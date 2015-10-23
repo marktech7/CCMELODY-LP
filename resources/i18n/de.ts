@@ -2422,11 +2422,11 @@ Find out more about OpenLP: http://openlp.org/
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
         <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Source Lyrics Projection
 
-OpenLP is free church presentation software, or lyrics projection software, used to display slides of songs, Bible verses, videos, images, and even presentations (if Impress, PowerPoint or PowerPoint Viewer is installed) for church worship using a computer and a data projector.
+OpenLP ist ein freies Programm für Präsentationen in Kirchen. Es können Liedtexte, Bibelverse, Videos, Bilder und Präsentationen (wenn Impress, PowerPoint oder der PowerPoint Viewer installiert sind) mittels Beamer und Computer angezeigt werden.
 
-Find out more about OpenLP: http://openlp.org/
+Weitere Informationen finden Sie unter: http://openlp.org/
 
-OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</translation>
+OpenLP wird von Freiwilligen Helfern entwickelt und unterstützt. Wenn Sie sich beteiligen wollen betätigen Sie untenstehende Schaltfläche und in ihrem Browser wird ihnen angezeigt, welche Möglichkeiten es gibt.</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="663"/>
@@ -2517,22 +2517,22 @@ Final Credit
     on the cross, setting us free from sin. We
     bring this software to you for free because
     He has set us free.</source>
-        <translation>Project Lead
+        <translation>Projektleitung
     %s
 
-Developers
+Entwickler
     %s
 
-Contributors
+Mitwirkende
     %s
 
-Testers
+Tester
     %s
 
-Packagers
+Paketierer
     %s
 
-Translators
+Übersetzer
     Afrikaans (af)
         %s
     Czech (cs)
@@ -2588,17 +2588,20 @@ Built With
     Oxygen Icons: http://techbase.kde.org/Projects/Oxygen/
     MuPDF: http://www.mupdf.com/
 
-Final Credit
-    &quot;For God so loved the world that He gave
-    His one and only Son, so that whoever
-    believes in Him will not perish but inherit
-    eternal life.&quot;  -- John 3:16
+Danke
+    Denn so sehr hat Gott die Welt geliebt,
+    daß er seinen eingeborenen Sohn
+     hingegeben hat, damit alle, die an ihn
+    glauben, nicht verloren gehen, sondern
+    ewiges Leben haben.  -- Johannes 3, 16
 
-    And last but not least, final credit goes to
-    God our Father, for sending His Son to die
-    on the cross, setting us free from sin. We
-    bring this software to you for free because
-    He has set us free.</translation>
+    Als Letztes, aber nicht zuletzt, geht unser
+    Dank an Gott, unseren Vater, dafür, dass er
+    uns seinen Sohn gesandt hat, der am Kreuz
+    für uns gestorben ist und uns so von der
+    Sünde befreite. Wir veröffentlichen dieses
+    Programm frei, weil er uns befreit hat.
+    Halleluja!</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="270"/>
