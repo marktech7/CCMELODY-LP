@@ -2421,11 +2421,11 @@ Find out more about OpenLP: http://openlp.org/
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
         <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Source Lyrics Projection
 
-OpenLP is free church presentation software, or lyrics projection software, used to display slides of songs, Bible verses, videos, images, and even presentations (if Impress, PowerPoint or PowerPoint Viewer is installed) for church worship using a computer and a data projector.
+OpenLP on tasuta kiriku esitlustarkvara või laulusõnade kuvaja, mis kuvab nii laule, piiblikohti, videoid, pilte ning isegi esitlusi (kui on paigaldatud Impress, PowerPoint või PowerPoint Viewer) kasutades selleks ainult arvutit ja projektorit.
 
-Find out more about OpenLP: http://openlp.org/
+Uuri OpenLP kohta lähemalt: http://openlp.org
 
-OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</translation>
+OpenLP on kirjutanud ja seda haldavad vabatahtlikud. Kui sa tahad näha rohkem tasuta kristlikku tarkvara, siis võib-olla tahad ise vabatahtlikuna kaasa aidata? Klõpsa alumisele nupule</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="663"/>
