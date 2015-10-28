@@ -84,7 +84,9 @@ def get_vlc():
             pass
     if is_vlc_available:
         try:
+            vlc_instance = vlc.Instance()
             VERSION = vlc.libvlc_get_version().decode('UTF-8')
+            vlc_instance.release()
         except:
             VERSION = '0.0.0'
         # LooseVersion does not work when a string contains letter and digits (e. g. 2.0.5 Twoflower).
@@ -95,6 +97,9 @@ def get_vlc():
     if is_vlc_available:
         return vlc
     else:
+        # The vlc module may have been imported. Remove it if it has.
+        if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
+            del sys.modules['openlp.core.ui.media.vendor.vlc']
         return None
 
 
