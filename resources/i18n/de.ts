@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="de" sourcelanguage="" version="2.0">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="2.0" language="de" sourcelanguage="">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -96,14 +97,14 @@ Möchten Sie dennoch fortfahren?</translation>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="190"/>
-        <source>The alert text does not contain '&lt;&gt;'.
+        <source>The alert text does not contain &apos;&lt;&gt;&apos;.
 Do you want to continue anyway?</source>
         <translation>Der Hinweistext enthält nicht &apos;&lt;&gt;&apos;.
 Möchten Sie dennoch fortfahren?</translation>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="107"/>
-        <source>You haven't specified any text for your alert. 
+        <source>You haven&apos;t specified any text for your alert. 
 Please type in some text before clicking New.</source>
         <translation>Sie haben keinen Text für Ihren Hinweistext eingegeben.
 Bitte geben Sie etwas ein.</translation>
@@ -1778,7 +1779,10 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln bei Bedarf heruntergeladen 
     <message numerus="yes">
         <location filename="openlp/plugins/custom/lib/mediaitem.py" line="186"/>
         <source>Are you sure you want to delete the %n selected custom slide(s)?</source>
-        <translation><numerusform>Soll die markierte Sonderfolie wirklich gelöscht werden?</numerusform><numerusform>Sollen die markierten %n Sonderfolien wirklich gelöscht werden?</numerusform></translation>
+        <translation>
+            <numerusform>Soll die markierte Sonderfolie wirklich gelöscht werden?</numerusform>
+            <numerusform>Sollen die markierten %n Sonderfolien wirklich gelöscht werden?</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2416,7 +2420,7 @@ OpenLP is free church presentation software, or lyrics projection software, used
 Find out more about OpenLP: http://openlp.org/
 
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
-        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Lyrics Projection
+        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Source Lyrics Projection
 
 OpenLP ist ein freies Programm für Präsentationen in Kirchen. Es können Liedtexte, Bibelverse, Videos, Bilder und Präsentationen (wenn Impress, PowerPoint oder der PowerPoint Viewer installiert sind) mittels Beamer und Computer angezeigt werden.
 
@@ -2475,7 +2479,7 @@ Translators
         %s
     Japanese (ja)
         %s
-    Norwegian Bokmål (nb)
+    Norwegian Bokm&#xe5;l (nb)
         %s
     Dutch (nl)
         %s
@@ -2531,44 +2535,65 @@ Paketierer
 Übersetzer
     Afrikaans (af)
         %s
-    Deutsch (de)
+    Czech (cs)
         %s
-    Englisch, Vereinigtes Königreich (en_GB)
+    Danish (da)
         %s
-    Englisch, Südafrika (en_ZA)
+    German (de)
         %s
-    Estnisch (et)
+    Greek (el)
         %s
-    Französisch (fr)
+    English, United Kingdom (en_GB)
         %s
-    Ungarisch (hu)
+    English, South Africa (en_ZA)
         %s
-    Japanisch (ja)
+    Spanish (es)
         %s
-    Norwegisch (nb)
+    Estonian (et)
         %s
-    Niederländisch (nl)
+    Finnish (fi)
         %s
-    Portugiesisch, Brasilien (pt_BR)
+    French (fr)
         %s
-    Russisch (ru)
+    Hungarian (hu)
+        %s
+    Indonesian (id)
+        %s
+    Japanese (ja)
+        %s
+    Norwegian Bokmål (nb)
+        %s
+    Dutch (nl)
+        %s
+    Polish (pl)
+        %s
+    Portuguese, Brazil (pt_BR)
+        %s
+    Russian (ru)
+        %s
+    Swedish (sv)
+        %s
+    Tamil(Sri-Lanka) (ta_LK)
+        %s
+    Chinese(China) (zh_CN)
         %s
 
-Dokumentation
+Documentation
     %s
 
-Erstellt mit
+Built With
     Python: http://www.python.org/
-    Qt4: http://qt.nokia.com/
+    Qt4: http://qt.io
     PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt/intro
-    Oxygen Icons: http://oxygen-icons.org/
+    Oxygen Icons: http://techbase.kde.org/Projects/Oxygen/
+    MuPDF: http://www.mupdf.com/
 
 Danke
-    »Denn so sehr hat Gott die Welt geliebt,
+    Denn so sehr hat Gott die Welt geliebt,
     daß er seinen eingeborenen Sohn
      hingegeben hat, damit alle, die an ihn
     glauben, nicht verloren gehen, sondern
-    ewiges Leben haben.«  -- Johannes 3, 16
+    ewiges Leben haben.  -- Johannes 3, 16
 
     Als Letztes, aber nicht zuletzt, geht unser
     Dank an Gott, unseren Vater, dafür, dass er
@@ -2580,8 +2605,8 @@ Danke
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="270"/>
-        <source>Copyright © 2004-2015 %s
-Portions copyright © 2004-2015 %s</source>
+        <source>Copyright &#xa9; 2004-2015 %s
+Portions copyright &#xa9; 2004-2015 %s</source>
         <translation>Copyright © 2004-2015 %s
 Teil-Copyright © 2004-2015 %s</translation>
     </message>
@@ -3927,7 +3952,7 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.MainDisplay</name>
     <message>
-        <location filename="openlp/core/ui/maindisplay.py" line="213"/>
+        <location filename="openlp/core/ui/maindisplay.py" line="227"/>
         <source>OpenLP Display</source>
         <translation>OpenLP-Anzeige</translation>
     </message>
@@ -6949,7 +6974,7 @@ Diese Dateien werden entfernt, wenn Sie mit dem Speichern fortfahren.</translati
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/ui.py" line="37"/>
-        <source>©</source>
+        <source>&#xa9;</source>
         <comment>Copyright symbol.</comment>
         <translation>©</translation>
     </message>
@@ -9117,7 +9142,10 @@ Er wurde wegen einem fehlenden Python-Modul deaktiviert. Wenn Sie diesen Importe
     <message numerus="yes">
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="361"/>
         <source>Are you sure you want to delete the %n selected song(s)?</source>
-        <translation><numerusform>Soll das markierte Lied wirklich gelöscht werden?</numerusform><numerusform>Sollen die markierten %n Lieder wirklich gelöscht werden?</numerusform></translation>
+        <translation>
+            <numerusform>Soll das markierte Lied wirklich gelöscht werden?</numerusform>
+            <numerusform>Sollen die markierten %n Lieder wirklich gelöscht werden?</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="128"/>

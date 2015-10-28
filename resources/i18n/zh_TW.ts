@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="zh_TW" sourcelanguage="" version="2.0">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="2.0" language="zh_TW" sourcelanguage="">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -95,14 +96,14 @@ Do you want to continue anyway?</source>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="190"/>
-        <source>The alert text does not contain '&lt;&gt;'.
+        <source>The alert text does not contain &apos;&lt;&gt;&apos;.
 Do you want to continue anyway?</source>
         <translation>警報訊息沒有包含&apos;&lt;&gt;&apos;，
 是否繼續？</translation>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="107"/>
-        <source>You haven't specified any text for your alert. 
+        <source>You haven&apos;t specified any text for your alert. 
 Please type in some text before clicking New.</source>
         <translation>您尚未在警報文字欄指定任何文字。
 請在新建前輸入一些文字。</translation>
@@ -1777,7 +1778,9 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message numerus="yes">
         <location filename="openlp/plugins/custom/lib/mediaitem.py" line="186"/>
         <source>Are you sure you want to delete the %n selected custom slide(s)?</source>
-        <translation><numerusform>您確定想要刪除這 %n 張選中的自訂幻燈片嗎?</numerusform></translation>
+        <translation>
+            <numerusform>您確定想要刪除這 %n 張選中的自訂幻燈片嗎?</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2417,13 +2420,13 @@ OpenLP is free church presentation software, or lyrics projection software, used
 Find out more about OpenLP: http://openlp.org/
 
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
-        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - 開放源碼歌詞投影
+        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Source Lyrics Projection
 
-OpenLP是一個免費的教會講道軟體或歌詞投影軟體，讓教會敬拜使用電腦及投影機來顯示歌詞、聖經經節、影片、圖片，甚至演講(如果已安?Impress, PowerPoint或PowerPoint Viewer)。
+OpenLP is free church presentation software, or lyrics projection software, used to display slides of songs, Bible verses, videos, images, and even presentations (if Impress, PowerPoint or PowerPoint Viewer is installed) for church worship using a computer and a data projector.
 
-查詢更多OpenLP訊息: http://openlp.org/
+Find out more about OpenLP: http://openlp.org/
 
-OpenLP是由志願者編寫及維護。如果您想看到更多基督教軟體被編寫出來，請考慮點擊下面的按鈕來加入。</translation>
+OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="663"/>
@@ -2433,6 +2436,88 @@ OpenLP是由志願者編寫及維護。如果您想看到更多基督教軟體�
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="157"/>
         <source>Project Lead
+    %s
+
+Developers
+    %s
+
+Contributors
+    %s
+
+Testers
+    %s
+
+Packagers
+    %s
+
+Translators
+    Afrikaans (af)
+        %s
+    Czech (cs)
+        %s
+    Danish (da)
+        %s
+    German (de)
+        %s
+    Greek (el)
+        %s
+    English, United Kingdom (en_GB)
+        %s
+    English, South Africa (en_ZA)
+        %s
+    Spanish (es)
+        %s
+    Estonian (et)
+        %s
+    Finnish (fi)
+        %s
+    French (fr)
+        %s
+    Hungarian (hu)
+        %s
+    Indonesian (id)
+        %s
+    Japanese (ja)
+        %s
+    Norwegian Bokm&#xe5;l (nb)
+        %s
+    Dutch (nl)
+        %s
+    Polish (pl)
+        %s
+    Portuguese, Brazil (pt_BR)
+        %s
+    Russian (ru)
+        %s
+    Swedish (sv)
+        %s
+    Tamil(Sri-Lanka) (ta_LK)
+        %s
+    Chinese(China) (zh_CN)
+        %s
+
+Documentation
+    %s
+
+Built With
+    Python: http://www.python.org/
+    Qt4: http://qt.io
+    PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt/intro
+    Oxygen Icons: http://techbase.kde.org/Projects/Oxygen/
+    MuPDF: http://www.mupdf.com/
+
+Final Credit
+    &quot;For God so loved the world that He gave
+    His one and only Son, so that whoever
+    believes in Him will not perish but inherit
+    eternal life.&quot;  -- John 3:16
+
+    And last but not least, final credit goes to
+    God our Father, for sending His Son to die
+    on the cross, setting us free from sin. We
+    bring this software to you for free because
+    He has set us free.</source>
+        <translation>Project Lead
     %s
 
 Developers
@@ -2513,94 +2598,12 @@ Final Credit
     God our Father, for sending His Son to die
     on the cross, setting us free from sin. We
     bring this software to you for free because
-    He has set us free.</source>
-        <translation>專案領導者
-%s
-
-開發群
-%s
-
-貢獻者
-%s
-
-測試群
-%s
-
-封裝
-%s
-
-翻譯群
-Afrikaans (af)
-%s
-Czech (cs)
-%s
-Danish (da)
-%s
-German (de)
-%s
-Greek (el)
-%s
-English, United Kingdom (en_GB)
-%s
-English, South Africa (en_ZA)
-%s
-Spanish (es)
-%s
-Estonian (et)
-%s
-Finnish (fi)
-%s
-French (fr)
-%s
-Hungarian (hu)
-%s
-Indonesian (id)
-%s
-Japanese (ja)
-%s
-Norwegian Bokmål (nb)
-%s
-Dutch (nl)
-%s
-Polish (pl)
-%s
-Portuguese, Brazil (pt_BR)
-%s
-Russian (ru)
-%s
-Swedish (sv)
-%s
-Tamil(Sri-Lanka) (ta_LK)
-%s
-Chinese(China) (zh_CN)
-%s
-Chinese(Taiwan) (zh_TW)
-%s
-
-文件
-%s
-
-建置於
-Python: http://www.python.org/
-Qt4: http://qt.io
-PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt/intro
-Oxygen Icons: http://techbase.kde.org/Projects/Oxygen/
-MuPDF: http://www.mupdf.com/
-
-最後功勞-
-&quot;For God so loved the world that He gave
-His one and only Son, so that whoever
-believes in Him will not perish but inherit
-eternal life.&quot; -- John 3:16
-&quot;神愛世人，甚至將他的獨生子賜給他們，
-叫一切信他的，不致滅亡，反得永生。 &quot;-- 約翰福音 三:16
-
-最後但並非最不重要的，最終要歸於我們的父神，差祂的兒子死在十字架上，使我們赦免罪。我們把這個軟件給你自由，因祂已經給我們自由。</translation>
+    He has set us free.</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="270"/>
-        <source>Copyright © 2004-2015 %s
-Portions copyright © 2004-2015 %s</source>
+        <source>Copyright &#xa9; 2004-2015 %s
+Portions copyright &#xa9; 2004-2015 %s</source>
         <translation>Copyright © 2004-2015 %s⏎ 部分版權 © 2004-2015 %s</translation>
     </message>
 </context>
@@ -3952,7 +3955,7 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.MainDisplay</name>
     <message>
-        <location filename="openlp/core/ui/maindisplay.py" line="213"/>
+        <location filename="openlp/core/ui/maindisplay.py" line="227"/>
         <source>OpenLP Display</source>
         <translation>OpenLP 顯示</translation>
     </message>
@@ -5399,12 +5402,12 @@ Suffix not supported</source>
     <message>
         <location filename="openlp/core/ui/projector/manager.py" line="476"/>
         <source>Delete projector (%s) %s?</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
     <message>
         <location filename="openlp/core/ui/projector/manager.py" line="478"/>
         <source>Are you sure you want to delete this projector?</source>
-        <translation type="unfinished"/>
+        <translation type="unfinished"></translation>
     </message>
 </context>
 <context>
@@ -6975,7 +6978,7 @@ These files will be removed if you continue to save.</source>
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/ui.py" line="37"/>
-        <source>©</source>
+        <source>&#xa9;</source>
         <comment>Copyright symbol.</comment>
         <translation>©</translation>
     </message>
@@ -9136,7 +9139,9 @@ Please enter the verses separated by spaces.</source>
     <message numerus="yes">
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="361"/>
         <source>Are you sure you want to delete the %n selected song(s)?</source>
-        <translation><numerusform>您確定想要刪除這 %n 首選中的歌曲嗎？</numerusform></translation>
+        <translation>
+            <numerusform>您確定想要刪除這 %n 首選中的歌曲嗎？</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="128"/>

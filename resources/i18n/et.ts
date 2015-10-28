@@ -1,4 +1,5 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="et" sourcelanguage="" version="2.0">
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE TS><TS version="2.0" language="et" sourcelanguage="">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -96,14 +97,14 @@ Kas tahad siiski jätkata?</translation>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="190"/>
-        <source>The alert text does not contain '&lt;&gt;'.
+        <source>The alert text does not contain &apos;&lt;&gt;&apos;.
 Do you want to continue anyway?</source>
         <translation>Teate tekst ei sisalda &apos;&lt;&gt;&apos; märke.
 Kas tahad siiski jätkata?</translation>
     </message>
     <message>
         <location filename="openlp/plugins/alerts/forms/alertform.py" line="107"/>
-        <source>You haven't specified any text for your alert. 
+        <source>You haven&apos;t specified any text for your alert. 
 Please type in some text before clicking New.</source>
         <translation>Sa pole oma teatele teksti lisanud.
 Enne nupu Uus vajutamist sisesta mingi tekst.</translation>
@@ -1777,7 +1778,10 @@ Pane tähele, et veebipiiblite salmid laaditakse internetist vajadusel, seega on
     <message numerus="yes">
         <location filename="openlp/plugins/custom/lib/mediaitem.py" line="186"/>
         <source>Are you sure you want to delete the %n selected custom slide(s)?</source>
-        <translation><numerusform>Kas tahad kindlasti kustutada %n valitud kohandatud slaidi?</numerusform><numerusform>Kas tahad kindlasti kustutada %n valitud kohandatud slaidi?</numerusform></translation>
+        <translation>
+            <numerusform>Kas tahad kindlasti kustutada %n valitud kohandatud slaidi?</numerusform>
+            <numerusform>Kas tahad kindlasti kustutada %n valitud kohandatud slaidi?</numerusform>
+        </translation>
     </message>
 </context>
 <context>
@@ -2415,7 +2419,7 @@ OpenLP is free church presentation software, or lyrics projection software, used
 Find out more about OpenLP: http://openlp.org/
 
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
-        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - avatud lähtekoodiga laulusõnade kuvaja
+        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Open Source Lyrics Projection
 
 OpenLP on tasuta kiriku esitlustarkvara või laulusõnade kuvaja, mis kuvab nii laule, piiblikohti, videoid, pilte ning isegi esitlusi (kui on paigaldatud Impress, PowerPoint või PowerPoint Viewer) kasutades selleks ainult arvutit ja projektorit.
 
@@ -2474,7 +2478,7 @@ Translators
         %s
     Japanese (ja)
         %s
-    Norwegian Bokmål (nb)
+    Norwegian Bokm&#xe5;l (nb)
         %s
     Dutch (nl)
         %s
@@ -2560,6 +2564,8 @@ Norra Bokmål (nb)
 %s
 Hollandi (nl)
 %s
+Poola (pl)
+%s
 Portugali, Brasiilia (pt_BR)
 %s
 Vene (ru)
@@ -2575,11 +2581,11 @@ Dokumentatsioon
 %s
 
 Valmistamiseks kasutati
-Python: http://www.python.org
+Python: http://www.python.org/
 Qt4: http://qt.io
 PyQt4: http://www.riverbankcomputing.co.uk/software/pyqt/intro
-Oxygeni ikoonid: http://oxygen-icons.org
-MuPDF: http://www.mupdf.com
+Oxygeni ikoonid: http://techbase.kde.org/Projects/Oxygen/
+MuPDF: http://www.mupdf.com/
 
 Lõputänu
 &quot;Sest nõnda on Jumal maailma armastanud,
@@ -2595,8 +2601,8 @@ vabastanud.</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/aboutdialog.py" line="270"/>
-        <source>Copyright © 2004-2015 %s
-Portions copyright © 2004-2015 %s</source>
+        <source>Copyright &#xa9; 2004-2015 %s
+Portions copyright &#xa9; 2004-2015 %s</source>
         <translation>Autoriõigus © 2004-2015 %s
 Osade autoriõigus © 2004-2015 %s</translation>
     </message>
@@ -3955,7 +3961,7 @@ Et katkestada esmakäivituse nõustaja täielikult (ja jätta OpenLP käivitamat
 <context>
     <name>OpenLP.MainDisplay</name>
     <message>
-        <location filename="openlp/core/ui/maindisplay.py" line="213"/>
+        <location filename="openlp/core/ui/maindisplay.py" line="227"/>
         <source>OpenLP Display</source>
         <translation>OpenLP kuva</translation>
     </message>
@@ -5402,12 +5408,12 @@ Selle lõpuga fail ei ole toetatud</translation>
     <message>
         <location filename="openlp/core/ui/projector/manager.py" line="476"/>
         <source>Delete projector (%s) %s?</source>
-        <translation type="unfinished"/>
+        <translation>Kas kustutada projektor (%s) %s?</translation>
     </message>
     <message>
         <location filename="openlp/core/ui/projector/manager.py" line="478"/>
         <source>Are you sure you want to delete this projector?</source>
-        <translation type="unfinished"/>
+        <translation>Kas tahad kindlasti kustutada selle projektori?</translation>
     </message>
 </context>
 <context>
@@ -6978,7 +6984,7 @@ Need failid eemaldatakse, kui sa otsustad siiski salvestada.</translation>
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/ui.py" line="37"/>
-        <source>©</source>
+        <source>&#xa9;</source>
         <comment>Copyright symbol.</comment>
         <translation>©</translation>
     </message>
@@ -9143,7 +9149,10 @@ Palun eralda salmid tühikutega.</translation>
     <message numerus="yes">
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="361"/>
         <source>Are you sure you want to delete the %n selected song(s)?</source>
-        <translation><numerusform>Kas tahad kindlasti kustutada %n valitud laulu?</numerusform><numerusform>Kas tahad kindlasti kustutada %n valitud laulu?</numerusform></translation>
+        <translation>
+            <numerusform>Kas tahad kindlasti kustutada %n valitud laulu?</numerusform>
+            <numerusform>Kas tahad kindlasti kustutada %n valitud laulu?</numerusform>
+        </translation>
     </message>
     <message>
         <location filename="openlp/plugins/songs/lib/mediaitem.py" line="128"/>
