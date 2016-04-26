@@ -2409,7 +2409,7 @@ Pitäisikö OpenLP:n päivittää ne nyt?</translation>
     <message>
         <location filename="../../openlp/core/__init__.py" line="226"/>
         <source>Backup</source>
-        <translation>Varmuuskopinti</translation>
+        <translation>Varmuuskopiointi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/__init__.py" line="211"/>
@@ -4558,7 +4558,7 @@ Käsittely on keskeytetty eikä muutoksia ole tehty.</translation>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="1101"/>
         <source>Are you sure you want to exit OpenLP?</source>
-        <translation>Haluatko varmasti sulkea  OpenLP:n?</translation>
+        <translation>Haluatko varmasti sulkea OpenLP:n?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="1108"/>

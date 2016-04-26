@@ -6577,7 +6577,7 @@ Estos archivos serán removidos si continua.</translation>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="422"/>
         <source>Line Spacing:</source>
-        <translation>Epaciado de Líneas:</translation>
+        <translation>Espaciado de Líneas:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="424"/>
@@ -6787,7 +6787,7 @@ Estos archivos serán removidos si continua.</translation>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="436"/>
         <source>color:</source>
-        <translation>color:</translation>
+        <translation>Color:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="449"/>
@@ -7335,7 +7335,7 @@ Por favor intente seleccionarlo individualmente.</translation>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="114"/>
         <source>OpenLP is already running. Do you wish to continue?</source>
-        <translation>OpenLP ya esta abierto. ¿Desea continuar?</translation>
+        <translation>OpenLP ya está abierto. ¿Desea continuar?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="115"/>
@@ -7536,19 +7536,19 @@ Por favor intente seleccionarlo individualmente.</translation>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="125"/>
         <source>Replace live background is not available when the WebKit player is disabled.</source>
-        <translation type="unfinished"/>
+        <translation>Reemplazar el fondo proyectado no está disponible cuando WebKit está deshabilitado.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="38"/>
         <source>Songbook</source>
         <comment>Singular</comment>
-        <translation type="unfinished"/>
+        <translation>Himnario</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="39"/>
         <source>Songbooks</source>
         <comment>Plural</comment>
-        <translation type="unfinished"/>
+        <translation>Himnarios</translation>
     </message>
 </context>
 <context>
@@ -8617,7 +8617,7 @@ La codificación se encarga de la correcta representación de caracteres.</trans
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
-        <translation>Este autor ya esta en la lista.</translation>
+        <translation>Este autor ya está en la lista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="587"/>
@@ -8637,7 +8637,7 @@ La codificación se encarga de la correcta representación de caracteres.</trans
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="656"/>
         <source>This topic is already in the list.</source>
-        <translation>Esta categoría ya esta en la lista.</translation>
+        <translation>Esta categoría ya está en la lista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="664"/>
@@ -8731,42 +8731,42 @@ Por favor, introduzca los Versículos separados por espacios.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="317"/>
         <source>&amp;Manage Authors, Topics, Songbooks</source>
-        <translation type="unfinished"/>
+        <translation>Ad&amp;ministrar Autores, Categorías, Himnarios</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="322"/>
         <source>Add &amp;to Song</source>
-        <translation type="unfinished"/>
+        <translation>A&amp;gregar a Canción</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="323"/>
         <source>Re&amp;move</source>
-        <translation type="unfinished"/>
+        <translation>E&amp;liminar</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="324"/>
         <source>Authors, Topics &amp;&amp; Songbooks</source>
-        <translation type="unfinished"/>
+        <translation>Autores, Categorías e Himnarios</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="683"/>
         <source>Add Songbook</source>
-        <translation type="unfinished"/>
+        <translation>Agregar Himnario</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="683"/>
         <source>This Songbook does not exist, do you want to add it?</source>
-        <translation type="unfinished"/>
+        <translation>Este himnario no existe, ¿desea agregarlo?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="700"/>
         <source>This Songbook is already in the list.</source>
-        <translation type="unfinished"/>
+        <translation>Este Himnario ya está en la lista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="707"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
-        <translation type="unfinished"/>
+        <translation>No ha seleccionado un Himnario válido. Seleccione un Himnario de la lista o ingrese un Himnario nuevo y presione el botón &quot;Agregar a Canción&quot; para agregar el Himnario nuevo.</translation>
     </message>
 </context>
 <context>
@@ -9206,12 +9206,12 @@ Por favor, introduzca los Versículos separados por espacios.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="364"/>
         <source>Are you sure you want to delete the &quot;%d&quot; selected song(s)?</source>
-        <translation>¿Desea borrar la(s) %n cancion(es) seleccionadas?</translation>
+        <translation>¿Desea borrar la(s) %d cancion(es) seleccionadas?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Search Songbooks...</source>
-        <translation type="unfinished"/>
+        <translation>Buscar Himnarios...</translation>
     </message>
 </context>
 <context>
@@ -9299,7 +9299,7 @@ Por favor, introduzca los Versículos separados por espacios.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookdialog.py" line="66"/>
         <source>Songbook Maintenance</source>
-        <translation type="unfinished"/>
+        <translation>Administración de Himnarios</translation>
     </message>
 </context>
 <context>
@@ -9606,7 +9606,7 @@ Por favor, introduzca los Versículos separados por espacios.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectdialog.py" line="244"/>
         <source>Stop</source>
-        <translation type="unfinished"/>
+        <translation>Detener</translation>
     </message>
 </context>
 <context>

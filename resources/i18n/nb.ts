@@ -9285,7 +9285,7 @@ Fyll inn versene adskilt med mellomrom.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookdialog.py" line="68"/>
         <source>&amp;Publisher:</source>
-        <translation>&amp;Forlegger:</translation>
+        <translation>&amp;Utgiver:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookform.py" line="61"/>

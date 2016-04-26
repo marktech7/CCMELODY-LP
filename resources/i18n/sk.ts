@@ -3468,7 +3468,7 @@ This location will be used after OpenLP is closed.</source>
 To re-run the First Time Wizard and import this sample data at a later time, check your Internet connection and re-run this wizard by selecting &quot;Tools/Re-run First Time Wizard&quot; from OpenLP.</source>
         <translation>Internetové pripojenie nie je dostupné. Sprievodca prvým spustením potrebuje internetové pripojenie pre stiahnutie ukážok piesní, Biblií a motívov. Kliknite na tlačidlo Koniec pre spustenie aplikácie OpenLP s predvoleným nastavením a bez vzorových dát. 
 
-Ak chcete znovu spustiť sprievodcu a importovať tieto vzorové dáta na neskoršiu dobru, skontrolujte svoje internetové pripojenie a znovu spustite tohto sprievodcu výberom &quot;Nastavenia/ Znovu spustiť sprievodcu prvým spustením&quot; z OpenLP.</translation>
+Ak chcete znovu spustiť sprievodcu a importovať tieto vzorové dáta na neskoršiu dobru, skontrolujte svoje internetové pripojenie a znovu spustite tohto sprievodcu výberom &quot;Nástroje/Znovu spustiť sprievodcu prvým spustením&quot; z OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="603"/>

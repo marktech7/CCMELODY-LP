@@ -4,35 +4,35 @@
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="152"/>
         <source>&amp;Alert</source>
-        <translation>&amp;Сигнал</translation>
+        <translation>&amp;Съобщение</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="152"/>
         <source>Show an alert message.</source>
-        <translation>Покажи сигнално съобщение</translation>
+        <translation>Покажи съобщение</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="211"/>
         <source>Alert</source>
         <comment>name singular</comment>
-        <translation>Сигнал</translation>
+        <translation>Съобщение</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="212"/>
         <source>Alerts</source>
         <comment>name plural</comment>
-        <translation>Сигнали</translation>
+        <translation>Съобщения</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="216"/>
         <source>Alerts</source>
         <comment>container title</comment>
-        <translation>Сигнали</translation>
+        <translation>Съобщения</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="201"/>
         <source>&lt;strong&gt;Alerts Plugin&lt;/strong&gt;&lt;br /&gt;The alert plugin controls the displaying of alerts on the display screen.</source>
-        <translation>&lt;strong&gt;Добавка за сигнали&lt;/strong&gt;&lt;br /&gt;Добавката за сигнали контролира показването на сигнали на екрана.</translation>
+        <translation>&lt;strong&gt;Добавка за съобщения&lt;/strong&gt;&lt;br /&gt;Добавката управлява показването на съобщения на екрана.</translation>
     </message>
 </context>
 <context>
@@ -40,17 +40,17 @@
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="95"/>
         <source>Alert Message</source>
-        <translation>Сигнално съобщение</translation>
+        <translation>Съобщение</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="96"/>
         <source>Alert &amp;text:</source>
-        <translation>Текст на сигнала</translation>
+        <translation>Текст на съобщението</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="98"/>
         <source>&amp;New</source>
-        <translation>&amp;Нов</translation>
+        <translation>&amp;Ново</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="99"/>
@@ -70,7 +70,7 @@
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="108"/>
         <source>New Alert</source>
-        <translation>Нов сигнал</translation>
+        <translation>Ново съобщение</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="97"/>
@@ -86,13 +86,13 @@
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="179"/>
         <source>You have not entered a parameter to be replaced.
 Do you want to continue anyway?</source>
-        <translation>Не сте задали промяна на параметъра.
-Искате ли да продължите въпреки това?</translation>
+        <translation>Не сте променили параметъра.
+Искате ли да продължите?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="192"/>
         <source>No Placeholder Found</source>
-        <translation>Няма намерен приемник</translation>
+        <translation>Няма намерена подсказка</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="192"/>

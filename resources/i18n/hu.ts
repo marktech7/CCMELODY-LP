@@ -3508,7 +3508,7 @@ Az Első indítás tündér újbóli indításához és a példaadatok későbbi
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="577"/>
         <source>Click the %s button to start OpenLP.</source>
-        <translation>Az OpenLP indításaó az alábbi %s gombbal.</translation>
+        <translation>Az OpenLP indítása az alábbi %s gombbal.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="603"/>
