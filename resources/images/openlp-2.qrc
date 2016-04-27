@@ -202,5 +202,6 @@
   </qresource>
   <qresource prefix="remotes">
     <file>android_app_qr.png</file>
+    <file>ios_app_qr.png</file>
   </qresource>
 </RCC>
