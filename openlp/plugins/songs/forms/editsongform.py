@@ -1054,8 +1054,23 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             filename = item.data(QtCore.Qt.UserRole)
             if not filename.startswith(save_path):
                 old_file, filename = filename, os.path.join(save_path, os.path.split(filename)[1])
-                shutil.copyfile(old_file, filename)
+                try:
+                    shutil.copyfile(old_file, filename)
+                except FileNotFoundError:
+                    # show a dialog
+                    button = QtWidgets.QMessageBox.critical(
+                        self,
+                        translate('SongsPlugin.EditSongForm', 'File not found'),
+                        translate('SongsPlugin.EditSongForm', 'Unable to find the following file:\n' +
+                                  '%s\nDo you want to remove the entry from the song?') % old_file,
+                        QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No,
+                        QtWidgets.QMessageBox.Yes
+                    )
+                    if button == QtWidgets.QMessageBox.Yes:
+                        # If they want the file removed, skip the rest and move onto the next file
+                        continue
             files.append(filename)
+            # Add the file to the media_file table
             media_file = MediaFile()
             media_file.file_name = filename
             media_file.type = 'audio'

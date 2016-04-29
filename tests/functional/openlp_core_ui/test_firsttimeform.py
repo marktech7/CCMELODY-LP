@@ -78,6 +78,23 @@ class TestFirstTimeForm(TestCase, TestMixin):
         if os.path.isfile(self.tempfile):
             os.remove(self.tempfile)
 
+    @patch('openlp.core.ui.firsttimewizard.is_macosx')
+    def constructor_macosx_test(self, mocked_is_macosx):
+        """
+        Test that the form is resized correctly on OS X
+        """
+        # GIVEN: The platform is OS X
+        mocked_is_macosx.return_value = True
+
+        # WHEN: The wizard is created
+        frw = FirstTimeForm(None)
+
+        # THEN: The form should have been resized
+        size = frw.size()
+        self.assertEqual(634, size.width())
+        self.assertEqual(386, size.height())
+
+
     def initialise_test(self):
         """
         Test if we can intialise the FirstTimeForm
