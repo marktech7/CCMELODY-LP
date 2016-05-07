@@ -50,8 +50,6 @@ class TestGeneralTab(TestCase):
         general_tab = GeneralTab(None)
 
         # THEN: Various member variables should be initialised
-        self.assertEqual(':/graphics/openlp-splash-screen.png', general_tab.logo_file, 'The logo_file should be set')
-        self.assertEqual('#ffffff', general_tab.logo_background_color, 'The logo background colour should be set')
         self.assertEqual(mocked_screen_list, general_tab.screens)
         self.assertEqual(':/icon/openlp-logo-16x16.png', general_tab.icon_path)
 
