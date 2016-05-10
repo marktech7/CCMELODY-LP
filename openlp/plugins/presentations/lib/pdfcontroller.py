@@ -154,7 +154,7 @@ class PdfController(PresentationController):
                 if not self.mudrawbin:
                     self.mutoolbin = which('mutool')
                     # Check we got a working mutool
-                    if not self.mutoolbin or self.process_check_binary(self.mutoolbin) != 'mutool':
+                    if not self.mutoolbin or self.check_binary(self.mutoolbin) != 'mutool':
                         self.gsbin = which('gs')
                 # Last option: check if mudraw or mutool is placed in OpenLP base folder
                 if not self.mudrawbin and not self.mutoolbin and not self.gsbin:
