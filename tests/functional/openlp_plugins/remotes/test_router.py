@@ -378,3 +378,26 @@ class TestRouter(TestCase, TestMixin):
 
         # THEN: we should use the specific stage file instance
         self.router._process_file.assert_called_with(os.path.join('trb', 'trb.css'))
+
+    def serve_file_with_partial_params_test(self):
+        """
+         Test the serve_file method with an existing file
+         """
+        # GIVEN: mocked environment
+        self.router.send_response = MagicMock()
+        self.router.send_header = MagicMock()
+        self.router.end_headers = MagicMock()
+        self.router.wfile = MagicMock()
+        self.router.html_dir = os.path.normpath('test/dir')
+        self.router.template_vars = MagicMock()
+        with patch('openlp.core.lib.os.path.exists') as mocked_exists, \
+                patch('builtins.open', mock_open(read_data='123')):
+            mocked_exists.return_value = True
+
+            # WHEN: call serve_file with an existing html file
+            self.router.serve_file(os.path.normpath('test/dir/test'))
+
+            # THEN: it should return a 200 and the file
+            self.router.send_response.assert_called_once_with(200)
+            self.router.send_header.assert_called_once_with('Content-type', 'text/plain')
+            self.assertEqual(self.router.end_headers.call_count, 1, 'end_headers called once')
