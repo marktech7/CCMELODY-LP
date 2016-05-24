@@ -52,4 +52,3 @@ class TestGeneralTab(TestCase):
         # THEN: Various member variables should be initialised
         self.assertEqual(mocked_screen_list, general_tab.screens)
         self.assertEqual(':/icon/openlp-logo-16x16.png', general_tab.icon_path)
-

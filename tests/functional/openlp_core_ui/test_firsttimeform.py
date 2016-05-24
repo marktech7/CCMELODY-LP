@@ -94,7 +94,6 @@ class TestFirstTimeForm(TestCase, TestMixin):
         self.assertEqual(634, size.width())
         self.assertEqual(386, size.height())
 
-
     def initialise_test(self):
         """
         Test if we can intialise the FirstTimeForm
