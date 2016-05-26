@@ -1605,7 +1605,7 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln während der Benutzung gela
 <context>
     <name>BiblesPlugin.ZefaniaImport</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="111"/>
+        <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="112"/>
         <source>Incorrect Bible file type supplied. Zefania Bibles may be compressed. You must decompress them before import.</source>
         <translation>Falscher Bibel Datei Typ. Zefania Bibeln sind möglicherweise gepackt. Diese Dateien müssen entpackt werden vor dem Import.</translation>
     </message>
@@ -1613,7 +1613,7 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln während der Benutzung gela
 <context>
     <name>BiblesPlugin.Zefnia</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="105"/>
+        <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="106"/>
         <source>Importing %(bookname)s %(chapter)s...</source>
         <translation>Importiere %(bookname)s %(chapter)s...</translation>
     </message>
@@ -1745,7 +1745,7 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln während der Benutzung gela
         <translation>A&amp;utoren:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="238"/>
+        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="239"/>
         <source>You need to type in a title.</source>
         <translation>Bitte geben Sie einen Titel ein.</translation>
     </message>
@@ -1760,7 +1760,7 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln während der Benutzung gela
         <translation>Folie einfügen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="242"/>
+        <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="243"/>
         <source>You need to add at least one slide.</source>
         <translation>Sie müssen mindestens eine Folie hinzufügen.</translation>
     </message>
@@ -1906,7 +1906,7 @@ Bitte beachten Sie, dass Bibeltexte von Onlinebibeln während der Benutzung gela
 <context>
     <name>ImagePlugin.ExceptionDialog</name>
     <message>
-        <location filename="../../openlp/core/ui/exceptionform.py" line="209"/>
+        <location filename="../../openlp/core/ui/exceptionform.py" line="211"/>
         <source>Select Attachment</source>
         <translation>Anhang auswählen</translation>
     </message>
@@ -3218,7 +3218,7 @@ Dieser Ort wird beim nächsten Start benutzt.</translation>
         <translation>Datei einhängen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/exceptionform.py" line="202"/>
+        <location filename="../../openlp/core/ui/exceptionform.py" line="204"/>
         <source>Description characters to enter : %s</source>
         <translation>Mindestens noch %s Zeichen eingeben</translation>
     </message>
@@ -5365,32 +5365,32 @@ Dateiendung nicht unterstützt.</translation>
 <context>
     <name>OpenLP.ProjectorPJLink</name>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="747"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="755"/>
         <source>Fan</source>
         <translation>Lüfter</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="751"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="759"/>
         <source>Lamp</source>
         <translation>Lampe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="755"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="763"/>
         <source>Temperature</source>
         <translation>Temperatur</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="759"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="767"/>
         <source>Cover</source>
         <translation>Deckblatt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="763"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="771"/>
         <source>Filter</source>
         <translation>Filter</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="767"/>
+        <location filename="../../openlp/core/lib/projector/pjlink1.py" line="775"/>
         <source>Other</source>
         <translation>Anderes</translation>
     </message>
@@ -5578,17 +5578,17 @@ Dateiendung nicht unterstützt.</translation>
         <translation>Die Datei ist keine gültige OpenLP Ablaufdatei.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1488"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1489"/>
         <source>Missing Display Handler</source>
         <translation>Fehlende Anzeigesteuerung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1444"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1445"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Dieses Element kann nicht angezeigt werden, da es keine Steuerung dafür gibt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1488"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1489"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Dieses Element kann nicht angezeigt werden, da die zugehörige Erweiterung fehlt oder inaktiv ist.</translation>
     </message>
@@ -5837,12 +5837,12 @@ Bitte speichern Sie ihn mit OpenLP 2.0.2 oder neuer.</translation>
         <translation>Verzögerung zwischen den Folien (in Sekunden)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1516"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1517"/>
         <source>Rename item title</source>
         <translation>Eintragstitel bearbeiten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1516"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1517"/>
         <source>Title:</source>
         <translation>Titel:</translation>
     </message>
@@ -7896,79 +7896,89 @@ Bitte wählen Sie die Dateien einzeln aus.</translation>
 <context>
     <name>RemotePlugin.RemoteTab</name>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="170"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="185"/>
         <source>Serve on IP address:</source>
         <translation>Verfügbar über IP-Adresse:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="171"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="186"/>
         <source>Port number:</source>
         <translation>Port-Nummer:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="169"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="184"/>
         <source>Server Settings</source>
         <translation>Server-Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="172"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="187"/>
         <source>Remote URL:</source>
         <translation>Fernsteuerung:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="173"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="188"/>
         <source>Stage view URL:</source>
         <translation>Bühnenmonitor:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="175"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="190"/>
         <source>Display stage time in 12h format</source>
         <translation>Nutze 12h Format für den Bühnenmonitor</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="178"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="193"/>
         <source>Android App</source>
-        <translation>Android App</translation>
+        <translation>Android-App</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="174"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="189"/>
         <source>Live view URL:</source>
         <translation>Liveansicht URL:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="183"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="203"/>
         <source>HTTPS Server</source>
         <translation>HTTPS-Server</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="184"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="204"/>
         <source>Could not find an SSL certificate. The HTTPS server will not be available unless an SSL certificate is found. Please see the manual for more information.</source>
         <translation>Konnte kein SSL-Zertifikat finden. Der HTTPS-Server wird nicht verfügbar sein solange kein SSL-Zertifikat gefunden werden kann. Bitte lesen Sie das Benutzerhandbuch für mehr Informationen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="191"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="211"/>
         <source>User Authentication</source>
         <translation>Benutzerauthentifizierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="192"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="212"/>
         <source>User id:</source>
         <translation>Benutzername:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="193"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="213"/>
         <source>Password:</source>
         <translation>Passwort:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="176"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="191"/>
         <source>Show thumbnails of non-text slides in remote and stage view.</source>
         <translation>Vorschaubilder für Folien ohne Text in der Fernsteuerung und auf dem Bühnenmonitor anzeigen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="179"/>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="194"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the Android app from Google Play.</source>
         <translation>Scannen Sie den QR-Code oder &lt;a href=&quot;%s&quot;&gt;laden&lt;/a&gt; Sie die Android-App von Google Play herunter.</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
+        <source>iOS App</source>
+        <translation>iOS-App</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
+        <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
+        <translation>Scannen Sie den QR-Code oder &lt;a href=&quot;%s&quot;&gt;laden&lt;/a&gt; Sie die iOS-App aus dem App Store herunter.</translation>
     </message>
 </context>
 <context>
@@ -8009,50 +8019,50 @@ Bitte wählen Sie die Dateien einzeln aus.</translation>
         <translation>Setzt die Protokollierung aus.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="238"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="237"/>
         <source>&lt;strong&gt;SongUsage Plugin&lt;/strong&gt;&lt;br /&gt;This plugin tracks the usage of songs in services.</source>
         <translation>&lt;strong&gt;Liedernutzungs-Protokollierungs-Erweiterung&lt;/strong&gt;&lt;br /&gt;Diese Erweiterung zählt die Verwendung von Liedern in Veranstaltungen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="249"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="248"/>
         <source>SongUsage</source>
         <comment>name singular</comment>
         <translation>Liedprotokollierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="250"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="249"/>
         <source>SongUsage</source>
         <comment>name plural</comment>
         <translation>Liedprotokollierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="254"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="253"/>
         <source>SongUsage</source>
         <comment>container title</comment>
         <translation>Liedprotokollierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="154"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="153"/>
         <source>Song Usage</source>
         <translation>Liedprotokollierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="178"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="177"/>
         <source>Song usage tracking is active.</source>
         <translation>Liedprotokollierung ist aktiv.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="183"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="182"/>
         <source>Song usage tracking is inactive.</source>
         <translation>Liedprotokollierung ist nicht aktiv.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="193"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="192"/>
         <source>display</source>
         <translation>Bildschirm</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="201"/>
+        <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="200"/>
         <source>printed</source>
         <translation>gedruckt</translation>
     </message>
@@ -8194,82 +8204,82 @@ Bitte geben Sie einen gültigen Pfad an.</translation>
         <translation>Reindiziere die Liederdatenbank...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="301"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="302"/>
         <source>Arabic (CP-1256)</source>
         <translation>Arabisch (CP-1256)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="302"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="303"/>
         <source>Baltic (CP-1257)</source>
         <translation>Baltisch (CP-1257)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="303"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="304"/>
         <source>Central European (CP-1250)</source>
         <translation>Zentraleuropäisch (CP-1250)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="304"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="305"/>
         <source>Cyrillic (CP-1251)</source>
         <translation>Kyrillisch (CP-1251)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="305"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="306"/>
         <source>Greek (CP-1253)</source>
         <translation>Griechisch (CP-1253)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="306"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="307"/>
         <source>Hebrew (CP-1255)</source>
         <translation>Hebräisch (CP-1255)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="307"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="308"/>
         <source>Japanese (CP-932)</source>
         <translation>Japanisch (CP-932)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="308"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="309"/>
         <source>Korean (CP-949)</source>
         <translation>Koreanisch (CP-949)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="310"/>
         <source>Simplified Chinese (CP-936)</source>
         <translation>Chinesisch, vereinfacht (CP-936)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="310"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="311"/>
         <source>Thai (CP-874)</source>
         <translation>Thailändisch (CP-874)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="311"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="312"/>
         <source>Traditional Chinese (CP-950)</source>
         <translation>Chinesisch, traditionell (CP-950)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="312"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="313"/>
         <source>Turkish (CP-1254)</source>
         <translation>Türkisch (CP-1254)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="313"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="314"/>
         <source>Vietnam (CP-1258)</source>
         <translation>Vietnamesisch (CP-1258)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="314"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="315"/>
         <source>Western European (CP-1252)</source>
         <translation>Westeuropäisch (CP-1252)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="331"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="332"/>
         <source>Character Encoding</source>
         <translation>Zeichenkodierung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="323"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="324"/>
         <source>The codepage setting is responsible
 for the correct character representation.
 Usually you are fine with the preselected choice.</source>
@@ -8279,7 +8289,7 @@ Gewöhnlich ist die vorausgewählte
 Einstellung korrekt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="331"/>
+        <location filename="../../openlp/plugins/songs/lib/__init__.py" line="332"/>
         <source>Please choose the character encoding.
 The encoding is responsible for the correct character representation.</source>
         <translation>Bitte wählen sie die Zeichenkodierung.
@@ -8448,28 +8458,28 @@ Diese ist für die korrekte Darstellung der Sonderzeichen verantwortlich.</trans
 <context>
     <name>SongsPlugin.EasyWorshipSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="310"/>
         <source>Administered by %s</source>
         <translation>Verwaltet durch %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="323"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="332"/>
         <source>&quot;%s&quot; could not be imported. %s</source>
         <translation>„%s“ konnte nicht importiert werden.
 %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="357"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="362"/>
         <source>Unexpected data formatting.</source>
         <translation>Unerwartete Datenformatierung.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="362"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="367"/>
         <source>No song text found.</source>
         <translation>Kein Liedtext gefunden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="399"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="407"/>
         <source>
 [above are Song Tags with notes imported from EasyWorship]</source>
         <translation>[Dies sind Tags und Notizen, die aus EasyWorship importiert wurden]</translation>
@@ -8748,6 +8758,20 @@ Bitte geben Sie die Verse mit Leerzeichen getrennt ein.</translation>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="707"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation>Es wurde kein gültiges Liederbuch ausgewählt. Bitte wählen Sie ein Liederbuch aus der Liste oder geben Sie ein neues Liederbuch ein und drücken die Schaltfläche »Liederbuch hinzufügen«.</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1066"/>
+        <source>File not found</source>
+        <translation>Datei nicht gefunden</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1066"/>
+        <source>Unable to find the following file:
+%s
+Do you want to remove the entry from the song?</source>
+        <translation>Die folgende Datei konnte nicht gefunden werden:
+%s
+Möchten Sie den Eintrag aus dem Lied entfernen?</translation>
     </message>
 </context>
 <context>
@@ -9207,7 +9231,7 @@ Er wurde wegen einem fehlenden Python-Modul deaktiviert. Wenn Sie diesen Importe
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="96"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation>Keine gültige OpenLP 2 Liederdatenbank</translation>
     </message>
