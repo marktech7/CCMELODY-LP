@@ -68,7 +68,7 @@ class PJLink1(QTcpSocket):
     """
     # Signals sent by this module
     changeStatus = pyqtSignal(str, int, str)
-    projectorNetwork = pyqtSignal(int)  # Projector network activity
+    projectorNetwork = pyqtSignal(str, int)  # Projector network activity
     projectorStatus = pyqtSignal(int)  # Status update
     projectorAuthentication = pyqtSignal(str)  # Authentication error
     projectorNoAuthentication = pyqtSignal(str)  # PIN set and no authentication needed
@@ -377,7 +377,7 @@ class PJLink1(QTcpSocket):
             self.projectorReceivedData.emit()
             return
         self.socket_timer.stop()
-        self.projectorNetwork.emit(S_NETWORK_RECEIVED)
+        self.projectorNetwork.emit(self.ip, S_NETWORK_RECEIVED)
         data_in = decode(read, 'ascii')
         data = data_in.strip()
         if len(data) < 7:
@@ -456,7 +456,7 @@ class PJLink1(QTcpSocket):
             log.warn('(%s) send_command(): Not connected - returning' % self.ip)
             self.send_queue = []
             return
-        self.projectorNetwork.emit(S_NETWORK_SENDING)
+        self.projectorNetwork.emit(self.ip, S_NETWORK_SENDING)
         log.debug('(%s) send_command(): Building cmd="%s" opts="%s" %s' % (self.ip,
                                                                            cmd,
                                                                            opts,
@@ -514,7 +514,7 @@ class PJLink1(QTcpSocket):
         log.debug('(%s) _send_string(): Queue = %s' % (self.ip, self.send_queue))
         self.socket_timer.start()
         try:
-            self.projectorNetwork.emit(S_NETWORK_SENDING)
+            self.projectorNetwork.emit(self.ip, S_NETWORK_SENDING)
             sent = self.write(out.encode('ascii'))
             self.waitForBytesWritten(2000)  # 2 seconds should be enough
             if sent == -1:
