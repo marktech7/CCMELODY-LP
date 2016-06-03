@@ -64,6 +64,7 @@ STATUS_ICONS = {S_NOT_CONNECTED: ':/projector/projector_item_disconnect.png',
 STATUS_NETWORK_BUSY = [S_CONNECTING, S_NETWORK_SENDING]
 STATUS_NETWORK_FREE = [E_NETWORK, E_UNKNOWN_SOCKET_ERROR, E_NOT_CONNECTED, S_NETWORK_RECEIVED]
 
+
 class Ui_ProjectorManager(object):
     """
     UI part of the Projector Manager
@@ -824,7 +825,7 @@ class ProjectorManager(OpenLPMixin, RegistryMixin, QWidget, Ui_ProjectorManager,
             log.debug('Turning on network busy icon')
             self.network_busy = True
         else:
-            log.debug('No network chatter - turning off netowkr icon')
+            log.debug('No network chatter - turning off network busy icon')
             self.network_busy = False
 
     @pyqtSlot(str, int, str)
