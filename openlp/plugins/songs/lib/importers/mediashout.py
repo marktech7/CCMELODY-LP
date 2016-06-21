@@ -59,6 +59,7 @@ class MediaShoutImport(SongImport):
         songs = cursor.fetchall()
         self.import_wizard.progress_bar.setMaximum(len(songs))
         for song in songs:
+            topics = []
             if self.stop_import_flag:
                 break
             cursor.execute('SELECT Type, Number, Text FROM Verses WHERE Record = %s ORDER BY Type, Number'
@@ -66,9 +67,10 @@ class MediaShoutImport(SongImport):
             verses = cursor.fetchall()
             cursor.execute('SELECT Type, Number, POrder FROM PlayOrder WHERE Record = %s ORDER BY POrder' % song.Record)
             verse_order = cursor.fetchall()
-            cursor.execute('SELECT Name FROM Themes INNER JOIN SongThemes ON SongThemes.ThemeId = Themes.ThemeId '
-                           'WHERE SongThemes.Record = %s' % song.Record)
-            topics = cursor.fetchall()
+            if cursor.tables(table='TableName', tableType='TABLE').fetchone():
+                cursor.execute('SELECT Name FROM Themes INNER JOIN SongThemes ON SongThemes.ThemeId = Themes.ThemeId '
+                               'WHERE SongThemes.Record = %s' % song.Record)
+                topics = cursor.fetchall()
             cursor.execute('SELECT Name FROM Groups INNER JOIN SongGroups ON SongGroups.GroupId = Groups.GroupId '
                            'WHERE SongGroups.Record = %s' % song.Record)
             topics += cursor.fetchall()
