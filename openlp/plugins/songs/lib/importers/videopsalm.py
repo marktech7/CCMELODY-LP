@@ -73,6 +73,14 @@ class VideoPsalmImport(SongImport):
                         processed_content += c
                         c = next(file_content_it)
                     processed_content += '"' + c
+                # Remove control characters
+                elif (c < chr(32)):
+                    processed_content += ' '
+                # Handle escaped characters
+                elif c == '\\':
+                    processed_content += c
+                    c = next(file_content_it)
+                    processed_content += c
                 else:
                     processed_content += c
             songbook = json.loads(processed_content.strip())
@@ -117,6 +125,6 @@ class VideoPsalmImport(SongImport):
                 if not self.finish():
                     self.log_error('Could not import %s' % self.title)
         except Exception as e:
-            self.log_error(translate('SongsPlugin.VideoPsalmImport', 'File %s' % file.name),
+            self.log_error(song_file.name,
                            translate('SongsPlugin.VideoPsalmImport', 'Error: %s') % e)
         song_file.close()
