@@ -23,13 +23,12 @@
 Package to test the openlp.core.ui.projector.networkutils package.
 """
 
-import os
-
 from unittest import TestCase
 
 from openlp.core.common import verify_ip_address, md5_hash, qmd5_hash
 
 from tests.resources.projector.data import TEST_PIN, TEST_SALT, TEST_HASH
+
 salt = TEST_SALT
 pin = TEST_PIN
 test_hash = TEST_HASH
@@ -148,7 +147,7 @@ class testProjectorUtilities(TestCase):
         hash_ = qmd5_hash(salt=salt.encode('ascii'), data=pin.encode('ascii'))
 
         # THEN: Validate return has is same
-        self.assertEquals(hash_.decode('ascii'), test_hash, 'Qt-MD5 should have returned a good hash')
+        self.assertEquals(hash_, test_hash.encode('ascii'), 'Qt-MD5 should have returned a good hash')
 
     def test_qmd5_hash_bad(self):
         """
@@ -158,7 +157,7 @@ class testProjectorUtilities(TestCase):
         hash_ = qmd5_hash(salt=pin.encode('ascii'), data=salt.encode('ascii'))
 
         # THEN: return data is different
-        self.assertNotEquals(hash_.decode('ascii'), test_hash, 'Qt-MD5 should have returned a bad hash')
+        self.assertNotEquals(hash_, test_hash, 'Qt-MD5 should have returned a bad hash')
 
     def test_md5_non_ascii_string(self):
         """
