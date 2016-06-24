@@ -2329,7 +2329,7 @@ Deseja continuar adicionando as outras imagens mesmo assim?</translation>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
         <source>&amp;Projector Manager</source>
-        <translation>Gerenciador de projetor</translation>
+        <translation>Gerenciador de &amp;Projetor</translation>
     </message>
 </context>
 <context>
@@ -7122,7 +7122,7 @@ See http://docs.python.org/library/datetime.html#strftime-strptime-behavior for 
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="73"/>
         <source>&amp;Delete</source>
-        <translation>&amp;Excluir</translation>
+        <translation>E&amp;xcluir</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="74"/>
@@ -7989,7 +7989,7 @@ Por favor, tente selecionar individualmente.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
         <source>iOS App</source>
-        <translation>iOS App</translation>
+        <translation>Aplicativo iOS</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
@@ -8027,12 +8027,12 @@ Por favor, tente selecionar individualmente.</translation>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="103"/>
         <source>Toggle Tracking</source>
-        <translation>Alternar Registro</translation>
+        <translation>Liga/Desliga Registro</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="117"/>
         <source>Toggle the tracking of song usage.</source>
-        <translation>Alternar o registro de uso das músicas.</translation>
+        <translation>Liga/Desliga o registro de uso das músicas.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="237"/>
@@ -8043,19 +8043,19 @@ Por favor, tente selecionar individualmente.</translation>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="248"/>
         <source>SongUsage</source>
         <comment>name singular</comment>
-        <translation>UsoDaMúsica</translation>
+        <translation>Música Utilizada</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="249"/>
         <source>SongUsage</source>
         <comment>name plural</comment>
-        <translation>UsoDaMúsica</translation>
+        <translation>Músicas Utilizadas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="253"/>
         <source>SongUsage</source>
         <comment>container title</comment>
-        <translation>UsoDaMúsica</translation>
+        <translation>Música Utilizada</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="153"/>
@@ -8548,7 +8548,7 @@ A codificação é responsável pela correta representação dos caracteres.</tr
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="304"/>
         <source>Alt&amp;ernate title:</source>
-        <translation>Título &amp;Alternativo:</translation>
+        <translation>Tít&amp;ulo Alternativo:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="305"/>
@@ -8558,12 +8558,12 @@ A codificação é responsável pela correta representação dos caracteres.</tr
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="306"/>
         <source>&amp;Verse order:</source>
-        <translation>Ordem das &amp;estrofes:</translation>
+        <translation>&amp;Ordem das estrofes:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="309"/>
         <source>Ed&amp;it All</source>
-        <translation>&amp;Editar Todos</translation>
+        <translation>Ed&amp;itar Todos</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="311"/>
@@ -8573,7 +8573,7 @@ A codificação é responsável pela correta representação dos caracteres.</tr
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="314"/>
         <source>&amp;Add to Song</source>
-        <translation>&amp;Adicionar à Música</translation>
+        <translation>&amp;Adicionar Autor</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="338"/>
@@ -8583,7 +8583,7 @@ A codificação é responsável pela correta representação dos caracteres.</tr
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="319"/>
         <source>A&amp;dd to Song</source>
-        <translation>A&amp;dicionar uma Música</translation>
+        <translation>Adicionar &amp;Tópico</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="320"/>
@@ -9247,7 +9247,7 @@ Você deseja remover a entrada da música?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
         <source>Not a valid OpenLP 2 song database.</source>
-        <translation>Não é uma base de dados de músicas válida do OpenLP 2.</translation>
+        <translation>Não é uma base de dados de músicas válido do OpenLP 2.</translation>
     </message>
 </context>
 <context>
