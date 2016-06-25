@@ -4548,7 +4548,7 @@ Dateiendung nicht unterstützt.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="109"/>
         <source>&amp;Clone</source>
-        <translation>&amp;Klonen</translation>
+        <translation>&amp;Duplizieren</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="379"/>
