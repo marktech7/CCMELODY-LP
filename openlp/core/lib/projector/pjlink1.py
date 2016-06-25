@@ -68,7 +68,7 @@ class PJLink1(QTcpSocket):
     """
     # Signals sent by this module
     changeStatus = pyqtSignal(str, int, str)
-    projectorNetwork = pyqtSignal(int)  # Projector network activity
+    projectorNetwork = pyqtSignal(str, int)  # Projector network activity
     projectorStatus = pyqtSignal(int)  # Status update
     projectorAuthentication = pyqtSignal(str)  # Authentication error
     projectorNoAuthentication = pyqtSignal(str)  # PIN set and no authentication needed
@@ -396,7 +396,7 @@ class PJLink1(QTcpSocket):
             self.projectorReceivedData.emit()
             return
         self.socket_timer.stop()
-        self.projectorNetwork.emit(S_NETWORK_RECEIVED)
+        self.projectorNetwork.emit(self.ip, S_NETWORK_RECEIVED)
         data_in = decode(read, 'ascii')
         data = data_in.strip()
         if len(data) < 7:
@@ -475,17 +475,15 @@ class PJLink1(QTcpSocket):
             log.warn('({ip}) send_command(): Not connected - returning'.format(ip=self.ip))
             self.send_queue = []
             return
-        self.projectorNetwork.emit(S_NETWORK_SENDING)
-        log.debug('({ip}) send_command(): Building cmd="{command}" opts="{data}"{salt}'.format(ip=self.ip,
-                                                                                               command=cmd,
-                                                                                               data=opts,
-                                                                                               salt='' if salt is None
-                                                                                               else ' with hash'))
-        out = '{salt}{header}{command} {options}{suffix}'.format(salt="" if salt is None else salt,
-                                                                 header=PJLINK_HEADER,
-                                                                 command=cmd,
-                                                                 options=opts,
-                                                                 suffix=CR)
+        self.projectorNetwork.emit(self.ip, S_NETWORK_SENDING)
+        log.debug('(%s) send_command(): Building cmd="%s" opts="%s" %s' % (self.ip,
+                                                                           cmd,
+                                                                           opts,
+                                                                           '' if salt is None else 'with hash'))
+        if salt is None:
+            out = '%s%s %s%s' % (PJLINK_HEADER, cmd, opts, CR)
+        else:
+            out = '%s%s%s %s%s' % (salt, PJLINK_HEADER, cmd, opts, CR)
         if out in self.send_queue:
             # Already there, so don't add
             log.debug('({ip}) send_command(out="{data}") Already in queue - skipping'.format(ip=self.ip,
@@ -535,13 +533,19 @@ class PJLink1(QTcpSocket):
         log.debug('({ip}) _send_string(): Sending "{data}"'.format(ip=self.ip, data=out.strip()))
         log.debug('({ip}) _send_string(): Queue = {data}'.format(ip=self.ip, data=self.send_queue))
         self.socket_timer.start()
-        self.projectorNetwork.emit(S_NETWORK_SENDING)
-        sent = self.write(out.encode('ascii'))
-        self.waitForBytesWritten(2000)  # 2 seconds should be enough
-        if sent == -1:
-            # Network error?
-            self.change_status(E_NETWORK,
-                               translate('OpenLP.PJLink1', 'Error while sending data to projector'))
+        try:
+            self.projectorNetwork.emit(self.ip, S_NETWORK_SENDING)
+            sent = self.write(out.encode('ascii'))
+            self.waitForBytesWritten(2000)  # 2 seconds should be enough
+            if sent == -1:
+                # Network error?
+                self.change_status(E_NETWORK,
+                                   translate('OpenLP.PJLink1', 'Error while sending data to projector'))
+        except SocketError as e:
+            self.disconnect_from_host(abort=True)
+            self.changeStatus(E_NETWORK,
+                              translate('OpenLP.PJLink1', '{code} : {string}').format(code=e.error(),
+                                                                                      string=e.errorString()))
 
     def process_command(self, cmd, data):
         """

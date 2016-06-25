@@ -102,6 +102,20 @@ class TestPJLink(TestCase):
         self.assertEquals(pjlink.pjlink_class, '1',
                           'Non-standard class reply should have set proper class')
 
+    def projector_class_test(self):
+        """
+        Test class version from projector
+        """
+        # GIVEN: Test object
+        pjlink = pjlink_test
+
+        # WHEN: Process class response
+        pjlink.process_clss('1')
+
+        # THEN: Projector class should be set to 1
+        self.assertEquals(pjlink.pjlink_class, '1',
+                          'Projector should have returned class=1')
+
     @patch.object(pjlink_test, 'change_status')
     def test_status_change(self, mock_change_status):
         """

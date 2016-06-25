@@ -61,6 +61,9 @@ STATUS_ICONS = {S_NOT_CONNECTED: ':/projector/projector_item_disconnect.png',
                 E_NOT_CONNECTED: ':/projector/projector_not_connected_error.png'
                 }
 
+STATUS_NETWORK_BUSY = [S_CONNECTING, S_NETWORK_SENDING]
+STATUS_NETWORK_FREE = [E_NETWORK, E_UNKNOWN_SOCKET_ERROR, E_NOT_CONNECTED, S_NETWORK_RECEIVED]
+
 
 class Ui_ProjectorManager(object):
     """
@@ -288,6 +291,8 @@ class ProjectorManager(OpenLPMixin, RegistryMixin, QWidget, Ui_ProjectorManager,
         self.projectordb = projectordb
         self.projector_list = []
         self.source_select_form = None
+        self.network_list = {}  # Currently active network communications keyed on IP
+        self.network_busy = False
 
     def bootstrap_initialise(self):
         """
@@ -482,7 +487,7 @@ class ProjectorManager(OpenLPMixin, RegistryMixin, QWidget, Ui_ProjectorManager,
         if ans == msg.Cancel:
             return
         try:
-            projector.link.projectorNetwork.disconnect(self.update_status)
+            projector.link.projectorNetwork.disconnect(self.update_network_status)
         except (AttributeError, TypeError):
             pass
         try:
@@ -720,7 +725,7 @@ class ProjectorManager(OpenLPMixin, RegistryMixin, QWidget, Ui_ProjectorManager,
         thread.started.connect(item.link.thread_started)
         thread.finished.connect(item.link.thread_stopped)
         thread.finished.connect(thread.deleteLater)
-        item.link.projectorNetwork.connect(self.update_status)
+        item.link.projectorNetwork.connect(self.update_network_status)
         item.link.changeStatus.connect(self.update_status)
         item.link.projectorAuthentication.connect(self.authentication_error)
         item.link.projectorNoAuthentication.connect(self.no_authentication_error)
@@ -789,6 +794,39 @@ class ProjectorManager(OpenLPMixin, RegistryMixin, QWidget, Ui_ProjectorManager,
         :returns: list
         """
         return self.projector_list
+
+    @pyqtSlot(str, int)
+    def update_network_status(self, ip, status):
+        """
+        Update network busy icon
+
+        NOTE: Placeholder for bugfix 1588369. Permanent fix will be in trunk for 2.6.
+
+        :param ip: IP of destination
+        :param status: Status code
+        """
+        log.debug('update_network_status(ip="%s" status=%d)' % (ip, status))
+        # Keep track of what connections are currently being chatty
+        if status in STATUS_NETWORK_BUSY:
+            if ip not in self.network_list:
+                log.debug('Adding %s to network list' % ip)
+                self.network_list[ip] = status
+        elif status in STATUS_NETWORK_FREE:
+            if ip in self.network_list:
+                log.debug('Removing %s from network list' % ip)
+                self.network_list.pop(ip)
+            else:
+                log.warn('"%s" not in network list - something got dropped in setting?')
+        else:
+            log.warn('Unknown network status update: ip="%s" stutus: %s' % (ip, status))
+        # Check for turnin on/off network busy icon
+        if self.network_list:
+            log.debug('network list: %s' % self.network_list)
+            log.debug('Turning on network busy icon')
+            self.network_busy = True
+        else:
+            log.debug('No network chatter - turning off network busy icon')
+            self.network_busy = False
 
     @pyqtSlot(str, int, str)
     def update_status(self, ip, status=None, msg=None):
