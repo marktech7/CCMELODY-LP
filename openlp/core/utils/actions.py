@@ -114,7 +114,7 @@ class CategoryActionList(object):
             if item[1] == action:
                 self.actions.remove(item)
                 return
-        raise ValueError('Action "%s" does not exist.' % action)
+        raise ValueError('Action "%s" does not exist.' % action[0])
 
 
 class CategoryList(object):
