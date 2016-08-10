@@ -429,9 +429,9 @@ class SourceSelectSingle(QtWidgets.QDialog):
                 self.layout.addRow(PJLINK_DEFAULT_CODES[key], item)
                 self.button_group.append(item)
             self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Reset |
-                                                        QtWidgets.QDialogButtonBox.Discard |
-                                                        QtWidgets.QDialogButtonBox.Ok |
-                                                        QtWidgets.QDialogButtonBox.Cancel)
+                                                         QtWidgets.QDialogButtonBox.Discard |
+                                                         QtWidgets.QDialogButtonBox.Ok |
+                                                         QtWidgets.QDialogButtonBox.Cancel)
         else:
             for key in keys:
                 source_text = self.projectordb.get_source_by_code(code=key, projector_id=self.projector.db_item.id)
