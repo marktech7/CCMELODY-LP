@@ -38,14 +38,16 @@ from openlp.plugins.songs.lib import Song, Author, Topic, VerseType, clean_song
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 
 USER_AGENTS = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36'
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) '
+    'Chrome/52.0.2743.116 Safari/537.36',
     'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36',
     'Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0',
     'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
     'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
 ]
 BASE_URL = 'https://songselect.ccli.com'
-LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&returnUrl=https%3a%2f%2fsongselect.ccli.com%2f'
+LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&returnUrl=' \
+    'https%3a%2f%2fsongselect.ccli.com%2f'
 LOGIN_URL = 'https://profile.ccli.com/'
 LOGOUT_URL = BASE_URL + '/account/logout'
 SEARCH_URL = BASE_URL + '/search/results'
@@ -199,7 +201,8 @@ class SongSelectImport(object):
                 theme_elements.extend(ul.find_all('li')[1:])
         song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
         song['topics'] = [unescape(li.string).strip() for li in theme_elements]
-        song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li').find('strong').string.strip()
+        song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
+            .find('strong').string.strip()
         song['verses'] = []
         verses = lyrics_page.find('div', 'song-viewer lyrics').find_all('p')
         verse_labels = lyrics_page.find('div', 'song-viewer lyrics').find_all('h3')
