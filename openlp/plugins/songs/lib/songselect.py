@@ -252,11 +252,11 @@ class SongSelectImport(object):
                     last_name = name_parts[1]
                 author = Author.populate(first_name=first_name, last_name=last_name, display_name=author_name)
             db_song.add_author(author)
-        for topic_name in song['topics']:
+        for topic_name in song.get('topics', []):
             topic = self.db_manager.get_object_filtered(Topic, Topic.name == topic_name)
             if not topic:
                 topic = Topic.populate(name=topic_name)
-            db_song.topics.append(topic)
+            db_song.add_topic(topic)
         self.db_manager.save_object(db_song)
         return db_song
 
