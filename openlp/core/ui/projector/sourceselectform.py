@@ -34,7 +34,6 @@ from openlp.core.lib.projector.db import ProjectorSource
 from openlp.core.lib.projector.constants import PJLINK_DEFAULT_SOURCES, PJLINK_DEFAULT_CODES
 
 log = logging.getLogger(__name__)
-log.debug('editform loaded')
 
 
 def source_group(inputs, source_text):

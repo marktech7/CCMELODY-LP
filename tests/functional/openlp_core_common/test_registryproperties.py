@@ -70,9 +70,10 @@ class TestRegistryProperties(TestCase, RegistryProperties):
         mocked_is_win.return_value = True
         mock_application = MagicMock()
         reg_props = RegistryProperties()
+        registry = Registry()
 
         # WHEN the application is accessed
-        with patch.object(self.registry, 'get') as mocked_get:
+        with patch.object(registry, 'get') as mocked_get:
             mocked_get.return_value = mock_application
             actual_application = reg_props.application
 
