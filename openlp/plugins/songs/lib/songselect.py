@@ -85,11 +85,9 @@ class SongSelectImport(object):
         if callback:
             callback()
         try:
-            login_page_contents = self.opener.open(LOGIN_PAGE).read()
-            log.debug('Login page:\n%s', login_page_contents)
-            login_page = BeautifulSoup(login_page_contents, 'lxml')
-        except (TypeError, URLError) as e:
-            log.exception('Could not login to SongSelect, %s', e)
+            login_page = BeautifulSoup(self.opener.open(LOGIN_PAGE).read(), 'lxml')
+        except (TypeError, URLError) as error:
+            log.exception('Could not login to SongSelect, %s', error)
             return False
         if callback:
             callback()
@@ -101,11 +99,9 @@ class SongSelectImport(object):
             'RememberMe': 'false'
         })
         try:
-            posted_page_contents = self.opener.open(LOGIN_URL, data.encode('utf-8')).read()
-            log.debug('Posted page:\n%s', posted_page_contents)
-            posted_page = BeautifulSoup(posted_page_contents, 'lxml')
-        except (TypeError, URLError) as e:
-            log.exception('Could not login to SongSelect, %s', e)
+            posted_page = BeautifulSoup(self.opener.open(LOGIN_URL, data.encode('utf-8')).read(), 'lxml')
+        except (TypeError, URLError) as error:
+            log.exception('Could not login to SongSelect, %s', error)
             return False
         if callback:
             callback()
@@ -117,8 +113,8 @@ class SongSelectImport(object):
         """
         try:
             self.opener.open(LOGOUT_URL)
-        except (TypeError, URLError) as e:
-            log.exception('Could not log of SongSelect, %s', e)
+        except (TypeError, URLError) as error:
+            log.exception('Could not log of SongSelect, %s', error)
 
     def search(self, search_text, max_results, callback=None):
         """
