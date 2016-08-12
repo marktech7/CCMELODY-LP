@@ -32,9 +32,8 @@ from PyQt5 import QtWidgets
 from openlp.core.common import AppLocation
 from openlp.core.lib import translate
 from openlp.core.utils import CONTROL_CHARS
-from openlp.plugins.songs.lib.db import MediaFile, Song
-from .db import Author
-from .ui import SongStrings
+from openlp.plugins.songs.lib.db import Author, MediaFile, Song, Topic
+from openlp.plugins.songs.lib.ui import SongStrings
 
 log = logging.getLogger(__name__)
 
