@@ -8816,7 +8816,7 @@ Chceš vymazať tento záznam z pesničiek?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="155"/>
         <source>Uncheck All</source>
-        <translation>Odoznačiť všetko</translation>
+        <translation>Odznačiť všetko</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="156"/>
@@ -9689,7 +9689,7 @@ Chceš vymazať tento záznam z pesničiek?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/__init__.py" line="154"/>
         <source>Intro</source>
-        <translation>Intro</translation>
+        <translation>Predohra</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/__init__.py" line="155"/>
