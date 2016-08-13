@@ -1321,7 +1321,7 @@ class ServiceManager(OpenLPMixin, RegistryMixin, QtWidgets.QWidget, Ui_ServiceMa
         """
         The theme may have changed in the settings dialog so make sure the theme combo box is in the correct state.
         """
-        visible = self.renderer.theme_level == ThemeLevel.Global
+        visible = self.renderer.theme_level != ThemeLevel.Global
         self.toolbar.actions['theme_combo_box'].setVisible(visible)
         self.toolbar.actions['theme_label'].setVisible(visible)
         self.regenerate_service_items()
