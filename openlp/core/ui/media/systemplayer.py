@@ -71,7 +71,6 @@ class SystemPlayer(MediaPlayer):
         Constructor
         """
         super(SystemPlayer, self).__init__(parent, 'system')
-        self.on_duration_changed = None
         self.original_name = 'System'
         self.display_name = '&System'
         self.parent = parent
