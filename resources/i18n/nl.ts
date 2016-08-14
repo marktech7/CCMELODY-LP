@@ -7986,12 +7986,12 @@ Probeer elk bestand individueel te selecteren.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
         <source>iOS App</source>
-        <translation type="unfinished"/>
+        <translation>iOS App</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
-        <translation type="unfinished"/>
+        <translation>Scan de QR-code of klik op &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; om de IOS-app te installeren via App Store.</translation>
     </message>
 </context>
 <context>
@@ -8780,7 +8780,9 @@ Geef de verzen op gescheiden door spaties.</translation>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
-        <translation type="unfinished"/>
+        <translation>Kon het volgende bestand niet vonden:
+%s
+Wilt u het lied verwijderen uit het overzicht?</translation>
     </message>
 </context>
 <context>
