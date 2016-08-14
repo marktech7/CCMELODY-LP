@@ -193,6 +193,8 @@ class TestSystemPlayer(TestCase):
         mocked_display.controller.media_info.start_time = 1
         mocked_display.controller.media_info.volume = 1
         mocked_display.media_player.state.return_value = QtMultimedia.QMediaPlayer.PlayingState
+        mocked_display.media_player.durationChanged.disconnect.side_effect = \
+            TypeError('disconnect() failed between \'durationChanged\' and all its connections')
 
         # WHEN: play() is called
         with patch.object(player, 'seek') as mocked_seek, \
@@ -204,6 +206,8 @@ class TestSystemPlayer(TestCase):
         mocked_display.media_player.play.assert_called_once_with()
         mocked_seek.assert_called_once_with(mocked_display, 1000)
         mocked_volume.assert_called_once_with(mocked_display, 1)
+        expected_block_signals_calls = [call(True), call(False)]
+        self.assertEqual(expected_block_signals_calls, mocked_display.media_player.blockSignals.call_args_list)
         mocked_display.media_player.durationChanged.disconnect.assert_called_once_with()
         mocked_display.media_player.durationChanged.connect.assert_called_once_with('function')
         self.assertEqual(MediaState.Playing, player.state)
@@ -240,6 +244,9 @@ class TestSystemPlayer(TestCase):
             player.stop(mocked_display)
 
         # THEN: The video is stopped
+        expected_block_signals_calls = [call(True), call(False)]
+        self.assertEqual(expected_block_signals_calls, mocked_display.media_player.blockSignals.call_args_list)
+        mocked_display.media_player.durationChanged.disconnect.assert_called_once_with()
         mocked_display.media_player.stop.assert_called_once_with()
         mocked_set_visible.assert_called_once_with(mocked_display, False)
         self.assertEqual(MediaState.Stopped, player.state)

@@ -161,7 +161,13 @@ class SystemPlayer(MediaPlayer):
         if start_time > 0:
             self.seek(display, controller.media_info.start_time * 1000)
         self.volume(display, controller.media_info.volume)
-        display.media_player.durationChanged.disconnect()
+        display.media_player.blockSignals(True)
+        try:
+            display.media_player.durationChanged.disconnect()
+        except TypeError:
+            # We get a type error if there are no slots attached to this signal, so ignore it
+            pass
+        display.media_player.blockSignals(False)
         display.media_player.durationChanged.connect(functools.partial(self.set_duration, controller))
         self.state = MediaState.Playing
         display.video_widget.raise_()
@@ -180,7 +186,11 @@ class SystemPlayer(MediaPlayer):
         Stop the current media item
         """
         display.media_player.blockSignals(True)
-        display.media_player.durationChanged.disconnect()
+        try:
+            display.media_player.durationChanged.disconnect()
+        except TypeError:
+            # We get a type error if there are no slots attached to this signal, so ignore it
+            pass
         display.media_player.blockSignals(False)
         display.media_player.stop()
         self.set_visible(display, False)
