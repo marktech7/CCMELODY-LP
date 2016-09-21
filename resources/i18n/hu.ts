@@ -92,7 +92,7 @@ Folytatható?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="192"/>
         <source>No Placeholder Found</source>
-        <translation>Nem található a helyjelölő</translation>
+        <translation>Nem található a helykitöltő</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="192"/>
@@ -106,7 +106,7 @@ Folytatható?</translation>
         <source>You haven't specified any text for your alert. 
 Please type in some text before clicking New.</source>
         <translation>A riasztás szövege nincs megadva. 
-Adj meg valamilyen szöveget az Új gombra való kattintás előtt.</translation>
+Meg kell adni valamilyen szöveget az Új gombra való kattintás előtt.</translation>
     </message>
 </context>
 <context>
@@ -183,7 +183,7 @@ Adj meg valamilyen szöveget az Új gombra való kattintás előtt.</translation
     <message>
         <location filename="../../openlp/plugins/bibles/lib/http.py" line="684"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
-        <translation>A kért könyv nem található ebben a Bibliában. Kérlek, ellenőrizd a könyv nevének helyesírását.</translation>
+        <translation>A kért könyv nem található ebben a Bibliában. A könyv neve helyesen lett írva?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="219"/>
@@ -233,7 +233,7 @@ Adj meg valamilyen szöveget az Új gombra való kattintás előtt.</translation
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="147"/>
         <source>Upgrade the Bible databases to the latest format.</source>
-        <translation>Frissíti a Biblia adatbázisokat a legutolsó formátumra.</translation>
+        <translation>Frissíti a Biblia adatbázisokat a legfrissebb formátumra.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="87"/>
@@ -726,7 +726,7 @@ Adj meg valamilyen szöveget az Új gombra való kattintás előtt.</translation
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="147"/>
         <source>You need to set a copyright for your Bible. Bibles in the Public Domain need to be marked as such.</source>
-        <translation>Meg kell adni a Biblia szerzői jogait. A közkincs Bibliákat meg kell jelölni ilyennek.</translation>
+        <translation>Meg kell adni a Biblia szerzői jogait. A közkincs Bibliákat meg kell jelölni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="155"/>
@@ -736,7 +736,7 @@ Adj meg valamilyen szöveget az Új gombra való kattintás előtt.</translation
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="155"/>
         <source>This Bible already exists. Please import a different Bible or first delete the existing one.</source>
-        <translation>Ez a Biblia már létezik. Kérlek, importálj egy másik Bibliát vagy előbb töröld a meglévőt.</translation>
+        <translation>Ez a Biblia már létezik. Egy másik Biblia importálható vagy előbb a meglévőt szükséges törölni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="169"/>
@@ -790,7 +790,7 @@ Több kifejezés is megadható. Szóközzel történő elválasztás esetén min
     <message>
         <location filename="../../openlp/plugins/bibles/lib/manager.py" line="329"/>
         <source>There are no Bibles currently installed. Please use the Import Wizard to install one or more Bibles.</source>
-        <translation>Jelenleg nincs telepített Biblia. Kérlek, használd a Bibliaimportáló tündért Bibliák telepítéséhez.</translation>
+        <translation>Jelenleg nincs telepített Biblia. A Bibliaimportáló tündér használható Bibliák telepítéséhez.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/manager.py" line="329"/>
@@ -808,7 +808,7 @@ Book Chapter%(verse)sVerse%(range)sVerse%(list)sVerse%(range)sVerse
 Book Chapter%(verse)sVerse%(range)sVerse%(list)sChapter%(verse)sVerse%(range)sVerse
 Book Chapter%(verse)sVerse%(range)sChapter%(verse)sVerse</source>
         <comment>Please pay attention to the appended &quot;s&quot; of the wildcards and refrain from translating the words inside the names in the brackets.</comment>
-        <translation>Ezt az igehely-hivatkozást nem támogatja az OpenLP vagy nem helyes. Kérlek, ellenőrizd, hogy a hivatkozás megfelel-e az egyik alábbi mintának, illetve segítségért tekints meg a kézikönyvet.
+        <translation>Ezt az igehely-hivatkozást nem támogatja az OpenLP vagy nem helyes. Megfelel a megadott hivatkozás az egyik alábbi mintának? További segítség a kézikönyvben található.
 
 Könyv fejezet
 Könyv fejezet%(range)sfejezet
@@ -833,12 +833,12 @@ Könyv fejezet%(verse)svers%(range)sfejezet%(verse)svers</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="161"/>
         <source>Bible theme:</source>
-        <translation>Biblia téma:</translation>
+        <translation>Biblia-téma:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="165"/>
         <source>No Brackets</source>
-        <translation>Nincsenek zárójelek</translation>
+        <translation>Zárójelek nélkül</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="167"/>
@@ -897,7 +897,7 @@ A módosítások nem érintik a már a szolgálati sorrendben lévő verseket.</
         <source>Multiple alternative verse separators may be defined.
 They have to be separated by a vertical bar &quot;|&quot;.
 Please clear this edit line to use the default value.</source>
-        <translation>Több alternatív versszak elválasztó definiálható.
+        <translation>Több alternatív versszakelválasztó definiálható.
 Egy függőleges vonal („|”) szolgál az elválasztásukra.
 Üresen hagyva az alapértelmezett érték áll helyre.</translation>
     </message>
@@ -974,7 +974,7 @@ megjelenő könyvnevek alapértelmezett nyelve:</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="86"/>
         <source>The following book name cannot be matched up internally. Please select the corresponding name from the list.</source>
-        <translation>A következő könyvnév nem ismerhető fel. Jelölj ki egy helyes nevet a következő listából.</translation>
+        <translation>A következő könyvnév nem ismerhető fel. A helyes név a következő listában jelölhető ki.</translation>
     </message>
 </context>
 <context>
@@ -1003,7 +1003,7 @@ megjelenő könyvnevek alapértelmezett nyelve:</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="125"/>
         <source>Bible Editor</source>
-        <translation>Biblia szerkesztő</translation>
+        <translation>Biblia-szerkesztő</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="129"/>
@@ -1059,7 +1059,7 @@ megjelenő könyvnevek alapértelmezett nyelve:</translation>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="73"/>
         <source>This is a Web Download Bible.
 It is not possible to customize the Book Names.</source>
-        <translation>Ez egy webről letöltött Biblia.
+        <translation>Ez egy a webről letöltött Biblia.
 Nincs lehetőség a könyvnevek módosítására.</translation>
     </message>
     <message>
@@ -1094,7 +1094,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/http.py" line="791"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur please consider reporting a bug.</source>
-        <translation>Probléma történt a kijelölt versek letöltésekor. Kérem, ellenőrizd a az internetkapcsolatot, és ha a hiba nem oldódik meg, fontold meg a hiba bejelentését.</translation>
+        <translation>Probléma történt a kijelölt versek letöltésekor. Javasolt az internetkapcsolat ellenőrzése, továbbá, ha a hiba nem oldódik meg, a hiba bejelentése.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/http.py" line="797"/>
@@ -1104,7 +1104,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/http.py" line="797"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
-        <translation>Probléma történt a kijelölt versek kicsomagolásakor. Ha a hiba nem oldódik meg, fontold meg a hiba bejelentését.</translation>
+        <translation>Probléma történt a kijelölt versek kicsomagolásakor. Ha a hiba nem oldódik meg, javasolt a hiba bejelentése.</translation>
     </message>
 </context>
 <context>
@@ -1117,7 +1117,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="312"/>
         <source>This wizard will help you to import Bibles from a variety of formats. Click the next button below to start the process by selecting a format to import from.</source>
-        <translation>A tündér segít a különféle formátumú bibliák importálásában. Kattints az alábbi Következő gombra a folyamat első lépésének indításhoz, a formátum kiválasztásához.</translation>
+        <translation>A tündér segít a különféle formátumú bibliák importálásában. Az alábbi „Következő” gombbal indítható a folyamat első lépése, a formátum kiválasztása.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="323"/>
@@ -1172,12 +1172,12 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="349"/>
         <source>License Details</source>
-        <translation>Licenc részletei</translation>
+        <translation>A licenc részletei</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="351"/>
         <source>Set up the Bible&apos;s license details.</source>
-        <translation>Állítsd be a Biblia licenc részleteit.</translation>
+        <translation>Meg kell adni a Biblia licencének részleteit.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="353"/>
@@ -1192,7 +1192,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="357"/>
         <source>Please wait while your Bible is imported.</source>
-        <translation>Kérlek, várj, míg a Biblia importálás alatt áll.</translation>
+        <translation>Türelem, míg a Biblia importálás alatt áll.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="384"/>
@@ -1222,7 +1222,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="440"/>
         <source>This Bible already exists. Please import a different Bible or first delete the existing one.</source>
-        <translation>Ez a Biblia már létezik. Kérlek, importálj egy másik Bibliát vagy előbb töröld a meglévőt.</translation>
+        <translation>Ez a Biblia már létezik. Egy másik Biblia importálható vagy előbb a meglévőt szükséges törölni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="642"/>
@@ -1267,7 +1267,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="636"/>
         <source>Registered Bible. Please note, that verses will be downloaded on demand and thus an internet connection is required.</source>
-        <translation>Biblia regisztrálva. Megjegyzés: a versek csak kérésre lesznek letöltve és akkor is internet kapcsolat szükségeltetik.</translation>
+        <translation>Biblia regisztrálva. Megjegyzés: a versek csak kérésre lesznek letöltve és akkor is internetkapcsolat szükségeltetik.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="332"/>
@@ -1300,7 +1300,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="69"/>
         <source>OpenLP is unable to determine the language of this translation of the Bible. Please select the language from the list below.</source>
-        <translation>Az OpenLP nem képes megállapítani a bibliafordítás nyelvét. Kérem, válassz nyelvet az alábbi listából.</translation>
+        <translation>Az OpenLP nem képes megállapítani a bibliafordítás nyelvét. A kívánt nyelvet az alábbi listából lehet kiválasztani.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="73"/>
@@ -1376,7 +1376,7 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="92"/>
         <source>You cannot combine single and dual Bible verse search results. Do you want to delete your search results and start a new search?</source>
-        <translation>Az egyes és a kettőzött bibliaversek nem kombinálhatók. Töröljük a keresési eredményt és kezdjünk egy újabbat?</translation>
+        <translation>Az egyes és a kettőzött bibliaversek nem kombinálhatók. Törölhető a keresési eredmény egy újabb keresés érdekében?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="415"/>
@@ -1428,7 +1428,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/lib/opensong.py" line="80"/>
         <source>Incorrect Bible file type supplied. This looks like a Zefania XML bible, please use the Zefania import option.</source>
-        <translation>A megadott Biblia-fájl hibás. Úgy tűnik, ez egy Zefania XML biblia, alkalmazd a Zefania importálási beállítást.</translation>
+        <translation>A megadott Biblia-fájl hibás. Úgy tűnik, ez egy Zefania XML biblia, melyet Zefania importálási beállításokkal lehet importálni.</translation>
     </message>
 </context>
 <context>
@@ -1457,7 +1457,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="107"/>
         <source>Select a Backup Directory</source>
-        <translation>Jelölj ki egy mappát a biztonsági mentésnek</translation>
+        <translation>Ki kell jelöni egy mappát a biztonsági mentésnek</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="233"/>
@@ -1467,7 +1467,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="236"/>
         <source>This wizard will help you to upgrade your existing Bibles from a prior version of OpenLP 2. Click the next button below to start the upgrade process.</source>
-        <translation>A tündér segít az OpenLP 2 korábbi verzióiból származó bibliák frissítésében. Kattints az alábbi Következő gombra a folyamat indításhoz.</translation>
+        <translation>A tündér segít az OpenLP 2 korábbi verzióiból származó bibliák frissítésében. Az alábbi „Következő” gombbal indítható a folyamat.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="240"/>
@@ -1477,7 +1477,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="241"/>
         <source>Please select a backup directory for your Bibles</source>
-        <translation>Jelölj ki egy mappát a bibliáid biztonsági mentésének</translation>
+        <translation>Ki kell jelölni egy mappát a bibliák biztonsági mentésének</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="243"/>
@@ -1487,7 +1487,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="251"/>
         <source>Please select a backup location for your Bibles.</source>
-        <translation>Jelölj ki egy helyet a bibliáid biztonsági mentésének.</translation>
+        <translation>Ki kell jelölni egy helyet a bibliák biztonsági mentésének</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="253"/>
@@ -1507,7 +1507,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="257"/>
         <source>Please select the Bibles to upgrade</source>
-        <translation>Jelöld ki a frissítendő bibliákat</translation>
+        <translation>Meg kell jelölni a frissítendő bibliákat</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="259"/>
@@ -1517,7 +1517,7 @@ Az esetleges újbóli alkalmazásához újra be kell majd importálni.</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="260"/>
         <source>Please wait while your Bibles are upgraded.</source>
-        <translation>Kérlek, várj, míg a bibliák frissítés alatt állnak.</translation>
+        <translation>Türelem, míg a bibliák frissítés alatt állnak.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="283"/>
@@ -1548,7 +1548,7 @@ Frissítés…</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="401"/>
         <source>To upgrade your Web Bibles an Internet connection is required.</source>
-        <translation>A webes bibliák frissítéséhez internet kapcsolat szükséges.</translation>
+        <translation>A webes bibliák frissítéséhez internetkapcsolat szükséges.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="483"/>
@@ -1599,7 +1599,7 @@ Kész</translation>
         <source>Upgrading Bible(s): %(success)d successful%(failed_text)s
 Please note that verses from Web Bibles will be downloaded on demand and so an Internet connection is required.</source>
         <translation>Bibliák frissítése: %(success)d teljesítve %(failed_text)s.
-Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor is internet kapcsolat szükségeltetik.</translation>
+Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor is internetkapcsolat szükségeltetik.</translation>
     </message>
 </context>
 <context>
@@ -1732,7 +1732,7 @@ Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor 
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomslidedialog.py" line="52"/>
         <source>Split a slide into two by inserting a slide splitter.</source>
-        <translation>Dia ketté vágása egy diaelválasztó beszúrásával.</translation>
+        <translation>Dia kettévágása egy diaelválasztó beszúrásával.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="113"/>
@@ -1747,7 +1747,7 @@ Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor 
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="239"/>
         <source>You need to type in a title.</source>
-        <translation>Meg kell adnod a címet.</translation>
+        <translation>Meg kell adni a címet.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="111"/>
@@ -1786,7 +1786,7 @@ Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor 
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="57"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
-        <translation>&lt;strong&gt;Kép bővítmény&lt;/strong&gt;&lt;br /&gt;A kép a bővítmény különféle képek vetítését teszi lehetővé.&lt;br /&gt;A bővítmény egyik különös figyelmet érdemlő képessége az, hogy képes a sorrendkezelőn csoportba foglalni a képeket, így könnyebbé téve képek tömeges vetítését. A bővítmény képes az OpenLP „időzített körkörös” lejátszásra is, amivel a diasort automatikusan tudjuk léptetni. Továbbá, a bővítményben megadott képekkel felülírhatjuk a téma háttérképét, így a szöveg alapú elemek ‒ mint pl. a dalok ‒ a megadott háttérképpel jelennek meg, a témában beállított háttérkép helyett.</translation>
+        <translation>&lt;strong&gt;Kép bővítmény&lt;/strong&gt;&lt;br /&gt;A kép bővítmény különféle képek vetítését teszi lehetővé.&lt;br /&gt;A bővítmény egyik különös figyelmet érdemlő képessége az, hogy képes a sorrendkezelőn csoportba foglalni a képeket, így könnyebbé téve képek tömeges vetítését. A bővítmény képes az OpenLP „időzített körkörös” lejátszásra is, amivel a diasort automatikusan tudjuk léptetni. Továbbá, a bővítményben megadott képekkel felülírhatjuk a téma háttérképét, így a szöveg alapú elemek ‒ mint pl. a dalok ‒ a megadott háttérképpel jelennek meg, a témában beállított háttérkép helyett.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="84"/>
@@ -1938,7 +1938,7 @@ Megjegyzés: a webes bibliák versei csak kérésre lesznek letöltve és ekkor 
         <source>The following image(s) no longer exist: %s
 Do you want to add the other images anyway?</source>
         <translation>A következő képek már nem léteznek: %s
-Szeretnél más képeket megadni?</translation>
+Más képekkel kellene helyettesíteni ezeket?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="686"/>
@@ -1953,7 +1953,7 @@ Szeretnél más képeket megadni?</translation>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupform.py" line="54"/>
         <source>-- Top-level group --</source>
-        <translation>-- Legfelsőbb szintű csoport --</translation>
+        <translation>‒ Legfelsőbb szintű csoport ‒</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="225"/>
@@ -2004,7 +2004,7 @@ Szeretnél más képeket megadni?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/systemplayer.py" line="249"/>
         <source>This media player uses your operating system to provide media capabilities.</source>
-        <translation>Ez egy médialejátszó, amely együttműködik az operációs rendszerrel a média képességek érdekében.</translation>
+        <translation>Ez egy médialejátszó, amely együttműködik az operációs rendszerrel a médiaképességek érdekében.</translation>
     </message>
 </context>
 <context>
@@ -2088,7 +2088,7 @@ Szeretnél más képeket megadni?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="188"/>
         <source>Select drive from list</source>
-        <translation>Jelöld ki a meghajtót a listából</translation>
+        <translation>Ki kell jelölni a meghajtót a listából</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="190"/>
@@ -2211,7 +2211,7 @@ Szeretnél más képeket megadni?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="594"/>
         <source>Enter a valid name or cancel</source>
-        <translation>Érvényes nevet kell megadni vagy elvetni</translation>
+        <translation>Érvényes nevet kell megadni vagy inkább elvetni</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="600"/>
@@ -2372,7 +2372,7 @@ Frissítheti most az OpenLP?</translation>
     <message>
         <location filename="../../openlp/core/__init__.py" line="226"/>
         <source>A backup of the data folder has been created at %s</source>
-        <translation>Az adatmappa biztonsági mentése létrehozva ide: %s</translation>
+        <translation>Az adatmappa biztonsági mentése létrehozva itt: %s</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="653"/>
@@ -2418,16 +2418,16 @@ Find out more about OpenLP: http://openlp.org/
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
         <translation>OpenLP &lt;version&gt;&lt;revision&gt; – Nyílt forrású dalszöveg vetítő
 
-Az OpenLP egy templomi/gyülekezeti bemutató, ill. dalszöveg vetítő szabad szoftver, mely használható énekek, bibliai versek, videók, képek és bemutatók (ha az Impress, a PowerPoint vagy a PowerPoint Viewer telepítve van) vetítésére a gyülekezeti dicsőítés alatt egy számítógép és egy projektor segítségével.
+Az OpenLP egy templomi/gyülekezeti bemutató, ill. dalszövegvetítő szabad szoftver, mely használható énekek, bibliai versek, videók, képek és bemutatók (ha az Impress, a PowerPoint vagy a PowerPoint Viewer telepítve van) vetítésére a gyülekezeti dicsőítés alatt egy számítógép és egy projektor segítségével.
 
 Többet az OpenLP-ről: http://openlp.org/
 
-Az OpenLP-t önkéntesek készítették és tartják karban. Ha szeretnél több keresztény számítógépes programot, az alábbi gombbal vedd fontolóra az önkéntes részvételt.</translation>
+Az OpenLP-t önkéntesek készítették és tartják karban. A projekt örömmel veszi további önkéntesek csatlakozását, hogy még több keresztény számítógépes program legyen.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="696"/>
         <source>Volunteer</source>
-        <translation>Önkéntesség</translation>
+        <translation>Önkéntes részvétel</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="157"/>
@@ -2699,7 +2699,7 @@ Részleges szerzői jog © 2004-2016 %s</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="300"/>
         <source>Browse for an image file to display.</source>
-        <translation>Tallózd be a megjelenítendő képfájlt.</translation>
+        <translation>Be kell tallózni a megjelenítendő képfájlt.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="301"/>
@@ -2809,7 +2809,7 @@ Részleges szerzői jog © 2004-2016 %s</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="304"/>
         <source>Browse for new data file location.</source>
-        <translation>Tallózd be az adatállományok helyét.</translation>
+        <translation>Be kell tallózni az adatállományok helyét.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="306"/>
@@ -2839,12 +2839,12 @@ Részleges szerzői jog © 2004-2016 %s</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="314"/>
         <source>&lt;strong&gt;WARNING:&lt;/strong&gt; New data directory location contains OpenLP data files.  These files WILL be replaced during a copy.</source>
-        <translation>&lt;strong&gt;FIGYELMEZTETÉS:&lt;/strong&gt; Az új mappa már tartalmaz OpenLP adatállományokat, melyek felül lesznek írva másoláskor.</translation>
+        <translation>&lt;strong&gt;FIGYELMEZTETÉS:&lt;/strong&gt; Az új mappa már tartalmaz OpenLP adatállományokat, melyek másoláskor felül lesznek írva.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="377"/>
         <source>Data Directory Error</source>
-        <translation>Adatmappa hiba</translation>
+        <translation>Adatmappahiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="530"/>
@@ -2894,7 +2894,7 @@ Az „Igen” gomb helyreállítja az adatmappát az alapértelmezett helyre.</t
 %s
 
 The data directory will be changed when OpenLP is closed.</source>
-        <translation>Valóban szeretnéd az OpenLP adatmappa helyét megváltoztatni erre a helyre?
+        <translation>Valóban megváltoztatható az OpenLP adatmappájának helye erre?
 
 %s
 
@@ -2957,7 +2957,7 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
     <message>
         <location filename="../../openlp/core/lib/colorbutton.py" line="45"/>
         <source>Click to select a color.</source>
-        <translation>Kattints a szín kijelöléséhez.</translation>
+        <translation>A színválasztó kattintásra jelenik meg.</translation>
     </message>
 </context>
 <context>
@@ -3244,13 +3244,13 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="92"/>
         <source>Please enter a description of what you were doing to cause this error. If possible, write in English.
 (Minimum 20 characters)</source>
-        <translation>Írd le mit tettél, ami a hibához vezetett. Lehetőség szerint angolul.
+        <translation>Le kell írni a hibához vezető eseményeket. Lehetőség szerint angolul.
 (minimum 20 karakter)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="96"/>
         <source>Oops! OpenLP hit a problem, and couldn&apos;t recover. The text in the box below contains information that might be helpful to the OpenLP developers, so please e-mail it to bugs@openlp.org, along with a detailed description of what you were doing when the problem occurred. Also attach any files that triggered the problem.</source>
-        <translation>Hoppá! Az OpenLP hibába ütközött, és nem tudta lekezelni. Az alsó szövegdoboz olyan információkat tartalmaz, amelyek hasznosak lehetnek az OpenLP fejlesztői számára, tehát kérjük, küld el a bugs@openlp.org email címre egy részletes leírás mellett, amely tartalmazza, hogy éppen hol és mit tettél, amikor a hiba történt. Csatolj minden olyan állományt, amely a hibához vezetett.</translation>
+        <translation>Hoppá! Az OpenLP hibába ütközött, és nem tudta lekezelni. Az alsó szövegdoboz olyan információkat tartalmaz, amelyek hasznosak lehetnek az OpenLP fejlesztői számára. Javasolt a jelentés elküldése a bugs@openlp.org email címre egy részletes leírás mellett, amely tartalmazza, hogy éppen hol és mi történt a hiba megjelenése előtt. Javasolt csatolni minden olyan állományt, amely a hibához vezetett.</translation>
     </message>
 </context>
 <context>
@@ -3301,7 +3301,7 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimelanguagedialog.py" line="70"/>
         <source>Choose the translation you&apos;d like to use in OpenLP.</source>
-        <translation>Válassz egy fordítást, amit használni szeretnél az OpenLP-ben.</translation>
+        <translation>Ki kell választani egy fordítást az OpenLP számára.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimelanguagedialog.py" line="72"/>
@@ -3334,7 +3334,7 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="236"/>
         <source>Select the Plugins you wish to use. </source>
-        <translation>Jelöld ki az alkalmazni kívánt bővítményeket.</translation>
+        <translation>Ki kell jelölni az alkalmazni kívánt bővítményeket.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="239"/>
@@ -3389,12 +3389,12 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="246"/>
         <source>No Internet Connection</source>
-        <translation>Nincs internet kapcsolat</translation>
+        <translation>Nincs internetkapcsolat</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="247"/>
         <source>Unable to detect an Internet connection.</source>
-        <translation>Nem sikerült internet kapcsolatot észlelni.</translation>
+        <translation>Nem sikerült internetkapcsolatot észlelni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="260"/>
@@ -3454,7 +3454,7 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="546"/>
         <source>Please wait while OpenLP is set up and your data is downloaded.</source>
-        <translation>Várj, amíg az OpenLP beállítások érvényre jutnak és míg az adatok letöltődnek.</translation>
+        <translation>Türelem, amíg az OpenLP beállítások érvényre jutnak és míg az adatok letöltődnek.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="550"/>
@@ -3476,9 +3476,9 @@ Az OpenLP bezárása után jut érvényre a változás.</translation>
         <source>No Internet connection was found. The First Time Wizard needs an Internet connection in order to be able to download sample songs, Bibles and themes.  Click the Finish button now to start OpenLP with initial settings and no sample data.
 
 To re-run the First Time Wizard and import this sample data at a later time, check your Internet connection and re-run this wizard by selecting &quot;Tools/Re-run First Time Wizard&quot; from OpenLP.</source>
-        <translation>Nem sikerült internetkapcsolatot találni. Az Első indítás tündérnek internetkapcsolatra van szüksége ahhoz, hogy a példa dalokat, bibliákat és témákat le lehessen letölteni. A Befejezés gombra való kattintással az OpenLP alapértelmezett beállításokkal és a példaadatok nélkül indul el. 
+        <translation>Nem sikerült internetkapcsolatot találni. Az Első indítás tündérnek internetkapcsolatra van szüksége ahhoz, hogy a példa dalokat, bibliákat és témákat le lehessen letölteni. A „Befejezés” gombra való kattintással az OpenLP alapértelmezett beállításokkal és a példaadatok nélkül indul el. 
 
-Az Első indítás tündér újbóli indításához és a példaadatok későbbi betöltéséhez ellenőrizd az internetkapcsolatot és futtasd újra ezt a tündért az OpenLP Eszközök &gt; Első indítás tündér menüpontjával.</translation>
+Az Első indítás tündér újbóli indításához és a példaadatok későbbi betöltéséhez ellenőrizni kell az internetkapcsolatot, majd ismét futtatni ezt a tündért az OpenLP Eszközök &gt; Első indítás tündér menüpontjával.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="603"/>
@@ -3493,17 +3493,17 @@ Az Első indítás tündér újbóli indításához és a példaadatok későbbi
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="564"/>
         <source>Download complete. Click the %s button to return to OpenLP.</source>
-        <translation>A letöltés befejeződött. Visszatérés az OpeLP-be az alábbi %s gombbal.</translation>
+        <translation>A letöltés befejeződött. Visszatérés az OpeLP-be az alábbi „%s” gombbal.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="568"/>
         <source>Download complete. Click the %s button to start OpenLP.</source>
-        <translation>A letöltés befejeződött. Az OpeLP indítása az alábbi %s gombbal.</translation>
+        <translation>A letöltés befejeződött. Az OpeLP indítása az alábbi „%s” gombbal.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="573"/>
         <source>Click the %s button to return to OpenLP.</source>
-        <translation>Visszatérés az OpenLP-be az alábbi %s gombbal.</translation>
+        <translation>Visszatérés az OpenLP-be az alábbi „%s” gombbal.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="577"/>
@@ -3518,7 +3518,7 @@ Az Első indítás tündér újbóli indításához és a példaadatok későbbi
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="226"/>
         <source>This wizard will help you to configure OpenLP for initial use. Click the %s button below to start.</source>
-        <translation>A tündér segít elkezdeni az OpenLP használatát. Kattints az alábbi %s gombra az indításhoz.</translation>
+        <translation>A tündér segít elkezdeni az OpenLP használatát. Az alábbi „%s” gombbal indítható a folyamat.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="256"/>
@@ -3527,7 +3527,7 @@ Az Első indítás tündér újbóli indításához és a példaadatok későbbi
 To cancel the First Time Wizard completely (and not start OpenLP), click the %s button now.</source>
         <translation>
 
-A tündér teljes leállításához (és az OpenLP bezárásához) kattints az alábbi %s gombra.</translation>
+A tündér az alábbi „%s” gombbal állítható le teljesen (és zárható be ezzel az OpenLP). </translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="230"/>
@@ -3537,12 +3537,12 @@ A tündér teljes leállításához (és az OpenLP bezárásához) kattints az a
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="231"/>
         <source>Please wait while the resource index is downloaded.</source>
-        <translation>Kérlek, várj, míg a forrás tartalomjegyzéke letöltődik.</translation>
+        <translation>Türelem, míg a forrás tartalomjegyzéke letöltődik.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="233"/>
         <source>Please wait while OpenLP downloads the resource index file...</source>
-        <translation>Kérlek, várj, míg az OpenLP letölti a forrás tartalomjegyzékét…</translation>
+        <translation>Türelem, míg az OpenLP letölti a forrás tartalomjegyzékét…</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="271"/>
@@ -3552,7 +3552,7 @@ A tündér teljes leállításához (és az OpenLP bezárásához) kattints az a
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="272"/>
         <source>Please wait while resources are downloaded and OpenLP is configured.</source>
-        <translation>Kérlek, várj, míg a források letöltődnek és az OpenLP beállításra kerül.</translation>
+        <translation>Türelem, míg a források letöltődnek és az OpenLP beállításra kerül.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="663"/>
@@ -3562,7 +3562,7 @@ A tündér teljes leállításához (és az OpenLP bezárásához) kattints az a
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="189"/>
         <source>There was a network error attempting to connect to retrieve initial configuration information</source>
-        <translation>Hálózati hiba történt a kezdő beállító információk letöltése közben</translation>
+        <translation>Hálózati hiba történt a kezdő beállítóinformációk letöltése közben</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="276"/>
@@ -4063,17 +4063,17 @@ A tündér teljes leállításához (és az OpenLP bezárásához) kattints az a
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
         <source>&amp;Preview Panel</source>
-        <translation>&amp;Előnézet panel</translation>
+        <translation>&amp;Előnézetpanel</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
         <source>Toggle Preview Panel</source>
-        <translation>Előnézet panel átváltása</translation>
+        <translation>Előnézetpanel átváltása</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
         <source>Toggle the visibility of the preview panel.</source>
-        <translation>Az előnézet panel láthatóságának átváltása.</translation>
+        <translation>Az előnézetpanel láthatóságának átváltása.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
@@ -4318,7 +4318,7 @@ A tündér újbóli futtatása során megváltozhatnak az OpenLP aktuális beál
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="853"/>
         <source>OpenLP Export Settings Files (*.conf)</source>
-        <translation>OpenLP exportált beállító fájlok (*.conf)</translation>
+        <translation>OpenLP exportált beállítófájlok (*.conf)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="931"/>
@@ -4333,22 +4333,22 @@ A tündér újbóli futtatása során megváltozhatnak az OpenLP aktuális beál
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="944"/>
         <source>Export Settings File</source>
-        <translation>Exportált beállító fájl</translation>
+        <translation>Exportált beállítófájl</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="944"/>
         <source>OpenLP Export Settings File (*.conf)</source>
-        <translation>OpenLP exportált beállító fájl (*.conf)</translation>
+        <translation>OpenLP exportált beállítófájl (*.conf)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="1416"/>
         <source>New Data Directory Error</source>
-        <translation>Új adatmappa hiba</translation>
+        <translation>Új adatmappahiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="1408"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
-        <translation>Az OpenLP adatok új helyre való másolása folyamatban - %s - Várj a folyamat befejeződéséig</translation>
+        <translation>Az OpenLP adatok új helyre való másolása folyamatban ‒ %s ‒ Türelem a folyamat befejeződéséig</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="1416"/>
@@ -4477,7 +4477,7 @@ A folyamat megszakad és a változások nem lesznek elmentve.</translation>
     <message>
         <location filename="../../openlp/core/lib/db.py" line="243"/>
         <source>Database Error</source>
-        <translation>Adatbázis hiba</translation>
+        <translation>Adatbázishiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/db.py" line="243"/>
@@ -4528,7 +4528,7 @@ Adatbázis: %s</translation>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="596"/>
         <source>You must select an existing service item to add to.</source>
-        <translation>Ki kell jelölni egy sorrendelemet, amihez hozzá szeretnél adni.</translation>
+        <translation>Ki kell jelölni egy hozzáadni kívánt sorrendelemet.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="604"/>
@@ -4640,7 +4640,7 @@ Az utótag nem támogatott</translation>
         <location filename="../../openlp/core/ui/media/playertab.py" line="256"/>
         <source>NOTE: To use VLC you must install the %s version</source>
         <comment>Will insert &quot;32bit&quot; or &quot;64bit&quot;</comment>
-        <translation>MEGJEGYZÉS: A VLC használatához ezt a verziót szükséges telepíteni: %s version</translation>
+        <translation>MEGJEGYZÉS: A VLC használatához ezt a verziót szükséges telepíteni: %s verzió</translation>
     </message>
 </context>
 <context>
@@ -4774,7 +4774,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="140"/>
         <source>Custom Footer Text:</source>
-        <translation>Egyedi lábjegyzet szöveg:</translation>
+        <translation>Egyedi lábjegyzetszöveg:</translation>
     </message>
 </context>
 <context>
@@ -4787,22 +4787,22 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="212"/>
         <source>General projector error</source>
-        <translation>Általános projektor hiba</translation>
+        <translation>Általános projektorhiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="213"/>
         <source>Not connected error</source>
-        <translation>Nem csatlakozik hiba</translation>
+        <translation>„Nincs csatlakozás”-hiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="214"/>
         <source>Lamp error</source>
-        <translation>Lámpa hiba</translation>
+        <translation>Lámpahiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="215"/>
         <source>Fan error</source>
-        <translation>Ventilátor hiba</translation>
+        <translation>Ventilátorhiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="216"/>
@@ -4857,12 +4857,12 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="226"/>
         <source>Error condition detected</source>
-        <translation>Hiba állapot észlelve</translation>
+        <translation>Hibaállapot észlelve</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="227"/>
         <source>PJLink class not supported</source>
-        <translation>A PJLink osztály nem támogatott</translation>
+        <translation>A PJLink-osztály nem támogatott</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="228"/>
@@ -4967,7 +4967,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="277"/>
         <source>Not connected</source>
-        <translation>Nem csatlakozik hiba</translation>
+        <translation>Nem csatlakozik</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="278"/>
@@ -5040,7 +5040,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/editform.py" line="172"/>
         <source>Name Not Set</source>
-        <translation>Név nincs beállítva</translation>
+        <translation>Nincs név beállítva</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/editform.py" line="172"/>
@@ -5098,7 +5098,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/editform.py" line="237"/>
         <source>Database Error</source>
-        <translation>Adatbázis hiba</translation>
+        <translation>Adatbázishiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/editform.py" line="237"/>
@@ -5146,7 +5146,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="100"/>
         <source>Choose input source on selected projector</source>
-        <translation>Adj meg egy bemeneti forrást a kijelölt projektor számára</translation>
+        <translation>Meg kell adni egy bemeneti forrást a kijelölt projektor számára</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="106"/>
@@ -5211,7 +5211,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="217"/>
         <source>&amp;Edit Projector</source>
-        <translation>Projektor &amp;szerkesztése</translation>
+        <translation>Projektor sz&amp;erkesztése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="223"/>
@@ -5281,7 +5281,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="640"/>
         <source>Projector information not available at this time.</source>
-        <translation>Projektorinformációk jelenleg nem állnak rendelkezésre.</translation>
+        <translation>A projektorinformációk jelenleg nem állnak rendelkezésre.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/manager.py" line="643"/>
@@ -5409,7 +5409,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/pjlink1.py" line="775"/>
         <source>Other</source>
-        <translation>Más</translation>
+        <translation>Egyéb</translation>
     </message>
 </context>
 <context>
@@ -5677,7 +5677,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="447"/>
         <source>The current service has been modified. Would you like to save this service?</source>
-        <translation>Az aktuális sorrend módosult. Szeretnéd elmenteni?</translation>
+        <translation>Az aktuális sorrend módosult. Legyen elmentve?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printserviceform.py" line="178"/>
@@ -5732,7 +5732,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="126"/>
         <source>Select a theme for the service.</source>
-        <translation>Jelöljön ki egy témát a sorrendhez.</translation>
+        <translation>Ki kell jelölni egy témát a sorrendhez.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="1274"/>
@@ -5807,7 +5807,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="694"/>
         <source>OpenLP Service Files (*.osz);; OpenLP Service Files - lite (*.oszl)</source>
-        <translation>OpenLP sorrendfájlok (*.osz *.oszl);; OpenLP sorrendfájlok - egyszerű (*.oszl)</translation>
+        <translation>OpenLP sorrendfájlok (*.osz *.oszl);; OpenLP sorrendfájlok ‒ egyszerű (*.oszl)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="699"/>
@@ -5836,12 +5836,12 @@ Legalább OpenLP 2.0.2-val kell elmenteni.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="891"/>
         <source>&amp;Auto Start - inactive</source>
-        <translation>&amp;Automatikus indítás - inaktív</translation>
+        <translation>&amp;Automatikus indítás ‒ inaktív</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="893"/>
         <source>&amp;Auto Start - active</source>
-        <translation>&amp;Automatikus indítás - aktív</translation>
+        <translation>&amp;Automatikus indítás ‒ aktív</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="980"/>
@@ -5924,7 +5924,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistdialog.py" line="140"/>
         <source>Select an action and click one of the buttons below to start capturing a new primary or alternate shortcut, respectively.</source>
-        <translation>Jelölj ki egy parancsot és kattints egyenként az egyik alul található gombra az elsődleges vagy alternatív gyorsbillentyű elfogásához.</translation>
+        <translation>Egy parancs kijelölése után az alul található két gomb egyikére való kattintással lehet elkapni az elsődleges vagy alternatív gyorsbillentyűt.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistdialog.py" line="146"/>
@@ -6140,7 +6140,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/sourceselectform.py" line="393"/>
         <source>Select Projector Source</source>
-        <translation>Projektor forrás kijelölése</translation>
+        <translation>Projektor-forrás kijelölése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/projector/sourceselectform.py" line="391"/>
@@ -6456,7 +6456,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="524"/>
         <source>Theme %s already exists. Do you want to replace it?</source>
-        <translation>Ez a téma már létezik: %s. Szeretnéd felülírni?</translation>
+        <translation>Ez a téma már létezik: %s. Felülírható?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="409"/>
@@ -6693,7 +6693,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="385"/>
         <source>This wizard will help you to create and edit your themes. Click the next button below to start the process by setting up your background.</source>
-        <translation>A tündér segít témákat létrehozni és módosítani. Kattints az alábbi Következő gombra a folyamat első lépésének indításhoz, a háttér beállításához.</translation>
+        <translation>A tündér segít témákat létrehozni és módosítani. Az alábbi „Következő” gombbal indítható a folyamat első lépése, a háttér beállítása.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="447"/>
@@ -6763,7 +6763,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="513"/>
         <source>There is no name for this theme. Please enter one.</source>
-        <translation>A témának nincs neve, meg kell adni.</translation>
+        <translation>A témának nincs neve. Meg kell adni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="518"/>
@@ -6773,7 +6773,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="518"/>
         <source>Invalid theme name. Please enter one.</source>
-        <translation>A téma neve érvénytelen, érvényeset kell megadni.</translation>
+        <translation>A téma neve érvénytelen. Érvényeset kell megadni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="392"/>
@@ -6904,7 +6904,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/wizard.py" line="55"/>
         <source>Select the import format and the location to import from.</source>
-        <translation>Jelöld ki az importálás formátumát és az importálás helyét.</translation>
+        <translation>Ki kell jelölni az importálás formátumát és az importálás helyét.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/wizard.py" line="56"/>
@@ -6990,7 +6990,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="44"/>
         <source>XML syntax error</source>
-        <translation>XML szintaktikai hiba</translation>
+        <translation>XML-szintaktikai hiba</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="234"/>
@@ -7119,7 +7119,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
         <source>Service %Y-%m-%d %H-%M</source>
         <comment>This may not contain any of the following characters: /\?*|&lt;&gt;[]&quot;:+
 See http://docs.python.org/library/datetime.html#strftime-strptime-behavior for more information.</comment>
-        <translation>Sorrend %Y-%m-%d %H-%M</translation>
+        <translation>Sorrend %Y. %m. %d. ‒ %H.%M</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="73"/>
@@ -7134,7 +7134,7 @@ See http://docs.python.org/library/datetime.html#strftime-strptime-behavior for 
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="75"/>
         <source>Duplicate Error</source>
-        <translation>Duplikátum hiba</translation>
+        <translation>Duplikátumhiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="76"/>
@@ -7579,7 +7579,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/core/ui/projector/tab.py" line="107"/>
         <source>Source select dialog interface</source>
-        <translation>Forráskijelölő párbeszédpanel felület</translation>
+        <translation>Forráskijelölő párbeszédpanel-felület</translation>
     </message>
 </context>
 <context>
@@ -7663,7 +7663,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="206"/>
         <source>This type of presentation is not supported.</source>
-        <translation>Ez a bemutató típus nem támogatott.</translation>
+        <translation>Ez a bemutatótípus nem támogatott.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="94"/>
@@ -7714,7 +7714,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="122"/>
         <source>PDF options</source>
-        <translation>PDF beállítások</translation>
+        <translation>PDF-beállítások</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="133"/>
@@ -7724,7 +7724,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="234"/>
         <source>Select mudraw or ghostscript binary.</source>
-        <translation>Jelöld ki a mudraw vagy a ghostscript binárist.</translation>
+        <translation>Ki kell jelölni ki a mudraw vagy a ghostscript binárist.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="240"/>
@@ -7744,7 +7744,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="129"/>
         <source>Let PowerPoint control the size and position of the presentation window (workaround for Windows 8 scaling issue).</source>
-        <translation>Hagyjuk, hogy a PowerPoint kezelje a bemutató ablak méretét és pozícióját (Windows 8 átméretezési hiba megkerülése).</translation>
+        <translation>Engedélyezve, hogy a PowerPoint kezelje a bemutató ablak méretét és pozícióját (Windows 8 átméretezési hiba megkerülése).</translation>
     </message>
 </context>
 <context>
@@ -7775,12 +7775,12 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/remoteplugin.py" line="121"/>
         <source>Server Config Change</source>
-        <translation>Szerver beállítások módosítása</translation>
+        <translation>Szerverbeállítások módosítása</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/remoteplugin.py" line="121"/>
         <source>Server configuration changes will require a restart to take effect.</source>
-        <translation>A szerver beállítások módosítása után újraindítás szükséges a változások érvényre jutásához.</translation>
+        <translation>A szerverbeállítások módosítása után újraindítás szükséges a változások érvényre jutásához.</translation>
     </message>
 </context>
 <context>
@@ -7926,17 +7926,17 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="184"/>
         <source>Server Settings</source>
-        <translation>Szerver beállítások</translation>
+        <translation>Szerverbeállítások</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="187"/>
         <source>Remote URL:</source>
-        <translation>Távirányító URL:</translation>
+        <translation>Távirányító URL-je:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="188"/>
         <source>Stage view URL:</source>
-        <translation>Színpadi nézet URL:</translation>
+        <translation>Színpadi nézet URL-je:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="190"/>
@@ -7951,7 +7951,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="189"/>
         <source>Live view URL:</source>
-        <translation>Élő adás nézet URL:</translation>
+        <translation>Élő adás-nézet URL-je:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="203"/>
@@ -7961,7 +7961,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="204"/>
         <source>Could not find an SSL certificate. The HTTPS server will not be available unless an SSL certificate is found. Please see the manual for more information.</source>
-        <translation>Nem található SSL tanúsítvány. A HTTPS szervert nem lehet elérni SSL tanúsítvány nélkül. Lásd a súgót a további információkért.</translation>
+        <translation>Nem található SSL tanúsítvány. A HTTPS szervert nem lehet elérni SSL tanúsítvány nélkül. További információk a súgóban.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="211"/>
@@ -7986,7 +7986,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="194"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the Android app from Google Play.</source>
-        <translation>Szkenneld be a QR kódot vagy kattints az Android alkalmazás &lt;a href=&quot;%s&quot;&gt;letöltéséhez&lt;/a&gt; a Google Play-ből.</translation>
+        <translation>Az Android alkalmazást a Google Play-ből a fenti QR kóddal vagy &lt;a href=&quot;%s&quot;&gt;ezzel a linkkel&lt;/a&gt; lehet letölteni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
@@ -7996,7 +7996,7 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
-        <translation>Szkenneld be a QR kódot vagy kattints az iOS alkalmazás &lt;a href=&quot;%s&quot;&gt;letöltéséhez&lt;/a&gt; az alkalmazásboltból.</translation>
+        <translation>Az iOS alkalmazást az alkalmazásboltból a fenti QR kóddal vagy &lt;a href=&quot;%s&quot;&gt;ezzel a linkkel&lt;/a&gt; lehet letölteni.</translation>
     </message>
 </context>
 <context>
@@ -8090,17 +8090,17 @@ Meg lehet próbálni egyenként kijelölni a fájlokat.</translation>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeletedialog.py" line="65"/>
         <source>Delete Song Usage Data</source>
-        <translation>Dalstatisztika adatok törlése</translation>
+        <translation>Dalstatisztika-adatok törlése</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeleteform.py" line="51"/>
         <source>Delete Selected Song Usage Events?</source>
-        <translation>Valóban törölhetők a kijelölt dalstatisztika események?</translation>
+        <translation>Valóban törölhetők a kijelölt dalstatisztika-események?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeleteform.py" line="51"/>
         <source>Are you sure you want to delete selected Song Usage data?</source>
-        <translation>Valóban törölhetők a kijelölt dalstatisztika adatok?</translation>
+        <translation>Valóban törölhetők a kijelölt dalstatisztika-adatok?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedeleteform.py" line="62"/>
@@ -8149,12 +8149,12 @@ All data recorded before this date will be permanently deleted.</source>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="85"/>
         <source>usage_detail_%s_%s.txt</source>
-        <translation>Dalstatisztika_%s%s.txt</translation>
+        <translation>Dalstatisztika_%s_%s.txt</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="103"/>
         <source>Report Creation</source>
-        <translation>Riport készítése</translation>
+        <translation>Jelentés készítése</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="103"/>
@@ -8173,17 +8173,17 @@ has been successfully created. </source>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="77"/>
         <source>You have not set a valid output location for your song usage report. 
 Please select an existing path on your computer.</source>
-        <translation>Nem létező útvonal lett megadva a dalstatisztika riporthoz. Jelölj ki egy érvényes útvonalat a számítógépen.</translation>
+        <translation>Nem létező útvonal lett megadva a dalstatisztika riporthoz. Ki kell jelölni egy érvényes útvonalat a számítógépen.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="110"/>
         <source>Report Creation Failed</source>
-        <translation>Riportkészítési hiba</translation>
+        <translation>Jelentéskészítési hiba</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="110"/>
         <source>An error occurred while creating the report: %s</source>
-        <translation>Hiba történt a riport készítése közben: %s</translation>
+        <translation>Hiba történt a jelentés készítése közben: %s</translation>
     </message>
 </context>
 <context>
@@ -8306,7 +8306,7 @@ a karakterek helyes megjelenítéséért.
         <location filename="../../openlp/plugins/songs/lib/__init__.py" line="332"/>
         <source>Please choose the character encoding.
 The encoding is responsible for the correct character representation.</source>
-        <translation>Válaszd ki a karakterkódolást.
+        <translation>Ki kell választani a karakterkódolást.
 A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     </message>
     <message>
@@ -8474,7 +8474,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="310"/>
         <source>Administered by %s</source>
-        <translation>Adminisztrálta: %s</translation>
+        <translation>Adminisztrálja: %s</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="332"/>
@@ -8496,7 +8496,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
         <source>
 [above are Song Tags with notes imported from EasyWorship]</source>
         <translation>
-[felül találhatók az EasyWorship-ből megjegyzésekkel importál dal címkék]</translation>
+[felül találhatók az EasyWorship-ből megjegyzésekkel importál dal-címkék]</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/easyworship.py" line="199"/>
@@ -8562,7 +8562,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="309"/>
         <source>Ed&amp;it All</source>
-        <translation>&amp;Összes szerkesztése</translation>
+        <translation>Össz&amp;es szerkesztése</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="311"/>
@@ -8617,7 +8617,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="560"/>
         <source>This author does not exist, do you want to add them?</source>
-        <translation>Ez a szerző még nem létezik, valóban hozzá kívánja adni?</translation>
+        <translation>Ez a szerző még nem létezik, valóban hozzáadható?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
@@ -8627,7 +8627,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="587"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
-        <translation>Nincs kijelölve egyetlen szerző sem. Vagy válassz egy szerzőt a listából, vagy írj az új szerző mezőbe és kattints a Hozzáadás gombra a szerző megjelöléséhez.</translation>
+        <translation>Nincs kijelölve egyetlen szerző sem. Szerzőt hozzáadni a listából való választással vagy a nevének beírása utána a „Hozzáadás” gombra való kattintással lehet.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="638"/>
@@ -8637,7 +8637,7 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="638"/>
         <source>This topic does not exist, do you want to add it?</source>
-        <translation>Ez a témakör még nem létezik, szeretnéd hozzáadni?</translation>
+        <translation>Ez a témakör még nem létezik, valóban hozzáadható?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="656"/>
@@ -8647,22 +8647,22 @@ A kódlap felelős a karakterek helyes megjelenítéséért.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="664"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
-        <translation>Nincs kijelölve egyetlen témakör sem. Vagy válassz egy témakört a listából, vagy írj az új témakör mezőbe és kattints a Hozzáadás gombra a témakör megjelöléséhez.</translation>
+        <translation>Nincs kijelölve egyetlen témakör sem. Témakört hozzáadni a listából való választással vagy a megnevezésének beírása utána a „Hozzáadás” gombra való kattintással lehet.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
         <source>You need to type in a song title.</source>
-        <translation>Add meg a dal címét.</translation>
+        <translation>Meg kell adni a dal címét.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
         <source>You need to type in at least one verse.</source>
-        <translation>Legalább egy versszakot meg kell adnod.</translation>
+        <translation>Legalább egy versszakot meg kell adni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
         <source>You need to have an author for this song.</source>
-        <translation>Egy szerzőt meg kell adnod ehhez a dalhoz.</translation>
+        <translation>Meg kell adni egy szerzőt ehhez a dalhoz.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="334"/>
@@ -8761,7 +8761,7 @@ A versszakokat szóközzel elválasztva kell megadni.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="683"/>
         <source>This Songbook does not exist, do you want to add it?</source>
-        <translation>Ez az énekeskönyv még nem létezik, szeretnéd hozzáadni a listához?</translation>
+        <translation>Ez az énekeskönyv még nem létezik, valóban hozzáadható?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="700"/>
@@ -8771,7 +8771,7 @@ A versszakokat szóközzel elválasztva kell megadni.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="707"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
-        <translation>Nincs kijelölve egyetlen énekeskönyv sem. Vagy válassz egy énekeskönyvet a listából, vagy írj az új énekeskönyv mezőbe és kattints a Hozzáadás gombra az énekeskönyv megjelöléséhez.</translation>
+        <translation>Nincs kijelölve egyetlen énekeskönyv sem. Énekeskönyvet hozzáadni a listából való választással vagy a megnevezésének beírása utána a „Hozzáadás” gombra való kattintással lehet.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1066"/>
@@ -8826,7 +8826,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="152"/>
         <source>Check the songs you want to export.</source>
-        <translation>Jelöld ki az exportálandó dalokat.</translation>
+        <translation>Ki kell jelölni az exportálandó dalokat.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="155"/>
@@ -8856,7 +8856,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="162"/>
         <source>Please wait while your songs are exported.</source>
-        <translation>Várj, míg a dalok exportálódnak.</translation>
+        <translation>Türelem, míg a dalok exportálódnak.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="178"/>
@@ -8886,7 +8886,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="158"/>
         <source>Select the directory where you want the songs to be saved.</source>
-        <translation>Jelöld ki a mappát, ahová a dalok mentésre kerülnek.</translation>
+        <translation>Ki kell jelölni a mappát, ahová a dalok mentésre kerülnek.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="148"/>
@@ -8915,7 +8915,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="210"/>
         <source>Select Document/Presentation Files</source>
-        <translation>Jelölj ki egy dokumentum vagy egy bemutató fájlokat</translation>
+        <translation>Ki kell jelölni dokumentum vagy bemutató fájlokat</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songimportform.py" line="134"/>
@@ -8925,7 +8925,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songimportform.py" line="137"/>
         <source>This wizard will help you to import songs from a variety of formats. Click the next button below to start the process by selecting a format to import from.</source>
-        <translation>A tündér segít a különféle formátumú dalok importálásában. Kattints az alábbi Következő gombra a folyamat első lépésének indításhoz, a formátum kijelöléséhez.</translation>
+        <translation>A tündér segít a különféle formátumú dalok importálásában. Az alábbi „Következő” gombbal indítható a folyamat első lépése, a formátum kijelölése.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="204"/>
@@ -8945,7 +8945,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songimportform.py" line="166"/>
         <source>Please wait while your songs are imported.</source>
-        <translation>Kérlek, várj, míg a dalok importálás alatt állnak.</translation>
+        <translation>Türelem, míg a dalok importálás alatt állnak.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="352"/>
@@ -9005,7 +9005,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="229"/>
         <source>EasySlides XML File</source>
-        <translation>EasySlides XML fájl</translation>
+        <translation>EasySlides XML-fájl</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="236"/>
@@ -9065,7 +9065,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="314"/>
         <source>In SongPro, export your songs using the File -&gt; Export menu</source>
-        <translation>SongPro-ban a Fájl -&gt; Exportálás menüpontban lehet exportálni a dalokat</translation>
+        <translation>SongPro-ban a Fájl → Exportálás menüpontban lehet exportálni a dalokat</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="243"/>
@@ -9166,7 +9166,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/mediafilesdialog.py" line="66"/>
         <source>Select one or more audio files from the list below, and click OK to import them into this song.</source>
-        <translation>Jelölj ki egy vagy több hangfájlt az alábbi listából és kattints az OK gombra a dalba való importálásukhoz.</translation>
+        <translation>Egy vagy több hangfájlt importálni ebbe dalba a listában való megjelölésükkel, majd az „OK” gombbal lehet.</translation>
     </message>
 </context>
 <context>
@@ -9280,7 +9280,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="99"/>
         <source>No %s files found.</source>
-        <translation>A fájlok nem találhatók %s.</translation>
+        <translation>A fájlok nem találhatók: %s.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="117"/>
@@ -9331,7 +9331,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="249"/>
         <source>Finished export. To import these files use the &lt;strong&gt;OpenLyrics&lt;/strong&gt; importer.</source>
-        <translation>Exportálás befejeződött. Ezen fájlok importálásához majd az &lt;strong&gt;OpenLyrics&lt;/strong&gt; importálót vedd igénybe.</translation>
+        <translation>Exportálás befejeződött. Ezen fájlok importálásához majd az &lt;strong&gt;OpenLyrics&lt;/strong&gt; importálót kell igénybe venni.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="255"/>
@@ -9462,17 +9462,17 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
-        <translation>Ez a szerző már létezik: %s. Szeretnéd, hogy a dal – melynek szerzője %s – a már létező szerző (%s) dalai közé kerüljön rögzítésre?</translation>
+        <translation>Ez a szerző már létezik: %s. A dal – melynek szerzője %s – kerüljön rögzítésre a már létező „%s” szerző dalai közé?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
-        <translation>Ez a témakör már létezik: %s. Szeretnéd, hogy a dal – melynek témaköre: %s – a már létező témakörben (%s) kerüljön rögzítésre?</translation>
+        <translation>Ez a témakör már létezik: %s. A dal – melynek témaköre: %s –  kerüljön rögzítésre a már létező „%s” témakörben?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
-        <translation>Ez a könyv már létezik: %s. Szeretnéd, hogy a dal – melynek könyve: %s – a már létező könyvben (%s) kerüljön rögzítésre?</translation>
+        <translation>Ez a könyv már létezik: %s. A dal – melynek könyve: %s –  kerüljön rögzítésre a már létező „%s” könyvben?</translation>
     </message>
 </context>
 <context>
@@ -9485,7 +9485,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectdialog.py" line="234"/>
         <source>&lt;strong&gt;Note:&lt;/strong&gt; An Internet connection is required in order to import songs from CCLI SongSelect.</source>
-        <translation>&lt;strong&gt;Figyelem:&lt;/strong&gt; Internet kapcsolat szükséges a CCLI SongSelect adatbázisból való importáláshoz.</translation>
+        <translation>&lt;strong&gt;Figyelem:&lt;/strong&gt; Internetkapcsolat szükséges a CCLI SongSelect adatbázisból való importáláshoz.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectdialog.py" line="238"/>
@@ -9590,7 +9590,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="246"/>
         <source>WARNING: Saving your username and password is INSECURE, your password is stored in PLAIN TEXT. Click Yes to save your password or No to cancel this.</source>
-        <translation>FIGYELMEZTETÉS: A felhasználói név és a jelszó mentése NEM BIZTONSÁGOS, mivel a jelszó EGYSZERŰ SZÖVEGKÉNT lesz mentve. Az Igennel a jelszó mentésre kerül, a Nemmel megszakad a mentés.</translation>
+        <translation>FIGYELMEZTETÉS: A felhasználói név és a jelszó mentése NEM BIZTONSÁGOS, mivel a jelszó EGYSZERŰ SZÖVEGKÉNT lesz mentve. Az „Igen”-nel a jelszó mentésre kerül, a „Nem”-mel megszakad a mentés.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="271"/>
@@ -9615,7 +9615,7 @@ Eltávolítható az elem a dalból?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="205"/>
         <source>This song is missing some information, like the lyrics, and cannot be imported.</source>
-        <translation>A dalból hiányzik néhány lapvető információ, mint pl. a szöveg, így az nem importálható.</translation>
+        <translation>A dalból hiányzik néhány alapvető információ, mint pl. a szöveg, így az nem importálható.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="392"/>
