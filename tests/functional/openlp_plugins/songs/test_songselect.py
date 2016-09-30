@@ -63,6 +63,30 @@ class TestSongSelectImport(TestCase, TestMixin):
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
+    def login_fails_type_error_test(self, MockedBeautifulSoup, mocked_build_opener):
+        """
+        Test that when logging in to SongSelect fails due to a TypeError, the login method returns False
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        mocked_opener = MagicMock()
+        mocked_build_opener.return_value = mocked_opener
+        mocked_login_page = MagicMock()
+        mocked_login_page.find.side_effect = [{'value': 'blah'}, None]
+        MockedBeautifulSoup.side_effect = [mocked_login_page, TypeError('wrong type')]
+        mock_callback = MagicMock()
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        result = importer.login('username', 'password', mock_callback)
+
+        # THEN: callback was called 3 times, open was called twice, find was called twice, and False was returned
+        self.assertEqual(2, mock_callback.call_count, 'callback should have been called 3 times')
+        self.assertEqual(1, mocked_login_page.find.call_count, 'find should have been called twice')
+        self.assertEqual(2, mocked_opener.open.call_count, 'opener should have been called twice')
+        self.assertFalse(result, 'The login method should have returned False')
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
     def login_fails_test(self, MockedBeautifulSoup, mocked_build_opener):
         """
         Test that when logging in to SongSelect fails, the login method returns False
@@ -144,6 +168,27 @@ class TestSongSelectImport(TestCase, TestMixin):
         mocked_opener.open.assert_called_with(LOGOUT_URL)
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.log')
+    def logout_fails_test(self, mocked_log, mocked_build_opener):
+        """
+        Test that when the logout method is called, it logs the user out of SongSelect
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        type_error = TypeError('wrong type')
+        mocked_opener = MagicMock()
+        mocked_opener.open.side_effect = type_error
+        mocked_build_opener.return_value = mocked_opener
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        importer.logout()
+
+        # THEN: The opener is called once with the logout url
+        self.assertEqual(1, mocked_opener.open.call_count, 'opener should have been called once')
+        mocked_opener.open.assert_called_with(LOGOUT_URL)
+        mocked_log.exception.assert_called_once_with('Could not log out of SongSelect, %s', type_error)
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
     def search_returns_no_results_test(self, MockedBeautifulSoup, mocked_build_opener):
         """
@@ -166,6 +211,30 @@ class TestSongSelectImport(TestCase, TestMixin):
         self.assertEqual(1, mocked_opener.open.call_count, 'open should have been called once')
         self.assertEqual(1, mocked_results_page.find_all.call_count, 'find_all should have been called once')
         mocked_results_page.find_all.assert_called_with('div', 'song-result')
+        self.assertEqual([], results, 'The search method should have returned an empty list')
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
+    def search_returns_no_results_after_exception_test(self, MockedBeautifulSoup, mocked_build_opener):
+        """
+        Test that when the search finds no results, it simply returns an empty list
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        mocked_opener = MagicMock()
+        mocked_build_opener.return_value = mocked_opener
+        mocked_results_page = MagicMock()
+        mocked_results_page.find_all.return_value = []
+        MockedBeautifulSoup.side_effect = TypeError('wrong type')
+        mock_callback = MagicMock()
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        results = importer.search('text', 1000, mock_callback)
+
+        # THEN: callback was never called, open was called once, find_all was called once, an empty list returned
+        self.assertEqual(0, mock_callback.call_count, 'callback should not have been called')
+        self.assertEqual(1, mocked_opener.open.call_count, 'open should have been called once')
+        self.assertEqual(0, mocked_results_page.find_all.call_count, 'find_all should not have been called')
         self.assertEqual([], results, 'The search method should have returned an empty list')
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')

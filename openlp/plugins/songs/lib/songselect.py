@@ -114,7 +114,7 @@ class SongSelectImport(object):
         try:
             self.opener.open(LOGOUT_URL)
         except (TypeError, URLError) as error:
-            log.exception('Could not log of SongSelect, %s', error)
+            log.exception('Could not log out of SongSelect, %s', error)
 
     def search(self, search_text, max_results, callback=None):
         """
@@ -255,7 +255,7 @@ class SongSelectImport(object):
             topic = self.db_manager.get_object_filtered(Topic, Topic.name == topic_name)
             if not topic:
                 topic = Topic.populate(name=topic_name)
-            db_song.add_topic(topic)
+            db_song.topics.append(topic)
         self.db_manager.save_object(db_song)
         return db_song
 
