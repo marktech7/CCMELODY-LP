@@ -23,7 +23,6 @@
 The :mod:`~openlp.plugins.songs.lib.songselect` module contains the SongSelect importer itself.
 """
 import logging
-import sys
 import random
 import re
 from http.cookiejar import CookieJar
