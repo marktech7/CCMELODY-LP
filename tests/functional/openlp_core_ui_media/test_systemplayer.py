@@ -251,6 +251,27 @@ class TestSystemPlayer(TestCase):
         mocked_set_visible.assert_called_once_with(mocked_display, False)
         self.assertEqual(MediaState.Stopped, player.state)
 
+    def test_stop_throws_exception(self):
+        """
+        Test the stop() method of the SystemPlayer when disconnect() throws an exception
+        """
+        # GIVEN: A SystemPlayer instance
+        player = SystemPlayer(self)
+        mocked_display = MagicMock()
+        mocked_display.media_player.durationChanged.disconnect.side_effect = TypeError('oops')
+
+        # WHEN: The stop method is called
+        with patch.object(player, 'set_visible') as mocked_set_visible:
+            player.stop(mocked_display)
+
+        # THEN: The video is stopped
+        expected_block_signals_calls = [call(True), call(False)]
+        self.assertEqual(expected_block_signals_calls, mocked_display.media_player.blockSignals.call_args_list)
+        mocked_display.media_player.durationChanged.disconnect.assert_called_once_with()
+        mocked_display.media_player.stop.assert_called_once_with()
+        mocked_set_visible.assert_called_once_with(mocked_display, False)
+        self.assertEqual(MediaState.Stopped, player.state)
+
     def test_volume(self):
         """
         Test the volume() method of the SystemPlayer
