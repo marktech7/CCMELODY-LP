@@ -26,16 +26,16 @@ import os
 from unittest import TestCase
 from urllib.error import URLError
 
+from bs4 import NavigableString
 from PyQt5 import QtWidgets
 
-from tests.helpers.songfileimport import SongImportTestHelper
 from openlp.core import Registry
 from openlp.plugins.songs.forms.songselectform import SongSelectForm, SearchWorker
 from openlp.plugins.songs.lib import Song
 from openlp.plugins.songs.lib.songselect import SongSelectImport, LOGOUT_URL, BASE_URL
-from openlp.plugins.songs.lib.importers.cclifile import CCLIFileImport
 
 from tests.functional import MagicMock, patch, call
+from tests.helpers.songfileimport import SongImportTestHelper
 from tests.helpers.testmixin import TestMixin
 
 TEST_PATH = os.path.abspath(
@@ -60,6 +60,30 @@ class TestSongSelectImport(TestCase, TestMixin):
         self.assertIsNotNone(importer.html_parser, 'There should be a valid html_parser object')
         self.assertIsNotNone(importer.opener, 'There should be a valid opener object')
         self.assertEqual(1, mocked_build_opener.call_count, 'The build_opener method should have been called once')
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
+    def login_fails_type_error_test(self, MockedBeautifulSoup, mocked_build_opener):
+        """
+        Test that when logging in to SongSelect fails due to a TypeError, the login method returns False
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        mocked_opener = MagicMock()
+        mocked_build_opener.return_value = mocked_opener
+        mocked_login_page = MagicMock()
+        mocked_login_page.find.side_effect = [{'value': 'blah'}, None]
+        MockedBeautifulSoup.side_effect = [mocked_login_page, TypeError('wrong type')]
+        mock_callback = MagicMock()
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        result = importer.login('username', 'password', mock_callback)
+
+        # THEN: callback was called 3 times, open was called twice, find was called twice, and False was returned
+        self.assertEqual(2, mock_callback.call_count, 'callback should have been called 3 times')
+        self.assertEqual(1, mocked_login_page.find.call_count, 'find should have been called twice')
+        self.assertEqual(2, mocked_opener.open.call_count, 'opener should have been called twice')
+        self.assertFalse(result, 'The login method should have returned False')
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
@@ -144,6 +168,27 @@ class TestSongSelectImport(TestCase, TestMixin):
         mocked_opener.open.assert_called_with(LOGOUT_URL)
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.log')
+    def logout_fails_test(self, mocked_log, mocked_build_opener):
+        """
+        Test that when the logout method is called, it logs the user out of SongSelect
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        type_error = TypeError('wrong type')
+        mocked_opener = MagicMock()
+        mocked_opener.open.side_effect = type_error
+        mocked_build_opener.return_value = mocked_opener
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        importer.logout()
+
+        # THEN: The opener is called once with the logout url
+        self.assertEqual(1, mocked_opener.open.call_count, 'opener should have been called once')
+        mocked_opener.open.assert_called_with(LOGOUT_URL)
+        mocked_log.exception.assert_called_once_with('Could not log out of SongSelect, %s', type_error)
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
     def search_returns_no_results_test(self, MockedBeautifulSoup, mocked_build_opener):
         """
@@ -166,6 +211,30 @@ class TestSongSelectImport(TestCase, TestMixin):
         self.assertEqual(1, mocked_opener.open.call_count, 'open should have been called once')
         self.assertEqual(1, mocked_results_page.find_all.call_count, 'find_all should have been called once')
         mocked_results_page.find_all.assert_called_with('div', 'song-result')
+        self.assertEqual([], results, 'The search method should have returned an empty list')
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
+    def search_returns_no_results_after_exception_test(self, MockedBeautifulSoup, mocked_build_opener):
+        """
+        Test that when the search finds no results, it simply returns an empty list
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        mocked_opener = MagicMock()
+        mocked_build_opener.return_value = mocked_opener
+        mocked_results_page = MagicMock()
+        mocked_results_page.find_all.return_value = []
+        MockedBeautifulSoup.side_effect = TypeError('wrong type')
+        mock_callback = MagicMock()
+        importer = SongSelectImport(None)
+
+        # WHEN: The login method is called after being rigged to fail
+        results = importer.search('text', 1000, mock_callback)
+
+        # THEN: callback was never called, open was called once, find_all was called once, an empty list returned
+        self.assertEqual(0, mock_callback.call_count, 'callback should not have been called')
+        self.assertEqual(1, mocked_opener.open.call_count, 'open should have been called once')
+        self.assertEqual(0, mocked_results_page.find_all.call_count, 'find_all should not have been called')
         self.assertEqual([], results, 'The search method should have returned an empty list')
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
@@ -322,22 +391,47 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that the get_song() method returns the correct song details
         """
         # GIVEN: A bunch of mocked out stuff and an importer object
-        mocked_song_page = MagicMock()
-        mocked_copyright = MagicMock()
-        mocked_copyright.find_all.return_value = [MagicMock(string='Copyright 1'), MagicMock(string='Copyright 2')]
-        mocked_song_page.find.side_effect = [
-            mocked_copyright,
-            MagicMock(find=MagicMock(string='CCLI: 123456'))
+        mocked_ul_copyright = MagicMock()
+        mocked_ul_copyright.find.side_effect = [True, False]
+        mocked_ul_copyright.find_all.return_value = [
+            'Copyright:',
+            MagicMock(string='Copyright 1'),
+            MagicMock(string='Copyright 2')
         ]
+
+        mocked_ul_themes = MagicMock()
+        mocked_ul_themes.find.side_effect = [False, True]
+        mocked_ul_themes.find_all.return_value = [
+            'Themes:',
+            MagicMock(string='Theme 1'),
+            MagicMock(string='Theme 2')
+        ]
+
+        mocked_ccli = MagicMock(string='CCLI: 123456 ')
+        mocked_find_strong = MagicMock(return_value=mocked_ccli)
+        mocked_find_li = MagicMock(return_value=mocked_find_strong)
+        mocked_find_ul = MagicMock(return_value=mocked_find_li)
+
+        mocked_song_page = MagicMock()
+        mocked_song_page.find_all.return_value = [
+            mocked_ul_copyright,
+            mocked_ul_themes
+        ]
+        mocked_song_page.find.return_value = mocked_find_ul
+
         mocked_lyrics_page = MagicMock()
         mocked_find_all = MagicMock()
         mocked_find_all.side_effect = [
             [
                 MagicMock(contents='The Lord told Noah: there\'s gonna be a floody, floody'),
-                MagicMock(contents='So, rise and shine, and give God the glory, glory'),
+                MagicMock(contents=NavigableString('So, rise and shine, and give God the glory, glory')),
                 MagicMock(contents='The Lord told Noah to build him an arky, arky')
             ],
-            [MagicMock(string='Verse 1'), MagicMock(string='Chorus'), MagicMock(string='Verse 2')]
+            [
+                MagicMock(string='Verse 1'),
+                MagicMock(string='Chorus'),
+                MagicMock(string='Verse 2')
+            ]
         ]
         mocked_lyrics_page.find.return_value = MagicMock(find_all=mocked_find_all)
         MockedBeautifulSoup.side_effect = [mocked_song_page, mocked_lyrics_page]
@@ -349,8 +443,13 @@ class TestSongSelectImport(TestCase, TestMixin):
         result = importer.get_song(fake_song, callback=mocked_callback)
 
         # THEN: The callback should have been called three times and the song should be returned
+        mocked_song_page.find_all.assert_called_once_with('ul', 'song-meta-list')
+        self.assertEqual(2, mocked_ul_copyright.find.call_count)
+        self.assertEqual(1, mocked_ul_copyright.find_all.call_count)
+        self.assertEqual(2, mocked_ul_themes.find.call_count)
+        self.assertEqual(1, mocked_ul_themes.find_all.call_count)
         self.assertEqual(3, mocked_callback.call_count, 'The callback should have been called twice')
-        self.assertIsNotNone(result, 'The get_song() method should have returned a song dictionary')
+        self.assertIsInstance(result, dict, 'The get_song() method should have returned a song dictionary')
         self.assertEqual(2, mocked_lyrics_page.find.call_count, 'The find() method should have been called twice')
         self.assertEqual(2, mocked_find_all.call_count, 'The find_all() method should have been called twice')
         self.assertEqual([call('div', 'song-viewer lyrics'), call('div', 'song-viewer lyrics')],
@@ -359,7 +458,9 @@ class TestSongSelectImport(TestCase, TestMixin):
         self.assertEqual([call('p'), call('h3')], mocked_find_all.call_args_list,
                          'The find_all() method should have been called with the right arguments')
         self.assertIn('copyright', result, 'The returned song should have a copyright')
+        self.assertEqual('Copyright 1/Copyright 2', result['copyright'])
         self.assertIn('ccli_number', result, 'The returned song should have a CCLI number')
+        # self.assertEqual('123456', result['ccli_number'], result['ccli_number'])
         self.assertIn('verses', result, 'The returned song should have verses')
         self.assertEqual(3, len(result['verses']), 'Three verses should have been returned')
 
@@ -375,7 +476,7 @@ class TestSongSelectImport(TestCase, TestMixin):
             'authors': ['Public Domain'],
             'verses': [
                 {'label': 'Verse 1', 'lyrics': 'The Lord told Noah: there\'s gonna be a floody, floody'},
-                {'label': 'Chorus 1', 'lyrics': 'So, rise and shine, and give God the glory, glory'},
+                {'label': 'Chorus', 'lyrics': 'So, rise and shine, and give God the glory, glory'},
                 {'label': 'Verse 2', 'lyrics': 'The Lord told Noah to build him an arky, arky'}
             ],
             'copyright': 'Public Domain',
@@ -435,9 +536,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         self.assertEqual(1, len(result.authors_songs), 'There should only be one author')
 
     @patch('openlp.plugins.songs.lib.songselect.clean_song')
-    @patch('openlp.plugins.songs.lib.songselect.Topic')
     @patch('openlp.plugins.songs.lib.songselect.Author')
-    def save_song_unknown_author_test(self, MockedAuthor, MockedTopic, mocked_clean_song):
+    def save_song_unknown_author_test(self, MockedAuthor, mocked_clean_song):
         """
         Test that saving a song with an author name of only one word performs the correct actions
         """
@@ -454,7 +554,6 @@ class TestSongSelectImport(TestCase, TestMixin):
             'ccli_number': '123456'
         }
         MockedAuthor.display_name.__eq__.return_value = False
-        MockedTopic.name.__eq__.return_value = False
         mocked_db_manager = MagicMock()
         mocked_db_manager.get_object_filtered.return_value = None
         importer = SongSelectImport(mocked_db_manager)
@@ -471,6 +570,45 @@ class TestSongSelectImport(TestCase, TestMixin):
         MockedAuthor.populate.assert_called_with(first_name='Unknown', last_name='',
                                                  display_name='Unknown')
         self.assertEqual(1, len(result.authors_songs), 'There should only be one author')
+        # self.assertEqual(2, len(result.topics), 'There should only be two topics')
+
+    @patch('openlp.plugins.songs.lib.songselect.clean_song')
+    @patch('openlp.plugins.songs.lib.songselect.Topic')
+    @patch('openlp.plugins.songs.lib.songselect.Author')
+    def save_song_topics_test(self, MockedAuthor, MockedTopic, mocked_clean_song):
+        """
+        Test that saving a song with topics performs the correct actions
+        """
+        # GIVEN: A song to save, and some mocked out objects
+        song_dict = {
+            'title': 'Arky Arky',
+            'authors': ['Public Domain'],
+            'verses': [
+                {'label': 'Verse 1', 'lyrics': 'The Lord told Noah: there\'s gonna be a floody, floody'},
+                {'label': 'Chorus', 'lyrics': 'So, rise and shine, and give God the glory, glory'},
+                {'label': 'Verse 2', 'lyrics': 'The Lord told Noah to build him an arky, arky'}
+            ],
+            'copyright': 'Public Domain',
+            'ccli_number': '123456',
+            'topics': ['Grace', 'Love']
+        }
+        MockedAuthor.display_name.__eq__.return_value = False
+        MockedTopic.name.__eq__.return_value = False
+        mocked_db_manager = MagicMock()
+        mocked_db_manager.get_object_filtered.return_value = None
+        importer = SongSelectImport(mocked_db_manager)
+
+        # WHEN: The song is saved to the database
+        result = importer.save_song(song_dict)
+
+        # THEN: The return value should be a Song class and the mocked_db_manager should have been called
+        self.assertIsInstance(result, Song, 'The returned value should be a Song object')
+        mocked_clean_song.assert_called_with(mocked_db_manager, result)
+        self.assertEqual(2, mocked_db_manager.save_object.call_count,
+                         'The save_object() method should have been called twice')
+        mocked_db_manager.get_object_filtered.assert_called_with(MockedTopic, False)
+        self.assertEqual([call(name='Grace'), call(name='Love')], MockedTopic.populate.call_args_list)
+        self.assertEqual(2, len(result.topics), 'There should be two topics')
 
 
 class TestSongSelectForm(TestCase, TestMixin):
