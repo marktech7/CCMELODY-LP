@@ -100,7 +100,7 @@ class SystemPlayer(MediaPlayer):
             ext = '*%s' % extension
             if ext not in mime_type_list:
                 mime_type_list.append(ext)
-        log.info('MediaPlugin: %s extensions: %s' % (mimetype, ' '.join(extensions)))
+        log.info('MediaPlugin: %s extensions: %s', mimetype, ' '.join(extensions))
 
     def setup(self, display):
         """
@@ -160,6 +160,13 @@ class SystemPlayer(MediaPlayer):
         if start_time > 0:
             self.seek(display, controller.media_info.start_time * 1000)
         self.volume(display, controller.media_info.volume)
+        display.media_player.blockSignals(True)
+        try:
+            display.media_player.durationChanged.disconnect()
+        except TypeError:
+            # We get a type error if there are no slots attached to this signal, so ignore it
+            pass
+        display.media_player.blockSignals(False)
         display.media_player.durationChanged.connect(functools.partial(self.set_duration, controller))
         self.state = MediaState.Playing
         display.video_widget.raise_()
@@ -178,7 +185,11 @@ class SystemPlayer(MediaPlayer):
         Stop the current media item
         """
         display.media_player.blockSignals(True)
-        display.media_player.durationChanged.disconnect()
+        try:
+            display.media_player.durationChanged.disconnect()
+        except TypeError:
+            # We get a type error if there are no slots attached to this signal, so ignore it
+            pass
         display.media_player.blockSignals(False)
         display.media_player.stop()
         self.set_visible(display, False)
@@ -216,6 +227,9 @@ class SystemPlayer(MediaPlayer):
 
     @staticmethod
     def set_duration(controller, duration):
+        """
+        Set the length of the seek slider
+        """
         controller.media_info.length = int(duration / 1000)
         controller.seek_slider.setMaximum(controller.media_info.length * 1000)
 
@@ -261,33 +275,34 @@ class SystemPlayer(MediaPlayer):
         :return: True if file can be played otherwise False
         """
         thread = QtCore.QThread()
-        check_media_player = CheckMedia(path)
-        check_media_player.setVolume(0)
-        check_media_player.moveToThread(thread)
-        check_media_player.finished.connect(thread.quit)
-        thread.started.connect(check_media_player.play)
+        check_media_worker = CheckMediaWorker(path)
+        check_media_worker.setVolume(0)
+        check_media_worker.moveToThread(thread)
+        check_media_worker.finished.connect(thread.quit)
+        thread.started.connect(check_media_worker.play)
         thread.start()
         while thread.isRunning():
             self.application.processEvents()
-        return check_media_player.result
+        return check_media_worker.result
 
 
-class CheckMedia(QtMultimedia.QMediaPlayer):
+class CheckMediaWorker(QtMultimedia.QMediaPlayer):
     """
     Class used to check if a media file is playable
     """
     finished = QtCore.pyqtSignal()
 
     def __init__(self, path):
-        super(CheckMedia, self).__init__(None, QtMultimedia.QMediaPlayer.VideoSurface)
+        super(CheckMediaWorker, self).__init__(None, QtMultimedia.QMediaPlayer.VideoSurface)
         self.result = None
-
         self.error.connect(functools.partial(self.signals, 'error'))
         self.mediaStatusChanged.connect(functools.partial(self.signals, 'media'))
-
         self.setMedia(QtMultimedia.QMediaContent(QtCore.QUrl.fromLocalFile(path)))
 
     def signals(self, origin, status):
+        """
+        Exit the worker and stop the thread when either an error or a media change is encountered
+        """
         if origin == 'media' and status == self.BufferedMedia:
             self.result = True
             self.stop()

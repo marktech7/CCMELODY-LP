@@ -2405,7 +2405,7 @@ Ar OpenLP turėtų naujinti dabar?</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="317"/>
         <source>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See below for more details.</source>
-        <translation>Ši programa platinama, tikintis, kad ji bus naudinga, tačiau BE JOKIŲ GARANTIJŲ; netgi be numanomos PARDAVIMO ar TINKAMUMO TAM TIKRAM TIKSLUI garantijos. Išsamiau apie tai, žiūrėkite žemiau.</translation>
+        <translation>Ši programa yra platinama, tikintis, kad ji bus naudinga, tačiau BE JOKIŲ GARANTIJŲ; netgi be numanomos PARDAVIMO ar TINKAMUMO TAM TIKRAM TIKSLUI garantijos. Išsamiau apie tai, žiūrėkite žemiau.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="92"/>

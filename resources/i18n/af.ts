@@ -7860,12 +7860,12 @@ Probeer asseblief om dit individueel te kies.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/httprouter.py" line="314"/>
         <source>Stage View</source>
-        <translation type="unfinished"/>
+        <translation>Verhoog skerm</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/httprouter.py" line="315"/>
         <source>Live View</source>
-        <translation type="unfinished"/>
+        <translation>Lewendige Kykskerm</translation>
     </message>
 </context>
 <context>

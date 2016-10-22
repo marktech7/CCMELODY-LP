@@ -135,7 +135,7 @@ class Song(BaseModel):
 
     def add_author(self, author, author_type=None):
         """
-        Add an author to the song if it not yet exists
+        Add an author to the song if it doesn't exist yet
 
         :param author: Author object
         :param author_type: AuthorType constant or None
@@ -162,7 +162,7 @@ class Song(BaseModel):
 
     def add_songbook_entry(self, songbook, entry):
         """
-        Add a Songbook Entry to the song if it not yet exists
+        Add a Songbook Entry to the song if it doesn't exist yet
 
         :param songbook_name: Name of the Songbook.
         :param entry: Entry in the Songbook (usually a number)

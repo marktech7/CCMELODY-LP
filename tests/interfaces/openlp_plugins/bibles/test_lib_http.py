@@ -50,7 +50,8 @@ class TestBibleHTTP(TestCase):
         books = handler.get_books_from_http('NIV')
 
         # THEN: We should get back a valid service item
-        assert len(books) == 66, 'The bible should not have had any books added or removed'
+        self.assertEqual(len(books), 66, 'The bible should not have had any books added or removed')
+        self.assertEqual(books[0], 'Genesis', 'The first bible book should be Genesis')
 
     def bible_gateway_extract_books_support_redirect_test(self):
         """
@@ -63,7 +64,7 @@ class TestBibleHTTP(TestCase):
         books = handler.get_books_from_http('DN1933')
 
         # THEN: We should get back a valid service item
-        assert len(books) == 66, 'This bible should have 66 books'
+        self.assertEqual(len(books), 66, 'This bible should have 66 books')
 
     def bible_gateway_extract_verse_test(self):
         """
@@ -76,7 +77,8 @@ class TestBibleHTTP(TestCase):
         results = handler.get_bible_chapter('NIV', 'John', 3)
 
         # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+        self.assertEqual(len(results.verse_list), 36,
+                         'The book of John should not have had any verses added or removed')
 
     def bible_gateway_extract_verse_nkjv_test(self):
         """
@@ -89,7 +91,8 @@ class TestBibleHTTP(TestCase):
         results = handler.get_bible_chapter('NKJV', 'John', 3)
 
         # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+        self.assertEqual(len(results.verse_list), 36,
+                         'The book of John should not have had any verses added or removed')
 
     def crosswalk_extract_books_test(self):
         """
@@ -102,7 +105,7 @@ class TestBibleHTTP(TestCase):
         books = handler.get_books_from_http('niv')
 
         # THEN: We should get back a valid service item
-        assert len(books) == 66, 'The bible should not have had any books added or removed'
+        self.assertEqual(len(books), 66, 'The bible should not have had any books added or removed')
 
     def crosswalk_extract_verse_test(self):
         """
@@ -115,7 +118,8 @@ class TestBibleHTTP(TestCase):
         results = handler.get_bible_chapter('niv', 'john', 3)
 
         # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+        self.assertEqual(len(results.verse_list), 36,
+                         'The book of John should not have had any verses added or removed')
 
     def bibleserver_get_bibles_test(self):
         """
@@ -144,7 +148,7 @@ class TestBibleHTTP(TestCase):
 
         # THEN: The list should not be None, and some known bibles should be there
         self.assertIsNotNone(bibles)
-        self.assertIn(('Holman Christian Standard Bible', 'HCSB', 'en'), bibles)
+        self.assertIn(('Holman Christian Standard Bible (HCSB)', 'HCSB', 'en'), bibles)
 
     def crosswalk_get_bibles_test(self):
         """

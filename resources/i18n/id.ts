@@ -7992,12 +7992,12 @@ Silakan coba memilih secara individu.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
         <source>iOS App</source>
-        <translation type="unfinished"/>
+        <translation>Aplikasi iOS</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
-        <translation type="unfinished"/>
+        <translation>Pindai QR Code atau klik &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; untuk meng-install aplikasi iOS dari App Store.</translation>
     </message>
 </context>
 <context>
@@ -8787,7 +8787,9 @@ Silakan masukkan bait-bait tersebut dan pisahkan dengan spasi.</translation>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
-        <translation type="unfinished"/>
+        <translation>Tidak dapat menemukan file berikut:
+%s
+Apa Anda ingin membuang entry ini dari lagu?</translation>
     </message>
 </context>
 <context>
