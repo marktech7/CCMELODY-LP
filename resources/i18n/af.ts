@@ -1288,7 +1288,7 @@ Dit is nie moontlik om die Boek Name aan te pas nie.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="517"/>
         <source>An error occurred while downloading the list of bibles from %s.</source>
-        <translation type="unfinished"/>
+        <translation>Daar was &apos;n probleem om die lys van Bybels af te laai vanaf %s.</translation>
     </message>
 </context>
 <context>
@@ -1429,7 +1429,7 @@ Hierdie Bybel sal weer ingevoer moet word voordat dit gebruik geneem kan word.</
     <message>
         <location filename="../../openlp/plugins/bibles/lib/opensong.py" line="80"/>
         <source>Incorrect Bible file type supplied. This looks like a Zefania XML bible, please use the Zefania import option.</source>
-        <translation type="unfinished"/>
+        <translation>Ongeldige Bybel lêertipe verskaf. Hierdie lyk soos &apos;n Zefania XML Bybel, gebruik asseblief die Zefania invoer opsie.</translation>
     </message>
 </context>
 <context>
@@ -1437,7 +1437,7 @@ Hierdie Bybel sal weer ingevoer moet word voordat dit gebruik geneem kan word.</
     <message>
         <location filename="../../openlp/plugins/bibles/lib/opensong.py" line="126"/>
         <source>Importing %(bookname)s %(chapter)s...</source>
-        <translation type="unfinished"/>
+        <translation>Invoer %(bookname)s %(chapter)s...</translation>
     </message>
 </context>
 <context>
@@ -1445,12 +1445,12 @@ Hierdie Bybel sal weer ingevoer moet word voordat dit gebruik geneem kan word.</
     <message>
         <location filename="../../openlp/plugins/bibles/lib/osis.py" line="76"/>
         <source>Removing unused tags (this may take a few minutes)...</source>
-        <translation type="unfinished"/>
+        <translation>Verwydering van ongebruikte tags (dit mag &apos;n paar minuute neem)...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/osis.py" line="168"/>
         <source>Importing %(bookname)s %(chapter)s...</source>
-        <translation type="unfinished"/>
+        <translation>Invoer %(bookname)s %(chapter)s...</translation>
     </message>
 </context>
 <context>
@@ -1599,7 +1599,8 @@ Volledig</translation>
         <location filename="../../openlp/plugins/bibles/forms/bibleupgradeform.py" line="549"/>
         <source>Upgrading Bible(s): %(success)d successful%(failed_text)s
 Please note that verses from Web Bibles will be downloaded on demand and so an Internet connection is required.</source>
-        <translation type="unfinished"/>
+        <translation>Opgradeer Bybel(s): %(success)d suksesvol %(failed_text)s
+Neem kennis dat verse van Web Bybels op aanvraag afgelaai word en dus is &apos;n Internet verbinding nodig.</translation>
     </message>
 </context>
 <context>
@@ -1607,7 +1608,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="112"/>
         <source>Incorrect Bible file type supplied. Zefania Bibles may be compressed. You must decompress them before import.</source>
-        <translation type="unfinished"/>
+        <translation>Ongeldige Bybel lêertipe verskaf. Zefania Bybels mag dalk saamgeperste lêers wees. Jy moet hulle eers ontpers voordat hulle ingevoer word.</translation>
     </message>
 </context>
 <context>
@@ -1615,7 +1616,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/bibles/lib/zefania.py" line="106"/>
         <source>Importing %(bookname)s %(chapter)s...</source>
-        <translation type="unfinished"/>
+        <translation>Invoer %(bookname)s %(chapter)s...</translation>
     </message>
 </context>
 <context>
@@ -1681,7 +1682,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="67"/>
         <source>&lt;strong&gt;Custom Slide Plugin &lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;Aanpas Skyfie Mini-program&lt;/strong&gt;&lt;br/&gt;Die aanpas skyfie mini-program verskaf die vermoë om aangepasde teks skyfies op te stel wat in dieselfde manier gebruik word as die liedere mini-program. Dié mini-program verskaf grooter vryheid as die liedere mini-program.</translation>
     </message>
 </context>
 <context>
@@ -1699,7 +1700,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/custom/lib/customtab.py" line="62"/>
         <source>Import missing custom slides from service files</source>
-        <translation type="unfinished"/>
+        <translation>Voer vermisde aangepasde skyfies in vanaf diens lêers</translation>
     </message>
 </context>
 <context>
@@ -1762,7 +1763,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="243"/>
         <source>You need to add at least one slide.</source>
-        <translation type="unfinished"/>
+        <translation>Ten minste een skyfie moet bygevoeg word</translation>
     </message>
 </context>
 <context>
@@ -1778,7 +1779,7 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="190"/>
         <source>Are you sure you want to delete the &quot;%d&quot; selected custom slide(s)?</source>
-        <translation type="unfinished"/>
+        <translation>Wis sekerlik die %d gekose aangepasde skyfie(s) uit?</translation>
     </message>
 </context>
 <context>
@@ -1847,32 +1848,32 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="55"/>
         <source>Add group</source>
-        <translation type="unfinished"/>
+        <translation>Voeg groep by</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="56"/>
         <source>Parent group:</source>
-        <translation type="unfinished"/>
+        <translation>Ouer groep:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="57"/>
         <source>Group name:</source>
-        <translation type="unfinished"/>
+        <translation>Groep naam:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupform.py" line="67"/>
         <source>You need to type in a group name.</source>
-        <translation type="unfinished"/>
+        <translation>&apos;n Groep naam moet ingevoer word.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="647"/>
         <source>Could not add the new group.</source>
-        <translation type="unfinished"/>
+        <translation>Nuwe groep kon nie bygevoeg word nie.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="650"/>
         <source>This group already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Hierdie groep bestaan reeds.</translation>
     </message>
 </context>
 <context>
@@ -1880,27 +1881,27 @@ Please note that verses from Web Bibles will be downloaded on demand and so an I
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="81"/>
         <source>Select Image Group</source>
-        <translation type="unfinished"/>
+        <translation>Selekteer Beeld Groep</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="82"/>
         <source>Add images to group:</source>
-        <translation type="unfinished"/>
+        <translation>Voeg beelde by groep:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="83"/>
         <source>No group</source>
-        <translation type="unfinished"/>
+        <translation>Geen groep</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="84"/>
         <source>Existing group</source>
-        <translation type="unfinished"/>
+        <translation>Reeds bestaande groep</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="85"/>
         <source>New group</source>
-        <translation type="unfinished"/>
+        <translation>Nuwe groep</translation>
     </message>
 </context>
 <context>
@@ -1953,22 +1954,22 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupform.py" line="54"/>
         <source>-- Top-level group --</source>
-        <translation type="unfinished"/>
+        <translation>-- Boonste vlak groep --</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="225"/>
         <source>You must select an image or group to delete.</source>
-        <translation type="unfinished"/>
+        <translation>Of &apos;n beeld of &apos;n groep om uit te wis moet geselekteer word.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="242"/>
         <source>Remove group</source>
-        <translation type="unfinished"/>
+        <translation>Verwyder groep</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="242"/>
         <source>Are you sure you want to remove &quot;%s&quot; and everything in it?</source>
-        <translation type="unfinished"/>
+        <translation>Verwyder sekerlik &quot;%s&quot; en alles wat daarin is?</translation>
     </message>
 </context>
 <context>
@@ -1984,27 +1985,27 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/webkitplayer.py" line="392"/>
         <source>Audio</source>
-        <translation type="unfinished"/>
+        <translation>Oudio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/webkitplayer.py" line="393"/>
         <source>Video</source>
-        <translation type="unfinished"/>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/vlcplayer.py" line="369"/>
         <source>VLC is an external player which supports a number of different formats.</source>
-        <translation type="unfinished"/>
+        <translation>VLC is &apos;n eksterne speler wat &apos;n aantal verskillende formate ondersteun.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/webkitplayer.py" line="390"/>
         <source>Webkit is a media player which runs inside a web browser. This player allows text over video to be rendered.</source>
-        <translation type="unfinished"/>
+        <translation>WebKit is &apos;n media-speler wat loop in &apos;n webblaaier. Hierdie speler toelaat teks oor video gelewer moet word.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/systemplayer.py" line="249"/>
         <source>This media player uses your operating system to provide media capabilities.</source>
-        <translation type="unfinished"/>
+        <translation>Hierdie media-speler gebruik jou bedryfstelsel om media vermoëns.</translation>
     </message>
 </context>
 <context>
@@ -2073,32 +2074,32 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="185"/>
         <source>Select Media Clip</source>
-        <translation type="unfinished"/>
+        <translation>Selekteer Media Gedeelte</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="186"/>
         <source>Source</source>
-        <translation type="unfinished"/>
+        <translation>Bron</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="187"/>
         <source>Media path:</source>
-        <translation type="unfinished"/>
+        <translation>Media pad:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="188"/>
         <source>Select drive from list</source>
-        <translation type="unfinished"/>
+        <translation>Selekteer skyf vanaf lys</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="190"/>
         <source>Load disc</source>
-        <translation type="unfinished"/>
+        <translation>Laai skyf</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="191"/>
         <source>Track Details</source>
-        <translation type="unfinished"/>
+        <translation>Snit Inligting</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="192"/>
@@ -2108,52 +2109,52 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="193"/>
         <source>Audio track:</source>
-        <translation type="unfinished"/>
+        <translation>Oudio snit:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="194"/>
         <source>Subtitle track:</source>
-        <translation type="unfinished"/>
+        <translation>Subtitel snit:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="202"/>
         <source>HH:mm:ss.z</source>
-        <translation type="unfinished"/>
+        <translation>HH:mm:ss.z</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="196"/>
         <source>Clip Range</source>
-        <translation type="unfinished"/>
+        <translation>Gedeelte Omvang</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="197"/>
         <source>Start point:</source>
-        <translation type="unfinished"/>
+        <translation>Begin punt:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="199"/>
         <source>Set start point</source>
-        <translation type="unfinished"/>
+        <translation>Stel begin punt</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="200"/>
         <source>Jump to start point</source>
-        <translation type="unfinished"/>
+        <translation>Spring na begin punt</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="201"/>
         <source>End point:</source>
-        <translation type="unfinished"/>
+        <translation>Eindpunt:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="203"/>
         <source>Set end point</source>
-        <translation type="unfinished"/>
+        <translation>Stel eindpunt</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="204"/>
         <source>Jump to end point</source>
-        <translation type="unfinished"/>
+        <translation>Spring na eindpunt</translation>
     </message>
 </context>
 <context>
@@ -2161,67 +2162,67 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="195"/>
         <source>No path was given</source>
-        <translation type="unfinished"/>
+        <translation>Geen pad gegee</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="201"/>
         <source>Given path does not exists</source>
-        <translation type="unfinished"/>
+        <translation>Gegewe pad bestaan nie</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="218"/>
         <source>An error happened during initialization of VLC player</source>
-        <translation type="unfinished"/>
+        <translation>&apos;n Fout het gebeur tydens inisialisering van VLC speler</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="239"/>
         <source>VLC player failed playing the media</source>
-        <translation type="unfinished"/>
+        <translation>VLC speler versuim om die media te speel</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="566"/>
         <source>CD not loaded correctly</source>
-        <translation type="unfinished"/>
+        <translation>CD nie korrek gelaai nie</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="566"/>
         <source>The CD was not loaded correctly, please re-load and try again.</source>
-        <translation type="unfinished"/>
+        <translation>Die CD was nie korrek gelaai nie, laai weer en probeer weer asseblief.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="577"/>
         <source>DVD not loaded correctly</source>
-        <translation type="unfinished"/>
+        <translation>DVD nie korrek gelaai nie</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="577"/>
         <source>The DVD was not loaded correctly, please re-load and try again.</source>
-        <translation type="unfinished"/>
+        <translation>Die DVD was nie korrek gelaai nie, laai weer en probeer weer asseblief.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="584"/>
         <source>Set name of mediaclip</source>
-        <translation type="unfinished"/>
+        <translation>Stel naam van media gedeelte</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="584"/>
         <source>Name of mediaclip:</source>
-        <translation type="unfinished"/>
+        <translation>Naam van media gedeelte:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="594"/>
         <source>Enter a valid name or cancel</source>
-        <translation type="unfinished"/>
+        <translation>Gee &apos;n geldige naam of kanselleer</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="600"/>
         <source>Invalid character</source>
-        <translation type="unfinished"/>
+        <translation>Ongeldige karakter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="600"/>
         <source>The name of the mediaclip must not contain the character &quot;:&quot;</source>
-        <translation type="unfinished"/>
+        <translation>Die naam van die media gedeelta mag nie die &quot;:&quot; karakter bevat nie</translation>
     </message>
 </context>
 <context>
@@ -2279,37 +2280,37 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="500"/>
         <source>VLC player required</source>
-        <translation type="unfinished"/>
+        <translation>VLC speler vereis</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="500"/>
         <source>VLC player required for playback of optical devices</source>
-        <translation type="unfinished"/>
+        <translation>VLC speler is vir die speel van optiese toestelle nodig</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="140"/>
         <source>Load CD/DVD</source>
-        <translation type="unfinished"/>
+        <translation>Laai CD/DVD</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="141"/>
         <source>Load CD/DVD - only supported when VLC is installed and enabled</source>
-        <translation type="unfinished"/>
+        <translation>Laai CD/DVD - net ondersteun wanneer VLC geïnstalleer en geaktiveer is</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="251"/>
         <source>The optical disc %s is no longer available.</source>
-        <translation type="unfinished"/>
+        <translation>Die optiese skyf %s is nie meer beskikbaar nie</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="444"/>
         <source>Mediaclip already saved</source>
-        <translation type="unfinished"/>
+        <translation>Media gedeelte alreeds gestoor</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="444"/>
         <source>This mediaclip has already been saved</source>
-        <translation type="unfinished"/>
+        <translation>Hierdie media gedeelte is alreeds gestoor</translation>
     </message>
 </context>
 <context>
@@ -2322,7 +2323,7 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediatab.py" line="57"/>
         <source>Start Live items automatically</source>
-        <translation type="unfinished"/>
+        <translation>Begin regstreeks items automaties</translation>
     </message>
 </context>
 <context>
@@ -2330,7 +2331,7 @@ Voeg steeds die ander beelde by?</translation>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
         <source>&amp;Projector Manager</source>
-        <translation type="unfinished"/>
+        <translation>Projektor Bestuurder</translation>
     </message>
 </context>
 <context>
@@ -2943,7 +2944,7 @@ Hierdie ligging sal gebruik word nadat OpenLP toegemaak is.</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="303"/>
         <source>Video</source>
-        <translation type="unfinished"/>
+        <translation>Video</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/projector/constants.py" line="304"/>
@@ -4173,7 +4174,7 @@ Die nuutste weergawe kan afgelaai word vanaf http://openlp.org/.</translation>
         <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
-        <translation>Engels</translation>
+        <translation>Afrikaans</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
@@ -7004,7 +7005,7 @@ These files will be removed if you continue to save.</source>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="54"/>
         <source>Add group</source>
-        <translation type="unfinished"/>
+        <translation>Voeg groep by</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/uistrings.py" line="55"/>
