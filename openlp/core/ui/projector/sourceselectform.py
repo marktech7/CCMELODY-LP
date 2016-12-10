@@ -61,9 +61,8 @@ def source_group(inputs, source_text):
     """
     groupdict = {}
     keydict = {}
-    checklist = inputs
-    key = checklist[0][0]
-    for item in checklist:
+    key = inputs[0][0]
+    for item in inputs:
         if item[0] == key:
             groupdict[item] = source_text[item]
             continue
@@ -75,7 +74,7 @@ def source_group(inputs, source_text):
     return keydict
 
 
-def Build_Tab(group, source_key, default, projector, projectordb, edit=False):
+def build_tab(group, source_key, default, projector, projectordb, edit=False):
     """
     Create the radio button page for a tab.
     Dictionary will be a 1-key entry where key=tab to setup, val=list of inputs.
@@ -275,7 +274,7 @@ class SourceSelectTabs(QtWidgets.QDialog):
         keys.sort()
         if self.edit:
             for key in keys:
-                (tab, button_count, buttonchecked) = Build_Tab(group=self.button_group,
+                (tab, button_count, buttonchecked) = build_tab(group=self.button_group,
                                                                source_key={key: self.source_group[key]},
                                                                default=self.projector.source,
                                                                projector=self.projector,
@@ -290,7 +289,7 @@ class SourceSelectTabs(QtWidgets.QDialog):
                                                          QtWidgets.QDialogButtonBox.Cancel)
         else:
             for key in keys:
-                (tab, button_count, buttonchecked) = Build_Tab(group=self.button_group,
+                (tab, button_count, buttonchecked) = build_tab(group=self.button_group,
                                                                source_key={key: self.source_group[key]},
                                                                default=self.projector.source,
                                                                projector=self.projector,
