@@ -28,6 +28,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import Registry
 from openlp.core.ui.shortcutlistform import ShortcutListForm
+from openlp.core.ui.shortcutlistdialog import CaptureShortcutButton, ShortcutTreeWidget
 
 from tests.interfaces import MagicMock, patch
 from tests.helpers.testmixin import TestMixin
@@ -227,3 +228,34 @@ class TestShortcutform(TestCase, TestMixin):
             mocked_action_shortcuts.assert_called_with(mocked_action)
             mocked_refresh_shortcut_list.assert_called_with()
             mocked_set_text.assert_called_with('Esc')
+
+
+def test_key_press_event():
+    """
+    Test the keyPressEvent method
+    """
+    # GIVEN: A checked button and a mocked event
+    button = CaptureShortcutButton()
+    button.setChecked(True)
+    mocked_event = MagicMock()
+    mocked_event.key.return_value = QtCore.Qt.Key_Space
+
+    # WHEN: keyPressEvent is called with an event that should be ignored
+    button.keyPressEvent(mocked_event)
+
+    # THEN: The ignore() method on the event should have been called
+    mocked_event.ignore.assert_called_once_with()
+
+
+def test_keyboard_search():
+    """
+    Test the keyboardSearch method of the ShortcutTreeWidget
+    """
+    # GIVEN: A ShortcutTreeWidget
+    widget = ShortcutTreeWidget()
+
+    # WHEN: keyboardSearch() is called
+    widget.keyboardSearch('')
+
+    # THEN: Nothing happens
+    assert True
