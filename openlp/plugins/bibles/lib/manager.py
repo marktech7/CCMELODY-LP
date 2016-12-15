@@ -126,7 +126,7 @@ class BibleManager(RegistryProperties):
             name = bible.get_name()
             # Remove corrupted files.
             if name is None:
-                bible.session.close()
+                bible.session.close_all()
                 delete_file(os.path.join(self.path, filename))
                 continue
             log.debug('Bible Name: "%s"', name)
@@ -173,7 +173,7 @@ class BibleManager(RegistryProperties):
         """
         log.debug('BibleManager.delete_bible("%s")', name)
         bible = self.db_cache[name]
-        bible.session.close()
+        bible.session.close_all()
         bible.session = None
         return delete_file(os.path.join(bible.path, bible.file))
 
