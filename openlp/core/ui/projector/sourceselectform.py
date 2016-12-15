@@ -173,7 +173,7 @@ class FingerTabBarWidget(QtWidgets.QTabBar):
         :param width: Remove default width parameter in kwargs
         :param height: Remove default height parameter in kwargs
         """
-        self.tabSize = QtWidgets.QSize(kwargs.pop('width', 100), kwargs.pop('height', 25))
+        self.tabSize = QtCore.QSize(kwargs.pop('width', 100), kwargs.pop('height', 25))
         QtWidgets.QTabBar.__init__(self, parent, *args, **kwargs)
 
     def paintEvent(self, event):
