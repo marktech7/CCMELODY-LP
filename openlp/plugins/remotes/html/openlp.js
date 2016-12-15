@@ -41,8 +41,6 @@ window.OpenLP = {
     $.getJSON(
       "/api/plugin/search",
       function (data, status) {
-        console.log(data);
-        console.log(status);
         var select = $("#search-plugin");
         select.html("");
         $.each(data.results.items, function (idx, value) {
