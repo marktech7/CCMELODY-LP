@@ -24,7 +24,9 @@
 
 Tests for the Projector Source Select form.
 """
-from openlp.core.ui.projector.sourceselectform import source_group
+from PyQt5 import QtCore
+
+from openlp.core.ui.projector.sourceselectform import FingerTabBarWidget, source_group
 
 
 def test_source_group():
@@ -52,3 +54,30 @@ def test_source_group():
         'h': {'hdmi1': 'HDMI 1', 'hdmi2': 'HDMI 2'}
     }
     assert result == expected_dict, result
+
+
+def test_finger_tab_bar_widget():
+    """
+    Test that the FingerTabBarWidget is initialised correctly
+    """
+    # GIVEN: A FinderTabBarWidget class
+    # WHEN: An instance of the FingerTabBarWidget is created
+    widget = FingerTabBarWidget()
+
+    # THEN: It should havea tabSize of 100x25
+    assert widget.tabSize == QtCore.QSize(100, 25)
+
+
+def test_finger_tab_bar_widget_with_kwargs():
+    """
+    Test that the FingerTabBarWidget is initialised correctly from kwargs
+    """
+    # GIVEN: A FinderTabBarWidget class and some arguments
+    width = 300
+    height = 100
+
+    # WHEN: An instance of the FingerTabBarWidget is created
+    widget = FingerTabBarWidget(width=width, height=height)
+
+    # THEN: It should havea tabSize of 100x25
+    assert widget.tabSize == QtCore.QSize(width, height)
