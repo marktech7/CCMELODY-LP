@@ -52,21 +52,17 @@ from openlp.core.ui.printserviceform import PrintServiceForm
 log = logging.getLogger(__name__)
 
 MEDIA_MANAGER_STYLE = """
-QToolBox {
-    padding-bottom: 2px;
-}
-QToolBox::tab {
+::tab#media_tool_box {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 palette(button), stop: 1.0 palette(mid));
-    border: 1px solid palette(mid);
-    border-radius: 3px;
+    border: 0;
+    border-radius: 2px;
+    margin-bottom: 0;
+    margin-top: 0;
+    text-align: left;
 }
-QToolBox::tab:selected {
-    background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
-        stop: 0 palette(light), stop: 1.0 palette(button));
-    border: 1px solid palette(mid);
-    font-weight: bold;
-}
+/* This is here to make the tabs on KDE with the Breeze theme work */
+::tab:selected {}
 """
 
 PROGRESSBAR_STYLE = """
