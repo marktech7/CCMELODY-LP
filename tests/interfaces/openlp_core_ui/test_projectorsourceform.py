@@ -24,19 +24,17 @@
 
 Tests for the Projector Source Select form.
 """
-import logging
-log = logging.getLogger(__name__)
-log.debug('test_projectorsourceform loaded')
 import os
+import time
 from unittest import TestCase
+from unittest.mock import patch
 
 from PyQt5.QtWidgets import QDialog
 
-from tests.functional import patch
 from tests.helpers.testmixin import TestMixin
 from tests.resources.projector.data import TEST_DB, TEST1_DATA
 
-from openlp.core.common import Registry, Settings
+from openlp.core.common import Registry
 from openlp.core.lib.projector.db import ProjectorDB, Projector
 from openlp.core.lib.projector.constants import PJLINK_DEFAULT_CODES, PJLINK_DEFAULT_SOURCES
 from openlp.core.ui.projector.sourceselectform import source_group, SourceSelectSingle
@@ -49,7 +47,7 @@ def build_source_dict():
     :returns: dictionary of valid PJLink source codes grouped by PJLink source group
     """
     test_group = {}
-    for group in PJLINK_DEFAULT_SOURCES.keys():
+    for group in PJLINK_DEFAULT_SOURCES:
         test_group[group] = {}
     for key in PJLINK_DEFAULT_CODES:
         test_group[key[0]][key] = PJLINK_DEFAULT_CODES[key]
@@ -86,8 +84,8 @@ class ProjectorSourceFormTest(TestCase, TestMixin):
         Delete all C++ objects at end so we don't segfault.
         """
         self.projectordb.session.close()
-        del(self.projectordb)
-        del(self.projector)
+        del self.projectordb
+        del self.projector
         retries = 0
         while retries < 5:
             try:

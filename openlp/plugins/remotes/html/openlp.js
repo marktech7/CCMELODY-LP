@@ -345,40 +345,42 @@ $(document).bind("mobileinit", function(){
   $.mobile.defaultPageTransition = "none";
 });
 // Service Manager
-$("#service-manager").live("pagebeforeshow", OpenLP.loadService);
-$("#service-refresh").live("click", OpenLP.loadService);
-$("#service-next").live("click", OpenLP.nextItem);
-$("#service-previous").live("click", OpenLP.previousItem);
-$("#service-blank").live("click", OpenLP.blankDisplay);
-$("#service-theme").live("click", OpenLP.themeDisplay);
-$("#service-desktop").live("click", OpenLP.desktopDisplay);
-$("#service-show").live("click", OpenLP.showDisplay);
+$("#service-manager").on("pagebeforeshow", OpenLP.loadService);
+$("#service-refresh").on("click", OpenLP.loadService);
+$("#service-next").on("click", OpenLP.nextItem);
+$("#service-previous").on("click", OpenLP.previousItem);
+$("#service-blank").on("click", OpenLP.blankDisplay);
+$("#service-theme").on("click", OpenLP.themeDisplay);
+$("#service-desktop").on("click", OpenLP.desktopDisplay);
+$("#service-show").on("click", OpenLP.showDisplay);
 // Slide Controller
-$("#slide-controller").live("pagebeforeshow", OpenLP.loadController);
-$("#controller-refresh").live("click", OpenLP.loadController);
-$("#controller-next").live("click", OpenLP.nextSlide);
-$("#controller-previous").live("click", OpenLP.previousSlide);
-$("#controller-blank").live("click", OpenLP.blankDisplay);
-$("#controller-theme").live("click", OpenLP.themeDisplay);
-$("#controller-desktop").live("click", OpenLP.desktopDisplay);
-$("#controller-show").live("click", OpenLP.showDisplay);
+$("#slide-controller").on("pagebeforeshow", OpenLP.loadController);
+$("#controller-refresh").on("click", OpenLP.loadController);
+$("#controller-next").on("click", OpenLP.nextSlide);
+$("#controller-previous").on("click", OpenLP.previousSlide);
+$("#controller-blank").on("click", OpenLP.blankDisplay);
+$("#controller-theme").on("click", OpenLP.themeDisplay);
+$("#controller-desktop").on("click", OpenLP.desktopDisplay);
+$("#controller-show").on("click", OpenLP.showDisplay);
 // Alerts
-$("#alert-submit").live("click", OpenLP.showAlert);
+$("#alert-submit").on("click", OpenLP.showAlert);
 // Search
-$("#search-submit").live("click", OpenLP.search);
-$("#search-text").live("keypress", function(event) {
+$("#search-submit").on("click", OpenLP.search);
+$("#search-text").on("keypress", function(event) {
     if (event.which == 13)
     {
         OpenLP.search(event);
     }
 });
-$("#go-live").live("click", OpenLP.goLive);
-$("#add-to-service").live("click", OpenLP.addToService);
-$("#add-and-go-to-service").live("click", OpenLP.addAndGoToService);
+$("#go-live").on("click", OpenLP.goLive);
+$("#add-to-service").on("click", OpenLP.addToService);
+$("#add-and-go-to-service").on("click", OpenLP.addAndGoToService);
 // Poll the server twice a second to get any updates.
 $.ajaxSetup({cache: false});
-$("#search").live("pageinit", function (event) {
+console.log("hook");
+$("#search").on("pageinit", function (event) {
+  console.log("Page init!");
   OpenLP.getSearchablePlugins();
 });
-setInterval("OpenLP.pollServer();", 500);
+setInterval(OpenLP.pollServer, 500);
 OpenLP.pollServer();
