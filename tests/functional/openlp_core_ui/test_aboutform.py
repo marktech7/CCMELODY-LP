@@ -42,7 +42,6 @@ def test_create_about_form(mocked_get_application_version):
     assert 'OpenLP 3.1.1 build 3000' in about_form.about_text_edit.toPlainText()
 
 
-
 @patch('openlp.core.ui.aboutform.webbrowser')
 def test_on_volunteer_button_clicked(mocked_webbrowser):
     """
