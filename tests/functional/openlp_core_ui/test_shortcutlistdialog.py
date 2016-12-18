@@ -20,38 +20,41 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
 ###############################################################################
 """
-Package to test the openlp.core.ui.firsttimeform package.
+Package to test the openlp.core.ui.shortcutdialog package.
 """
-from unittest.mock import patch
+from unittest.mock import MagicMock
 
-from openlp.core.ui.aboutform import AboutForm
+from PyQt5 import QtCore
+
+from openlp.core.ui.shortcutlistdialog import CaptureShortcutButton, ShortcutTreeWidget
 
 
-@patch('openlp.core.ui.aboutform.get_application_version')
-def test_create_about_form(mocked_get_application_version):
+def test_key_press_event():
     """
-    Test creating an about form
+    Test the keyPressEvent method
     """
-    # GIVEN: An application version with a build number
-    mocked_get_application_version.return_value = {'version': '3.1.1', 'build': '3000'}
+    # GIVEN: A checked button and a mocked event
+    button = CaptureShortcutButton()
+    button.setChecked(True)
+    mocked_event = MagicMock()
+    mocked_event.key.return_value = QtCore.Qt.Key_Space
 
-    # WHEN: The about form is created
-    about_form = AboutForm(None)
+    # WHEN: keyPressEvent is called with an event that should be ignored
+    button.keyPressEvent(mocked_event)
 
-    # THEN: The correct version information should be in the dialog
-    assert 'OpenLP 3.1.1 build 3000' in about_form.about_text_edit.toPlainText()
+    # THEN: The ignore() method on the event should have been called
+    mocked_event.ignore.assert_called_once_with()
 
 
-@patch('openlp.core.ui.aboutform.webbrowser')
-def test_on_volunteer_button_clicked(mocked_webbrowser):
+def test_keyboard_search():
     """
-    Test that clicking on the "Volunteer" button opens a web page.
+    Test the keyboardSearch method of the ShortcutTreeWidget
     """
-    # GIVEN: A new About dialog and a mocked out webbrowser module
-    about_form = AboutForm(None)
+    # GIVEN: A ShortcutTreeWidget
+    widget = ShortcutTreeWidget()
 
-    # WHEN: The "Volunteer" button is "clicked"
-    about_form.on_volunteer_button_clicked()
+    # WHEN: keyboardSearch() is called
+    widget.keyboardSearch('')
 
-    # THEN: A web browser is opened
-    mocked_webbrowser.open_new.assert_called_with('http://openlp.org/en/contribute')
+    # THEN: Nothing happens
+    assert True
