@@ -298,8 +298,8 @@ class UiAboutDialog(object):
         self.about_notebook.setTabText(self.about_notebook.indexOf(self.credits_tab),
                                        translate('OpenLP.AboutForm', 'Credits'))
         copyright_note = translate('OpenLP.AboutForm',
-                                   'Copyright \xa9 2004-2016 %s\n'
-                                   'Portions copyright \xa9 2004-2016 %s') % \
+                                   'Copyright \xa9 2004-2017 %s\n'
+                                   'Portions copyright \xa9 2004-2017 %s') % \
             ('Raoul Snyman',
              'Tim Bentley, Gerald Britton, Jonathan Corwin, Samuel Findlay, '
              'Michael Gorven, Scott Guerrieri, Matthias Hub, Meinert Jordan, '
