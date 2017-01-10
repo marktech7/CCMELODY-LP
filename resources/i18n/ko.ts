@@ -8741,7 +8741,7 @@ Please enter the verses separated by spaces.</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1066"/>
         <source>File not found</source>
-        <translation type="unfinished"/>
+        <translation>파일을 찾지 못함</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1066"/>
@@ -9129,7 +9129,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/mediafilesdialog.py" line="66"/>
         <source>Select one or more audio files from the list below, and click OK to import them into this song.</source>
-        <translation type="unfinished"/>
+        <translation>하나 또는 여러개의 오디오 파일을 이하 리스트에서 선택하고 OK를 클릭하여 노래들을 가져옵니다.</translation>
     </message>
 </context>
 <context>
@@ -9137,7 +9137,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Titles</source>
-        <translation type="unfinished"/>
+        <translation>제목</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
@@ -9152,7 +9152,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Entire Song</source>
-        <translation type="unfinished"/>
+        <translation>전체 노래</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="132"/>
@@ -9168,12 +9168,12 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Search Titles...</source>
-        <translation type="unfinished"/>
+        <translation>제목 검색</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Search Entire Song...</source>
-        <translation type="unfinished"/>
+        <translation>전체 노래 검색</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
@@ -9183,7 +9183,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="142"/>
         <source>Search Authors...</source>
-        <translation type="unfinished"/>
+        <translation>작곡자 검색</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="364"/>
@@ -9225,7 +9225,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/opensong.py" line="139"/>
         <source>Invalid OpenSong song file. Missing song tag.</source>
-        <translation type="unfinished"/>
+        <translation>유효하지 않은 OpenSong 파일. Tag 유실.</translation>
     </message>
 </context>
 <context>
@@ -9233,7 +9233,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="99"/>
         <source>No songs to import.</source>
-        <translation type="unfinished"/>
+        <translation>아무 노래도 가져오지 않음.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="146"/>
@@ -9327,7 +9327,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/openoffice.py" line="86"/>
         <source>File not found</source>
-        <translation type="unfinished"/>
+        <translation>파일을 찾지 못함</translation>
     </message>
 </context>
 <context>
@@ -9335,22 +9335,22 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
         <source>Could not add your author.</source>
-        <translation type="unfinished"/>
+        <translation>작성자를 추가할 수 없습니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
         <source>This author already exists.</source>
-        <translation type="unfinished"/>
+        <translation>작성자가 이미 추가되어 있습니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
         <source>Could not add your topic.</source>
-        <translation type="unfinished"/>
+        <translation>주제를 추가하지 못함</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
         <source>This topic already exists.</source>
-        <translation type="unfinished"/>
+        <translation>이 주제는 이미 존재합니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
@@ -9365,27 +9365,27 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
         <source>Could not save your changes.</source>
-        <translation type="unfinished"/>
+        <translation>변경된 사항을 저장할 수 없습니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
         <source>Could not save your modified author, because the author already exists.</source>
-        <translation type="unfinished"/>
+        <translation>변경된 작성자를 저장할 수 없습니다. 이미 작성자가 존재합니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
         <source>Could not save your modified topic, because it already exists.</source>
-        <translation type="unfinished"/>
+        <translation>변경된 주제를 저장할 수 없습니다. 주제가 이미 존재합니다.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
         <source>Delete Author</source>
-        <translation type="unfinished"/>
+        <translation>작성자 삭제</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
         <source>Are you sure you want to delete the selected author?</source>
-        <translation type="unfinished"/>
+        <translation>모든 선택된 저자를 삭제하는 것이 확실합니까?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
@@ -9395,12 +9395,12 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
         <source>Delete Topic</source>
-        <translation type="unfinished"/>
+        <translation>주제 삭제</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
         <source>Are you sure you want to delete the selected topic?</source>
-        <translation type="unfinished"/>
+        <translation>선택된 주제를 삭제하는 것이 확실합니까?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
@@ -9410,7 +9410,7 @@ Do you want to remove the entry from the song?</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
         <source>Delete Book</source>
-        <translation>선경 삭제하기</translation>
+        <translation>성경 삭제하기</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>

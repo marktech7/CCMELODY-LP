@@ -7997,12 +7997,12 @@ Please try selecting it individually.</source>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
         <source>iOS App</source>
-        <translation type="unfinished"/>
+        <translation>iOS App</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
-        <translation type="unfinished"/>
+        <translation>Просканируйте QR-код или нажмите &lt;a href=&quot;%s&quot;&gt;скачать&lt;/a&gt;, чтобы установить приложение для iOS из App Store.</translation>
     </message>
 </context>
 <context>
@@ -8791,7 +8791,9 @@ Please enter the verses separated by spaces.</translation>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
-        <translation type="unfinished"/>
+        <translation>Неудалось найти указанный файл:
+%s
+Хотите удалить эту запись из Песни?</translation>
     </message>
 </context>
 <context>
