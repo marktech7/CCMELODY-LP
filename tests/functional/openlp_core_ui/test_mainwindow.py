@@ -156,6 +156,15 @@ class TestMainWindow(TestCase, TestMixin):
         self.assertTrue('plugin_manager' in self.registry.service_list,
                         'The plugin_manager should have been registered.')
 
+    def test_projector_dock_hidden_by_default(self):
+        """
+        Test that the projector dock is hidden by default
+        """
+        # GIVEN: A main window
+        # WHEN: OpenLP starts
+        # THEN: The projector dock is hidden
+        self.main_window.projector_manager_dock.setVisible.assert_called_once_with(False)
+
     def on_search_shortcut_triggered_shows_media_manager_test(self):
         """
         Test that the media manager is made visible when the search shortcut is triggered
