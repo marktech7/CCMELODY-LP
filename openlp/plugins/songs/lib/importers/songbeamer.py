@@ -115,11 +115,15 @@ class SongBeamerImport(SongImport):
             if os.path.isfile(import_file):
                 # First open in binary mode to detect the encoding
                 detect_file = open(import_file, 'rb')
-                details = chardet.detect(detect_file.read())
+                self.input_file_encoding = chardet.detect(detect_file.read())['encoding']
                 detect_file.close()
-                infile = codecs.open(import_file, 'r', details['encoding'])
+                # The encoding should only be ANSI (cp1252), UTF-8, Unicode, Big-Endian-Unicode.
+                # So if it doesn't start with 'u' we default to cp1252. See:
+                # https://forum.songbeamer.com/viewtopic.php?p=419&sid=ca4814924e37c11e4438b7272a98b6f2
+                if self.input_file_encoding.lower().startswith('u'):
+                    self.input_file_encoding = 'cp1252'
+                infile = open(import_file, 'rt', encoding=self.input_file_encoding)
                 song_data = infile.readlines()
-                infile.close()
             else:
                 continue
             self.title = file_name.split('.sng')[0]
