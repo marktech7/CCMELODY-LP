@@ -177,6 +177,38 @@ class OpenLP(OpenLPMixin, QtWidgets.QApplication):
             self.shared_memory.create(1)
             return False
 
+    def is_data_path_missing(self):
+        """
+        Check if the data folder path exists.
+        """
+        data_folder_path = AppLocation.get_data_path()
+        if not os.path.exists(data_folder_path):
+            log.critical('Database was not found in: ' + data_folder_path)
+            status = QtWidgets.QMessageBox.critical(None, translate('OpenLP', 'Data Directory Error'),
+                                                    translate('OpenLP', 'OpenLP data folder was not found in:\n\n{path}'
+                                                                        '\n\nThe location of the data folder was '
+                                                                        'previously changed from the OpenLP\'s '
+                                                                        'default location. If the data was stored on '
+                                                                        'removable device, that device needs to be '
+                                                                        'made available.\n\nYou may reset the data '
+                                                                        'location back to the default location, '
+                                                                        'or you can try to make the current location '
+                                                                        'available.\n\nDo you want to reset to the '
+                                                                        'default data location? If not, OpenLP will be '
+                                                                        'closed so you can try to fix the the problem.')
+                                                    .format(path=data_folder_path),
+                                                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
+                                                                                          QtWidgets.QMessageBox.No),
+                                                    QtWidgets.QMessageBox.No)
+            if status == QtWidgets.QMessageBox.No:
+                # If answer was "No", return "True", it will shutdown OpenLP in def main
+                log.info('User requested termination')
+                return True
+            # If answer was "Yes", remove the custom data path thus resetting the default location.
+            Settings().remove('advanced/data path')
+            log.info('Database location has been reset to the default settings.')
+            return False
+
     def hook_exception(self, exc_type, value, traceback):
         """
         Add an exception hook so that any uncaught exceptions are displayed in this window rather than somewhere where
@@ -213,7 +245,7 @@ class OpenLP(OpenLPMixin, QtWidgets.QApplication):
             Settings().setValue('core/application version', openlp_version)
         # If data_version is different from the current version ask if we should backup the data folder
         elif data_version != openlp_version:
-            if self.splash.isVisible():
+            if can_show_splash and self.splash.isVisible():
                 self.splash.hide()
             if QtWidgets.QMessageBox.question(None, translate('OpenLP', 'Backup'),
                                               translate('OpenLP', 'OpenLP has been upgraded, do you want to create '
@@ -378,8 +410,12 @@ def main(args=None):
     Registry.create()
     Registry().register('application', application)
     application.setApplicationVersion(get_application_version()['version'])
-    # Instance check
+    # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     if application.is_already_running():
+        sys.exit()
+    # If the custom data path is missing and the user wants to restore the data path, quit OpenLP.
+    if application.is_data_path_missing():
+        application.shared_memory.detach()
         sys.exit()
     # Remove/convert obsolete settings.
     Settings().remove_obsolete_settings()
