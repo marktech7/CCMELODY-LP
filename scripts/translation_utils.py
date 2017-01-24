@@ -270,7 +270,7 @@ def update_translations():
         return
     else:
         os.chdir(os.path.abspath('..'))
-        run('pylupdate4 -verbose -noobsolete openlp.pro')
+        run('pylupdate5 -verbose -noobsolete openlp.pro')
         os.chdir(os.path.abspath('scripts'))
 
 
