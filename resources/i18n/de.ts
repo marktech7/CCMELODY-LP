@@ -2329,7 +2329,7 @@ Wollen Sie die anderen Bilder trotzdem hinzufügen?</translation>
 <context>
     <name>OPenLP.MainWindow</name>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
         <source>&amp;Projector Manager</source>
         <translation>&amp;Projektorverwaltung</translation>
     </message>
@@ -2383,7 +2383,7 @@ Möchten Sie dies jetzt tun?</translation>
     <message>
         <location filename="../../openlp/core/__init__.py" line="188"/>
         <source>Data Directory Error</source>
-        <translation type="unfinished">Fehler im Daten Ordner</translation>
+        <translation>Fehler im Daten Ordner</translation>
     </message>
     <message>
         <location filename="../../openlp/core/__init__.py" line="188"/>
@@ -3922,257 +3922,257 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.MainWindow</name>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="386"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
         <source>&amp;File</source>
         <translation>&amp;Datei</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
         <source>&amp;Import</source>
         <translation>&amp;Importieren</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
         <source>&amp;Export</source>
         <translation>&amp;Exportieren</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="390"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="391"/>
         <source>&amp;View</source>
         <translation>&amp;Ansicht</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="391"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
         <source>M&amp;ode</source>
         <translation>An&amp;sichtsmodus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
         <source>&amp;Tools</source>
         <translation>E&amp;xtras</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
         <source>&amp;Settings</source>
         <translation>&amp;Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
         <source>&amp;Language</source>
         <translation>&amp;Sprache</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
         <source>&amp;Help</source>
         <translation>&amp;Hilfe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="398"/>
         <source>Service Manager</source>
         <translation>Ablaufverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="398"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="399"/>
         <source>Theme Manager</source>
         <translation>Designverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
         <source>Open an existing service.</source>
         <translation>Einen vorhandenen Ablauf öffnen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="408"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
         <source>Save the current service to disk.</source>
         <translation>Den aktuellen Ablauf speichern.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
         <source>Save Service As</source>
         <translation>Den aktuellen Ablauf unter einem neuen Namen speichern</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="412"/>
         <source>Save the current service under a new name.</source>
         <translation>Den aktuellen Ablauf unter einem neuen Namen speichern.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
         <source>E&amp;xit</source>
         <translation>&amp;Beenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
         <source>Quit OpenLP</source>
         <translation>OpenLP beenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="419"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
         <source>&amp;Theme</source>
         <translation>&amp;Design</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
         <source>&amp;Configure OpenLP...</source>
         <translation>&amp;Einstellungen...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="436"/>
         <source>&amp;Media Manager</source>
         <translation>&amp;Medienverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="436"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="437"/>
         <source>Toggle Media Manager</source>
         <translation>Die Medienverwaltung ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="437"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="438"/>
         <source>Toggle the visibility of the media manager.</source>
         <translation>Die Medienverwaltung ein- bzw. ausblenden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="439"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="440"/>
         <source>&amp;Theme Manager</source>
         <translation>&amp;Designverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="440"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="441"/>
         <source>Toggle Theme Manager</source>
         <translation>Die Designverwaltung ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="441"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="442"/>
         <source>Toggle the visibility of the theme manager.</source>
         <translation>Die Designverwaltung ein- bzw. ausblenden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="443"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
         <source>&amp;Service Manager</source>
         <translation>&amp;Ablaufverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
         <source>Toggle Service Manager</source>
         <translation>Die Ablaufverwaltung ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="446"/>
         <source>Toggle the visibility of the service manager.</source>
         <translation>Die Ablaufverwaltung ein- bzw. ausblenden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="447"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
         <source>&amp;Preview Panel</source>
         <translation>&amp;Vorschau-Ansicht</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
         <source>Toggle Preview Panel</source>
         <translation>Die Vorschau ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="450"/>
         <source>Toggle the visibility of the preview panel.</source>
         <translation>Die Vorschau ein- bzw. ausschalten.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
         <source>&amp;Live Panel</source>
         <translation>&amp;Live-Ansicht</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
         <source>Toggle Live Panel</source>
         <translation>Die Live Ansicht ein- bzw. ausschalten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
         <source>Toggle the visibility of the live panel.</source>
         <translation>Die Live Ansicht ein- bzw. ausschalten.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
         <source>List the Plugins</source>
         <translation>Erweiterungen verwalten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="461"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
         <source>&amp;User Guide</source>
         <translation>Benutzer&amp;handbuch</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
         <source>&amp;About</source>
         <translation>&amp;Info über OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="460"/>
         <source>More information about OpenLP</source>
         <translation>Mehr Informationen über OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="463"/>
         <source>&amp;Online Help</source>
         <translation>&amp;Online Hilfe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="466"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="467"/>
         <source>&amp;Web Site</source>
         <translation>&amp;Webseite</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="471"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="472"/>
         <source>Use the system language, if available.</source>
         <translation>Die Systemsprache, sofern diese verfügbar ist, verwenden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="469"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="470"/>
         <source>Set the interface language to %s</source>
         <translation>Die Sprache von OpenLP auf %s stellen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="472"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="473"/>
         <source>Add &amp;Tool...</source>
         <translation>Hilfsprogramm hin&amp;zufügen...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="473"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="474"/>
         <source>Add an application to the list of tools.</source>
         <translation>Eine Anwendung zur Liste der Hilfsprogramme hinzufügen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="484"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="485"/>
         <source>&amp;Default</source>
         <translation>&amp;Standard</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="485"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="486"/>
         <source>Set the view mode back to the default.</source>
         <translation>Den Ansichtsmodus auf Standardeinstellung setzen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="486"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="487"/>
         <source>&amp;Setup</source>
         <translation>&amp;Einrichten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="487"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="488"/>
         <source>Set the view mode to Setup.</source>
         <translation>Die Ansicht für die Ablauferstellung optimieren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="488"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="489"/>
         <source>&amp;Live</source>
         <translation>&amp;Live</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="489"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="490"/>
         <source>Set the view mode to Live.</source>
         <translation>Die Ansicht für den Live-Betrieb optimieren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="620"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="621"/>
         <source>Version %s of OpenLP is now available for download (you are currently running version %s). 
 
 You can download the latest version from http://openlp.org/.</source>
@@ -4181,22 +4181,22 @@ You can download the latest version from http://openlp.org/.</source>
 Sie können die letzte Version auf http://openlp.org abrufen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="623"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="624"/>
         <source>OpenLP Version Updated</source>
         <translation>Neue OpenLP Version verfügbar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="724"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="725"/>
         <source>OpenLP Main Display Blanked</source>
         <translation>Hauptbildschirm abgedunkelt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="724"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="725"/>
         <source>The Main Display has been blanked out</source>
         <translation>Die Projektion ist momentan nicht aktiv.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1169"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1170"/>
         <source>Default Theme: %s</source>
         <translation>Standarddesign: %s</translation>
     </message>
@@ -4207,67 +4207,67 @@ Sie können die letzte Version auf http://openlp.org abrufen.</translation>
         <translation>Deutsch</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
         <source>Configure &amp;Shortcuts...</source>
         <translation>Konfiguriere &amp;Tastenkürzel...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="475"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="476"/>
         <source>Open &amp;Data Folder...</source>
         <translation>Öffne &amp;Datenverzeichnis...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="476"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="477"/>
         <source>Open the folder where songs, bibles and other data resides.</source>
         <translation>Öffne das Verzeichnis, wo Lieder, Bibeln und andere Daten gespeichert sind.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="470"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="471"/>
         <source>&amp;Autodetect</source>
         <translation>&amp;Automatisch</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="481"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="482"/>
         <source>Update Theme Images</source>
         <translation>Aktualisiere Design Bilder</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="482"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="483"/>
         <source>Update the preview images for all themes.</source>
         <translation>Aktualisiert die Vorschaubilder aller Designs.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="414"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
         <source>Print the current service.</source>
         <translation>Drucke den aktuellen Ablauf.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
         <source>L&amp;ock Panels</source>
         <translation>Ansicht &amp;sperren</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
         <source>Prevent the panels being moved.</source>
         <translation>Unterbindet das Bewegen der Leisten.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="478"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="479"/>
         <source>Re-run First Time Wizard</source>
         <translation>Einrichtungsassistent starten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="479"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="480"/>
         <source>Re-run the First Time Wizard, importing songs, Bibles and themes.</source>
         <translation>Einrichtungsassistent erneut starten um Beispiel-Lieder, Bibeln und Designs zu importieren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="677"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="678"/>
         <source>Re-run First Time Wizard?</source>
         <translation>Einrichtungsassistent starten?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="677"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="678"/>
         <source>Are you sure you want to re-run the First Time Wizard?
 
 Re-running this wizard may make changes to your current OpenLP configuration and possibly add songs to your existing songs list and change your default theme.</source>
@@ -4276,83 +4276,83 @@ Re-running this wizard may make changes to your current OpenLP configuration and
 Der Einrichtungsassistent kann einige Einstellungen verändern und ggf. neue Lieder, Bibeln und Designs zu den bereits vorhandenen hinzufügen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1309"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1310"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Leeren</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1309"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1310"/>
         <source>Clear the list of recent files.</source>
         <translation>Leert die Liste der zuletzte geöffnete Abläufe.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
         <source>Configure &amp;Formatting Tags...</source>
         <translation>Konfiguriere &amp;Formatvorlagen...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
         <source>Export OpenLP settings to a specified *.config file</source>
         <translation>Exportiere OpenLPs Einstellungen in ein *.config-Datei.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="430"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
         <source>Settings</source>
         <translation>Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
         <source>Import OpenLP settings from a specified *.config file previously exported on this or another machine</source>
         <translation>Importiere OpenLPs Einstellungen aus ein *.config-Datei, die vorher an diesem oder einem anderen Computer exportiert wurde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="836"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="837"/>
         <source>Import settings?</source>
         <translation>Importiere Einstellungen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="849"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="850"/>
         <source>Open File</source>
         <translation>Ablauf öffnen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="849"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="850"/>
         <source>OpenLP Export Settings Files (*.conf)</source>
         <translation>OpenLP Einstellungsdatei (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="927"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="928"/>
         <source>Import settings</source>
         <translation>Importiere Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="927"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="928"/>
         <source>OpenLP will now close.  Imported settings will be applied the next time you start OpenLP.</source>
         <translation>OpenLP wird nun geschlossen. Importierte Einstellungen werden bei dem nächsten Start übernommen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="940"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
         <source>Export Settings File</source>
         <translation>Exportiere Einstellungsdatei</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="940"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
         <source>OpenLP Export Settings File (*.conf)</source>
         <translation>OpenLP Einstellungsdatei (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1412"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
         <source>New Data Directory Error</source>
         <translation>Fehler im neuen Daten Ordner</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1404"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>Kopiere OpenLP Daten in das neue Datenverzeichnis - %s - Bitte warten Sie, bis der Kopiervorgang beendet wurde.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1412"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -4361,22 +4361,22 @@ Der Einrichtungsassistent kann einige Einstellungen verändern und ggf. neue Lie
 %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="325"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="326"/>
         <source>General</source>
         <translation>Allgemein</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
         <source>Library</source>
         <translation>Bibliothek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="464"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="465"/>
         <source>Jump to the search box of the current active plugin.</source>
         <translation>Zum Suchfeld der aktiven Erweiterung springen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="836"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="837"/>
         <source>Are you sure you want to import settings?
 
  Importing settings will make permanent changes to your current OpenLP configuration.
@@ -4389,7 +4389,7 @@ Wenn Sie die Einstellungen importieren, machen Sie unwiderrufliche Änderungen a
 Fehlerhafte Einstellungen können zu Fehlern oder Abstürzen führen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="886"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="887"/>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
@@ -4398,77 +4398,77 @@ Processing has terminated and no changes have been made.</source>
 Der Import wurde abgebrochen und es wurden keine Änderungen gemacht.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="399"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="400"/>
         <source>Projector Manager</source>
         <translation>Projektorverwaltung</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
         <source>Toggle Projector Manager</source>
         <translation>Die Projektorverwaltung ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="434"/>
         <source>Toggle the visibility of the Projector Manager</source>
         <translation>Die Projektorverwaltung ein- bzw. ausblenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1018"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1019"/>
         <source>Export setting error</source>
         <translation>Fehler beim Exportieren der Einstellungen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="994"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="995"/>
         <source>The key &quot;%s&quot; does not have a default value so it will be skipped in this export.</source>
         <translation>Der Schlüssel „%s“ hat keinen Standardwert, deshalb wird er beim Exportieren übersprungen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1018"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1019"/>
         <source>An error occurred while exporting the settings: %s</source>
         <translation>Folgender Fehler trat beim Exportieren der Einstellungen auf: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="390"/>
         <source>&amp;Recent Services</source>
         <translation>&amp;Zuletzt geöffnete Abläufe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="400"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="401"/>
         <source>&amp;New Service</source>
         <translation>&amp;Neuer Ablauf</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="403"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
         <source>&amp;Open Service</source>
         <translation>Ablauf &amp;öffnen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="407"/>
         <source>&amp;Save Service</source>
         <translation>Ablauf &amp;speichern</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
         <source>Save Service &amp;As...</source>
         <translation>Ablauf speichern &amp;unter...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
         <source>&amp;Manage Plugins</source>
         <translation>Plugins &amp;verwalten</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1097"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1098"/>
         <source>Exit OpenLP</source>
         <translation>OpenLP beenden</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1097"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1098"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Soll OpenLP wirklich beendet werden?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1104"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1105"/>
         <source>&amp;Exit OpenLP</source>
         <translation>OpenLP &amp;beenden</translation>
     </message>
@@ -8148,22 +8148,22 @@ Alle Daten, die vor diesem Datum aufgezeichnet wurden, werden permanent gelösch
         <translation>Zielverzeichnis für die Statistiken</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="63"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="72"/>
         <source>Output File Location</source>
         <translation>Zielverzeichnis</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="85"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="94"/>
         <source>usage_detail_%s_%s.txt</source>
         <translation>Aufrufprotokoll_%s_%s.txt</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="103"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="112"/>
         <source>Report Creation</source>
         <translation>Statistik Erstellung</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="103"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="112"/>
         <source>Report 
 %s 
 has been successfully created. </source>
@@ -8172,24 +8172,24 @@ has been successfully created. </source>
 wurde erfolgreich erstellt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="77"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="86"/>
         <source>Output Path Not Selected</source>
         <translation>Kein Zielverzeichnis angegeben</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="77"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="86"/>
         <source>You have not set a valid output location for your song usage report. 
 Please select an existing path on your computer.</source>
         <translation>Die haben keinen gültigen Ausgabeort für das Nutzungsprotokoll angegeben.
 Bitte geben Sie einen gültigen Pfad an.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="110"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="119"/>
         <source>Report Creation Failed</source>
         <translation>Fehler beim Erstellen des Berichts</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="110"/>
+        <location filename="../../openlp/plugins/songusage/forms/songusagedetailform.py" line="119"/>
         <source>An error occurred while creating the report: %s</source>
         <translation>Folgender Fehler trat beim Erstellen des Berichts auf: %s</translation>
     </message>
