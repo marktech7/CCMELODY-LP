@@ -28,7 +28,7 @@ from unittest.mock import MagicMock, patch
 from openlp.core import Registry
 from openlp.plugins.songusage.lib import upgrade
 from openlp.plugins.songusage.lib.db import init_schema
-from openlp.plugins.songusage.songusageplugin import SongUsagePlugin
+from openlp.plugins.songusage.songusageplugin import SongUsagePlugin, __default_settings__
 
 
 class TestSongUsage(TestCase):
@@ -81,3 +81,28 @@ class TestSongUsage(TestCase):
 
         # THEN: It should return True
         self.assertTrue(ret)
+
+    def test_default_settings(self):
+        """
+        Test that all the default settings are correct
+        """
+        # GIVEN: A list of default settings
+        expected_defaults = sorted([
+            'songusage/db type',
+            'songusage/db username',
+            'songusage/db password',
+            'songusage/db hostname',
+            'songusage/db database',
+            'songusage/active',
+            'songusage/to date',
+            'songusage/from date',
+            'songusage/last directory',
+            'songusage/last directory export',
+            'songusage/status'
+        ])
+
+        # WHEN: The plugin is initialised
+        # THEN: The defaults should be correct
+        print(__default_settings__)
+        for e_key, a_key in zip(expected_defaults, sorted(__default_settings__.keys())):
+            assert e_key == a_key, '{} != {}'.format(e_key, a_key)
