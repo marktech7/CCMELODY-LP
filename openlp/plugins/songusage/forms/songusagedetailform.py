@@ -22,6 +22,7 @@
 
 import logging
 import os
+from datetime import datetime
 
 from PyQt5 import QtCore, QtWidgets
 from sqlalchemy.sql import and_
@@ -52,8 +53,16 @@ class SongUsageDetailForm(QtWidgets.QDialog, Ui_SongUsageDetailDialog, RegistryP
         """
         We need to set up the screen
         """
-        self.from_date_calendar.setSelectedDate(Settings().value(self.plugin.settings_section + '/from date'))
-        self.to_date_calendar.setSelectedDate(Settings().value(self.plugin.settings_section + '/to date'))
+        from_date = Settings().value(self.plugin.settings_section + '/from date')
+        if from_date:
+            self.from_date_calendar.setSelectedDate(from_date)
+        else:
+            self.from_date_calendar.setSelectedDate(datetime.today().replace(day=1))
+        to_date = Settings().value(self.plugin.settings_section + '/to date')
+        if to_date:
+            self.to_date_calendar.setSelectedDate(to_date)
+        else:
+            self.to_date_calendar.setSelectedDate(datetime.today())
         self.file_line_edit.setText(Settings().value(self.plugin.settings_section + '/last directory export'))
 
     def define_output_location(self):
