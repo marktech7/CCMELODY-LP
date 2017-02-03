@@ -103,6 +103,5 @@ class TestSongUsage(TestCase):
 
         # WHEN: The plugin is initialised
         # THEN: The defaults should be correct
-        print(__default_settings__)
         for e_key, a_key in zip(expected_defaults, sorted(__default_settings__.keys())):
             assert e_key == a_key, '{} != {}'.format(e_key, a_key)
