@@ -81,7 +81,6 @@ class PresentationManagerImport(SongImport):
         else:
             return ''
 
-
     def process_song(self, root, file_path):
         self.set_defaults()
         attrs = None
