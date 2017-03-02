@@ -119,7 +119,8 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             cache.append(obj.name)
             combo.setItemData(row, obj.id)
         set_case_insensitive_completer(cache, combo)
-        combo.setEditText('')
+        combo.setCurrentIndex(-1)
+        combo.setCurrentText('')
 
     def _add_author_to_list(self, author, author_type):
         """
@@ -353,7 +354,8 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             self.authors_combo_box.setItemData(row, author.id)
             self.authors.append(author.display_name)
         set_case_insensitive_completer(self.authors, self.authors_combo_box)
-        self.authors_combo_box.setEditText('')
+        self.authors_combo_box.setCurrentIndex(-1)
+        self.authors_combo_box.setCurrentText('')
 
         # Types
         self.author_types_combo_box.clear()
