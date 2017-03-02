@@ -324,8 +324,8 @@ class TestAuthorsForm(TestCase, TestMixin):
         mocked_critical_error.assert_called_once_with(
             message='You have not set a display name for the author, combine the first and last names?',
             parent=self.form, question=True)
-        mocked_first_name_edit_text.assert_called_once_with()
-        mocked_last_name_edit_text.assert_called_once_with()
+        assert mocked_first_name_edit_text.call_count == 2
+        assert mocked_last_name_edit_text.call_count == 2
         mocked_display_edit_text.assert_called_once_with()
         mocked_display_edit_setText.assert_called_once_with('John Newton')
         mocked_accept.assert_called_once_with(self.form)
