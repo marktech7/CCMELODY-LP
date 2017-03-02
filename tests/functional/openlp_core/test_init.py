@@ -22,12 +22,12 @@
 
 import sys
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from openlp.core import parse_options
-from tests.helpers.testmixin import TestMixin
+from openlp.core import OpenLP, parse_options
 
 
-class TestInitFunctions(TestMixin, TestCase):
+class TestInitFunctions(TestCase):
 
     def parse_options_basic_test(self):
         """
@@ -116,7 +116,7 @@ class TestInitFunctions(TestMixin, TestCase):
 
     def parse_options_file_and_debug_test(self):
         """
-        Test the parse options process works with a file
+        Test the parse options process works with a file and the debug log level
 
         """
         # GIVEN: a a set of system arguments.
@@ -131,14 +131,28 @@ class TestInitFunctions(TestMixin, TestCase):
         self.assertEquals(args.style, None, 'There are no style flags to be processed')
         self.assertEquals(args.rargs, 'dummy_temp', 'The service file should not be blank')
 
-    def parse_options_two_files_test(self):
-        """
-        Test the parse options process works with a file
 
+class TestOpenLP(TestCase):
+    """
+    Test the OpenLP app class
+    """
+    @patch('openlp.core.QtWidgets.QApplication.exec')
+    def test_exec(self, mocked_exec):
         """
-        # GIVEN: a a set of system arguments.
-        sys.argv[1:] = ['dummy_temp', 'dummy_temp2']
-        # WHEN: We we parse them to expand to options
-        args = parse_options()
-        # THEN: the following fields will have been extracted.
-        self.assertEquals(args, None, 'The args should be None')
+        Test the exec method
+        """
+        # GIVEN: An app
+        app = OpenLP([])
+        app.shared_memory = MagicMock()
+        mocked_exec.return_value = False
+
+        # WHEN: exec() is called
+        result = app.exec()
+
+        # THEN: The right things should be called
+        assert app.is_event_loop_active is True
+        mocked_exec.assert_called_once_with()
+        app.shared_memory.detach.assert_called_once_with()
+        assert result is False
+
+        del app

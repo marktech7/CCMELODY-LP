@@ -22,7 +22,7 @@
 """
 Package to test the openlp.plugins.bibles.forms.bibleimportform package.
 """
-from unittest import TestCase
+from unittest import TestCase, skip
 
 from PyQt5 import QtWidgets
 
@@ -48,12 +48,12 @@ class TestBibleImportForm(TestCase, TestMixin):
         Registry().register('main_window', self.main_window)
         self.form = BibleImportForm(self.main_window, MagicMock(), MagicMock())
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.form
-        del self.main_window
+    # def tearDown(self):
+    #     """
+    #     Delete all the C++ objects at the end so that we don't have a segfault
+    #     """
+    #     del self.form
+    #     del self.main_window
 
     @patch('openlp.plugins.bibles.forms.bibleimportform.CWExtract.get_bibles_from_http')
     @patch('openlp.plugins.bibles.forms.bibleimportform.BGExtract.get_bibles_from_http')
