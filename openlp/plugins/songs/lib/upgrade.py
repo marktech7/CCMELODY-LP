@@ -32,7 +32,7 @@ from openlp.core.lib.db import get_upgrade_op
 from openlp.core.utils.db import drop_columns
 
 log = logging.getLogger(__name__)
-__version__ = 5
+__version__ = 6
 
 
 # TODO: When removing an upgrade path the ftw-data needs updating to the minimum supported version
@@ -139,7 +139,7 @@ def upgrade_5(session, metadata):
 
     # Migrate old data
     op.execute('INSERT INTO songs_songbooks SELECT song_book_id, id, song_number FROM songs\
-                WHERE song_book_id IS NOT NULL AND song_number IS NOT NULL')
+                WHERE song_book_id IS NOT NULL AND song_book_id <> 0 AND song_number IS NOT NULL')
 
     # Drop old columns
     if metadata.bind.url.get_dialect().name == 'sqlite':
@@ -148,3 +148,12 @@ def upgrade_5(session, metadata):
         op.drop_constraint('songs_ibfk_1', 'songs', 'foreignkey')
         op.drop_column('songs', 'song_book_id')
         op.drop_column('songs', 'song_number')
+
+def upgrade_6(session, metadata):
+    """
+    Version 6 upgrade.
+
+    This is to fix an issue we had with songbooks with an id of "0" being imported in the previous upgrade.
+    """
+    op = get_upgrade_op(session)
+    op.execute('DELETE FROM songs_songbooks WHERE songbook_id = 0')
