@@ -172,7 +172,7 @@ class OpenLPSongImport(SongImport):
         else:
             song_props['book'] = relation(OldBook, backref='songs')
         if has_authors_songs:
-            song_props['authors_songs'] = relation(OldAuthorSong) 
+            song_props['authors_songs'] = relation(OldAuthorSong)
         # Map the rest of the tables
         try:
             class_mapper(OldAuthor)
