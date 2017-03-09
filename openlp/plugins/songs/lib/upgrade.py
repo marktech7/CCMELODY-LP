@@ -26,7 +26,7 @@ backend for the Songs plugin
 import logging
 
 from sqlalchemy import Table, Column, ForeignKey, types
-from sqlalchemy.sql.expression import func, false, null, text
+from sqlalchemy.sql.expression import func, false, null, text, and_, select
 
 from openlp.core.lib.db import get_upgrade_op
 from openlp.core.utils.db import drop_columns
@@ -105,13 +105,15 @@ def upgrade_4(session, metadata):
     # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
     # and copy the old values
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata)
-    if 'author_type' not in [col.name for col in songs_table.c.values()]:
-        op.create_table('authors_songs_tmp',
-                        Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
-                        Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-                        Column('author_type', types.Unicode(255), primary_key=True,
-                               nullable=False, server_default=text('""')))
+    authors_songs = Table('authors_songs', metadata, autoload=True)
+    if 'author_type' not in [col.name for col in authors_songs.c.values()]:
+        authors_songs_tmp = op.create_table(
+            'authors_songs_tmp',
+            Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
+            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+            Column('author_type', types.Unicode(255), primary_key=True,
+                   nullable=False, server_default=text('""'))
+        )
         op.execute('INSERT INTO authors_songs_tmp SELECT author_id, song_id, "" FROM authors_songs')
         op.drop_table('authors_songs')
         op.rename_table('authors_songs_tmp', 'authors_songs')
@@ -126,16 +128,18 @@ def upgrade_5(session, metadata):
     This upgrade adds support for multiple songbooks
     """
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata)
-    if 'song_book_id' in [col.name for col in songs_table.c.values()]:
+    songs_table = Table('songs', metadata, autoload=True)
+    if 'song_book_id' not in [col.name for col in songs_table.c.values()]:
         log.warning('Skipping upgrade_5 step of upgrading the song db')
         return
 
     # Create the mapping table (songs <-> songbooks)
-    op.create_table('songs_songbooks',
-                    Column('songbook_id', types.Integer(), ForeignKey('song_books.id'), primary_key=True),
-                    Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-                    Column('entry', types.Unicode(255), primary_key=True, nullable=False))
+    songs_songbooks_table = op.create_table(
+        'songs_songbooks',
+        Column('songbook_id', types.Integer(), ForeignKey('song_books.id'), primary_key=True),
+        Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+        Column('entry', types.Unicode(255), primary_key=True, nullable=False)
+    )
 
     # Migrate old data
     op.execute('INSERT INTO songs_songbooks SELECT song_book_id, id, song_number FROM songs\
@@ -149,6 +153,7 @@ def upgrade_5(session, metadata):
         op.drop_column('songs', 'song_book_id')
         op.drop_column('songs', 'song_number')
 
+
 def upgrade_6(session, metadata):
     """
     Version 6 upgrade.
@@ -156,4 +161,6 @@ def upgrade_6(session, metadata):
     This is to fix an issue we had with songbooks with an id of "0" being imported in the previous upgrade.
     """
     op = get_upgrade_op(session)
-    op.execute('DELETE FROM songs_songbooks WHERE songbook_id = 0')
+    songs_songbooks = Table('songs_songbooks', metadata, autoload=True)
+    del_query = songs_songbooks.delete().where(songs_songbooks.c.songbook_id == 0)
+    op.execute(del_query)
