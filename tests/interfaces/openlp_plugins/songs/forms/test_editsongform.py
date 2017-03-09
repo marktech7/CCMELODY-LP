@@ -23,13 +23,13 @@
 Package to test the openlp.plugins.songs.forms.editsongform package.
 """
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import Registry
 from openlp.core.common.uistrings import UiStrings
 from openlp.plugins.songs.forms.editsongform import EditSongForm
-from tests.interfaces import MagicMock
 from tests.helpers.testmixin import TestMixin
 
 
@@ -157,3 +157,50 @@ class TestEditSongForm(TestCase, TestMixin):
 
         # THEN: The verse order should be converted to uppercase
         self.assertEqual(form.verse_order_edit.text(), 'V1 V2 C1 V3 C1 V4 C1')
+
+    @patch('openlp.plugins.songs.forms.editsongform.QtWidgets.QListWidgetItem')
+    def test_add_author_to_list(self, MockedQListWidgetItem):
+        """
+        Test the _add_author_to_list() method
+        """
+        # GIVEN: A song edit form and some mocked stuff
+        mocked_author = MagicMock()
+        mocked_author.id = 1
+        mocked_author.get_display_name.return_value = 'John Newton'
+        mocked_author_type = 'words'
+        mocked_widget_item = MagicMock()
+        MockedQListWidgetItem.return_value = mocked_widget_item
+
+        # WHEN: _add_author_to_list() is called
+        with patch.object(self.form.authors_list_view, 'addItem') as mocked_add_item:
+            self.form._add_author_to_list(mocked_author, mocked_author_type)
+
+        # THEN: All the correct methods should have been called
+        mocked_author.get_display_name.assert_called_once_with('words')
+        MockedQListWidgetItem.assert_called_once_with('John Newton')
+        mocked_widget_item.setData.assert_called_once_with(QtCore.Qt.UserRole, (1, mocked_author_type))
+        mocked_add_item.assert_called_once_with(mocked_widget_item)
+
+    @patch('openlp.plugins.songs.forms.editsongform.SongBookEntry')
+    @patch('openlp.plugins.songs.forms.editsongform.QtWidgets.QListWidgetItem')
+    def test_add_songbook_entry_to_list(self, MockedQListWidgetItem, MockedSongbookEntry):
+        """
+        Test the add_songbook_entry_to_list() method
+        """
+        # GIVEN: A song edit form and some mocked stuff
+        songbook_id = 1
+        songbook_name = 'Hymnal'
+        entry = '546'
+        MockedSongbookEntry.get_display_name.return_value = 'Hymnal #546'
+        mocked_widget_item = MagicMock()
+        MockedQListWidgetItem.return_value = mocked_widget_item
+
+        # WHEN: _add_author_to_list() is called
+        with patch.object(self.form.songbooks_list_view, 'addItem') as mocked_add_item:
+            self.form.add_songbook_entry_to_list(songbook_id, songbook_name, entry)
+
+        # THEN: All the correct methods should have been called
+        MockedSongbookEntry.get_display_name.assert_called_once_with(songbook_name, entry)
+        MockedQListWidgetItem.assert_called_once_with('Hymnal #546')
+        mocked_widget_item.setData.assert_called_once_with(QtCore.Qt.UserRole, (songbook_id, entry))
+        mocked_add_item.assert_called_once_with(mocked_widget_item)
