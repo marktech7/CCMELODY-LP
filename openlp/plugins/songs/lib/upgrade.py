@@ -102,23 +102,8 @@ def upgrade_4(session, metadata):
 
     This upgrade adds a column for author type to the authors_songs table
     """
-    # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
-    # and copy the old values
-    op = get_upgrade_op(session)
-    authors_songs = Table('authors_songs', metadata, autoload=True)
-    if 'author_type' not in [col.name for col in authors_songs.c.values()]:
-        authors_songs_tmp = op.create_table(
-            'authors_songs_tmp',
-            Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
-            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-            Column('author_type', types.Unicode(255), primary_key=True,
-                   nullable=False, server_default=text('""'))
-        )
-        op.execute('INSERT INTO authors_songs_tmp SELECT author_id, song_id, "" FROM authors_songs')
-        op.drop_table('authors_songs')
-        op.rename_table('authors_songs_tmp', 'authors_songs')
-    else:
-        log.warning('Skipping upgrade_4 step of upgrading the song db')
+    # Due to an incorrect check, this step was always skipped. Moved this code into upgrade 6.
+    log.warning('Skipping upgrade_4 step of upgrading the song db')
 
 
 def upgrade_5(session, metadata):
@@ -158,9 +143,24 @@ def upgrade_6(session, metadata):
     """
     Version 6 upgrade.
 
-    This is to fix an issue we had with songbooks with an id of "0" being imported in the previous upgrade.
+    This is to redo upgrade 4 due to an incorrect if statement, and fix an issue we had with songbooks with an id of
+    "0" being imported in the previous upgrade.
     """
+    # Move step 4 to here because the check in 4 was incorrect, leaving a bunch of databases in a bad condition
     op = get_upgrade_op(session)
+    authors_songs = Table('authors_songs', metadata, autoload=True)
+    if 'author_type' not in [col.name for col in authors_songs.c.values()]:
+        authors_songs_tmp = op.create_table(
+            'authors_songs_tmp',
+            Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
+            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+            Column('author_type', types.Unicode(255), primary_key=True,
+                   nullable=False, server_default=text('""'))
+        )
+        op.execute('INSERT INTO authors_songs_tmp SELECT author_id, song_id, "" FROM authors_songs')
+        op.drop_table('authors_songs')
+        op.rename_table('authors_songs_tmp', 'authors_songs')
+    # Now fix up another issue we had due to a previous upgrade
     songs_songbooks = Table('songs_songbooks', metadata, autoload=True)
     del_query = songs_songbooks.delete().where(songs_songbooks.c.songbook_id == 0)
     op.execute(del_query)
