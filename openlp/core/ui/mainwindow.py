@@ -796,7 +796,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, RegistryProperties):
         Open data folder
         """
         path = AppLocation.get_data_path()
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("file:///" + path))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(path))
 
     def on_update_theme_images(self):
         """
