@@ -139,9 +139,9 @@ class TestSongMaintenanceForm(TestCase, TestMixin):
         # WHEN: _delete_item() is called
         with patch.object(self.form, '_get_current_item_id') as mocked_get_current_item_id:
             mocked_get_current_item_id.return_value = -1
-            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text, 
+            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                                    error_text)
-        
+
         # THEN: The right things should have been called
         mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
         mocked_critical_error_message_box.assert_called_once_with(dialog_title, UiStrings().NISs)
@@ -163,9 +163,9 @@ class TestSongMaintenanceForm(TestCase, TestMixin):
         # WHEN: _delete_item() is called
         with patch.object(self.form, '_get_current_item_id') as mocked_get_current_item_id:
             mocked_get_current_item_id.return_value = 1
-            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text, 
+            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                                    error_text)
-        
+
         # THEN: The right things should have been called
         mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
         self.mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
@@ -192,9 +192,9 @@ class TestSongMaintenanceForm(TestCase, TestMixin):
         # WHEN: _delete_item() is called
         with patch.object(self.form, '_get_current_item_id') as mocked_get_current_item_id:
             mocked_get_current_item_id.return_value = 1
-            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text, 
+            self.form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                                    error_text)
-        
+
         # THEN: The right things should have been called
         mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
         self.mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
