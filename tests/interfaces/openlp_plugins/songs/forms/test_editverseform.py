@@ -28,6 +28,7 @@ from PyQt5 import QtCore, QtTest, QtWidgets
 
 from openlp.core.common import Registry
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
+
 from tests.helpers.testmixin import TestMixin
 
 

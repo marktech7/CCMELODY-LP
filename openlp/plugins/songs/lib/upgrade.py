@@ -32,7 +32,7 @@ from openlp.core.lib.db import get_upgrade_op
 from openlp.core.utils.db import drop_columns
 
 log = logging.getLogger(__name__)
-__version__ = 6
+__version__ = 5
 
 
 # TODO: When removing an upgrade path the ftw-data needs updating to the minimum supported version
@@ -102,8 +102,7 @@ def upgrade_4(session, metadata):
 
     This upgrade adds a column for author type to the authors_songs table
     """
-    # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
-    # and copy the old values
+    # Due to an incorrect check, this step was always skipped. Moved this code into upgrade 6.
     op = get_upgrade_op(session)
     authors_songs = Table('authors_songs', metadata, autoload=True)
     if 'author_type' not in [col.name for col in authors_songs.c.values()]:
@@ -152,15 +151,3 @@ def upgrade_5(session, metadata):
         op.drop_constraint('songs_ibfk_1', 'songs', 'foreignkey')
         op.drop_column('songs', 'song_book_id')
         op.drop_column('songs', 'song_number')
-
-
-def upgrade_6(session, metadata):
-    """
-    Version 6 upgrade.
-
-    This is to fix an issue we had with songbooks with an id of "0" being imported in the previous upgrade.
-    """
-    op = get_upgrade_op(session)
-    songs_songbooks = Table('songs_songbooks', metadata, autoload=True)
-    del_query = songs_songbooks.delete().where(songs_songbooks.c.songbook_id == 0)
-    op.execute(del_query)
