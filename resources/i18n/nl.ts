@@ -2633,7 +2633,8 @@ Tenslotte gaat onze laatste dankbetuiging naar God onze Vader, omdat hij Zijn Zo
         <location filename="../../openlp/core/ui/aboutdialog.py" line="303"/>
         <source>Copyright (c) 2004-2017 %s
 Portions copyright (c) 2004-2017 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Copyright (c) 2004-2017 %s
+Gedeelten copyright (c) 2004-2017 %s</translation>
     </message>
 </context>
 <context>
@@ -4354,17 +4355,17 @@ De Eerste Keer Assistent opnieuw starten zou veranderingen in uw huidige OpenLP 
         <translation>OpenLP Export instellingsbestand (*.config)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>Nieuwe bestandslocatie fout</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>OpenLP data wordt nu naar de nieuwe datamaplocatie gekopieerd - %s - Een moment geduld alstublieft</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -4624,7 +4625,7 @@ Extensie niet ondersteund</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/pjlink1.py" line="547"/>
         <source>{code} : {string}</source>
-        <translation type="unfinished"></translation>
+        <translation>{code} : {string}</translation>
     </message>
 </context>
 <context>
@@ -8640,47 +8641,47 @@ De tekstcodering is verantwoordelijk voor een correcte weergave van lettertekens
         <translation>Deze auteur bestaat nog niet, toevoegen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="580"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
         <translation>Deze auteur staat al in de lijst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="586"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="588"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>Geen auteur geselecteerd. Kies een auteur uit de lijst of voeg er een toe door de naam in te typen en op de knop &quot;Voeg auteur toe&quot; te klikken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>Add Topic</source>
         <translation>Voeg onderwerp toe</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>Dit onderwerp bestaat nog niet, toevoegen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="655"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="658"/>
         <source>This topic is already in the list.</source>
         <translation>Dit onderwerp staat al in de lijst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="663"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="667"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>Geen geldig onderwerp geselecteerd. Kies een onderwerp uit de lijst of type een nieuw onderwerp en klik op &quot;Nieuw onderwerp toevoegen&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>You need to type in a song title.</source>
         <translation>Vul de titel van het lied in.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="219"/>
         <source>You need to type in at least one verse.</source>
         <translation>Vul minstens de tekst van één couplet in.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="225"/>
         <source>You need to have an author for this song.</source>
         <translation>Selecteer minimaal één auteur voor dit lied.</translation>
     </message>
@@ -8705,7 +8706,7 @@ De tekstcodering is verantwoordelijk voor een correcte weergave van lettertekens
         <translation>&amp;Alles verwijderen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="908"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="914"/>
         <source>Open File(s)</source>
         <translation>Open bestand(en)</translation>
     </message>
@@ -8720,14 +8721,14 @@ De tekstcodering is verantwoordelijk voor een correcte weergave van lettertekens
         <translation>&lt;strong&gt;Waarschuwing:&lt;/strong&gt; U hebt geen volgorde opgegeven voor de verzen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="193"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="195"/>
         <source>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Er is geen vers dat overeenkomen met &quot;%(invalid)s&quot;. Geldige waarden zijn %(valid)s.
 Geef de verzen op gescheiden door spaties.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="196"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="198"/>
         <source>Invalid Verse Order</source>
         <translation>Ongeldige vers volgorde</translation>
     </message>
@@ -8737,17 +8738,17 @@ Geef de verzen op gescheiden door spaties.</translation>
         <translation>Aut&amp;eurstype aanpassen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Edit Author Type</source>
         <translation>Auteurstype aanpassen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Choose type for this author</source>
         <translation>Kies het type van deze auteur</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="189"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="191"/>
         <source>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Er zijn geen verzen die overeenkomen met &quot;%(invalid)s&quot;. Geldige waarden zijn %(valid)s.
@@ -8774,32 +8775,32 @@ Geef de verzen op gescheiden door spaties.</translation>
         <translation>Auteurs, onderwerpen &amp;&amp; liedboeken</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>Add Songbook</source>
         <translation>Voeg liedboek toe</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation>Dit liedboek bestaat nog niet, toevoegen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="704"/>
         <source>This Songbook is already in the list.</source>
         <translation>Dit liedboek staat al in de lijst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="706"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="712"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation>Geen geldig liedboek geselecteerd. Kies een liedboek uit de lijst of type de naam van een liedboek en klik op &quot;Nieuw liedboek toevoegen&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>File not found</source>
         <translation>Bestand niet gevonden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
@@ -9264,7 +9265,7 @@ Wilt u het lied verwijderen uit het overzicht?</translation>
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="108"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation>Geen geldige OpenLP 2 liederendatabase.</translation>
     </message>
@@ -9321,7 +9322,7 @@ Wilt u het lied verwijderen uit het overzicht?</translation>
 <context>
     <name>SongsPlugin.PresentationManagerImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="60"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="62"/>
         <source>File is not in XML-format, which is the only format supported.</source>
         <translation type="unfinished"></translation>
     </message>

@@ -2396,7 +2396,15 @@ The location of the data folder was previously changed from the OpenLP&apos;s de
 You may reset the data location back to the default location, or you can try to make the current location available.
 
 Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the the problem.</source>
-        <translation type="unfinished"></translation>
+        <translation>OpenLP data folder was not found in:
+
+{path}
+
+The location of the data folder was previously changed from the OpenLP&apos;s default location. If the data was stored on removable device, that device needs to be made available.
+
+You may reset the data location back to the default location, or you can try to make the current location available.
+
+Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the the problem.</translation>
     </message>
 </context>
 <context>
@@ -2639,7 +2647,8 @@ OpenLP is written and maintained by volunteers. If you would like to see more fr
         <location filename="../../openlp/core/ui/aboutdialog.py" line="303"/>
         <source>Copyright (c) 2004-2017 %s
 Portions copyright (c) 2004-2017 %s</source>
-        <translation type="unfinished"></translation>
+        <translation>Copyright (c) 2004-2017 %s
+Portions copyright (c) 2004-2017 %s</translation>
     </message>
 </context>
 <context>
@@ -4359,17 +4368,17 @@ Re-running this wizard may make changes to your current OpenLP configuration and
         <translation>OpenLP Export Settings File (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>New Data Directory Error</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -4629,7 +4638,7 @@ Suffix not supported</translation>
     <message>
         <location filename="../../openlp/core/lib/projector/pjlink1.py" line="547"/>
         <source>{code} : {string}</source>
-        <translation type="unfinished"></translation>
+        <translation>{code} : {string}</translation>
     </message>
 </context>
 <context>
@@ -8014,12 +8023,12 @@ Please try selecting it individually.</translation>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="198"/>
         <source>iOS App</source>
-        <translation type="unfinished"></translation>
+        <translation>iOS App</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/remotes/lib/remotetab.py" line="199"/>
         <source>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</source>
-        <translation type="unfinished"></translation>
+        <translation>Scan the QR code or click &lt;a href=&quot;%s&quot;&gt;download&lt;/a&gt; to install the iOS app from the App Store.</translation>
     </message>
 </context>
 <context>
@@ -8646,47 +8655,47 @@ The encoding is responsible for the correct character representation.</translati
         <translation>This author does not exist, do you want to add them?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="580"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
         <translation>This author is already in the list.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="586"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="588"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>Add Topic</source>
         <translation>Add Topic</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>This topic does not exist, do you want to add it?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="655"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="658"/>
         <source>This topic is already in the list.</source>
         <translation>This topic is already in the list.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="663"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="667"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>You need to type in a song title.</source>
         <translation>You need to type in a song title.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="219"/>
         <source>You need to type in at least one verse.</source>
         <translation>You need to type in at least one verse.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="225"/>
         <source>You need to have an author for this song.</source>
         <translation>You need to have an author for this song.</translation>
     </message>
@@ -8711,7 +8720,7 @@ The encoding is responsible for the correct character representation.</translati
         <translation>Remove &amp;All</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="908"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="914"/>
         <source>Open File(s)</source>
         <translation>Open File(s)</translation>
     </message>
@@ -8726,14 +8735,14 @@ The encoding is responsible for the correct character representation.</translati
         <translation>&lt;strong&gt;Warning:&lt;/strong&gt; You have not entered a verse order.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="193"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="195"/>
         <source>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="196"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="198"/>
         <source>Invalid Verse Order</source>
         <translation>Invalid Verse Order</translation>
     </message>
@@ -8743,17 +8752,17 @@ Please enter the verses separated by spaces.</translation>
         <translation>&amp;Edit Author Type</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Edit Author Type</source>
         <translation>Edit Author Type</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Choose type for this author</source>
         <translation>Choose type for this author</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="189"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="191"/>
         <source>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
@@ -8780,36 +8789,38 @@ Please enter the verses separated by spaces.</translation>
         <translation>Authors, Topics &amp;&amp; Songbooks</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>Add Songbook</source>
         <translation>Add Songbook</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation>This Songbook does not exist, do you want to add it?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="704"/>
         <source>This Songbook is already in the list.</source>
         <translation>This Songbook is already in the list.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="706"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="712"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>File not found</source>
         <translation>File not found</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
-        <translation type="unfinished"></translation>
+        <translation>Unable to find the following file:
+%s
+Do you want to remove the entry from the song?</translation>
     </message>
 </context>
 <context>
@@ -9268,7 +9279,7 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="108"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation>Not a valid OpenLP 2 song database.</translation>
     </message>
@@ -9325,9 +9336,9 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.PresentationManagerImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="60"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="62"/>
         <source>File is not in XML-format, which is the only format supported.</source>
-        <translation type="unfinished"></translation>
+        <translation>File is not in XML-format, which is the only format supported.</translation>
     </message>
 </context>
 <context>

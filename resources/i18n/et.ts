@@ -4359,17 +4359,17 @@ Selle nõustaja taaskäivitamine muudab sinu praegust OpenLP seadistust ja võib
         <translation>OpenLP eksporditud sätete fail (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>Uue andmekausta viga</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>OpenLP andmete kopeerimine uude andmekataloogi - %s - palun oota, kuni kopeerimine lõpeb...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -8645,47 +8645,47 @@ Kodeering on vajalik märkide õige esitamise jaoks.</translation>
         <translation>Seda autorit veel pole, kas tahad autori lisada?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="580"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
         <translation>See autor juba on loendis.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="586"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="588"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>Sa ei ole valinud ühtegi sobilikku autorit. Vali autor loendist või sisesta uue autori nimi ja klõpsa uue nupul &quot;Lisa laulule autor&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>Add Topic</source>
         <translation>Teema lisamine</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>Sellist teemat pole. Kas tahad selle lisada?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="655"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="658"/>
         <source>This topic is already in the list.</source>
         <translation>See teema juba on loendis.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="663"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="667"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>Sa pole valinud sobivat teemat. Vali teema kas loendist või sisesta uus teema ja selle lisamiseks klõpsa nupule &quot;Lisa laulule teema&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>You need to type in a song title.</source>
         <translation>Pead sisestama laulu pealkirja.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="219"/>
         <source>You need to type in at least one verse.</source>
         <translation>Pead sisestama vähemalt ühe salmi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="225"/>
         <source>You need to have an author for this song.</source>
         <translation>Pead lisama sellele laulule autori.</translation>
     </message>
@@ -8710,7 +8710,7 @@ Kodeering on vajalik märkide õige esitamise jaoks.</translation>
         <translation>Eemalda &amp;kõik</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="908"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="914"/>
         <source>Open File(s)</source>
         <translation>Failide avamine</translation>
     </message>
@@ -8725,14 +8725,14 @@ Kodeering on vajalik märkide õige esitamise jaoks.</translation>
         <translation>&lt;strong&gt;Hoiatus:&lt;/strong&gt; sa pole sisestanud salmide järjekorda.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="193"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="195"/>
         <source>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Pole salmi, mis vastaks &quot;%(invalid)s&quot;. Sobivad kanded on %(valid)s.
 Palun eralda salmid tühikutega.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="196"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="198"/>
         <source>Invalid Verse Order</source>
         <translation>Sobimatu salmijärjekord</translation>
     </message>
@@ -8742,17 +8742,17 @@ Palun eralda salmid tühikutega.</translation>
         <translation>&amp;Muuda autori liiki</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Edit Author Type</source>
         <translation>Autori liigi muutmine</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Choose type for this author</source>
         <translation>Vali selle autori liik</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="189"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="191"/>
         <source>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Pole salme, mis vastaksid &quot;%(invalid)s&quot;. Sobivad kanded on %(valid)s.
@@ -8779,32 +8779,32 @@ Palun eralda salmid tühikutega.</translation>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>Add Songbook</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="704"/>
         <source>This Songbook is already in the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="706"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="712"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>File not found</source>
         <translation>Faili ei leitud</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
@@ -9267,7 +9267,7 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="108"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation>See pole korrektne OpenLP 2 laulude andmebaas.</translation>
     </message>
@@ -9324,7 +9324,7 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.PresentationManagerImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="60"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="62"/>
         <source>File is not in XML-format, which is the only format supported.</source>
         <translation type="unfinished"></translation>
     </message>

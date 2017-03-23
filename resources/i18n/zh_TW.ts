@@ -4336,17 +4336,17 @@ Re-running this wizard may make changes to your current OpenLP configuration and
         <translation>OpenLP 匯出設定檔 (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>新的資料目錄錯誤</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>正在複製 OpenLP 資料到新的資料目錄位置 - %s - ，請等待複製完成</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -8618,47 +8618,47 @@ The encoding is responsible for the correct character representation.</source>
         <translation>此作者不存在，您是否要新增？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="580"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
         <translation>此作者已存在於列表。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="586"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="588"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>您沒有選擇有效的作者。從列表中選擇一位作者，或輸入一位新作者名稱並點選&quot;將作者加入歌曲&quot;按鈕。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>Add Topic</source>
         <translation>新增主題</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>此主題不存在，您是否要新增？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="655"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="658"/>
         <source>This topic is already in the list.</source>
         <translation>此主題已存在於列表。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="663"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="667"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>您沒有選擇有效的主題。從列表中選擇一個主題，或輸入一個新主題名稱並點選&quot;將主題加入歌曲&quot;按鈕。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>You need to type in a song title.</source>
         <translation>您需要輸入歌曲標題。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="219"/>
         <source>You need to type in at least one verse.</source>
         <translation>您需要輸入至少一段歌詞。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="225"/>
         <source>You need to have an author for this song.</source>
         <translation>您需要給這首歌一位作者。</translation>
     </message>
@@ -8683,7 +8683,7 @@ The encoding is responsible for the correct character representation.</source>
         <translation>移除全部(&amp;A)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="908"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="914"/>
         <source>Open File(s)</source>
         <translation>開啟檔案</translation>
     </message>
@@ -8698,13 +8698,13 @@ The encoding is responsible for the correct character representation.</source>
         <translation>&lt;strong&gt;警告：&lt;/strong&gt; 您還沒有輸入歌詞段落順序。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="193"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="195"/>
         <source>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>沒有相對應的 &quot;%(invalid)s&quot;，有效輸入的為 &quot;%(valid)s&quot;。請輸入空格分隔段落。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="196"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="198"/>
         <source>Invalid Verse Order</source>
         <translation>無效的段落順序</translation>
     </message>
@@ -8714,17 +8714,17 @@ Please enter the verses separated by spaces.</source>
         <translation>編輯作者類型(&amp;E)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Edit Author Type</source>
         <translation>編輯作者類型</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Choose type for this author</source>
         <translation>為作者選擇一個類型</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="189"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="191"/>
         <source>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation type="unfinished"></translation>
@@ -8750,32 +8750,32 @@ Please enter the verses separated by spaces.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>Add Songbook</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="704"/>
         <source>This Songbook is already in the list.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="706"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="712"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>File not found</source>
         <translation>找不到檔案</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
@@ -9238,7 +9238,7 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="108"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation type="unfinished"></translation>
     </message>
@@ -9295,7 +9295,7 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.PresentationManagerImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="60"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="62"/>
         <source>File is not in XML-format, which is the only format supported.</source>
         <translation type="unfinished"></translation>
     </message>
