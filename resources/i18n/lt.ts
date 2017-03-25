@@ -2443,7 +2443,7 @@ OpenLP is free church presentation software, or lyrics projection software, used
 Find out more about OpenLP: http://openlp.org/
 
 OpenLP is written and maintained by volunteers. If you would like to see more free Christian software being written, please consider volunteering by using the button below.</source>
-        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Atvirojo Kodo Giesmių Žodžių Projekcija
+        <translation>OpenLP &lt;version&gt;&lt;revision&gt; - Atvirojo kodo giesmių žodžių projekcija
 
 OpenLP yra bažnyčioms skirta, laisva pateikčių programinė įranga, arba giesmių žodžių projekcijos programinė įranga, naudojama giesmių skaidrių, Biblijos eilučių, vaizdo, paveikslų, ir netgi pateikčių (jei Impress, PowerPoint ar PowerPoint Viewer yra įdiegti) rodymui bažnyčioje, šlovinimo metu, naudojant kompiuterį ir projektorių.
 
@@ -4369,17 +4369,17 @@ Re-running this wizard may make changes to your current OpenLP configuration and
         <translation>OpenLP eksportuotas nustatymų failas (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>Naujo duomenų katalogo klaida</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
         <source>Copying OpenLP data to new data directory location - %s - Please wait for copy to finish</source>
         <translation>OpenLP duomenys kopijuojami į naują duomenų katalogo vietą - %s - Prašome palaukti, kol bus užbaigtas kopijavimas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>OpenLP Data directory copy failed
 
 %s</source>
@@ -8656,47 +8656,47 @@ Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
         <translation>Tokio autoriaus nėra, ar norite jį pridėti?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="580"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="581"/>
         <source>This author is already in the list.</source>
         <translation>Šis autorius jau yra sąraše.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="586"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="588"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>Jūs nepasirinkote teisingo autoriaus. Arba pasirinkite autorių iš sąrašo, arba įrašykite naują autorių ir spustelėkite mygtuką &quot;Pridėti prie giesmės&quot;, kad pridėtumėte naują autorių.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>Add Topic</source>
         <translation>Pridėti temą</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="637"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="639"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>Tokios temos nėra, ar norite ją pridėti?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="655"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="658"/>
         <source>This topic is already in the list.</source>
         <translation>Ši tema jau yra sąraše.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="663"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="667"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
         <translation>Jūs nepasirinkote teisingos temos. Arba pasirinkite temą iš sąrašo, arba įrašykite naują temą ir spustelėkite mygtuką &quot;Pridėti prie giesmės&quot;, kad pridėtumėte naują temą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>You need to type in a song title.</source>
         <translation>Turite įrašyti giesmės pavadinimą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="217"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="219"/>
         <source>You need to type in at least one verse.</source>
         <translation>Turite įrašyti bent vieną posmelį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="223"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="225"/>
         <source>You need to have an author for this song.</source>
         <translation>Ši giesmė privalo turėti autorių.</translation>
     </message>
@@ -8721,7 +8721,7 @@ Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
         <translation>Šalinti &amp;viską</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="908"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="914"/>
         <source>Open File(s)</source>
         <translation>Atverti failą(-us)</translation>
     </message>
@@ -8736,14 +8736,14 @@ Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
         <translation>&lt;strong&gt;Įspėjimas:&lt;/strong&gt; Jūs neįvedėte posmelių tvarkos.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="193"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="195"/>
         <source>There is no verse corresponding to &quot;%(invalid)s&quot;.Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Nėra posmelio, atitinkančio &quot;%(invalid)s&quot;. Teisingi įrašai yra %(valid)s.
 Prašome įvesti tarpais atskirtus posmelius.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="196"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="198"/>
         <source>Invalid Verse Order</source>
         <translation>Neteisinga posmelių tvarka</translation>
     </message>
@@ -8753,17 +8753,17 @@ Prašome įvesti tarpais atskirtus posmelius.</translation>
         <translation>&amp;Keisti autoriaus tipą</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Edit Author Type</source>
         <translation>Keisti autoriaus tipą</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="610"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="612"/>
         <source>Choose type for this author</source>
         <translation>Pasirinkite šiam autoriui tipą</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="189"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="191"/>
         <source>There are no verses corresponding to &quot;%(invalid)s&quot;. Valid entries are %(valid)s.
 Please enter the verses separated by spaces.</source>
         <translation>Nėra eilučių, kurios atitiktų &quot;%(invalid)s&quot;. Teisingi įrašai yra %(valid)s.
@@ -8790,32 +8790,32 @@ Prašome įvesti tarpais atskirtas eilutes.</translation>
         <translation>Autoriai, temos ir giesmynai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>Add Songbook</source>
         <translation>Pridėti giesmyną</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="682"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="686"/>
         <source>This Songbook does not exist, do you want to add it?</source>
         <translation>Tokio giesmyno nėra, ar norite jį pridėti?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="699"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="704"/>
         <source>This Songbook is already in the list.</source>
         <translation>Šis giesmynas jau yra sąraše.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="706"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="712"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
         <translation>Jūs nepasirinkote teisingą giesmyną. Arba pasirinkite giesmyną iš sąrašo, arba įrašykite naują giesmyną ir spustelėkite mygtuką &quot;Pridėti prie Giesmės&quot;, kad pridėtumėte naują giesmyną.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>File not found</source>
         <translation>Failas nerastas</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1065"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="1071"/>
         <source>Unable to find the following file:
 %s
 Do you want to remove the entry from the song?</source>
@@ -9280,7 +9280,7 @@ Ar norite pašalinti įrašą iš giesmės?</translation>
 <context>
     <name>SongsPlugin.OpenLPSongImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="102"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="108"/>
         <source>Not a valid OpenLP 2 song database.</source>
         <translation>Neteisinga OpenLP 2 giesmių duomenų bazė.</translation>
     </message>
@@ -9337,7 +9337,7 @@ Ar norite pašalinti įrašą iš giesmės?</translation>
 <context>
     <name>SongsPlugin.PresentationManagerImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="60"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="62"/>
         <source>File is not in XML-format, which is the only format supported.</source>
         <translation>Failas nėra XML formato, kuris savo ruožtu yra vienintelis palaikomas formatas.</translation>
     </message>
