@@ -299,7 +299,6 @@ class TestSongMaintenanceForm(TestCase, TestMixin):
         """
         Test the check_author_exists() method
         """
-        print(dir(self.form))
         # GIVEN: A bunch of mocked out stuff
         MockedAuthor.first_name = 'John'
         MockedAuthor.last_name = 'Newton'
