@@ -1,22 +1,23 @@
 {
     "authors": [
-        "John Newton",
-        "Edwin Excell",
-        "John P. Rees"
+        "John Newton"
     ],
     "ccli_number": 22025,
-    "comments": "\n\n\n",
+    "comments": "",
     "copyright": "Public Domain ",
-    "song_book_name": "Demonstration Songs",
+    "song_book_name": "",
     "song_number": 0,
-    "title": "Amazing Grace (Demonstration)",
+    "title": "Amazing Grace",
     "topics": [
-        "Assurance",
-        "Grace",
-        "Praise",
-        "Salvation"
+        "Grace"
     ],
-    "verse_order_list": [],
+    "verse_order_list": [
+      "V1",
+      "V2",
+      "V3",
+      "V4",
+      "V5"
+    ],
     "verses": [
         [
             "Amazing grace! How sweet the sound!\nThat saved a wretch like me!\nI once was lost, but now am found;\nWas blind, but now I see.",

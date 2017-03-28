@@ -22,11 +22,32 @@
 """
 This module contains tests for the OpenLP song importer.
 """
+import os
 from unittest import TestCase
+from unittest.mock import patch, MagicMock
 
-from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
 from openlp.core.common import Registry
-from tests.functional import patch, MagicMock
+from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
+
+from tests.helpers.songfileimport import SongImportTestHelper
+
+TEST_PATH = os.path.abspath(
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'resources', 'openlpsongs'))
+
+
+class TestOpenLPFileImport(SongImportTestHelper):
+
+    def __init__(self, *args, **kwargs):
+        self.importer_class_name = 'OpenLPSongImport'
+        self.importer_module_name = 'openlp'
+        super(TestOpenLPFileImport, self).__init__(*args, **kwargs)
+
+    def test_song_import(self):
+        """
+        Test that loading an OpenSong file works correctly on various files
+        """
+        self.file_import([os.path.join(TEST_PATH, 'songs.sqlite')],
+                         self.load_external_result_data(os.path.join(TEST_PATH, 'AmazingGrace.json')))
 
 
 class TestOpenLPImport(TestCase):
