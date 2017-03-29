@@ -52,6 +52,24 @@ class TestShortcutform(TestCase, TestMixin):
         del self.form
         del self.main_window
 
+    def test_set_controls_enabled(self):
+        """
+        Test that the _set_controls_enabled() method works correctly
+        """
+        # GIVEN: A shortcut form, and a value to set the controls
+        is_enabled = True
+
+        # WHEN: _set_controls_enabled() is called
+        self.form._set_controls_enabled(is_enabled)
+
+        # THEN: The controls should be enabled
+        assert self.form.default_radio_button.isEnabled() is True
+        assert self.form.custom_radio_button.isEnabled() is True
+        assert self.form.primary_push_button.isEnabled() is True
+        assert self.form.alternate_push_button.isEnabled() is True
+        assert self.form.clear_primary_button.isEnabled() is True
+        assert self.form.clear_alternate_button.isEnabled() is True
+
     def adjust_button_test(self):
         """
         Test the _adjust_button() method
@@ -70,6 +88,27 @@ class TestShortcutform(TestCase, TestMixin):
             self.assertEqual(button.text(), text, 'The text should match.')
             mocked_check_method.assert_called_once_with(True)
             self.assertEqual(button.isEnabled(), enabled, 'The button should be disabled.')
+
+    @patch('openlp.core.ui.shortcutlistform.QtWidgets.QDialog.exec')
+    def test_exec(self, mocked_exec):
+        """
+        Test the exec method
+        """
+        # GIVEN: A form and a mocked out base exec method
+        mocked_exec.return_value = True
+
+        # WHEN: exec is called
+        result = self.form.exec()
+
+        # THEN: The result should be True and the controls should be disabled
+        assert self.form.default_radio_button.isEnabled() is False
+        assert self.form.custom_radio_button.isEnabled() is False
+        assert self.form.primary_push_button.isEnabled() is False
+        assert self.form.alternate_push_button.isEnabled() is False
+        assert self.form.clear_primary_button.isEnabled() is False
+        assert self.form.clear_alternate_button.isEnabled() is False
+        mocked_exec.assert_called_once_with(self.form)
+        assert result is True
 
     def space_key_press_event_test(self):
         """
