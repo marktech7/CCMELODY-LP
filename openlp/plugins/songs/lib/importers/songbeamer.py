@@ -25,6 +25,7 @@ The :mod:`songbeamer` module provides the functionality for importing SongBeamer
 import logging
 import os
 import re
+import chardet
 
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
