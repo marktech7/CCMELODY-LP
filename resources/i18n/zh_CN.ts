@@ -3888,12 +3888,12 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>语言</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>请重新启动OpenLP来使用您新的语言设置。</translation>
     </message>
@@ -4188,7 +4188,7 @@ You can download the latest version from http://openlp.org/.</source>
         <translation>默认主题： %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>中文</translation>
@@ -5889,12 +5889,12 @@ These files will be removed if you continue to save.</source>
         <translation>快捷方式</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>重复的快捷键</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>快捷键 &quot;%s&quot; 已被指派给另一个动作，请使用一个不同的快捷键。</translation>
     </message>
@@ -5929,12 +5929,12 @@ These files will be removed if you continue to save.</source>
         <translation>将此动作的快捷键恢复为默认。</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>恢复为默认快捷键</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>您想将所有快捷键恢复为默认吗？</translation>
     </message>
@@ -9353,107 +9353,107 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>无法添加您的作者名称</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>该作者名称已存在</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>无法加入您的题目</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>该题目已存在</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>无法加入您的书卷</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>该书卷已存在</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>无法保存改动。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>无法保存您改动的作者名，因为该作者名已存在</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>无法保存您改动的题目，因为它已经存在了。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>删除作者名</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>你真的要删除选中的作者名吗？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>该作者名无法被删除，它目前至少被指派给了一首歌。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>删除题目</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>您确定要删除选中的题目吗？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>该题目无法被删除，它目前已被指派给了至少一首歌。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>删除曲集</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>您真的要删除选中的曲集吗？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>无法删除这个曲集，它当前被指派给至少一首歌曲。</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>作者名%s已存在。您想取消创建作者名%s，并用已存在的作者名%s制作歌曲吗？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>题目%s已存在。您想取消创建题目%s，并用已存在的题目%s制作歌曲吗？</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>曲集%s已存在。您想取消创建曲集%s，并用已存在的曲集%s制作歌曲吗？</translation>
     </message>

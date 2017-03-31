@@ -3901,12 +3901,12 @@ För att avbryta Kom igång-guiden helt (och inte starta OpenLP), klicka på kna
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>Språk</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>Vänligen starta om OpenLP för att aktivera dina nya språkinställningar.</translation>
     </message>
@@ -4201,7 +4201,7 @@ Du kan ladda ner den senaste versionen från http://openlp.org/.</translation>
         <translation>Standardtema: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>Svenska</translation>
@@ -5913,12 +5913,12 @@ Filerna kommer att tas bort från körschemat om du går vidare och sparar.</tra
         <translation>Genväg</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>Dubblett</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>Genvägen &quot;%s&quot; är redan kopplad till en annan åtgärd; välj en annan genväg.</translation>
     </message>
@@ -5953,12 +5953,12 @@ Filerna kommer att tas bort från körschemat om du går vidare och sparar.</tra
         <translation>Återställ till standardgenvägen för den här åtgärden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>Återställ till standardgenvägar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>Vill du återställa alla genvägar till standardvärdena?</translation>
     </message>
@@ -9382,107 +9382,107 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>Kunde inte lägga till författaren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>Författaren finns redan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>Kunde inte lägga till ämnet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>Ämnet finns redan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>Kunde inte lägga till boken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>Boken finns redan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>Kunde inte spara ändringarna.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>Kunde inte spara den ändrade författaren eftersom den redan finns.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>Kunde inte spara det ändrade ämnet eftersom det redan finns.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>Ta bort författare</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Är du säker på att du vill ta bort den valda författaren?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Författaren kan inte tas bort; den används för närvarande av minst en sång.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>Ta bort ämne</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Är du säker på att du vill ta bort det valda ämnet?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Ämnet kan inte tas bort; det används för närvarande av minst en sång.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>Ta bort bok</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Är du säker på att du vill ta bort den valda boken?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Boken kan inte tas bort; den används för närvarande av minst en sång.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>Författaren %s finns redan. Vill du låta sånger med författaren %s använda den befintliga författaren %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>Ämnet %s finns redan. Vill du låta sånger med ämnet %s använda det befintliga ämnet %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>Boken %s finns redan. Vill du låta sånger med boken %s använda den befintliga boken %s?</translation>
     </message>

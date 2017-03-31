@@ -3919,12 +3919,12 @@ Untuk membatalkan sepenuhnya Wisaya Kali Pertama (dan tidak memulai OpenLP), kli
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>Bahasa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>Silakan memulai-ulang OpenLP untuk menggunakan setelan bahasa baru.</translation>
     </message>
@@ -4219,7 +4219,7 @@ Versi terbaru dapat diunduh dari http://openlp.org/.</translation>
         <translation>Tema Bawaan: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>Bahasa Inggris</translation>
@@ -5931,12 +5931,12 @@ Berkas-berkas ini akan dihapus apabila Anda lanjutkan menyimpan.</translation>
         <translation>Pintasan</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>Duplikasi Pintasan</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>Pintasan &quot;%s&quot; sudah diterapkan untuk aksi lain, silakan gunakan Pintasan yang berbeda.</translation>
     </message>
@@ -5971,12 +5971,12 @@ Berkas-berkas ini akan dihapus apabila Anda lanjutkan menyimpan.</translation>
         <translation>Mengembalikan pintasan bawaan untuk aksi ini.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>Mengembalikan Pintasan Bawaan</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>Apakah Anda ingin mengembalikan semua pintasan ke bawaan-nya masing-masing?</translation>
     </message>
@@ -9405,107 +9405,107 @@ Apa Anda ingin membuang entry ini dari lagu?</translation>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>Tidak dapat menambahkan pengarang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>Pengarang sudah ada.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>Tidak dapat menambahkan topik.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>Topik sudah ada.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>Tidak dapat menambahkan buku lagu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>Buku lagu sudah ada.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>Tidak dapat menyimpan perubahan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>Tidak dapat menyimpan pengarang yang telah dimodifikasi, karena sudah ada.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>Tidak dapat menyimpan topik yang telah dimodifikasi, karena sudah ada.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>Hapus Pengarang</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Anda yakin ingin menghapus pengarang terpilih?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Pengarang tidak dapat dihapus, karena masih terkait dengan setidaknya satu lagu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>Hapus Topik</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Anda yakin ingin menghapus topik terpilih?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Topik tidak dapat dihapus, karena masih terkait dengan setidaknya satu lagu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>Hapus Buku Lagu</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Anda yakin ingin menghapus buku lagu terpilih?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Buku lagu tidak dapat dihapus, karena masih terkait dengan setidaknya satu lagu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>Pengarang %s sudah ada. Anda ingin membuat lagu dengan pengarang %s menggunakan pengarang %s yang sudah ada?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>Topik %s sudah ada. Anda ingin membuat lagu dengan topik %s menggunakan topik %s yang sudah ada?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>Buku lagu %s sudah ada. Anda ingin membuat lagu dengan buku lagu %s menggunakan buku lagu %s yang sudah ada?</translation>
     </message>

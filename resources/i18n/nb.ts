@@ -3925,12 +3925,12 @@ For å avbryte oppstartsveiviseren fullstendig (og ikke starte OpenLP), trykk p�
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>Språk</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>Vennligst start OpenLP på nytt for å bruke de nye språkinnstillingene.</translation>
     </message>
@@ -4226,7 +4226,7 @@ Du kan laste ned siste versjon fra http://openlp.org/.</translation>
         <translation>Standard tema: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>Norsk (bokmål)</translation>
@@ -5938,12 +5938,12 @@ Disse filene vil bli fjernet hvis du fortsetter til lagre.</translation>
         <translation>Hurtigtast</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>Dublett snarvei</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>Hurtigtasten &quot;%s&quot; er allerede brukt til en annen handling, bruk en annen hurtigtast.</translation>
     </message>
@@ -5978,12 +5978,12 @@ Disse filene vil bli fjernet hvis du fortsetter til lagre.</translation>
         <translation>Tilbakestill til standard hurtigtast for denne handlingen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>Tilbakestill til standard hurtigtast</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>Ønsker du å tilbakestille alle hurtigtaster til standard verdier?</translation>
     </message>
@@ -9411,107 +9411,107 @@ Vil du fjerne denne fra sangen?</translation>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>Kunne ikke legge til forfatteren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>Denne forfatteren finnes allerede.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>Kunne ikke legge til emnet.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>Dette emnet finnes allerede. </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>Kunne ikke legge til boken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>Denne boken finnes allerede.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>Kunne ikke lagre endringene.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>Kunne ikke lagre den endrede forfatteren fordi forfatteren finnes allerede.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>Kunne ikke lagre det endrede emnet, fordi det finnes allerede.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>Slett forfatter</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Er du sikker på at du vil slette den valgte forfatteren?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Denne forfatteren kan ikke slettes. Den er for øyeblikket tilknyttet minst én sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>Slett emne</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Er du sikker på at du vil slette valgte emne?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Dette emnet kan ikke slettes. Det er for øyeblikket tilknyttet minst én sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>Slett bok</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Er du sikker på at du vil slette valgte bok?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Denne boken kan ikke slettes. Den er for øyeblikket tilknyttet minst én sang.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>Forfatteren %s finnes allerede. Vil du lage sanger med forfatter %s bruk den eksisterende forfatter %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>Emnet %s finnes allerede. Vil du lage sanger med emne %s bruk det eksisterende emne %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>Boken %s finnes allerede. Vil du lage sanger med bok %s bruk den eksisterende bok %s?</translation>
     </message>

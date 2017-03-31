@@ -3875,12 +3875,12 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>Език</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>Моля рестартирай OpenLP за ползване на новите езикови настройки</translation>
     </message>
@@ -4173,7 +4173,7 @@ You can download the latest version from http://openlp.org/.</source>
         <translation>Тема по подразбиране: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>Английски</translation>
@@ -5875,12 +5875,12 @@ These files will be removed if you continue to save.</source>
         <translation>Пряк път</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>Повторение на пряк път</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>Прекият път &quot;%s&quot; е вече свързан с друго действие. Моля ползвайте друг пряк път!</translation>
     </message>
@@ -5915,12 +5915,12 @@ These files will be removed if you continue to save.</source>
         <translation>Възстанови прекия път по подразбиране за това действие.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>Възстанови преките пътища по подразбиране</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>Наистина ли да възстанови всички преки пътища по подразбиране</translation>
     </message>
@@ -9339,107 +9339,107 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>Не може да се добави автора</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>Този автор го има вече.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>Не може да се добави темата</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>Тази тема я има вече.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>Не може да се добави песнарката.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>Тази песнарка вече я има</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>Не могат да се запазят промените</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>Не може да се запази промяната във името на автора, защото такова име вече съществува.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>Не може да се запази промяната на темата, защото такава има вече.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>Изтрий автор</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>Наистина ли авторът да бъде изтрит?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>Авторът не може да бъде изтрит, защото е свързан с поне една песен.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>Изтрии тема</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>Наистина ли темата да бъде изтрита?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Темата не може да бъде изтрита, защото е свързана с поне една песен.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>Изтрии песнарка</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>Наистина ли песнарката да бъде изтрита?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>Песнарката не може да бъде изтрита, защото е свързана с поне една песен.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>Вече има автор  %s. Бихте ли искали вместо автора  %s, когото сте въвели като автор на пресните да се ползва  %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>Вече има тема  %s. Бихте ли искали вместо темата  %s, която сте въвели да се ползва  %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>Вече има песнарка %s.  Бихте ли искали вместо  %s, която сте въвели да се ползва  %s?</translation>
     </message>

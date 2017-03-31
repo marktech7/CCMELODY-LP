@@ -3888,12 +3888,12 @@ To cancel the First Time Wizard completely (and not start OpenLP), click the %s 
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Language</source>
         <translation>மொழி</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="121"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="123"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>உங்கள் புதிய மொழி அமைப்பு பயன்படுத்த OpenLP மறுதொடக்கம் செய்க.</translation>
     </message>
@@ -4188,7 +4188,7 @@ You can download the latest version from http://openlp.org/.</source>
         <translation>இயல்புநிலை தீம்: %s</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/utils/languagemanager.py" line="84"/>
+        <location filename="../../openlp/core/utils/languagemanager.py" line="86"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
         <translation>ஆங்கிலம்</translation>
@@ -5892,12 +5892,12 @@ These files will be removed if you continue to save.</source>
         <translation>குறுக்கு வழி</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>Duplicate Shortcut</source>
         <translation>குறுக்குவழி நகல்</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="438"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="147"/>
         <source>The shortcut &quot;%s&quot; is already assigned to another action, please use a different shortcut.</source>
         <translation>குறுக்கு வழி &quot;%s&quot; ஏற்கனவே மற்றொரு நடவடிக்கை ஒதுக்கப்படும், வேறு குறுக்குவழி பயன்படுத்தவும்.</translation>
     </message>
@@ -5932,12 +5932,12 @@ These files will be removed if you continue to save.</source>
         <translation>இந்த நடவடிக்கை முன்னிருப்பு குறுக்குவழி மீட்க.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Restore Default Shortcuts</source>
         <translation>இயல்புநிலை குறுக்குவழிகள் மீட்க</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/shortcutlistform.py" line="286"/>
+        <location filename="../../openlp/core/ui/shortcutlistform.py" line="368"/>
         <source>Do you want to restore all shortcuts to their defaults?</source>
         <translation>அவர்கள் இயல்பாக அனைத்து குறுக்குவழிகளை மீட்க வேண்டும்?</translation>
     </message>
@@ -9359,107 +9359,107 @@ Do you want to remove the entry from the song?</source>
 <context>
     <name>SongsPlugin.SongMaintenanceForm</name>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="229"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="228"/>
         <source>Could not add your author.</source>
         <translation>உங்கள் நூலாசிரியர் சேர்க்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="231"/>
         <source>This author already exists.</source>
         <translation>இந்த நூலாசிரியர் முன்பே இருக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="245"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="244"/>
         <source>Could not add your topic.</source>
         <translation>உங்கள் தலைப்பை சேர்க்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="248"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="247"/>
         <source>This topic already exists.</source>
         <translation>இந்த தலைப்பு ஏற்கனவே உள்ளது.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="262"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="261"/>
         <source>Could not add your book.</source>
         <translation>உங்கள் புத்தகத்தில் சேர்க்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="265"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>This book already exists.</source>
         <translation>இந்த புத்தகம் முன்பே இருக்கிறது.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="368"/>
         <source>Could not save your changes.</source>
         <translation>உங்கள் மாற்றங்களை சேமிக்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="309"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="308"/>
         <source>Could not save your modified author, because the author already exists.</source>
         <translation>நூலாசிரியர் ஏற்கனவே உள்ளது, ஏனெனில், உங்கள் மணிக்கு நூலாசிரியர் காப்பாற்ற முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="340"/>
         <source>Could not save your modified topic, because it already exists.</source>
         <translation>இது ஏற்கனவே உள்ளது, ஏனெனில், உங்கள் மணிக்கு தலைப்பை சேமிக்க முடியவில்லை.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Delete Author</source>
         <translation>படைப்பாளர் நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>Are you sure you want to delete the selected author?</source>
         <translation>நீங்கள் தேர்ந்தெடுத்த நூலாசிரியர் நீக்க வேண்டுமா?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="466"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="465"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
         <translation>இந்த நூலாசிரியர் நீக்க முடியாது, அவர்கள் தற்சமயம் குறைந்தபட்சம் ஒரு பாடல் ஒதுக்கப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Delete Topic</source>
         <translation>தலைப்பு நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>Are you sure you want to delete the selected topic?</source>
         <translation>நீங்கள் தேர்ந்தெடுத்த தலைப்பு நீக்க வேண்டுமா?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="478"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="477"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>இந்த தலைப்பை நீக்க முடியாது, அது தற்சமயம் குறைந்தது ஒரு பாடல் ஒதுக்கப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Delete Book</source>
         <translation>புத்தக நீக்கு</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>Are you sure you want to delete the selected book?</source>
         <translation>நீங்கள் தேர்ந்தெடுத்த புத்தகம் நீக்க வேண்டுமா?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="489"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="488"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
         <translation>இந்த புத்தகம் நீக்க முடியாது, அது தற்சமயம் குறைந்தது ஒரு பாடல் ஒதுக்கப்படும்.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="297"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="296"/>
         <source>The author %s already exists. Would you like to make songs with author %s use the existing author %s?</source>
         <translation>இந்த நூலாசிரியர் %s முன்பே இருக்கிறது. நீங்கள் நூலாசிரியர் என்ற இசை செய்ய விரும்புகிறேன் %s ஏற்கனவே இருக்கும் நூலாசிரியர் பயன்படுத்தும்%s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="332"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="331"/>
         <source>The topic %s already exists. Would you like to make songs with topic %s use the existing topic %s?</source>
         <translation>இந்த தலைப்பை %s முன்பே இருக்கிறது. நீங்கள் தலைப்பை கொண்ட இசை செய்ய விரும்புகிறேன் %s ஏற்கனவே தலைப்பை பயன்படுத்த %s?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="370"/>
         <source>The book %s already exists. Would you like to make songs with book %s use the existing book %s?</source>
         <translation>இந்த புத்தகம் %s ஏற்கனவே உள்ளது. நீங்கள் புத்தகம் இசை செய்ய விரும்புகிறேன் %s ஏற்கனவே புத்தகத்தில் பயன்படுத்த %s?</translation>
     </message>
