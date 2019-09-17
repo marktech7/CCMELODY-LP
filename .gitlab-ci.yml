@@ -1,0 +1,37 @@
+stages:
+  - test
+
+test-debian:
+  stage: test
+  image: registry.gitlab.com/openlp/runner:debian
+  before_script:
+    - sh scripts/generate_resources.sh
+  script:
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+
+test-ubuntu:
+  stage: test
+  image: registry.gitlab.com/openlp/runner:ubuntu
+  before_script:
+    - sh scripts/generate_resources.sh
+  script:
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+
+test-fedora:
+  stage: test
+  image: registry.gitlab.com/openlp/runner:fedora
+  before_script:
+    - sh scripts/generate_resources.sh
+  script:
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+
+test-macos:
+  only:
+    - master@openlp/openlp
+  stage: test
+  tags:
+    - macos
+  before_script:
+    - sh scripts/generate_resources.sh
+  script:
+    - python3 -m pytest -v --color=no --disable-warnings --ignore=tests/utils
