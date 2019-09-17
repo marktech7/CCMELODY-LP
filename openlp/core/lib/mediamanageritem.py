@@ -498,7 +498,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
                                               translate('OpenLP.MediaManagerItem',
                                                         'You must select one or more items to preview.'))
         else:
-            log.debug('%s Preview requested' % self.plugin.name)
+            log.debug('{plug} Preview requested'.format(plug=self.plugin.name))
             Registry().set_flag('has doubleclick added item to service', False)
             service_item = self.build_service_item()
             if service_item:
@@ -636,8 +636,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         service_item.add_icon()
         if self.generate_slide_data(service_item, item=item, remote=remote, context=context):
             return service_item
-        else:
-            return None
+        return None
 
     def service_load(self, item):
         """

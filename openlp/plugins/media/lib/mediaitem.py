@@ -127,36 +127,6 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                                                 tooltip=optical_button_tooltip,
                                                                 triggers=self.on_load_optical)
 
-    def add_end_header_bar(self):
-        """
-        Adds buttons to the end of the header bar.
-        """
-        # Replace backgrounds do not work at present so remove functionality.
-        # self.replace_action = self.toolbar.add_toolbar_action('replace_action', icon=UiIcons().theme,
-        #                                                       triggers=self.on_replace_click)
-        # if 'webkit' not in get_media_players()[0]:
-        #     self.replace_action.setDisabled(True)
-        #     if hasattr(self, 'replace_action_context'):
-        #         self.replace_action_context.setDisabled(True)
-        # self.reset_action = self.toolbar.add_toolbar_action('reset_action', icon=UiIcons().close,
-        #                                                    visible=False, triggers=self.on_reset_click)
-        # self.media_widget = QtWidgets.QWidget(self)
-        # self.media_widget.setObjectName('media_widget')
-        # self.display_layout = QtWidgets.QFormLayout(self.media_widget)
-        # self.display_layout.setContentsMargins(self.display_layout.spacing(), self.display_layout.spacing(),
-        #                                        self.display_layout.spacing(), self.display_layout.spacing())
-        # self.display_layout.setObjectName('display_layout')
-        # self.display_type_label = QtWidgets.QLabel(self.media_widget)
-        # self.display_type_label.setObjectName('display_type_label')
-        # self.display_type_combo_box = create_horizontal_adjusting_combo_box(
-        #     self.media_widget, 'display_type_combo_box')
-        # self.display_type_label.setBuddy(self.display_type_combo_box)
-        # self.display_layout.addRow(self.display_type_label, self.display_type_combo_box)
-        # Add the Media widget to the page layout.
-        # self.page_layout.addWidget(self.media_widget)
-        # self.display_type_combo_box.currentIndexChanged.connect(self.override_player_changed)
-        pass
-
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
         """

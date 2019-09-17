@@ -107,7 +107,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             if hasattr(self.main_window, 'splash') and self.main_window.splash.isVisible():
                 self.main_window.splash.hide()
             State().missing_text('media_live', translate('OpenLP.SlideController',
-                                 'VLC or pymediainfo are missing, so you are unable to play any media'))
+                                                         'python3-vlc or pymediainfo are missing, so you are unable to play any media'))
         return True
 
     def bootstrap_post_set_up(self):
@@ -132,8 +132,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         if controller_type == DisplayControllerType.Live:
             return self.live_controller
-        else:
-            return self.preview_controller
+        return self.preview_controller
 
     def media_state_live(self):
         """
@@ -271,7 +270,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                        translate('MediaPlugin.MediaItem', 'Unsupported File'))
             return False
-        log.debug('video media type: ' + str(controller.media_info.media_type))
+        log.debug('video media type: {tpe) '.format(tpe=str(controller.media_info.media_type)))
         # dont care about actual theme, set a black background
         # now start playing - Preview is autoplay!
         autoplay = False
@@ -292,7 +291,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
         self.set_controls_visible(controller, True)
-        log.debug('use %s controller' % self.current_media_players[controller.controller_type].display_name)
+        log.debug('use {nm} controller'.format(nm=self.current_media_players[controller.controller_type].display_name))
         return True
 
     @staticmethod
@@ -578,7 +577,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param controller: The Controller to use
         :param volume: The volume to be set
         """
-        log.debug('media_volume %d' % volume)
+        log.debug('media_volume {vol}'.format(vol=volume))
         display = self._define_display(controller)
         self.current_media_players[controller.controller_type].volume(display, volume)
         controller.volume_slider.setValue(volume)
