@@ -263,6 +263,9 @@ def init_schema(url):
         * theme_name
         * search_title
         * search_lyrics
+        * created_date
+        * last_modified
+        * temporary
 
     **songs_songsbooks Table**
         This is a mapping table between the *songs* and the *song_books* tables. It has the following columns:

@@ -1100,3 +1100,4 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         clean_song(self.manager, self.song)
         self.manager.save_object(self.song)
         self.media_item.auto_select_id = self.song.id
+        Registry().execute('song_changed', self.song.id)

@@ -228,7 +228,7 @@ class OpenLyrics(object):
         self.manager = manager
         FormattingTags.load_tags()
 
-    def song_to_xml(self, song):
+    def song_to_xml(self, song, version=None):
         """
         Convert the song to OpenLyrics Format.
         """
@@ -257,6 +257,9 @@ class OpenLyrics(object):
                 'verseOrder', properties, song.verse_order.lower())
         if song.ccli_number:
             self._add_text_to_element('ccliNo', properties, song.ccli_number)
+        # Add a custom version
+        if version:
+            self._add_text_to_element('version', properties, version)
         if song.authors_songs:
             authors = etree.SubElement(properties, 'authors')
             for author_song in song.authors_songs:
@@ -369,7 +372,7 @@ class OpenLyrics(object):
         end_tags.reverse()
         return ''.join(start_tags), ''.join(end_tags)
 
-    def xml_to_song(self, xml, parse_and_temporary_save=False):
+    def xml_to_song(self, xml, parse_and_temporary_save=False, update_song_id=None):
         """
         Create and save a song from OpenLyrics format xml to the database. Since we also export XML from external
         sources (e. g. OpenLyrics import), we cannot ensure, that it completely conforms to the OpenLyrics standard.
@@ -391,7 +394,10 @@ class OpenLyrics(object):
         # Formatting tags are new in OpenLyrics 0.8
         if float(song_xml.get('version')) > 0.7:
             self._process_formatting_tags(song_xml, parse_and_temporary_save)
-        song = Song()
+        if update_song_id:
+            song = self.manager.get_object(Song, update_song_id)
+        else:
+            song = Song()
         # Values will be set when cleaning the song.
         song.search_lyrics = ''
         song.verse_order = ''

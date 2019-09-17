@@ -144,6 +144,7 @@ class SongsPlugin(Plugin):
         """
         super(SongsPlugin, self).__init__('songs', __default_settings__, SongMediaItem, SongsTab)
         self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
+        Registry().register('songs_manager', self.manager)
         self.weight = -10
         self.icon_path = UiIcons().music
         self.icon = build_icon(self.icon_path)
