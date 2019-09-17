@@ -41,7 +41,6 @@ from openlp.core.widgets.edits import SearchEdit
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListWidgetWithDnD
 
-
 log = logging.getLogger(__name__)
 
 
@@ -416,7 +415,9 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         for index in range(self.list_view.count()):
             list_item = self.list_view.item(index)
             file_path = list_item.data(QtCore.Qt.UserRole)
-            file_paths.append(file_path)
+            # This is added as start of OpenLP each time
+            if file_path != UiStrings().LiveStream:
+                file_paths.append(file_path)
         return file_paths
 
     def load_list(self, load_list, target_group):

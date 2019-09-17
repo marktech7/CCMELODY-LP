@@ -25,7 +25,6 @@ import os
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.mixins import RegistryProperties
@@ -36,10 +35,10 @@ from openlp.core.lib import MediaType, ServiceItemContext, check_item_selected
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import parse_optical_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.media.vlcplayer import get_vlc
-
 
 if get_vlc() is not None:
     from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
@@ -175,7 +174,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                 return False
         filename = str(item.data(QtCore.Qt.UserRole))
         # Special handling if the filename is a optical clip
-        if filename == 'live':
+        if filename == UiStrings().LiveStream:
             service_item.processor = 'vlc'
             service_item.title = filename
             service_item.add_capability(ItemCapabilities.CanStream)
@@ -265,7 +264,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         file_name = translate('MediaPlugin.MediaItem', 'Live Stream')
         item_name = QtWidgets.QListWidgetItem(file_name)
         item_name.setIcon(UiIcons().video)
-        item_name.setData(QtCore.Qt.UserRole, 'live')
+        item_name.setData(QtCore.Qt.UserRole, UiStrings().LiveStream)
         item_name.setToolTip(translate('MediaPlugin.MediaItem', 'Show Live Stream'))
         self.list_view.addItem(item_name)
         for track in media:

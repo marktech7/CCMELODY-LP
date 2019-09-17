@@ -273,8 +273,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             return False
         log.debug('video media type: ' + str(controller.media_info.media_type))
         # dont care about actual theme, set a black background
-        # if controller.is_live and not controller.media_info.is_background:
-        #    display.frame.runJavaScript('show_video("setBackBoard", null, null,"visible");')
         # now start playing - Preview is autoplay!
         autoplay = False
         if service_item.is_capable(ItemCapabilities.CanStream):
