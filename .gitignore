@@ -8,7 +8,6 @@
 *.nja
 *.orig
 *.pyc
-resources/i18n/*.ts
 *.rej
 *.ropeproject
 *.~\?~
@@ -16,8 +15,6 @@ resources/i18n/*.ts
 .cache
 .coverage
 .directory
-.git
-.gitignore
 .idea
 .kdev4
 .komodotools
@@ -35,7 +32,6 @@ env
 htmlcov
 list
 node_modules
-openlp-test-projectordb.sqlite
 openlp.cfg
 openlp.pro
 openlp/core/resources.py.old
@@ -45,4 +41,3 @@ output
 package-lock.json
 tags
 test
-tests.kdev4
