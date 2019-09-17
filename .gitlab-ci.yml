@@ -28,8 +28,7 @@ test-debian:
                          python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
                          python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
                          python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
-                         python3-vlc python3-zeroconf python3-pip python3-pep8 pylint3 mediainfo mupdf-tools
-                         ghostscript xvfb
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 pylint3 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
@@ -47,8 +46,7 @@ test-ubuntu:
                          python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
                          python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
                          python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
-                         python3-vlc python3-zeroconf python3-pip python3-pep8 pylint3 mediainfo mupdf-tools
-                         ghostscript xvfb
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 pylint3 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
