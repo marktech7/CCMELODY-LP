@@ -35,7 +35,6 @@ if [ $result != 'scripts' ] ; then
 	exit
 fi
 
-
 rm ../resources/i18n/*.ts
 
 echo
