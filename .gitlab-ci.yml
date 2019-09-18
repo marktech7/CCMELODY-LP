@@ -1,5 +1,19 @@
 stages:
+  - lint
   - test
+
+lint:
+  stage: lint
+  image: python
+  before_script:
+    - apt-get update
+    # packages required for dbus-python
+    - apt-get -y install libdbus-1-dev libdbus-glib-1-dev
+    # packages required for pyodbc
+    - apt-get -y install unixodbc unixodbc-dev
+    - pip install -e .[test]
+  script:
+    - flake8
 
 test-debian:
   stage: test
