@@ -1,6 +1,18 @@
 stages:
   - test
 
+pylint:
+  stage: test
+  image: python
+  before_script:
+    - pip install pylint
+  script:
+    - FILES=$(find . -name "*.py" | grep -v "ci-scripts/")
+    - pylint --rcfile=pylintrc --exit-zero ${FILES} > pylint_report.txt
+  artifacts:
+    paths:
+      - pylint_report.txt
+
 test-debian:
   stage: test
   variables:
