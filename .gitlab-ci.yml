@@ -11,7 +11,7 @@ pylint:
     - apt-get -y install libdbus-1-dev libdbus-glib-1-dev
     # packages required for pyodbc
     - apt-get -y install unixodbc unixodbc-dev
-    - pip install -r requirements-ci-testing.txt
+    - pip install -e .[test]
   script:
     - FILES=$(find . -name "*.py" | grep -v "ci-scripts/")
     - pylint --rcfile=pylintrc ${FILES} > pylint_report.txt
