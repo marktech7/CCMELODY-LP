@@ -26,6 +26,7 @@ from PyQt4 import QtCore, QtGui
 
 from auditdetaildialog import Ui_AuditDetailDialog
 
+
 class AuditDetailForm(QtGui.QDialog, Ui_AuditDetailDialog):
     """
     Class documentation goes here.
@@ -68,10 +69,8 @@ class AuditDetailForm(QtGui.QDialog, Ui_AuditDetailDialog):
         self.resetWindow()
 
     def defineOutputLocation(self):
-        path = QtGui.QFileDialog.getExistingDirectory(self,
-            self.trUtf8(u'Output File Location'),
-            self.parent.config.get_last_dir(1) )
-        path = unicode(path)
+        path = QtGui.QFileDialog.getExistingDirectory(self, self.trUtf8(u'Output File Location'),
+                                                      self.parent.config.get_last_dir(1))
         if path != u'':
             self.parent.config.set_last_dir(path, 1)
             self.FileLineEdit.setText(path)
@@ -97,10 +96,10 @@ class AuditDetailForm(QtGui.QDialog, Ui_AuditDetailDialog):
             self.ThirdToTimeEdit.setEnabled(True)
 
     def accept(self):
-        print self.DetailedReport.isChecked()
-        print self.SummaryReport.isChecked()
-        print self.FromDateEdit.date()
-        print self.ToDateEdit.date()
+        print(self.DetailedReport.isChecked())
+        print(self.SummaryReport.isChecked())
+        print(self.FromDateEdit.date())
+        print(self.ToDateEdit.date())
         if self.DetailedReport.isChecked():
             self.detailedReport()
         else:
@@ -108,15 +107,15 @@ class AuditDetailForm(QtGui.QDialog, Ui_AuditDetailDialog):
         self.close()
 
     def detailedReport(self):
-        print "detailed"
+        print("detailed")
         filename = u'audit_det_%s_%s.txt' % \
             (self.FromDateEdit.date().toString(u'ddMMyyyy'),
              self.ToDateEdit.date().toString(u'ddMMyyyy'))
-        print filename
+        print(filename)
 
     def summaryReport(self):
-        print "summary"
+        print("summary")
         filename = u'audit_sum_%s_%s.txt' % \
             (self.FromDateEdit.date().toString(u'ddMMyyyy'),
              self.ToDateEdit.date().toString(u'ddMMyyyy'))
-        print filename
+        print(filename)
