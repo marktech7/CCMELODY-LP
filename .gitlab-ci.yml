@@ -6,7 +6,12 @@ pylint:
   stage: lint
   image: python
   before_script:
-    - pip install pylint
+    - apt-get update
+    # packages required for dbus-python
+    - apt-get -y install libdbus-1-dev libdbus-glib-1-dev
+    # packages required for pyodbc
+    - apt-get -y install unixodbc unixodbc-dev
+    - pip install -r requirements-ci-testing.txt
   script:
     - FILES=$(find . -name "*.py" | grep -v "ci-scripts/")
     - pylint --rcfile=pylintrc ${FILES} > pylint_report.txt

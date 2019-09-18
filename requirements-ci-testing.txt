@@ -1,0 +1,27 @@
+alembic
+appdirs
+beautifulsoup4
+chardet
+dbus-python
+lxml
+Mako
+pymediainfo >= 2.2
+PyQt5 >= 5.12
+PyQtWebEngine
+python-vlc
+QtAwesome
+requests
+SQLAlchemy >= 0.5
+waitress
+WebOb
+websockets
+zeroconf
+PyMuPDF
+QDarkStyle
+pymysql
+pyodbc
+psycopg2
+pylint
+pysword
+pytest
+python-xlib
