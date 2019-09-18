@@ -197,16 +197,16 @@ using a computer and a data projector.""",
         'sword-bibles': ['pysword'],
         # Required for scripts/*.py:
         'jenkins': ['python-jenkins'],
-        'launchpad': ['launchpadlib']
+        'launchpad': ['launchpadlib'],
+        'test': [
+            'PyMuPDF',
+            'pyodbc',
+            'pysword',
+            'pytest',
+            'python-xlib; platform_system=="Linux"',
+            'flake8',
+        ]
     },
-    tests_require=[
-        'pylint',
-        'PyMuPDF',
-        'pyodbc',
-        'pysword',
-        'pytest',
-        'python-xlib; platform_system=="Linux"'
-    ],
     setup_requires=['pytest-runner'],
     entry_points={'gui_scripts': ['openlp = openlp.__main__:start']}
 )
