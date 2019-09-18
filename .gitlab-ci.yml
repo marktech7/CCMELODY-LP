@@ -22,16 +22,16 @@ test-debian:
   image: debian:unstable
   before_script:
     - apt-get update
-    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia \
-                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit \
-                         python3-pyqt5.qtwebengine python3-sqlalchemy python3-chardet python3-lxml python3-enchant \
-                         python3-bs4 python3-mako python3-uno python3-pytest python3-pytest-cov python3-pip \
-                         python3-alembic python3-xdg python3-dbus.mainloop.pyqt5 python3-pep8 python3-websockets \
-                         python3-waitress python3-webob python3-requests python3-pymediainfo python3-qtawesome \
-                         python3-opengl python3-appdirs python3-vlc python3-zeroconf mediainfo pylint3 xvfb
+    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia
+                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit
+                         python3-pyqt5.qtwebengine python3-dbus.mainloop.pyqt5 python3-sqlalchemy python3-alembic
+                         python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
+                         python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
+                         python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-ubuntu:
   stage: test
@@ -40,31 +40,31 @@ test-ubuntu:
   image: ubuntu:rolling
   before_script:
     - apt-get update
-    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia \
-                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit \
-                         python3-pyqt5.qtwebengine python3-sqlalchemy python3-chardet python3-lxml python3-enchant \
-                         python3-bs4 python3-mako python3-uno python3-pytest python3-pytest-cov python3-pip \
-                         python3-alembic python3-xdg python3-dbus.mainloop.pyqt5 python3-pep8 python3-websockets \
-                         python3-waitress python3-webob python3-requests python3-pymediainfo python3-qtawesome \
-                         python3-opengl python3-appdirs python3-vlc python3-zeroconf mediainfo pylint3 xvfb
+    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia
+                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit
+                         python3-pyqt5.qtwebengine python3-dbus.mainloop.pyqt5 python3-sqlalchemy python3-alembic
+                         python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
+                         python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
+                         python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-fedora:
   stage: test
   image: fedora
   before_script:
-    - dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm \
+    - dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
                      https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
-    - dnf install -y python3-PyQt5 python3-qt5-webkit python3-qt5-webengine python3-sqlalchemy python3-alembic \
-                     python3-beautifulsoup4 python3-chardet python3-enchant python3-lxml python3-pyxdg python3-pytest \
-                     python3-websockets python3-appdirs python3-webob python3-QtAwesome python3-waitress \
-                     python3-pymediainfo python3-pyopengl python3-pylint python-pysword python3-requests \
-                     mediainfo patch xorg-x11-server-Xvfb python3-vlc python3-zeroconf
+    - dnf install -y python3-PyQt5 python3-qt5-webkit python3-qt5-webengine python3-sqlalchemy python3-alembic
+                     python3-beautifulsoup4 python3-chardet python3-enchant python3-lxml python3-pyxdg python3-pytest
+                     python3-websockets python3-appdirs python3-webob python3-QtAwesome python3-waitress python3-vlc
+                     python3-pymediainfo python3-pyopengl python-pysword python3-requests python3-zeroconf mediainfo
+                     patch xorg-x11-server-Xvfb ghostscript mupdf
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-macos:
   only:
