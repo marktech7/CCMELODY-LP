@@ -1,8 +1,9 @@
 stages:
+  - lint
   - test
 
 pylint:
-  stage: test
+  stage: lint
   image: python
   before_script:
     - pip install pylint
