@@ -14,11 +14,7 @@ pylint:
     - pip install -e .[test]
   script:
     - FILES=$(find . -name "*.py" | grep -v "ci-scripts/")
-    - pylint --rcfile=pylintrc ${FILES} > pylint_report.txt
-  artifacts:
-    when: always
-    paths:
-      - pylint_report.txt
+    - flake8 ${FILES}
 
 test-debian:
   stage: test
