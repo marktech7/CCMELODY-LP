@@ -9,8 +9,9 @@ pylint:
     - pip install pylint
   script:
     - FILES=$(find . -name "*.py" | grep -v "ci-scripts/")
-    - pylint --rcfile=pylintrc --exit-zero ${FILES} > pylint_report.txt
+    - pylint --rcfile=pylintrc ${FILES} > pylint_report.txt
   artifacts:
+    when: always
     paths:
       - pylint_report.txt
 
