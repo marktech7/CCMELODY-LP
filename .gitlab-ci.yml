@@ -67,12 +67,13 @@ test-fedora:
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-macos:
-  only:
-    - master@openlp/openlp
   stage: test
   tags:
     - macos
   before_script:
+    - export PATH=/opt/local/bin:$PATH
     - sh scripts/generate_resources.sh
   script:
     - python3 -m pytest -v --color=no --disable-warnings --ignore=tests/utils
+  only:
+    - master@openlp/openlp
