@@ -47,7 +47,6 @@ from openlp.core.widgets.layouts import AspectRatioLayout
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListPreviewWidget
 
-
 # Threshold which has to be trespassed to toggle.
 HIDE_MENU_THRESHOLD = 27
 
@@ -863,6 +862,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
             # Get theme
+            # TODO this is wrong!!!
             theme_name = service_item.theme if service_item.theme else Registry().get('theme_manager').global_theme
             theme_data = Registry().get('theme_manager').get_theme_data(theme_name)
             # Set theme for preview

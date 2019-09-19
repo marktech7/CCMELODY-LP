@@ -112,7 +112,7 @@ class UiAboutDialog(object):
                       '<p>This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; '
                       'without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. '
                       'See the GNU General Public License for more details.</p>'
-                      '<p>You should have received a copy of the GNU General Public License'
+                      '<p>You should have received a copy of the GNU General Public License '
                       'along with this program.  If not, see <a href="https://www.gnu.org/licenses/">'
                       'https://www.gnu.org/licenses/</a>.</p>').format(crs='\xa9', yr=datetime.date.today().year))
         self.about_notebook.setTabText(self.about_notebook.indexOf(self.about_tab), UiStrings().About)
