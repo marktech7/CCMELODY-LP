@@ -565,6 +565,7 @@ class TestVLCPlayer(TestCase, TestMixin):
         # GIVEN: A display object and a VlcPlayer instance
         mocked_display = MagicMock()
         mocked_display.size.return_value = (10, 10)
+        mocked_display.is_display = False
         vlc_player = VlcPlayer(None)
 
         # WHEN: resize is called
