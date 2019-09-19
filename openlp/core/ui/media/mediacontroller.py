@@ -54,16 +54,7 @@ TICK_TIME = 200
 
 class MediaController(RegistryBase, LogMixin, RegistryProperties):
     """
-    The implementation of the Media Controller. The Media Controller adds an own class for every Player.
-    Currently these are QtWebkit, Phonon and Vlc. display_controllers are an array of controllers keyed on the
-    slidecontroller or plugin which built them.
-
-    ControllerType is the class containing the key values.
-
-    media_players are an array of media players keyed on player name.
-
-    current_media_players is an array of player instances keyed on ControllerType.
-
+    The implementation of the Media Controller which manages how media is played.
     """
 
     def setup(self):
@@ -107,15 +98,16 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         else:
             if hasattr(self.main_window, 'splash') and self.main_window.splash.isVisible():
                 self.main_window.splash.hide()
-            text = ''
+            text_vlc = translate('OpenLP.MediaController',
+                                 'The media integration library is missing (python - vlc is not installed)')
+            text_info = translate('OpenLP.MediaController',
+                                  'The media integration library is missing (python - pymediainfo is not installed)')
             if not getvlc and not pymediainfo_available:
-                text = 'Both python3-vlc or python3-pymediainfo are missing'
+                State().missing_text('media_live', "{text}\n{base}".format(text=text_vlc, base=text_info))
             if getvlc and not pymediainfo_available:
-                text = 'python3-pymediainfo is missing'
+                State().missing_text('media_live', "{text}".format(text=text_info))
             if not getvlc and pymediainfo_available:
-                text = 'python3-vlc is missing'
-            base_string = translate('OpenLP.SlideController', 'so you are unable to play any media')
-            State().missing_text('media_live', "{text}, {base}".format(text=text, base=base_string))
+                State().missing_text('media_live', "{text}".format(text=text_vlc))
         return True
 
     def bootstrap_post_set_up(self):
@@ -128,7 +120,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 self.setup_display(self.live_controller.display, False)
             except AttributeError:
                 State().update_pre_conditions('media_live', False)
-                State().missing_text('media_live', translate('OpenLP.SlideController',
+                State().missing_text('media_live', translate('OpenLP.MediaController',
                                                              'No Displays configure so Live Media has been disabled'))
             self.setup_display(self.preview_controller.preview_display, True)
 
