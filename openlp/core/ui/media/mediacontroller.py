@@ -100,14 +100,22 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.vlc_player = VlcPlayer(self)
         State().add_service('mediacontroller', 0)
         State().add_service('media_live', 0)
-        if get_vlc() and pymediainfo_available:
+        getvlc = get_vlc()
+        if getvlc and pymediainfo_available:
             State().update_pre_conditions('mediacontroller', True)
             State().update_pre_conditions('media_live', True)
         else:
             if hasattr(self.main_window, 'splash') and self.main_window.splash.isVisible():
                 self.main_window.splash.hide()
-            State().missing_text('media_live', translate('OpenLP.SlideController',
-                                                         'python3-vlc or pymediainfo are missing, so you are unable to play any media'))
+            text = ''
+            if not getvlc and not pymediainfo_available:
+                text = 'Both python3-vlc or python3-pymediainfo are missing'
+            if getvlc and not pymediainfo_available:
+                text = 'python3-pymediainfo is missing'
+            if not getvlc and pymediainfo_available:
+                text = 'python3-vlc is missing'
+            base_string = translate('OpenLP.SlideController', 'so you are unable to play any media')
+            State().missing_text('media_live', "{text}, {base}".format(text=text, base=base_string))
         return True
 
     def bootstrap_post_set_up(self):
@@ -270,7 +278,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                        translate('MediaPlugin.MediaItem', 'Unsupported File'))
             return False
-        log.debug('video media type: {tpe) '.format(tpe=str(controller.media_info.media_type)))
+        log.debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
         # dont care about actual theme, set a black background
         # now start playing - Preview is autoplay!
         autoplay = False

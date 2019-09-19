@@ -177,9 +177,6 @@ class VlcPlayer(MediaPlayer):
         elif output_display.media_info.media_type == MediaType.Stream:
             stream_cmd = Settings().value('media/stream command')
             output_display.vlc_media = output_display.vlc_instance.media_new_location(stream_cmd)
-        elif output_display.media_info.media_type == MediaType.Stream:
-            stream_cmd = Settings().value('media/stream command')
-            output_display.vlc_media = output_display.vlc_instance.media_new_location(stream_cmd)
         else:
             output_display.vlc_media = output_display.vlc_instance.media_new_path(path)
         # put the media in the media player
