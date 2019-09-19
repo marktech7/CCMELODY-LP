@@ -42,3 +42,4 @@ output
 package-lock.json
 tags
 test
+openlp-test-projectordb.sqlite
