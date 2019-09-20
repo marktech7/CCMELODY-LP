@@ -3,6 +3,7 @@ import shutil
 import pyqt5ac
 
 
+# constants for various directory paths and file paths
 SCRIPTS_DIR = os.path.realpath(os.path.dirname(__file__))
 ROOT_DIR = os.path.realpath(os.path.join(SCRIPTS_DIR, '..'))
 CORE_DIR = os.path.realpath(os.path.join(ROOT_DIR, 'openlp', 'core'))
