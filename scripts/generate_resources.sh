@@ -34,7 +34,9 @@
 #
 ###############################################################################
 # Backup the existing resources
-mv openlp/core/resources.py openlp/core/resources.py.old
+if [ -f "openlp/core/resources.py" ]; then
+    mv openlp/core/resources.py openlp/core/resources.py.old
+fi
 
 # Create the new data from the updated qrc
 pyrcc5 -o openlp/core/resources.py.new resources/images/openlp-2.qrc

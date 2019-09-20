@@ -9,14 +9,14 @@
 
 from PyQt4 import QtCore, QtGui
 
+
 class Ui_AuditDetailDialog(object):
     def setupUi(self, AuditDetailDialog):
         AuditDetailDialog.setObjectName(u'AuditDetailDialog')
         AuditDetailDialog.resize(593, 501)
         self.buttonBox = QtGui.QDialogButtonBox(AuditDetailDialog)
         self.buttonBox.setGeometry(QtCore.QRect(420, 470, 170, 25))
-        self.buttonBox.setStandardButtons(
-            QtGui.QDialogButtonBox.Cancel|QtGui.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtGui.QDialogButtonBox.Cancel | QtGui.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName(u'buttonBox')
         self.FileGroupBox = QtGui.QGroupBox(AuditDetailDialog)
         self.FileGroupBox.setGeometry(QtCore.QRect(10, 370, 571, 70))
@@ -31,7 +31,7 @@ class Ui_AuditDetailDialog(object):
         self.SaveFilePushButton = QtGui.QPushButton(self.FileGroupBox)
         icon = QtGui.QIcon()
         icon.addPixmap(QtGui.QPixmap(u':/exports/export_load.png'),
-            QtGui.QIcon.Normal, QtGui.QIcon.Off)
+                       QtGui.QIcon.Normal, QtGui.QIcon.Off)
         self.SaveFilePushButton.setIcon(icon)
         self.SaveFilePushButton.setObjectName(u'SaveFilePushButton')
         self.horizontalLayout.addWidget(self.SaveFilePushButton)
