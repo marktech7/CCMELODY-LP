@@ -18,7 +18,6 @@
 .idea
 .kdev4
 .komodotools
-.pylint.d
 .pytest_cache
 .vscode
 OpenLP.egg-info

@@ -4,7 +4,7 @@ image:
   - Visual Studio 2017
 
 clone_script:
-  - curl -L https://bazaar.launchpad.net/BRANCHPATH/tarball -o sourcecode.tar.gz
+  - curl -L https://gitlab.com/openlp/openlp/-/archive/BRANCHPATH/openlp-BRANCHPATH.tar.gz -o sourcecode.tar.gz
   - 7z e sourcecode.tar.gz
   - 7z x sourcecode.tar
   - mv BRANCHPATH openlp-branch
@@ -46,7 +46,7 @@ after_test:
   # Install VLC
   - choco install %CHOCO_VLC%
   # Get the packaging code
-  - appveyor DownloadFile http://bazaar.launchpad.net/~openlp-core/openlp/packaging/tarball -FileName packaging.tar.gz
+  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.tar.gz -FileName packaging.tar.gz
   - 7z e packaging.tar.gz
   - 7z x packaging.tar
   - mv ~openlp-core/openlp/packaging packaging
@@ -54,7 +54,7 @@ after_test:
   - ps: >-
       If (BUILD_DOCS) {
         &"$env:PYTHON\python.exe" -m pip install sphinx
-        Invoke-WebRequest -Uri "http://bazaar.launchpad.net/~openlp-core/openlp/documentation/tarball" -OutFile documentation.tar.gz
+        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.tar.gz" -OutFile documentation.tar.gz
         7z e documentation.tar.gz
         7z x documentation.tar
         mv ~openlp-core/openlp/documentation documentation

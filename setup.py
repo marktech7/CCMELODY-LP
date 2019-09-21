@@ -21,88 +21,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-import re
-from subprocess import Popen, PIPE
+from subprocess import run
 
 from setuptools import setup, find_packages
 
 
 VERSION_FILE = 'openlp/.version'
-SPLIT_ALPHA_DIGITS = re.compile(r'(\d+|\D+)')
 
 
-def try_int(s):
-    """
-    Convert string s to an integer if possible. Fail silently and return
-    the string as-is if it isn't an integer.
-
-    :param s: The string to try to convert.
-    """
-    try:
-        return int(s)
-    except (TypeError, ValueError):
-        return s
-
-
-def natural_sort_key(s):
-    """
-    Return a tuple by which s is sorted.
-
-    :param s: A string value from the list we want to sort.
-    """
-    return list(map(try_int, SPLIT_ALPHA_DIGITS.findall(s)))
-
-
-def natural_sort(seq):
-    """
-    Returns a copy of seq, sorted by natural string sort.
-
-    :param seq: The sequence to sort.
-    :param compare: The comparison method to use
-    :return: The sorted sequence
-    """
-    import copy
-    temp = copy.copy(seq)
-    temp.sort(key=natural_sort_key)
-    return temp
-
-
-# NOTE: The following code is a duplicate of the code in openlp/core/common/checkversion.py.
-# Any fix applied here should also be applied there.
 ver_file = None
 try:
     # Get the revision of this tree.
-    bzr = Popen(('bzr', 'revno'), stdout=PIPE)
-    tree_revision, error = bzr.communicate()
-    code = bzr.wait()
-    if code != 0:
-        raise Exception('Error running bzr log')
-
-    # Get all tags.
-    bzr = Popen(('bzr', 'tags'), stdout=PIPE)
-    output, error = bzr.communicate()
-    code = bzr.wait()
-    if code != 0:
-        raise Exception('Error running bzr tags')
-    tags = output.splitlines()
-    if not tags:
-        tag_version = '0.0.0'
-        tag_revision = '0'
-    else:
-        # Remove any tag that has "?" as revision number. A "?" as revision number indicates, that this tag is from
-        # another series.
-        tags = [tag for tag in tags if tag.split()[-1].strip() != '?']
-        # Get the last tag and split it in a revision and tag name.
-        tag_version, tag_revision = tags[-1].split()
-    # If they are equal, then this tree is tarball with the source for the release. We do not want the revision number
-    # in the version string.
-    tree_revision = tree_revision.strip()
-    tag_revision = tag_revision.strip()
-    if tree_revision == tag_revision:
-        version_string = tag_version.decode('utf-8')
-    else:
-        version_string = '{version}.dev{revision}'.format(version=tag_version.decode('utf-8'),
-                                                          revision=tree_revision.decode('utf-8'))
+    git_version = run(['git', 'describe', '--tags'], capture_output=True, check=True, universal_newlines=True).stdout
+    version_string = '+'.join(git_version.strip().rsplit('-g', 1))
+    version_string = '.dev'.join(version_string.rsplit('-', 1))
     ver_file = open(VERSION_FILE, 'w')
     ver_file.write(version_string)
 except Exception:
@@ -177,6 +109,7 @@ using a computer and a data projector.""",
         'pyobjc-framework-Cocoa; platform_system=="Darwin"',
         'PyQt5 >= 5.12',
         'PyQtWebEngine',
+        'Pyro4; platform_system=="Darwin"',
         'python-vlc',
         'pywin32; platform_system=="Windows"',
         'QtAwesome',
@@ -190,14 +123,13 @@ using a computer and a data projector.""",
     extras_require={
         'agpl-pdf': ['PyMuPDF'],
         'darkstyle': ['QDarkStyle'],
-        'mysql': ['pymysql'],
+        'mysql': ['PyMySQL'],
         'odbc': ['pyodbc'],
         'postgresql': ['psycopg2'],
         'spellcheck': ['pyenchant >= 1.6'],
         'sword-bibles': ['pysword'],
         # Required for scripts/*.py:
         'jenkins': ['python-jenkins'],
-        'launchpad': ['launchpadlib'],
         'test': [
             'PyMuPDF',
             'pyodbc',

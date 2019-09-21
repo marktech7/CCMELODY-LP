@@ -62,6 +62,7 @@ LINUX_MODULES = [
 
 MACOSX_MODULES = [
     'objc',
+    'Pyro4',
     'AppKit'
 ]
 
@@ -106,9 +107,8 @@ OPTIONAL_MODULES = [
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
     ('jenkins', '(access jenkins api)'),
-    ('launchpadlib', '(launchpad script support)'),
     ('pytest', '(testing framework)'),
-    ('pylint', '(linter)')
+    ('flake8', '(linter)')
 ]
 
 w = sys.stdout.write

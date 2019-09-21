@@ -127,7 +127,7 @@ class TestLib(TestCase, TestMixin):
         """
         Test that the 'range' regex parses bible verse references correctly.
         Note: This test takes in to account that the regex does not work quite as expected!
-        see https://bugs.launchpad.net/openlp/+bug/1638620
+        see https://gitlab.com/openlp/openlp/issues/240
         """
         # GIVEN: Some test data which contains different references to parse, with the expected results.
         with patch('openlp.plugins.bibles.lib.Settings', return_value=MagicMock(**{'value.return_value': ''})):
@@ -168,7 +168,7 @@ class TestLib(TestCase, TestMixin):
         # GIVEN: Some test data which contains different references to parse, with the expected results.
         with patch('openlp.plugins.bibles.lib.Settings', return_value=MagicMock(**{'value.return_value': ''})):
             # The following test data tests with 111 variants when using the default 'separators'
-            # The regex for handling ranges is a bit screwy, see https://bugs.launchpad.net/openlp/+bug/1638620
+            # The regex for handling ranges is a bit screwy, see https://gitlab.com/openlp/openlp/issues/240
             test_data = [
                 ('23', ['23']),
                 ('23{to}24', ['23-24']),

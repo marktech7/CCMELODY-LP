@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
-# pylint: disable=protected-access
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
@@ -895,7 +894,7 @@ class TestSearchWorker(TestCase, TestMixin):
 
         # WHEN: The start() method is called
         with patch.object(worker, 'found_song') as mocked_found_song:
-            worker._found_song_callback(song)                                   # pylint: disable=protected-access
+            worker._found_song_callback(song)
 
         # THEN: The "found_song" signal should have been emitted
         mocked_found_song.emit.assert_called_with(song)

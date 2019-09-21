@@ -96,7 +96,7 @@ def get_yml(branch, build_type):
     version_string, version = get_version()
     yml_text = yml_text.replace('TAG', version)
     if build_type in ['openlp', 'trunk']:
-        yml_text = yml_text.replace('BRANCHPATH', '~openlp-core/openlp/trunk')
+        yml_text = yml_text.replace('BRANCHPATH', 'master')
         yml_text = yml_text.replace('BUILD_DOCS', '$TRUE')
     else:
         yml_text = yml_text.replace('BRANCHPATH', branch.split(':')[1])
