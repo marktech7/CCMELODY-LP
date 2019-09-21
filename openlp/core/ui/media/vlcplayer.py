@@ -29,13 +29,13 @@ import sys
 import threading
 from datetime import datetime
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.settings import Settings
+from openlp.core.display.screens import ScreenList
 from openlp.core.ui.media import MediaState, MediaType
 from openlp.core.ui.media.mediaplayer import MediaPlayer
-
 
 log = logging.getLogger(__name__)
 
@@ -105,8 +105,14 @@ class VlcPlayer(MediaPlayer):
         :return:
         """
         vlc = get_vlc()
-        output_display.vlc_widget = QtWidgets.QFrame(output_display)
+        if output_display.is_display:
+            output_display.vlc_widget = QtWidgets.QFrame()
+            output_display.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool |
+                                                     QtCore.Qt.WindowStaysOnTopHint)
+        else:
+            output_display.vlc_widget = QtWidgets.QFrame(output_display)
         output_display.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
+
         # creating a basic vlc instance
         command_line_options = '--no-video-title-show '
         if Settings().value('advanced/hide mouse') and live_display:
@@ -206,7 +212,10 @@ class VlcPlayer(MediaPlayer):
         :param output_display: The display where the media is
         :return:
         """
-        output_display.vlc_widget.resize(output_display.size())
+        if output_display.is_display:
+            output_display.vlc_widget.setGeometry(ScreenList().current.display_geometry)
+        else:
+            output_display.vlc_widget.resize(output_display.size())
 
     def play(self, controller, output_display):
         """

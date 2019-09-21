@@ -54,16 +54,7 @@ TICK_TIME = 200
 
 class MediaController(RegistryBase, LogMixin, RegistryProperties):
     """
-    The implementation of the Media Controller. The Media Controller adds an own class for every Player.
-    Currently these are QtWebkit, Phonon and Vlc. display_controllers are an array of controllers keyed on the
-    slidecontroller or plugin which built them.
-
-    ControllerType is the class containing the key values.
-
-    media_players are an array of media players keyed on player name.
-
-    current_media_players is an array of player instances keyed on ControllerType.
-
+    The implementation of the Media Controller which manages how media is played.
     """
 
     def setup(self):
@@ -100,14 +91,23 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.vlc_player = VlcPlayer(self)
         State().add_service('mediacontroller', 0)
         State().add_service('media_live', 0)
-        if get_vlc() and pymediainfo_available:
+        getvlc = get_vlc()
+        if getvlc and pymediainfo_available:
             State().update_pre_conditions('mediacontroller', True)
             State().update_pre_conditions('media_live', True)
         else:
             if hasattr(self.main_window, 'splash') and self.main_window.splash.isVisible():
                 self.main_window.splash.hide()
-            State().missing_text('media_live', translate('OpenLP.SlideController',
-                                 'VLC or pymediainfo are missing, so you are unable to play any media'))
+            text_vlc = translate('OpenLP.MediaController',
+                                 'The media integration library is missing (python - vlc is not installed)')
+            text_info = translate('OpenLP.MediaController',
+                                  'The media integration library is missing (python - pymediainfo is not installed)')
+            if not getvlc and not pymediainfo_available:
+                State().missing_text('media_live', "{text}\n{base}".format(text=text_vlc, base=text_info))
+            if getvlc and not pymediainfo_available:
+                State().missing_text('media_live', "{text}".format(text=text_info))
+            if not getvlc and pymediainfo_available:
+                State().missing_text('media_live', "{text}".format(text=text_vlc))
         return True
 
     def bootstrap_post_set_up(self):
@@ -120,7 +120,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 self.setup_display(self.live_controller.display, False)
             except AttributeError:
                 State().update_pre_conditions('media_live', False)
-                State().missing_text('media_live', translate('OpenLP.SlideController',
+                State().missing_text('media_live', translate('OpenLP.MediaController',
                                                              'No Displays configure so Live Media has been disabled'))
             self.setup_display(self.preview_controller.preview_display, True)
 
@@ -132,8 +132,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         if controller_type == DisplayControllerType.Live:
             return self.live_controller
-        else:
-            return self.preview_controller
+        return self.preview_controller
 
     def media_state_live(self):
         """
@@ -271,10 +270,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                        translate('MediaPlugin.MediaItem', 'Unsupported File'))
             return False
-        log.debug('video media type: ' + str(controller.media_info.media_type))
+        log.debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
         # dont care about actual theme, set a black background
-        # if controller.is_live and not controller.media_info.is_background:
-        #    display.frame.runJavaScript('show_video("setBackBoard", null, null,"visible");')
         # now start playing - Preview is autoplay!
         autoplay = False
         if service_item.is_capable(ItemCapabilities.CanStream):
@@ -294,7 +291,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
         self.set_controls_visible(controller, True)
-        log.debug('use %s controller' % self.current_media_players[controller.controller_type].display_name)
+        log.debug('use {nm} controller'.format(nm=self.current_media_players[controller.controller_type].display_name))
         return True
 
     @staticmethod
@@ -580,7 +577,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param controller: The Controller to use
         :param volume: The volume to be set
         """
-        log.debug('media_volume %d' % volume)
+        log.debug('media_volume {vol}'.format(vol=volume))
         display = self._define_display(controller)
         self.current_media_players[controller.controller_type].volume(display, volume)
         controller.volume_slider.setValue(volume)

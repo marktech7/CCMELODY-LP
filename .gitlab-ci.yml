@@ -1,37 +1,79 @@
 stages:
+  - lint
   - test
+
+lint:
+  stage: lint
+  image: python
+  before_script:
+    - apt-get update
+    # packages required for dbus-python
+    - apt-get -y install libdbus-1-dev libdbus-glib-1-dev
+    # packages required for pyodbc
+    - apt-get -y install unixodbc unixodbc-dev
+    - pip install -e .[test]
+  script:
+    - flake8
 
 test-debian:
   stage: test
-  image: registry.gitlab.com/openlp/runner:debian
+  variables:
+    DEBIAN_FRONTEND: noninteractive
+  image: debian:unstable
   before_script:
+    - apt-get update
+    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia
+                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit
+                         python3-pyqt5.qtwebengine python3-dbus.mainloop.pyqt5 python3-sqlalchemy python3-alembic
+                         python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
+                         python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
+                         python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-ubuntu:
   stage: test
-  image: registry.gitlab.com/openlp/runner:ubuntu
+  variables:
+    DEBIAN_FRONTEND: noninteractive
+  image: ubuntu:rolling
   before_script:
+    - apt-get update
+    - apt-get install -y python3 qttools5-dev-tools pyqt5-dev-tools python3-pyqt5 python3-pyqt5.qtmultimedia
+                         python3-pyqt5.qtsvg python3-pyqt5.qtopengl python3-pyqt5.qtwebchannel python3-pyqt5.qtwebkit
+                         python3-pyqt5.qtwebengine python3-dbus.mainloop.pyqt5 python3-sqlalchemy python3-alembic
+                         python3-chardet python3-lxml python3-enchant python3-bs4 python3-mako python3-uno
+                         python3-pytest python3-pytest-cov python3-websockets python3-webob python3-waitress
+                         python3-requests python3-pymediainfo python3-qtawesome python3-opengl python3-appdirs
+                         python3-vlc python3-zeroconf python3-pip python3-pep8 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-fedora:
   stage: test
-  image: registry.gitlab.com/openlp/runner:fedora
+  image: fedora
   before_script:
+    - dnf install -y https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-$(rpm -E %fedora).noarch.rpm
+                     https://download1.rpmfusion.org/nonfree/fedora/rpmfusion-nonfree-release-$(rpm -E %fedora).noarch.rpm
+    - dnf install -y python3-PyQt5 python3-qt5-webkit python3-qt5-webengine python3-sqlalchemy python3-alembic
+                     python3-beautifulsoup4 python3-chardet python3-enchant python3-lxml python3-pyxdg python3-pytest
+                     python3-websockets python3-appdirs python3-webob python3-QtAwesome python3-waitress python3-vlc
+                     python3-pymediainfo python3-pyopengl python-pysword python3-requests python3-zeroconf mediainfo
+                     patch xorg-x11-server-Xvfb ghostscript mupdf
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
 test-macos:
-  only:
-    - master@openlp/openlp
   stage: test
   tags:
     - macos
   before_script:
+    - export PATH=/opt/local/bin:$PATH
     - sh scripts/generate_resources.sh
   script:
     - python3 -m pytest -v --color=no --disable-warnings --ignore=tests/utils
+  only:
+    - master@openlp/openlp
