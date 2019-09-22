@@ -3,12 +3,6 @@ version: OpenLP-win-ci-b{build}
 image:
   - Visual Studio 2017
 
-clone_script:
-  - curl -L https://gitlab.com/openlp/openlp/-/archive/BRANCHPATH/openlp-BRANCHPATH.tar.gz -o sourcecode.tar.gz
-  - 7z e sourcecode.tar.gz
-  - 7z x sourcecode.tar
-  - mv BRANCHPATH openlp-branch
-
 environment:
   matrix:
     - PYTHON: C:\\Python37-x64
@@ -23,7 +17,7 @@ install:
 build: off
 
 test_script:
-  - cd openlp-branch
+  - cd openlp
   # Run the tests
   - "%PYTHON%\\python.exe -m pytest -v tests"
   # Go back to the user root folder
@@ -46,23 +40,19 @@ after_test:
   # Install VLC
   - choco install %CHOCO_VLC%
   # Get the packaging code
-  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.tar.gz -FileName packaging.tar.gz
-  - 7z e packaging.tar.gz
-  - 7z x packaging.tar
-  - mv ~openlp-core/openlp/packaging packaging
+  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
+  - 7z x packaging-master.zip
   # If this is trunk we should also build the manual
   - ps: >-
-      If (BUILD_DOCS) {
+      If ($APPVEYOR_REPO_TAG -eq $True) {
         &"$env:PYTHON\python.exe" -m pip install sphinx
-        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.tar.gz" -OutFile documentation.tar.gz
-        7z e documentation.tar.gz
-        7z x documentation.tar
-        mv ~openlp-core/openlp/documentation documentation
-        cd packaging
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b ../openlp-branch -d ../documentation --portable --tag-override TAG
+        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
+        7z x documentation-master.zip
+        cd packaging-master
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b ../openlp -d ../documentation-master --portable
       } else {
-        cd packaging
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b ../openlp-branch --portable --tag-override TAG
+        cd packaging-master
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b ../openlp --portable
       }
 
 artifacts:
