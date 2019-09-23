@@ -23,7 +23,7 @@ test_script:
   # Go back to the user root folder
   - cd..
 
-after_test:
+on_success:
   # This is where we create a package using PyInstaller
   # Install PyInstaller 
   - "%PYTHON%\\python.exe -m pip install pyinstaller"
@@ -53,7 +53,7 @@ after_test:
         7z x documentation-master.zip
         #cd packaging-master
         cd packaging-gitlab-packaging
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
       } else {
         #cd packaging-master
         cd packaging-gitlab-packaging
