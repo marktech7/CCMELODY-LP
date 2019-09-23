@@ -40,18 +40,23 @@ after_test:
   # Install VLC
   - choco install %CHOCO_VLC%
   # Get the packaging code
-  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
-  - 7z x packaging-master.zip
+  #- appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
+  - appveyor DownloadFile https://gitlab.com/tgc-dk/packaging/-/archive/gitlab-packaging/packaging-gitlab-packaging.zip packaging-gitlab-packaging.zip
+  #- 7z x packaging-master.zip
+  - 7z x packaging-gitlab-packaging.zip
+
   # If this is trunk we should also build the manual
   - ps: >-
       If ($env:APPVEYOR_REPO_TAG -eq $True) {
         &"$env:PYTHON\python.exe" -m pip install sphinx
         Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
         7z x documentation-master.zip
-        cd packaging-master
+        #cd packaging-master
+        cd packaging-gitlab-packaging
         &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
       } else {
-        cd packaging-master
+        #cd packaging-master
+        cd packaging-gitlab-packaging
         &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
       }
 
