@@ -120,8 +120,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 self.setup_display(self.live_controller.display, False)
             except AttributeError:
                 State().update_pre_conditions('media_live', False)
-                State().missing_text('media_live', translate('OpenLP.MediaController',
-                                                             'No Displays configure so Live Media has been disabled'))
+                State().missing_text('media_live', translate(
+                    'OpenLP.MediaController',
+                    'No Displays have been configured, so Live Media has been disabled'))
             self.setup_display(self.preview_controller.preview_display, True)
 
     def display_controllers(self, controller_type):
