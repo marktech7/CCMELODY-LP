@@ -56,7 +56,7 @@ after_test:
       }
 
 artifacts:
-  - path: "%APPPVEYOR_BUILD_FOLDER%\dist\*.exe"
+  - path: dist\*.exe
     name: Portable-installer
-  - path: "%APPVEYOR_BUILD_FOLDER%\dist\*.msi"
+  - path: dist\*.msi
     name: Installer
