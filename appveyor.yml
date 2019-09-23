@@ -17,7 +17,7 @@ install:
 build: off
 
 test_script:
-  - cd openlp
+  - cd %APPVEYOR_BUILD_FOLDER%
   # Run the tests
   - "%PYTHON%\\python.exe -m pytest -v tests"
   # Go back to the user root folder
@@ -44,19 +44,19 @@ after_test:
   - 7z x packaging-master.zip
   # If this is trunk we should also build the manual
   - ps: >-
-      If ($APPVEYOR_REPO_TAG -eq $True) {
+      If ($env:APPVEYOR_REPO_TAG -eq $True) {
         &"$env:PYTHON\python.exe" -m pip install sphinx
         Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
         7z x documentation-master.zip
         cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b ../openlp -d ../documentation-master --portable
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
       } else {
         cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b ../openlp --portable
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
       }
 
 artifacts:
-  - path: openlp-branch\dist\*.exe
+  - path: %APPVEYOR_BUILD_FOLDER%\dist\*.exe
     name: Portable-installer
-  - path: openlp-branch\dist\*.msi
+  - path: %APPVEYOR_BUILD_FOLDER%\dist\*.msi
     name: Installer
