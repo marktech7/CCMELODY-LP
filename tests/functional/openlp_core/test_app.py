@@ -20,12 +20,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
-from unittest import TestCase, skip
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtWidgets
 
 # Mock QtWebEngineWidgets
+from tests.helpers.testmixin import TestMixin
+
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.app import OpenLP, parse_options
@@ -158,49 +160,58 @@ def test_parse_options_file_and_debug():
     assert args.rargs == ['dummy_temp'], 'The service file should not be blank'
 
 
-@skip('Figure out why this is causing a segfault')
-class TestOpenLP(TestCase):
+# @skip('Figure out why this is causing a segfault')
+class TestOpenLP(TestCase, TestMixin):
     """
     Test the OpenLP app class
     """
     def setUp(self):
-        self.build_settings()
-        self.qapplication_patcher = patch('openlp.core.app.QtGui.QApplication')
-        self.mocked_qapplication = self.qapplication_patcher.start()
         self.openlp = OpenLP([])
+        self.build_settings()
+        # self.qapplication_patcher = patch('openlp.core.app.QtGui.QApplication')
+        # self.mocked_qapplication = self.qapplication_patcher.start()
 
     def tearDown(self):
-        self.qapplication_patcher.stop()
+        # self.qapplication_patcher.stop()
         self.destroy_settings()
         del self.openlp
         self.openlp = None
 
-    def test_exec(self):
+    @patch('PyQt5.QtWidgets.QApplication')
+    def test_exec(self, mocked_qapplication):
         """
         Test the exec method
         """
         # GIVEN: An app
         self.openlp.shared_memory = MagicMock()
-        self.mocked_qapplication.exec.return_value = False
+        mocked_qapplication.exec.return_value = 0
 
         # WHEN: exec() is called
         result = self.openlp.exec()
 
         # THEN: The right things should be called
         assert self.openlp.is_event_loop_active is True
-        self.mocked_qapplication.exec.assert_called_once_with()
+        mocked_qapplication.exec.assert_called_once_with()
         self.openlp.shared_memory.detach.assert_called_once_with()
         assert result is False
 
+    @patch('openlp.core.app.QtWidgets.QMessageBox.critical')
+    @patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
     @patch('openlp.core.app.QtCore.QSharedMemory')
-    def test_is_already_running_not_running(self, MockedSharedMemory):
+    def test_is_already_running_not_running(self, MockedSharedMemory, MockedStandardButtons, mocked_critical):
         """
         Test the is_already_running() method when OpenLP is NOT running
         """
         # GIVEN: An OpenLP app and some mocks
+        # mocked_shared_memory = MagicMock()
+        # mocked_shared_memory.attach.return_value = False
+        # MockedSharedMemory.return_value = mocked_shared_memory
+
         mocked_shared_memory = MagicMock()
         mocked_shared_memory.attach.return_value = False
         MockedSharedMemory.return_value = mocked_shared_memory
+        MockedStandardButtons.return_value = 0
+        mocked_critical.return_value = QtWidgets.QMessageBox.Ok
 
         # WHEN: is_already_running() is called
         result = self.openlp.is_already_running()
