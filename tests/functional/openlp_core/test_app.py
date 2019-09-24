@@ -195,15 +195,23 @@ class TestOpenLP(TestCase, TestMixin):
         self.openlp.shared_memory.detach.assert_called_once_with()
         assert result is False
 
+    @patch('openlp.core.app.QtWidgets.QMessageBox.critical')
+    @patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
     @patch('openlp.core.app.QtCore.QSharedMemory')
-    def test_is_already_running_not_running(self, MockedSharedMemory):
+    def test_is_already_running_not_running(self, MockedSharedMemory, MockedStandardButtons, mocked_critical):
         """
         Test the is_already_running() method when OpenLP is NOT running
         """
         # GIVEN: An OpenLP app and some mocks
+        # mocked_shared_memory = MagicMock()
+        # mocked_shared_memory.attach.return_value = False
+        # MockedSharedMemory.return_value = mocked_shared_memory
+
         mocked_shared_memory = MagicMock()
         mocked_shared_memory.attach.return_value = False
         MockedSharedMemory.return_value = mocked_shared_memory
+        MockedStandardButtons.return_value = 0
+        mocked_critical.return_value = QtWidgets.QMessageBox.Ok
 
         # WHEN: is_already_running() is called
         result = self.openlp.is_already_running()
