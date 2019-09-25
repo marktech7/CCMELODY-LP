@@ -174,14 +174,6 @@ class SongSelectImport(object):
         }
         current_page = 1
         songs = []
-        if re.compile('^[0-9]+$').match(search_text):
-            song = {
-                'link': SONG_PAGE + search_text
-            }
-            if callback:
-                callback(song)
-            songs.append(song)
-            self.run_search = False
         while self.run_search:
             if current_page > 1:
                 params['page'] = current_page
@@ -190,11 +182,24 @@ class SongSelectImport(object):
                 search_results = results_page.find_all('div', 'song-result')
             except (TypeError, URLError) as error:
                 log.exception('Could not search SongSelect, {error}'.format(error=error))
+                results_page = None
                 search_results = None
             if not search_results:
+                if re.compile('^[0-9]+$').match(search_text):
+                    author_elements = results_page.find('ul', class_='authors').find_all('li')
+                    song = {
+                        'link': SONG_PAGE + search_text,
+                        'authors': [unescape(li.find('a').string).strip() for li in author_elements],
+                        'title': unescape(results_page.find('div', 'content-title').find('h1').string).strip()
+                    }
+                    if callback:
+                        callback(song)
+                    songs.append(song)
                 break
             for result in search_results:
                 song = {
+                    'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
+                    'authors': unescape(result.find('p', 'song-result-subtitle').string).strip().split(', '),
                     'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
                 }
                 if callback:
@@ -225,7 +230,7 @@ class SongSelectImport(object):
         if callback:
             callback()
         try:
-            lyrics_page = BeautifulSoup(self.opener.open(lyrics_link).read(), 'lxml')
+            lyrics_page = BeautifulSoup(self.opener.open(BASE_URL + lyrics_link).read(), 'lxml')
         except (TypeError, URLError):
             log.exception('Could not get lyrics from SongSelect')
             return None
@@ -242,9 +247,6 @@ class SongSelectImport(object):
                 theme_elements.extend(ul.find_all('li')[1:])
         song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
         song['topics'] = [unescape(li.string).strip() for li in theme_elements]
-        author_elements = lyrics_page.find('ul', class_='authors').find_all('li')
-        song['authors'] = [unescape(li.find('a').string).strip() for li in author_elements]
-        song['title'] = unescape(lyrics_page.find('div', 'content-title').find('h1').string).strip()
         song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
             .find('strong').string.strip()
         song['verses'] = []
