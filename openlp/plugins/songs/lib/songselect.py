@@ -52,6 +52,7 @@ LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&retu
 LOGIN_URL = 'https://profile.ccli.com'
 LOGOUT_URL = BASE_URL + '/account/logout'
 SEARCH_URL = BASE_URL + '/search/results'
+SONG_PAGE = BASE_URL + '/Songs/'
 
 log = logging.getLogger(__name__)
 
@@ -123,9 +124,10 @@ class SongSelectImport(object):
         elif posted_page.find('div', id="select-organization") is not None:
             try:
                 home_page = BeautifulSoup(self.opener.open(BASE_URL).read(), 'lxml')
+                self.subscription_level = self.find_subscription_level(home_page)
             except (TypeError, URLError) as error:
                 log.exception('Could not reach SongSelect, {error}'.format(error=error))
-            self.subscription_level = self.find_subscription_level(home_page)
+                self.subscription_level = None
             return self.subscription_level
         else:
             log.debug(posted_page)
@@ -160,6 +162,7 @@ class SongSelectImport(object):
         :return: List of songs
         """
         self.run_search = True
+        search_text = search_text.strip()
         params = {
             'SongContent': '',
             'PrimaryLanguage': '',
@@ -171,6 +174,14 @@ class SongSelectImport(object):
         }
         current_page = 1
         songs = []
+        if re.compile('^[0-9]+$').match(search_text):
+            song = {
+                'link': SONG_PAGE + search_text
+            }
+            if callback:
+                callback(song)
+            songs.append(song)
+            self.run_search = False
         while self.run_search:
             if current_page > 1:
                 params['page'] = current_page
@@ -184,8 +195,6 @@ class SongSelectImport(object):
                 break
             for result in search_results:
                 song = {
-                    'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
-                    'authors': unescape(result.find('p', 'song-result-subtitle').string).strip().split(', '),
                     'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
                 }
                 if callback:
@@ -212,10 +221,11 @@ class SongSelectImport(object):
         except (TypeError, URLError) as error:
             log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
+        lyrics_link = song_page.find('a', title='View song lyrics')['href']
         if callback:
             callback()
         try:
-            lyrics_page = BeautifulSoup(self.opener.open(song['link'] + '/viewlyrics').read(), 'lxml')
+            lyrics_page = BeautifulSoup(self.opener.open(lyrics_link).read(), 'lxml')
         except (TypeError, URLError):
             log.exception('Could not get lyrics from SongSelect')
             return None
@@ -232,6 +242,9 @@ class SongSelectImport(object):
                 theme_elements.extend(ul.find_all('li')[1:])
         song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
         song['topics'] = [unescape(li.string).strip() for li in theme_elements]
+        author_elements = lyrics_page.find('ul', class_='authors').find_all('li')
+        song['authors'] = [unescape(li.find('a').string).strip() for li in author_elements]
+        song['title'] = unescape(lyrics_page.find('div', 'content-title').find('h1').string).strip()
         song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
             .find('strong').string.strip()
         song['verses'] = []

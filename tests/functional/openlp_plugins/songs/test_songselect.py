@@ -22,7 +22,13 @@
 
 """
 This module contains tests for the CCLI SongSelect importer.
+It needs re-writing at some point to load real HTML pages from disk and
+then test the behaviour based on those. That way if and when CCLI change
+their page layout, changing the tests would just be a case of
+re-downloading the HTML pages and changing the code to use the new layout.
 """
+import unittest.case
+import unittest.result
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 from urllib.error import URLError
@@ -214,15 +220,11 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
-            MagicMock(string='James, John'),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
-            MagicMock(string='Philip'),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # rest of the stuff
@@ -244,8 +246,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 2 == mocked_results_page.find_all.call_count, 'find_all should have been called twice'
         mocked_results_page.find_all.assert_called_with('div', 'song-result')
         expected_list = [
-            {'title': 'Title 1', 'authors': ['James', 'John'], 'link': BASE_URL + '/url1'},
-            {'title': 'Title 2', 'authors': ['Philip'], 'link': BASE_URL + '/url2'}
+            {'link': BASE_URL + '/url1'},
+            {'link': BASE_URL + '/url2'}
         ]
         assert expected_list == results, 'The search method should have returned two songs'
 
@@ -259,22 +261,16 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
-            MagicMock(string='James, John'),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
-            MagicMock(string='Philip'),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # third search result
         mocked_result3 = MagicMock()
         mocked_result3.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 3'))),
-            MagicMock(string='Luke, Matthew'),
             MagicMock(find=MagicMock(return_value={'href': '/url3'}))
         ]
         # rest of the stuff
@@ -295,8 +291,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 1 == mocked_opener.open.call_count, 'open should have been called once'
         assert 1 == mocked_results_page.find_all.call_count, 'find_all should have been called once'
         mocked_results_page.find_all.assert_called_with('div', 'song-result')
-        expected_list = [{'title': 'Title 1', 'authors': ['James', 'John'], 'link': BASE_URL + '/url1'},
-                         {'title': 'Title 2', 'authors': ['Philip'], 'link': BASE_URL + '/url2'}]
+        expected_list = [{'link': BASE_URL + '/url1'},
+                         {'link': BASE_URL + '/url2'}]
         assert expected_list == results, 'The search method should have returned two songs'
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
@@ -341,7 +337,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that when BeautifulSoup gets a bad lyrics page the get_song() method returns None
         """
         # GIVEN: A bunch of mocked out stuff and an importer object
-        MockedBeautifulSoup.side_effect = [None, TypeError('Test Error')]
+        song_page = MagicMock(return_value={'href': '/lyricpage'})
+        MockedBeautifulSoup.side_effect = [song_page, TypeError('Test Error')]
         mocked_callback = MagicMock()
         importer = SongSelectImport(None)
 
@@ -352,6 +349,9 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 2 == mocked_callback.call_count, 'The callback should have been called twice'
         assert result is None, 'The get_song() method should have returned None'
 
+    def _addSkip(self, result: unittest.result.TestResult, test_case: unittest.case.TestCase, reason: str) -> None:
+        super()._addSkip(result, test_case, reason)
+
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
     def test_get_song(self, MockedBeautifulSoup, mocked_build_opener):
@@ -359,10 +359,12 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that the get_song() method returns the correct song details
         """
         # GIVEN: A bunch of mocked out stuff and an importer object
+
         mocked_song_page = MagicMock()
         mocked_copyright = MagicMock()
         mocked_copyright.find_all.return_value = [MagicMock(string='Copyright 1'), MagicMock(string='Copyright 2')]
         mocked_song_page.find.side_effect = [
+            MagicMock(href='link'),
             mocked_copyright,
             MagicMock(find=MagicMock(string='CCLI: 123456'))
         ]
@@ -376,11 +378,19 @@ class TestSongSelectImport(TestCase, TestMixin):
             ],
             [MagicMock(string='Verse 1'), MagicMock(string='Chorus'), MagicMock(string='Verse 2')]
         ]
-        mocked_lyrics_page.find.return_value = MagicMock(find_all=mocked_find_all)
+        mocked_lyrics_page.find.side_effect = [
+            MagicMock(find_all=MagicMock(find=MagicMock(string='Author 1'))),
+            MagicMock(find=MagicMock(string='Title 1')),
+            MagicMock(find_all=mocked_find_all),
+            MagicMock(find_all=mocked_find_all)
+        ]
+
+        # mocked_lyrics_page.find.return_value = MagicMock(find_all=mocked_find_all)
+
         MockedBeautifulSoup.side_effect = [mocked_song_page, mocked_lyrics_page]
         mocked_callback = MagicMock()
         importer = SongSelectImport(None)
-        fake_song = {'title': 'Title', 'authors': ['Author 1', 'Author 2'], 'link': 'url'}
+        fake_song = {'link': 'url', 'authors': ['temp']}
 
         # WHEN: get_song is called
         result = importer.get_song(fake_song, callback=mocked_callback)
@@ -388,9 +398,10 @@ class TestSongSelectImport(TestCase, TestMixin):
         # THEN: The callback should have been called three times and the song should be returned
         assert 3 == mocked_callback.call_count, 'The callback should have been called twice'
         assert result is not None, 'The get_song() method should have returned a song dictionary'
-        assert 2 == mocked_lyrics_page.find.call_count, 'The find() method should have been called twice'
+        assert 4 == mocked_lyrics_page.find.call_count, 'The find() method should have been called twice'
         assert 2 == mocked_find_all.call_count, 'The find_all() method should have been called twice'
-        assert [call('div', 'song-viewer lyrics'), call('div', 'song-viewer lyrics')] == \
+        assert [call('ul', class_='authors'), call('div', 'content-title'),
+                call('div', 'song-viewer lyrics'), call('div', 'song-viewer lyrics')] == \
             mocked_lyrics_page.find.call_args_list, 'The find() method should have been called with the right arguments'
         assert [call('p'), call('h3')] == mocked_find_all.call_args_list, \
             'The find_all() method should have been called with the right arguments'
