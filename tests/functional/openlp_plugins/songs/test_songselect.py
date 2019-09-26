@@ -22,6 +22,10 @@
 
 """
 This module contains tests for the CCLI SongSelect importer.
+It needs re-writing at some point to load real HTML pages from disk and
+then test the behaviour based on those. That way if and when CCLI change
+their page layout, changing the tests would just be a case of
+re-downloading the HTML pages and changing the code to use the new layout.
 """
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
@@ -206,6 +210,35 @@ class TestSongSelectImport(TestCase, TestMixin):
 
     @patch('openlp.plugins.songs.lib.songselect.build_opener')
     @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
+    def test_search_returns_ccli_song_number_result(self, MockedBeautifulSoup, mocked_build_opener):
+        """
+        Test that search can find a single song by CCLI number
+        """
+        # GIVEN: A bunch of mocked out stuff and an importer object
+        mocked_opener = MagicMock()
+        mocked_build_opener.return_value = mocked_opener
+        mocked_results_page = MagicMock()
+        mocked_results_page.find_all.return_value = []
+        MockedBeautifulSoup.return_value = mocked_results_page
+        mock_callback = MagicMock()
+        importer = SongSelectImport(None)
+        importer.subscription_level = 'premium'
+
+        # WHEN: The search is performed
+        results = importer.search('1234567', 1000, mock_callback)
+
+        # THEN: callback was called once and the results are as expected
+        assert 1 == mock_callback.call_count, 'callback should not have been called'
+        assert 1 == mocked_opener.open.call_count, 'open should have been called once'
+        assert 1 == mocked_results_page.find_all.call_count, 'find_all should have been called once'
+        mocked_results_page.find_all.assert_called_with('div', 'song-result')
+
+        assert 1 == len(results), 'The search method should have returned an single song in a list'
+        assert 'https://songselect.ccli.com/Songs/1234567' == results[0]['link'],\
+            'The correct link should have been returned'
+
+    @patch('openlp.plugins.songs.lib.songselect.build_opener')
+    @patch('openlp.plugins.songs.lib.songselect.BeautifulSoup')
     def test_search_returns_two_results(self, MockedBeautifulSoup, mocked_build_opener):
         """
         Test that when the search finds 2 results, it simply returns a list with 2 results
@@ -341,7 +374,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that when BeautifulSoup gets a bad lyrics page the get_song() method returns None
         """
         # GIVEN: A bunch of mocked out stuff and an importer object
-        MockedBeautifulSoup.side_effect = [None, TypeError('Test Error')]
+        song_page = MagicMock(return_value={'href': '/lyricpage'})
+        MockedBeautifulSoup.side_effect = [song_page, TypeError('Test Error')]
         mocked_callback = MagicMock()
         importer = SongSelectImport(None)
 
