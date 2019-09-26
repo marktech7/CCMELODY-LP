@@ -185,7 +185,7 @@ class SongSelectImport(object):
                 results_page = None
                 search_results = None
             if not search_results:
-                if re.compile('^[0-9]+$').match(search_text):
+                if results_page and re.compile('^[0-9]+$').match(search_text):
                     author_elements = results_page.find('ul', class_='authors').find_all('li')
                     song = {
                         'link': SONG_PAGE + search_text,
