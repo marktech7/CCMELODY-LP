@@ -232,7 +232,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 1 == mocked_opener.open.call_count, 'open should have been called once'
         assert 1 == mocked_results_page.find_all.call_count, 'find_all should have been called once'
         mocked_results_page.find_all.assert_called_with('div', 'song-result')
-        print(results)
+
         assert 1 == len(results), 'The search method should have returned an single song in a list'
         assert 'https://songselect.ccli.com/Songs/1234567' == results[0]['link'],\
             'The correct link should have been returned'
