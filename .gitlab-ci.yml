@@ -31,7 +31,7 @@ test-debian:
                          python3-vlc python3-zeroconf python3-pip python3-pep8 mediainfo mupdf-tools xvfb
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 -Wignore --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py --cov openlp --cov-report term --cov-report html
 
 test-ubuntu:
   stage: test
