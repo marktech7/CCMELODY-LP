@@ -67,8 +67,15 @@ def init_schema(url):
     countdown_slide_table = Table('countdown_slide', metadata,
                                Column('id', types.Integer(), primary_key=True),
                                Column('title', types.Unicode(255), nullable=False),
-                               Column('text', types.UnicodeText, nullable=False),
-                               Column('credits', types.UnicodeText),
+                               Column('countdown_type', types.Integer),
+                               Column('countdown_duration', types.Time),
+                               Column('countdown_use_specific_date', types.Unicode(2)),
+                               Column('countdown_specific_date', types.Date),
+                               Column('countdown_use_specific_time', types.Unicode(2)),
+                               Column('countdown_specific_time',types.Time),
+                               Column('interval_large', types.Integer),
+                               Column('interval_small', types.Integer),
+                               Column('finish_action', types.Integer),
                                Column('theme_name', types.Unicode(128))
                                )
 

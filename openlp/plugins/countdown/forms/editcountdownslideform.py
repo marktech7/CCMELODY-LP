@@ -31,7 +31,7 @@ import logging
 
 from PyQt4 import QtGui
 
-from .editcountdownslidedialog import Ui_CountdownSlideEditDialog
+#from .editcountdownslidedialog import Ui_CountdownSlideEditDialog
 
 log = logging.getLogger(__name__)
 

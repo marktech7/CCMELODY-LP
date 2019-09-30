@@ -36,7 +36,7 @@ from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo
 from openlp.plugins.countdown.lib import CountdownXMLBuilder, CountdownXMLParser
 from openlp.plugins.countdown.lib.db import CountdownSlide
 from .editcountdowndialog import Ui_CountdownEditDialog
-from .editcountdownslideform import EditCountdownSlideForm
+#from .editcountdownslideform import EditCountdownSlideForm
 
 log = logging.getLogger(__name__)
 
@@ -56,7 +56,7 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
         self.media_item = media_item
         self.setupUi(self)
         # Create other objects and forms.
-        self.edit_slide_form = EditCountdownSlideForm(self)
+        #self.edit_slide_form = EditCountdownSlideForm(self)
         # Connecting signals and slots
        # self.preview_button.clicked.connect(self.on_preview_button_clicked)
         #self.add_button.clicked.connect(self.on_add_button_clicked)
@@ -69,7 +69,6 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
     def load_themes(self, theme_list):
         """
         Load a list of themes into the themes combo box.
-
         :param theme_list: The list of themes to load.
         """
         self.theme_combo_box.clear()
@@ -79,55 +78,85 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
     def load_countdown(self, id, preview=False):
         """
         Called when editing or creating a new countdown.
-
-        :param id: The countdown's id. If zero, then a new countdown is created.
-        :param preview: States whether the countdown is edited while being previewed in the preview panel.
-        
-        self.slide_list_view.clear()
+        :param id: The countdown's id. If zero, then a new countdown is created
+        """
         if id == 0:
             self.countdown_slide = CountdownSlide()
-            self.title_edit.setText('')
-            self.credit_edit.setText('')
+            self.title_edit.setText('') 
             self.theme_combo_box.setCurrentIndex(0)
         else:
             self.countdown_slide = self.manager.get_object(CountdownSlide, id)
             self.title_edit.setText(self.countdown_slide.title)
-            self.credit_edit.setText(self.countdown_slide.credits)
-            countdown_xml = CountdownXMLParser(self.countdown_slide.text)
-            countdown_item_settings = countdown_xml.get_countdown_item_settings()
-            self.slide_list_view.addItems(countdown_item_settings)
+            
+            self.countdown_type_combo_box.setCurrentIndex(self.countdown_slide.countdown_type)
+            if self.countdown_slide.countdown_type == 1:
+                self.countdown_duration_time_edit.setTime(self.countdown_slide.countdown_duration)
+            else:
+                 
+                if self.countdown_slide.countdown_use_specific_date:
+                    self.use_specific_date_check_box.setChecked(True)
+                    self.countdown_date_date_edit.setDate(self.countdown_slide.countdown_specific_date)
+                if self.countdown_slide.countdown_use_specific_time:
+                    self.use_specific_time_check_box.setChecked(True)
+                    self.countdown_time_time_edit.setTime(self.countdown_slide.countdown_specific_time)
+                    
+            self.interval_large_combo_box.setCurrentIndex(self.countdown_slide.interval_large)
+            self.interval_small_combo_box.setCurrentIndex(self.countdown_slide.interval_small) 
+            self.finish_action_combo_box.setCurrentIndex(self.countdown_slide.finish_action)
+
+            self.countdown_slide.theme_name = self.theme_combo_box.currentText()
+            self.media_item.auto_select_id = self.countdown_slide.id
+            
+           
+          
             theme = self.countdown_slide.theme_name
-            find_and_set_in_combo_box(self.theme_combo_box, theme)
+            #find_and_set_in_combo_box(self.theme_combo_box, theme)
         self.title_edit.setFocus()
-        # If not preview hide the preview button.
-        self.preview_button.setVisible(preview)
-        """
+        log.debug('load successful')
+        
 
     def accept(self):
         """
         Override the QDialog method to check if the countdown slide has been saved before closing the dialog.
         """
+        
         log.debug('accept')
         if self.save_countdown():
             QtGui.QDialog.accept(self)
-
+            log.debug('Save successful')
+        
+        
     def save_countdown(self):
         """
         Saves the countdown.
-       
+        """
         if not self._validate():
             return False
-        sxml = CountdownXMLBuilder()
-        for count in range(self.slide_list_view.count()):
-            sxml.add_verse_to_lyrics('countdown', str(count + 1), self.slide_list_view.item(count).text())
+        #sxml = CountdownXMLBuilder()
+        #for count in range(self.slide_list_view.count()):
+        #    sxml.add_verse_to_lyrics('countdown', str(count + 1), self.slide_list_view.item(count).text())
+        
         self.countdown_slide.title = self.title_edit.text()
-        self.countdown_slide.text = str(sxml.extract_xml(), 'utf-8')
-        self.countdown_slide.credits = self.credit_edit.text()
+        self.countdown_slide.countdown_type = self.countdown_type_combo_box.currentIndex()
+        if self.countdown_slide.countdown_type == 1:
+            self.countdown_slide.countdown_duration = self.countdown_duration_time_edit.time().toPyTime()
+        else:
+            self.countdown_slide.countdown_use_specific_date = self.use_specific_date_check_box.isChecked()
+            if self.countdown_slide.countdown_use_specific_date:
+                self.countdown_slide.countdown_specific_date = self.countdown_date_date_edit.date().toPyDate()
+            self.countdown_slide.countdown_use_specific_time = self.use_specific_time_check_box.isChecked()
+            if self.countdown_slide.countdown_use_specific_time:
+                self.countdown_slide.countdown_specific_time = self.countdown_time_time_edit.time().toPyTime()
+         
+        self.countdown_slide.interval_large = self.interval_large_combo_box.currentIndex()
+        self.countdown_slide.interval_small = self.interval_small_combo_box.currentIndex()
+        self.countdown_slide.finish_action = self.finish_action_combo_box.currentIndex()
+
         self.countdown_slide.theme_name = self.theme_combo_box.currentText()
-        success = self.manager.save_object(self.countdown_slide)
         self.media_item.auto_select_id = self.countdown_slide.id
+        success = self.manager.save_object(self.countdown_slide)
         return success
-        """
+        
 
     def on_up_button_clicked(self):
         """
@@ -164,15 +193,16 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
     def on_edit_button_clicked(self):
         """
         Edit the currently selected slide.
-        """
+       
         self.edit_slide_form.set_text(self.slide_list_view.currentItem().text())
         if self.edit_slide_form.exec_():
             self.update_slide_list(self.edit_slide_form.get_text())
+         """
 
     def on_edit_all_button_clicked(self):
         """
         Edits all slides.
-        """
+        
         slide_text = ''
         for row in range(self.slide_list_view.count()):
             item = self.slide_list_view.item(row)
@@ -182,22 +212,23 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
         self.edit_slide_form.set_text(slide_text)
         if self.edit_slide_form.exec_():
             self.update_slide_list(self.edit_slide_form.get_text(), True)
-
+        """
+        
     def on_preview_button_clicked(self):
         """
         Save the countdown item and preview it.
-        """
+        
         log.debug('onPreview')
         if self.save_countdown():
             Registry().execute('countdown_preview')
-
+        """
     def update_slide_list(self, slides, edit_all=False):
         """
         Updates the slide list after editing slides.
 
         :param slides: A list of all slides which have been edited.
         :param edit_all:  Indicates if all slides or only one slide has been edited.
-        """
+        
         if edit_all:
             self.slide_list_view.clear()
             self.slide_list_view.addItems(slides)
@@ -212,21 +243,23 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
                 old_slides.insert(old_row, slide)
             self.slide_list_view.addItems(old_slides)
         self.slide_list_view.repaint()
-
+        """
+        
     def on_delete_button_clicked(self):
         """
         Removes the current row from the list.
-        """
+        
         self.slide_list_view.takeItem(self.slide_list_view.currentRow())
         self.on_current_row_changed(self.slide_list_view.currentRow())
-
+        """
+        
     def on_current_row_changed(self, row):
         """
         Called when the *slide_list_view*'s current row has been changed. This
         enables or disables buttons which require an slide to act on.
 
         :param row: The row (int). If there is no current row, the value is -1.
-        """
+        
         if row == -1:
             self.delete_button.setEnabled(False)
             self.edit_button.setEnabled(False)
@@ -238,7 +271,8 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
             # Decide if the up/down buttons should be enabled or not.
             self.down_button.setEnabled(self.slide_list_view.count() - 1 != row)
             self.up_button.setEnabled(row != 0)
-
+        """
+        
     def _validate(self):
         """
         Checks whether a countdown is valid or not.
@@ -249,8 +283,9 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
             critical_error_message_box(message=translate('CountdownPlugin.EditCountdownForm', 'You need to type in a title.'))
             return False
         # We must have at least one slide.
-        if self.slide_list_view.count() == 0:
-            critical_error_message_box(message=translate('CountdownPlugin.EditCountdownForm',
-                                                         'You need to add at least one slide.'))
-            return False
+        #if self.slide_list_view.count() == 0:
+        #    critical_error_message_box(message=translate('CountdownPlugin.EditCountdownForm',
+        #                                                 'You need to add at least one slide.'))
+        #    return False
         return True
+        
