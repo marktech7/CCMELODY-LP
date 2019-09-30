@@ -25,10 +25,13 @@
 # You should have received a copy of the GNU General Public License along     #
 # with this program; if not, write to the Free Software Foundation, Inc., 59  #
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
+#                                                                             #
+###############################################################################
+# This file contains MIT licensed code                                        #
 ###############################################################################
 """
 The :mod:`~openlp.plugins.countdown.countdownplugin` module contains the Plugin class
-for the Countdown Slides plugin.
+for the Countdown plugin.
 """
 
 import logging
@@ -60,10 +63,11 @@ __default_settings__ = {
 
 class CountdownPlugin(Plugin):
     """
-    This plugin enables the user to create, edit and display countdown slide shows. Countdown shows are divided into slides.
-    Each show is able to have it's own theme.
-    Countdown shows are designed to replace the use of songs where the songs plugin has become restrictive.
-    Examples could be Welcome slides, Bible Reading information, Orders of service.
+    This plugin enables the user to create, edit and display countdown timers. 
+    All Countdown timers have one slide, which is dynamically updated by JavaScript running in webkit.
+    The slide manager will display only one slide for all countdown items with a textual representation of the countdown event
+    Examples include countdowns until: worship time, Christmas, Easter.
+    Examples do not include countdowns until: judgement day.
     """
     log.info('Countdown Plugin loaded')
 
@@ -75,7 +79,7 @@ class CountdownPlugin(Plugin):
         self.icon = build_icon(self.icon_path)
 
     def about(self):
-        about_text = translate('CountdownPlugin', '<strong>Countdown Slide Plugin </strong><br />The countdown slide plugin '
+        about_text = translate('CountdownPlugin', '<strong>Countdown Plugin </strong><br />The countdown  plugin '
                                'provides the ability to display a live countdown to an event')
         return about_text
 
@@ -137,6 +141,7 @@ class CountdownPlugin(Plugin):
     def get_display_css(self):
         """
         Add css style sheets to htmlbuilder.
+        Currently, countdowns use no custom CSS, but that will probably change, so lets build an empty class
         """
         css = """
         #countdowntext{
@@ -149,6 +154,7 @@ class CountdownPlugin(Plugin):
     def get_display_javascript(self):
         """
         Add javascript functions to htmlbuilder.
+        This section uses code from http://countdownjs.org under the MIT License
         """
         javascript = """
           /*

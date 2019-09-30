@@ -58,12 +58,12 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
         # Create other objects and forms.
         self.edit_slide_form = EditCountdownSlideForm(self)
         # Connecting signals and slots
-        self.preview_button.clicked.connect(self.on_preview_button_clicked)
-        self.add_button.clicked.connect(self.on_add_button_clicked)
-        self.edit_button.clicked.connect(self.on_edit_button_clicked)
-        self.edit_all_button.clicked.connect(self.on_edit_all_button_clicked)
-        self.slide_list_view.currentRowChanged.connect(self.on_current_row_changed)
-        self.slide_list_view.doubleClicked.connect(self.on_edit_button_clicked)
+       # self.preview_button.clicked.connect(self.on_preview_button_clicked)
+        #self.add_button.clicked.connect(self.on_add_button_clicked)
+        #self.edit_button.clicked.connect(self.on_edit_button_clicked)
+        #self.edit_all_button.clicked.connect(self.on_edit_all_button_clicked)
+        #self.slide_list_view.currentRowChanged.connect(self.on_current_row_changed)
+        #self.slide_list_view.doubleClicked.connect(self.on_edit_button_clicked)
         Registry().register_function('theme_update_list', self.load_themes)
 
     def load_themes(self, theme_list):
@@ -82,7 +82,7 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
 
         :param id: The countdown's id. If zero, then a new countdown is created.
         :param preview: States whether the countdown is edited while being previewed in the preview panel.
-        """
+        
         self.slide_list_view.clear()
         if id == 0:
             self.countdown_slide = CountdownSlide()
@@ -101,6 +101,7 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
         self.title_edit.setFocus()
         # If not preview hide the preview button.
         self.preview_button.setVisible(preview)
+        """
 
     def accept(self):
         """
@@ -113,7 +114,7 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
     def save_countdown(self):
         """
         Saves the countdown.
-        """
+       
         if not self._validate():
             return False
         sxml = CountdownXMLBuilder()
@@ -126,36 +127,40 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
         success = self.manager.save_object(self.countdown_slide)
         self.media_item.auto_select_id = self.countdown_slide.id
         return success
+        """
 
     def on_up_button_clicked(self):
         """
         Move a slide up in the list when the "Up" button is clicked.
-        """
+        
         selected_row = self.slide_list_view.currentRow()
         if selected_row != 0:
             qw = self.slide_list_view.takeItem(selected_row)
             self.slide_list_view.insertItem(selected_row - 1, qw)
             self.slide_list_view.setCurrentRow(selected_row - 1)
+         """
 
     def on_down_button_clicked(self):
         """
         Move a slide down in the list when the "Down" button is clicked.
-        """
+        
         selected_row = self.slide_list_view.currentRow()
         # zero base arrays
         if selected_row != self.slide_list_view.count() - 1:
             qw = self.slide_list_view.takeItem(selected_row)
             self.slide_list_view.insertItem(selected_row + 1, qw)
             self.slide_list_view.setCurrentRow(selected_row + 1)
-
+        """
+        
     def on_add_button_clicked(self):
         """
         Add a new blank slide.
-        """
+        
         self.edit_slide_form.set_text('')
         if self.edit_slide_form.exec_():
             self.slide_list_view.addItems(self.edit_slide_form.get_text())
-
+        """
+        
     def on_edit_button_clicked(self):
         """
         Edit the currently selected slide.

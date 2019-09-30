@@ -27,7 +27,7 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
 ###############################################################################
 """
-The :mod:`countdown` module provides the Countdown plugin which allows countdown,
-themed, text based items to be displayed without having to misuse another item
+The :mod:`countdown` module provides the Countdown plugin which allows
+themed countdown, timers to be displayed on the main screen
 type.
 """
