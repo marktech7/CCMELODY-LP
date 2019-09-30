@@ -1,118 +1,111 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The UI widgets for the formatting tags window.
 """
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import UiStrings, translate
-from openlp.core.lib import build_icon
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.ui import create_button_box
+from openlp.core.ui.icons import UiIcons
 
 
 class Ui_FormattingTagDialog(object):
     """
     The UI widgets for the formatting tags window.
     """
-    def setupUi(self, formatting_tag_dialog):
+    def setup_ui(self, formatting_tag_dialog):
         """
         Set up the UI
         """
         formatting_tag_dialog.setObjectName('formatting_tag_dialog')
-        formatting_tag_dialog.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
+        formatting_tag_dialog.setWindowIcon(UiIcons().main_icon)
         formatting_tag_dialog.resize(725, 548)
-        self.list_data_grid_layout = QtGui.QVBoxLayout(formatting_tag_dialog)
-        self.list_data_grid_layout.setMargin(8)
+        self.list_data_grid_layout = QtWidgets.QVBoxLayout(formatting_tag_dialog)
+        self.list_data_grid_layout.setContentsMargins(8, 8, 8, 8)
         self.list_data_grid_layout.setObjectName('list_data_grid_layout')
-        self.tag_table_widget_read_label = QtGui.QLabel()
+        self.tag_table_widget_read_label = QtWidgets.QLabel()
         self.list_data_grid_layout.addWidget(self.tag_table_widget_read_label)
-        self.tag_table_widget_read = QtGui.QTableWidget(formatting_tag_dialog)
+        self.tag_table_widget_read = QtWidgets.QTableWidget(formatting_tag_dialog)
         self.tag_table_widget_read.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.tag_table_widget_read.setEditTriggers(QtGui.QAbstractItemView.NoEditTriggers)
+        self.tag_table_widget_read.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tag_table_widget_read.setAlternatingRowColors(True)
         self.tag_table_widget_read.setCornerButtonEnabled(False)
         self.tag_table_widget_read.setObjectName('tag_table_widget_read')
         self.tag_table_widget_read.setColumnCount(4)
         self.tag_table_widget_read.setRowCount(0)
         self.tag_table_widget_read.horizontalHeader().setStretchLastSection(True)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget_read.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget_read.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget_read.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget_read.setHorizontalHeaderItem(3, item)
         self.list_data_grid_layout.addWidget(self.tag_table_widget_read)
-        self.tag_table_widget_label = QtGui.QLabel()
+        self.tag_table_widget_label = QtWidgets.QLabel()
         self.list_data_grid_layout.addWidget(self.tag_table_widget_label)
-        self.tag_table_widget = QtGui.QTableWidget(formatting_tag_dialog)
+        self.tag_table_widget = QtWidgets.QTableWidget(formatting_tag_dialog)
         self.tag_table_widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.tag_table_widget.setEditTriggers(QtGui.QAbstractItemView.AllEditTriggers)
+        self.tag_table_widget.setEditTriggers(QtWidgets.QAbstractItemView.AllEditTriggers)
         self.tag_table_widget.setAlternatingRowColors(True)
-        self.tag_table_widget.setSelectionMode(QtGui.QAbstractItemView.SingleSelection)
-        self.tag_table_widget.setSelectionBehavior(QtGui.QAbstractItemView.SelectRows)
+        self.tag_table_widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.tag_table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tag_table_widget.setCornerButtonEnabled(False)
         self.tag_table_widget.setObjectName('tag_table_widget')
         self.tag_table_widget.setColumnCount(4)
         self.tag_table_widget.setRowCount(0)
         self.tag_table_widget.horizontalHeader().setStretchLastSection(True)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget.setHorizontalHeaderItem(0, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget.setHorizontalHeaderItem(1, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget.setHorizontalHeaderItem(2, item)
-        item = QtGui.QTableWidgetItem()
+        item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget.setHorizontalHeaderItem(3, item)
         self.list_data_grid_layout.addWidget(self.tag_table_widget)
-        self.edit_button_layout = QtGui.QHBoxLayout()
-        self.new_button = QtGui.QPushButton(formatting_tag_dialog)
-        self.new_button.setIcon(build_icon(':/general/general_new.png'))
+        self.edit_button_layout = QtWidgets.QHBoxLayout()
+        self.new_button = QtWidgets.QPushButton(formatting_tag_dialog)
+        self.new_button.setIcon(UiIcons().new)
         self.new_button.setObjectName('new_button')
         self.edit_button_layout.addWidget(self.new_button)
-        self.delete_button = QtGui.QPushButton(formatting_tag_dialog)
-        self.delete_button.setIcon(build_icon(':/general/general_delete.png'))
+        self.delete_button = QtWidgets.QPushButton(formatting_tag_dialog)
+        self.delete_button.setIcon(UiIcons().delete)
         self.delete_button.setObjectName('delete_button')
         self.edit_button_layout.addWidget(self.delete_button)
         self.edit_button_layout.addStretch()
         self.list_data_grid_layout.addLayout(self.edit_button_layout)
         self.button_box = create_button_box(formatting_tag_dialog, 'button_box', ['cancel', 'save', 'defaults'])
-        self.save_button = self.button_box.button(QtGui.QDialogButtonBox.Save)
+        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
         self.save_button.setObjectName('save_button')
-        self.restore_button = self.button_box.button(QtGui.QDialogButtonBox.RestoreDefaults)
-        self.restore_button.setIcon(build_icon(':/general/general_revert.png'))
+        self.restore_button = self.button_box.button(QtWidgets.QDialogButtonBox.RestoreDefaults)
+        self.restore_button.setIcon(UiIcons().undo)
         self.restore_button.setObjectName('restore_button')
         self.list_data_grid_layout.addWidget(self.button_box)
-        self.retranslateUi(formatting_tag_dialog)
+        self.retranslate_ui(formatting_tag_dialog)
 
-    def retranslateUi(self, formatting_tag_dialog):
+    def retranslate_ui(self, formatting_tag_dialog):
         """
         Translate the UI on the fly
         """

@@ -1,44 +1,206 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the lib submodule of the Bibles plugin.
 """
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from openlp.plugins.bibles.lib import SearchResults
+from openlp.plugins.bibles import lib
+from openlp.plugins.bibles.lib import SearchResults, get_reference_match
+from tests.helpers.testmixin import TestMixin
 
 
-class TestLib(TestCase):
+class TestLib(TestCase, TestMixin):
     """
     Test the functions in the :mod:`lib` module.
     """
-    def search_results_creation_test(self):
+    @patch('openlp.plugins.bibles.lib.update_reference_separators')
+    def test_get_reference_separator(self, mocked_update_reference_separators):
+        """
+        Test the get_reference_separator method
+        """
+        # GIVEN: A list of expected separators and the lib module's constant is empty
+        lib.REFERENCE_SEPARATORS = None
+        separators = {'sep_r': '\\s*(?:e)\\s*', 'sep_e_default': 'end', 'sep_v_display': 'w', 'sep_l_display': 'r',
+                      'sep_v_default': ':|v|V|verse|verses', 'sep_l': '\\s*(?:r)\\s*', 'sep_l_default': ',|and',
+                      'sep_e': '\\s*(?:t)\\s*', 'sep_v': '\\s*(?:w)\\s*', 'sep_r_display': 'e', 'sep_r_default': '-|to'}
+
+        def _update_side_effect():
+            """
+            Update the references after mocking out the method
+            """
+            lib.REFERENCE_SEPARATORS = separators
+
+        mocked_update_reference_separators.side_effect = _update_side_effect
+
+        # WHEN: Calling get_reference_separator
+        for key, value in separators.items():
+            lib.get_reference_separator(key)
+
+            # THEN: get_reference_separator should return the correct separator
+            assert separators[key] == value
+        mocked_update_reference_separators.assert_called_once_with()
+
+    def test_reference_matched_full(self):
+        """
+        Test that the 'full' regex parses bible verse references correctly.
+        """
+        # GIVEN: Some test data which contains different references to parse, with the expected results.
+        with patch('openlp.plugins.bibles.lib.Settings', return_value=MagicMock(**{'value.return_value': ''})):
+            # The following test data tests with about 240 variants when using the default 'separators'
+            # The amount is exactly 222 without '1. John 23' and'1. John. 23'
+            test_data = [
+                # Input reference, book name, chapter + verse reference
+                ('Psalm 23', 'Psalm', '23'),
+                ('Psalm. 23', 'Psalm', '23'),
+                ('Psalm 23{to}24', 'Psalm', '23-24'),
+                ('Psalm 23{verse}1{to}2', 'Psalm', '23:1-2'),
+                ('Psalm 23{verse}1{to}{end}', 'Psalm', '23:1-end'),
+                ('Psalm 23{verse}1{to}2{_and}5{to}6', 'Psalm', '23:1-2,5-6'),
+                ('Psalm 23{verse}1{to}2{_and}5{to}{end}', 'Psalm', '23:1-2,5-end'),
+                ('Psalm 23{verse}1{to}2{_and}24{verse}1{to}3', 'Psalm', '23:1-2,24:1-3'),
+                ('Psalm 23{verse}1{to}{end}{_and}24{verse}1{to}{end}', 'Psalm', '23:1-end,24:1-end'),
+                ('Psalm 23{verse}1{to}24{verse}1', 'Psalm', '23:1-24:1'),
+                ('Psalm 23{_and}24', 'Psalm', '23,24'),
+                ('1 John 23', '1 John', '23'),
+                ('1 John. 23', '1 John', '23'),
+                ('1. John 23', '1. John', '23'),
+                ('1. John. 23', '1. John', '23'),
+                ('1 John 23{to}24', '1 John', '23-24'),
+                ('1 John 23{verse}1{to}2', '1 John', '23:1-2'),
+                ('1 John 23{verse}1{to}{end}', '1 John', '23:1-end'),
+                ('1 John 23{verse}1{to}2{_and}5{to}6', '1 John', '23:1-2,5-6'),
+                ('1 John 23{verse}1{to}2{_and}5{to}{end}', '1 John', '23:1-2,5-end'),
+                ('1 John 23{verse}1{to}2{_and}24{verse}1{to}3', '1 John', '23:1-2,24:1-3'),
+                ('1 John 23{verse}1{to}{end}{_and}24{verse}1{to}{end}', '1 John', '23:1-end,24:1-end'),
+                ('1 John 23{verse}1{to}24{verse}1', '1 John', '23:1-24:1'),
+                ('1 John 23{_and}24', '1 John', '23,24')]
+
+            full_reference_match = get_reference_match('full')
+            for reference_text, book_result, ranges_result in test_data:
+                to_separators = ['-', ' - ', 'to', ' to '] if '{to}' in reference_text else ['']
+                verse_separators = [':', ' : ', 'v', ' v ', 'V', ' V ', 'verse', ' verse ', 'verses', ' verses '] \
+                    if '{verse}' in reference_text else ['']
+                and_separators = [',', ' , ', 'and', ' and '] if '{_and}' in reference_text else ['']
+                end_separators = ['end', ' end '] if '{end}' in reference_text else ['']
+
+                for to in to_separators:
+                    for verse in verse_separators:
+                        for _and in and_separators:
+                            for end in end_separators:
+                                reference_text = reference_text.format(to=to, verse=verse, _and=_and, end=end)
+
+                                # WHEN: Attempting to parse the input string
+                                match = full_reference_match.match(reference_text)
+
+                                # THEN: A match should be returned, and the book and reference should match the
+                                #       expected result
+                                assert match is not None, '{text} should provide a match'.format(text=reference_text)
+                                assert book_result == match.group('book'), \
+                                    '{text} does not provide the expected result for the book group.'\
+                                    .format(text=reference_text)
+                                assert ranges_result == match.group('ranges'), \
+                                    '{text} does not provide the expected result for the ranges group.' \
+                                    .format(text=reference_text)
+
+    def test_reference_matched_range(self):
+        """
+        Test that the 'range' regex parses bible verse references correctly.
+        Note: This test takes in to account that the regex does not work quite as expected!
+        see https://gitlab.com/openlp/openlp/issues/240
+        """
+        # GIVEN: Some test data which contains different references to parse, with the expected results.
+        with patch('openlp.plugins.bibles.lib.Settings', return_value=MagicMock(**{'value.return_value': ''})):
+            # The following test data tests with 45 variants when using the default 'separators'
+            test_data = [
+                ('23', None, '23', None, None, None),
+                ('23{to}24', None, '23', '-24', None, '24'),
+                ('23{verse}1{to}2', '23', '1', '-2', None, '2'),
+                ('23{verse}1{to}{end}', '23', '1', '-end', None, None),
+                ('23{verse}1{to}24{verse}1', '23', '1', '-24:1', '24', '1')]
+            full_reference_match = get_reference_match('range')
+            for reference_text, from_chapter, from_verse, range_to, to_chapter, to_verse in test_data:
+                to_separators = ['-', ' - ', 'to', ' to '] if '{to}' in reference_text else ['']
+                verse_separators = [':', ' : ', 'v', ' v ', 'V', ' V ', 'verse', ' verse ', 'verses', ' verses '] \
+                    if '{verse}' in reference_text else ['']
+                and_separators = [',', ' , ', 'and', ' and '] if '{_and}' in reference_text else ['']
+                end_separators = ['end', ' end '] if '{end}' in reference_text else ['']
+
+                for to in to_separators:
+                    for verse in verse_separators:
+                        for _and in and_separators:
+                            for end in end_separators:
+                                reference_text = reference_text.format(to=to, verse=verse, _and=_and, end=end)
+
+                                # WHEN: Attempting to parse the input string
+                                match = full_reference_match.match(reference_text)
+
+                                # THEN: A match should be returned, and the to/from chapter/verses should match as
+                                #       expected
+                                assert match is not None, '{text} should provide a match'.format(text=reference_text)
+                                assert match.group('from_chapter') == from_chapter
+                                assert match.group('from_verse') == from_verse
+                                assert match.group('range_to') == range_to
+                                assert match.group('to_chapter') == to_chapter
+                                assert match.group('to_verse') == to_verse
+
+    def test_reference_matched_range_separator(self):
+        # GIVEN: Some test data which contains different references to parse, with the expected results.
+        with patch('openlp.plugins.bibles.lib.Settings', return_value=MagicMock(**{'value.return_value': ''})):
+            # The following test data tests with 111 variants when using the default 'separators'
+            # The regex for handling ranges is a bit screwy, see https://gitlab.com/openlp/openlp/issues/240
+            test_data = [
+                ('23', ['23']),
+                ('23{to}24', ['23-24']),
+                ('23{verse}1{to}2', ['23:1-2']),
+                ('23{verse}1{to}{end}', ['23:1-end']),
+                ('23{verse}1{to}2{_and}5{to}6', ['23:1-2', '5-6']),
+                ('23{verse}1{to}2{_and}5{to}{end}', ['23:1-2', '5-end']),
+                ('23{verse}1{to}2{_and}24{verse}1{to}3', ['23:1-2', '24:1-3']),
+                ('23{verse}1{to}{end}{_and}24{verse}1{to}{end}', ['23:1-end', '24:1-end']),
+                ('23{verse}1{to}24{verse}1', ['23:1-24:1']),
+                ('23,24', ['23', '24'])]
+            full_reference_match = get_reference_match('range_separator')
+            for reference_text, ranges in test_data:
+                to_separators = ['-', ' - ', 'to', ' to '] if '{to}' in reference_text else ['']
+                verse_separators = [':', ' : ', 'v', ' v ', 'V', ' V ', 'verse', ' verse ', 'verses', ' verses '] \
+                    if '{verse}' in reference_text else ['']
+                and_separators = [',', ' , ', 'and', ' and '] if '{_and}' in reference_text else ['']
+                end_separators = ['end', ' end '] if '{end}' in reference_text else ['']
+
+                for to in to_separators:
+                    for verse in verse_separators:
+                        for _and in and_separators:
+                            for end in end_separators:
+                                reference_text = reference_text.format(to=to, verse=verse, _and=_and, end=end)
+
+                                # WHEN: Attempting to parse the input string
+                                references = full_reference_match.split(reference_text)
+
+                                # THEN: The list of references should be as the expected results
+                                assert references == ranges
+
+    def test_search_results_creation(self):
         """
         Test the creation and construction of the SearchResults class
         """
@@ -55,12 +217,12 @@ class TestLib(TestCase):
         search_results = SearchResults(book, chapter, verse_list)
 
         # THEN: It should have a book, a chapter and a verse list
-        self.assertIsNotNone(search_results, 'The search_results object should not be None')
-        self.assertEqual(search_results.book, book, 'The book should be "Genesis"')
-        self.assertEqual(search_results.chapter, chapter, 'The chapter should be 1')
-        self.assertDictEqual(search_results.verse_list, verse_list, 'The verse lists should be identical')
+        assert search_results is not None, 'The search_results object should not be None'
+        assert search_results.book == book, 'The book should be "Genesis"'
+        assert search_results.chapter == chapter, 'The chapter should be 1'
+        assert search_results.verse_list == verse_list, 'The verse lists should be identical'
 
-    def search_results_has_verse_list_test(self):
+    def test_search_results_has_verse_list(self):
         """
         Test that a SearchResults object with a valid verse list returns True when checking ``has_verse_list()``
         """
@@ -71,9 +233,9 @@ class TestLib(TestCase):
         has_verse_list = search_results.has_verse_list()
 
         # THEN: It should be True
-        self.assertTrue(has_verse_list, 'The SearchResults object should have a verse list')
+        assert has_verse_list is True, 'The SearchResults object should have a verse list'
 
-    def search_results_has_no_verse_list_test(self):
+    def test_search_results_has_no_verse_list(self):
         """
         Test that a SearchResults object with an empty verse list returns False when checking ``has_verse_list()``
         """
@@ -84,4 +246,4 @@ class TestLib(TestCase):
         has_verse_list = search_results.has_verse_list()
 
         # THEN: It should be False
-        self.assertFalse(has_verse_list, 'The SearchResults object should have a verse list')
+        assert has_verse_list is False, 'The SearchResults object should have a verse list'

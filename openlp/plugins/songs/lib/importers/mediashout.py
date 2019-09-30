@@ -1,41 +1,42 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`mediashout` module provides the functionality for importing
 a MediaShout database into the OpenLP database.
 """
+
+# WARNING: See https://docs.python.org/3/library/sqlite3.html for value substitution
+#          in SQL statements
+
+import logging
+
 import pyodbc
 
-from openlp.core.lib import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
+
 VERSE_TAGS = ['V', 'C', 'B', 'O', 'P', 'I', 'E']
+log = logging.getLogger(__name__)
 
 
 class MediaShoutImport(SongImport):
@@ -47,17 +48,18 @@ class MediaShoutImport(SongImport):
         """
         Initialise the MediaShout importer.
         """
-        SongImport.__init__(self, manager, **kwargs)
+        super(MediaShoutImport, self).__init__(manager, **kwargs)
 
     def do_import(self):
         """
         Receive a single file to import.
         """
         try:
-            conn = pyodbc.connect('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=%s;PWD=6NOZ4eHK7k' %
-                                  self.import_source)
-        except:
+            conn = pyodbc.connect('DRIVER={{Microsoft Access Driver (*.mdb)}};DBQ={source};'
+                                  'PWD=6NOZ4eHK7k'.format(source=self.import_source))
+        except Exception as e:
             # Unfortunately no specific exception type
+            log.exception(e)
             self.log_error(self.import_source, translate('SongsPlugin.MediaShoutImport',
                                                          'Unable to open the MediaShout database.'))
             return
@@ -66,18 +68,21 @@ class MediaShoutImport(SongImport):
         songs = cursor.fetchall()
         self.import_wizard.progress_bar.setMaximum(len(songs))
         for song in songs:
+            topics = []
             if self.stop_import_flag:
                 break
-            cursor.execute('SELECT Type, Number, Text FROM Verses WHERE Record = %s ORDER BY Type, Number'
-                           % song.Record)
+            cursor.execute('SELECT Type, Number, Text FROM Verses WHERE Record = ? ORDER BY Type, Number',
+                           float(song.Record))
             verses = cursor.fetchall()
-            cursor.execute('SELECT Type, Number, POrder FROM PlayOrder WHERE Record = %s ORDER BY POrder' % song.Record)
+            cursor.execute('SELECT Type, Number, POrder FROM PlayOrder WHERE Record = ? ORDER BY POrder',
+                           float(song.Record))
             verse_order = cursor.fetchall()
-            cursor.execute('SELECT Name FROM Themes INNER JOIN SongThemes ON SongThemes.ThemeId = Themes.ThemeId '
-                           'WHERE SongThemes.Record = %s' % song.Record)
-            topics = cursor.fetchall()
+            if cursor.tables(table='TableName', tableType='TABLE').fetchone():
+                cursor.execute('SELECT Name FROM Themes INNER JOIN SongThemes ON SongThemes.ThemeId = Themes.ThemeId '
+                               'WHERE SongThemes.Record = ?', float(song.Record))
+                topics = cursor.fetchall()
             cursor.execute('SELECT Name FROM Groups INNER JOIN SongGroups ON SongGroups.GroupId = Groups.GroupId '
-                           'WHERE SongGroups.Record = %s' % song.Record)
+                           'WHERE SongGroups.Record = ?', float(song.Record))
             topics += cursor.fetchall()
             self.process_song(song, verses, verse_order, topics)
 

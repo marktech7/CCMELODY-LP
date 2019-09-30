@@ -1,49 +1,47 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Functional tests to test the PowerPointController class and related methods.
 """
 import os
 import shutil
-from unittest import TestCase
 from tempfile import mkdtemp
+from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from tests.functional import patch, MagicMock
+from openlp.core.common import is_win
+from openlp.core.common.settings import Settings
+from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument, \
+    _get_text_from_shapes
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import TEST_RESOURCES_PATH
 
-from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument,\
-    _get_text_from_shapes
-from openlp.core.common import is_win
 
 if is_win():
     import pywintypes
+
+__default_settings__ = {
+    'presentations/powerpoint slide click advance': True
+}
 
 
 class TestPowerpointController(TestCase, TestMixin):
@@ -68,7 +66,7 @@ class TestPowerpointController(TestCase, TestMixin):
         self.destroy_settings()
         shutil.rmtree(self.temp_folder)
 
-    def constructor_test(self):
+    def test_constructor(self):
         """
         Test the Constructor from the PowerpointController
         """
@@ -79,8 +77,7 @@ class TestPowerpointController(TestCase, TestMixin):
         controller = PowerpointController(plugin=self.mock_plugin)
 
         # THEN: The name of the presentation controller should be correct
-        self.assertEqual('Powerpoint', controller.name,
-                         'The name of the presentation controller should be correct')
+        assert 'Powerpoint' == controller.name, 'The name of the presentation controller should be correct'
 
 
 class TestPowerpointDocument(TestCase, TestMixin):
@@ -111,6 +108,7 @@ class TestPowerpointDocument(TestCase, TestMixin):
         self.mock_presentation_document_get_temp_folder.return_value = 'temp folder'
         self.file_name = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.pptx')
         self.real_controller = PowerpointController(self.mock_plugin)
+        Settings().extend_default_settings(__default_settings__)
 
     def tearDown(self):
         """
@@ -122,7 +120,7 @@ class TestPowerpointDocument(TestCase, TestMixin):
         self.destroy_settings()
         shutil.rmtree(self.temp_folder)
 
-    def show_error_msg_test(self):
+    def test_show_error_msg(self):
         """
         Test the PowerpointDocument.show_error_msg() method gets called on com exception
         """
@@ -133,12 +131,13 @@ class TestPowerpointDocument(TestCase, TestMixin):
                 instance = PowerpointDocument(self.mock_controller, self.mock_presentation)
                 instance.presentation = MagicMock()
                 instance.presentation.SlideShowWindow.View.GotoSlide = MagicMock(side_effect=pywintypes.com_error('1'))
+                instance.index_map[42] = 42
 
                 # WHEN: Calling goto_slide which will throw an exception
                 instance.goto_slide(42)
 
                 # THEN: mocked_critical_error_message_box should have been called
-                mocked_critical_error_message_box.assert_called_with('Error', 'An error occurred in the Powerpoint '
+                mocked_critical_error_message_box.assert_called_with('Error', 'An error occurred in the PowerPoint '
                                                                      'integration and the presentation will be stopped.'
                                                                      ' Restart the presentation if you wish to '
                                                                      'present it.')
@@ -157,55 +156,52 @@ class TestPowerpointDocument(TestCase, TestMixin):
             result = doc.is_loaded()
 
             # THEN: result should be true
-            self.assertEqual(result, True, 'The result should be True')
+            assert result is True, 'The result should be True'
         else:
             self.skipTest('Powerpoint not available, skipping test.')
 
-    def create_titles_and_notes_test(self):
+    def test_create_titles_and_notes(self):
         """
         Test creating the titles from PowerPoint
         """
-        if is_win() and self.real_controller.check_available():
-            # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
-            self.doc = PowerpointDocument(self.real_controller, self.file_name)
-            self.doc.save_titles_and_notes = MagicMock()
-            self.doc._PowerpointDocument__get_text_from_shapes = MagicMock()
-            slide = MagicMock()
-            slide.Shapes.Title.TextFrame.TextRange.Text = 'SlideText'
-            pres = MagicMock()
-            pres.Slides = [slide, slide]
-            self.doc.presentation = pres
+        # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
+        self.doc = PowerpointDocument(self.mock_controller, self.file_name)
+        self.doc.get_slide_count = MagicMock()
+        self.doc.get_slide_count.return_value = 2
+        self.doc.index_map = {1: 1, 2: 2}
+        self.doc.save_titles_and_notes = MagicMock()
+        self.doc._PowerpointDocument__get_text_from_shapes = MagicMock()
+        slide = MagicMock()
+        slide.Shapes.Title.TextFrame.TextRange.Text = 'SlideText'
+        pres = MagicMock()
+        pres.Slides = MagicMock(side_effect=[slide, slide])
+        self.doc.presentation = pres
 
-            # WHEN reading the titles and notes
-            self.doc.create_titles_and_notes()
+        # WHEN reading the titles and notes
+        self.doc.create_titles_and_notes()
 
-            # THEN the save should have been called exactly once with 2 titles and 2 notes
-            self.doc.save_titles_and_notes.assert_called_once_with(['SlideText\n', 'SlideText\n'], [' ', ' '])
-        else:
-            self.skipTest('Powerpoint not available, skipping test.')
+        # THEN the save should have been called exactly once with 2 titles and 2 notes
+        self.doc.save_titles_and_notes.assert_called_once_with(['SlideText', 'SlideText'], [' ', ' '])
 
-    def create_titles_and_notes_with_no_slides_test(self):
+    def test_create_titles_and_notes_with_no_slides(self):
         """
         Test creating the titles from PowerPoint when it returns no slides
         """
-        if is_win() and self.real_controller.check_available():
-            # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
-            doc = PowerpointDocument(self.real_controller, self.file_name)
-            doc.save_titles_and_notes = MagicMock()
-            doc._PowerpointDocument__get_text_from_shapes = MagicMock()
-            pres = MagicMock()
-            pres.Slides = []
-            doc.presentation = pres
+        # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
+        doc = PowerpointDocument(self.mock_controller, self.file_name)
+        doc.save_titles_and_notes = MagicMock()
+        doc._PowerpointDocument__get_text_from_shapes = MagicMock()
+        pres = MagicMock()
+        pres.Slides = []
+        doc.presentation = pres
 
-            # WHEN reading the titles and notes
-            doc.create_titles_and_notes()
+        # WHEN reading the titles and notes
+        doc.create_titles_and_notes()
 
-            # THEN the save should have been called exactly once with empty titles and notes
-            doc.save_titles_and_notes.assert_called_once_with([], [])
-        else:
-            self.skipTest('Powerpoint not available, skipping test.')
+        # THEN the save should have been called exactly once with empty titles and notes
+        doc.save_titles_and_notes.assert_called_once_with([], [])
 
-    def get_text_from_shapes_test(self):
+    def test_get_text_from_shapes(self):
         """
         Test getting text from powerpoint shapes
         """
@@ -220,9 +216,9 @@ class TestPowerpointDocument(TestCase, TestMixin):
         result = _get_text_from_shapes(shapes)
 
         # THEN: it should return the text
-        self.assertEqual(result, 'slideText\nslideText\n', 'result should match \'slideText\nslideText\n\'')
+        assert result == 'slideText\nslideText\n', 'result should match \'slideText\nslideText\n\''
 
-    def get_text_from_shapes_with_no_shapes_test(self):
+    def test_get_text_from_shapes_with_no_shapes(self):
         """
         Test getting text from powerpoint shapes with no shapes
         """
@@ -233,4 +229,75 @@ class TestPowerpointDocument(TestCase, TestMixin):
         result = _get_text_from_shapes(shapes)
 
         # THEN: it should not fail but return empty string
-        self.assertEqual(result, '', 'result should be empty')
+        assert result == '', 'result should be empty'
+
+    def test_goto_slide(self):
+        """
+        Test that goto_slide goes to next effect if the slide is already displayed
+        """
+        # GIVEN: A Document with mocked controller, presentation, and mocked functions get_slide_number and next_step
+        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
+        doc.presentation = MagicMock()
+        doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 1
+        doc.presentation.SlideShowWindow.View.GetClickCount.return_value = 2
+        doc.get_slide_number = MagicMock()
+        doc.get_slide_number.return_value = 1
+        doc.next_step = MagicMock()
+        doc.index_map[1] = 1
+
+        # WHEN: Calling goto_slide
+        doc.goto_slide(1)
+
+        # THEN: next_step() should be call to try to advance to the next effect.
+        assert doc.next_step.called is True, 'next_step() should have been called!'
+
+    def test_blank_screen(self):
+        """
+        Test that blank_screen works as expected
+        """
+        # GIVEN: A Document with mocked controller, presentation, and mocked function get_slide_number
+        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
+        doc.presentation = MagicMock()
+        doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
+        doc.presentation.Application.Version = 14.0
+        doc.get_slide_number = MagicMock()
+        doc.get_slide_number.return_value = 2
+
+        # WHEN: Calling goto_slide
+        doc.blank_screen()
+
+        # THEN: The view state, doc.blank_slide and doc.blank_click should have new values
+        assert doc.presentation.SlideShowWindow.View.State == 3, 'The View State should be 3'
+        assert doc.blank_slide == 2, 'doc.blank_slide should be 2 because of the PowerPoint version'
+        assert doc.blank_click == 3, 'doc.blank_click should be 3 because of the PowerPoint version'
+
+    def test_unblank_screen(self):
+        """
+        Test that unblank_screen works as expected
+        """
+        # GIVEN: A Document with mocked controller, presentation, ScreenList, and mocked function get_slide_number
+        with patch('openlp.plugins.presentations.lib.powerpointcontroller.ScreenList') as mocked_screen_list:
+            mocked_screen_list_ret = MagicMock()
+            mocked_screen_list_ret.screen_list = [1]
+            mocked_screen_list.return_value = mocked_screen_list_ret
+            doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
+            doc.presentation = MagicMock()
+            doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
+            doc.presentation.Application.Version = 14.0
+            doc.get_slide_number = MagicMock()
+            doc.get_slide_number.return_value = 2
+            doc.index_map[1] = 1
+            doc.blank_slide = 1
+            doc.blank_click = 1
+
+            # WHEN: Calling goto_slide
+            doc.unblank_screen()
+
+            # THEN: The view state have new value, and several function should have been called
+            assert doc.presentation.SlideShowWindow.View.State == 1, 'The View State should be 1'
+            assert doc.presentation.SlideShowWindow.Activate.called is True, \
+                'SlideShowWindow.Activate should have been called'
+            assert doc.presentation.SlideShowWindow.View.GotoSlide.called is True, \
+                'View.GotoSlide should have been called because of the PowerPoint version'
+            assert doc.presentation.SlideShowWindow.View.GotoClick.called is True, \
+                'View.GotoClick should have been called because of the PowerPoint version'

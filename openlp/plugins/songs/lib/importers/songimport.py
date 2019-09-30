@@ -1,45 +1,42 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 import re
-import shutil
-import os
+from shutil import copyfile
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
-from openlp.core.common import Registry, AppLocation, check_directory_exists, translate
-from openlp.core.ui.wizard import WizardStrings
-from openlp.plugins.songs.lib import clean_song, VerseType
-from openlp.plugins.songs.lib.db import Song, Author, Topic, Book, MediaFile
-from openlp.plugins.songs.lib.ui import SongStrings
+from openlp.core.common import normalize_str
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.i18n import translate
+from openlp.core.common.path import create_paths
+from openlp.core.common.registry import Registry
+from openlp.core.widgets.wizard import WizardStrings
+from openlp.plugins.songs.lib import VerseType, clean_song
+from openlp.plugins.songs.lib.db import Author, Book, MediaFile, Song, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
+from openlp.plugins.songs.lib.ui import SongStrings
+
 
 log = logging.getLogger(__name__)
 
@@ -68,14 +65,14 @@ class SongImport(QtCore.QObject):
         """
         self.manager = manager
         QtCore.QObject.__init__(self)
-        if 'filename' in kwargs:
-            self.import_source = kwargs['filename']
-        elif 'filenames' in kwargs:
-            self.import_source = kwargs['filenames']
-        elif 'folder' in kwargs:
-            self.import_source = kwargs['folder']
+        if 'file_path' in kwargs:
+            self.import_source = kwargs['file_path']
+        elif 'file_paths' in kwargs:
+            self.import_source = kwargs['file_paths']
+        elif 'folder_path' in kwargs:
+            self.import_source = kwargs['folder_path']
         else:
-            raise KeyError('Keyword arguments "filename[s]" or "folder" not supplied.')
+            raise KeyError('Keyword arguments "file_path[s]" or "folder_path" not supplied.')
         log.debug(self.import_source)
         self.import_wizard = None
         self.song = None
@@ -112,7 +109,7 @@ class SongImport(QtCore.QObject):
         This should be called, when a song could not be imported.
 
         :param file_path: This should be the file path if ``self.import_source`` is a list with different files. If it
-        is not a list, but a single file (for instance a database), then this should be the song's title.
+            is not a list, but a single file (for instance a database), then this should be the song's title.
         :param reason: The reason why the import failed. The string should be as informative as possible.
         """
         self.set_defaults()
@@ -124,7 +121,7 @@ class SongImport(QtCore.QObject):
             self.import_wizard.error_report_text_edit.setVisible(True)
             self.import_wizard.error_copy_to_button.setVisible(True)
             self.import_wizard.error_save_to_button.setVisible(True)
-        self.import_wizard.error_report_text_edit.append('- %s (%s)' % (file_path, reason))
+        self.import_wizard.error_report_text_edit.append('- {path} ({error})'.format(path=file_path, error=reason))
 
     def stop_import(self):
         """
@@ -135,23 +132,6 @@ class SongImport(QtCore.QObject):
 
     def register(self, import_wizard):
         self.import_wizard = import_wizard
-
-    def tidy_text(self, text):
-        """
-        Get rid of some dodgy unicode and formatting characters we're not interested in. Some can be converted to ascii.
-        """
-        text = text.replace('\u2018', '\'')
-        text = text.replace('\u2019', '\'')
-        text = text.replace('\u201c', '"')
-        text = text.replace('\u201d', '"')
-        text = text.replace('\u2026', '...')
-        text = text.replace('\u2013', '-')
-        text = text.replace('\u2014', '-')
-        # Remove surplus blank lines, spaces, trailing/leading spaces
-        text = re.sub(r'[ \t\v]+', ' ', text)
-        text = re.sub(r' ?(\r\n?|\n) ?', '\n', text)
-        text = re.sub(r' ?(\n{5}|\f)+ ?', '\f', text)
-        return text
 
     def process_song_text(self, text):
         """
@@ -246,7 +226,7 @@ class SongImport(QtCore.QObject):
             self.copyright += ' '
         self.copyright += copyright
 
-    def parse_author(self, text):
+    def parse_author(self, text, type=None):
         """
         Add the author. OpenLP stores them individually so split by 'and', '&' and comma. However need to check
         for 'Mr and Mrs Smith' and turn it to 'Mr Smith' and 'Mrs Smith'.
@@ -260,23 +240,26 @@ class SongImport(QtCore.QObject):
                 if author2.endswith('.'):
                     author2 = author2[:-1]
                 if author2:
-                    self.add_author(author2)
+                    if type:
+                        self.add_author(author2, type)
+                    else:
+                        self.add_author(author2)
 
-    def add_author(self, author):
+    def add_author(self, author, type=None):
         """
         Add an author to the list
         """
-        if author in self.authors:
+        if (author, type) in self.authors:
             return
-        self.authors.append(author)
+        self.authors.append((author, type))
 
-    def add_media_file(self, filename, weight=0):
+    def add_media_file(self, file_path, weight=0):
         """
         Add a media file to the list
         """
-        if filename in [x[0] for x in self.media_files]:
+        if file_path in [x[0] for x in self.media_files]:
             return
-        self.media_files.append((filename, weight))
+        self.media_files.append((file_path, weight))
 
     def add_verse(self, verse_text, verse_def='v', lang=None):
         """
@@ -308,12 +291,23 @@ class SongImport(QtCore.QObject):
         if verse_def not in self.verse_order_list_generated:
             self.verse_order_list_generated.append(verse_def)
 
-    def repeat_verse(self):
+    def repeat_verse(self, verse_def=None):
         """
-        Repeat the previous verse in the verse order
+        Repeat the verse with the given verse_def or default to repeating the previous verse in the verse order
+
+        :param verse_def: verse_def of the verse to be repeated
         """
         if self.verse_order_list_generated:
-            self.verse_order_list_generated.append(self.verse_order_list_generated[-1])
+            if verse_def:
+                # If the given verse_def is only one char (like 'v' or 'c'), postfix it with '1'
+                if len(verse_def) == 1:
+                    verse_def += '1'
+                if verse_def in self.verse_order_list_generated:
+                    self.verse_order_list_generated.append(verse_def)
+                else:
+                    log.warning('Trying to add unknown verse_def "%s"' % verse_def)
+            else:
+                self.verse_order_list_generated.append(self.verse_order_list_generated[-1])
             self.verse_order_list_generated_useful = True
 
     def check_complete(self):
@@ -333,11 +327,11 @@ class SongImport(QtCore.QObject):
         if not self.check_complete():
             self.set_defaults()
             return False
-        log.info('committing song %s to database', self.title)
+        log.info('committing song {title} to database'.format(title=self.title))
         song = Song()
         song.title = self.title
         if self.import_wizard is not None:
-            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType % song.title)
+            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=song.title))
         song.alternate_title = self.alternate_title
         # Values will be set when cleaning the song.
         song.search_title = ''
@@ -351,13 +345,13 @@ class SongImport(QtCore.QObject):
             if verse_def[0].lower() in VerseType.tags:
                 verse_tag = verse_def[0].lower()
             else:
-                new_verse_def = '%s%d' % (VerseType.tags[VerseType.Other], other_count)
+                new_verse_def = '{tag}{count:d}'.format(tag=VerseType.tags[VerseType.Other], count=other_count)
                 verses_changed_to_other[verse_def] = new_verse_def
                 other_count += 1
                 verse_tag = VerseType.tags[VerseType.Other]
-                log.info('Versetype %s changing to %s', verse_def, new_verse_def)
+                log.info('Versetype {old} changing to {new}'.format(old=verse_def, new=new_verse_def))
                 verse_def = new_verse_def
-            sxml.add_verse_to_lyrics(verse_tag, verse_def[1:], verse_text, lang)
+            sxml.add_verse_to_lyrics(verse_tag, verse_def[1:], normalize_str(verse_text), lang)
         song.lyrics = str(sxml.extract_xml(), 'utf-8')
         if not self.verse_order_list and self.verse_order_list_generated_useful:
             self.verse_order_list = self.verse_order_list_generated
@@ -367,18 +361,18 @@ class SongImport(QtCore.QObject):
         song.comments = self.comments
         song.theme_name = self.theme_name
         song.ccli_number = self.ccli_number
-        for author_text in self.authors:
+        for author_text, author_type in self.authors:
             author = self.manager.get_object_filtered(Author, Author.display_name == author_text)
             if not author:
                 author = Author.populate(display_name=author_text,
                                          last_name=author_text.split(' ')[-1],
                                          first_name=' '.join(author_text.split(' ')[:-1]))
-            song.add_author(author)
+            song.add_author(author, author_type)
         if self.song_book_name:
             song_book = self.manager.get_object_filtered(Book, Book.name == self.song_book_name)
             if song_book is None:
                 song_book = Book.populate(name=self.song_book_name, publisher=self.song_book_pub)
-            song.book = song_book
+            song.add_songbook_entry(song_book, song.song_number)
         for topic_text in self.topics:
             if not topic_text:
                 continue
@@ -392,29 +386,30 @@ class SongImport(QtCore.QObject):
         self.manager.save_object(song)
         # Now loop through the media files, copy them to the correct location,
         # and save the song again.
-        for filename, weight in self.media_files:
-            media_file = self.manager.get_object_filtered(MediaFile, MediaFile.file_name == filename)
+        for file_path, weight in self.media_files:
+            media_file = self.manager.get_object_filtered(MediaFile, MediaFile.file_path == file_path)
             if not media_file:
-                if os.path.dirname(filename):
-                    filename = self.copy_media_file(song.id, filename)
-                song.media_files.append(MediaFile.populate(file_name=filename, weight=weight))
+                if file_path.parent:
+                    file_path = self.copy_media_file(song.id, file_path)
+                song.media_files.append(MediaFile.populate(file_path=file_path, weight=weight))
         self.manager.save_object(song)
         self.set_defaults()
         return True
 
-    def copy_media_file(self, song_id, filename):
+    def copy_media_file(self, song_id, file_path):
         """
         This method copies the media file to the correct location and returns
         the new file location.
 
         :param song_id:
-        :param filename: The file to copy.
+        :param pathlib.Path file_path: The file to copy.
+        :return: The new location of the file
+        :rtype: pathlib.Path
         """
         if not hasattr(self, 'save_path'):
-            self.save_path = os.path.join(AppLocation.get_section_data_path(self.import_wizard.plugin.name),
-                                          'audio', str(song_id))
-        check_directory_exists(self.save_path)
-        if not filename.startswith(self.save_path):
-            old_file, filename = filename, os.path.join(self.save_path, os.path.split(filename)[1])
-            shutil.copyfile(old_file, filename)
-        return filename
+            self.save_path = AppLocation.get_section_data_path(self.import_wizard.plugin.name) / 'audio' / str(song_id)
+        create_paths(self.save_path)
+        if self.save_path not in file_path.parents:
+            old_path, file_path = file_path, self.save_path / file_path.name
+            copyfile(old_path, file_path)
+        return file_path

@@ -1,43 +1,41 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
-import os
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import logging
+import os
 import re
-from time import sleep
 from datetime import datetime
+from pathlib import Path
+from time import sleep
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import translate, is_win, is_linux, is_macosx, RegistryProperties
-from openlp.plugins.media.forms.mediaclipselectordialog import Ui_MediaClipSelector
+from openlp.core.common import is_linux, is_macosx, is_win
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import RegistryProperties
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.media.vlcplayer import get_vlc
+from openlp.plugins.media.forms.mediaclipselectordialog import Ui_MediaClipSelector
+
 
 if is_win():
     from win32com.client import Dispatch
@@ -45,31 +43,21 @@ if is_win():
 if is_linux():
     import dbus
 
-try:
-    from openlp.core.ui.media.vendor import vlc
-except (ImportError, NameError, NotImplementedError):
-    pass
-except OSError as e:
-    if is_win():
-        if not isinstance(e, WindowsError) and e.winerror != 126:
-            raise
-    else:
-        raise
-
 log = logging.getLogger(__name__)
 
 
-class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryProperties):
+class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryProperties):
     """
     Class to manage the clip selection
     """
-    log.info('%s MediaClipSelectorForm loaded', __name__)
+    log.info('{name} MediaClipSelectorForm loaded'.format(name=__name__))
 
     def __init__(self, media_item, parent, manager):
         """
         Constructor
         """
-        super(MediaClipSelectorForm, self).__init__(parent)
+        super(MediaClipSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
+                                                    QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.vlc_instance = None
         self.vlc_media_player = None
         self.vlc_media = None
@@ -78,14 +66,10 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         self.audio_cd = False
         self.playback_length = 0
         self.media_item = media_item
-        self.setupUi(self)
+        self.setup_ui(self)
         # setup play/pause icon
-        self.play_icon = QtGui.QIcon()
-        self.play_icon.addPixmap(QtGui.QPixmap(":/slides/media_playback_start.png"), QtGui.QIcon.Normal,
-                                 QtGui.QIcon.Off)
-        self.pause_icon = QtGui.QIcon()
-        self.pause_icon.addPixmap(QtGui.QPixmap(":/slides/media_playback_pause.png"), QtGui.QIcon.Normal,
-                                  QtGui.QIcon.Off)
+        self.play_icon = UiIcons().play
+        self.pause_icon = UiIcons().pause
 
     def reject(self):
         """
@@ -103,15 +87,15 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         if self.vlc_media:
             self.vlc_media.release()
             self.vlc_media = None
-        return QtGui.QDialog.reject(self)
+        return QtWidgets.QDialog.reject(self)
 
-    def exec_(self):
+    def exec(self):
         """
         Start dialog
         """
         self.reset_ui()
         self.setup_vlc()
-        return QtGui.QDialog.exec_(self)
+        return QtWidgets.QDialog.exec(self)
 
     def reset_ui(self):
         """
@@ -124,7 +108,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         self.subtitle_tracks_combobox.clear()
         self.audio_tracks_combobox.clear()
         self.titles_combo_box.clear()
-        time = QtCore.QTime()
+        time = QtCore.QTime(0, 0, 0)
         self.start_position_edit.setTime(time)
         self.end_timeedit.setTime(time)
         self.position_timeedit.setTime(time)
@@ -133,6 +117,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         """
         Setup VLC instance and mediaplayer
         """
+        vlc = get_vlc()
         self.vlc_instance = vlc.Instance()
         # creating an empty vlc media player
         self.vlc_media_player = self.vlc_instance.media_player_new()
@@ -145,7 +130,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         if is_win():
             self.vlc_media_player.set_hwnd(win_id)
         elif is_macosx():
-            # We have to use 'set_nsobject' since Qt4 on OSX uses Cocoa
+            # We have to use 'set_nsobject' since Qt5 on OSX uses Cocoa
             # framework and not the old Carbon.
             self.vlc_media_player.set_nsobject(win_id)
         else:
@@ -167,6 +152,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         :param path: Path to the device to be tested.
         :return: True if it was an audio CD else False.
         """
+        vlc = get_vlc()
         # Detect by trying to play it as a CD
         self.vlc_media = self.vlc_instance.media_new_location('cdda://' + path)
         self.vlc_media_player.set_media(self.vlc_media)
@@ -200,6 +186,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         :param clicked: Given from signal, not used.
         """
         log.debug('on_load_disc_button_clicked')
+        vlc = get_vlc()
         self.disable_all()
         self.application.set_busy_cursor()
         path = self.media_path_combobox.currentText()
@@ -221,7 +208,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         # detect if we're dealing with a DVD or CD, so we use different loading approaches depending on the OS.
         if is_win():
             # If the given path is in the format "D:\" or "D:", prefix it with "/" to make VLC happy
-            pattern = re.compile('^\w:\\\\*$')
+            pattern = re.compile(r'^\w:\\\\*$')
             if pattern.match(path):
                 path = '/' + path
             self.vlc_media = self.vlc_instance.media_new_location('dvd://' + path)
@@ -279,7 +266,8 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
             # Enable audio track combobox if anything is in it
             if len(titles) > 0:
                 self.titles_combo_box.setDisabled(False)
-        log.debug('load_disc_button end - vlc_media_player state: %s' % self.vlc_media_player.get_state())
+        log.debug('load_disc_button end - '
+                  'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
 
     @QtCore.pyqtSlot(bool)
     def on_play_button_clicked(self, clicked):
@@ -288,6 +276,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
 
         :param clicked: Given from signal, not used.
         """
+        vlc = get_vlc()
         if self.vlc_media_player.get_state() == vlc.State.Playing:
             self.vlc_media_player.pause()
             self.play_button.setIcon(self.play_icon)
@@ -304,7 +293,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         :param clicked: Given from signal, not used.
         """
         vlc_ms_pos = self.vlc_media_player.get_time()
-        time = QtCore.QTime()
+        time = QtCore.QTime(0, 0, 0)
         new_pos_time = time.addMSecs(vlc_ms_pos)
         self.start_position_edit.setTime(new_pos_time)
         # If start time is after end time, update end time.
@@ -320,7 +309,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         :param clicked: Given from signal, not used.
         """
         vlc_ms_pos = self.vlc_media_player.get_time()
-        time = QtCore.QTime()
+        time = QtCore.QTime(0, 0, 0)
         new_pos_time = time.addMSecs(vlc_ms_pos)
         self.end_timeedit.setTime(new_pos_time)
         # If start time is after end time, update start time.
@@ -387,7 +376,8 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
 
         :param index: The index of the newly chosen title track.
         """
-        log.debug('in on_titles_combo_box_changed, index: %d', index)
+        log.debug('in on_titles_combo_box_changed, index: {index:d}'.format(index=index))
+        vlc = get_vlc()
         if not self.vlc_media_player:
             log.error('vlc_media_player was None')
             return
@@ -419,7 +409,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
             self.vlc_media_player.audio_set_mute(True)
             # Get audio tracks
             audio_tracks = self.vlc_media_player.audio_get_track_description()
-            log.debug('number of audio tracks: %d' % len(audio_tracks))
+            log.debug('number of audio tracks: {tracks:d}'.format(tracks=len(audio_tracks)))
             # Clear the audio track combobox, insert new tracks
             self.audio_tracks_combobox.clear()
             for audio_track in audio_tracks:
@@ -445,18 +435,18 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
                 self.toggle_disable_player(False)
         # Set media length info
         self.playback_length = self.vlc_media_player.get_length()
-        log.debug('playback_length: %d ms' % self.playback_length)
+        log.debug('playback_length: {length:d} ms'.format(length=self.playback_length))
         # if length is 0, wait a bit, maybe vlc will change its mind...
         loop_count = 0
         while self.playback_length == 0 and loop_count < 20:
             sleep(0.1)
             self.playback_length = self.vlc_media_player.get_length()
             loop_count += 1
-            log.debug('in loop, playback_length: %d ms' % self.playback_length)
+            log.debug('in loop, playback_length: {length:d} ms'.format(length=self.playback_length))
         self.position_slider.setMaximum(self.playback_length)
         # setup start and end time
         rounded_vlc_ms_length = int(round(self.playback_length / 100.0) * 100.0)
-        time = QtCore.QTime()
+        time = QtCore.QTime(0, 0, 0)
         playback_length_time = time.addMSecs(rounded_vlc_ms_length)
         self.start_position_edit.setMaximumTime(playback_length_time)
         self.end_timeedit.setMaximumTime(playback_length_time)
@@ -467,7 +457,8 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
             sleep(0.1)
             self.vlc_media_player.set_pause(1)
             loop_count += 1
-        log.debug('titles_combo_box end - vlc_media_player state: %s' % self.vlc_media_player.get_state())
+        log.debug('titles_combo_box end - '
+                  'vlc_media_player state: {state}'.format(state=self.vlc_media_player.get_state()))
         self.application.set_normal_cursor()
 
     @QtCore.pyqtSlot(int)
@@ -480,7 +471,8 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         if not self.vlc_media_player:
             return
         audio_track = self.audio_tracks_combobox.itemData(index)
-        log.debug('in on_audio_tracks_combobox_currentIndexChanged, index: %d  audio_track: %s' % (index, audio_track))
+        log.debug('in on_audio_tracks_combobox_currentIndexChanged, '
+                  'index: {index:d}  audio_track: {tracks}'.format(index=index, tracks=audio_track))
         if audio_track and int(audio_track) > 0:
             self.vlc_media_player.audio_set_track(int(audio_track))
 
@@ -512,7 +504,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         if self.vlc_media_player:
             vlc_ms_pos = self.vlc_media_player.get_time()
             rounded_vlc_ms_pos = int(round(vlc_ms_pos / 100.0) * 100.0)
-            time = QtCore.QTime()
+            time = QtCore.QTime(0, 0, 0)
             new_pos_time = time.addMSecs(rounded_vlc_ms_pos)
             self.position_timeedit.setTime(new_pos_time)
             self.position_slider.setSliderPosition(vlc_ms_pos)
@@ -578,7 +570,9 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
                                            translate('MediaPlugin.MediaClipSelectorForm',
                                                      'The CD was not loaded correctly, please re-load and try again.'))
                 return
-            optical = 'optical:%d:-1:-1:%d:%d:' % (title, start_time_ms, end_time_ms)
+            optical = 'optical:{title:d}:-1:-1:{start:d}:{end:d}:'.format(title=title,
+                                                                          start=start_time_ms,
+                                                                          end=end_time_ms)
         else:
             audio_track = self.audio_tracks_combobox.itemData(self.audio_tracks_combobox.currentIndex())
             subtitle_track = self.subtitle_tracks_combobox.itemData(self.subtitle_tracks_combobox.currentIndex())
@@ -589,14 +583,18 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
                                            translate('MediaPlugin.MediaClipSelectorForm',
                                                      'The DVD was not loaded correctly, please re-load and try again.'))
                 return
-            optical = 'optical:%d:%d:%d:%d:%d:' % (title, audio_track, subtitle_track, start_time_ms, end_time_ms)
+            optical = 'optical:{title:d}:{audio:d}:{sub:d}:{start:d}:{end:d}:'.format(title=title,
+                                                                                      audio=audio_track,
+                                                                                      sub=subtitle_track,
+                                                                                      start=start_time_ms,
+                                                                                      end=end_time_ms)
         # Ask for an alternative name for the mediaclip
         while True:
-            new_optical_name, ok = QtGui.QInputDialog.getText(self, translate('MediaPlugin.MediaClipSelectorForm',
-                                                                              'Set name of mediaclip'),
-                                                              translate('MediaPlugin.MediaClipSelectorForm',
-                                                                        'Name of mediaclip:'),
-                                                              QtGui.QLineEdit.Normal)
+            new_optical_name, ok = QtWidgets.QInputDialog.getText(self, translate('MediaPlugin.MediaClipSelectorForm',
+                                                                                  'Set name of mediaclip'),
+                                                                  translate('MediaPlugin.MediaClipSelectorForm',
+                                                                            'Name of mediaclip:'),
+                                                                  QtWidgets.QLineEdit.Normal)
             # User pressed cancel, don't save the clip
             if not ok:
                 return
@@ -616,7 +614,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
                 break
         # Append the new name to the optical string and the path
         optical += new_optical_name + ':' + path
-        self.media_item.add_optical_clip(optical)
+        self.media_item.add_optical_clip(Path(optical))
 
     def media_state_wait(self, media_state):
         """
@@ -626,6 +624,7 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         :param media_state: VLC media state to wait for.
         :return: True if state was reached within 15 seconds, False if not or error occurred.
         """
+        vlc = get_vlc()
         start = datetime.now()
         while media_state != self.vlc_media_player.get_state():
             if self.vlc_media_player.get_state() == vlc.State.Error:
@@ -645,10 +644,10 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
             # use win api to find optical drives
             fso = Dispatch('scripting.filesystemobject')
             for drive in fso.Drives:
-                log.debug('Drive %s has type %d' % (drive.DriveLetter, drive.DriveType))
+                log.debug('Drive {drive} has type {types:d}'.format(drive=drive.DriveLetter, types=drive.DriveType))
                 # if type is 4, it is a cd-rom drive
                 if drive.DriveType == 4:
-                    self.media_path_combobox.addItem('%s:\\' % drive.DriveLetter)
+                    self.media_path_combobox.addItem('{drive}:\\'.format(drive=drive.DriveLetter))
         elif is_linux():
             # Get disc devices from dbus and find the ones that are optical
             bus = dbus.SystemBus()
@@ -684,7 +683,6 @@ class MediaClipSelectorForm(QtGui.QDialog, Ui_MediaClipSelector, RegistryPropert
         elif is_macosx():
             # Look for DVD folders in devices to find optical devices
             volumes = os.listdir('/Volumes')
-            candidates = list()
             for volume in volumes:
                 if volume.startswith('.'):
                     continue

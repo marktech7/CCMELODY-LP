@@ -1,75 +1,133 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.songs.songsplugin` module contains the Plugin class
 for the Songs plugin.
 """
 
 import logging
-import os
-from tempfile import gettempdir
 import sqlite3
+from pathlib import Path
+from tempfile import gettempdir
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import UiStrings, Registry, translate
-from openlp.core.lib import Plugin, StringContent, build_icon
+from openlp.core.state import State
+from openlp.core.api.http import register_endpoint
+from openlp.core.common.actions import ActionList
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.registry import Registry
+from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
+from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
-from openlp.core.utils.actions import ActionList
+from openlp.core.ui.icons import UiIcons
+from openlp.plugins.songs import reporting
+from openlp.plugins.songs.endpoint import api_songs_endpoint, songs_endpoint
 from openlp.plugins.songs.forms.duplicatesongremovalform import DuplicateSongRemovalForm
 from openlp.plugins.songs.forms.songselectform import SongSelectForm
 from openlp.plugins.songs.lib import clean_song, upgrade
-from openlp.plugins.songs.lib.db import init_schema, Song
-from openlp.plugins.songs.lib.mediaitem import SongSearch
+from openlp.plugins.songs.lib.db import Song, init_schema
 from openlp.plugins.songs.lib.importer import SongFormat
 from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
-from openlp.plugins.songs.lib.mediaitem import SongMediaItem
+from openlp.plugins.songs.lib.mediaitem import SongMediaItem, SongSearch
 from openlp.plugins.songs.lib.songstab import SongsTab
 
 
 log = logging.getLogger(__name__)
 __default_settings__ = {
     'songs/db type': 'sqlite',
-    'songs/last search type': SongSearch.Entire,
+    'songs/db username': '',
+    'songs/db password': '',
+    'songs/db hostname': '',
+    'songs/db database': '',
+    'songs/last used search type': SongSearch.Entire,
     'songs/last import type': SongFormat.OpenLyrics,
     'songs/update service on edit': False,
-    'songs/search as type': True,
     'songs/add song from service': True,
+    'songs/add songbook slide': False,
     'songs/display songbar': True,
-    'songs/display songbook': False,
-    'songs/display copyright symbol': False,
-    'songs/last directory import': '',
-    'songs/last directory export': '',
+    'songs/last directory import': None,
+    'songs/last directory export': None,
     'songs/songselect username': '',
     'songs/songselect password': '',
-    'songs/songselect searches': ''
+    'songs/songselect searches': '',
+    'songs/enable chords': True,
+    'songs/chord notation': 'english',  # Can be english, german or neo-latin
+    'songs/mainview chords': False,
+    'songs/disable chords import': False,
+    'songs/footer template': """\
+${title}<br/>
+
+%if authors_none:
+  <%
+    authors = ", ".join(authors_none)
+  %>
+  ${authors_none_label}:&nbsp;${authors}<br/>
+%endif
+
+%if authors_words_music:
+  <%
+    authors = ", ".join(authors_words_music)
+  %>
+  ${authors_words_music_label}:&nbsp;${authors}<br/>
+%endif
+
+%if authors_words:
+  <%
+    authors = ", ".join(authors_words)
+  %>
+  ${authors_words_label}:&nbsp;${authors}<br/>
+%endif
+
+%if authors_music:
+  <%
+    authors = ", ".join(authors_music)
+  %>
+  ${authors_music_label}:&nbsp;${authors}<br/>
+%endif
+
+%if authors_translation:
+  <%
+    authors = ", ".join(authors_translation)
+  %>
+  ${authors_translation_label}:&nbsp;${authors}<br/>
+%endif
+
+%if copyright:
+  &copy;&nbsp;${copyright}<br/>
+%endif
+
+%if songbook_entries:
+  <%
+    entries = ", ".join(songbook_entries)
+  %>
+  ${entries}<br/>
+%endif
+
+%if ccli_license:
+  ${ccli_license_label}&nbsp;${ccli_license}<br/>
+%endif
+""",
 }
 
 
@@ -87,9 +145,13 @@ class SongsPlugin(Plugin):
         super(SongsPlugin, self).__init__('songs', __default_settings__, SongMediaItem, SongsTab)
         self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
         self.weight = -10
-        self.icon_path = ':/plugins/plugin_songs.png'
+        self.icon_path = UiIcons().music
         self.icon = build_icon(self.icon_path)
         self.songselect_form = None
+        register_endpoint(songs_endpoint)
+        register_endpoint(api_songs_endpoint)
+        State().add_service(self.name, self.weight, is_plugin=True)
+        State().update_pre_conditions(self.name, self.check_pre_conditions())
 
     def check_pre_conditions(self):
         """
@@ -107,13 +169,13 @@ class SongsPlugin(Plugin):
         self.songselect_form.initialise()
         self.song_import_item.setVisible(True)
         self.song_export_item.setVisible(True)
-        self.tools_reindex_item.setVisible(True)
-        self.tools_find_duplicates.setVisible(True)
+        self.song_tools_menu.menuAction().setVisible(True)
         action_list = ActionList.get_instance()
         action_list.add_action(self.song_import_item, UiStrings().Import)
         action_list.add_action(self.song_export_item, UiStrings().Export)
         action_list.add_action(self.tools_reindex_item, UiStrings().Tools)
         action_list.add_action(self.tools_find_duplicates, UiStrings().Tools)
+        action_list.add_action(self.tools_report_song_list, UiStrings().Tools)
 
     def add_import_menu_item(self, import_menu):
         """
@@ -156,19 +218,37 @@ class SongsPlugin(Plugin):
         :param tools_menu: The actual **Tools** menu item, so that your actions can use it as their parent.
         """
         log.info('add tools menu')
+        self.tools_menu = tools_menu
+        self.song_tools_menu = QtWidgets.QMenu(tools_menu)
+        self.song_tools_menu.setObjectName('song_tools_menu')
+        self.song_tools_menu.setTitle(translate('SongsPlugin', 'Songs'))
         self.tools_reindex_item = create_action(
             tools_menu, 'toolsReindexItem',
             text=translate('SongsPlugin', '&Re-index Songs'),
-            icon=':/plugins/plugin_songs.png',
+            icon=UiIcons().music,
             statustip=translate('SongsPlugin', 'Re-index the songs database to improve searching and ordering.'),
-            visible=False, triggers=self.on_tools_reindex_item_triggered)
-        tools_menu.addAction(self.tools_reindex_item)
+            triggers=self.on_tools_reindex_item_triggered)
         self.tools_find_duplicates = create_action(
             tools_menu, 'toolsFindDuplicates',
             text=translate('SongsPlugin', 'Find &Duplicate Songs'),
             statustip=translate('SongsPlugin', 'Find and remove duplicate songs in the song database.'),
-            visible=False, triggers=self.on_tools_find_duplicates_triggered, can_shortcuts=True)
-        tools_menu.addAction(self.tools_find_duplicates)
+            triggers=self.on_tools_find_duplicates_triggered, can_shortcuts=True)
+        self.tools_report_song_list = create_action(
+            tools_menu, 'toolsSongListReport',
+            text=translate('SongsPlugin', 'Song List Report'),
+            statustip=translate('SongsPlugin', 'Produce a CSV file of all the songs in the database.'),
+            triggers=self.on_tools_report_song_list_triggered)
+
+        self.tools_menu.addAction(self.song_tools_menu.menuAction())
+        self.song_tools_menu.addAction(self.tools_reindex_item)
+        self.song_tools_menu.addAction(self.tools_find_duplicates)
+        self.song_tools_menu.addAction(self.tools_report_song_list)
+
+        self.song_tools_menu.menuAction().setVisible(False)
+
+    @staticmethod
+    def on_tools_report_song_list_triggered():
+        reporting.report_song_list()
 
     def on_tools_reindex_item_triggered(self):
         """
@@ -177,7 +257,7 @@ class SongsPlugin(Plugin):
         max_songs = self.manager.get_object_count(Song)
         if max_songs == 0:
             return
-        progress_dialog = QtGui.QProgressDialog(
+        progress_dialog = QtWidgets.QProgressDialog(
             translate('SongsPlugin', 'Reindexing songs...'), UiStrings().Cancel, 0, max_songs, self.main_window)
         progress_dialog.setWindowTitle(translate('SongsPlugin', 'Reindexing songs'))
         progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
@@ -192,13 +272,13 @@ class SongsPlugin(Plugin):
         """
         Search for duplicates in the song database.
         """
-        DuplicateSongRemovalForm(self).exec_()
+        DuplicateSongRemovalForm(self).exec()
 
     def on_import_songselect_item_triggered(self):
         """
         Run the SongSelect importer.
         """
-        self.songselect_form.exec_()
+        self.songselect_form.exec()
         self.media_item.on_search_text_button_clicked()
 
     def on_song_import_item_clicked(self):
@@ -215,7 +295,8 @@ class SongsPlugin(Plugin):
         if self.media_item:
             self.media_item.on_export_click()
 
-    def about(self):
+    @staticmethod
+    def about():
         """
         Provides information for the plugin manager to display.
 
@@ -229,11 +310,9 @@ class SongsPlugin(Plugin):
         Called to find out if the song plugin is currently using a theme.
 
         :param theme: The theme to check for usage
-        :return: True if the theme is being used, otherwise returns False
+        :return: count of the number of times the theme is used.
         """
-        if self.manager.get_all_objects(Song, Song.theme_name == theme):
-            return True
-        return False
+        return len(self.manager.get_all_objects(Song, Song.theme_name == theme))
 
     def rename_theme(self, old_theme, new_theme):
         """
@@ -293,30 +372,29 @@ class SongsPlugin(Plugin):
         self.application.process_events()
         self.on_tools_reindex_item_triggered()
         self.application.process_events()
-        db_dir = os.path.join(gettempdir(), 'openlp')
-        if not os.path.exists(db_dir):
+        db_dir_path = Path(gettempdir(), 'openlp')
+        if not db_dir_path.exists():
             return
-        song_dbs = []
+        song_db_paths = []
         song_count = 0
-        for sfile in os.listdir(db_dir):
-            if sfile.startswith('songs_') and sfile.endswith('.sqlite'):
-                self.application.process_events()
-                song_dbs.append(os.path.join(db_dir, sfile))
-                song_count += self._count_songs(os.path.join(db_dir, sfile))
-        if not song_dbs:
+        for db_file_path in db_dir_path.glob('songs_*.sqlite'):
+            self.application.process_events()
+            song_db_paths.append(db_file_path)
+            song_count += SongsPlugin._count_songs(db_file_path)
+        if not song_db_paths:
             return
         self.application.process_events()
-        progress = QtGui.QProgressDialog(self.main_window)
+        progress = QtWidgets.QProgressDialog(self.main_window)
         progress.setWindowModality(QtCore.Qt.WindowModal)
-        progress.setWindowTitle(translate('OpenLP.Ui', 'Importing Songs'))
-        progress.setLabelText(translate('OpenLP.Ui', 'Starting import...'))
+        progress.setWindowTitle(translate('SongsPlugin', 'Importing Songs'))
+        progress.setLabelText(UiStrings().StartingImport)
         progress.setCancelButton(None)
         progress.setRange(0, song_count)
         progress.setMinimumDuration(0)
         progress.forceShow()
         self.application.process_events()
-        for db in song_dbs:
-            importer = OpenLPSongImport(self.manager, filename=db)
+        for db_path in song_db_paths:
+            importer = OpenLPSongImport(self.manager, file_path=db_path)
             importer.do_import(progress)
             self.application.process_events()
         progress.setValue(song_count)
@@ -332,30 +410,33 @@ class SongsPlugin(Plugin):
         self.manager.finalise()
         self.song_import_item.setVisible(False)
         self.song_export_item.setVisible(False)
-        self.tools_reindex_item.setVisible(False)
-        self.tools_find_duplicates.setVisible(False)
         action_list = ActionList.get_instance()
         action_list.remove_action(self.song_import_item, UiStrings().Import)
         action_list.remove_action(self.song_export_item, UiStrings().Export)
         action_list.remove_action(self.tools_reindex_item, UiStrings().Tools)
         action_list.remove_action(self.tools_find_duplicates, UiStrings().Tools)
+        action_list.add_action(self.tools_report_song_list, UiStrings().Tools)
+        self.song_tools_menu.menuAction().setVisible(False)
         super(SongsPlugin, self).finalise()
 
     def new_service_created(self):
         """
         Remove temporary songs from the database
         """
-        songs = self.manager.get_all_objects(Song, Song.temporary is True)
+        songs = self.manager.get_all_objects(Song, Song.temporary == True)  # noqa: E712
         for song in songs:
             self.manager.delete_object(Song, song.id)
 
-    def _count_songs(self, db_file):
+    @staticmethod
+    def _count_songs(db_path):
         """
         Provide a count of the songs in the database
 
-        :param db_file: the database name to count
+        :param Path db_path: The database to use
+        :return: The number of songs in the db.
+        :rtype: int
         """
-        connection = sqlite3.connect(db_file)
+        connection = sqlite3.connect(str(db_path))
         cursor = connection.cursor()
         cursor.execute('SELECT COUNT(id) AS song_count FROM songs')
         song_count = cursor.fetchone()[0]

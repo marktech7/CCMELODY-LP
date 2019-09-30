@@ -1,41 +1,34 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`powersong` module provides the functionality for importing
 PowerSong songs into the OpenLP database.
 """
 import logging
-import fnmatch
-import os
+from pathlib import Path
 
-from openlp.core.common import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+
 
 log = logging.getLogger(__name__)
 
@@ -78,11 +71,15 @@ class PowerSongImport(SongImport):
         """
         Checks if source is a PowerSong 1.0 folder:
             * is a directory
-            * contains at least one *.song file
+            * contains at least one * .song file
+
+        :param Path import_source: Should be a Path object that fulfills the above criteria
+        :return: If the source is valid
+        :rtype: bool
         """
-        if os.path.isdir(import_source):
-            for file in os.listdir(import_source):
-                if fnmatch.fnmatch(file, '*.song'):
+        if import_source.is_dir():
+            for file_path in import_source.iterdir():
+                if file_path.suffix == '.song':
                     return True
         return False
 
@@ -92,26 +89,25 @@ class PowerSongImport(SongImport):
         """
         from openlp.plugins.songs.lib.importer import SongFormat
         ps_string = SongFormat.get(SongFormat.PowerSong, 'name')
-        if isinstance(self.import_source, str):
-            if os.path.isdir(self.import_source):
+        if isinstance(self.import_source, Path):
+            if self.import_source.is_dir():
                 dir = self.import_source
                 self.import_source = []
-                for file in os.listdir(dir):
-                    if fnmatch.fnmatch(file, '*.song'):
-                        self.import_source.append(os.path.join(dir, file))
+                for path in dir.glob('*.song'):
+                    self.import_source.append(path)
             else:
-                self.import_source = ''
+                self.import_source = None
         if not self.import_source or not isinstance(self.import_source, list):
             self.log_error(translate('SongsPlugin.PowerSongImport', 'No songs to import.'),
-                           translate('SongsPlugin.PowerSongImport', 'No %s files found.') % ps_string)
+                           translate('SongsPlugin.PowerSongImport', 'No {text} files found.').format(text=ps_string))
             return
         self.import_wizard.progress_bar.setMaximum(len(self.import_source))
-        for file in self.import_source:
+        for file_path in self.import_source:
             if self.stop_import_flag:
                 return
             self.set_defaults()
             parse_error = False
-            with open(file, 'rb') as song_data:
+            with file_path.open('rb') as song_data:
                 while True:
                     try:
                         label = self._read_string(song_data)
@@ -120,9 +116,9 @@ class PowerSongImport(SongImport):
                         field = self._read_string(song_data)
                     except ValueError:
                         parse_error = True
-                        self.log_error(os.path.basename(file), str(
-                            translate('SongsPlugin.PowerSongImport', 'Invalid %s file. Unexpected byte value.')) %
-                            ps_string)
+                        self.log_error(file_path.name,
+                                       translate('SongsPlugin.PowerSongImport',
+                                                 'Invalid {text} file. Unexpected byte value.').format(text=ps_string))
                         break
                     else:
                         if label == 'TITLE':
@@ -138,19 +134,20 @@ class PowerSongImport(SongImport):
                 continue
             # Check that file had TITLE field
             if not self.title:
-                self.log_error(os.path.basename(file), str(
-                    translate('SongsPlugin.PowerSongImport', 'Invalid %s file. Missing "TITLE" header.')) % ps_string)
+                self.log_error(file_path.name,
+                               translate('SongsPlugin.PowerSongImport',
+                                         'Invalid {text} file. Missing "TITLE" header.').format(text=ps_string))
                 continue
             # Check that file had COPYRIGHTLINE label
             if not found_copyright:
-                self.log_error(self.title, str(
-                    translate('SongsPlugin.PowerSongImport', 'Invalid %s file. Missing "COPYRIGHTLINE" header.')) %
-                    ps_string)
+                self.log_error(self.title,
+                               translate('SongsPlugin.PowerSongImport',
+                                         'Invalid {text} file. Missing "COPYRIGHTLINE" header.').format(text=ps_string))
                 continue
             # Check that file had at least one verse
             if not self.verses:
-                self.log_error(self.title, str(
-                    translate('SongsPlugin.PowerSongImport', 'Verses not found. Missing "PART" header.')))
+                self.log_error(self.title,
+                               translate('SongsPlugin.PowerSongImport', 'Verses not found. Missing "PART" header.'))
                 continue
             if not self.finish():
                 self.log_error(self.title)

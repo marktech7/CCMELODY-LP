@@ -1,0 +1,90 @@
+@keyframes alert-scrolling-text {
+  0% {
+    opacity: 1;
+    transform: translateX(100%);
+  }
+  99% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(-101%);
+  }
+}
+
+body {
+  background: transparent !important;
+  color: rgb(255, 255, 255) !important;
+}
+
+sup {
+  vertical-align: super !important;
+  font-size: smaller !important;
+}
+
+.reveal .slides > section,
+.reveal .slides > section > section {
+  padding: 0;
+}
+
+.reveal > .backgrounds > .present {
+  visibility: hidden !important;
+}
+
+#global-background {
+  display: block;
+  visibility: visible;
+  z-index: -1;
+}
+
+.alert-container {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  width: 100vw;
+}
+
+.hide {
+  opacity: 0 !important;
+  transition: opacity 0.5s ease;
+}
+
+.show {
+  opacity: 1 !important;
+  transition: opacity 0.5s ease;
+}
+
+.middle {
+  align-items: center;
+}
+
+.top {
+  align-items: flex-start;
+}
+
+.bottom {
+  align-items: flex-end;
+}
+
+#alert-background {
+  left: 0;
+  margin: 0;
+  opacity: 0;
+  overflow: hidden;
+  padding: 0.5em 0;
+  position: absolute;
+  transition: opacity 0.5s ease;
+  white-space: nowrap;
+  width: 100%;
+  z-index: 11;
+}
+
+#alert-text {
+  margin: 0 0.5em;
+  opacity: 0;
+  overflow: visible;
+  padding: 0;
+  transition: opacity 0.5s linear;
+  z-index: 100;
+}

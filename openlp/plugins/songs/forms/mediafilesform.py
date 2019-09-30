@@ -1,58 +1,59 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
-import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
 from .mediafilesdialog import Ui_MediaFilesDialog
+
 
 log = logging.getLogger(__name__)
 
 
-class MediaFilesForm(QtGui.QDialog, Ui_MediaFilesDialog):
+class MediaFilesForm(QtWidgets.QDialog, Ui_MediaFilesDialog):
     """
     Class to show a list of files from the
     """
-    log.info('%s MediaFilesForm loaded', __name__)
+    log.info('{name} MediaFilesForm loaded'.format(name=__name__))
 
     def __init__(self, parent):
-        super(MediaFilesForm, self).__init__()
-        self.setupUi(self)
+        super(MediaFilesForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                             QtCore.Qt.WindowCloseButtonHint)
+        self.setup_ui(self)
 
-    def populate_files(self, files):
+    def populate_files(self, file_paths):
+        """
+        :param list[pathlib.Path] file_paths:
+        :return:
+        """
         self.file_list_widget.clear()
-        for file in files:
-            item = QtGui.QListWidgetItem(os.path.split(file)[1])
-            item.setData(QtCore.Qt.UserRole, file)
+        for file_path in file_paths:
+            item = QtWidgets.QListWidgetItem(file_path.name)
+            item.setData(QtCore.Qt.UserRole, file_path)
             self.file_list_widget.addItem(item)
 
     def get_selected_files(self):
+        """
+        :rtype: list[pathlib.Path]
+        """
         return [item.data(QtCore.Qt.UserRole) for item in self.file_list_widget.selectedItems()]

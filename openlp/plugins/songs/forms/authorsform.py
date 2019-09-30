@@ -1,40 +1,33 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.lib import translate
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.forms.authorsdialog import Ui_AuthorsDialog
 
 
-class AuthorsForm(QtGui.QDialog, Ui_AuthorsDialog):
+class AuthorsForm(QtWidgets.QDialog, Ui_AuthorsDialog):
     """
     Class to control the Maintenance of Authors Dialog
     """
@@ -42,13 +35,14 @@ class AuthorsForm(QtGui.QDialog, Ui_AuthorsDialog):
         """
         Set up the screen and common data
         """
-        super(AuthorsForm, self).__init__(parent)
-        self.setupUi(self)
+        super(AuthorsForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                          QtCore.Qt.WindowCloseButtonHint)
+        self.setup_ui(self)
         self.auto_display_name = False
         self.first_name_edit.textEdited.connect(self.on_first_name_edited)
         self.last_name_edit.textEdited.connect(self.on_last_name_edited)
 
-    def exec_(self, clear=True):
+    def exec(self, clear=True):
         """
         Execute the dialog.
 
@@ -59,7 +53,7 @@ class AuthorsForm(QtGui.QDialog, Ui_AuthorsDialog):
             self.last_name_edit.clear()
             self.display_edit.clear()
         self.first_name_edit.setFocus()
-        return QtGui.QDialog.exec_(self)
+        return QtWidgets.QDialog.exec(self)
 
     def on_first_name_edited(self, display_name):
         """
@@ -109,14 +103,14 @@ class AuthorsForm(QtGui.QDialog, Ui_AuthorsDialog):
             if critical_error_message_box(
                 message=translate('SongsPlugin.AuthorsForm',
                                   'You have not set a display name for the author, combine the first and last names?'),
-                    parent=self, question=True) == QtGui.QMessageBox.Yes:
+                    parent=self, question=True) == QtWidgets.QMessageBox.Yes:
                 self.display_edit.setText(self.first_name_edit.text() + ' ' + self.last_name_edit.text())
-                return QtGui.QDialog.accept(self)
+                return QtWidgets.QDialog.accept(self)
             else:
                 self.display_edit.setFocus()
                 return False
         else:
-            return QtGui.QDialog.accept(self)
+            return QtWidgets.QDialog.accept(self)
 
     def _get_first_name(self):
         """

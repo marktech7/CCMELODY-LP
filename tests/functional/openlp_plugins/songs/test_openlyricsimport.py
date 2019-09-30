@@ -1,50 +1,43 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the OpenLyrics song importer.
 """
-
-import os
 import json
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
+
 from lxml import etree, objectify
 
-from tests.functional import MagicMock, patch
-from tests.helpers.testmixin import TestMixin
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.openlyrics import OpenLyricsImport
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics
-from openlp.core.common import Registry, Settings
+from tests.helpers.testmixin import TestMixin
+from tests.utils.constants import RESOURCE_PATH
 
 
-TEST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__),
-                                         '..', '..', '..', 'resources', 'openlyricssongs'))
+TEST_PATH = RESOURCE_PATH / 'songs' / 'openlyrics'
 SONG_TEST_DATA = {
     'What a friend we have in Jesus.xml': {
         'title': 'What A Friend We Have In Jesus',
@@ -73,6 +66,21 @@ result_tags = [{"temporary": False, "protected": False, "desc": "z", "start tag"
                 "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
                 "protected": False}]
 
+author_xml = '<properties>\
+                  <authors>\
+                      <author type="words">Test Author1</author>\
+                      <author type="music">Test Author1</author>\
+                      <author type="words">Test Author2</author>\
+                  </authors>\
+            </properties>'
+
+songbook_xml = '<properties>\
+                    <songbooks>\
+                        <songbook name="Collection 1" entry="48"/>\
+                        <songbook name="Collection 2" entry="445 A"/>\
+                    </songbooks>\
+                </properties>'
+
 
 class TestOpenLyricsImport(TestCase, TestMixin):
     """
@@ -92,7 +100,7 @@ class TestOpenLyricsImport(TestCase, TestMixin):
         """
         self.destroy_settings()
 
-    def create_importer_test(self):
+    def test_create_importer(self):
         """
         Test creating an instance of the OpenLyrics file importer
         """
@@ -101,12 +109,12 @@ class TestOpenLyricsImport(TestCase, TestMixin):
             mocked_manager = MagicMock()
 
             # WHEN: An importer object is created
-            importer = OpenLyricsImport(mocked_manager, filenames=[])
+            importer = OpenLyricsImport(mocked_manager, file_paths=[])
 
             # THEN: The importer should be an instance of SongImport
-            self.assertIsInstance(importer, SongImport)
+            assert isinstance(importer, SongImport)
 
-    def file_import_test(self):
+    def test_file_import(self):
         """
         Test the actual import of real song files
         """
@@ -114,19 +122,19 @@ class TestOpenLyricsImport(TestCase, TestMixin):
         for song_file in SONG_TEST_DATA:
             mocked_manager = MagicMock()
             mocked_import_wizard = MagicMock()
-            importer = OpenLyricsImport(mocked_manager, filenames=[])
+            importer = OpenLyricsImport(mocked_manager, file_paths=[])
             importer.import_wizard = mocked_import_wizard
             importer.open_lyrics = MagicMock()
             importer.open_lyrics.xml_to_song = MagicMock()
 
             # WHEN: Importing each file
-            importer.import_source = [os.path.join(TEST_PATH, song_file)]
+            importer.import_source = [TEST_PATH / song_file]
             importer.do_import()
 
             # THEN: The xml_to_song() method should have been called
-            self.assertTrue(importer.open_lyrics.xml_to_song.called)
+            assert importer.open_lyrics.xml_to_song.called is True
 
-    def process_formatting_tags_test(self):
+    def test_process_formatting_tags(self):
         """
         Test that _process_formatting_tags works
         """
@@ -135,7 +143,7 @@ class TestOpenLyricsImport(TestCase, TestMixin):
         Settings().setValue('formattingTags/html_tags', json.dumps(start_tags))
         ol = OpenLyrics(mocked_manager)
         parser = etree.XMLParser(remove_blank_text=True)
-        parsed_file = etree.parse(open(os.path.join(TEST_PATH, 'duchu-tags.xml'), 'rb'), parser)
+        parsed_file = etree.parse((TEST_PATH / 'duchu-tags.xml').open('rb'), parser)
         xml = etree.tostring(parsed_file).decode()
         song_xml = objectify.fromstring(xml)
 
@@ -143,6 +151,43 @@ class TestOpenLyricsImport(TestCase, TestMixin):
         ol._process_formatting_tags(song_xml, False)
 
         # THEN: New tags should have been saved
-        self.assertListEqual(json.loads(json.dumps(result_tags)),
-                             json.loads(str(Settings().value('formattingTags/html_tags'))),
-                             'The formatting tags should contain both the old and the new')
+        assert json.loads(json.dumps(result_tags)) == json.loads(str(Settings().value('formattingTags/html_tags'))), \
+            'The formatting tags should contain both the old and the new'
+
+    def test_process_author(self):
+        """
+        Test that _process_authors works
+        """
+        # GIVEN: A OpenLyric XML with authors and a mocked out manager
+        with patch('openlp.plugins.songs.lib.openlyricsxml.Author'):
+            mocked_manager = MagicMock()
+            mocked_manager.get_object_filtered.return_value = None
+            ol = OpenLyrics(mocked_manager)
+            properties_xml = objectify.fromstring(author_xml)
+            mocked_song = MagicMock()
+
+            # WHEN: processing the author xml
+            ol._process_authors(properties_xml, mocked_song)
+
+            # THEN: add_author should have been called twice
+            assert mocked_song.method_calls[0][1][1] == 'words+music'
+            assert mocked_song.method_calls[1][1][1] == 'words'
+
+    def test_process_songbooks(self):
+        """
+        Test that _process_songbooks works
+        """
+        # GIVEN: A OpenLyric XML with songbooks and a mocked out manager
+        with patch('openlp.plugins.songs.lib.openlyricsxml.Book'):
+            mocked_manager = MagicMock()
+            mocked_manager.get_object_filtered.return_value = None
+            ol = OpenLyrics(mocked_manager)
+            properties_xml = objectify.fromstring(songbook_xml)
+            mocked_song = MagicMock()
+
+            # WHEN: processing the songbook xml
+            ol._process_songbooks(properties_xml, mocked_song)
+
+            # THEN: add_songbook_entry should have been called twice
+            assert mocked_song.method_calls[0][1][1] == '48'
+            assert mocked_song.method_calls[1][1][1] == '445 A'

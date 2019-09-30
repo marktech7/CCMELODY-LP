@@ -1,60 +1,50 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.custom.lib.customtab` module contains the settings tab
 for the Custom Slides plugin, which is inserted into the configuration dialog.
 """
+from PyQt5 import QtCore, QtWidgets
 
-from PyQt4 import QtCore, QtGui
-
-from openlp.core.common import Settings, translate
-from openlp.core.lib import SettingsTab
+from openlp.core.common.i18n import translate
+from openlp.core.common.settings import Settings
+from openlp.core.lib.settingstab import SettingsTab
 
 
 class CustomTab(SettingsTab):
     """
     CustomTab is the Custom settings tab in the settings dialog.
     """
-    def __init__(self, parent, title, visible_title, icon_path):
-        super(CustomTab, self).__init__(parent, title, visible_title, icon_path)
-
-    def setupUi(self):
+    def setup_ui(self):
         self.setObjectName('CustomTab')
-        super(CustomTab, self).setupUi()
-        self.custom_mode_group_box = QtGui.QGroupBox(self.left_column)
+        super(CustomTab, self).setup_ui()
+        self.custom_mode_group_box = QtWidgets.QGroupBox(self.left_column)
         self.custom_mode_group_box.setObjectName('custom_mode_group_box')
-        self.custom_mode_layout = QtGui.QFormLayout(self.custom_mode_group_box)
+        self.custom_mode_layout = QtWidgets.QFormLayout(self.custom_mode_group_box)
         self.custom_mode_layout.setObjectName('custom_mode_layout')
-        self.display_footer_check_box = QtGui.QCheckBox(self.custom_mode_group_box)
+        self.display_footer_check_box = QtWidgets.QCheckBox(self.custom_mode_group_box)
         self.display_footer_check_box.setObjectName('display_footer_check_box')
         self.custom_mode_layout.addRow(self.display_footer_check_box)
-        self.add_from_service_checkbox = QtGui.QCheckBox(self.custom_mode_group_box)
+        self.add_from_service_checkbox = QtWidgets.QCheckBox(self.custom_mode_group_box)
         self.add_from_service_checkbox.setObjectName('add_from_service_checkbox')
         self.custom_mode_layout.addRow(self.add_from_service_checkbox)
         self.left_layout.addWidget(self.custom_mode_group_box)
@@ -63,7 +53,7 @@ class CustomTab(SettingsTab):
         self.display_footer_check_box.stateChanged.connect(self.on_display_footer_check_box_changed)
         self.add_from_service_checkbox.stateChanged.connect(self.on_add_from_service_check_box_changed)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         self.custom_mode_group_box.setTitle(translate('CustomPlugin.CustomTab', 'Custom Display'))
         self.display_footer_check_box.setText(translate('CustomPlugin.CustomTab', 'Display footer'))
         self.add_from_service_checkbox.setText(translate('CustomPlugin.CustomTab',

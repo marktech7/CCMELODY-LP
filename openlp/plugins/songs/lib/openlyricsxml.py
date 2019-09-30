@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`xml` module provides the XML functionality.
 
@@ -62,22 +55,25 @@ The XML of an `OpenLyrics <http://openlyrics.info/>`_  song looks like this::
         </lyrics>
     </song>
 """
-import cgi
+import html
 import logging
 import re
 
 from lxml import etree, objectify
 
-from openlp.core.common import translate
-from openlp.core.lib import FormattingTags
+from openlp.core.common.i18n import translate
+from openlp.core.common.settings import Settings
+from openlp.core.lib.formattingtags import FormattingTags
+from openlp.core.version import get_version
 from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song, Topic
-from openlp.core.utils import get_application_version
+
 
 log = logging.getLogger(__name__)
 
 NAMESPACE = 'http://openlyrics.info/namespace/2009/song'
-NSMAP = '{' + NAMESPACE + '}' + '%s'
+NSMAP = '{{' + NAMESPACE + '}}{tag}'
+NEWPAGETAG = '<p style="page-break-after: always;"/>'
 
 
 class SongXML(object):
@@ -98,7 +94,7 @@ class SongXML(object):
         Add a verse to the ``<lyrics>`` tag.
 
         :param type:  A string denoting the type of verse. Possible values are *v*, *c*, *b*, *p*, *i*, *e* and *o*.
-        Any other type is **not** allowed, this also includes translated types.
+            Any other type is **not** allowed, this also includes translated types.
         :param number: An integer denoting the number of the item, for example: verse 1.
         :param content: The actual text of the verse to be stored.
         :param lang:  The verse's language code (ISO-639). This is not required, but should be added if available.
@@ -120,6 +116,7 @@ class SongXML(object):
         Iterates through the verses in the XML and returns a list of verses and their attributes.
 
         :param xml: The XML of the song to be parsed.
+
         The returned list has the following format::
 
             [[{'type': 'v', 'label': '1'}, u"optional slide split 1[---]optional slide split 2"],
@@ -127,22 +124,12 @@ class SongXML(object):
         """
         self.song_xml = None
         verse_list = []
-        if not xml.startswith('<?xml') and not xml.startswith('<song'):
-            # This is an old style song, without XML. Let's handle it correctly by iterating through the verses, and
-            # then recreating the internal xml object as well.
-            self.song_xml = objectify.fromstring('<song version="1.0" />')
-            self.lyrics = etree.SubElement(self.song_xml, 'lyrics')
-            verses = xml.split('\n\n')
-            for count, verse in enumerate(verses):
-                verse_list.append([{'type': 'v', 'label': str(count)}, str(verse)])
-                self.add_verse_to_lyrics('v', str(count), verse)
-            return verse_list
-        elif xml.startswith('<?xml'):
+        if xml.startswith('<?xml'):
             xml = xml[38:]
         try:
             self.song_xml = objectify.fromstring(xml)
         except etree.XMLSyntaxError:
-            log.exception('Invalid xml %s', xml)
+            log.exception('Invalid xml {text}'.format(text=xml))
         xml_iter = self.song_xml.getiterator()
         for element in xml_iter:
             if element.tag == 'verse':
@@ -169,7 +156,7 @@ class OpenLyrics(object):
         OpenLP does not support the attribute *lang*.
 
     ``<chord>``
-        This property is not supported.
+        This property is fully supported.
 
     ``<comments>``
         The ``<comments>`` property is fully supported. But comments in lyrics are not supported.
@@ -234,7 +221,7 @@ class OpenLyrics(object):
     """
     IMPLEMENTED_VERSION = '0.8'
     START_TAGS_REGEX = re.compile(r'\{(\w+)\}')
-    END_TAGS_REGEX = re.compile(r'\{\/(\w+)\}')
+    END_TAGS_REGEX = re.compile(r'\{/(\w+)\}')
     VERSE_TAG_SPLITTER = re.compile('([a-zA-Z]+)([0-9]*)([a-zA-Z]?)')
 
     def __init__(self, manager):
@@ -250,7 +237,7 @@ class OpenLyrics(object):
         # Append the necessary meta data to the song.
         song_xml.set('xmlns', NAMESPACE)
         song_xml.set('version', OpenLyrics.IMPLEMENTED_VERSION)
-        application_name = 'OpenLP ' + get_application_version()['version']
+        application_name = 'OpenLP ' + get_version()['version']
         song_xml.set('createdIn', application_name)
         song_xml.set('modifiedIn', application_name)
         # "Convert" 2012-08-27 11:49:15 to 2012-08-27T11:49:15.
@@ -282,13 +269,12 @@ class OpenLyrics(object):
                         element.set('type', AuthorType.Music)
                     else:
                         element.set('type', author_song.author_type)
-        book = self.manager.get_object_filtered(Book, Book.id == song.song_book_id)
-        if book is not None:
-            book = book.name
+        if song.songbook_entries:
             songbooks = etree.SubElement(properties, 'songbooks')
-            element = self._add_text_to_element('songbook', songbooks, None, book)
-            if song.song_number:
-                element.set('entry', song.song_number)
+            for songbook_entry in song.songbook_entries:
+                element = self._add_text_to_element('songbook', songbooks, None, songbook_entry.songbook.name)
+                if songbook_entry.entry:
+                    element.set('entry', songbook_entry.entry)
         if song.topics:
             themes = etree.SubElement(properties, 'themes')
             for topic in song.topics:
@@ -296,9 +282,9 @@ class OpenLyrics(object):
         # Process the formatting tags.
         # Have we any tags in song lyrics?
         tags_element = None
-        match = re.search('\{/?\w+\}', song.lyrics, re.UNICODE)
+        match = re.search(r'\{/?\w+\}', song.lyrics)
         if match:
-            # Named 'format_' - 'format' is built-in fuction in Python.
+            # Named 'format_' - 'format' is built-in function in Python.
             format_ = etree.SubElement(song_xml, 'format')
             tags_element = etree.SubElement(format_, 'tags')
             tags_element.set('application', 'OpenLP')
@@ -325,7 +311,7 @@ class OpenLyrics(object):
             if 'lang' in verse[0]:
                 verse_element.set('lang', verse[0]['lang'])
             # Create a list with all "optional" verses.
-            optional_verses = cgi.escape(verse[1])
+            optional_verses = html.escape(verse[1])
             optional_verses = optional_verses.split('\n[---]\n')
             start_tags = ''
             end_tags = ''
@@ -339,7 +325,19 @@ class OpenLyrics(object):
                 # Do not add the break attribute to the last lines element.
                 if index < len(optional_verses) - 1:
                     lines_element.set('break', 'optional')
-        return self._extract_xml(song_xml).decode()
+        xml_text = self._extract_xml(song_xml).decode()
+        return self._chordpro_to_openlyrics(xml_text)
+
+    def _chordpro_to_openlyrics(self, text):
+        """
+        Convert chords from Chord Pro format to Open Lyrics format
+
+        :param text: the lyric with chords
+        :return: the lyrics with the converted chords
+        """
+        # Process chords.
+        new_text = re.sub(r'\[(\w.*?)\]', r'<chord name="\1"/>', text)
+        return new_text
 
     def _get_missing_tags(self, text):
         """
@@ -378,7 +376,7 @@ class OpenLyrics(object):
 
         :param xml: The XML to parse (unicode).
         :param parse_and_temporary_save: Switch to skip processing the whole song and storing the songs in the database
-        with a temporary flag. Defaults to ``False``.
+            with a temporary flag. Defaults to ``False``.
         """
         # No xml get out of here.
         if not xml:
@@ -439,7 +437,7 @@ class OpenLyrics(object):
         :param tags_element: Some tag elements
         """
         available_tags = FormattingTags.get_html_tags()
-        start_tag = '{%s}' % tag_name
+        start_tag = '{{{name}}}'.format(name=tag_name)
         for tag in available_tags:
             if tag['start tag'] == start_tag:
                 # Create new formatting tag in openlyrics xml.
@@ -466,18 +464,19 @@ class OpenLyrics(object):
             xml_tags = tags_element.xpath('tag/attribute::name')
             # Some formatting tag has only starting part e.g. <br>. Handle this case.
             if tag in end_tags:
-                text = text.replace('{%s}' % tag, '<tag name="%s">' % tag)
+                text = text.replace('{{{tag}}}'.format(tag=tag), '<tag name="{tag}">'.format(tag=tag))
             else:
-                text = text.replace('{%s}' % tag, '<tag name="%s"/>' % tag)
+                text = text.replace('{{{tag}}}'.format(tag=tag), '<tag name="{tag}"/>'.format(tag=tag))
             # Add tag to <format> element if tag not present.
             if tag not in xml_tags:
                 self._add_tag_to_formatting(tag, tags_element)
         # Replace end tags.
         for tag in end_tags:
-            text = text.replace('{/%s}' % tag, '</tag>')
+            text = text.replace('{{/{tag}}}'.format(tag=tag), '</tag>')
         # Replace \n with <br/>.
         text = text.replace('\n', '<br/>')
-        element = etree.XML('<lines>%s</lines>' % text)
+        text = text.replace('[--}{--]', NEWPAGETAG)
+        element = etree.XML('<lines>{text}</lines>'.format(text=text))
         verse_element.append(element)
         return element
 
@@ -511,8 +510,19 @@ class OpenLyrics(object):
             for author in properties.authors.author:
                 display_name = self._text(author)
                 author_type = author.get('type', '')
+                # As of 0.8 OpenLyrics supports these 3 author types
+                if author_type not in ('words', 'music', 'translation'):
+                    author_type = ''
                 if display_name:
-                    authors.append((display_name, author_type))
+                    # Check if an author is listed for both music and words. In that case we use a special type
+                    if author_type == 'words' and (display_name, 'music') in authors:
+                        authors.remove((display_name, 'music'))
+                        authors.append((display_name, 'words+music'))
+                    elif author_type == 'music' and (display_name, 'words') in authors:
+                        authors.remove((display_name, 'words'))
+                        authors.append((display_name, 'words+music'))
+                    else:
+                        authors.append((display_name, author_type))
         for (display_name, author_type) in authors:
             author = self.manager.get_object_filtered(Author, Author.display_name == display_name)
             if author is None:
@@ -572,9 +582,9 @@ class OpenLyrics(object):
             name = tag.get('name')
             if name is None:
                 continue
-            start_tag = '{%s}' % name[:5]
+            start_tag = '{{{name}}}'.format(name=name[:5])
             # Some tags have only start tag e.g. {br}
-            end_tag = '{/' + name[:5] + '}' if hasattr(tag, 'close') else ''
+            end_tag = '{{/{name}}}'.format(name=name[:5]) if hasattr(tag, 'close') else ''
             openlp_tag = {
                 'desc': name,
                 'start tag': start_tag,
@@ -600,8 +610,7 @@ class OpenLyrics(object):
 
     def _process_lines_mixed_content(self, element, newlines=True):
         """
-        Converts the xml text with mixed content to OpenLP representation. Chords are skipped and formatting tags are
-        converted.
+        Converts the xml text with mixed content to OpenLP representation. Chords and formatting tags are converted.
 
         :param element: The property object (lxml.etree.Element).
         :param newlines: The switch to enable/disable processing of line breaks <br/>. The <br/> is used since
@@ -610,26 +619,31 @@ class OpenLyrics(object):
         text = ''
         use_endtag = True
         # Skip <comment> elements - not yet supported.
-        if element.tag == NSMAP % 'comment':
+        if element.tag == NSMAP.format(tag='comment'):
             if element.tail:
-                # Append tail text at chord element.
+                # Append tail text at comment element.
                 text += element.tail
             return text
-        # Skip <chord> element - not yet supported.
-        elif element.tag == NSMAP % 'chord':
+        # Convert chords to ChordPro format which OpenLP uses internally
+        elif element.tag == NSMAP.format(tag='chord'):
+            if Settings().value('songs/enable chords') and not Settings().value('songs/disable chords import'):
+                text += '[{chord}]'.format(chord=element.get('name'))
             if element.tail:
                 # Append tail text at chord element.
                 text += element.tail
             return text
         # Convert line breaks <br/> to \n.
-        elif newlines and element.tag == NSMAP % 'br':
+        elif newlines and element.tag == NSMAP.format(tag='br'):
             text += '\n'
             if element.tail:
                 text += element.tail
             return text
+        elif newlines and element.tag == NSMAP.format(tag='p') and 'page-break-after' in str(element.attrib):
+            text += '[--}{--]'
+            return text
         # Start formatting tag.
-        if element.tag == NSMAP % 'tag':
-            text += '{%s}' % element.get('name')
+        if element.tag == NSMAP.format(tag='tag'):
+            text += '{{{name}}}'.format(name=element.get('name'))
             # Some formattings may have only start tag.
             # Handle this case if element has no children and contains no text.
             if not element and not element.text:
@@ -642,8 +656,8 @@ class OpenLyrics(object):
             # Use recursion since nested formatting tags are allowed.
             text += self._process_lines_mixed_content(child, newlines)
         # Append text from tail and add formatting end tag.
-        if element.tag == NSMAP % 'tag' and use_endtag:
-            text += '{/%s}' % element.get('name')
+        if element.tag == NSMAP.format(tag='tag') and use_endtag:
+            text += '{{/{name}}}'.format(name=element.get('name'))
         # Append text from tail.
         if element.tail:
             text += element.tail
@@ -666,10 +680,10 @@ class OpenLyrics(object):
             text = self._process_lines_mixed_content(element)
         # OpenLyrics version <= 0.7 contains <line> elements to represent lines. First child element is tested.
         else:
-            # Loop over the "line" elements removing comments and chords.
+            # Loop over the "line" elements removing comments
             for line in element:
                 # Skip comment lines.
-                if line.tag == NSMAP % 'comment':
+                if line.tag == NSMAP.format(tag='comment'):
                     continue
                 if text:
                     text += '\n'
@@ -749,8 +763,6 @@ class OpenLyrics(object):
         :param properties: The property object (lxml.objectify.ObjectifiedElement).
         :param song: The song object.
         """
-        song.song_book_id = None
-        song.song_number = ''
         if hasattr(properties, 'songbooks'):
             for songbook in properties.songbooks.songbook:
                 book_name = songbook.get('name', '')
@@ -760,10 +772,7 @@ class OpenLyrics(object):
                         # We need to create a book, because it does not exist.
                         book = Book.populate(name=book_name, publisher='')
                         self.manager.save_object(book)
-                    song.song_book_id = book.id
-                    song.song_number = songbook.get('entry', '')
-                    # We only support one song book, so take the first one.
-                    break
+                    song.add_songbook_entry(book, songbook.get('entry', ''))
 
     def _process_titles(self, properties, song):
         """

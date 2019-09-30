@@ -1,45 +1,43 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`songexportform` module provides the wizard for exporting songs to the
 OpenLyrics format.
 """
 import logging
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Registry, UiStrings, translate
-from openlp.core.lib import create_separated_list, build_icon
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib import create_separated_list
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.ui.wizard import OpenLPWizard, WizardStrings
+from openlp.core.widgets.edits import PathEdit
+from openlp.core.widgets.enums import PathEditType
+from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
 from openlp.plugins.songs.lib.db import Song
 from openlp.plugins.songs.lib.openlyricsexport import OpenLyricsExport
+
 
 log = logging.getLogger(__name__)
 
@@ -58,7 +56,7 @@ class SongExportForm(OpenLPWizard):
         :param parent: The QWidget-derived parent of the wizard.
         :param plugin: The songs plugin.
         """
-        super(SongExportForm, self).__init__(parent, plugin, 'song_export_wizard', ':/wizards/wizard_exportsong.bmp')
+        super(SongExportForm, self).__init__(parent, plugin, 'song_export_wizard', ':/wizards/wizard_song.bmp')
         self.stop_export_flag = False
         Registry().register_function('openlp_stop_wizard', self.stop_export)
 
@@ -69,96 +67,89 @@ class SongExportForm(OpenLPWizard):
         log.debug('Stopping songs export')
         self.stop_export_flag = True
 
-    def setupUi(self, image):
+    def setup_ui(self, image):
         """
         Set up the song wizard UI.
         """
-        super(SongExportForm, self).setupUi(image)
+        super(SongExportForm, self).setup_ui(image)
 
     def custom_signals(self):
         """
         Song wizard specific signals.
         """
-        self.available_list_widget.itemActivated.connect(self.on_item_activated)
+        self.available_list_widget.itemActivated.connect(on_item_activated)
         self.search_line_edit.textEdited.connect(self.on_search_line_edit_changed)
         self.uncheck_button.clicked.connect(self.on_uncheck_button_clicked)
         self.check_button.clicked.connect(self.on_check_button_clicked)
-        self.directory_button.clicked.connect(self.on_directory_button_clicked)
 
     def add_custom_pages(self):
         """
         Add song wizard specific pages.
         """
         # The page with all available songs.
-        self.available_songs_page = QtGui.QWizardPage()
+        self.available_songs_page = QtWidgets.QWizardPage()
         self.available_songs_page.setObjectName('available_songs_page')
-        self.available_songs_layout = QtGui.QHBoxLayout(self.available_songs_page)
+        self.available_songs_layout = QtWidgets.QHBoxLayout(self.available_songs_page)
         self.available_songs_layout.setObjectName('available_songs_layout')
-        self.vertical_layout = QtGui.QVBoxLayout()
+        self.vertical_layout = QtWidgets.QVBoxLayout()
         self.vertical_layout.setObjectName('vertical_layout')
-        self.available_list_widget = QtGui.QListWidget(self.available_songs_page)
+        self.available_list_widget = QtWidgets.QListWidget(self.available_songs_page)
         self.available_list_widget.setObjectName('available_list_widget')
         self.vertical_layout.addWidget(self.available_list_widget)
-        self.horizontal_layout = QtGui.QHBoxLayout()
+        self.horizontal_layout = QtWidgets.QHBoxLayout()
         self.horizontal_layout.setObjectName('horizontal_layout')
-        self.search_label = QtGui.QLabel(self.available_songs_page)
+        self.search_label = QtWidgets.QLabel(self.available_songs_page)
         self.search_label.setObjectName('search_label')
         self.horizontal_layout.addWidget(self.search_label)
-        self.search_line_edit = QtGui.QLineEdit(self.available_songs_page)
+        self.search_line_edit = QtWidgets.QLineEdit(self.available_songs_page)
         self.search_line_edit.setObjectName('search_line_edit')
         self.horizontal_layout.addWidget(self.search_line_edit)
-        spacer_item = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+        spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
         self.horizontal_layout.addItem(spacer_item)
-        self.uncheck_button = QtGui.QPushButton(self.available_songs_page)
+        self.uncheck_button = QtWidgets.QPushButton(self.available_songs_page)
         self.uncheck_button.setObjectName('uncheck_button')
         self.horizontal_layout.addWidget(self.uncheck_button)
-        self.check_button = QtGui.QPushButton(self.available_songs_page)
+        self.check_button = QtWidgets.QPushButton(self.available_songs_page)
         self.check_button.setObjectName('selectButton')
         self.horizontal_layout.addWidget(self.check_button)
         self.vertical_layout.addLayout(self.horizontal_layout)
         self.available_songs_layout.addLayout(self.vertical_layout)
         self.addPage(self.available_songs_page)
         # The page with the selected songs.
-        self.export_song_page = QtGui.QWizardPage()
+        self.export_song_page = QtWidgets.QWizardPage()
         self.export_song_page.setObjectName('available_songs_page')
-        self.export_song_layout = QtGui.QHBoxLayout(self.export_song_page)
+        self.export_song_layout = QtWidgets.QHBoxLayout(self.export_song_page)
         self.export_song_layout.setObjectName('export_song_layout')
-        self.grid_layout = QtGui.QGridLayout()
+        self.grid_layout = QtWidgets.QGridLayout()
         self.grid_layout.setObjectName('range_layout')
-        self.selected_list_widget = QtGui.QListWidget(self.export_song_page)
+        self.selected_list_widget = QtWidgets.QListWidget(self.export_song_page)
         self.selected_list_widget.setObjectName('selected_list_widget')
-        self.grid_layout.addWidget(self.selected_list_widget, 1, 0, 1, 1)
-        # FIXME: self.horizontal_layout is already defined above?!?!?
-        self.horizontal_layout = QtGui.QHBoxLayout()
-        self.horizontal_layout.setObjectName('horizontal_layout')
-        self.directory_label = QtGui.QLabel(self.export_song_page)
+        self.grid_layout.addWidget(self.selected_list_widget, 1, 0, 1, 2)
+        self.output_directory_path_edit = PathEdit(
+            self.export_song_page, PathEditType.Directories,
+            dialog_caption=translate('SongsPlugin.ExportWizardForm', 'Select Destination Folder'), show_revert=False)
+        self.output_directory_path_edit.path = Settings().value('songs/last directory export')
+        self.directory_label = QtWidgets.QLabel(self.export_song_page)
         self.directory_label.setObjectName('directory_label')
-        self.horizontal_layout.addWidget(self.directory_label)
-        self.directory_line_edit = QtGui.QLineEdit(self.export_song_page)
-        self.directory_line_edit.setObjectName('directory_line_edit')
-        self.horizontal_layout.addWidget(self.directory_line_edit)
-        self.directory_button = QtGui.QToolButton(self.export_song_page)
-        self.directory_button.setIcon(build_icon(':/exports/export_load.png'))
-        self.directory_button.setObjectName('directory_button')
-        self.horizontal_layout.addWidget(self.directory_button)
-        self.grid_layout.addLayout(self.horizontal_layout, 0, 0, 1, 1)
+        self.grid_layout.addWidget(self.directory_label, 0, 0)
+        self.grid_layout.addWidget(self.output_directory_path_edit, 0, 1)
         self.export_song_layout.addLayout(self.grid_layout)
         self.addPage(self.export_song_page)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         """
         Song wizard localisation.
         """
         self.setWindowTitle(translate('SongsPlugin.ExportWizardForm', 'Song Export Wizard'))
-        self.title_label.setText(WizardStrings.HeaderStyle %
-                                 translate('OpenLP.Ui', 'Welcome to the Song Export Wizard'))
+        self.title_label.setText(
+            WizardStrings.HeaderStyle.format(text=translate('OpenLP.Ui', 'Welcome to the Song Export Wizard')))
         self.information_label.setText(
             translate('SongsPlugin.ExportWizardForm', 'This wizard will help to export your songs to the open and free '
                                                       '<strong>OpenLyrics </strong> worship song format.'))
         self.available_songs_page.setTitle(translate('SongsPlugin.ExportWizardForm', 'Select Songs'))
         self.available_songs_page.setSubTitle(translate('SongsPlugin.ExportWizardForm',
                                               'Check the songs you want to export.'))
-        self.search_label.setText('%s:' % UiStrings().Search)
+        self.search_label.setText('{text}:'.format(text=UiStrings().Search))
         self.uncheck_button.setText(translate('SongsPlugin.ExportWizardForm', 'Uncheck All'))
         self.check_button.setText(translate('SongsPlugin.ExportWizardForm', 'Check All'))
         self.export_song_page.setTitle(translate('SongsPlugin.ExportWizardForm', 'Select Directory'))
@@ -179,7 +170,7 @@ class SongExportForm(OpenLPWizard):
             return True
         elif self.currentPage() == self.available_songs_page:
             items = [
-                item for item in self._find_list_widget_items(self.available_list_widget) if item.checkState()
+                item for item in find_list_widget_items(self.available_list_widget) if item.checkState()
             ]
             if not items:
                 critical_error_message_box(
@@ -189,17 +180,18 @@ class SongExportForm(OpenLPWizard):
             self.selected_list_widget.clear()
             # Add the songs to the list of selected songs.
             for item in items:
-                song = QtGui.QListWidgetItem(item.text())
+                song = QtWidgets.QListWidgetItem(item.text())
                 song.setData(QtCore.Qt.UserRole, item.data(QtCore.Qt.UserRole))
                 song.setFlags(QtCore.Qt.ItemIsEnabled)
                 self.selected_list_widget.addItem(song)
             return True
         elif self.currentPage() == self.export_song_page:
-            if not self.directory_line_edit.text():
+            if not self.output_directory_path_edit.path:
                 critical_error_message_box(
                     translate('SongsPlugin.ExportWizardForm', 'No Save Location specified'),
                     translate('SongsPlugin.ExportWizardForm', 'You need to specify a directory.'))
                 return False
+            Settings().setValue('songs/last directory export', self.output_directory_path_edit.path)
             return True
         elif self.currentPage() == self.progress_page:
             self.available_list_widget.clear()
@@ -210,24 +202,26 @@ class SongExportForm(OpenLPWizard):
         """
         Set default form values for the song export wizard.
         """
+        def get_song_key(song):
+            """Get the key to sort by"""
+            return song.sort_key
+
         self.restart()
         self.finish_button.setVisible(False)
         self.cancel_button.setVisible(True)
         self.available_list_widget.clear()
-        self.selected_list_widget.clear()
-        self.directory_line_edit.clear()
         self.search_line_edit.clear()
         # Load the list of songs.
         self.application.set_busy_cursor()
         songs = self.plugin.manager.get_all_objects(Song)
-        songs.sort(key=lambda song: song.sort_key)
+        songs.sort(key=get_song_key)
         for song in songs:
             # No need to export temporary songs.
             if song.temporary:
                 continue
             authors = create_separated_list([author.display_name for author in song.authors])
-            title = '%s (%s)' % (str(song.title), authors)
-            item = QtGui.QListWidgetItem(title)
+            title = '{title} ({author})'.format(title=song.title, author=authors)
+            item = QtWidgets.QListWidgetItem(title)
             item.setData(QtCore.Qt.UserRole, song)
             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
             item.setCheckState(QtCore.Qt.Unchecked)
@@ -248,37 +242,19 @@ class SongExportForm(OpenLPWizard):
         """
         songs = [
             song.data(QtCore.Qt.UserRole)
-            for song in self._find_list_widget_items(self.selected_list_widget)
+            for song in find_list_widget_items(self.selected_list_widget)
         ]
-        exporter = OpenLyricsExport(self, songs, self.directory_line_edit.text())
-        if exporter.do_export():
-            self.progress_label.setText(
-                translate('SongsPlugin.SongExportForm',
-                          'Finished export. To import these files use the <strong>OpenLyrics</strong> importer.'))
-        else:
-            self.progress_label.setText(translate('SongsPlugin.SongExportForm', 'Your song export failed.'))
-
-    def _find_list_widget_items(self, list_widget, text=''):
-        """
-        Returns a list of *QListWidgetItem*s of the ``list_widget``. Note, that hidden items are included.
-
-        :param list_widget: The widget to get all items from. (QListWidget)
-        :param text: The text to search for. (unicode string)
-        """
-        return [
-            item for item in list_widget.findItems(text, QtCore.Qt.MatchContains)
-        ]
-
-    def on_item_activated(self, item):
-        """
-        Called, when an item in the *available_list_widget* has been triggered.
-        The item is check if it was not checked, whereas it is unchecked when it
-        was checked.
-
-        :param item:  The *QListWidgetItem* which was triggered.
-        """
-        item.setCheckState(
-            QtCore.Qt.Unchecked if item.checkState() else QtCore.Qt.Checked)
+        exporter = OpenLyricsExport(self, songs, self.output_directory_path_edit.path)
+        try:
+            if exporter.do_export():
+                self.progress_label.setText(
+                    translate('SongsPlugin.SongExportForm',
+                              'Finished export. To import these files use the <strong>OpenLyrics</strong> importer.'))
+            else:
+                self.progress_label.setText(translate('SongsPlugin.SongExportForm', 'Your song export failed.'))
+        except OSError as ose:
+            self.progress_label.setText(translate('SongsPlugin.SongExportForm', 'Your song export failed because this '
+                                                  'error occurred: {error}').format(error=ose.strerror))
 
     def on_search_line_edit_changed(self, text):
         """
@@ -289,9 +265,9 @@ class SongExportForm(OpenLPWizard):
         :param text:  The text of the *search_line_edit*.
         """
         search_result = [
-            song for song in self._find_list_widget_items(self.available_list_widget, text)
+            song for song in find_list_widget_items(self.available_list_widget, text)
         ]
-        for item in self._find_list_widget_items(self.available_list_widget):
+        for item in find_list_widget_items(self.available_list_widget):
             item.setHidden(item not in search_result)
 
     def on_uncheck_button_clicked(self):
@@ -312,11 +288,25 @@ class SongExportForm(OpenLPWizard):
             if not item.isHidden():
                 item.setCheckState(QtCore.Qt.Checked)
 
-    def on_directory_button_clicked(self):
-        """
-        Called when the *directory_button* was clicked. Opens a dialog and writes
-        the path to *directory_line_edit*.
-        """
-        self.get_folder(
-            translate('SongsPlugin.ExportWizardForm', 'Select Destination Folder'),
-            self.directory_line_edit, 'last directory export')
+
+def find_list_widget_items(list_widget, text=''):
+    """
+    Returns a list of *QListWidgetItem*s of the ``list_widget``. Note, that hidden items are included.
+
+    :param list_widget: The widget to get all items from. (QListWidget)
+    :param text: The text to search for. (unicode string)
+    """
+    return [
+        item for item in list_widget.findItems(text, QtCore.Qt.MatchContains)
+    ]
+
+
+def on_item_activated(item):
+    """
+    Called, when an item in the *available_list_widget* has been triggered.
+    The item is check if it was not checked, whereas it is unchecked when it
+    was checked.
+
+    :param item:  The *QListWidgetItem* which was triggered.
+    """
+    item.setCheckState(QtCore.Qt.Unchecked if item.checkState() else QtCore.Qt.Checked)

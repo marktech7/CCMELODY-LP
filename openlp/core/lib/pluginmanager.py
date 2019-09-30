@@ -1,43 +1,41 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Provide plugin management
 """
 import os
-import sys
-import imp
 
-from openlp.core.lib import Plugin, PluginStatus
-from openlp.core.common import AppLocation, RegistryProperties, OpenLPMixin, RegistryMixin
+from PyQt5 import QtWidgets
+
+from openlp.core.state import State
+from openlp.core.common import extension_loader
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.i18n import translate, UiStrings
+from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.registry import RegistryBase
+from openlp.core.lib.plugin import Plugin, PluginStatus
 
 
-class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
+class PluginManager(RegistryBase, LogMixin, RegistryProperties):
     """
     This is the Plugin manager, which loads all the plugins,
     and executes all the hooks, as and when necessary.
@@ -49,19 +47,29 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         """
         super(PluginManager, self).__init__(parent)
         self.log_info('Plugin manager Initialising')
-        self.base_path = os.path.abspath(AppLocation.get_directory(AppLocation.PluginsDir))
-        self.log_debug('Base path %s ' % self.base_path)
+        self.log_debug('Base path {path}'.format(path=AppLocation.get_directory(AppLocation.PluginsDir)))
         self.plugins = []
         self.log_info('Plugin manager Initialised')
 
     def bootstrap_initialise(self):
         """
         Bootstrap all the plugin manager functions
+        Scan a directory for objects inheriting from the ``Plugin`` class.
         """
-        self.find_plugins()
-        # hook methods have to happen after find_plugins. Find plugins needs
-        # the controllers hence the hooks have moved from setupUI() to here
-        # Find and insert settings tabs
+        glob_pattern = os.path.join('plugins', '*', '[!.]*plugin.py')
+        extension_loader(glob_pattern)
+        plugin_classes = Plugin.__subclasses__()
+        for p in plugin_classes:
+            try:
+                p()
+                self.log_debug('Loaded plugin {plugin}'.format(plugin=str(p)))
+            except TypeError:
+                self.log_exception('Failed to load plugin {plugin}'.format(plugin=str(p)))
+
+    def bootstrap_post_set_up(self):
+        """
+        Bootstrap all the plugin manager functions
+        """
         self.hook_settings_tabs()
         # Find and insert media manager items
         self.hook_media_manager()
@@ -74,58 +82,23 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         # Call the initialise method to setup plugins.
         self.initialise_plugins()
 
-    def find_plugins(self):
+    def bootstrap_completion(self):
         """
-        Scan a directory for objects inheriting from the ``Plugin`` class.
+        Give all the plugins a chance to perform some tasks at startup
         """
-        start_depth = len(os.path.abspath(self.base_path).split(os.sep))
-        present_plugin_dir = os.path.join(self.base_path, 'presentations')
-        self.log_debug('finding plugins in %s at depth %d' % (self.base_path, start_depth))
-        for root, dirs, files in os.walk(self.base_path):
-            for name in files:
-                if name.endswith('.py') and not name.startswith('__'):
-                    path = os.path.abspath(os.path.join(root, name))
-                    this_depth = len(path.split(os.sep))
-                    if this_depth - start_depth > 2:
-                        # skip anything lower down
-                        break
-                    module_name = name[:-3]
-                    # import the modules
-                    self.log_debug('Importing %s from %s. Depth %d' % (module_name, root, this_depth))
-                    try:
-                        # Use the "imp" library to try to get around a problem with the PyUNO library which
-                        # monkey-patches the __import__ function to do some magic. This causes issues with our tests.
-                        # First, try to find the module we want to import, searching the directory in root
-                        fp, path_name, description = imp.find_module(module_name, [root])
-                        # Then load the module (do the actual import) using the details from find_module()
-                        imp.load_module(module_name, fp, path_name, description)
-                    except ImportError as e:
-                        self.log_exception('Failed to import module %s on path %s: %s'
-                                           % (module_name, path, e.args[0]))
-        plugin_classes = Plugin.__subclasses__()
-        plugin_objects = []
-        for p in plugin_classes:
-            try:
-                plugin = p()
-                self.log_debug('Loaded plugin %s' % str(p))
-                plugin_objects.append(plugin)
-            except TypeError:
-                self.log_exception('Failed to load plugin %s' % str(p))
-        plugins_list = sorted(plugin_objects, key=lambda plugin: plugin.weight)
-        for plugin in plugins_list:
-            if plugin.check_pre_conditions():
-                self.log_debug('Plugin %s active' % str(plugin.name))
-                plugin.set_status()
-            else:
-                plugin.status = PluginStatus.Disabled
-            self.plugins.append(plugin)
+        self.application.process_events()
+        for plugin in State().list_plugins():
+            if plugin and plugin.is_active():
+                plugin.app_startup()
+                self.application.process_events()
 
-    def hook_media_manager(self):
+    @staticmethod
+    def hook_media_manager():
         """
         Create the plugins' media manager items.
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.create_media_manager_item()
 
     def hook_settings_tabs(self):
@@ -135,8 +108,8 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         Tabs are set for all plugins not just Active ones
 
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.create_settings_tab(self.settings_form)
 
     def hook_import_menu(self):
@@ -145,8 +118,8 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         item to the import menu.
 
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.add_import_menu_item(self.main_window.file_import_menu)
 
     def hook_export_menu(self):
@@ -154,8 +127,8 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         Loop through all the plugins and give them an opportunity to add an
         item to the export menu.
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.add_export_menu_item(self.main_window.file_export_menu)
 
     def hook_tools_menu(self):
@@ -163,52 +136,75 @@ class PluginManager(RegistryMixin, OpenLPMixin, RegistryProperties):
         Loop through all the plugins and give them an opportunity to add an
         item to the tools menu.
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.add_tools_menu_item(self.main_window.tools_menu)
 
-    def hook_upgrade_plugin_settings(self, settings):
+    @staticmethod
+    def hook_upgrade_plugin_settings(settings):
         """
         Loop through all the plugins and give them an opportunity to upgrade their settings.
 
         :param settings: The Settings object containing the old settings.
         """
-        for plugin in self.plugins:
-            if plugin.status is not PluginStatus.Disabled:
+        for plugin in State().list_plugins():
+            if plugin and plugin.status is not PluginStatus.Disabled:
                 plugin.upgrade_settings(settings)
 
     def initialise_plugins(self):
         """
         Loop through all the plugins and give them an opportunity to initialise themselves.
         """
-        for plugin in self.plugins:
-            self.log_info('initialising plugins %s in a %s state' % (plugin.name, plugin.is_active()))
-            if plugin.is_active():
-                plugin.initialise()
-                self.log_info('Initialisation Complete for %s ' % plugin.name)
+        uninitialised_plugins = []
+
+        for plugin in State().list_plugins():
+            if plugin:
+                self.log_info('initialising plugins {plugin} in a {state} state'.format(plugin=plugin.name,
+                                                                                        state=plugin.is_active()))
+                if plugin.is_active():
+                    try:
+                        plugin.initialise()
+                        self.log_info('Initialisation Complete for {plugin}'.format(plugin=plugin.name))
+                    except Exception:
+                        uninitialised_plugins.append(plugin.name.title())
+                        self.log_exception('Unable to initialise plugin {plugin}'.format(plugin=plugin.name))
+        display_text = ''
+
+        if uninitialised_plugins:
+            display_text = translate('OpenLP.PluginManager', 'Unable to initialise the following plugins:') + \
+                '\n\n'.join(uninitialised_plugins) + '\n\n'
+        error_text = State().get_text()
+        if error_text:
+            display_text = display_text + error_text + '\n'
+        if display_text:
+            display_text = display_text + translate('OpenLP.PluginManager', 'See the log file for more details')
+            QtWidgets.QMessageBox.critical(None, UiStrings().Error, display_text,
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
 
     def finalise_plugins(self):
         """
         Loop through all the plugins and give them an opportunity to clean themselves up
         """
-        for plugin in self.plugins:
-            if plugin.is_active():
+        for plugin in State().list_plugins():
+            if plugin and plugin.is_active():
                 plugin.finalise()
-                self.log_info('Finalisation Complete for %s ' % plugin.name)
+                self.log_info('Finalisation Complete for {plugin}'.format(plugin=plugin.name))
 
-    def get_plugin_by_name(self, name):
+    @staticmethod
+    def get_plugin_by_name(name):
         """
         Return the plugin which has a name with value ``name``.
         """
-        for plugin in self.plugins:
-            if plugin.name == name:
+        for plugin in State().list_plugins():
+            if plugin and plugin.name == name:
                 return plugin
         return None
 
-    def new_service_created(self):
+    @staticmethod
+    def new_service_created():
         """
         Loop through all the plugins and give them an opportunity to handle a new service
         """
-        for plugin in self.plugins:
+        for plugin in State().list_plugins():
             if plugin.is_active():
                 plugin.new_service_created()

@@ -1,50 +1,46 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The actual print service dialog
 """
 import datetime
-import os
 import html
+
 import lxml.html
+from PyQt5 import QtCore, QtGui, QtPrintSupport, QtWidgets
 
-from PyQt4 import QtCore, QtGui
-
-from openlp.core.common import Registry, RegistryProperties, Settings, UiStrings, translate
-from openlp.core.lib import get_text_file_string
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib import get_text_file_string, image_to_byte
 from openlp.core.ui.printservicedialog import Ui_PrintServiceDialog, ZoomSize
-from openlp.core.common import AppLocation
+
 
 DEFAULT_CSS = """/*
 Edit this file to customize the service order print. Note, that not all CSS
 properties are supported. See:
-http://doc.trolltech.com/4.7/richtext-html-subset.html#css-properties
+https://doc.qt.io/qt-5/richtext-html-subset.html#css-properties
 */
 
 .serviceTitle {
@@ -108,10 +104,23 @@ http://doc.trolltech.com/4.7/richtext-html-subset.html#css-properties
 .newPage {
     page-break-before: always;
 }
+
+table.line {}
+
+table.segment {
+  float: left;
+}
+
+td.chord {
+    font-size: 80%;
+}
+
+td.lyrics {
+}
 """
 
 
-class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties):
+class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryProperties):
     """
     The :class:`~openlp.core.ui.printserviceform.PrintServiceForm` class displays a dialog for printing the service.
     """
@@ -119,12 +128,13 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
         """
         Constructor
         """
-        super(PrintServiceForm, self).__init__(Registry().get('main_window'))
-        self.printer = QtGui.QPrinter()
-        self.print_dialog = QtGui.QPrintDialog(self.printer, self)
+        super(PrintServiceForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
+                                               QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self.printer = QtPrintSupport.QPrinter()
+        self.print_dialog = QtPrintSupport.QPrintDialog(self.printer, self)
         self.document = QtGui.QTextDocument()
         self.zoom = 0
-        self.setupUi(self)
+        self.setup_ui(self)
         # Load the settings for the dialog.
         settings = Settings()
         settings.beginGroup('advanced')
@@ -169,21 +179,27 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
         html_data = self._add_element('html')
         self._add_element('head', parent=html_data)
         self._add_element('title', self.title_line_edit.text(), html_data.head)
-        css_path = os.path.join(AppLocation.get_data_path(), 'service_print.css')
+        css_path = AppLocation.get_data_path() / 'serviceprint' / 'service_print.css'
         custom_css = get_text_file_string(css_path)
         if not custom_css:
             custom_css = DEFAULT_CSS
         self._add_element('style', custom_css, html_data.head, attribute=('type', 'text/css'))
         self._add_element('body', parent=html_data)
-        self._add_element('h1', html.escape(self.title_line_edit.text()), html_data.body, classId='serviceTitle')
+        self._add_element('h1', html.escape(self.title_line_edit.text()), html_data.body, class_id='serviceTitle')
         for index, item in enumerate(self.service_manager.service_items):
             self._add_preview_item(html_data.body, item['service_item'], index)
+        if not self.show_chords_check_box.isChecked():
+            # Remove chord row and spacing span elements when not printing chords
+            for chord_row in html_data.find_class('chordrow'):
+                chord_row.drop_tree()
+            for spacing_span in html_data.find_class('chordspacing'):
+                spacing_span.drop_tree()
         # Add the custom service notes:
         if self.footer_text_edit.toPlainText():
-            div = self._add_element('div', parent=html_data.body, classId='customNotes')
+            div = self._add_element('div', parent=html_data.body, class_id='customNotes')
             self._add_element(
-                'span', translate('OpenLP.ServiceManager', 'Custom Service Notes: '), div, classId='customNotesTitle')
-            self._add_element('span', html.escape(self.footer_text_edit.toPlainText()), div, classId='customNotesText')
+                'span', translate('OpenLP.ServiceManager', 'Custom Service Notes: '), div, class_id='customNotesTitle')
+            self._add_element('span', html.escape(self.footer_text_edit.toPlainText()), div, class_id='customNotesText')
         self.document.setHtml(lxml.html.tostring(html_data).decode())
         self.preview_widget.updatePreview()
 
@@ -191,53 +207,56 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
         """
         Add a preview item
         """
-        div = self._add_element('div', classId='item', parent=body)
+        div = self._add_element('div', class_id='item', parent=body)
         # Add the title of the service item.
-        item_title = self._add_element('h2', parent=div, classId='itemTitle')
-        self._add_element('img', parent=item_title, attribute=('src', item.icon))
+        item_title = self._add_element('h2', parent=div, class_id='itemTitle')
+        img = image_to_byte(item.icon.pixmap(20, 20).toImage())
+        self._add_element('img', parent=item_title, attribute=('src', 'data:image/png;base64, ' + img))
         self._add_element('span', '&nbsp;' + html.escape(item.get_display_title()), item_title)
         if self.slide_text_check_box.isChecked():
             # Add the text of the service item.
             if item.is_text():
                 verse_def = None
-                for slide in item.get_frames():
-                    if not verse_def or verse_def != slide['verseTag']:
-                        text_div = self._add_element('div', parent=div, classId='itemText')
-                    else:
+                verse_html = None
+                for slide in item.print_slides:
+                    if not verse_def or verse_def != slide['verse'] or verse_html == slide['text']:
+                        text_div = self._add_element('div', parent=div, class_id='itemText')
+                    elif 'chordspacing' not in slide['text']:
                         self._add_element('br', parent=text_div)
-                    self._add_element('span', slide['html'], text_div)
-                    verse_def = slide['verseTag']
+                    self._add_element('span', slide['text'], text_div)
+                    verse_def = slide['verse']
+                    verse_html = slide['text']
                 # Break the page before the div element.
                 if index != 0 and self.page_break_after_text.isChecked():
                     div.set('class', 'item newPage')
             # Add the image names of the service item.
             elif item.is_image():
-                ol = self._add_element('ol', parent=div, classId='imageList')
+                ol = self._add_element('ol', parent=div, class_id='imageList')
                 for slide in range(len(item.get_frames())):
                     self._add_element('li', item.get_frame_title(slide), ol)
             # add footer
-            foot_text = item.foot_text
-            foot_text = foot_text.partition('<br>')[2]
-            if foot_text:
-                foot_text = html.escape(foot_text.replace('<br>', '\n'))
-                self._add_element('div', foot_text.replace('\n', '<br>'), parent=div, classId='itemFooter')
+            footer_html = item.footer_html
+            footer_html = footer_html.partition('<br>')[2]
+            if footer_html:
+                footer_html = html.escape(footer_html.replace('<br>', '\n'))
+                self._add_element('div', footer_html.replace('\n', '<br>'), parent=div, class_id='itemFooter')
         # Add service items' notes.
         if self.notes_check_box.isChecked():
             if item.notes:
-                p = self._add_element('div', classId='itemNotes', parent=div)
-                self._add_element('span', translate('OpenLP.ServiceManager', 'Notes: '), p, classId='itemNotesTitle')
-                self._add_element('span', html.escape(item.notes).replace('\n', '<br>'), p, classId='itemNotesText')
+                p = self._add_element('div', class_id='itemNotes', parent=div)
+                self._add_element('span', translate('OpenLP.ServiceManager', 'Notes: '), p, class_id='itemNotesTitle')
+                self._add_element('span', html.escape(item.notes).replace('\n', '<br>'), p, class_id='itemNotesText')
         # Add play length of media files.
         if item.is_media() and self.meta_data_check_box.isChecked():
             tme = item.media_length
             if item.end_time > 0:
                 tme = item.end_time - item.start_time
-            title = self._add_element('div', classId='media', parent=div)
+            title = self._add_element('div', class_id='media', parent=div)
             self._add_element(
-                'span', translate('OpenLP.ServiceManager', 'Playing time: '), title, classId='mediaTitle')
-            self._add_element('span', str(datetime.timedelta(seconds=tme)), title, classId='mediaText')
+                'span', translate('OpenLP.ServiceManager', 'Playing time: '), title, class_id='mediaTitle')
+            self._add_element('span', str(datetime.timedelta(seconds=tme)), title, class_id='mediaText')
 
-    def _add_element(self, tag, text=None, parent=None, classId=None, attribute=None):
+    def _add_element(self, tag, text=None, parent=None, class_id=None, attribute=None):
         """
         Creates a html element. If ``text`` is given, the element's text will set and if a ``parent`` is given,
         the element is appended.
@@ -245,7 +264,7 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
         :param tag: The html tag, e. g. ``'span'``. Defaults to ``None``.
         :param text: The text for the tag. Defaults to ``None``.
         :param parent: The parent element. Defaults to ``None``.
-        :param classId: Value for the class attribute
+        :param class_id: Value for the class attribute
         :param attribute: Tuple name/value pair to add as an optional attribute
         """
         if text is not None:
@@ -254,8 +273,8 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
             element = lxml.html.Element(tag)
         if parent is not None:
             parent.append(element)
-        if classId is not None:
-            element.set('class', classId)
+        if class_id is not None:
+            element.set('class', class_id)
         if attribute is not None:
             element.set(attribute[0], attribute[1])
         return element
@@ -329,7 +348,7 @@ class PrintServiceForm(QtGui.QDialog, Ui_PrintServiceDialog, RegistryProperties)
         """
         Called, when the *print_button* is clicked. Opens the *print_dialog*.
         """
-        if not self.print_dialog.exec_():
+        if not self.print_dialog.exec():
             return
         self.update_song_usage()
         # Print the document.

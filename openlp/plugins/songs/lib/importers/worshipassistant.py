@@ -1,43 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`worshipassistant` module provides the functionality for importing
 Worship Assistant songs into the OpenLP database.
 """
-import chardet
 import csv
 import logging
 import re
 
-from openlp.core.common import translate
+from openlp.core.common import get_file_encoding
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+
 
 log = logging.getLogger(__name__)
 
@@ -88,21 +82,18 @@ class WorshipAssistantImport(SongImport):
         Receive a CSV file to import.
         """
         # Get encoding
-        detect_file = open(self.import_source, 'rb')
-        detect_content = detect_file.read()
-        details = chardet.detect(detect_content)
-        detect_file.close()
-        songs_file = open(self.import_source, 'r', encoding=details['encoding'])
-        songs_reader = csv.DictReader(songs_file, escapechar='\\')
-        try:
-            records = list(songs_reader)
-        except csv.Error as e:
-            self.log_error(translate('SongsPlugin.WorshipAssistantImport', 'Error reading CSV file.'),
-                           translate('SongsPlugin.WorshipAssistantImport', 'Line %d: %s') %
-                           (songs_reader.line_num, e))
-            return
+        encoding = get_file_encoding(self.import_source)
+        with self.import_source.open('r', encoding=encoding) as songs_file:
+            songs_reader = csv.DictReader(songs_file, escapechar='\\')
+            try:
+                records = list(songs_reader)
+            except csv.Error as e:
+                self.log_error(translate('SongsPlugin.WorshipAssistantImport', 'Error reading CSV file.'),
+                               translate('SongsPlugin.WorshipAssistantImport',
+                                         'Line {number:d}: {error}').format(number=songs_reader.line_num, error=e))
+                return
         num_records = len(records)
-        log.info('%s records found in CSV file' % num_records)
+        log.info('{count} records found in CSV file'.format(count=num_records))
         self.import_wizard.progress_bar.setMaximum(num_records)
         # Create regex to strip html tags
         re_html_strip = re.compile(r'<[^>]+>')
@@ -129,15 +120,18 @@ class WorshipAssistantImport(SongImport):
                     verse_order_list = [x.strip() for x in record['ROADMAP'].split(',')]
                 lyrics = record['LYRICS2']
             except UnicodeDecodeError as e:
-                self.log_error(translate('SongsPlugin.WorshipAssistantImport', 'Record %d' % index),
-                               translate('SongsPlugin.WorshipAssistantImport', 'Decoding error: %s') % e)
+                self.log_error(translate('SongsPlugin.WorshipAssistantImport', 'Record {count:d}').format(count=index),
+                               translate('SongsPlugin.WorshipAssistantImport',
+                                         'Decoding error: {error}').format(error=e))
                 continue
             except TypeError as e:
                 self.log_error(translate('SongsPlugin.WorshipAssistantImport',
-                                         'File not valid WorshipAssistant CSV format.'), 'TypeError: %s' % e)
+                                         'File not valid WorshipAssistant CSV format.'),
+                               'TypeError: {error}'.format(error=e))
                 return
             verse = ''
             used_verses = []
+            verse_id = VerseType.tags[VerseType.Verse] + '1'
             for line in lyrics.splitlines():
                 if line.startswith('['):  # verse marker
                     # Add previous verse
@@ -149,7 +143,7 @@ class WorshipAssistantImport(SongImport):
                     # drop the square brackets
                     right_bracket = line.find(']')
                     content = line[1:right_bracket].lower()
-                    match = re.match('(\D*)(\d+)', content)
+                    match = re.match(r'(\D*)(\d+)', content)
                     if match is not None:
                         verse_tag = match.group(1)
                         verse_num = match.group(2)
@@ -186,6 +180,6 @@ class WorshipAssistantImport(SongImport):
                         cleaned_verse_order_list.append(verse)
                 self.verse_order_list = cleaned_verse_order_list
             if not self.finish():
-                self.log_error(translate('SongsPlugin.WorshipAssistantImport', 'Record %d') % index
-                               + (': "' + self.title + '"' if self.title else ''))
-            songs_file.close()
+                self.log_error(translate('SongsPlugin.WorshipAssistantImport',
+                                         'Record {count:d}').format(count=index) +
+                               (': "' + self.title + '"' if self.title else ''))

@@ -1,40 +1,34 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import RegistryProperties, translate
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.plugins.songusage.forms.songusagedeletedialog import Ui_SongUsageDeleteDialog
 from openlp.plugins.songusage.lib.db import SongUsageItem
-from .songusagedeletedialog import Ui_SongUsageDeleteDialog
 
 
-class SongUsageDeleteForm(QtGui.QDialog, Ui_SongUsageDeleteDialog, RegistryProperties):
+class SongUsageDeleteForm(QtWidgets.QDialog, Ui_SongUsageDeleteDialog, RegistryProperties):
     """
     Class documentation goes here.
     """
@@ -43,8 +37,9 @@ class SongUsageDeleteForm(QtGui.QDialog, Ui_SongUsageDeleteDialog, RegistryPrope
         Constructor
         """
         self.manager = manager
-        super(SongUsageDeleteForm, self).__init__(parent)
-        self.setupUi(self)
+        super(SongUsageDeleteForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
+                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self.setup_ui(self)
         self.button_box.clicked.connect(self.on_button_box_clicked)
 
     def on_button_box_clicked(self, button):
@@ -53,14 +48,14 @@ class SongUsageDeleteForm(QtGui.QDialog, Ui_SongUsageDeleteDialog, RegistryPrope
 
         :param button: The button pressed
         """
-        if self.button_box.standardButton(button) == QtGui.QDialogButtonBox.Ok:
-            ret = QtGui.QMessageBox.question(
-                self,
-                translate('SongUsagePlugin.SongUsageDeleteForm', 'Delete Selected Song Usage Events?'),
-                translate('SongUsagePlugin.SongUsageDeleteForm',
-                          'Are you sure you want to delete selected Song Usage data?'),
-                QtGui.QMessageBox.StandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No), QtGui.QMessageBox.No)
-            if ret == QtGui.QMessageBox.Yes:
+        if self.button_box.standardButton(button) == QtWidgets.QDialogButtonBox.Ok:
+            ret = QtWidgets.QMessageBox.question(self,
+                                                 translate('SongUsagePlugin.SongUsageDeleteForm',
+                                                           'Delete Selected Song Usage Events?'),
+                                                 translate('SongUsagePlugin.SongUsageDeleteForm',
+                                                           'Are you sure you want to delete selected Song Usage data?'),
+                                                 defaultButton=QtWidgets.QMessageBox.No)
+            if ret == QtWidgets.QMessageBox.Yes:
                 delete_date = self.delete_calendar.selectedDate().toPyDate()
                 self.manager.delete_all_objects(SongUsageItem, SongUsageItem.usagedate <= delete_date)
                 self.main_window.information_message(

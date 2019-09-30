@@ -1,52 +1,45 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.songs.lib` module contains a number of library functions and classes used in the Songs plugin.
 """
 
 import logging
-import os
 import re
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
-from openlp.core.common import AppLocation
-from openlp.core.lib import translate
-from openlp.core.utils import CONTROL_CHARS
-from openlp.plugins.songs.lib.db import MediaFile, Song
-from .db import Author
-from .ui import SongStrings
+from openlp.core.common import CONTROL_CHARS
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.i18n import translate
+from openlp.core.common.settings import Settings
+from openlp.core.display.render import remove_tags
+from openlp.plugins.songs.lib.db import Author, MediaFile, Song
+from openlp.plugins.songs.lib.ui import SongStrings
 
 log = logging.getLogger(__name__)
 
-WHITESPACE = re.compile(r'[\W_]+', re.UNICODE)
-APOSTROPHE = re.compile('[\'`’ʻ′]', re.UNICODE)
+WHITESPACE = re.compile(r'[\W_]+')
+APOSTROPHE = re.compile(r'[\'`’ʻ′]')
 # PATTERN will look for the next occurence of one of these symbols:
 #   \controlword - optionally preceded by \*, optionally followed by a number
 #   \'## - where ## is a pair of hex digits, representing a single character
@@ -263,6 +256,7 @@ class VerseType(object):
         for num, translation in enumerate(VerseType.translated_names):
             if verse_name == translation.lower():
                 return num
+        return None
 
     @staticmethod
     def from_loose_input(verse_name, default=Other):
@@ -278,7 +272,7 @@ class VerseType(object):
             if verse_index is None:
                 verse_index = VerseType.from_string(verse_name, default)
         elif len(verse_name) == 1:
-            verse_index = VerseType.from_translated_tag(verse_name, default)
+            verse_index = VerseType.from_translated_tag(verse_name, None)
             if verse_index is None:
                 verse_index = VerseType.from_tag(verse_name, default)
         else:
@@ -322,12 +316,12 @@ def retrieve_windows_encoding(recommendation=None):
     ]
     recommended_index = -1
     if recommendation:
-        for index in range(len(encodings)):
-            if recommendation == encodings[index][0]:
+        for index, encoding in enumerate(encodings):
+            if recommendation == encoding[0]:
                 recommended_index = index
                 break
     if recommended_index > -1:
-        choice = QtGui.QInputDialog.getItem(
+        choice = QtWidgets.QInputDialog.getItem(
             None,
             translate('SongsPlugin', 'Character Encoding'),
             translate('SongsPlugin', 'The codepage setting is responsible\n'
@@ -335,7 +329,7 @@ def retrieve_windows_encoding(recommendation=None):
                                      'Usually you are fine with the preselected choice.'),
             [pair[1] for pair in encodings], recommended_index, False)
     else:
-        choice = QtGui.QInputDialog.getItem(
+        choice = QtWidgets.QInputDialog.getItem(
             None,
             translate('SongsPlugin', 'Character Encoding'),
             translate('SongsPlugin', 'Please choose the character encoding.\n'
@@ -388,7 +382,7 @@ def clean_song(manager, song):
     if isinstance(song.lyrics, bytes):
         song.lyrics = str(song.lyrics, encoding='utf8')
     verses = SongXML().get_verses(song.lyrics)
-    song.search_lyrics = ' '.join([clean_string(verse[1]) for verse in verses])
+    song.search_lyrics = ' '.join([clean_string(remove_tags(verse[1], True)) for verse in verses])
     # The song does not have any author, add one.
     if not song.authors_songs:
         name = SongStrings.AuthorUnknown
@@ -449,7 +443,7 @@ def strip_rtf(text, default_encoding=None):
     # Encoded buffer.
     ebytes = bytearray()
     for match in PATTERN.finditer(text):
-        iinu, word, arg, hex, char, brace, tchar = match.groups()
+        iinu, word, arg, hex_, char, brace, tchar = match.groups()
         # \x (non-alpha character)
         if char:
             if char in '\\{}':
@@ -457,7 +451,7 @@ def strip_rtf(text, default_encoding=None):
             else:
                 word = char
         # Flush encoded buffer to output buffer
-        if ebytes and not hex and not tchar:
+        if ebytes and not hex_ and not tchar:
             failed = False
             while True:
                 try:
@@ -514,16 +508,19 @@ def strip_rtf(text, default_encoding=None):
             elif iinu:
                 ignorable = True
         # \'xx
-        elif hex:
+        elif hex_:
             if curskip > 0:
                 curskip -= 1
             elif not ignorable:
-                ebytes.append(int(hex, 16))
+                ebytes.append(int(hex_, 16))
         elif tchar:
-            if curskip > 0:
-                curskip -= 1
-            elif not ignorable:
+            if not ignorable:
                 ebytes += tchar.encode()
+                if len(ebytes) >= curskip:
+                    ebytes = ebytes[curskip:]
+                else:
+                    curskip -= len(ebytes)
+                    ebytes = ""
     text = ''.join(out)
     return text, default_encoding
 
@@ -539,13 +536,136 @@ def delete_song(song_id, song_plugin):
     media_files = song_plugin.manager.get_all_objects(MediaFile, MediaFile.song_id == song_id)
     for media_file in media_files:
         try:
-            os.remove(media_file.file_name)
+            media_file.file_path.unlink()
         except OSError:
-            log.exception('Could not remove file: %s', media_file.file_name)
+            log.exception('Could not remove file: {name}'.format(name=media_file.file_path))
     try:
-        save_path = os.path.join(AppLocation.get_section_data_path(song_plugin.name), 'audio', str(song_id))
-        if os.path.exists(save_path):
-            os.rmdir(save_path)
+        save_path = AppLocation.get_section_data_path(song_plugin.name) / 'audio' / str(song_id)
+        if save_path.exists():
+            save_path.rmdir()
     except OSError:
-        log.exception('Could not remove directory: %s', save_path)
+        log.exception('Could not remove directory: {path}'.format(path=save_path))
     song_plugin.manager.delete_object(Song, song_id)
+
+
+def transpose_lyrics(lyrics, transpose_value):
+    """
+    Transpose lyrics
+
+    :param lyrics: The lyrics to be transposed
+    :param transpose_value: The value to transpose the lyrics with
+    :return: The transposed lyrics
+    """
+    # Split text by verse delimiter - both normal and optional
+    verse_list = re.split(r'(---\[.+?:.+?\]---|\[---\])', lyrics)
+    transposed_lyrics = ''
+    notation = Settings().value('songs/chord notation')
+    for verse in verse_list:
+        if verse.startswith('---[') or verse == '[---]':
+            transposed_lyrics += verse
+        else:
+            transposed_lyrics += transpose_verse(verse, transpose_value, notation)
+    return transposed_lyrics
+
+
+def transpose_verse(verse_text, transpose_value, notation):
+    """
+    Transpose Verse
+
+    :param verse_text: The lyrics to be transposed
+    :param transpose_value: The value to transpose the lyrics with
+    :param notation: which notation to use
+    :return: The transposed lyrics
+    """
+    if '[' not in verse_text:
+        return verse_text
+    # Split the lyrics based on chord tags
+    lyric_list = re.split(r'(\[|\]|/)', verse_text)
+    transposed_lyrics = ''
+    in_tag = False
+    for word in lyric_list:
+        if not in_tag:
+            transposed_lyrics += word
+            if word == '[':
+                in_tag = True
+        else:
+            if word == ']':
+                in_tag = False
+                transposed_lyrics += word
+            elif word == '/' or word == '--}{--':
+                transposed_lyrics += word
+            else:
+                # This MUST be a chord
+                transposed_lyrics += transpose_chord(word, transpose_value, notation)
+    # If still inside a chord tag something is wrong!
+    if in_tag:
+        return verse_text
+    else:
+        return transposed_lyrics
+
+
+def transpose_chord(chord, transpose_value, notation):
+    """
+    Transpose chord according to the notation used.
+    NOTE: This function has a javascript equivalent in chords.js - make sure to update both!
+
+    :param chord: The chord to transpose.
+    :param transpose_value: The value the chord should be transposed.
+    :param notation: The notation to use when transposing.
+    :return: The transposed chord.
+    """
+    # See https://en.wikipedia.org/wiki/Musical_note#12-tone_chromatic_scale
+    notes_sharp_notation = {
+        'german': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'H'],
+        'english': ['C', 'C#', 'D', 'D#', 'E', 'F', 'F#', 'G', 'G#', 'A', 'A#', 'B'],
+        'neo-latin': ['Do', 'Do#', 'Re', 'Re#', 'Mi', 'Fa', 'Fa#', 'Sol', 'Sol#', 'La', 'La#', 'Si']
+    }
+    notes_flat_notation = {
+        'german': ['C', 'Db', 'D', 'Eb', 'Fb', 'F', 'Gb', 'G', 'Ab', 'A', 'B', 'H'],
+        'english': ['C', 'Db', 'D', 'Eb', 'Fb', 'F', 'Gb', 'G', 'Ab', 'A', 'Bb', 'B'],
+        'neo-latin': ['Do', 'Reb', 'Re', 'Mib', 'Fab', 'Fa', 'Solb', 'Sol', 'Lab', 'La', 'Sib', 'Si']
+    }
+    chord_split = chord.replace('♭', 'b').split('/')
+    transposed_chord = ''
+    last_chord = ''
+    notes_sharp = notes_sharp_notation[notation]
+    notes_flat = notes_flat_notation[notation]
+    notes_preferred = ['b', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#', '#']
+    for i in range(0, len(chord_split)):
+        if i > 0:
+            transposed_chord += '/'
+        current_chord = chord_split[i]
+        if current_chord and current_chord[0] == '(':
+            transposed_chord += '('
+            if len(current_chord) > 1:
+                current_chord = current_chord[1:]
+            else:
+                current_chord = ''
+        if len(current_chord) > 0:
+            if len(current_chord) > 1:
+                if '#b'.find(current_chord[1]) == -1:
+                    note = current_chord[0:1]
+                    rest = current_chord[1:]
+                else:
+                    note = current_chord[0:2]
+                    rest = current_chord[2:]
+            else:
+                note = current_chord
+                rest = ''
+            note_number = notes_flat.index(note) if note not in notes_sharp else notes_sharp.index(note)
+            note_number += transpose_value
+            while note_number > 11:
+                note_number -= 12
+            while note_number < 0:
+                note_number += 12
+            if i == 0:
+                current_chord = notes_sharp[note_number] if notes_preferred[note_number] == '#' else notes_flat[
+                    note_number]
+                last_chord = current_chord
+            else:
+                current_chord = notes_flat[note_number] if last_chord not in notes_sharp else notes_sharp[note_number]
+            if not (note not in notes_flat and note not in notes_sharp):
+                transposed_chord += current_chord + rest
+            else:
+                transposed_chord += note + rest
+    return transposed_chord

@@ -1,52 +1,50 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`easyworship` module provides the functionality for importing EasyWorship song databases into OpenLP.
 """
-
+import logging
 import os
-import struct
 import re
+import sqlite3
+import struct
 import zlib
+from pathlib import Path
 
-from openlp.core.lib import translate
-from openlp.plugins.songs.lib import VerseType
-from openlp.plugins.songs.lib import retrieve_windows_encoding, strip_rtf
+from openlp.core.common.i18n import translate
+from openlp.plugins.songs.lib import VerseType, retrieve_windows_encoding, strip_rtf
+
 from .songimport import SongImport
+
 
 # regex: at least two newlines, can have spaces between them
 SLIDE_BREAK_REGEX = re.compile(r'\n *?\n[\n ]*')
 NUMBER_REGEX = re.compile(r'[0-9]+')
 NOTE_REGEX = re.compile(r'\(.*?\)')
 
+log = logging.getLogger(__name__)
 
-class FieldDescEntry:
+
+class FieldDescEntry(object):
     def __init__(self, name, field_type, size):
         self.name = name
         self.field_type = field_type
@@ -79,10 +77,14 @@ class EasyWorshipSongImport(SongImport):
         """
         Determines the type of file to import and calls the appropiate method
         """
-        if self.import_source.lower().endswith('ews'):
+        self.import_source = Path(self.import_source)
+        ext = self.import_source.suffix.lower()
+        if ext == '.ews':
             self.import_ews()
-        else:
+        elif ext == '.db':
             self.import_db()
+        else:
+            self.import_sqlite_db()
 
     def import_ews(self):
         """
@@ -92,11 +94,11 @@ class EasyWorshipSongImport(SongImport):
         or here: http://wiki.openlp.org/Development:EasyWorship_EWS_Format
         """
         # Open ews file if it exists
-        if not os.path.isfile(self.import_source):
+        if not self.import_source.is_file():
             log.debug('Given ews file does not exists.')
             return
         # Make sure there is room for at least a header and one entry
-        if os.path.getsize(self.import_source) < 892:
+        if self.import_source.stat().st_size < 892:
             log.debug('Given ews file is to small to contain valid data.')
             return
         # Take a stab at how text is encoded
@@ -105,7 +107,7 @@ class EasyWorshipSongImport(SongImport):
         if not self.encoding:
             log.debug('No encoding set.')
             return
-        self.ews_file = open(self.import_source, 'rb')
+        self.ews_file = self.import_source.open('rb')
         # EWS header, version '1.6'/'  3'/'  5':
         # Offset   Field             Data type    Length    Details
         # --------------------------------------------------------------------------------------------------
@@ -116,8 +118,8 @@ class EasyWorshipSongImport(SongImport):
         # 40/48/56 Entry count        int32le           4    Number of items in the schedule
         # 44/52/60 Entry length       int16le           2    Length of schedule entries: 0x0718 = 1816
         # Get file version
-        type, = struct.unpack('<38s', self.ews_file.read(38))
-        version = type.decode()[-3:]
+        file_type, = struct.unpack('<38s', self.ews_file.read(38))
+        version = file_type.decode()[-3:]
         # Set fileposition based on filetype/version
         file_pos = 0
         if version == '  5':
@@ -129,8 +131,8 @@ class EasyWorshipSongImport(SongImport):
         else:
             log.debug('Given ews file is of unknown version.')
             return
-        entry_count = self.get_i32(file_pos)
-        entry_length = self.get_i16(file_pos+4)
+        entry_count = self.ews_get_i32(file_pos)
+        entry_length = self.ews_get_i16(file_pos + 4)
         file_pos += 6
         self.import_wizard.progress_bar.setMaximum(entry_count)
         # Loop over songs
@@ -148,13 +150,13 @@ class EasyWorshipSongImport(SongImport):
             #                                                       0x08 = Audio, 0x09 = Web
             #   1410  Song number            cstring          10
             self.set_defaults()
-            self.title = self.get_string(file_pos + 0, 50)
-            authors = self.get_string(file_pos + 307, 50)
-            copyright = self.get_string(file_pos + 358, 100)
-            admin = self.get_string(file_pos + 459, 50)
-            cont_ptr = self.get_i32(file_pos + 800)
-            cont_type = self.get_i32(file_pos + 820)
-            self.ccli_number = self.get_string(file_pos + 1410, 10)
+            self.title = self.ews_get_string(file_pos + 0, 50)
+            authors = self.ews_get_string(file_pos + 307, 50)
+            copyright = self.ews_get_string(file_pos + 358, 100)
+            admin = self.ews_get_string(file_pos + 459, 50)
+            cont_ptr = self.ews_get_i32(file_pos + 800)
+            cont_type = self.ews_get_i32(file_pos + 820)
+            self.ccli_number = self.ews_get_string(file_pos + 1410, 10)
             # Only handle content type 1 (songs)
             if cont_type != 1:
                 file_pos += entry_length
@@ -168,9 +170,9 @@ class EasyWorshipSongImport(SongImport):
             #         Checksum           int32be           4    Alder-32 checksum.
             #         (unknown)                            4    0x51 0x4b 0x03 0x04
             #         Content length     int32le           4    Length of content after decompression
-            content_length = self.get_i32(cont_ptr)
-            deflated_content = self.get_bytes(cont_ptr + 4, content_length - 10)
-            deflated_length = self.get_i32(cont_ptr + 4 + content_length - 6)
+            content_length = self.ews_get_i32(cont_ptr)
+            deflated_content = self.ews_get_bytes(cont_ptr + 4, content_length - 10)
+            deflated_length = self.ews_get_i32(cont_ptr + 4 + content_length - 6)
             inflated_content = zlib.decompress(deflated_content, 15, deflated_length)
             if copyright:
                 self.copyright = copyright
@@ -178,15 +180,16 @@ class EasyWorshipSongImport(SongImport):
                 if copyright:
                     self.copyright += ', '
                 self.copyright += translate('SongsPlugin.EasyWorshipSongImport',
-                                            'Administered by %s') % admin
+                                            'Administered by {admin}').format(admin=admin)
             # Set the SongImport object members.
             self.set_song_import_object(authors, inflated_content)
             if self.stop_import_flag:
                 break
             if self.entry_error_log:
                 self.log_error(self.import_source,
-                               translate('SongsPlugin.EasyWorshipSongImport', '"%s" could not be imported. %s')
-                               % (self.title, self.entry_error_log))
+                               translate('SongsPlugin.EasyWorshipSongImport',
+                                         '"{title}" could not be imported. {entry}').format(title=self.title,
+                                                                                            entry=self.entry_error_log))
                 self.entry_error_log = ''
             elif not self.finish():
                 self.log_error(self.import_source)
@@ -199,23 +202,22 @@ class EasyWorshipSongImport(SongImport):
         Import the songs from the database
         """
         # Open the DB and MB files if they exist
-        import_source_mb = self.import_source.replace('.DB', '.MB').replace('.db', '.mb')
-        if not os.path.isfile(self.import_source):
+        import_source_mb = self.import_source.with_suffix('.MB')
+        if not self.import_source.is_file():
             self.log_error(self.import_source, translate('SongsPlugin.EasyWorshipSongImport',
                                                          'This file does not exist.'))
             return
-        if not os.path.isfile(import_source_mb):
+        if not import_source_mb.is_file():
             self.log_error(self.import_source, translate('SongsPlugin.EasyWorshipSongImport',
                                                          'Could not find the "Songs.MB" file. It must be in the same '
                                                          'folder as the "Songs.DB" file.'))
             return
-        db_size = os.path.getsize(self.import_source)
-        if db_size < 0x800:
+        if self.import_source.stat().st_size < 0x800:
             self.log_error(self.import_source, translate('SongsPlugin.EasyWorshipSongImport',
                                                          'This file is not a valid EasyWorship database.'))
             return
-        db_file = open(self.import_source, 'rb')
-        self.memo_file = open(import_source_mb, 'rb')
+        db_file = self.import_source.open('rb')
+        self.memo_file = import_source_mb.open('rb')
         # Don't accept files that are clearly not paradox files
         record_size, header_size, block_size, first_block, num_fields = struct.unpack('<hhxb8xh17xh', db_file.read(35))
         if header_size != 0x800 or block_size < 1 or block_size > 4:
@@ -263,16 +265,16 @@ class EasyWorshipSongImport(SongImport):
         for i, field_name in enumerate(field_names):
             field_type, field_size = struct.unpack_from('BB', field_info, i * 2)
             field_descriptions.append(FieldDescEntry(field_name, field_type, field_size))
-        self.set_record_struct(field_descriptions)
+        self.db_set_record_struct(field_descriptions)
         # Pick out the field description indexes we will need
         try:
+            fi_title = self.db_find_field(b'Title')
+            fi_author = self.db_find_field(b'Author')
+            fi_copy = self.db_find_field(b'Copyright')
+            fi_admin = self.db_find_field(b'Administrator')
+            fi_words = self.db_find_field(b'Words')
+            fi_ccli = self.db_find_field(b'Song Number')
             success = True
-            fi_title = self.find_field(b'Title')
-            fi_author = self.find_field(b'Author')
-            fi_copy = self.find_field(b'Copyright')
-            fi_admin = self.find_field(b'Administrator')
-            fi_words = self.find_field(b'Words')
-            fi_ccli = self.find_field(b'Song Number')
         except IndexError:
             # This is the wrong table
             success = False
@@ -296,42 +298,107 @@ class EasyWorshipSongImport(SongImport):
             for i in range(rec_count):
                 if self.stop_import_flag:
                     break
-                raw_record = db_file.read(record_size)
-                self.fields = self.record_structure.unpack(raw_record)
-                self.set_defaults()
-                self.title = self.get_field(fi_title).decode('unicode-escape')
-                # Get remaining fields.
-                copy = self.get_field(fi_copy)
-                admin = self.get_field(fi_admin)
-                ccli = self.get_field(fi_ccli)
-                authors = self.get_field(fi_author)
-                words = self.get_field(fi_words)
-                if copy:
-                    self.copyright = copy.decode('unicode-escape')
-                if admin:
+                try:
+                    raw_record = db_file.read(record_size)
+                    self.fields = self.record_structure.unpack(raw_record)
+                    self.set_defaults()
+                    self.title = self.db_get_field(fi_title).decode(self.encoding)
+                    # Get remaining fields.
+                    copy = self.db_get_field(fi_copy)
+                    admin = self.db_get_field(fi_admin)
+                    ccli = self.db_get_field(fi_ccli)
+                    authors = self.db_get_field(fi_author)
+                    words = self.db_get_field(fi_words)
                     if copy:
-                        self.copyright += ', '
-                    self.copyright += translate('SongsPlugin.EasyWorshipSongImport',
-                                                'Administered by %s') % admin.decode('unicode-escape')
-                if ccli:
-                    self.ccli_number = ccli.decode('unicode-escape')
-                if authors:
-                    authors = authors.decode('unicode-escape')
-                else:
-                    authors = ''
-                # Set the SongImport object members.
-                self.set_song_import_object(authors, words)
-                if self.stop_import_flag:
-                    break
-                if self.entry_error_log:
+                        self.copyright = copy.decode(self.encoding)
+                    if admin:
+                        if copy:
+                            self.copyright += ', '
+                        self.copyright += translate('SongsPlugin.EasyWorshipSongImport',
+                                                    'Administered by {admin}').format(admin=admin.decode(self.encoding))
+                    if ccli:
+                        self.ccli_number = ccli.decode(self.encoding)
+                    if authors:
+                        authors = authors.decode(self.encoding)
+                    else:
+                        authors = ''
+                    # Set the SongImport object members.
+                    self.set_song_import_object(authors, words)
+                    if self.stop_import_flag:
+                        break
+                    if self.entry_error_log:
+                        self.log_error(self.import_source,
+                                       translate('SongsPlugin.EasyWorshipSongImport',
+                                                 '"{title}" could not be imported. '
+                                                 '{entry}').format(title=self.title, entry=self.entry_error_log))
+                        self.entry_error_log = ''
+                    elif not self.finish():
+                        self.log_error(self.import_source)
+                except Exception as e:
                     self.log_error(self.import_source,
-                                   translate('SongsPlugin.EasyWorshipSongImport', '"%s" could not be imported. %s')
-                                   % (self.title, self.entry_error_log))
-                    self.entry_error_log = ''
-                elif not self.finish():
-                    self.log_error(self.import_source)
+                                   translate('SongsPlugin.EasyWorshipSongImport',
+                                             '"{title}" could not be imported. {error}').format(title=self.title,
+                                                                                                error=e))
         db_file.close()
         self.memo_file.close()
+
+    def import_sqlite_db(self):
+        """
+        Import the songs from an EasyWorship 6 SQLite database
+        """
+        songs_db_path = next(self.import_source.rglob('Songs.db'), None)
+        song_words_db_path = next(self.import_source.rglob('SongWords.db'), None)
+        invalid_dir_msg = translate('SongsPlugin.EasyWorshipSongImport',
+                                    'This does not appear to be a valid Easy Worship 6 database directory.')
+        invalid_db_msg = translate('SongsPlugin.EasyWorshipSongImport', 'This is not a valid Easy Worship 6 database.')
+        # check to see if needed files are there
+        if not (songs_db_path and songs_db_path.is_file()):
+            self.log_error(self.import_source, invalid_dir_msg)
+            return
+        if not (song_words_db_path and song_words_db_path.is_file()):
+            self.log_error(self.import_source, invalid_dir_msg)
+            return
+        # get database handles
+        songs_conn = sqlite3.connect(str(songs_db_path))
+        words_conn = sqlite3.connect(str(song_words_db_path))
+        if songs_conn is None or words_conn is None:
+            self.log_error(self.import_source, invalid_db_msg)
+            songs_conn.close()
+            words_conn.close()
+            return
+        songs_db = songs_conn.cursor()
+        words_db = words_conn.cursor()
+        if songs_conn is None or words_conn is None:
+            self.log_error(self.import_source, invalid_db_msg)
+            songs_conn.close()
+            words_conn.close()
+            return
+        # Take a stab at how text is encoded
+        self.encoding = 'cp1252'
+        self.encoding = retrieve_windows_encoding(self.encoding)
+        if not self.encoding:
+            log.debug('No encoding set.')
+            return
+        # import songs
+        songs = songs_db.execute('SELECT rowid,title,author,copyright,vendor_id FROM song;')
+        for song in songs:
+            song_id = song[0]
+            # keep extra copy of title for error message because error check clears it
+            self.title = title = song[1]
+            self.author = song[2]
+            self.copyright = song[3]
+            self.ccli_number = song[4]
+            words = words_db.execute('SELECT words FROM word WHERE song_id = ?;', (song_id,))
+            self.set_song_import_object(self.author, words.fetchone()[0].encode())
+            if not self.finish():
+                self.log_error(self.import_source,
+                               translate('SongsPlugin.EasyWorshipSongImport',
+                                         '"{title}" could not be imported. {entry}').
+                               format(title=title, entry=self.entry_error_log))
+        # close database handles
+        songs_conn.close()
+        words_conn.close()
+        return
 
     def set_song_import_object(self, authors, words):
         """
@@ -375,7 +442,7 @@ class EasyWorshipSongImport(SongImport):
                 first_line_is_tag = False
                 # EW tags: verse, chorus, pre-chorus, bridge, tag,
                 # intro, ending, slide
-                for tag in VerseType.tags + ['tag', 'slide']:
+                for tag in VerseType.names + ['tag', 'slide', 'end']:
                     tag = tag.lower()
                     ew_tag = verse_split[0].strip().lower()
                     if ew_tag.startswith(tag):
@@ -397,12 +464,15 @@ class EasyWorshipSongImport(SongImport):
                         if not number_found:
                             verse_type += '1'
                         break
+                # If the verse only consist of the tag-line, add an empty line to create an empty slide
+                if first_line_is_tag and len(verse_split) == 1:
+                    verse_split.append("")
                 self.add_verse(verse_split[-1].strip() if first_line_is_tag else verse, verse_type)
         if len(self.comments) > 5:
             self.comments += str(translate('SongsPlugin.EasyWorshipSongImport',
                                            '\n[above are Song Tags with notes imported from EasyWorship]'))
 
-    def find_field(self, field_name):
+    def db_find_field(self, field_name):
         """
         Find a field in the descriptions
 
@@ -410,7 +480,7 @@ class EasyWorshipSongImport(SongImport):
         """
         return [i for i, x in enumerate(self.field_descriptions) if x.name == field_name][0]
 
-    def set_record_struct(self, field_descriptions):
+    def db_set_record_struct(self, field_descriptions):
         """
         Save the record structure
 
@@ -420,7 +490,7 @@ class EasyWorshipSongImport(SongImport):
         fsl = ['>']
         for field_desc in field_descriptions:
             if field_desc.field_type == FieldType.String:
-                fsl.append('%ds' % field_desc.size)
+                fsl.append('{size:d}s'.format(size=field_desc.size))
             elif field_desc.field_type == FieldType.Int16:
                 fsl.append('H')
             elif field_desc.field_type == FieldType.Int32:
@@ -428,17 +498,17 @@ class EasyWorshipSongImport(SongImport):
             elif field_desc.field_type == FieldType.Logical:
                 fsl.append('B')
             elif field_desc.field_type == FieldType.Memo:
-                fsl.append('%ds' % field_desc.size)
+                fsl.append('{size:d}s'.format(size=field_desc.size))
             elif field_desc.field_type == FieldType.Blob:
-                fsl.append('%ds' % field_desc.size)
+                fsl.append('{size:d}s'.format(size=field_desc.size))
             elif field_desc.field_type == FieldType.Timestamp:
                 fsl.append('Q')
             else:
-                fsl.append('%ds' % field_desc.size)
+                fsl.append('{size:d}s'.format(size=field_desc.size))
         self.record_structure = struct.Struct(''.join(fsl))
         self.field_descriptions = field_descriptions
 
-    def get_field(self, field_desc_index):
+    def db_get_field(self, field_desc_index):
         """
         Extract the field
 
@@ -482,7 +552,7 @@ class EasyWorshipSongImport(SongImport):
         else:
             return 0
 
-    def get_bytes(self, pos, length):
+    def ews_get_bytes(self, pos, length):
         """
         Get bytes from ews_file
 
@@ -493,7 +563,7 @@ class EasyWorshipSongImport(SongImport):
         self.ews_file.seek(pos)
         return self.ews_file.read(length)
 
-    def get_string(self, pos, length):
+    def ews_get_string(self, pos, length):
         """
         Get string from ews_file
 
@@ -501,12 +571,12 @@ class EasyWorshipSongImport(SongImport):
         :param length: Characters to read
         :return: String read
         """
-        bytes = self.get_bytes(pos, length)
+        bytes = self.ews_get_bytes(pos, length)
         mask = '<' + str(length) + 's'
         byte_str, = struct.unpack(mask, bytes)
-        return byte_str.decode('unicode-escape').replace('\0', '').strip()
+        return byte_str.decode(self.encoding).replace('\0', '').strip()
 
-    def get_i16(self, pos):
+    def ews_get_i16(self, pos):
         """
         Get short int from ews_file
 
@@ -514,19 +584,19 @@ class EasyWorshipSongImport(SongImport):
         :return: Short integer read
         """
 
-        bytes = self.get_bytes(pos, 2)
+        bytes = self.ews_get_bytes(pos, 2)
         mask = '<h'
         number, = struct.unpack(mask, bytes)
         return number
 
-    def get_i32(self, pos):
+    def ews_get_i32(self, pos):
         """
         Get long int from ews_file
 
         :param pos: Position to read from
         :return: Long integer read
         """
-        bytes = self.get_bytes(pos, 4)
+        bytes = self.ews_get_bytes(pos, 4)
         mask = '<i'
         number, = struct.unpack(mask, bytes)
         return number

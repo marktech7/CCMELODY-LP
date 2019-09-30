@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`lib` module contains all the library functionality for the bibles
 plugin.
@@ -33,9 +26,9 @@ plugin.
 import logging
 import re
 
-from openlp.core.common import Settings
-from openlp.core.lib import translate
-
+from openlp.core.common import Singleton
+from openlp.core.common.i18n import translate
+from openlp.core.common.settings import Settings
 
 log = logging.getLogger(__name__)
 
@@ -72,20 +65,10 @@ class LanguageSelection(object):
     English = 2
 
 
-class BibleStrings(object):
+class BibleStrings(metaclass=Singleton):
     """
     Provide standard strings for objects to use.
     """
-    __instance__ = None
-
-    def __new__(cls):
-        """
-        Override the default object creation method to return a single instance.
-        """
-        if not cls.__instance__:
-            cls.__instance__ = object.__new__(cls)
-        return cls.__instance__
-
     def __init__(self):
         """
         These strings should need a good reason to be retranslated elsewhere.
@@ -180,12 +163,28 @@ class BibleStrings(object):
 
 def update_reference_separators():
     """
-    Updates separators and matches for parsing and formating scripture references.
+    Updates separators and matches for parsing and formatting scripture references.
     """
-    default_separators = \
-        translate('BiblesPlugin',
-                  ':|v|V|verse|verses;;-|to;;,|and;;end Double-semicolon delimited separators for parsing references. '
-                  'Consult the developers for further information.').split(';;')
+    default_separators = [
+        '|'.join([
+            translate('BiblesPlugin', ':', 'Verse identifier e.g. Genesis 1 : 1 = Genesis Chapter 1 Verse 1'),
+            translate('BiblesPlugin', 'v', 'Verse identifier e.g. Genesis 1 v 1 = Genesis Chapter 1 Verse 1'),
+            translate('BiblesPlugin', 'V', 'Verse identifier e.g. Genesis 1 V 1 = Genesis Chapter 1 Verse 1'),
+            translate('BiblesPlugin', 'verse', 'Verse identifier e.g. Genesis 1 verse 1 = Genesis Chapter 1 Verse 1'),
+            translate('BiblesPlugin', 'verses',
+                      'Verse identifier e.g. Genesis 1 verses 1 - 2 = Genesis Chapter 1 Verses 1 to 2')]),
+        '|'.join([
+            translate('BiblesPlugin', '-',
+                      'range identifier e.g. Genesis 1 verse 1 - 2 = Genesis Chapter 1 Verses 1 To 2'),
+            translate('BiblesPlugin', 'to',
+                      'range identifier e.g. Genesis 1 verse 1 - 2 = Genesis Chapter 1 Verses 1 To 2')]),
+        '|'.join([
+            translate('BiblesPlugin', ',', 'connecting identifier e.g. Genesis 1 verse 1 - 2, 4 - 5 = '
+                                           'Genesis Chapter 1 Verses 1 To 2 And Verses 4 To 5'),
+            translate('BiblesPlugin', 'and', 'connecting identifier e.g. Genesis 1 verse 1 - 2 and 4 - 5 = '
+                                             'Genesis Chapter 1 Verses 1 To 2 And Verses 4 To 5')]),
+        '|'.join([translate('BiblesPlugin', 'end', 'ending identifier e.g. Genesis 1 verse 1 - end = '
+                                                   'Genesis Chapter 1 Verses 1 To The Last Verse')])]
     settings = Settings()
     settings.beginGroup('bibles')
     custom_separators = [
@@ -202,26 +201,26 @@ def update_reference_separators():
         while '||' in source_string:
             source_string = source_string.replace('||', '|')
         if role != 'e':
-            REFERENCE_SEPARATORS['sep_%s_display' % role] = source_string.split('|')[0]
+            REFERENCE_SEPARATORS['sep_{role}_display'.format(role=role)] = source_string.split('|')[0]
         # escape reserved characters
         for character in '\\.^$*+?{}[]()':
             source_string = source_string.replace(character, '\\' + character)
-        # add various unicode alternatives
+        # add various Unicode alternatives
         source_string = source_string.replace('-', '(?:[-\u00AD\u2010\u2011\u2012\u2014\u2014\u2212\uFE63\uFF0D])')
         source_string = source_string.replace(',', '(?:[,\u201A])')
-        REFERENCE_SEPARATORS['sep_%s' % role] = '\s*(?:%s)\s*' % source_string
-        REFERENCE_SEPARATORS['sep_%s_default' % role] = default_separators[index]
+        REFERENCE_SEPARATORS['sep_{role}'.format(role=role)] = r'\s*(?:{source})\s*'.format(source=source_string)
+        REFERENCE_SEPARATORS['sep_{role}_default'.format(role=role)] = default_separators[index]
     # verse range match: (<chapter>:)?<verse>(-((<chapter>:)?<verse>|end)?)?
-    range_regex = '(?:(?P<from_chapter>[0-9]+)%(sep_v)s)?' \
-        '(?P<from_verse>[0-9]+)(?P<range_to>%(sep_r)s(?:(?:(?P<to_chapter>' \
-        '[0-9]+)%(sep_v)s)?(?P<to_verse>[0-9]+)|%(sep_e)s)?)?' % REFERENCE_SEPARATORS
-    REFERENCE_MATCHES['range'] = re.compile('^\s*%s\s*$' % range_regex, re.UNICODE)
-    REFERENCE_MATCHES['range_separator'] = re.compile(REFERENCE_SEPARATORS['sep_l'], re.UNICODE)
+    range_regex = '(?:(?P<from_chapter>[0-9]+){sep_v})?' \
+        '(?P<from_verse>[0-9]+)(?P<range_to>{sep_r}(?:(?:(?P<to_chapter>' \
+        '[0-9]+){sep_v})?(?P<to_verse>[0-9]+)|{sep_e})?)?'.format_map(REFERENCE_SEPARATORS)
+    REFERENCE_MATCHES['range'] = re.compile(r'^\s*{range}\s*$'.format(range=range_regex))
+    REFERENCE_MATCHES['range_separator'] = re.compile(REFERENCE_SEPARATORS['sep_l'])
     # full reference match: <book>(<range>(,(?!$)|(?=$)))+
     REFERENCE_MATCHES['full'] = \
-        re.compile('^\s*(?!\s)(?P<book>[\d]*[^\d]+)(?<!\s)\s*'
-                   '(?P<ranges>(?:%(range_regex)s(?:%(sep_l)s(?!\s*$)|(?=\s*$)))+)\s*$'
-                   % dict(list(REFERENCE_SEPARATORS.items()) + [('range_regex', range_regex)]), re.UNICODE)
+        re.compile(r'^\s*(?!\s)(?P<book>[\d]*[.]?[^\d\.]+)\.*(?<!\s)\s*'
+                   r'(?P<ranges>(?:{range_regex}(?:{sep_l}(?!\s*$)|(?=\s*$)))+)\s*$'.format(
+                       range_regex=range_regex, sep_l=REFERENCE_SEPARATORS['sep_l']))
 
 
 def get_reference_separator(separator_type):
@@ -247,7 +246,7 @@ def get_reference_match(match_type):
 
 
 def parse_reference(reference, bible, language_selection, book_ref_id=False):
-    """
+    r"""
     This is the next generation über-awesome function that takes a person's typed in string and converts it to a list
     of references to be queried from the Bible database files.
 
@@ -315,25 +314,27 @@ def parse_reference(reference, bible, language_selection, book_ref_id=False):
 
     ``^\s*(?!\s)(?P<book>[\d]*[^\d]+)(?<!\s)\s*``
         The ``book`` group starts with the first non-whitespace character. There are optional leading digits followed by
-        non-digits. The group ends before the whitspace in front of the next digit.
+        non-digits. The group ends before the whitespace, or a full stop in front of the next digit.
 
     ``(?P<ranges>(?:%(range_regex)s(?:%(sep_l)s(?!\s*$)|(?=\s*$)))+)\s*$``
         The second group contains all ``ranges``. This can be multiple declarations of range_regex separated by a list
         separator.
 
     """
-    log.debug('parse_reference("%s")', reference)
+    log.debug('parse_reference("{text}")'.format(text=reference))
     match = get_reference_match('full').match(reference)
     if match:
-        log.debug('Matched reference %s' % reference)
+        log.debug('Matched reference {text}'.format(text=reference))
         book = match.group('book')
         if not book_ref_id:
-            book_ref_id = bible.get_book_ref_id_by_localised_name(book, language_selection)
+            book_ref_ids = bible.get_book_ref_id_by_localised_name(book, language_selection)
         elif not bible.get_book_by_book_ref_id(book_ref_id):
-            return False
+            return []
+        else:
+            book_ref_ids = [book_ref_id]
         # We have not found the book so do not continue
-        if not book_ref_id:
-            return False
+        if not book_ref_ids:
+            return []
         ranges = match.group('ranges')
         range_list = get_reference_match('range_separator').split(ranges)
         ref_list = []
@@ -362,7 +363,7 @@ def parse_reference(reference, bible, language_selection, book_ref_id=False):
                 from_chapter = from_verse
                 from_verse = None
             if to_chapter:
-                if to_chapter < from_chapter:
+                if from_chapter and to_chapter < from_chapter:
                     continue
                 else:
                     chapter = to_chapter
@@ -373,26 +374,27 @@ def parse_reference(reference, bible, language_selection, book_ref_id=False):
                     to_chapter = to_verse
                     to_verse = None
             # Append references to the list
-            if has_range:
-                if not from_verse:
-                    from_verse = 1
-                if not to_verse:
-                    to_verse = -1
-                if to_chapter > from_chapter:
-                    ref_list.append((book_ref_id, from_chapter, from_verse, -1))
-                    for i in range(from_chapter + 1, to_chapter):
-                        ref_list.append((book_ref_id, i, 1, -1))
-                    ref_list.append((book_ref_id, to_chapter, 1, to_verse))
-                elif to_verse >= from_verse or to_verse == -1:
-                    ref_list.append((book_ref_id, from_chapter, from_verse, to_verse))
-            elif from_verse:
-                ref_list.append((book_ref_id, from_chapter, from_verse, from_verse))
-            else:
-                ref_list.append((book_ref_id, from_chapter, 1, -1))
+            for book_ref_id in book_ref_ids:
+                if has_range:
+                    if not from_verse:
+                        from_verse = 1
+                    if not to_verse:
+                        to_verse = -1
+                    if to_chapter and to_chapter > from_chapter:
+                        ref_list.append((book_ref_id, from_chapter, from_verse, -1))
+                        for i in range(from_chapter + 1, to_chapter):
+                            ref_list.append((book_ref_id, i, 1, -1))
+                        ref_list.append((book_ref_id, to_chapter, 1, to_verse))
+                    elif to_verse >= from_verse or to_verse == -1:
+                        ref_list.append((book_ref_id, from_chapter, from_verse, to_verse))
+                elif from_verse:
+                    ref_list.append((book_ref_id, from_chapter, from_verse, from_verse))
+                else:
+                    ref_list.append((book_ref_id, from_chapter, 1, -1))
         return ref_list
     else:
-        log.debug('Invalid reference: %s' % reference)
-        return None
+        log.debug('Invalid reference: {text}'.format(text=reference))
+        return []
 
 
 class SearchResults(object):
@@ -416,9 +418,3 @@ class SearchResults(object):
         Returns whether or not the verse list contains verses.
         """
         return len(self.verse_list) > 0
-
-
-from .versereferencelist import VerseReferenceList
-from .manager import BibleManager
-from .biblestab import BiblesTab
-from .mediaitem import BibleMediaItem

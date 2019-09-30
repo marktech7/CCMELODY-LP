@@ -1,44 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
-from openlp.core.common import translate
-from openlp.core.lib import build_icon
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button, create_button_box
+from openlp.core.ui.icons import UiIcons
 
 
 class Ui_AlertDialog(object):
     """
     Alert UI Class
     """
-    def setupUi(self, alert_dialog):
+    def setup_ui(self, alert_dialog):
         """
         Setup the Alert UI dialog
 
@@ -46,37 +39,37 @@ class Ui_AlertDialog(object):
         """
         alert_dialog.setObjectName('alert_dialog')
         alert_dialog.resize(400, 300)
-        alert_dialog.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
-        self.alert_dialog_layout = QtGui.QGridLayout(alert_dialog)
+        alert_dialog.setWindowIcon(UiIcons().main_icon)
+        self.alert_dialog_layout = QtWidgets.QGridLayout(alert_dialog)
         self.alert_dialog_layout.setObjectName('alert_dialog_layout')
-        self.alert_text_layout = QtGui.QFormLayout()
+        self.alert_text_layout = QtWidgets.QFormLayout()
         self.alert_text_layout.setObjectName('alert_text_layout')
-        self.alert_entry_label = QtGui.QLabel(alert_dialog)
+        self.alert_entry_label = QtWidgets.QLabel(alert_dialog)
         self.alert_entry_label.setObjectName('alert_entry_label')
-        self.alert_text_edit = QtGui.QLineEdit(alert_dialog)
+        self.alert_text_edit = QtWidgets.QLineEdit(alert_dialog)
         self.alert_text_edit.setObjectName('alert_text_edit')
         self.alert_entry_label.setBuddy(self.alert_text_edit)
         self.alert_text_layout.addRow(self.alert_entry_label, self.alert_text_edit)
-        self.alert_parameter = QtGui.QLabel(alert_dialog)
+        self.alert_parameter = QtWidgets.QLabel(alert_dialog)
         self.alert_parameter.setObjectName('alert_parameter')
-        self.parameter_edit = QtGui.QLineEdit(alert_dialog)
+        self.parameter_edit = QtWidgets.QLineEdit(alert_dialog)
         self.parameter_edit.setObjectName('parameter_edit')
         self.alert_parameter.setBuddy(self.parameter_edit)
         self.alert_text_layout.addRow(self.alert_parameter, self.parameter_edit)
         self.alert_dialog_layout.addLayout(self.alert_text_layout, 0, 0, 1, 2)
-        self.alert_list_widget = QtGui.QListWidget(alert_dialog)
+        self.alert_list_widget = QtWidgets.QListWidget(alert_dialog)
         self.alert_list_widget.setAlternatingRowColors(True)
         self.alert_list_widget.setObjectName('alert_list_widget')
         self.alert_dialog_layout.addWidget(self.alert_list_widget, 1, 0)
-        self.manage_button_layout = QtGui.QVBoxLayout()
+        self.manage_button_layout = QtWidgets.QVBoxLayout()
         self.manage_button_layout.setObjectName('manage_button_layout')
-        self.new_button = QtGui.QPushButton(alert_dialog)
-        self.new_button.setIcon(build_icon(':/general/general_new.png'))
+        self.new_button = QtWidgets.QPushButton(alert_dialog)
+        self.new_button.setIcon(UiIcons().new)
         self.new_button.setObjectName('new_button')
         self.manage_button_layout.addWidget(self.new_button)
-        self.save_button = QtGui.QPushButton(alert_dialog)
+        self.save_button = QtWidgets.QPushButton(alert_dialog)
         self.save_button.setEnabled(False)
-        self.save_button.setIcon(build_icon(':/general/general_save.png'))
+        self.save_button.setIcon(UiIcons().save)
         self.save_button.setObjectName('save_button')
         self.manage_button_layout.addWidget(self.save_button)
         self.delete_button = create_button(alert_dialog, 'delete_button', role='delete', enabled=False,
@@ -84,16 +77,15 @@ class Ui_AlertDialog(object):
         self.manage_button_layout.addWidget(self.delete_button)
         self.manage_button_layout.addStretch()
         self.alert_dialog_layout.addLayout(self.manage_button_layout, 1, 1)
-        display_icon = build_icon(':/general/general_live.png')
-        self.display_button = create_button(alert_dialog, 'display_button', icon=display_icon, enabled=False)
-        self.display_close_button = create_button(alert_dialog, 'display_close_button', icon=display_icon,
+        self.display_button = create_button(alert_dialog, 'display_button', icon=UiIcons().live, enabled=False)
+        self.display_close_button = create_button(alert_dialog, 'display_close_button', icon=UiIcons().live,
                                                   enabled=False)
         self.button_box = create_button_box(alert_dialog, 'button_box', ['close'],
                                             [self.display_button, self.display_close_button])
         self.alert_dialog_layout.addWidget(self.button_box, 2, 0, 1, 2)
-        self.retranslateUi(alert_dialog)
+        self.retranslate_ui(alert_dialog)
 
-    def retranslateUi(self, alert_dialog):
+    def retranslate_ui(self, alert_dialog):
         """
         Retranslate the UI strings
 

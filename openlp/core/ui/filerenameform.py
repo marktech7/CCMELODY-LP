@@ -1,43 +1,36 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The file rename dialog.
 """
+from PyQt5 import QtCore, QtWidgets
 
-from PyQt4 import QtGui
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.registry import Registry
+from openlp.core.ui.filerenamedialog import Ui_FileRenameDialog
 
-from .filerenamedialog import Ui_FileRenameDialog
 
-from openlp.core.common import Registry, RegistryProperties, translate
-
-
-class FileRenameForm(QtGui.QDialog, Ui_FileRenameDialog, RegistryProperties):
+class FileRenameForm(QtWidgets.QDialog, Ui_FileRenameDialog, RegistryProperties):
     """
     The file rename dialog
     """
@@ -45,10 +38,17 @@ class FileRenameForm(QtGui.QDialog, Ui_FileRenameDialog, RegistryProperties):
         """
         Constructor
         """
-        super(FileRenameForm, self).__init__(Registry().get('main_window'))
-        self.setupUi(self)
+        super(FileRenameForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
+                                             QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self._setup()
 
-    def exec_(self, copy=False):
+    def _setup(self):
+        """
+        Set up the class. This method is mocked out by the tests.
+        """
+        self.setup_ui(self)
+
+    def exec(self, copy=False):
         """
         Run the Dialog with correct heading.
         """
@@ -57,4 +57,4 @@ class FileRenameForm(QtGui.QDialog, Ui_FileRenameDialog, RegistryProperties):
         else:
             self.setWindowTitle(translate('OpenLP.FileRenameForm', 'File Rename'))
         self.file_name_edit.setFocus()
-        return QtGui.QDialog.exec_(self)
+        return QtWidgets.QDialog.exec(self)

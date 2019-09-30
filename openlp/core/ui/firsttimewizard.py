@@ -1,39 +1,36 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The UI widgets for the first time wizard.
 """
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import translate, is_macosx, clean_button_text
-from openlp.core.lib import build_icon
+from openlp.core.common import clean_button_text, is_macosx
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import add_welcome_page
+from openlp.core.ui.icons import UiIcons
+
+from openlp.core.display.screens import ScreenList
+from openlp.core.widgets.widgets import ScreenSelectionWidget
 
 
 class FirstTimePage(object):
@@ -42,12 +39,47 @@ class FirstTimePage(object):
     """
     Welcome = 0
     Plugins = 1
-    NoInternet = 2
-    Songs = 3
-    Bibles = 4
-    Themes = 5
-    Defaults = 6
-    Progress = 7
+    ScreenConfig = 2
+    SampleOption = 3
+    Download = 4
+    NoInternet = 5
+    Songs = 6
+    Bibles = 7
+    Themes = 8
+    Progress = 9
+
+
+class ThemeListWidget(QtWidgets.QListWidget):
+    """
+    Subclass a QListWidget so we can make it look better when it resizes.
+    """
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setIconSize(QtCore.QSize(133, 100))
+        self.setMovement(QtWidgets.QListView.Static)
+        self.setFlow(QtWidgets.QListView.LeftToRight)
+        self.setProperty("isWrapping", True)
+        self.setResizeMode(QtWidgets.QListView.Adjust)
+        self.setViewMode(QtWidgets.QListView.IconMode)
+        self.setUniformItemSizes(True)
+
+    def resizeEvent(self, event):
+        """
+        Resize the grid so the list looks better when its resized/
+
+        :param QtGui.QResizeEvent event: Not used
+        :return: None
+        """
+        nominal_width = 141  # Icon width of 133 + 4 each side
+        max_items_per_row = self.viewport().width() // nominal_width or 1  # or 1 to avoid divide by 0 errors
+        col_size = (self.viewport().width() - 1) // max_items_per_row
+        self.setGridSize(QtCore.QSize(col_size, 140))
 
 
 class UiFirstTimeWizard(object):
@@ -61,201 +93,235 @@ class UiFirstTimeWizard(object):
         :param first_time_wizard: The wizard form
         """
         first_time_wizard.setObjectName('first_time_wizard')
-        first_time_wizard.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
+        first_time_wizard.setWindowIcon(UiIcons().main_icon)
         first_time_wizard.resize(550, 386)
         first_time_wizard.setModal(True)
-        first_time_wizard.setOptions(QtGui.QWizard.IndependentPages | QtGui.QWizard.NoBackButtonOnStartPage |
-                                     QtGui.QWizard.NoBackButtonOnLastPage | QtGui.QWizard.HaveCustomButton1)
-        if is_macosx():
-            first_time_wizard.setPixmap(QtGui.QWizard.BackgroundPixmap,
+        first_time_wizard.setOptions(QtWidgets.QWizard.IndependentPages | QtWidgets.QWizard.NoBackButtonOnStartPage |
+                                     QtWidgets.QWizard.NoBackButtonOnLastPage | QtWidgets.QWizard.HaveCustomButton1)
+        if is_macosx():                                                                             # pragma: nocover
+            first_time_wizard.setPixmap(QtWidgets.QWizard.BackgroundPixmap,
                                         QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
             first_time_wizard.resize(634, 386)
         else:
-            first_time_wizard.setWizardStyle(QtGui.QWizard.ModernStyle)
-        self.finish_button = self.button(QtGui.QWizard.FinishButton)
-        self.no_internet_finish_button = self.button(QtGui.QWizard.CustomButton1)
-        self.cancel_button = self.button(QtGui.QWizard.CancelButton)
-        self.next_button = self.button(QtGui.QWizard.NextButton)
-        self.back_button = self.button(QtGui.QWizard.BackButton)
+            first_time_wizard.setWizardStyle(QtWidgets.QWizard.ModernStyle)
         add_welcome_page(first_time_wizard, ':/wizards/wizard_firsttime.bmp')
-        # The plugins page
-        self.plugin_page = QtGui.QWizardPage()
-        self.plugin_page.setObjectName('plugin_page')
-        self.plugin_layout = QtGui.QVBoxLayout(self.plugin_page)
-        self.plugin_layout.setContentsMargins(40, 15, 40, 0)
-        self.plugin_layout.setObjectName('plugin_layout')
-        self.songs_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.songs_check_box.setChecked(True)
-        self.songs_check_box.setObjectName('songs_check_box')
-        self.plugin_layout.addWidget(self.songs_check_box)
-        self.custom_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.custom_check_box.setChecked(True)
-        self.custom_check_box.setObjectName('custom_check_box')
-        self.plugin_layout.addWidget(self.custom_check_box)
-        self.bible_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.bible_check_box.setChecked(True)
-        self.bible_check_box.setObjectName('bible_check_box')
-        self.plugin_layout.addWidget(self.bible_check_box)
-        self.image_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.image_check_box.setChecked(True)
-        self.image_check_box.setObjectName('image_check_box')
-        self.plugin_layout.addWidget(self.image_check_box)
-        self.presentation_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.presentation_check_box.setChecked(True)
-        self.presentation_check_box.setObjectName('presentation_check_box')
-        self.plugin_layout.addWidget(self.presentation_check_box)
-        self.media_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.media_check_box.setChecked(True)
-        self.media_check_box.setObjectName('media_check_box')
-        self.plugin_layout.addWidget(self.media_check_box)
-        self.remote_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.remote_check_box.setObjectName('remote_check_box')
-        self.plugin_layout.addWidget(self.remote_check_box)
-        self.song_usage_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.song_usage_check_box.setChecked(True)
-        self.song_usage_check_box.setObjectName('song_usage_check_box')
-        self.plugin_layout.addWidget(self.song_usage_check_box)
-        self.alert_check_box = QtGui.QCheckBox(self.plugin_page)
-        self.alert_check_box.setChecked(True)
-        self.alert_check_box.setObjectName('alert_check_box')
-        self.plugin_layout.addWidget(self.alert_check_box)
-        first_time_wizard.setPage(FirstTimePage.Plugins, self.plugin_page)
+        # The screen config page
+        self.screen_page = QtWidgets.QWizardPage()
+        self.screen_page.setObjectName('defaults_page')
+        self.screen_page_layout = QtWidgets.QFormLayout(self.screen_page)
+        self.screen_selection_widget = ScreenSelectionWidget(self, ScreenList())
+        self.screen_selection_widget.use_simple_view()
+        self.screen_selection_widget.load()
+        self.screen_page_layout.addRow(self.screen_selection_widget)
+        first_time_wizard.setPage(FirstTimePage.ScreenConfig, self.screen_page)
+        # Download Samples page
+        self.resource_page = QtWidgets.QWizardPage()
+        self.resource_page.setObjectName('resource_page')
+        self.resource_page.setFinalPage(True)
+        self.resource_layout = QtWidgets.QVBoxLayout(self.resource_page)
+        self.resource_layout.setContentsMargins(50, 20, 50, 20)
+        self.resource_layout.setObjectName('resource_layout')
+        self.resource_label = QtWidgets.QLabel(self.resource_page)
+        self.resource_label.setObjectName('resource_label')
+        self.resource_label.setWordWrap(True)
+        self.resource_layout.addWidget(self.resource_label)
+        first_time_wizard.setPage(FirstTimePage.SampleOption, self.resource_page)
+        # The download page
+        self.download_page = QtWidgets.QWizardPage()
+        self.download_page.setObjectName('download_page')
+        self.download_layout = QtWidgets.QVBoxLayout(self.download_page)
+        self.download_layout.setContentsMargins(48, 48, 48, 48)
+        self.download_layout.setObjectName('download_layout')
+        self.download_label = QtWidgets.QLabel(self.download_page)
+        self.download_label.setObjectName('download_label')
+        self.download_layout.addWidget(self.download_label)
+        first_time_wizard.setPage(FirstTimePage.Download, self.download_page)
         # The "you don't have an internet connection" page.
-        self.no_internet_page = QtGui.QWizardPage()
+        self.no_internet_page = QtWidgets.QWizardPage()
         self.no_internet_page.setObjectName('no_internet_page')
-        self.no_internet_layout = QtGui.QVBoxLayout(self.no_internet_page)
+        self.no_internet_page.setFinalPage(True)
+        self.no_internet_layout = QtWidgets.QVBoxLayout(self.no_internet_page)
         self.no_internet_layout.setContentsMargins(50, 30, 50, 40)
         self.no_internet_layout.setObjectName('no_internet_layout')
-        self.no_internet_label = QtGui.QLabel(self.no_internet_page)
+        self.no_internet_label = QtWidgets.QLabel(self.no_internet_page)
         self.no_internet_label.setWordWrap(True)
         self.no_internet_label.setObjectName('no_internet_label')
         self.no_internet_layout.addWidget(self.no_internet_label)
         first_time_wizard.setPage(FirstTimePage.NoInternet, self.no_internet_page)
+        # The plugins page
+        self.plugin_page = QtWidgets.QWizardPage()
+        self.plugin_page.setObjectName('plugin_page')
+        self.plugin_layout = QtWidgets.QVBoxLayout(self.plugin_page)
+        self.plugin_layout.setContentsMargins(40, 15, 40, 0)
+        self.plugin_layout.setObjectName('plugin_layout')
+        self.songs_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.songs_check_box.setChecked(True)
+        self.songs_check_box.setObjectName('songs_check_box')
+        self.plugin_layout.addWidget(self.songs_check_box)
+        self.custom_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.custom_check_box.setChecked(True)
+        self.custom_check_box.setObjectName('custom_check_box')
+        self.plugin_layout.addWidget(self.custom_check_box)
+        self.bible_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.bible_check_box.setChecked(True)
+        self.bible_check_box.setObjectName('bible_check_box')
+        self.plugin_layout.addWidget(self.bible_check_box)
+        self.image_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.image_check_box.setChecked(True)
+        self.image_check_box.setObjectName('image_check_box')
+        self.plugin_layout.addWidget(self.image_check_box)
+        self.presentation_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.presentation_check_box.setChecked(True)
+        self.presentation_check_box.setObjectName('presentation_check_box')
+        self.plugin_layout.addWidget(self.presentation_check_box)
+        self.media_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.media_check_box.setChecked(True)
+        self.media_check_box.setObjectName('media_check_box')
+        self.plugin_layout.addWidget(self.media_check_box)
+        self.song_usage_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.song_usage_check_box.setChecked(True)
+        self.song_usage_check_box.setObjectName('song_usage_check_box')
+        self.plugin_layout.addWidget(self.song_usage_check_box)
+        self.alert_check_box = QtWidgets.QCheckBox(self.plugin_page)
+        self.alert_check_box.setChecked(True)
+        self.alert_check_box.setObjectName('alert_check_box')
+        self.plugin_layout.addWidget(self.alert_check_box)
+        first_time_wizard.setPage(FirstTimePage.Plugins, self.plugin_page)
         # The song samples page
-        self.songs_page = QtGui.QWizardPage()
+        self.songs_page = QtWidgets.QWizardPage()
         self.songs_page.setObjectName('songs_page')
-        self.songs_layout = QtGui.QVBoxLayout(self.songs_page)
+        self.songs_layout = QtWidgets.QVBoxLayout(self.songs_page)
         self.songs_layout.setContentsMargins(50, 20, 50, 20)
         self.songs_layout.setObjectName('songs_layout')
-        self.songs_list_widget = QtGui.QListWidget(self.songs_page)
+        self.songs_list_widget = QtWidgets.QListWidget(self.songs_page)
         self.songs_list_widget.setAlternatingRowColors(True)
         self.songs_list_widget.setObjectName('songs_list_widget')
         self.songs_layout.addWidget(self.songs_list_widget)
         first_time_wizard.setPage(FirstTimePage.Songs, self.songs_page)
         # The Bible samples page
-        self.bibles_page = QtGui.QWizardPage()
+        self.bibles_page = QtWidgets.QWizardPage()
         self.bibles_page.setObjectName('bibles_page')
-        self.bibles_layout = QtGui.QVBoxLayout(self.bibles_page)
+        self.bibles_layout = QtWidgets.QVBoxLayout(self.bibles_page)
         self.bibles_layout.setContentsMargins(50, 20, 50, 20)
         self.bibles_layout.setObjectName('bibles_layout')
-        self.bibles_tree_widget = QtGui.QTreeWidget(self.bibles_page)
+        self.bibles_tree_widget = QtWidgets.QTreeWidget(self.bibles_page)
         self.bibles_tree_widget.setAlternatingRowColors(True)
         self.bibles_tree_widget.header().setVisible(False)
         self.bibles_tree_widget.setObjectName('bibles_tree_widget')
         self.bibles_layout.addWidget(self.bibles_tree_widget)
         first_time_wizard.setPage(FirstTimePage.Bibles, self.bibles_page)
         # The theme samples page
-        self.themes_page = QtGui.QWizardPage()
+        self.themes_page = QtWidgets.QWizardPage()
         self.themes_page.setObjectName('themes_page')
-        self.themes_layout = QtGui.QVBoxLayout(self.themes_page)
-        self.themes_layout.setContentsMargins(20, 50, 20, 60)
+        self.themes_layout = QtWidgets.QVBoxLayout(self.themes_page)
         self.themes_layout.setObjectName('themes_layout')
-        self.themes_list_widget = QtGui.QListWidget(self.themes_page)
-        self.themes_list_widget.setViewMode(QtGui.QListView.IconMode)
-        self.themes_list_widget.setMovement(QtGui.QListView.Static)
-        self.themes_list_widget.setFlow(QtGui.QListView.LeftToRight)
-        self.themes_list_widget.setSpacing(4)
-        self.themes_list_widget.setUniformItemSizes(True)
-        self.themes_list_widget.setIconSize(QtCore.QSize(133, 100))
-        self.themes_list_widget.setWrapping(False)
-        self.themes_list_widget.setObjectName('themes_list_widget')
+        self.themes_list_widget = ThemeListWidget(self.themes_page)
         self.themes_layout.addWidget(self.themes_list_widget)
-        first_time_wizard.setPage(FirstTimePage.Themes, self.themes_page)
-        # the default settings page
-        self.defaults_page = QtGui.QWizardPage()
-        self.defaults_page.setObjectName('defaults_page')
-        self.defaults_layout = QtGui.QFormLayout(self.defaults_page)
-        self.defaults_layout.setContentsMargins(50, 20, 50, 20)
-        self.defaults_layout.setObjectName('defaults_layout')
-        self.display_label = QtGui.QLabel(self.defaults_page)
-        self.display_label.setObjectName('display_label')
-        self.display_combo_box = QtGui.QComboBox(self.defaults_page)
-        self.display_combo_box.setEditable(False)
-        self.display_combo_box.setInsertPolicy(QtGui.QComboBox.NoInsert)
-        self.display_combo_box.setObjectName('display_combo_box')
-        self.defaults_layout.addRow(self.display_label, self.display_combo_box)
-        self.theme_label = QtGui.QLabel(self.defaults_page)
-        self.theme_label.setObjectName('theme_label')
-        self.theme_combo_box = QtGui.QComboBox(self.defaults_page)
+        self.theme_options_layout = QtWidgets.QHBoxLayout()
+        self.default_theme_layout = QtWidgets.QHBoxLayout()
+        self.theme_label = QtWidgets.QLabel(self.themes_page)
+        self.default_theme_layout.addWidget(self.theme_label)
+        self.theme_combo_box = QtWidgets.QComboBox(self.themes_page)
         self.theme_combo_box.setEditable(False)
-        self.theme_combo_box.setInsertPolicy(QtGui.QComboBox.NoInsert)
-        self.theme_combo_box.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToContents)
-        self.theme_combo_box.setObjectName('theme_combo_box')
-        self.defaults_layout.addRow(self.theme_label, self.theme_combo_box)
-        first_time_wizard.setPage(FirstTimePage.Defaults, self.defaults_page)
+        self.default_theme_layout.addWidget(self.theme_combo_box, stretch=1)
+        self.theme_options_layout.addLayout(self.default_theme_layout, stretch=1)
+        self.select_buttons_layout = QtWidgets.QHBoxLayout()
+        self.themes_select_all_button = QtWidgets.QToolButton(self.themes_page)
+        self.themes_select_all_button.setIcon(UiIcons().select_all)
+        self.select_buttons_layout.addWidget(self.themes_select_all_button, stretch=1, alignment=QtCore.Qt.AlignRight)
+        self.themes_deselect_all_button = QtWidgets.QToolButton(self.themes_page)
+        self.themes_deselect_all_button.setIcon(UiIcons().select_none)
+        self.select_buttons_layout.addWidget(self.themes_deselect_all_button)
+        self.theme_options_layout.addLayout(self.select_buttons_layout, stretch=1)
+        self.themes_layout.addLayout(self.theme_options_layout)
+        first_time_wizard.setPage(FirstTimePage.Themes, self.themes_page)
         # Progress page
-        self.progress_page = QtGui.QWizardPage()
+        self.progress_page = QtWidgets.QWizardPage()
         self.progress_page.setObjectName('progress_page')
-        self.progress_layout = QtGui.QVBoxLayout(self.progress_page)
-        self.progress_layout.setMargin(48)
+        self.progress_layout = QtWidgets.QVBoxLayout(self.progress_page)
+        self.progress_layout.setContentsMargins(48, 48, 48, 48)
         self.progress_layout.setObjectName('progress_layout')
-        self.progress_label = QtGui.QLabel(self.progress_page)
+        self.progress_label = QtWidgets.QLabel(self.progress_page)
         self.progress_label.setObjectName('progress_label')
         self.progress_layout.addWidget(self.progress_label)
-        self.progress_bar = QtGui.QProgressBar(self.progress_page)
+        self.progress_bar = QtWidgets.QProgressBar(self.progress_page)
         self.progress_bar.setObjectName('progress_bar')
         self.progress_layout.addWidget(self.progress_bar)
         first_time_wizard.setPage(FirstTimePage.Progress, self.progress_page)
-        self.retranslate_ui(first_time_wizard)
+        self.retranslate_ui()
 
-    def retranslate_ui(self, first_time_wizard):
+    def retranslate_ui(self):
         """
         Translate the UI on the fly
 
         :param first_time_wizard: The wizard form
         """
-        first_time_wizard.setWindowTitle(translate('OpenLP.FirstTimeWizard', 'First Time Wizard'))
-        first_time_wizard.title_label.setText('<span style="font-size:14pt; font-weight:600;">%s</span>' %
-                                              translate('OpenLP.FirstTimeWizard', 'Welcome to the First Time Wizard'))
-        first_time_wizard.information_label.setText(
+        self.finish_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.FinishButton))
+        back_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.BackButton))
+        next_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.NextButton))
+
+        self.setWindowTitle(translate('OpenLP.FirstTimeWizard', 'First Time Wizard'))
+        text = translate('OpenLP.FirstTimeWizard', 'Welcome to the First Time Wizard')
+        self.title_label.setText('<span style="font-size:14pt; font-weight:600;">{text}</span>'.format(text=text))
+        self.information_label.setText(
             translate('OpenLP.FirstTimeWizard', 'This wizard will help you to configure OpenLP for initial use. '
-                                                'Click the %s button below to start.') %
-            clean_button_text(first_time_wizard.buttonText(QtGui.QWizard.NextButton)))
-        self.plugin_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Activate required Plugins'))
-        self.plugin_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Select the Plugins you wish to use. '))
+                                                'Click the \'{next_button}\' button below to start.'
+                      ).format(next_button=next_button_text))
+        self.setButtonText(
+            QtWidgets.QWizard.CustomButton1, translate('OpenLP.FirstTimeWizard', 'Internet Settings'))
+        self.download_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Downloading Resource Index'))
+        self.download_page.setSubTitle(translate('OpenLP.FirstTimeWizard',
+                                                 'Please wait while the resource index is downloaded.'))
+        self.download_label.setText(translate('OpenLP.FirstTimeWizard',
+                                              'Please wait while OpenLP downloads the resource index file...'))
+        self.plugin_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Select parts of the program you wish to use'))
+        self.plugin_page.setSubTitle(translate('OpenLP.FirstTimeWizard',
+                                               'You can also change these settings after the Wizard.'))
+        self.screen_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Displays'))
+        self.screen_page.setSubTitle(translate('OpenLP.FirstTimeWizard',
+                                               'Choose the main display screen for OpenLP.'))
         self.songs_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Songs'))
-        self.custom_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Custom Slides'))
-        self.bible_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Bible'))
-        self.image_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Images'))
-        self.presentation_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Presentations'))
-        self.media_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Media (Audio and Video)'))
-        self.remote_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Allow remote access'))
-        self.song_usage_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Monitor Song Usage'))
-        self.alert_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Allow Alerts'))
+        self.custom_check_box.setText(
+            translate('OpenLP.FirstTimeWizard',
+                      'Custom Slides – Easier to manage than songs and they have their own list of slides'))
+        self.bible_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Bibles – Import and show Bibles'))
+        self.image_check_box.setText(translate('OpenLP.FirstTimeWizard',
+                                               'Images – Show images or replace background with them'))
+        self.presentation_check_box.setText(translate('OpenLP.FirstTimeWizard',
+                                                      'Presentations – Show .ppt, .odp and .pdf files'))
+        self.media_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Media – Playback of Audio and Video files'))
+        self.song_usage_check_box.setText(translate('OpenLP.FirstTimeWizard', 'Song Usage Monitor'))
+        self.alert_check_box.setText(translate('OpenLP.FirstTimeWizard',
+                                               'Alerts – Display informative messages while showing other slides'))
+        self.resource_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Resource Data'))
+        self.resource_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Can OpenLP download some resource data?'))
+        self.resource_label.setText(
+            translate('OpenLP.FirstTimeWizard',
+                      'OpenLP has collected some resources that we have permission to distribute.\n\n'
+                      'If you would like to download some of these resources click the \'{next_button}\' button, '
+                      'otherwise click the \'{finish_button}\' button.'
+                      ).format(next_button=next_button_text, finish_button=self.finish_button_text))
         self.no_internet_page.setTitle(translate('OpenLP.FirstTimeWizard', 'No Internet Connection'))
-        self.no_internet_page.setSubTitle(
-            translate('OpenLP.FirstTimeWizard', 'Unable to detect an Internet connection.'))
-        self.no_internet_text = translate('OpenLP.FirstTimeWizard',
-                                          'No Internet connection was found. The First Time Wizard needs an Internet '
-                                          'connection in order to be able to download sample songs, Bibles and themes.'
-                                          '  Click the Finish button now to start OpenLP with initial settings and '
-                                          'no sample data.\n\nTo re-run the First Time Wizard and import this sample '
-                                          'data at a later time, check your Internet connection and re-run this '
-                                          'wizard by selecting "Tools/Re-run First Time Wizard" from OpenLP.')
-        self.cancel_wizard_text = translate('OpenLP.FirstTimeWizard',
-                                            '\n\nTo cancel the First Time Wizard completely (and not start OpenLP), '
-                                            'click the %s button now.') % \
-            clean_button_text(first_time_wizard.buttonText(QtGui.QWizard.CancelButton))
+        self.no_internet_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Cannot connect to the internet.'))
+        self.no_internet_label.setText(
+            translate('OpenLP.FirstTimeWizard',
+                      'OpenLP could not connect to the internet to get information about the sample data available.\n\n'
+                      'Please check your internet connection. If your church uses a proxy server click the '
+                      '\'Internet Settings\' button below and enter the server details there.\n\nClick the '
+                      '\'{back_button}\' button to try again.\n\nIf you click the \'{finish_button}\' '
+                      'button you can download the data at a later time by selecting \'Re-run First Time Wizard\' '
+                      'from the \'Tools\' menu in OpenLP.'
+                      ).format(back_button=back_button_text, finish_button=self.finish_button_text))
         self.songs_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Sample Songs'))
         self.songs_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Select and download public domain songs.'))
         self.bibles_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Sample Bibles'))
         self.bibles_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Select and download free Bibles.'))
+        # Themes Page
         self.themes_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Sample Themes'))
         self.themes_page.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Select and download sample themes.'))
-        self.defaults_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Default Settings'))
-        self.defaults_page.setSubTitle(translate('OpenLP.FirstTimeWizard',
-                                                 'Set up default settings to be used by OpenLP.'))
-        self.display_label.setText(translate('OpenLP.FirstTimeWizard', 'Default output display:'))
-        self.theme_label.setText(translate('OpenLP.FirstTimeWizard', 'Select default theme:'))
-        self.progress_label.setText(translate('OpenLP.FirstTimeWizard', 'Starting configuration process...'))
-        first_time_wizard.setButtonText(QtGui.QWizard.CustomButton1, translate('OpenLP.FirstTimeWizard', 'Finish'))
+        self.theme_label.setText(translate('OpenLP.FirstTimeWizard', 'Default theme:'))
+        self.themes_select_all_button.setToolTip(translate('OpenLP.FirstTimeWizard', 'Select all'))
+        self.themes_deselect_all_button.setToolTip(translate('OpenLP.FirstTimeWizard', 'Deselect all'))
+        self.progress_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Downloading and Configuring'))
+        self.progress_page.setSubTitle(
+            translate('OpenLP.FirstTimeWizard', 'Please wait while resources are downloaded and OpenLP is configured.'))

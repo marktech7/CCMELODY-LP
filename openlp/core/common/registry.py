@@ -1,57 +1,41 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Provide Registry Services
 """
 import logging
-import sys
 
-from openlp.core.common import trace_error_handler
+from openlp.core.common import Singleton, de_hump, trace_error_handler
+
 
 log = logging.getLogger(__name__)
 
 
-class Registry(object):
+class Registry(metaclass=Singleton):
     """
     This is the Component Registry.  It is a singleton object and is used to provide a look up service for common
     objects.
     """
     log.info('Registry loaded')
-    __instance__ = None
-
-    def __new__(cls):
-        """
-        Re-implement the __new__ method to make sure we create a true singleton.
-        """
-        if not cls.__instance__:
-            cls.__instance__ = object.__new__(cls)
-        return cls.__instance__
 
     @classmethod
     def create(cls):
@@ -62,8 +46,7 @@ class Registry(object):
         registry = cls()
         registry.service_list = {}
         registry.functions_list = {}
-        # Allow the tests to remove Registry entries but not the live system
-        registry.running_under_test = 'nose' in sys.argv[0]
+        registry.working_flags = {}
         registry.initialising = True
         return registry
 
@@ -78,8 +61,8 @@ class Registry(object):
         else:
             if not self.initialising:
                 trace_error_handler(log)
-                log.error('Service %s not found in list' % key)
-                raise KeyError('Service %s not found in list' % key)
+                log.error('Service {key} not found in list'.format(key=key))
+                raise KeyError('Service {key} not found in list'.format(key=key))
 
     def register(self, key, reference):
         """
@@ -90,15 +73,14 @@ class Registry(object):
         """
         if key in self.service_list:
             trace_error_handler(log)
-            log.error('Duplicate service exception %s' % key)
-            raise KeyError('Duplicate service exception %s' % key)
+            log.error('Duplicate service exception {key}'.format(key=key))
+            raise KeyError('Duplicate service exception {key}'.format(key=key))
         else:
             self.service_list[key] = reference
 
     def remove(self, key):
         """
-        Removes the registry value from the list based on the key passed in (Only valid and active for testing
-        framework).
+        Removes the registry value from the list based on the key passed in.
 
         :param key: The service to be deleted.
         """
@@ -126,7 +108,7 @@ class Registry(object):
         :param event: The function description..
         :param function: The function to be called when the event happens.
         """
-        if event in self.functions_list:
+        if event in self.functions_list and function in self.functions_list[event]:
             self.functions_list[event].remove(function)
 
     def execute(self, event, *args, **kwargs):
@@ -141,14 +123,83 @@ class Registry(object):
         if event in self.functions_list:
             for function in self.functions_list[event]:
                 try:
+                    log.debug('Running function {} for {}'.format(function, event))
                     result = function(*args, **kwargs)
-                    if result:
+                    if result is not None:
                         results.append(result)
                 except TypeError:
                     # Who has called me can help in debugging
                     trace_error_handler(log)
-                    log.exception('Exception for function %s', function)
+                    log.exception('Exception for function {function}'.format(function=function))
+        else:
+            if log.getEffectiveLevel() == logging.DEBUG:
+                trace_error_handler(log)
+                log.exception('Event {event} called but not registered'.format(event=event))
+        return results
+
+    def get_flag(self, key):
+        """
+        Extracts the working_flag value from the list based on the key passed in
+
+        :param key: The flag to be retrieved.
+        """
+        if key in self.working_flags:
+            return self.working_flags[key]
         else:
             trace_error_handler(log)
-            log.error("Event %s called but not registered" % event)
-        return results
+            log.error('Working Flag {key} not found in list'.format(key=key))
+            raise KeyError('Working Flag {key} not found in list'.format(key=key))
+
+    def set_flag(self, key, reference):
+        """
+        Sets a working_flag based on the key passed in.
+
+        :param key: The working_flag to be created this is usually a major class like "renderer" or "main_window" .
+        :param reference: The data to be saved.
+        """
+        self.working_flags[key] = reference
+
+    def remove_flag(self, key):
+        """
+        Removes the working flags value from the list based on the key passed.
+
+        :param key: The working_flag to be deleted.
+        """
+        if key in self.working_flags:
+            del self.working_flags[key]
+
+
+class RegistryBase(object):
+    """
+    This adds registry components to classes to use at run time.
+    """
+    def __init__(self, *args, **kwargs):
+        """
+        Register the class and bootstrap hooks.
+        """
+        try:
+            super().__init__(*args, **kwargs)
+        except TypeError:
+            super().__init__()
+        Registry().register(de_hump(self.__class__.__name__), self)
+        Registry().register_function('bootstrap_initialise', self.bootstrap_initialise)
+        Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
+        Registry().register_function('bootstrap_completion', self.bootstrap_completion)
+
+    def bootstrap_initialise(self):
+        """
+        Dummy method to be overridden
+        """
+        pass
+
+    def bootstrap_post_set_up(self):
+        """
+        Dummy method to be overridden
+        """
+        pass
+
+    def bootstrap_completion(self):
+        """
+        Dummy method to be overridden
+        """
+        pass

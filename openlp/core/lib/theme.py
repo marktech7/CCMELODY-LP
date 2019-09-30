@@ -1,44 +1,38 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Provide the theme XML and handling functions for OpenLP v2 themes.
 """
-import os
-import re
-import logging
 import json
+import logging
 
-from xml.dom.minidom import Document
 from lxml import etree, objectify
-from openlp.core.common import AppLocation, de_hump
 
-from openlp.core.lib import str_to_bool, ScreenList, get_text_file_string
+from openlp.core.common import de_hump
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
+from openlp.core.display.screens import ScreenList
+from openlp.core.lib import get_text_file_string, str_to_bool
+
 
 log = logging.getLogger(__name__)
 
@@ -51,6 +45,8 @@ class BackgroundType(object):
     Gradient = 1
     Image = 2
     Transparent = 3
+    Video = 4
+    Stream = 5
 
     @staticmethod
     def to_string(background_type):
@@ -65,6 +61,10 @@ class BackgroundType(object):
             return 'image'
         elif background_type == BackgroundType.Transparent:
             return 'transparent'
+        elif background_type == BackgroundType.Video:
+            return 'video'
+        elif background_type == BackgroundType.Stream:
+            return 'stream'
 
     @staticmethod
     def from_string(type_string):
@@ -79,6 +79,10 @@ class BackgroundType(object):
             return BackgroundType.Image
         elif type_string == 'transparent':
             return BackgroundType.Transparent
+        elif type_string == 'video':
+            return BackgroundType.Video
+        elif type_string == 'stream':
+            return BackgroundType.Stream
 
 
 class BackgroundGradientType(object):
@@ -153,7 +157,7 @@ INTEGER_LIST = ['size', 'line_adjustment', 'x', 'height', 'y', 'width', 'shadow_
                 'horizontal_align', 'vertical_align', 'wrap_style']
 
 
-class ThemeXML(object):
+class Theme(object):
     """
     A class to encapsulate the Theme XML.
     """
@@ -162,11 +166,11 @@ class ThemeXML(object):
         Initialise the theme object.
         """
         # basic theme object with defaults
-        json_dir = os.path.join(AppLocation.get_directory(AppLocation.AppDir), 'core', 'lib', 'json')
-        json_file = os.path.join(json_dir, 'theme.json')
-        jsn = get_text_file_string(json_file)
-        jsn = json.loads(jsn)
-        self.expand_json(jsn)
+        json_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'lib' / 'json' / 'theme.json'
+        jsn = get_text_file_string(json_path)
+        self.load_theme(jsn)
+        self.background_filename = None
+        self.version = 2
 
     def expand_json(self, var, prev=None):
         """
@@ -178,8 +182,6 @@ class ThemeXML(object):
         for key, value in var.items():
             if prev:
                 key = prev + "_" + key
-            else:
-                key = key
             if isinstance(value, dict):
                 self.expand_json(value, key)
             else:
@@ -189,209 +191,53 @@ class ThemeXML(object):
         """
         Add the path name to the image name so the background can be rendered.
 
-        :param path: The path name to be added.
+        :param pathlib.Path path: The path name to be added.
+        :rtype: None
         """
-        if self.background_type == 'image':
+        if self.background_type == 'image' or self.background_type == 'video':
             if self.background_filename and path:
                 self.theme_name = self.theme_name.strip()
-                self.background_filename = self.background_filename.strip()
-                self.background_filename = os.path.join(path, self.theme_name, self.background_filename)
-
-    def _new_document(self, name):
-        """
-        Create a new theme XML document.
-        """
-        self.theme_xml = Document()
-        self.theme = self.theme_xml.createElement('theme')
-        self.theme_xml.appendChild(self.theme)
-        self.theme.setAttribute('version', '2.0')
-        self.name = self.theme_xml.createElement('name')
-        text_node = self.theme_xml.createTextNode(name)
-        self.name.appendChild(text_node)
-        self.theme.appendChild(self.name)
-
-    def add_background_transparent(self):
-        """
-        Add a transparent background.
-        """
-        background = self.theme_xml.createElement('background')
-        background.setAttribute('type', 'transparent')
-        self.theme.appendChild(background)
-
-    def add_background_solid(self, bkcolor):
-        """
-        Add a Solid background.
-
-        :param bkcolor: The color of the background.
-        """
-        background = self.theme_xml.createElement('background')
-        background.setAttribute('type', 'solid')
-        self.theme.appendChild(background)
-        self.child_element(background, 'color', str(bkcolor))
-
-    def add_background_gradient(self, startcolor, endcolor, direction):
-        """
-        Add a gradient background.
-
-        :param startcolor: The gradient's starting colour.
-        :param endcolor: The gradient's ending colour.
-        :param direction: The direction of the gradient.
-        """
-        background = self.theme_xml.createElement('background')
-        background.setAttribute('type', 'gradient')
-        self.theme.appendChild(background)
-        # Create startColor element
-        self.child_element(background, 'startColor', str(startcolor))
-        # Create endColor element
-        self.child_element(background, 'endColor', str(endcolor))
-        # Create direction element
-        self.child_element(background, 'direction', str(direction))
-
-    def add_background_image(self, filename, border_color):
-        """
-        Add a image background.
-
-        :param filename: The file name of the image.
-        :param border_color:
-        """
-        background = self.theme_xml.createElement('background')
-        background.setAttribute('type', 'image')
-        self.theme.appendChild(background)
-        # Create Filename element
-        self.child_element(background, 'filename', filename)
-        # Create endColor element
-        self.child_element(background, 'borderColor', str(border_color))
-
-    def add_font(self, name, color, size, override, fonttype='main', bold='False', italics='False',
-                 line_adjustment=0, xpos=0, ypos=0, width=0, height=0, outline='False', outline_color='#ffffff',
-                 outline_pixel=2, shadow='False', shadow_color='#ffffff', shadow_pixel=5):
-        """
-        Add a Font.
-
-        :param name: The name of the font.
-        :param color: The colour of the font.
-        :param size: The size of the font.
-        :param override: Whether or not to override the default positioning of the theme.
-        :param fonttype: The type of font, ``main`` or ``footer``. Defaults to ``main``.
-        :param bold:
-        :param italics: The weight of then font Defaults to 50 Normal
-        :param line_adjustment: Does the font render to italics Defaults to 0 Normal
-        :param xpos: The X position of the text block.
-        :param ypos: The Y position of the text block.
-        :param width: The width of the text block.
-        :param height: The height of the text block.
-        :param outline: Whether or not to show an outline.
-        :param outline_color: The colour of the outline.
-        :param outline_pixel:  How big the Shadow is
-        :param shadow: Whether or not to show a shadow.
-        :param shadow_color: The colour of the shadow.
-        :param shadow_pixel: How big the Shadow is
-        """
-        background = self.theme_xml.createElement('font')
-        background.setAttribute('type', fonttype)
-        self.theme.appendChild(background)
-        # Create Font name element
-        self.child_element(background, 'name', name)
-        # Create Font color element
-        self.child_element(background, 'color', str(color))
-        # Create Proportion name element
-        self.child_element(background, 'size', str(size))
-        # Create weight name element
-        self.child_element(background, 'bold', str(bold))
-        # Create italics name element
-        self.child_element(background, 'italics', str(italics))
-        # Create indentation name element
-        self.child_element(background, 'line_adjustment', str(line_adjustment))
-        # Create Location element
-        element = self.theme_xml.createElement('location')
-        element.setAttribute('override', str(override))
-        element.setAttribute('x', str(xpos))
-        element.setAttribute('y', str(ypos))
-        element.setAttribute('width', str(width))
-        element.setAttribute('height', str(height))
-        background.appendChild(element)
-        # Shadow
-        element = self.theme_xml.createElement('shadow')
-        element.setAttribute('shadowColor', str(shadow_color))
-        element.setAttribute('shadowSize', str(shadow_pixel))
-        value = self.theme_xml.createTextNode(str(shadow))
-        element.appendChild(value)
-        background.appendChild(element)
-        # Outline
-        element = self.theme_xml.createElement('outline')
-        element.setAttribute('outlineColor', str(outline_color))
-        element.setAttribute('outlineSize', str(outline_pixel))
-        value = self.theme_xml.createTextNode(str(outline))
-        element.appendChild(value)
-        background.appendChild(element)
-
-    def add_display(self, horizontal, vertical, transition):
-        """
-        Add a Display options.
-
-        :param horizontal: The horizontal alignment of the text.
-        :param vertical: The vertical alignment of the text.
-        :param transition: Whether the slide transition is active.
-        """
-        background = self.theme_xml.createElement('display')
-        self.theme.appendChild(background)
-        # Horizontal alignment
-        element = self.theme_xml.createElement('horizontalAlign')
-        value = self.theme_xml.createTextNode(str(horizontal))
-        element.appendChild(value)
-        background.appendChild(element)
-        # Vertical alignment
-        element = self.theme_xml.createElement('verticalAlign')
-        value = self.theme_xml.createTextNode(str(vertical))
-        element.appendChild(value)
-        background.appendChild(element)
-        # Slide Transition
-        element = self.theme_xml.createElement('slideTransition')
-        value = self.theme_xml.createTextNode(str(transition))
-        element.appendChild(value)
-        background.appendChild(element)
-
-    def child_element(self, element, tag, value):
-        """
-        Generic child element creator.
-        """
-        child = self.theme_xml.createElement(tag)
-        child.appendChild(self.theme_xml.createTextNode(value))
-        element.appendChild(child)
-        return child
+                self.background_filename = path / self.theme_name / self.background_filename
 
     def set_default_header_footer(self):
         """
         Set the header and footer size into the current primary screen.
         10 px on each side is removed to allow for a border.
         """
-        current_screen = ScreenList().current
+        current_screen_geometry = ScreenList().current.display_geometry
         self.font_main_y = 0
-        self.font_main_width = current_screen['size'].width() - 20
-        self.font_main_height = current_screen['size'].height() * 9 / 10
-        self.font_footer_width = current_screen['size'].width() - 20
-        self.font_footer_y = current_screen['size'].height() * 9 / 10
-        self.font_footer_height = current_screen['size'].height() / 10
+        self.font_main_width = current_screen_geometry.width() - 20
+        self.font_main_height = current_screen_geometry.height() * 9 / 10
+        self.font_footer_width = current_screen_geometry.width() - 20
+        self.font_footer_y = current_screen_geometry.height() * 9 / 10
+        self.font_footer_height = current_screen_geometry.height() / 10
 
-    def dump_xml(self):
+    def load_theme(self, theme, theme_path=None):
         """
-        Dump the XML to file used for debugging
-        """
-        return self.theme_xml.toprettyxml(indent='  ')
+        Convert the JSON file and expand it.
 
-    def extract_xml(self):
+        :param theme: the theme string
+        :param pathlib.Path theme_path: The path to the theme
+        :rtype: None
         """
-        Print out the XML string.
-        """
-        self._build_xml_from_attrs()
-        return self.theme_xml.toxml('utf-8').decode('utf-8')
+        if theme_path:
+            jsn = json.loads(theme, cls=OpenLPJSONDecoder, base_path=theme_path)
+        else:
+            jsn = json.loads(theme, cls=OpenLPJSONDecoder)
+        self.expand_json(jsn)
 
-    def extract_formatted_xml(self):
+    def export_theme(self, theme_path=None, is_js=False):
         """
-        Pull out the XML string formatted for human consumption
+        Loop through the fields and build a dictionary of them
+
+        :param pathlib.Path | None theme_path:
+        :param bool is_js: For internal use, for example with the theme js code.
+        :return str: The json encoded theme object
         """
-        self._build_xml_from_attrs()
-        return self.theme_xml.toprettyxml(indent='    ', newl='\n', encoding='utf-8')
+        theme_data = {}
+        for attr, value in self.__dict__.items():
+            theme_data["{attr}".format(attr=attr)] = value
+        return json.dumps(theme_data, cls=OpenLPJSONEncoder, base_path=theme_path, is_js=is_js)
 
     def parse(self, xml):
         """
@@ -414,7 +260,7 @@ class ThemeXML(object):
         try:
             theme_xml = objectify.fromstring(xml)
         except etree.XMLSyntaxError:
-            log.exception('Invalid xml %s', xml)
+            log.exception('Invalid xml {text}'.format(text=xml))
             return
         xml_iter = theme_xml.getiterator()
         for element in xml_iter:
@@ -448,7 +294,8 @@ class ThemeXML(object):
                 if element.tag == 'name':
                     self._create_attr('theme', element.tag, element.text)
 
-    def _translate_tags(self, master, element, value):
+    @staticmethod
+    def _translate_tags(master, element, value):
         """
         Clean up XML removing and redefining tags
         """
@@ -461,15 +308,16 @@ class ThemeXML(object):
             if element.startswith('shadow') or element.startswith('outline'):
                 master = 'font_main'
         # fix bold font
+        ret_value = None
         if element == 'weight':
             element = 'bold'
             if value == 'Normal':
-                value = False
+                ret_value = False
             else:
-                value = True
+                ret_value = True
         if element == 'proportion':
             element = 'size'
-        return False, master, element, value
+        return False, master, element, ret_value if ret_value is not None else value
 
     def _create_attr(self, master, element, value):
         """
@@ -487,7 +335,7 @@ class ThemeXML(object):
         else:
             # make string value unicode
             if not isinstance(value, str):
-                value = str(str(value), 'utf-8')
+                value = str(value, 'utf-8')
             # None means an empty string so lets have one.
             if value == 'None':
                 value = ''
@@ -500,67 +348,5 @@ class ThemeXML(object):
         theme_strings = []
         for key in dir(self):
             if key[0:1] != '_':
-                theme_strings.append('%30s: %s' % (key, getattr(self, key)))
+                theme_strings.append('{key:>30}: {value}'.format(key=key, value=getattr(self, key)))
         return '\n'.join(theme_strings)
-
-    def _build_xml_from_attrs(self):
-        """
-        Build the XML from the varables in the object
-        """
-        self._new_document(self.theme_name)
-        if self.background_type == BackgroundType.to_string(BackgroundType.Solid):
-            self.add_background_solid(self.background_color)
-        elif self.background_type == BackgroundType.to_string(BackgroundType.Gradient):
-            self.add_background_gradient(
-                self.background_start_color,
-                self.background_end_color,
-                self.background_direction
-            )
-        elif self.background_type == BackgroundType.to_string(BackgroundType.Image):
-            filename = os.path.split(self.background_filename)[1]
-            self.add_background_image(filename, self.background_border_color)
-        elif self.background_type == BackgroundType.to_string(BackgroundType.Transparent):
-            self.add_background_transparent()
-        self.add_font(
-            self.font_main_name,
-            self.font_main_color,
-            self.font_main_size,
-            self.font_main_override, 'main',
-            self.font_main_bold,
-            self.font_main_italics,
-            self.font_main_line_adjustment,
-            self.font_main_x,
-            self.font_main_y,
-            self.font_main_width,
-            self.font_main_height,
-            self.font_main_outline,
-            self.font_main_outline_color,
-            self.font_main_outline_size,
-            self.font_main_shadow,
-            self.font_main_shadow_color,
-            self.font_main_shadow_size
-        )
-        self.add_font(
-            self.font_footer_name,
-            self.font_footer_color,
-            self.font_footer_size,
-            self.font_footer_override, 'footer',
-            self.font_footer_bold,
-            self.font_footer_italics,
-            0,  # line adjustment
-            self.font_footer_x,
-            self.font_footer_y,
-            self.font_footer_width,
-            self.font_footer_height,
-            self.font_footer_outline,
-            self.font_footer_outline_color,
-            self.font_footer_outline_size,
-            self.font_footer_shadow,
-            self.font_footer_shadow_color,
-            self.font_footer_shadow_size
-        )
-        self.add_display(
-            self.display_horizontal_align,
-            self.display_vertical_align,
-            self.display_slide_transition
-        )

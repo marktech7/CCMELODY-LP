@@ -1,41 +1,36 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`worshipcenterpro` module provides the functionality for importing
 a WorshipCenter Pro database into the OpenLP database.
 """
 import logging
+import re
 
 import pyodbc
 
-from openlp.core.common import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+
 
 log = logging.getLogger(__name__)
 
@@ -49,16 +44,18 @@ class WorshipCenterProImport(SongImport):
         """
         Initialise the WorshipCenter Pro importer.
         """
-        SongImport.__init__(self, manager, **kwargs)
+        super(WorshipCenterProImport, self).__init__(manager, **kwargs)
 
     def do_import(self):
         """
         Receive a single file to import.
         """
         try:
-            conn = pyodbc.connect('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=%s' % self.import_source)
+            conn = pyodbc.connect('DRIVER={{Microsoft Access Driver (*.mdb)}};'
+                                  'DBQ={source}'.format(source=self.import_source))
         except (pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError, pyodbc.OperationalError) as e:
-            log.warning('Unable to connect the WorshipCenter Pro database %s. %s', self.import_source, str(e))
+            log.warning('Unable to connect the WorshipCenter Pro '
+                        'database {source}. {error}'.format(source=self.import_source, error=str(e)))
             # Unfortunately no specific exception type
             self.log_error(self.import_source, translate('SongsPlugin.WorshipCenterProImport',
                                                          'Unable to connect the WorshipCenter Pro database.'))
@@ -78,8 +75,41 @@ class WorshipCenterProImport(SongImport):
                 break
             self.set_defaults()
             self.title = songs[song]['TITLE']
+            if 'AUTHOR' in songs[song]:
+                self.parse_author(songs[song]['AUTHOR'])
+            if 'CCLISONGID' in songs[song]:
+                self.ccli_number = songs[song]['CCLISONGID']
+            if 'COMMENTS' in songs[song]:
+                self.add_comment(songs[song]['COMMENTS'])
+            if 'COPY' in songs[song]:
+                self.add_copyright(songs[song]['COPY'])
+            if 'SUBJECT' in songs[song]:
+                self.topics.append(songs[song]['SUBJECT'])
             lyrics = songs[song]['LYRICS'].strip('&crlf;&crlf;')
             for verse in lyrics.split('&crlf;&crlf;'):
                 verse = verse.replace('&crlf;', '\n')
-                self.add_verse(verse)
+                marker_type = 'v'
+                # Find verse markers if any
+                marker_start = verse.find('<')
+                if marker_start > -1:
+                    marker_end = verse.find('>')
+                    marker = verse[marker_start + 1:marker_end]
+                    # Identify the marker type
+                    if 'REFRAIN' in marker or 'CHORUS' in marker:
+                        marker_type = 'c'
+                    elif 'BRIDGE' in marker:
+                        marker_type = 'b'
+                    elif 'PRECHORUS' in marker:
+                        marker_type = 'p'
+                    elif 'END' in marker:
+                        marker_type = 'e'
+                    elif 'INTRO' in marker:
+                        marker_type = 'i'
+                    elif 'TAG' in marker:
+                        marker_type = 'o'
+                    else:
+                        marker_type = 'v'
+                    # Strip tags from text
+                    verse = re.sub('<[^<]+?>', '', verse)
+                self.add_verse(verse.strip(), marker_type)
             self.finish()

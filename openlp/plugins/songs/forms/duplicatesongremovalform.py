@@ -1,47 +1,42 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The duplicate song removal logic for OpenLP.
 """
 
 import logging
 import multiprocessing
-import os
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Registry, RegistryProperties, translate
-from openlp.core.ui.wizard import OpenLPWizard, WizardStrings
-from openlp.plugins.songs.lib import delete_song
-from openlp.plugins.songs.lib.db import Song, MediaFile
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.registry import Registry
+from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
 from openlp.plugins.songs.forms.songreviewwidget import SongReviewWidget
+from openlp.plugins.songs.lib import delete_song
+from openlp.plugins.songs.lib.db import Song
 from openlp.plugins.songs.lib.songcompare import songs_probably_equal
+
 
 log = logging.getLogger(__name__)
 
@@ -89,56 +84,60 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         self.finish_button.clicked.connect(self.on_wizard_exit)
         self.cancel_button.clicked.connect(self.on_wizard_exit)
 
+    def closeEvent(self, event):
+        self.on_wizard_exit()
+
     def add_custom_pages(self):
         """
         Add song wizard specific pages.
         """
         # Add custom pages.
-        self.searching_page = QtGui.QWizardPage()
+        self.searching_page = QtWidgets.QWizardPage()
         self.searching_page.setObjectName('searching_page')
-        self.searching_vertical_layout = QtGui.QVBoxLayout(self.searching_page)
+        self.searching_vertical_layout = QtWidgets.QVBoxLayout(self.searching_page)
         self.searching_vertical_layout.setObjectName('searching_vertical_layout')
-        self.duplicate_search_progress_bar = QtGui.QProgressBar(self.searching_page)
+        self.duplicate_search_progress_bar = QtWidgets.QProgressBar(self.searching_page)
         self.duplicate_search_progress_bar.setObjectName('duplicate_search_progress_bar')
         self.duplicate_search_progress_bar.setFormat(WizardStrings.PercentSymbolFormat)
         self.searching_vertical_layout.addWidget(self.duplicate_search_progress_bar)
-        self.found_duplicates_edit = QtGui.QPlainTextEdit(self.searching_page)
+        self.found_duplicates_edit = QtWidgets.QPlainTextEdit(self.searching_page)
         self.found_duplicates_edit.setUndoRedoEnabled(False)
         self.found_duplicates_edit.setReadOnly(True)
         self.found_duplicates_edit.setObjectName('found_duplicates_edit')
         self.searching_vertical_layout.addWidget(self.found_duplicates_edit)
         self.searching_page_id = self.addPage(self.searching_page)
-        self.review_page = QtGui.QWizardPage()
+        self.review_page = QtWidgets.QWizardPage()
         self.review_page.setObjectName('review_page')
-        self.review_layout = QtGui.QVBoxLayout(self.review_page)
+        self.review_layout = QtWidgets.QVBoxLayout(self.review_page)
         self.review_layout.setObjectName('review_layout')
-        self.review_scroll_area = QtGui.QScrollArea(self.review_page)
+        self.review_scroll_area = QtWidgets.QScrollArea(self.review_page)
         self.review_scroll_area.setObjectName('review_scroll_area')
         self.review_scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.review_scroll_area.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAsNeeded)
         self.review_scroll_area.setWidgetResizable(True)
-        self.review_scroll_area_widget = QtGui.QWidget(self.review_scroll_area)
+        self.review_scroll_area_widget = QtWidgets.QWidget(self.review_scroll_area)
         self.review_scroll_area_widget.setObjectName('review_scroll_area_widget')
-        self.review_scroll_area_layout = QtGui.QHBoxLayout(self.review_scroll_area_widget)
+        self.review_scroll_area_layout = QtWidgets.QHBoxLayout(self.review_scroll_area_widget)
         self.review_scroll_area_layout.setObjectName('review_scroll_area_layout')
-        self.review_scroll_area_layout.setSizeConstraint(QtGui.QLayout.SetMinAndMaxSize)
-        self.review_scroll_area_layout.setMargin(0)
+        self.review_scroll_area_layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.review_scroll_area_layout.setContentsMargins(0, 0, 0, 0)
         self.review_scroll_area_layout.setSpacing(0)
         self.review_scroll_area.setWidget(self.review_scroll_area_widget)
         self.review_layout.addWidget(self.review_scroll_area)
         self.review_page_id = self.addPage(self.review_page)
         # Add a dummy page to the end, to prevent the finish button to appear and the next button do disappear on the
         # review page.
-        self.dummy_page = QtGui.QWizardPage()
+        self.dummy_page = QtWidgets.QWizardPage()
         self.dummy_page_id = self.addPage(self.dummy_page)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         """
         Song wizard localisation.
         """
         self.setWindowTitle(translate('Wizard', 'Wizard'))
-        self.title_label.setText(WizardStrings.HeaderStyle % translate('OpenLP.Ui',
-                                                                       'Welcome to the Duplicate Song Removal Wizard'))
+        self.title_label.setText(
+            WizardStrings.HeaderStyle.format(text=translate('OpenLP.Ui',
+                                                            'Welcome to the Duplicate Song Removal Wizard')))
         self.information_label.setText(
             translate("Wizard",
                       'This wizard will help you to remove duplicate songs from the song database. You will have a '
@@ -155,8 +154,8 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         Set the wizard review page header text.
         """
         self.review_page.setTitle(
-            translate('Wizard', 'Review duplicate songs (%s/%s)') %
-                     (self.review_current_count, self.review_total_count))
+            translate('Wizard', 'Review duplicate songs ({current}/{total})').format(current=self.review_current_count,
+                                                                                     total=self.review_total_count))
 
     def custom_page_changed(self, page_id):
         """
@@ -165,11 +164,11 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         :param page_id: ID of the page the wizard changed to.
         """
         # Hide back button.
-        self.button(QtGui.QWizard.BackButton).hide()
+        self.button(QtWidgets.QWizard.BackButton).hide()
         if page_id == self.searching_page_id:
             self.application.set_busy_cursor()
             try:
-                self.button(QtGui.QWizard.NextButton).hide()
+                self.button(QtWidgets.QWizard.NextButton).hide()
                 # Search duplicate songs.
                 max_songs = self.plugin.manager.get_object_count(Song)
                 if max_songs == 0 or max_songs == 1:
@@ -204,7 +203,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
                         self.found_duplicates_edit.appendPlainText(song1.title + "  =  " + song2.title)
                 self.review_total_count = len(self.duplicate_song_list)
                 if self.duplicate_song_list:
-                    self.button(QtGui.QWizard.NextButton).show()
+                    self.button(QtWidgets.QWizard.NextButton).show()
                 else:
                     self.notify_no_duplicates()
             finally:
@@ -216,14 +215,13 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         """
         Notifies the user, that there were no duplicates found in the database.
         """
-        self.button(QtGui.QWizard.FinishButton).show()
-        self.button(QtGui.QWizard.FinishButton).setEnabled(True)
-        self.button(QtGui.QWizard.NextButton).hide()
-        self.button(QtGui.QWizard.CancelButton).hide()
-        QtGui.QMessageBox.information(
+        self.button(QtWidgets.QWizard.FinishButton).show()
+        self.button(QtWidgets.QWizard.FinishButton).setEnabled(True)
+        self.button(QtWidgets.QWizard.NextButton).hide()
+        self.button(QtWidgets.QWizard.CancelButton).hide()
+        QtWidgets.QMessageBox.information(
             self, translate('Wizard', 'Information'),
-            translate('Wizard', 'No duplicate songs have been found in the database.'),
-            QtGui.QMessageBox.StandardButtons(QtGui.QMessageBox.Ok))
+            translate('Wizard', 'No duplicate songs have been found in the database.'))
 
     def add_duplicates_to_song_list(self, search_song, duplicate_song):
         """
@@ -317,7 +315,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         # Remove all previous elements.
         for i in reversed(list(range(self.review_scroll_area_layout.count()))):
             item = self.review_scroll_area_layout.itemAt(i)
-            if isinstance(item, QtGui.QWidgetItem):
+            if isinstance(item, QtWidgets.QWidgetItem):
                 # The order is important here, if the .setParent(None) call is done
                 # before the .removeItem() call, a segfault occurs.
                 widget = item.widget()
@@ -346,7 +344,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
             self.review_scroll_area_layout.addStretch(1)
         # Change next button to finish button on last review.
         if len(self.duplicate_song_list) == 1:
-            self.button(QtGui.QWizard.FinishButton).show()
-            self.button(QtGui.QWizard.FinishButton).setEnabled(True)
-            self.button(QtGui.QWizard.NextButton).hide()
-            self.button(QtGui.QWizard.CancelButton).hide()
+            self.button(QtWidgets.QWizard.FinishButton).show()
+            self.button(QtWidgets.QWizard.FinishButton).setEnabled(True)
+            self.button(QtWidgets.QWizard.NextButton).hide()
+            self.button(QtWidgets.QWizard.CancelButton).hide()

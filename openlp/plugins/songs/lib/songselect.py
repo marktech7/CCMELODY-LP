@@ -1,50 +1,55 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.songs.lib.songselect` module contains the SongSelect importer itself.
 """
 import logging
+import random
+import re
+from html import unescape
+from html.parser import HTMLParser
 from http.cookiejar import CookieJar
 from urllib.parse import urlencode
-from urllib.request import HTTPCookieProcessor, HTTPError, build_opener
-from html.parser import HTMLParser
+from urllib.request import HTTPCookieProcessor, URLError, build_opener
 
 from bs4 import BeautifulSoup, NavigableString
 
-from openlp.plugins.songs.lib import Song, VerseType, clean_song, Author
+from openlp.plugins.songs.lib import VerseType, clean_song
+from openlp.plugins.songs.lib.db import Song, Author, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 
-USER_AGENT = 'Mozilla/5.0 (Linux; U; Android 4.0.3; en-us; GT-I9000 ' \
-             'Build/IML74K) AppleWebKit/534.30 (KHTML, like Gecko) Version/4.0 ' \
-             'Mobile Safari/534.30'
-BASE_URL = 'https://mobile.songselect.com'
-LOGIN_URL = BASE_URL + '/account/login'
+
+USER_AGENTS = [
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) '
+    'Chrome/52.0.2743.116 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0',
+    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
+]
+BASE_URL = 'https://songselect.ccli.com'
+LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&returnUrl='\
+    'https%3a%2f%2fsongselect.ccli.com%2f'
+LOGIN_URL = 'https://profile.ccli.com'
 LOGOUT_URL = BASE_URL + '/account/logout'
 SEARCH_URL = BASE_URL + '/search/results'
 
@@ -65,7 +70,8 @@ class SongSelectImport(object):
         self.db_manager = db_manager
         self.html_parser = HTMLParser()
         self.opener = build_opener(HTTPCookieProcessor(CookieJar()))
-        self.opener.addheaders = [('User-Agent', USER_AGENT)]
+        self.opener.addheaders = [('User-Agent', random.choice(USER_AGENTS))]
+        self.run_search = True
 
     def login(self, username, password, callback=None):
         """
@@ -75,30 +81,74 @@ class SongSelectImport(object):
         :param username: SongSelect username
         :param password: SongSelect password
         :param callback: Method to notify of progress.
-        :return: True on success, False on failure.
+        :return: subscription level on success, None on failure.
         """
         if callback:
             callback()
-        login_page = BeautifulSoup(self.opener.open(LOGIN_URL).read(), 'lxml')
+        try:
+            login_page = BeautifulSoup(self.opener.open(LOGIN_PAGE).read(), 'lxml')
+        except (TypeError, URLError) as error:
+            log.exception('Could not login to SongSelect, {error}'.format(error=error))
+            return False
         if callback:
             callback()
         token_input = login_page.find('input', attrs={'name': '__RequestVerificationToken'})
         data = urlencode({
             '__RequestVerificationToken': token_input['value'],
-            'UserName': username,
-            'Password': password,
+            'emailAddress': username,
+            'password': password,
             'RememberMe': 'false'
         })
-        posted_page = BeautifulSoup(self.opener.open(LOGIN_URL, data.encode('utf-8')).read(), 'lxml')
+        login_form = login_page.find('form')
+        if login_form:
+            login_url = login_form.attrs['action']
+        else:
+            login_url = '/Account/SignIn'
+        if not login_url.startswith('http'):
+            if login_url[0] != '/':
+                login_url = '/' + login_url
+            login_url = LOGIN_URL + login_url
+        try:
+            posted_page = BeautifulSoup(self.opener.open(login_url, data.encode('utf-8')).read(), 'lxml')
+        except (TypeError, URLError) as error:
+            log.exception('Could not login to SongSelect, {error}'.format(error=error))
+            return False
         if callback:
             callback()
-        return not posted_page.find('input', attrs={'name': '__RequestVerificationToken'})
+        # Page if user is in an organization
+        if posted_page.find('input', id='SearchText') is not None:
+            self.subscription_level = self.find_subscription_level(posted_page)
+            return self.subscription_level
+        # Page if user is not in an organization
+        elif posted_page.find('div', id="select-organization") is not None:
+            try:
+                home_page = BeautifulSoup(self.opener.open(BASE_URL).read(), 'lxml')
+            except (TypeError, URLError) as error:
+                log.exception('Could not reach SongSelect, {error}'.format(error=error))
+            self.subscription_level = self.find_subscription_level(home_page)
+            return self.subscription_level
+        else:
+            log.debug(posted_page)
+            return None
+
+    def find_subscription_level(self, page):
+        scripts = page.find_all('script')
+        for tag in scripts:
+            if tag.string:
+                match = re.search("'Subscription': '(?P<subscription_level>[^']+)", tag.string)
+                if match:
+                    return match.group('subscription_level')
+        log.error('Could not determine SongSelect subscription level')
+        return None
 
     def logout(self):
         """
         Log the user out of SongSelect
         """
-        self.opener.open(LOGOUT_URL)
+        try:
+            self.opener.open(LOGOUT_URL)
+        except (TypeError, URLError) as error:
+            log.exception('Could not log out of SongSelect, {error}'.format(error=error))
 
     def search(self, search_text, max_results, callback=None):
         """
@@ -109,26 +159,40 @@ class SongSelectImport(object):
         :param callback: A method which is called when each song is found, with the song as a parameter.
         :return: List of songs
         """
-        params = {'allowredirect': 'false', 'SearchTerm': search_text}
+        self.run_search = True
+        params = {
+            'SongContent': '',
+            'PrimaryLanguage': '',
+            'Keys': '',
+            'Themes': '',
+            'List': 'publicdomain' if self.subscription_level == 'Free' else '',
+            'Sort': '',
+            'SearchText': search_text
+        }
         current_page = 1
         songs = []
-        while True:
+        while self.run_search:
             if current_page > 1:
                 params['page'] = current_page
-            results_page = BeautifulSoup(self.opener.open(SEARCH_URL + '?' + urlencode(params)).read(), 'lxml')
-            search_results = results_page.find_all('li', 'result pane')
+            try:
+                results_page = BeautifulSoup(self.opener.open(SEARCH_URL + '?' + urlencode(params)).read(), 'lxml')
+                search_results = results_page.find_all('div', 'song-result')
+            except (TypeError, URLError) as error:
+                log.exception('Could not search SongSelect, {error}'.format(error=error))
+                search_results = None
             if not search_results:
                 break
             for result in search_results:
                 song = {
-                    'title': self.html_parser.unescape(result.find('h3').string),
-                    'authors': [self.html_parser.unescape(author.string) for author in result.find_all('li')],
-                    'link': BASE_URL + result.find('a')['href']
+                    'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
+                    'authors': unescape(result.find('p', 'song-result-subtitle').string).strip().split(', '),
+                    'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
                 }
                 if callback:
                     callback(song)
                 songs.append(song)
                 if len(songs) >= max_results:
+                    self.run_search = False
                     break
             current_page += 1
         return songs
@@ -145,35 +209,45 @@ class SongSelectImport(object):
             callback()
         try:
             song_page = BeautifulSoup(self.opener.open(song['link']).read(), 'lxml')
-        except (TypeError, HTTPError) as e:
-            log.exception('Could not get song from SongSelect, %s', e)
+        except (TypeError, URLError) as error:
+            log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
         if callback:
             callback()
         try:
-            lyrics_page = BeautifulSoup(self.opener.open(song['link'] + '/lyrics').read(), 'lxml')
-        except (TypeError, HTTPError):
+            lyrics_page = BeautifulSoup(self.opener.open(song['link'] + '/viewlyrics').read(), 'lxml')
+        except (TypeError, URLError):
             log.exception('Could not get lyrics from SongSelect')
             return None
         if callback:
             callback()
-        song['copyright'] = '/'.join([li.string for li in song_page.find('ul', 'copyright').find_all('li')])
-        song['copyright'] = self.html_parser.unescape(song['copyright'])
-        song['ccli_number'] = song_page.find('ul', 'info').find('li').string.split(':')[1].strip()
+        copyright_elements = []
+        theme_elements = []
+        copyrights_regex = re.compile(r'\bCopyrights\b')
+        themes_regex = re.compile(r'\bThemes\b')
+        for ul in song_page.find_all('ul', 'song-meta-list'):
+            if ul.find('li', string=copyrights_regex):
+                copyright_elements.extend(ul.find_all('li')[1:])
+            if ul.find('li', string=themes_regex):
+                theme_elements.extend(ul.find_all('li')[1:])
+        song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
+        song['topics'] = [unescape(li.string).strip() for li in theme_elements]
+        song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
+            .find('strong').string.strip()
         song['verses'] = []
-        verses = lyrics_page.find('section', 'lyrics').find_all('p')
-        verse_labels = lyrics_page.find('section', 'lyrics').find_all('h3')
-        for counter in range(len(verses)):
-            verse = {'label': verse_labels[counter].string, 'lyrics': ''}
-            for v in verses[counter].contents:
+        verses = lyrics_page.find('div', 'song-viewer lyrics').find_all('p')
+        verse_labels = lyrics_page.find('div', 'song-viewer lyrics').find_all('h3')
+        for verse, label in zip(verses, verse_labels):
+            song_verse = {'label': unescape(label.string).strip(), 'lyrics': ''}
+            for v in verse.contents:
                 if isinstance(v, NavigableString):
-                    verse['lyrics'] = verse['lyrics'] + v.string
+                    song_verse['lyrics'] += unescape(v.string).strip()
                 else:
-                    verse['lyrics'] += '\n'
-            verse['lyrics'] = verse['lyrics'].strip(' \n\r\t')
-            song['verses'].append(self.html_parser.unescape(verse))
+                    song_verse['lyrics'] += '\n'
+            song_verse['lyrics'] = song_verse['lyrics'].strip(' \n\r\t')
+            song['verses'].append(song_verse)
         for counter, author in enumerate(song['authors']):
-            song['authors'][counter] = self.html_parser.unescape(author)
+            song['authors'][counter] = unescape(author)
         return song
 
     def save_song(self, song):
@@ -187,11 +261,15 @@ class SongSelectImport(object):
         song_xml = SongXML()
         verse_order = []
         for verse in song['verses']:
-            verse_type, verse_number = verse['label'].split(' ')[:2]
+            if ' ' in verse['label']:
+                verse_type, verse_number = verse['label'].split(' ', 1)
+            else:
+                verse_type = verse['label']
+                verse_number = 1
             verse_type = VerseType.from_loose_input(verse_type)
             verse_number = int(verse_number)
             song_xml.add_verse_to_lyrics(VerseType.tags[verse_type], verse_number, verse['lyrics'])
-            verse_order.append('%s%s' % (VerseType.tags[verse_type], verse_number))
+            verse_order.append('{tag}{number}'.format(tag=VerseType.tags[verse_type], number=verse_number))
         db_song.verse_order = ' '.join(verse_order)
         db_song.lyrics = song_xml.extract_xml()
         clean_song(self.db_manager, db_song)
@@ -200,9 +278,24 @@ class SongSelectImport(object):
         for author_name in song['authors']:
             author = self.db_manager.get_object_filtered(Author, Author.display_name == author_name)
             if not author:
-                author = Author.populate(first_name=author_name.rsplit(' ', 1)[0],
-                                         last_name=author_name.rsplit(' ', 1)[1],
-                                         display_name=author_name)
+                name_parts = author_name.rsplit(' ', 1)
+                first_name = name_parts[0]
+                if len(name_parts) == 1:
+                    last_name = ''
+                else:
+                    last_name = name_parts[1]
+                author = Author.populate(first_name=first_name, last_name=last_name, display_name=author_name)
             db_song.add_author(author)
+        for topic_name in song.get('topics', []):
+            topic = self.db_manager.get_object_filtered(Topic, Topic.name == topic_name)
+            if not topic:
+                topic = Topic.populate(name=topic_name)
+            db_song.topics.append(topic)
         self.db_manager.save_object(db_song)
         return db_song
+
+    def stop(self):
+        """
+        Stop the search.
+        """
+        self.run_search = False

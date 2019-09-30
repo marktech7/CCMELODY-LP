@@ -1,43 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The actual start time form.
 """
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from .starttimedialog import Ui_StartTimeDialog
-
-from openlp.core.common import Registry, RegistryProperties, UiStrings, translate
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.ui.starttimedialog import Ui_StartTimeDialog
 
 
-class StartTimeForm(QtGui.QDialog, Ui_StartTimeDialog, RegistryProperties):
+class StartTimeForm(QtWidgets.QDialog, Ui_StartTimeDialog, RegistryProperties):
     """
     The start time dialog
     """
@@ -45,10 +39,11 @@ class StartTimeForm(QtGui.QDialog, Ui_StartTimeDialog, RegistryProperties):
         """
         Constructor
         """
-        super(StartTimeForm, self).__init__(Registry().get('main_window'))
-        self.setupUi(self)
+        super(StartTimeForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
+                                            QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self.setup_ui(self)
 
-    def exec_(self):
+    def exec(self):
         """
         Run the Dialog with correct heading.
         """
@@ -56,14 +51,16 @@ class StartTimeForm(QtGui.QDialog, Ui_StartTimeDialog, RegistryProperties):
         self.hour_spin_box.setValue(hour)
         self.minute_spin_box.setValue(minutes)
         self.second_spin_box.setValue(seconds)
-        hours, minutes, seconds = self._time_split(self.item['service_item'].media_length)
+        hours, minutes, seconds = self._time_split(self.item['service_item'].end_time)
+        if hours == 0 and minutes == 0 and seconds == 0:
+            hours, minutes, seconds = self._time_split(self.item['service_item'].media_length)
         self.hour_finish_spin_box.setValue(hours)
         self.minute_finish_spin_box.setValue(minutes)
         self.second_finish_spin_box.setValue(seconds)
-        self.hour_finish_label.setText('%s%s' % (str(hour), UiStrings().Hours))
-        self.minute_finish_label.setText('%s%s' % (str(minutes), UiStrings().Minutes))
-        self.second_finish_label.setText('%s%s' % (str(seconds), UiStrings().Seconds))
-        return QtGui.QDialog.exec_(self)
+        self.hour_finish_label.setText('{val:d}{text}'.format(val=hour, text=UiStrings().Hours))
+        self.minute_finish_label.setText('{val:d}{text}'.format(val=minutes, text=UiStrings().Minutes))
+        self.second_finish_label.setText('{val:d}{text}'.format(val=seconds, text=UiStrings().Seconds))
+        return QtWidgets.QDialog.exec(self)
 
     def accept(self):
         """
@@ -84,7 +81,7 @@ class StartTimeForm(QtGui.QDialog, Ui_StartTimeDialog, RegistryProperties):
             return
         self.item['service_item'].start_time = start
         self.item['service_item'].end_time = end
-        return QtGui.QDialog.accept(self)
+        return QtWidgets.QDialog.accept(self)
 
     def _time_split(self, seconds):
         """

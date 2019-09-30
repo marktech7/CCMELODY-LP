@@ -1,41 +1,40 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Package to test the openlp.plugins.songs.forms.editverseform package.
 """
 from unittest import TestCase
 
-from PyQt4 import QtCore, QtGui, QtTest
+from PyQt5 import QtCore, QtTest, QtWidgets
 
-from openlp.core.common import Registry
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
 from tests.helpers.testmixin import TestMixin
+
+
+__default_settings__ = {
+    'songs/enable chords': True,
+}
 
 
 class TestEditVerseForm(TestCase, TestMixin):
@@ -49,27 +48,30 @@ class TestEditVerseForm(TestCase, TestMixin):
         """
         Registry.create()
         self.setup_application()
-        self.main_window = QtGui.QMainWindow()
+        self.main_window = QtWidgets.QMainWindow()
         Registry().register('main_window', self.main_window)
+        self.build_settings()
+        Settings().extend_default_settings(__default_settings__)
         self.form = EditVerseForm()
 
     def tearDown(self):
         """
         Delete all the C++ objects at the end so that we don't have a segfault
         """
+        self.destroy_settings()
         del self.form
         del self.main_window
 
-    def ui_defaults_test(self):
+    def test_ui_defaults(self):
         """
         Test the EditVerseForm defaults are correct
         """
         # GIVEN: An EditVerseForm instance
         # WHEN: The form is shown
         # THEN: The default value is correct
-        self.assertEqual(self.form.verse_text_edit.toPlainText(), '', 'The verse edit box is empty.')
+        assert self.form.verse_text_edit.toPlainText() == '', 'The verse edit box is empty.'
 
-    def type_verse_text_tests(self):
+    def test_type_verse_text(self):
         """
         Test that typing into the verse text edit box returns the correct text
         """
@@ -80,10 +82,10 @@ class TestEditVerseForm(TestCase, TestMixin):
         QtTest.QTest.keyClicks(self.form.verse_text_edit, text)
 
         # THEN: The verse text edit should have the verse text in it
-        self.assertEqual(text, self.form.verse_text_edit.toPlainText(),
-                         'The verse text edit should have the typed out verse')
+        assert text == self.form.verse_text_edit.toPlainText(), \
+            'The verse text edit should have the typed out verse'
 
-    def insert_verse_test(self):
+    def test_insert_verse(self):
         """
         Test that clicking the insert button inserts the correct verse marker
         """
@@ -92,10 +94,10 @@ class TestEditVerseForm(TestCase, TestMixin):
         QtTest.QTest.mouseClick(self.form.insert_button, QtCore.Qt.LeftButton)
 
         # THEN: The verse text edit should have a Verse:1 in it
-        self.assertIn('---[Verse:1]---', self.form.verse_text_edit.toPlainText(),
-                      'The verse text edit should have a verse marker')
+        assert '---[Verse:1]---' in self.form.verse_text_edit.toPlainText(), \
+            'The verse text edit should have a verse marker'
 
-    def insert_verse_2_test(self):
+    def test_insert_verse_2(self):
         """
         Test that clicking the up button on the spin box and then clicking the insert button inserts the correct marker
         """
@@ -105,10 +107,10 @@ class TestEditVerseForm(TestCase, TestMixin):
         QtTest.QTest.mouseClick(self.form.insert_button, QtCore.Qt.LeftButton)
 
         # THEN: The verse text edit should have a Verse:1 in it
-        self.assertIn('---[Verse:2]---', self.form.verse_text_edit.toPlainText(),
-                      'The verse text edit should have a "Verse 2" marker')
+        assert '---[Verse:2]---' in self.form.verse_text_edit.toPlainText(), \
+            'The verse text edit should have a "Verse 2" marker'
 
-    def insert_chorus_test(self):
+    def test_insert_chorus(self):
         """
         Test that clicking the verse type combo box and then clicking the insert button inserts the correct marker
         """
@@ -118,5 +120,5 @@ class TestEditVerseForm(TestCase, TestMixin):
         QtTest.QTest.mouseClick(self.form.insert_button, QtCore.Qt.LeftButton)
 
         # THEN: The verse text edit should have a Chorus:1 in it
-        self.assertIn('---[Chorus:1]---', self.form.verse_text_edit.toPlainText(),
-                      'The verse text edit should have a "Chorus 1" marker')
+        assert '---[Chorus:1]---' in self.form.verse_text_edit.toPlainText(), \
+            'The verse text edit should have a "Chorus 1" marker'

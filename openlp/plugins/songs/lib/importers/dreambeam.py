@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`dreambeam` module provides the functionality for importing DreamBeam songs into the OpenLP database.
 """
@@ -33,9 +26,10 @@ import logging
 
 from lxml import etree, objectify
 
-from openlp.core.lib import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.ui import SongStrings
+
 
 log = logging.getLogger(__name__)
 
@@ -80,32 +74,35 @@ class DreamBeamImport(SongImport):
 
     Valid extensions for a DreamBeam song file are:
 
-        * \*.xml
+        * .xml
     """
 
     def do_import(self):
         """
-        Receive a single file or a list of files to import.
+        Receive a single file_path or a list of files to import.
         """
         if isinstance(self.import_source, list):
             self.import_wizard.progress_bar.setMaximum(len(self.import_source))
-            for file in self.import_source:
+            for file_path in self.import_source:
                 if self.stop_import_flag:
                     return
                 self.set_defaults()
+                author_copyright = ''
                 parser = etree.XMLParser(remove_blank_text=True)
                 try:
-                    parsed_file = etree.parse(open(file, 'r'), parser)
+                    with file_path.open('r') as xml_file:
+                        parsed_file = etree.parse(xml_file, parser)
                 except etree.XMLSyntaxError:
-                    log.exception('XML syntax error in file %s' % file)
-                    self.log_error(file, SongStrings.XMLSyntaxError)
+                    log.exception('XML syntax error in file_path {name}'.format(name=file_path))
+                    self.log_error(file_path, SongStrings.XMLSyntaxError)
                     continue
                 xml = etree.tostring(parsed_file).decode()
                 song_xml = objectify.fromstring(xml)
                 if song_xml.tag != 'DreamSong':
                     self.log_error(
-                        file,
-                        translate('SongsPlugin.DreamBeamImport', 'Invalid DreamBeam song file. Missing DreamSong tag.'))
+                        file_path,
+                        translate('SongsPlugin.DreamBeamImport',
+                                  'Invalid DreamBeam song file_path. Missing DreamSong tag.'))
                     continue
                 if hasattr(song_xml, 'Version'):
                     self.version = float(song_xml.Version.text)
@@ -122,15 +119,17 @@ class DreamBeamImport(SongImport):
                             verse_type = lyrics_item.get('Type')
                             verse_number = lyrics_item.get('Number')
                             verse_text = str(lyrics_item.text)
-                            self.add_verse(verse_text, ('%s%s' % (verse_type[:1], verse_number)))
+                            self.add_verse(verse_text,
+                                           '{verse}{number}'.format(verse=verse_type[:1], number=verse_number))
                     if hasattr(song_xml, 'Collection'):
                         self.song_book_name = str(song_xml.Collection.text)
                     if hasattr(song_xml, 'Number'):
                         self.song_number = str(song_xml.Number.text)
                     if hasattr(song_xml, 'Sequence'):
                         for lyrics_sequence_item in (song_xml.Sequence.iterchildren()):
-                            self.verse_order_list.append("%s%s" % (lyrics_sequence_item.get('Type')[:1],
-                                                         lyrics_sequence_item.get('Number')))
+                            item = lyrics_sequence_item.get('Type')[:1]
+                            number = lyrics_sequence_item.get('Number')
+                            self.verse_order_list.append("{item}{number}".format(item=item, number=number))
                     if hasattr(song_xml, 'Notes'):
                         self.comments = str(song_xml.Notes.text)
                 else:
@@ -144,9 +143,9 @@ class DreamBeamImport(SongImport):
                         author_copyright = song_xml.Text2.Text.text
                 if author_copyright:
                     author_copyright = str(author_copyright)
-                    if author_copyright.find(str(SongStrings.CopyrightSymbol)) >= 0:
+                    if author_copyright.find(SongStrings.CopyrightSymbol) >= 0:
                         self.add_copyright(author_copyright)
                     else:
                         self.parse_author(author_copyright)
                 if not self.finish():
-                    self.log_error(file)
+                    self.log_error(file_path)

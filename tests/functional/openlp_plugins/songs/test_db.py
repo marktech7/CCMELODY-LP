@@ -1,42 +1,35 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the db submodule of the Songs plugin.
 """
 import os
 import shutil
-from unittest import TestCase
 from tempfile import mkdtemp
+from unittest import TestCase
 
-from openlp.plugins.songs.lib.db import Song, Author, AuthorType
-from openlp.plugins.songs.lib import upgrade
 from openlp.core.lib.db import upgrade_db
+from openlp.plugins.songs.lib import upgrade
+from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song
 from tests.utils.constants import TEST_RESOURCES_PATH
 
 
@@ -55,7 +48,8 @@ class TestDB(TestCase):
         """
         Clean up after tests
         """
-        shutil.rmtree(self.tmp_folder)
+        # Ignore errors since windows can have problems with locked files
+        shutil.rmtree(self.tmp_folder, ignore_errors=True)
 
     def test_add_author(self):
         """
@@ -72,10 +66,10 @@ class TestDB(TestCase):
         song.add_author(author)
 
         # THEN: The author should have been added with author_type=None
-        self.assertEqual(1, len(song.authors_songs))
-        self.assertEqual("Max", song.authors_songs[0].author.first_name)
-        self.assertEqual("Mustermann", song.authors_songs[0].author.last_name)
-        self.assertIsNone(song.authors_songs[0].author_type)
+        assert 1 == len(song.authors_songs)
+        assert "Max" == song.authors_songs[0].author.first_name
+        assert "Mustermann" == song.authors_songs[0].author.last_name
+        assert song.authors_songs[0].author_type is None
 
     def test_add_author_with_type(self):
         """
@@ -92,10 +86,10 @@ class TestDB(TestCase):
         song.add_author(author, AuthorType.Words)
 
         # THEN: The author should have been added with author_type=None
-        self.assertEqual(1, len(song.authors_songs))
-        self.assertEqual("Max", song.authors_songs[0].author.first_name)
-        self.assertEqual("Mustermann", song.authors_songs[0].author.last_name)
-        self.assertEqual(AuthorType.Words, song.authors_songs[0].author_type)
+        assert 1 == len(song.authors_songs)
+        assert "Max" == song.authors_songs[0].author.first_name
+        assert "Mustermann" == song.authors_songs[0].author.last_name
+        assert AuthorType.Words == song.authors_songs[0].author_type
 
     def test_remove_author(self):
         """
@@ -111,7 +105,7 @@ class TestDB(TestCase):
         song.remove_author(author)
 
         # THEN: It should have been removed
-        self.assertEqual(0, len(song.authors_songs))
+        assert 0 == len(song.authors_songs)
 
     def test_remove_author_with_type(self):
         """
@@ -128,8 +122,8 @@ class TestDB(TestCase):
         song.remove_author(author, AuthorType.Translation)
 
         # THEN: It should have been removed and the other author should still be there
-        self.assertEqual(1, len(song.authors_songs))
-        self.assertEqual(None, song.authors_songs[0].author_type)
+        assert 1 == len(song.authors_songs)
+        assert song.authors_songs[0].author_type is None
 
     def test_get_author_type_from_translated_text(self):
         """
@@ -142,7 +136,7 @@ class TestDB(TestCase):
         author_type = AuthorType.from_translated_text(author_type_name)
 
         # THEN: The type should be correct
-        self.assertEqual(author_type, AuthorType.Words)
+        assert author_type == AuthorType.Words
 
     def test_author_get_display_name(self):
         """
@@ -156,11 +150,11 @@ class TestDB(TestCase):
         display_name = author.get_display_name()
 
         # THEN: It should return only the name
-        self.assertEqual("John Doe", display_name)
+        assert "John Doe" == display_name
 
-    def test_author_get_display_name_with_type(self):
+    def test_author_get_display_name_with_type_words(self):
         """
-        Test that the display name of an author with a type is correct
+        Test that the display name of an author with a type is correct (Words)
         """
         # GIVEN: An author
         author = Author()
@@ -170,7 +164,38 @@ class TestDB(TestCase):
         display_name = author.get_display_name(AuthorType.Words)
 
         # THEN: It should return the name with the type in brackets
-        self.assertEqual("John Doe (Words)", display_name)
+        assert "John Doe (Words)" == display_name
+
+    def test_author_get_display_name_with_type_translation(self):
+        """
+        Test that the display name of an author with a type is correct (Translation)
+        """
+        # GIVEN: An author
+        author = Author()
+        author.display_name = "John Doe"
+
+        # WHEN: We call the get_display_name() function
+        display_name = author.get_display_name(AuthorType.Translation)
+
+        # THEN: It should return the name with the type in brackets
+        assert "John Doe (Translation)" == display_name
+
+    def test_add_songbooks(self):
+        """
+        Test that adding songbooks to a song works correctly
+        """
+        # GIVEN: A mocked song and songbook
+        song = Song()
+        song.songbook_entries = []
+        songbook = Book()
+        songbook.name = "Thy Word"
+
+        # WHEN: We add two songbooks to a Song
+        song.add_songbook_entry(songbook, "120")
+        song.add_songbook_entry(songbook, "550A")
+
+        # THEN: The song should have two songbook entries
+        assert len(song.songbook_entries) == 2, 'There should be two Songbook entries.'
 
     def test_upgrade_old_song_db(self):
         """
@@ -185,9 +210,8 @@ class TestDB(TestCase):
         # WHEN: upgrading the db
         updated_to_version, latest_version = upgrade_db(db_url, upgrade)
 
-        # Then the song db should have been upgraded to the latest version
-        self.assertEqual(updated_to_version, latest_version,
-                         'The song DB should have been upgrade to the latest version')
+        # THEN: the song db should have been upgraded to the latest version
+        assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
 
     def test_upgrade_invalid_song_db(self):
         """
@@ -202,6 +226,5 @@ class TestDB(TestCase):
         # WHEN: upgrading the db
         updated_to_version, latest_version = upgrade_db(db_url, upgrade)
 
-        # Then the song db should have been upgraded to the latest version without errors
-        self.assertEqual(updated_to_version, latest_version,
-                         'The song DB should have been upgrade to the latest version')
+        # THEN: the song db should have been upgraded to the latest version without errors
+        assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'

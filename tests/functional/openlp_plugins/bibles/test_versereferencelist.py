@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the versereferencelist submodule of the Bibles plugin.
 """
@@ -38,7 +31,7 @@ class TestVerseReferenceList(TestCase):
     """
     Test the VerseReferenceList class
     """
-    def add_first_verse_test(self):
+    def test_add_first_verse(self):
         """
         Test the addition of a verse to the empty list
         """
@@ -55,16 +48,14 @@ class TestVerseReferenceList(TestCase):
         reference_list.add(book, chapter, verse, version, copyright_, permission)
 
         # THEN: The entries should be in the first entry of the list
-        self.assertEqual(reference_list.current_index, 0, 'The current index should be 0')
-        self.assertEqual(reference_list.verse_list[0]['book'], book, 'The book in first entry should be %s' % book)
-        self.assertEqual(reference_list.verse_list[0]['chapter'], chapter, 'The chapter in first entry should be %u' %
-                                                                           chapter)
-        self.assertEqual(reference_list.verse_list[0]['start'], verse, 'The start in first entry should be %u' % verse)
-        self.assertEqual(reference_list.verse_list[0]['version'], version, 'The version in first entry should be %s' %
-                                                                           version)
-        self.assertEqual(reference_list.verse_list[0]['end'], verse, 'The end in first entry should be %u' % verse)
+        assert reference_list.current_index == 0, 'The current index should be 0'
+        assert reference_list.verse_list[0]['book'] == book, 'The book in first entry should be %s' % book
+        assert reference_list.verse_list[0]['chapter'] == chapter, 'The chapter in first entry should be %u' % chapter
+        assert reference_list.verse_list[0]['start'] == verse, 'The start in first entry should be %u' % verse
+        assert reference_list.verse_list[0]['version'] == version, 'The version in first entry should be %s' % version
+        assert reference_list.verse_list[0]['end'] == verse, 'The end in first entry should be %u' % verse
 
-    def add_next_verse_test(self):
+    def test_add_next_verse(self):
         """
         Test the addition of the following verse
         """
@@ -83,11 +74,10 @@ class TestVerseReferenceList(TestCase):
         reference_list.add(book, chapter, next_verse, version, copyright_, permission)
 
         # THEN: The current index should be 0 and the end pointer of the entry should be '2'
-        self.assertEqual(reference_list.current_index, 0, 'The current index should be 0')
-        self.assertEqual(reference_list.verse_list[0]['end'], next_verse,
-                         'The end in first entry should be %u' % next_verse)
+        assert reference_list.current_index == 0, 'The current index should be 0'
+        assert reference_list.verse_list[0]['end'] == next_verse, 'The end in first entry should be %u' % next_verse
 
-    def add_another_verse_test(self):
+    def test_add_another_verse(self):
         """
         Test the addition of a verse in another book
         """
@@ -108,9 +98,9 @@ class TestVerseReferenceList(TestCase):
         reference_list.add(another_book, another_chapter, another_verse, version, copyright_, permission)
 
         # THEN: the current index should be 1
-        self.assertEqual(reference_list.current_index, 1, 'The current index should be 1')
+        assert reference_list.current_index == 1, 'The current index should be 1'
 
-    def add_version_test(self):
+    def test_add_version(self):
         """
         Test the addition of a version to the list
         """
@@ -124,12 +114,12 @@ class TestVerseReferenceList(TestCase):
         reference_list.add_version(version, copyright_, permission)
 
         # THEN: the data will be appended to the list
-        self.assertEqual(len(reference_list.version_list), 1, 'The version data should be appended')
-        self.assertEqual(reference_list.version_list[0],
-                         {'version': version, 'copyright': copyright_, 'permission': permission},
-                         'The version data should be appended')
+        assert len(reference_list.version_list) == 1, 'The version data should be appended'
+        assert reference_list.version_list[0] == \
+            {'version': version, 'copyright': copyright_, 'permission': permission}, \
+            'The version data should be appended'
 
-    def add_existing_version_test(self):
+    def test_add_existing_version(self):
         """
         Test the addition of an existing version to the list
         """
@@ -144,4 +134,4 @@ class TestVerseReferenceList(TestCase):
         reference_list.add_version(version, copyright_, permission)
 
         # THEN: the data will not be appended to the list
-        self.assertEqual(len(reference_list.version_list), 1, 'The version data should not be appended')
+        assert len(reference_list.version_list) == 1, 'The version data should not be appended'

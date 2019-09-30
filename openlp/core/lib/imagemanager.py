@@ -1,32 +1,24 @@
-
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Provides the store and management for Images automatically caching them and resizing them when needed. Only one copy of
 each image is needed in the system. A Thread is used to convert the image to a byte array so the user does not need to
@@ -34,20 +26,24 @@ wait for the conversion to happen.
 """
 import logging
 import os
-import time
 import queue
+import time
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
-from openlp.core.common import Registry
-from openlp.core.lib import ScreenList, resize_image, image_to_byte
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.display.screens import ScreenList
+from openlp.core.lib import image_to_byte, resize_image
+from openlp.core.threading import ThreadWorker, run_thread
+
 
 log = logging.getLogger(__name__)
 
 
-class ImageThread(QtCore.QThread):
+class ImageWorker(ThreadWorker):
     """
-    A special Qt thread class to speed up the display of images. This is threaded so it loads the frames and generates
+    A thread worker class to speed up the display of images. This is threaded so it loads the frames and generates
     byte stream in background.
     """
     def __init__(self, manager):
@@ -57,14 +53,21 @@ class ImageThread(QtCore.QThread):
         ``manager``
             The image manager.
         """
-        super(ImageThread, self).__init__(None)
+        super().__init__()
         self.image_manager = manager
 
-    def run(self):
+    def start(self):
         """
-        Run the thread.
+        Start the worker
         """
-        self.image_manager._process()
+        self.image_manager.process()
+        self.quit.emit()
+
+    def stop(self):
+        """
+        Stop the worker
+        """
+        self.image_manager.stop_manager = True
 
 
 class Priority(object):
@@ -118,6 +121,8 @@ class Image(object):
         :param width: The width of the image, defaults to -1 meaning that the screen width will be used.
         :param height: The height of the image, defaults to -1 meaning that the screen height will be used.
         """
+        if not os.path.exists(path):
+            raise FileNotFoundError('{path} not found'.format(path=path))
         self.path = path
         self.image = None
         self.image_bytes = None
@@ -127,16 +132,14 @@ class Image(object):
         self.timestamp = 0
         self.width = width
         self.height = height
-        # FIXME: We assume that the path exist. The caller has to take care that it exists!
-        if os.path.exists(path):
-            self.timestamp = os.stat(path).st_mtime
+        self.timestamp = os.stat(path).st_mtime
         self.secondary_priority = Image.secondary_priority
         Image.secondary_priority += 1
 
 
 class PriorityQueue(queue.PriorityQueue):
     """
-    Customised ``Queue.PriorityQueue``.
+    Customised ``queue.PriorityQueue``.
 
     Each item in the queue must be a tuple with three values. The first value is the :class:`Image`'s ``priority``
     attribute, the second value the :class:`Image`'s ``secondary_priority`` attribute. The last value the :class:`Image`
@@ -182,10 +185,9 @@ class ImageManager(QtCore.QObject):
         super(ImageManager, self).__init__()
         Registry().register('image_manager', self)
         current_screen = ScreenList().current
-        self.width = current_screen['size'].width()
-        self.height = current_screen['size'].height()
+        self.width = current_screen.display_geometry.width()
+        self.height = current_screen.display_geometry.height()
         self._cache = {}
-        self.image_thread = ImageThread(self)
         self._conversion_queue = PriorityQueue()
         self.stop_manager = False
         Registry().register_function('images_regenerate', self.process_updates)
@@ -196,8 +198,8 @@ class ImageManager(QtCore.QObject):
         """
         log.debug('update_display')
         current_screen = ScreenList().current
-        self.width = current_screen['size'].width()
-        self.height = current_screen['size'].height()
+        self.width = current_screen.display_geometry.width()
+        self.height = current_screen.display_geometry.height()
         # Mark the images as dirty for a rebuild by setting the image and byte stream to None.
         for image in list(self._cache.values()):
             self._reset_image(image)
@@ -236,15 +238,26 @@ class ImageManager(QtCore.QObject):
         """
         Flush the queue to updated any data to update
         """
-        # We want only one thread.
-        if not self.image_thread.isRunning():
-            self.image_thread.start()
+        try:
+            worker = ImageWorker(self)
+            run_thread(worker, 'image_manager')
+        except KeyError:
+            # run_thread() will throw a KeyError if this thread already exists, so ignore it so that we don't
+            # try to start another thread when one is already running
+            pass
 
     def get_image(self, path, source, width=-1, height=-1):
         """
         Return the ``QImage`` from the cache. If not present wait for the background thread to process it.
+
+        :param: path: The image path
+        :param: source: The source of the image
+        :param: background: The image background colour
+        :param: width: The processed image width
+        :param: height: The processed image height
         """
-        log.debug('getImage %s' % path)
+        log.debug('get_image {path} {source} {width} {height}'.format(path=path, source=source,
+                                                                      width=width, height=height))
         image = self._cache[(path, source, width, height)]
         if image.image is None:
             self._conversion_queue.modify_priority(image, Priority.High)
@@ -263,8 +276,15 @@ class ImageManager(QtCore.QObject):
     def get_image_bytes(self, path, source, width=-1, height=-1):
         """
         Returns the byte string for an image. If not present wait for the background thread to process it.
+
+        :param: path: The image path
+        :param: source: The source of the image
+        :param: background: The image background colour
+        :param: width: The processed image width
+        :param: height: The processed image height
         """
-        log.debug('get_image_bytes %s' % path)
+        log.debug('get_image_bytes {path} {source} {width} {height}'.format(path=path, source=source,
+                                                                            width=width, height=height))
         image = self._cache[(path, source, width, height)]
         if image.image_bytes is None:
             self._conversion_queue.modify_priority(image, Priority.Urgent)
@@ -278,8 +298,15 @@ class ImageManager(QtCore.QObject):
     def add_image(self, path, source, background, width=-1, height=-1):
         """
         Add image to cache if it is not already there.
+
+        :param: path: The image path
+        :param: source: The source of the image
+        :param: background: The image background colour
+        :param: width: The processed image width
+        :param: height: The processed image height
         """
-        log.debug('add_image %s' % path)
+        log.debug('add_image {path} {source} {width} {height}'.format(path=path, source=source,
+                                                                      width=width, height=height))
         if not (path, source, width, height) in self._cache:
             image = Image(path, source, background, width, height)
             self._cache[(path, source, width, height)] = image
@@ -290,15 +317,13 @@ class ImageManager(QtCore.QObject):
                 if image.path == path and image.timestamp != os.stat(path).st_mtime:
                     image.timestamp = os.stat(path).st_mtime
                     self._reset_image(image)
-        # We want only one thread.
-        if not self.image_thread.isRunning():
-            self.image_thread.start()
+        self.process_updates()
 
-    def _process(self):
+    def process(self):
         """
         Controls the processing called from a ``QtCore.QThread``.
         """
-        log.debug('_process - started')
+        log.debug('process - started')
         while not self._conversion_queue.empty() and not self.stop_manager:
             self._process_cache()
         log.debug('_process - ended')
@@ -314,7 +339,8 @@ class ImageManager(QtCore.QObject):
             # Let's see if the image was requested with specific dimensions
             width = self.width if image.width == -1 else image.width
             height = self.height if image.height == -1 else image.height
-            image.image = resize_image(image.path, width, height, image.background)
+            image.image = resize_image(image.path, width, height, image.background,
+                                       Settings().value('advanced/ignore aspect ratio'))
             # Set the priority to Lowest and stop here as we need to process more important images first.
             if image.priority == Priority.Normal:
                 self._conversion_queue.modify_priority(image, Priority.Lowest)

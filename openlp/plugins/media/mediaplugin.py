@@ -1,39 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
+"""
+The Media plugin
+"""
 import logging
 
-from PyQt4 import QtCore
-
-from openlp.core.common import translate
-from openlp.core.lib import Plugin, StringContent, build_icon
-from openlp.plugins.media.lib import MediaMediaItem, MediaTab
+from openlp.core.state import State
+from openlp.core.api.http import register_endpoint
+from openlp.core.common.i18n import translate
+from openlp.core.ui.icons import UiIcons
+from openlp.core.lib import build_icon
+from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.plugins.media.endpoint import api_media_endpoint, media_endpoint
+from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 
 
 log = logging.getLogger(__name__)
@@ -41,30 +39,46 @@ log = logging.getLogger(__name__)
 
 # Some settings starting with "media" are in core, because they are needed for core functionality.
 __default_settings__ = {
-    'media/media auto start': QtCore.Qt.Unchecked,
-    'media/media files': []
+    'media/media files': [],
+    'media/last directory': None
 }
 
 
 class MediaPlugin(Plugin):
-    log.info('%s MediaPlugin loaded', __name__)
+    """
+    The media plugin adds the ability to playback audio and video content.
+    """
+    log.info('{name} MediaPlugin loaded'.format(name=__name__))
 
     def __init__(self):
         super(MediaPlugin, self).__init__('media', __default_settings__, MediaMediaItem)
         self.weight = -6
-        self.icon_path = ':/plugins/plugin_media.png'
+        self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)
         # passed with drag and drop messages
         self.dnd_id = 'Media'
+        register_endpoint(media_endpoint)
+        register_endpoint(api_media_endpoint)
+        State().add_service(self.name, self.weight, requires='mediacontroller', is_plugin=True)
+        State().update_pre_conditions(self.name, self.check_pre_conditions())
 
-    def create_settings_tab(self, parent):
+    def initialise(self):
         """
-        Create the settings Tab
+        Override the inherited initialise() method in order to upgrade the media before trying to load it
         """
-        visible_name = self.get_string(StringContent.VisibleName)
-        self.settings_tab = MediaTab(parent, self.name, visible_name['title'], self.icon_path)
+        super().initialise()
 
-    def about(self):
+    def app_startup(self):
+        """
+        Override app_startup() in order to do nothing
+        """
+        pass
+
+    @staticmethod
+    def about():
+        """
+        Return the about text for the plugin manager
+        """
         about_text = translate('MediaPlugin', '<strong>Media Plugin</strong>'
                                '<br />The media plugin provides playback of audio and video.')
         return about_text
@@ -102,21 +116,3 @@ class MediaPlugin(Plugin):
         log.info('Media Finalising')
         self.media_controller.finalise()
         Plugin.finalise(self)
-
-    def get_display_css(self):
-        """
-        Add css style sheets to htmlbuilder.
-        """
-        return self.media_controller.get_media_display_css()
-
-    def get_display_javascript(self):
-        """
-        Add javascript functions to htmlbuilder.
-        """
-        return self.media_controller.get_media_display_javascript()
-
-    def get_display_html(self):
-        """
-        Add html code to htmlbuilder.
-        """
-        return self.media_controller.get_media_display_html()

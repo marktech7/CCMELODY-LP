@@ -1,42 +1,32 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the Words of Worship song importer.
 """
-
-import os
-
 from tests.helpers.songfileimport import SongImportTestHelper
-from openlp.plugins.songs.lib.importers.wordsofworship import WordsOfWorshipImport
+from tests.utils.constants import RESOURCE_PATH
 
-TEST_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'resources', 'wordsofworshipsongs'))
+
+TEST_PATH = RESOURCE_PATH / 'songs' / 'wordsofworship'
 
 
 class TestWordsOfWorshipFileImport(SongImportTestHelper):
@@ -44,13 +34,39 @@ class TestWordsOfWorshipFileImport(SongImportTestHelper):
     def __init__(self, *args, **kwargs):
         self.importer_class_name = 'WordsOfWorshipImport'
         self.importer_module_name = 'wordsofworship'
-        super(TestWordsOfWorshipFileImport, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
 
-    def test_song_import(self):
+    def test_amazing_grace_song_import(self):
         """
         Test that loading a Words of Worship file works correctly
         """
-        self.file_import([os.path.join(TEST_PATH, 'Amazing Grace (6 Verses).wow-song')],
-                         self.load_external_result_data(os.path.join(TEST_PATH, 'Amazing Grace (6 Verses).json')))
-        self.file_import([os.path.join(TEST_PATH, 'When morning gilds the skies.wsg')],
-                         self.load_external_result_data(os.path.join(TEST_PATH, 'When morning gilds the skies.json')))
+        self.file_import([TEST_PATH / 'Amazing Grace (6 Verses)_v2_1_2.wow-song'],
+                         self.load_external_result_data(TEST_PATH / 'Amazing Grace (6 Verses)_v2_1_2.json'))
+
+    def test_when_morning_gilds_song_import(self):
+        """
+        Test that loading a Words of Worship file v2.0.0 works correctly
+        """
+        self.file_import([TEST_PATH / 'When morning gilds the skies_v2_0_0.wsg'],
+                         self.load_external_result_data(TEST_PATH / 'When morning gilds the skies_v2_0_0.json'))
+
+    def test_holy_holy_holy_song_import(self):
+        """
+        Test that loading a Words of Worship file works correctly
+        """
+        self.file_import([TEST_PATH / 'Holy Holy Holy Lord God Almighty_v2_1_2.wow-song'],
+                         self.load_external_result_data(TEST_PATH / 'Holy Holy Holy Lord God Almighty_v2_1_2.json'))
+
+    def test_test_song_v2_0_0_song_import(self):
+        """
+        Test that loading a Words of Worship file v2.0.0 works correctly
+        """
+        self.file_import([TEST_PATH / 'Test_Song_v2_0_0.wsg'],
+                         self.load_external_result_data(TEST_PATH / 'Test_Song_v2_0_0.json'))
+
+    def test_test_song_song_import(self):
+        """
+        Test that loading a Words of Worship file v2.1.2 works correctly
+        """
+        self.file_import([TEST_PATH / 'Test_Song_v2_1_2.wow-song'],
+                         self.load_external_result_data(TEST_PATH / 'Test_Song_v2_1_2.json'))

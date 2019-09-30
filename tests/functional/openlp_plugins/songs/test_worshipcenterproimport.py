@@ -1,79 +1,78 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the WorshipCenter Pro song importer.
 """
-import os
-from unittest import TestCase, SkipTest
-
-if os.name != 'nt':
-    raise SkipTest('Not Windows, skipping test')
-
-import pyodbc
-
-from openlp.plugins.songs.lib.importers.worshipcenterpro import WorshipCenterProImport
-from tests.functional import patch, MagicMock
+from unittest import TestCase, skipUnless
+from unittest.mock import MagicMock, patch
 
 
-class TestRecord(object):
+try:
+    import pyodbc
+    from openlp.core.common.registry import Registry
+    from openlp.plugins.songs.lib.importers.worshipcenterpro import WorshipCenterProImport
+    CAN_RUN_TESTS = True
+except ImportError:
+    CAN_RUN_TESTS = False
+
+
+class DBTestRecord(object):
     """
-    Microsoft Access Driver is not available on non Microsoft Systems for this reason the :class:`TestRecord` is used
+    Microsoft Access Driver is not available on non Microsoft Systems for this reason the :class:`FakeRecord` is used
     to simulate a recordset that would be returned by pyobdc.
     """
-    def __init__(self, id, field, value):
+    def __init__(self, id_, field, value):
         # The case of the following instance variables is important as it needs to be the same as the ones in use in the
         # WorshipCenter Pro database.
-        self.ID = id
+        self.ID = id_
         self.Field = field
         self.Value = value
 
 
-class WorshipCenterProImportLogger(WorshipCenterProImport):
-    """
-    This class logs changes in the title instance variable
-    """
-    _title_assignment_list = []
+if CAN_RUN_TESTS:
+    class WorshipCenterProImportLogger(WorshipCenterProImport):
+        """
+        This class logs changes in the title instance variable
+        """
+        _title_assignment_list = []
 
-    def __init__(self, manager):
-        WorshipCenterProImport.__init__(self, manager)
+        def __init__(self, manager):
+            WorshipCenterProImport.__init__(self, manager, file_paths=[])
 
-    @property
-    def title(self):
-        return self._title_assignment_list[-1]
+        @property
+        def title(self):
+            return self._title_assignment_list[-1]
 
-    @title.setter
-    def title(self, title):
-        self._title_assignment_list.append(title)
+        @title.setter
+        def title(self, title):
+            self._title_assignment_list.append(title)
 
 
-RECORDSET_TEST_DATA = [TestRecord(1, 'TITLE', 'Amazing Grace'),
-                       TestRecord(
+RECORDSET_TEST_DATA = [DBTestRecord(1, 'TITLE', 'Amazing Grace'),
+                       DBTestRecord(1, 'AUTHOR', 'John Newton'),
+                       DBTestRecord(1, 'CCLISONGID', '12345'),
+                       DBTestRecord(1, 'COMMENTS', 'The original version'),
+                       DBTestRecord(1, 'COPY', 'Public Domain'),
+                       DBTestRecord(
                            1, 'LYRICS',
                            'Amazing grace! How&crlf;sweet the sound&crlf;That saved a wretch like me!&crlf;'
                            'I once was lost,&crlf;but now am found;&crlf;Was blind, but now I see.&crlf;&crlf;'
@@ -90,8 +89,8 @@ RECORDSET_TEST_DATA = [TestRecord(1, 'TITLE', 'Amazing Grace'),
                            'Shall be forever mine.&crlf;&crlf;When we\'ve been there&crlf;ten thousand years,&crlf;'
                            'Bright shining as the sun,&crlf;We\'ve no less days to&crlf;sing God\'s praise&crlf;'
                            'Than when we\'d first begun.&crlf;&crlf;'),
-                       TestRecord(2, 'TITLE', 'Beautiful Garden Of Prayer, The'),
-                       TestRecord(
+                       DBTestRecord(2, 'TITLE', 'Beautiful Garden Of Prayer, The'),
+                       DBTestRecord(
                            2, 'LYRICS',
                            'There\'s a garden where&crlf;Jesus is waiting,&crlf;'
                            'There\'s a place that&crlf;is wondrously fair,&crlf;For it glows with the&crlf;'
@@ -119,7 +118,10 @@ SONG_TEST_DATA = [{'title': 'Amazing Grace',
                        ('The earth shall soon\ndissolve like snow,\nThe sun forbear to shine;\nBut God, Who called\n'
                         'me here below,\nShall be forever mine.'),
                        ('When we\'ve been there\nten thousand years,\nBright shining as the sun,\n'
-                        'We\'ve no less days to\nsing God\'s praise\nThan when we\'d first begun.')]},
+                        'We\'ve no less days to\nsing God\'s praise\nThan when we\'d first begun.')],
+                   'author': 'John Newton',
+                   'comments': 'The original version',
+                   'copyright': 'Public Domain'},
                   {'title': 'Beautiful Garden Of Prayer, The',
                    'verses': [
                        ('There\'s a garden where\nJesus is waiting,\nThere\'s a place that\nis wondrously fair,\n'
@@ -132,11 +134,18 @@ SONG_TEST_DATA = [{'title': 'Amazing Grace',
                         'Just to bow and\nreceive a new blessing\nIn the beautiful\ngarden of prayer.')]}]
 
 
+@skipUnless(CAN_RUN_TESTS, 'Not Windows, skipping test')
 class TestWorshipCenterProSongImport(TestCase):
     """
     Test the functions in the :mod:`worshipcenterproimport` module.
     """
-    def create_importer_test(self):
+    def setUp(self):
+        """
+        Create the registry
+        """
+        Registry.create()
+
+    def test_create_importer(self):
         """
         Test creating an instance of the WorshipCenter Pro file importer
         """
@@ -145,25 +154,24 @@ class TestWorshipCenterProSongImport(TestCase):
             mocked_manager = MagicMock()
 
             # WHEN: An importer object is created
-            importer = WorshipCenterProImport(mocked_manager)
+            importer = WorshipCenterProImport(mocked_manager, file_paths=[])
 
             # THEN: The importer object should not be None
-            self.assertIsNotNone(importer, 'Import should not be none')
+            assert importer is not None, 'Import should not be none'
 
-    def pyodbc_exception_test(self):
+    def test_pyodbc_exception(self):
         """
         Test that exceptions raised by pyodbc are handled
         """
         # GIVEN: A mocked out SongImport class, a mocked out pyodbc module, a mocked out translate method,
         #       a mocked "manager" and a mocked out log_error method.
         with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
-            patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc.connect') \
-                as mocked_pyodbc_connect, \
+                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc.connect') as mocked_pyodbc_connect, \
                 patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
             mocked_manager = MagicMock()
             mocked_log_error = MagicMock()
             mocked_translate.return_value = 'Translated Text'
-            importer = WorshipCenterProImport(mocked_manager)
+            importer = WorshipCenterProImport(mocked_manager, file_paths=[])
             importer.log_error = mocked_log_error
             importer.import_source = 'import_source'
             pyodbc_errors = [pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError, pyodbc.OperationalError]
@@ -174,24 +182,27 @@ class TestWorshipCenterProSongImport(TestCase):
                 return_value = importer.do_import()
 
                 # THEN: do_import should return None, and pyodbc, translate & log_error are called with known calls
-                self.assertIsNone(return_value, 'do_import should return None when pyodbc raises an exception.')
+                assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
                 mocked_pyodbc_connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
                 mocked_translate.assert_called_with('SongsPlugin.WorshipCenterProImport',
                                                     'Unable to connect the WorshipCenter Pro database.')
                 mocked_log_error.assert_called_with('import_source', 'Translated Text')
 
-    def song_import_test(self):
+    def test_song_import(self):
         """
         Test that a simulated WorshipCenter Pro recordset is imported correctly
         """
         # GIVEN: A mocked out SongImport class, a mocked out pyodbc module with a simulated recordset, a mocked out
         #       translate method,  a mocked "manager", add_verse method & mocked_finish method.
         with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
-            patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc') as mocked_pyodbc, \
+                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc') as mocked_pyodbc, \
                 patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
             mocked_manager = MagicMock()
             mocked_import_wizard = MagicMock()
             mocked_add_verse = MagicMock()
+            mocked_parse_author = MagicMock()
+            mocked_add_comment = MagicMock()
+            mocked_add_copyright = MagicMock()
             mocked_finish = MagicMock()
             mocked_pyodbc.connect().cursor().fetchall.return_value = RECORDSET_TEST_DATA
             mocked_translate.return_value = 'Translated Text'
@@ -199,6 +210,9 @@ class TestWorshipCenterProSongImport(TestCase):
             importer.import_source = 'import_source'
             importer.import_wizard = mocked_import_wizard
             importer.add_verse = mocked_add_verse
+            importer.parse_author = mocked_parse_author
+            importer.add_comment = mocked_add_comment
+            importer.add_copyright = mocked_add_copyright
             importer.stop_import_flag = False
             importer.finish = mocked_finish
 
@@ -207,7 +221,7 @@ class TestWorshipCenterProSongImport(TestCase):
 
             # THEN: do_import should return None, and pyodbc, import_wizard, importer.title and add_verse are called
             # with known calls
-            self.assertIsNone(return_value, 'do_import should return None when pyodbc raises an exception.')
+            assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
             mocked_pyodbc.connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
             mocked_pyodbc.connect().cursor.assert_any_call()
             mocked_pyodbc.connect().cursor().execute.assert_called_with('SELECT ID, Field, Value FROM __SONGDATA')
@@ -216,11 +230,15 @@ class TestWorshipCenterProSongImport(TestCase):
             add_verse_call_count = 0
             for song_data in SONG_TEST_DATA:
                 title_value = song_data['title']
-                self.assertIn(title_value, importer._title_assignment_list,
-                              'title should have been set to %s' % title_value)
+                assert title_value in importer._title_assignment_list, 'title should have been set to %s' % title_value
                 verse_calls = song_data['verses']
                 add_verse_call_count += len(verse_calls)
                 for call in verse_calls:
-                    mocked_add_verse.assert_any_call(call)
-            self.assertEqual(mocked_add_verse.call_count, add_verse_call_count,
-                             'Incorrect number of calls made to add_verse')
+                    mocked_add_verse.assert_any_call(call, 'v')
+                if 'author' in song_data:
+                    mocked_parse_author.assert_any_call(song_data['author'])
+                if 'comments' in song_data:
+                    mocked_add_comment.assert_any_call(song_data['comments'])
+                if 'copyright' in song_data:
+                    mocked_add_copyright.assert_any_call(song_data['copyright'])
+            assert mocked_add_verse.call_count == add_verse_call_count, 'Incorrect number of calls made to add_verse'

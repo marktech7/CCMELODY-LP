@@ -1,45 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the OpenSong song importer.
 """
-
-import os
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from tests.helpers.songfileimport import SongImportTestHelper
+from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.importers.opensong import OpenSongImport
-from openlp.core.common import Registry
-from tests.functional import patch, MagicMock
+from tests.helpers.songfileimport import SongImportTestHelper
+from tests.utils.constants import RESOURCE_PATH
 
-TEST_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'resources', 'opensongsongs'))
+
+TEST_PATH = RESOURCE_PATH / 'songs' / 'opensong'
 
 
 class TestOpenSongFileImport(SongImportTestHelper):
@@ -49,16 +41,26 @@ class TestOpenSongFileImport(SongImportTestHelper):
         self.importer_module_name = 'opensong'
         super(TestOpenSongFileImport, self).__init__(*args, **kwargs)
 
-    def test_song_import(self):
+    @patch('openlp.plugins.songs.lib.importers.opensong.Settings')
+    def test_song_import(self, mocked_settings):
         """
         Test that loading an OpenSong file works correctly on various files
         """
-        self.file_import([os.path.join(TEST_PATH, 'Amazing Grace')],
-                         self.load_external_result_data(os.path.join(TEST_PATH, 'Amazing Grace.json')))
-        self.file_import([os.path.join(TEST_PATH, 'Beautiful Garden Of Prayer')],
-                         self.load_external_result_data(os.path.join(TEST_PATH, 'Beautiful Garden Of Prayer.json')))
-        self.file_import([os.path.join(TEST_PATH, 'One, Two, Three, Four, Five')],
-                         self.load_external_result_data(os.path.join(TEST_PATH, 'One, Two, Three, Four, Five.json')))
+        # Mock out the settings - always return False
+        mocked_returned_settings = MagicMock()
+        mocked_returned_settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
+        mocked_settings.return_value = mocked_returned_settings
+        # Do the test import
+        self.file_import([TEST_PATH / 'Amazing Grace'],
+                         self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+        self.file_import([TEST_PATH / 'Beautiful Garden Of Prayer'],
+                         self.load_external_result_data(TEST_PATH / 'Beautiful Garden Of Prayer.json'))
+        self.file_import([TEST_PATH / 'One, Two, Three, Four, Five'],
+                         self.load_external_result_data(TEST_PATH / 'One, Two, Three, Four, Five.json'))
+        self.file_import([TEST_PATH / 'Amazing Grace2'],
+                         self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+        self.file_import([TEST_PATH / 'Amazing Grace with bad CCLI'],
+                         self.load_external_result_data(TEST_PATH / 'Amazing Grace without CCLI.json'))
 
 
 class TestOpenSongImport(TestCase):
@@ -71,7 +73,7 @@ class TestOpenSongImport(TestCase):
         """
         Registry.create()
 
-    def create_importer_test(self):
+    def test_create_importer(self):
         """
         Test creating an instance of the OpenSong file importer
         """
@@ -80,12 +82,12 @@ class TestOpenSongImport(TestCase):
             mocked_manager = MagicMock()
 
             # WHEN: An importer object is created
-            importer = OpenSongImport(mocked_manager, filenames=[])
+            importer = OpenSongImport(mocked_manager, file_paths=[])
 
             # THEN: The importer object should not be None
-            self.assertIsNotNone(importer, 'Import should not be none')
+            assert importer is not None, 'Import should not be none'
 
-    def invalid_import_source_test(self):
+    def test_invalid_import_source(self):
         """
         Test OpenSongImport.do_import handles different invalid import_source values
         """
@@ -93,7 +95,7 @@ class TestOpenSongImport(TestCase):
         with patch('openlp.plugins.songs.lib.importers.opensong.SongImport'):
             mocked_manager = MagicMock()
             mocked_import_wizard = MagicMock()
-            importer = OpenSongImport(mocked_manager, filenames=[])
+            importer = OpenSongImport(mocked_manager, file_paths=[])
             importer.import_wizard = mocked_import_wizard
             importer.stop_import_flag = True
 
@@ -102,11 +104,11 @@ class TestOpenSongImport(TestCase):
                 importer.import_source = source
 
                 # THEN: do_import should return none and the progress bar maximum should not be set.
-                self.assertIsNone(importer.do_import(), 'do_import should return None when import_source is not a list')
-                self.assertEqual(mocked_import_wizard.progress_bar.setMaximum.called, False,
-                                 'setMaximum on import_wizard.progress_bar should not have been called')
+                assert importer.do_import() is None, 'do_import should return None when import_source is not a list'
+                assert mocked_import_wizard.progress_bar.setMaximum.called is False, \
+                    'setMaximum on import_wizard.progress_bar should not have been called'
 
-    def valid_import_source_test(self):
+    def test_valid_import_source(self):
         """
         Test OpenSongImport.do_import handles different invalid import_source values
         """
@@ -114,7 +116,7 @@ class TestOpenSongImport(TestCase):
         with patch('openlp.plugins.songs.lib.importers.opensong.SongImport'):
             mocked_manager = MagicMock()
             mocked_import_wizard = MagicMock()
-            importer = OpenSongImport(mocked_manager, filenames=[])
+            importer = OpenSongImport(mocked_manager, file_paths=[])
             importer.import_wizard = mocked_import_wizard
             importer.stop_import_flag = True
 
@@ -123,6 +125,6 @@ class TestOpenSongImport(TestCase):
 
             # THEN: do_import should return none and the progress bar setMaximum should be called with the length of
             #       import_source.
-            self.assertIsNone(importer.do_import(), 'do_import should return None when import_source is a list '
-                                                    'and stop_import_flag is True')
+            assert importer.do_import() is None, \
+                'do_import should return None when import_source is a list and stop_import_flag is True'
             mocked_import_wizard.progress_bar.setMaximum.assert_called_with(len(importer.import_source))

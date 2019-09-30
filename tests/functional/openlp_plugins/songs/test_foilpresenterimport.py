@@ -1,63 +1,39 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the SongShow Plus song importer.
 """
-
-import os
 from unittest import TestCase
-from tests.functional import patch, MagicMock
+from unittest.mock import MagicMock, patch
 
 from openlp.plugins.songs.lib.importers.foilpresenter import FoilPresenter
-
-TEST_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '/resources/foilpresentersongs'))
 
 
 class TestFoilPresenter(TestCase):
     """
     Test the functions in the :mod:`foilpresenterimport` module.
     """
-    # TODO: The following modules still need tests written for
-    #   xml_to_song
-    #   _child
-    #   _process_authors
-    #   _process_cclinumber
-    #   _process_comments
-    #   _process_copyright
-    #   _process_lyrics
-    #   _process_songbooks
-    #   _process_titles
-    #   _process_topics
-
     def setUp(self):
-        self.child_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.FoilPresenter._child')
+        self.to_str_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.to_str')
         self.clean_song_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.clean_song')
         self.objectify_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.objectify')
         self.process_authors_patcher = \
@@ -79,7 +55,7 @@ class TestFoilPresenter(TestCase):
         self.song_xml_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.SongXML')
         self.translate_patcher = patch('openlp.plugins.songs.lib.importers.foilpresenter.translate')
 
-        self.mocked_child = self.child_patcher.start()
+        self.mocked_child = self.to_str_patcher.start()
         self.mocked_clean_song = self.clean_song_patcher.start()
         self.mocked_objectify = self.objectify_patcher.start()
         self.mocked_process_authors = self.process_authors_patcher.start()
@@ -99,7 +75,7 @@ class TestFoilPresenter(TestCase):
         self.mocked_song_import = MagicMock()
 
     def tearDown(self):
-        self.child_patcher.stop()
+        self.to_str_patcher.stop()
         self.clean_song_patcher.stop()
         self.objectify_patcher.stop()
         self.process_authors_patcher.stop()
@@ -114,7 +90,7 @@ class TestFoilPresenter(TestCase):
         self.song_xml_patcher.stop()
         self.translate_patcher.stop()
 
-    def create_foil_presenter_test(self):
+    def test_create_foil_presenter(self):
         """
         Test creating an instance of the foil_presenter class
         """
@@ -126,9 +102,9 @@ class TestFoilPresenter(TestCase):
         foil_presenter_instance = FoilPresenter(mocked_manager, mocked_song_import)
 
         # THEN: The instance should not be None
-        self.assertIsNotNone(foil_presenter_instance, 'foil_presenter instance should not be none')
+        assert foil_presenter_instance is not None, 'foil_presenter instance should not be none'
 
-    def no_xml_test(self):
+    def test_no_xml(self):
         """
         Test calling xml_to_song with out the xml argument
         """
@@ -142,9 +118,9 @@ class TestFoilPresenter(TestCase):
             result = foil_presenter_instance.xml_to_song(arg)
 
             # Then: xml_to_song should return False
-            self.assertEqual(result, None, 'xml_to_song should return None when called with %s' % arg)
+            assert result is None, 'xml_to_song should return None when called with %s' % arg
 
-    def encoding_declaration_removal_test(self):
+    def test_encoding_declaration_removal(self):
         """
         Test that the encoding declaration is removed
         """
@@ -158,7 +134,7 @@ class TestFoilPresenter(TestCase):
         # THEN: the xml encoding declaration should have been stripped
         self.mocked_re.compile.sub.called_with('\n<foilpresenterfolie>')
 
-    def no_encoding_declaration_test(self):
+    def test_no_encoding_declaration(self):
         """
         Check that the xml sting is left intact when no encoding declaration is made
         """
@@ -172,7 +148,7 @@ class TestFoilPresenter(TestCase):
         # THEN: the string should have been left intact
         self.mocked_re.compile.sub.called_with('<foilpresenterfolie>')
 
-    def process_lyrics_no_verses_test(self):
+    def test_process_lyrics_no_verses(self):
         """
         Test that _process_lyrics handles song files that have no verses.
         """
@@ -189,6 +165,6 @@ class TestFoilPresenter(TestCase):
         result = foil_presenter_instance._process_lyrics(mock_foilpresenterfolie, mocked_song)
 
         # THEN: _process_lyrics should return None and the song_import log_error method should have been called once
-        self.assertIsNone(result)
+        assert result is None
         self.mocked_song_import.log_error.assert_called_once_with('Element Text', 'Translated String')
         self.process_lyrics_patcher.start()

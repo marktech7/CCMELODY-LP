@@ -1,43 +1,43 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 
-from PyQt4 import QtCore, QtGui
-from sqlalchemy.sql import or_, func, and_
+from PyQt5 import QtCore, QtWidgets
+from sqlalchemy.sql import and_, func, or_
 
-from openlp.core.common import Registry, Settings, UiStrings, translate
-from openlp.core.lib import MediaManagerItem, ItemCapabilities, ServiceItemContext, PluginStatus, \
-    check_item_selected
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib import check_item_selected
+from openlp.core.lib.mediamanageritem import MediaManagerItem
+from openlp.core.lib.plugin import PluginStatus
+from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.lib.ui import create_widget_action
+from openlp.core.ui.icons import UiIcons
 from openlp.plugins.custom.forms.editcustomform import EditCustomForm
-from openlp.plugins.custom.lib import CustomXMLParser, CustomXMLBuilder
+from openlp.plugins.custom.lib.customxmlhandler import CustomXMLBuilder, CustomXMLParser
 from openlp.plugins.custom.lib.db import CustomSlide
+
 
 log = logging.getLogger(__name__)
 
@@ -54,6 +54,8 @@ class CustomMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Custom Slides.
     """
+    custom_go_live = QtCore.pyqtSignal(list)
+    custom_add_to_service = QtCore.pyqtSignal(list)
     log.info('Custom Media Item loaded')
 
     def __init__(self, parent, plugin):
@@ -64,6 +66,8 @@ class CustomMediaItem(MediaManagerItem):
         """
         Do some additional setup.
         """
+        self.custom_go_live.connect(self.go_live_remote)
+        self.custom_add_to_service.connect(self.add_to_service_remote)
         self.edit_custom_form = EditCustomForm(self, self.main_window, self.plugin.db_manager)
         self.single_service_item = False
         self.quick_preview_allowed = True
@@ -79,12 +83,17 @@ class CustomMediaItem(MediaManagerItem):
         self.toolbar.addSeparator()
         self.add_search_to_toolbar()
         # Signals and slots
-        QtCore.QObject.connect(self.search_text_edit, QtCore.SIGNAL('cleared()'), self.on_clear_text_button_click)
-        QtCore.QObject.connect(self.search_text_edit, QtCore.SIGNAL('searchTypeChanged(int)'),
-                               self.on_search_text_button_clicked)
+        self.search_text_edit.cleared.connect(self.on_clear_text_button_click)
+        self.search_text_edit.searchTypeChanged.connect(self.on_search_text_button_clicked)
         Registry().register_function('custom_load_list', self.load_list)
         Registry().register_function('custom_preview', self.on_preview_click)
         Registry().register_function('custom_create_from_service', self.create_from_service_item)
+
+    def add_custom_context_actions(self):
+        create_widget_action(self.list_view, separator=True)
+        create_widget_action(
+            self.list_view, text=translate('OpenLP.MediaManagerItem', '&Clone'), icon=UiIcons().clone,
+            triggers=self.on_clone_click)
 
     def config_update(self):
         """
@@ -92,13 +101,13 @@ class CustomMediaItem(MediaManagerItem):
         """
         log.debug('Config loaded')
         self.add_custom_from_service = Settings().value(self.settings_section + '/add custom from service')
+        self.is_search_as_you_type_enabled = Settings().value('advanced/search as type')
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         """
 
-
         """
-        self.search_text_label.setText('%s:' % UiStrings().Search)
+        self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))
         self.search_text_button.setText(UiStrings().Search)
 
     def initialise(self):
@@ -106,10 +115,9 @@ class CustomMediaItem(MediaManagerItem):
         Initialise the UI so it can provide Searches
         """
         self.search_text_edit.set_search_types(
-            [(CustomSearch.Titles, ':/songs/song_search_title.png', translate('SongsPlugin.MediaItem', 'Titles'),
+            [(CustomSearch.Titles, UiIcons().search, translate('SongsPlugin.MediaItem', 'Titles'),
               translate('SongsPlugin.MediaItem', 'Search Titles...')),
-             (CustomSearch.Themes, ':/slides/slide_theme.png', UiStrings().Themes, UiStrings().SearchThemes)])
-        self.search_text_edit.set_current_search_type(Settings().value('%s/last search type' % self.settings_section))
+             (CustomSearch.Themes, UiIcons().theme, UiStrings().Themes, UiStrings().SearchThemes)])
         self.load_list(self.plugin.db_manager.get_all_objects(CustomSlide, order_by_ref=CustomSlide.title))
         self.config_update()
 
@@ -124,7 +132,7 @@ class CustomMediaItem(MediaManagerItem):
         self.list_view.clear()
         custom_slides.sort()
         for custom_slide in custom_slides:
-            custom_name = QtGui.QListWidgetItem(custom_slide.title)
+            custom_name = QtWidgets.QListWidgetItem(custom_slide.title)
             custom_name.setData(QtCore.Qt.UserRole, custom_slide.id)
             self.list_view.addItem(custom_name)
             # Auto-select the custom.
@@ -140,7 +148,7 @@ class CustomMediaItem(MediaManagerItem):
         Handle the New item event
         """
         self.edit_custom_form.load_custom(0)
-        self.edit_custom_form.exec_()
+        self.edit_custom_form.exec()
         self.on_clear_text_button_click()
         self.on_selection_change()
 
@@ -156,7 +164,7 @@ class CustomMediaItem(MediaManagerItem):
         valid = self.plugin.db_manager.get_object(CustomSlide, custom_id)
         if valid:
             self.edit_custom_form.load_custom(custom_id, preview)
-            if self.edit_custom_form.exec_() == QtGui.QDialog.Accepted:
+            if self.edit_custom_form.exec() == QtWidgets.QDialog.Accepted:
                 self.remote_triggered = True
                 self.remote_custom = custom_id
                 self.auto_select_id = -1
@@ -165,6 +173,10 @@ class CustomMediaItem(MediaManagerItem):
                 self.remote_triggered = None
                 self.remote_custom = 1
                 if item:
+                    if preview:
+                        # A custom slide can only be edited if it comes from plugin,
+                        # so we set it again for the new item.
+                        item.from_plugin = True
                     return item
         return None
 
@@ -176,7 +188,7 @@ class CustomMediaItem(MediaManagerItem):
             item = self.list_view.currentItem()
             item_id = item.data(QtCore.Qt.UserRole)
             self.edit_custom_form.load_custom(item_id, False)
-            self.edit_custom_form.exec_()
+            self.edit_custom_form.exec()
             self.auto_select_id = -1
             self.on_search_text_button_clicked()
 
@@ -186,13 +198,12 @@ class CustomMediaItem(MediaManagerItem):
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
             items = self.list_view.selectedIndexes()
-            if QtGui.QMessageBox.question(self, UiStrings().ConfirmDelete,
-                                          translate('CustomPlugin.MediaItem',
-                                                    'Are you sure you want to delete the %n selected custom slide(s)?',
-                                                    '', QtCore.QCoreApplication.CodecForTr, len(items)),
-                                          QtGui.QMessageBox.StandardButtons(
-                                              QtGui.QMessageBox.Yes | QtGui.QMessageBox.No),
-                                          QtGui.QMessageBox.Yes) == QtGui.QMessageBox.No:
+            if QtWidgets.QMessageBox.question(
+                    self, UiStrings().ConfirmDelete,
+                    translate('CustomPlugin.MediaItem',
+                              'Are you sure you want to delete the "{items:d}" '
+                              'selected custom slide(s)?').format(items=len(items)),
+                    defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
                 return
             row_list = [item.row() for item in self.list_view.selectedIndexes()]
             row_list.sort(reverse=True)
@@ -206,16 +217,14 @@ class CustomMediaItem(MediaManagerItem):
         Set the focus
         """
         self.search_text_edit.setFocus()
+        self.search_text_edit.selectAll()
 
-    def generate_slide_data(self, service_item, item=None, xml_version=False,
-                            remote=False, context=ServiceItemContext.Service):
+    def generate_slide_data(self, service_item, *, item=None, **kwargs):
         """
         Generate the slide data. Needs to be implemented by the plugin.
         :param service_item: To be updated
         :param item: The custom database item to be used
-        :param xml_version: No used
-        :param remote: Is this triggered by the Preview Controller or Service Manager.
-        :param context: Why is this item required to be build (Default Service).
+        :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
         item_id = self._get_id_of_item_to_generate(item, self.remote_custom)
         service_item.add_capability(ItemCapabilities.CanEdit)
@@ -242,15 +251,30 @@ class CustomMediaItem(MediaManagerItem):
             service_item.raw_footer.append('')
         return True
 
+    def on_clone_click(self):
+        """
+        Clone the selected Custom item
+        """
+        item = self.list_view.currentItem()
+        item_id = item.data(QtCore.Qt.UserRole)
+        old_custom_slide = self.plugin.db_manager.get_object(CustomSlide, item_id)
+        new_custom_slide = CustomSlide()
+        new_custom_slide.title = '{title} <{text}>'.format(title=old_custom_slide.title,
+                                                           text=translate('CustomPlugin.MediaItem',
+                                                                          'copy', 'For item cloning'))
+        new_custom_slide.text = old_custom_slide.text
+        new_custom_slide.credits = old_custom_slide.credits
+        new_custom_slide.theme_name = old_custom_slide.theme_name
+        self.plugin.db_manager.save_object(new_custom_slide)
+        self.on_search_text_button_clicked()
+
     def on_search_text_button_clicked(self):
         """
         Search the plugin database
         """
-        # Save the current search type to the configuration.
-        Settings().setValue('%s/last search type' % self.settings_section, self.search_text_edit.current_search_type())
         # Reload the list considering the new search type.
         search_type = self.search_text_edit.current_search_type()
-        search_keywords = '%' + self.whitespace.sub(' ', self.search_text_edit.displayText()) + '%'
+        search_keywords = '%{search}%'.format(search=self.whitespace.sub(' ', self.search_text_edit.displayText()))
         if search_type == CustomSearch.Titles:
             log.debug('Titles Search')
             search_results = self.plugin.db_manager.get_all_objects(CustomSlide,
@@ -263,7 +287,6 @@ class CustomMediaItem(MediaManagerItem):
                                                                     CustomSlide.theme_name.like(search_keywords),
                                                                     order_by_ref=CustomSlide.title)
             self.load_list(search_results)
-        self.check_search_result()
 
     def on_search_text_edit_changed(self, text):
         """
@@ -272,11 +295,12 @@ class CustomMediaItem(MediaManagerItem):
 
         :param text: The search text
         """
-        search_length = 2
-        if len(text) > search_length:
-            self.on_search_text_button_clicked()
-        elif not text:
-            self.on_clear_text_button_click()
+        if self.is_search_as_you_type_enabled:
+            search_length = 2
+            if len(text) > search_length:
+                self.on_search_text_button_clicked()
+            elif not text:
+                self.on_clear_text_button_click()
 
     def service_load(self, item):
         """
@@ -287,10 +311,15 @@ class CustomMediaItem(MediaManagerItem):
         log.debug('service_load')
         if self.plugin.status != PluginStatus.Active:
             return
-        custom = self.plugin.db_manager.get_object_filtered(CustomSlide, and_(CustomSlide.title == item.title,
-                                                                              CustomSlide.theme_name == item.theme,
-                                                                              CustomSlide.credits ==
-                                                                              item.raw_footer[0][len(item.title) + 1:]))
+        if item.theme:
+            custom = self.plugin.db_manager.get_object_filtered(CustomSlide, and_(CustomSlide.title == item.title,
+                                                                CustomSlide.theme_name == item.theme,
+                                                                CustomSlide.credits ==
+                                                                item.raw_footer[0][len(item.title) + 1:]))
+        else:
+            custom = self.plugin.db_manager.get_object_filtered(CustomSlide, and_(CustomSlide.title == item.title,
+                                                                CustomSlide.credits ==
+                                                                item.raw_footer[0][len(item.title) + 1:]))
         if custom:
             item.edit_id = custom.id
             return item
@@ -319,8 +348,8 @@ class CustomMediaItem(MediaManagerItem):
         else:
             custom.credits = ''
         custom_xml = CustomXMLBuilder()
-        for (idx, slide) in enumerate(item._raw_frames):
-            custom_xml.add_verse_to_lyrics('custom', str(idx + 1), slide['raw_slide'])
+        for (idx, slide) in enumerate(item.slides):
+            custom_xml.add_verse_to_lyrics('custom', str(idx + 1), slide['text'])
         custom.text = str(custom_xml.extract_xml(), 'utf-8')
         self.plugin.db_manager.save_object(custom)
         self.on_search_text_button_clicked()
@@ -339,7 +368,7 @@ class CustomMediaItem(MediaManagerItem):
         :param string: The search string
         :param show_error: The error string to be show.
         """
-        search = '%' + string.lower() + '%'
+        search = '%{search}%'.format(search=string.lower())
         search_results = self.plugin.db_manager.get_all_objects(CustomSlide,
                                                                 or_(func.lower(CustomSlide.title).like(search),
                                                                     func.lower(CustomSlide.text).like(search)),

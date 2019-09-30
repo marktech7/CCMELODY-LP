@@ -1,42 +1,36 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
-import logging
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import copy
-import os
+import logging
+from pathlib import Path
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
-from openlp.core.common import Registry
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib import ServiceItemContext
 from openlp.core.ui import HideMode
-from openlp.core.lib import ServiceItemContext, ServiceItem
 from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETYPES
+
 
 log = logging.getLogger(__name__)
 
@@ -55,14 +49,14 @@ class Controller(object):
         self.is_live = live
         self.doc = None
         self.hide_mode = None
-        log.info('%s controller loaded' % live)
+        log.info('{name} controller loaded'.format(name=live))
 
     def add_handler(self, controller, file, hide_mode, slide_no):
         """
         Add a handler, which is an instance of a presentation and slidecontroller combination. If the slidecontroller
         has a display then load the presentation.
         """
-        log.debug('Live = %s, add_handler %s' % (self.is_live, file))
+        log.debug('Live = {live}, add_handler {handler}'.format(live=self.is_live, handler=file))
         self.controller = controller
         if self.doc is not None:
             self.shutdown()
@@ -70,10 +64,11 @@ class Controller(object):
         if not self.doc.load_presentation():
             # Display error message to user
             # Inform slidecontroller that the action failed?
+            self.doc.slidenumber = 0
             return
         self.doc.slidenumber = slide_no
         self.hide_mode = hide_mode
-        log.debug('add_handler, slide_number: %d' % slide_no)
+        log.debug('add_handler, slide_number: {slide:d}'.format(slide=slide_no))
         if self.is_live:
             if hide_mode == HideMode.Screen:
                 Registry().execute('live_display_hide', HideMode.Screen)
@@ -93,14 +88,14 @@ class Controller(object):
         """
         Active the presentation, and show it on the screen. Use the last slide number.
         """
-        log.debug('Live = %s, activate' % self.is_live)
+        log.debug('Live = {live}, activate'.format(live=self.is_live))
         if not self.doc:
             return False
         if self.doc.is_active():
             return True
         if not self.doc.is_loaded():
             if not self.doc.load_presentation():
-                log.warning('Failed to activate %s' % self.doc.filepath)
+                log.warning('Failed to activate {path}'.format(path=self.doc.file_path))
                 return False
         if self.is_live:
             self.doc.start_presentation()
@@ -111,14 +106,14 @@ class Controller(object):
         if self.doc.is_active():
             return True
         else:
-            log.warning('Failed to activate %s' % self.doc.filepath)
+            log.warning('Failed to activate {path}'.format(path=self.doc.file_path))
             return False
 
     def slide(self, slide):
         """
         Go to a specific slide
         """
-        log.debug('Live = %s, slide' % self.is_live)
+        log.debug('Live = {live}, slide'.format(live=self.is_live))
         if not self.doc:
             return
         if not self.is_live:
@@ -136,7 +131,7 @@ class Controller(object):
         """
         Based on the handler passed at startup triggers the first slide.
         """
-        log.debug('Live = %s, first' % self.is_live)
+        log.debug('Live = {live}, first'.format(live=self.is_live))
         if not self.doc:
             return
         if not self.is_live:
@@ -154,7 +149,7 @@ class Controller(object):
         """
         Based on the handler passed at startup triggers the last slide.
         """
-        log.debug('Live = %s, last' % self.is_live)
+        log.debug('Live = {live}, last'.format(live=self.is_live))
         if not self.doc:
             return
         if not self.is_live:
@@ -172,53 +167,51 @@ class Controller(object):
         """
         Based on the handler passed at startup triggers the next slide event.
         """
-        log.debug('Live = %s, next' % self.is_live)
+        log.debug('Live = {live}, next'.format(live=self.is_live))
         if not self.doc:
-            return
+            return False
         if not self.is_live:
-            return
+            return False
         if self.hide_mode:
             if not self.doc.is_active():
-                return
+                return False
             if self.doc.slidenumber < self.doc.get_slide_count():
                 self.doc.slidenumber += 1
                 self.poll()
-            return
+            return False
         if not self.activate():
-            return
-        # The "End of slideshow" screen is after the last slide. Note, we can't just stop on the last slide, since it
-        # may contain animations that need to be stepped through.
-        if self.doc.slidenumber > self.doc.get_slide_count():
-            return
-        self.doc.next_step()
+            return False
+        ret = self.doc.next_step()
         self.poll()
+        return ret
 
     def previous(self):
         """
         Based on the handler passed at startup triggers the previous slide event.
         """
-        log.debug('Live = %s, previous' % self.is_live)
+        log.debug('Live = {live}, previous'.format(live=self.is_live))
         if not self.doc:
-            return
+            return False
         if not self.is_live:
-            return
+            return False
         if self.hide_mode:
             if not self.doc.is_active():
-                return
+                return False
             if self.doc.slidenumber > 1:
                 self.doc.slidenumber -= 1
                 self.poll()
-            return
+            return False
         if not self.activate():
-            return
-        self.doc.previous_step()
+            return False
+        ret = self.doc.previous_step()
         self.poll()
+        return ret
 
     def shutdown(self):
         """
         Based on the handler passed at startup triggers slide show to shut down.
         """
-        log.debug('Live = %s, shutdown' % self.is_live)
+        log.debug('Live = {live}, shutdown'.format(live=self.is_live))
         if not self.doc:
             return
         self.doc.close_presentation()
@@ -228,7 +221,7 @@ class Controller(object):
         """
         Instruct the controller to blank the presentation.
         """
-        log.debug('Live = %s, blank' % self.is_live)
+        log.debug('Live = {live}, blank'.format(live=self.is_live))
         self.hide_mode = hide_mode
         if not self.doc:
             return
@@ -249,7 +242,14 @@ class Controller(object):
         """
         Instruct the controller to stop and hide the presentation.
         """
-        log.debug('Live = %s, stop' % self.is_live)
+        log.debug('Live = {live}, stop'.format(live=self.is_live))
+        # The document has not been loaded yet, so don't do anything. This can happen when going live with a
+        # presentation while blanked to desktop.
+        if not self.doc:
+            return
+        # Save the current slide number to be able to return to this slide if the presentation is activated again.
+        if self.doc.is_active():
+            self.doc.slidenumber = self.doc.get_slide_number()
         self.hide_mode = HideMode.Screen
         if not self.doc:
             return
@@ -265,7 +265,7 @@ class Controller(object):
         """
         Instruct the controller to unblank the presentation.
         """
-        log.debug('Live = %s, unblank' % self.is_live)
+        log.debug('Live = {live}, unblank'.format(live=self.is_live))
         self.hide_mode = None
         if not self.doc:
             return
@@ -273,8 +273,6 @@ class Controller(object):
             return
         if not self.activate():
             return
-        if self.doc.slidenumber and self.doc.slidenumber != self.doc.get_slide_number():
-            self.doc.goto_slide(self.doc.slidenumber)
         self.doc.unblank_screen()
         Registry().execute('live_display_hide', HideMode.Screen)
 
@@ -292,6 +290,13 @@ class MessageListener(object):
     log.info('Message Listener loaded')
 
     def __init__(self, media_item):
+        self._setup(media_item)
+
+    def _setup(self, media_item):
+        """
+        Start up code moved out to make mocking easier
+        :param media_item: The plugin media item handing Presentations
+        """
         self.controllers = media_item.controllers
         self.media_item = media_item
         self.preview_handler = Controller(False)
@@ -315,39 +320,45 @@ class MessageListener(object):
         """
         Start of new presentation. Save the handler as any new presentations start here
         """
-        log.debug('Startup called with message %s' % message)
+        log.debug('Startup called with message {text}'.format(text=message))
         is_live = message[1]
         item = message[0]
         hide_mode = message[2]
-        file = item.get_frame_path()
+        file_path = Path(item.get_frame_path())
         self.handler = item.processor
         # When starting presentation from the servicemanager we convert
         # PDF/XPS/OXPS-serviceitems into image-serviceitems. When started from the mediamanager
         # the conversion has already been done at this point.
-        file_type = os.path.splitext(file.lower())[1][1:]
+        file_type = file_path.suffix.lower()[1:]
         if file_type in PDF_CONTROLLER_FILETYPES:
-            log.debug('Converting from pdf/xps/oxps to images for serviceitem with file %s', file)
+            log.debug('Converting from pdf/xps/oxps/epub/cbz/fb2 to images for serviceitem with file {name}'
+                      .format(name=file_path))
             # Create a copy of the original item, and then clear the original item so it can be filled with images
             item_cpy = copy.copy(item)
             item.__init__(None)
-            if is_live:
-                self.media_item.generate_slide_data(item, item_cpy, False, False, ServiceItemContext.Live, file)
-            else:
-                self.media_item.generate_slide_data(item, item_cpy, False, False, ServiceItemContext.Preview, file)
+            context = ServiceItemContext.Live if is_live else ServiceItemContext.Preview
+            self.media_item.generate_slide_data(item, item=item_cpy, context=context, file_path=file_path)
             # Some of the original serviceitem attributes is needed in the new serviceitem
             item.footer = item_cpy.footer
             item.from_service = item_cpy.from_service
-            item.iconic_representation = item_cpy.iconic_representation
+            item.iconic_representation = item_cpy.icon
             item.image_border = item_cpy.image_border
             item.main = item_cpy.main
             item.theme_data = item_cpy.theme_data
             # When presenting PDF/XPS/OXPS, we are using the image presentation code,
             # so handler & processor is set to None, and we skip adding the handler.
             self.handler = None
-        if self.handler == self.media_item.automatic:
-            self.handler = self.media_item.find_controller_by_type(file)
-            if not self.handler:
-                return
+        else:
+            if self.handler == self.media_item.automatic:
+                self.handler = self.media_item.find_controller_by_type(file_path)
+                if not self.handler:
+                    return
+            else:
+                # the saved handler is not present so need to use one based on file_path suffix.
+                if not self.controllers[self.handler].available:
+                    self.handler = self.media_item.find_controller_by_type(file_path)
+                    if not self.handler:
+                        return
         if is_live:
             controller = self.live_handler
         else:
@@ -357,7 +368,8 @@ class MessageListener(object):
         if self.handler is None:
             self.controller = controller
         else:
-            controller.add_handler(self.controllers[self.handler], file, hide_mode, message[3])
+            controller.add_handler(self.controllers[self.handler], file_path, hide_mode, message[3])
+            self.timer.start()
 
     def slide(self, message):
         """
@@ -404,9 +416,12 @@ class MessageListener(object):
         """
         is_live = message[1]
         if is_live:
-            self.live_handler.next()
+            ret = self.live_handler.next()
+            if Settings().value('core/click live slide to unblank'):
+                Registry().execute('slidecontroller_live_unblank')
+            return ret
         else:
-            self.preview_handler.next()
+            return self.preview_handler.next()
 
     def previous(self, message):
         """
@@ -416,9 +431,12 @@ class MessageListener(object):
         """
         is_live = message[1]
         if is_live:
-            self.live_handler.previous()
+            ret = self.live_handler.previous()
+            if Settings().value('core/click live slide to unblank'):
+                Registry().execute('slidecontroller_live_unblank')
+            return ret
         else:
-            self.preview_handler.previous()
+            return self.preview_handler.previous()
 
     def shutdown(self, message):
         """
@@ -429,6 +447,7 @@ class MessageListener(object):
         is_live = message[1]
         if is_live:
             self.live_handler.shutdown()
+            self.timer.stop()
         else:
             self.preview_handler.shutdown()
 

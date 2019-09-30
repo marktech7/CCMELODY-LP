@@ -1,68 +1,67 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 
-from PyQt4 import QtGui
+from openlp.core.state import State
+from openlp.core.api.http import register_endpoint
+from openlp.core.common.actions import ActionList
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.ui.icons import UiIcons
+from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.lib.ui import create_action
+from openlp.plugins.bibles.endpoint import api_bibles_endpoint, bibles_endpoint
+from openlp.plugins.bibles.lib import LayoutStyle, DisplayStyle, LanguageSelection
+from openlp.plugins.bibles.lib.biblestab import BiblesTab
+from openlp.plugins.bibles.lib.manager import BibleManager
+from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem, BibleSearch
 
-from openlp.core.lib import Plugin, StringContent, build_icon, translate
-from openlp.core.lib.ui import UiStrings, create_action
-from openlp.core.utils.actions import ActionList
-from openlp.plugins.bibles.lib import BibleManager, BiblesTab, BibleMediaItem, LayoutStyle, DisplayStyle, \
-    LanguageSelection
-from openlp.plugins.bibles.lib.mediaitem import BibleSearch
-from openlp.plugins.bibles.forms import BibleUpgradeForm
 
 log = logging.getLogger(__name__)
 
 
 __default_settings__ = {
     'bibles/db type': 'sqlite',
-    'bibles/last search type': BibleSearch.Reference,
+    'bibles/db username': '',
+    'bibles/db password': '',
+    'bibles/db hostname': '',
+    'bibles/db database': '',
+    'bibles/last used search type': BibleSearch.Combined,
+    'bibles/reset to combined quick search': True,
     'bibles/verse layout style': LayoutStyle.VersePerSlide,
     'bibles/book name language': LanguageSelection.Bible,
     'bibles/display brackets': DisplayStyle.NoBrackets,
     'bibles/is verse number visible': True,
     'bibles/display new chapter': False,
     'bibles/second bibles': True,
-    'bibles/advanced bible': '',
-    'bibles/quick bible': '',
-    'bibles/proxy name': '',
-    'bibles/proxy address': '',
-    'bibles/proxy username': '',
-    'bibles/proxy password': '',
+    'bibles/primary bible': '',
     'bibles/bible theme': '',
     'bibles/verse separator': '',
     'bibles/range separator': '',
     'bibles/list separator': '',
     'bibles/end separator': '',
-    'bibles/last directory import': ''
+    'bibles/last directory import': None,
+    'bibles/hide combined quick error': False,
+    'bibles/is search while typing enabled': True
 }
 
 
@@ -75,9 +74,13 @@ class BiblePlugin(Plugin):
     def __init__(self):
         super(BiblePlugin, self).__init__('bibles', __default_settings__, BibleMediaItem, BiblesTab)
         self.weight = -9
-        self.icon_path = ':/plugins/plugin_bibles.png'
-        self.icon = build_icon(self.icon_path)
+        self.icon_path = UiIcons().bible
+        self.icon = UiIcons().bible
         self.manager = BibleManager(self)
+        register_endpoint(bibles_endpoint)
+        register_endpoint(api_bibles_endpoint)
+        State().add_service('bible', self.weight, is_plugin=True)
+        State().update_pre_conditions('bible', self.check_pre_conditions())
 
     def initialise(self):
         """
@@ -90,7 +93,6 @@ class BiblePlugin(Plugin):
         action_list.add_action(self.import_bible_item, UiStrings().Import)
         # Set to invisible until we can export bibles
         self.export_bible_item.setVisible(False)
-        self.tools_upgrade_item.setVisible(bool(self.manager.old_bible_databases))
 
     def finalise(self):
         """
@@ -104,24 +106,11 @@ class BiblePlugin(Plugin):
         self.import_bible_item.setVisible(False)
         self.export_bible_item.setVisible(False)
 
-    def app_startup(self):
-        """
-        Perform tasks on application startup
-        """
-        super(BiblePlugin, self).app_startup()
-        if self.manager.old_bible_databases:
-            if QtGui.QMessageBox.information(
-                    self.main_window, translate('OpenLP', 'Information'),
-                    translate('OpenLP', 'Bible format has changed.\nYou have to upgrade your '
-                                        'existing Bibles.\nShould OpenLP upgrade now?'),
-                    QtGui.QMessageBox.StandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)) == \
-                    QtGui.QMessageBox.Yes:
-                self.on_tools_upgrade_Item_triggered()
-
     def add_import_menu_item(self, import_menu):
         """
+        Add an import menu item
 
-        :param import_menu:
+        :param import_menu: The menu to insert the menu item into.
         """
         self.import_bible_item = create_action(import_menu, 'importBibleItem',
                                                text=translate('BiblesPlugin', '&Bible'), visible=False,
@@ -130,42 +119,26 @@ class BiblePlugin(Plugin):
 
     def add_export_menu_item(self, export_menu):
         """
+        Add an export menu item
 
-        :param export_menu:
+        :param export_menu: The menu to insert the menu item into.
         """
         self.export_bible_item = create_action(export_menu, 'exportBibleItem',
                                                text=translate('BiblesPlugin', '&Bible'), visible=False)
         export_menu.addAction(self.export_bible_item)
 
-    def add_tools_menu_item(self, tools_menu):
-        """
-        Give the bible plugin the opportunity to add items to the **Tools** menu.
-
-        :param tools_menu:  The actual **Tools** menu item, so that your actions can use it as their parent.
-        """
-        log.debug('add tools menu')
-        self.tools_upgrade_item = create_action(
-            tools_menu, 'toolsUpgradeItem',
-            text=translate('BiblesPlugin', '&Upgrade older Bibles'),
-            statustip=translate('BiblesPlugin', 'Upgrade the Bible databases to the latest format.'),
-            visible=False, triggers=self.on_tools_upgrade_Item_triggered)
-        tools_menu.addAction(self.tools_upgrade_item)
-
-    def on_tools_upgrade_Item_triggered(self):
-        """
-        Upgrade older bible databases.
-        """
-        if not hasattr(self, 'upgrade_wizard'):
-            self.upgrade_wizard = BibleUpgradeForm(self.main_window, self.manager, self)
-        # If the import was not cancelled then reload.
-        if self.upgrade_wizard.exec_():
-            self.media_item.reload_bibles()
-
     def on_bible_import_click(self):
+        """
+        Show the Bible Import wizard
+        """
         if self.media_item:
             self.media_item.on_import_click()
 
-    def about(self):
+    @staticmethod
+    def about():
+        """
+        Return the about text for the plugin manager
+        """
         about_text = translate('BiblesPlugin', '<strong>Bible Plugin</strong>'
                                '<br />The Bible plugin provides the ability to display Bible '
                                'verses from different sources during the service.')
@@ -173,20 +146,22 @@ class BiblePlugin(Plugin):
 
     def uses_theme(self, theme):
         """
-        Called to find out if the bible plugin is currently using a theme. Returns ``True`` if the theme is being used,
-        otherwise returns ``False``.
+        Called to find out if the bible plugin is currently using a theme.
 
         :param theme: The theme
+        :return: 1 if the theme is being used, otherwise returns 0
         """
-        return str(self.settings_tab.bible_theme) == theme
+        if str(self.settings_tab.bible_theme) == theme:
+            return 1
+        return 0
 
     def rename_theme(self, old_theme, new_theme):
         """
-        Rename the theme the bible plugin is using making the plugin use the
-        new name.
+        Rename the theme the bible plugin is using, making the plugin use the new name.
 
         :param old_theme: The name of the theme the plugin should stop using. Unused for this particular plugin.
         :param new_theme:  The new name the plugin should now use.
+        :return: None
         """
         self.settings_tab.bible_theme = new_theme
         self.settings_tab.save()

@@ -1,35 +1,28 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import translate
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box
 
 
@@ -37,7 +30,7 @@ class Ui_ChooseGroupDialog(object):
     """
     The UI for the "Choose Image Group" form.
     """
-    def setupUi(self, choose_group_dialog):
+    def setup_ui(self, choose_group_dialog):
         """
         Set up the UI.
 
@@ -45,41 +38,43 @@ class Ui_ChooseGroupDialog(object):
         """
         choose_group_dialog.setObjectName('choose_group_dialog')
         choose_group_dialog.resize(399, 119)
-        self.choose_group_layout = QtGui.QFormLayout(choose_group_dialog)
-        self.choose_group_layout.setFieldGrowthPolicy(QtGui.QFormLayout.ExpandingFieldsGrow)
-        self.choose_group_layout.setMargin(8)
+        self.choose_group_layout = QtWidgets.QFormLayout(choose_group_dialog)
+        self.choose_group_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.ExpandingFieldsGrow)
+        self.choose_group_layout.setContentsMargins(8, 8, 8, 8)
         self.choose_group_layout.setSpacing(8)
         self.choose_group_layout.setLabelAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter)
         self.choose_group_layout.setObjectName('choose_group_layout')
-        self.group_question_label = QtGui.QLabel(choose_group_dialog)
+        self.group_question_label = QtWidgets.QLabel(choose_group_dialog)
         self.group_question_label.setWordWrap(True)
         self.group_question_label.setObjectName('group_question_label')
-        self.choose_group_layout.setWidget(1, QtGui.QFormLayout.SpanningRole, self.group_question_label)
-        self.nogroup_radio_button = QtGui.QRadioButton(choose_group_dialog)
+        self.choose_group_layout.setWidget(1, QtWidgets.QFormLayout.SpanningRole, self.group_question_label)
+        self.nogroup_radio_button = QtWidgets.QRadioButton(choose_group_dialog)
         self.nogroup_radio_button.setChecked(True)
         self.nogroup_radio_button.setObjectName('nogroup_radio_button')
-        self.choose_group_layout.setWidget(2, QtGui.QFormLayout.LabelRole, self.nogroup_radio_button)
-        self.existing_radio_button = QtGui.QRadioButton(choose_group_dialog)
+        self.choose_group_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.nogroup_radio_button)
+        self.existing_radio_button = QtWidgets.QRadioButton(choose_group_dialog)
         self.existing_radio_button.setChecked(False)
         self.existing_radio_button.setObjectName('existing_radio_button')
-        self.choose_group_layout.setWidget(3, QtGui.QFormLayout.LabelRole, self.existing_radio_button)
-        self.group_combobox = QtGui.QComboBox(choose_group_dialog)
+        self.choose_group_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.existing_radio_button)
+        self.group_combobox = QtWidgets.QComboBox(choose_group_dialog)
         self.group_combobox.setObjectName('group_combobox')
-        self.choose_group_layout.setWidget(3, QtGui.QFormLayout.FieldRole, self.group_combobox)
-        self.new_radio_button = QtGui.QRadioButton(choose_group_dialog)
+        self.group_combobox.activated.connect(self.on_group_combobox_selected)
+        self.choose_group_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.group_combobox)
+        self.new_radio_button = QtWidgets.QRadioButton(choose_group_dialog)
         self.new_radio_button.setChecked(False)
         self.new_radio_button.setObjectName('new_radio_button')
-        self.choose_group_layout.setWidget(4, QtGui.QFormLayout.LabelRole, self.new_radio_button)
-        self.new_group_edit = QtGui.QLineEdit(choose_group_dialog)
+        self.choose_group_layout.setWidget(4, QtWidgets.QFormLayout.LabelRole, self.new_radio_button)
+        self.new_group_edit = QtWidgets.QLineEdit(choose_group_dialog)
         self.new_group_edit.setObjectName('new_group_edit')
-        self.choose_group_layout.setWidget(4, QtGui.QFormLayout.FieldRole, self.new_group_edit)
+        self.new_group_edit.textEdited.connect(self.on_new_group_edit_changed)
+        self.choose_group_layout.setWidget(4, QtWidgets.QFormLayout.FieldRole, self.new_group_edit)
         self.group_button_box = create_button_box(choose_group_dialog, 'buttonBox', ['ok'])
-        self.choose_group_layout.setWidget(5, QtGui.QFormLayout.FieldRole, self.group_button_box)
+        self.choose_group_layout.setWidget(5, QtWidgets.QFormLayout.FieldRole, self.group_button_box)
 
-        self.retranslateUi(choose_group_dialog)
+        self.retranslate_ui(choose_group_dialog)
         QtCore.QMetaObject.connectSlotsByName(choose_group_dialog)
 
-    def retranslateUi(self, choose_group_dialog):
+    def retranslate_ui(self, choose_group_dialog):
         """
         Translate the UI on the fly.
 
@@ -90,3 +85,22 @@ class Ui_ChooseGroupDialog(object):
         self.nogroup_radio_button.setText(translate('ImagePlugin.ChooseGroupForm', 'No group'))
         self.existing_radio_button.setText(translate('ImagePlugin.ChooseGroupForm', 'Existing group'))
         self.new_radio_button.setText(translate('ImagePlugin.ChooseGroupForm', 'New group'))
+
+    def on_group_combobox_selected(self, index):
+        """
+        Handles the activated signal from the existing group combobox when the
+        user makes a selection
+
+        :param index: position of the selected item in the combobox
+        """
+        self.existing_radio_button.setChecked(True)
+        self.group_combobox.setFocus()
+
+    def on_new_group_edit_changed(self, new_group):
+        """
+        Handles the textEdited signal from the new group text input field
+        when the user enters a new group name
+
+        :param new_group: new text entered by the user
+        """
+        self.new_radio_button.setChecked(True)

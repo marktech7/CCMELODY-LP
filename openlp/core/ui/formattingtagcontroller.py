@@ -1,40 +1,33 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`formattingtagform` provides an Tag Edit facility. The Base set are protected and included each time loaded.
 Custom tags can be defined and saved. The Custom Tag arrays are saved in a pickle so QSettings works on them. Base Tags
 cannot be changed.
 """
-
 import re
-from openlp.core.common import translate
-from openlp.core.lib import FormattingTags
+
+from openlp.core.common.i18n import translate
+from openlp.core.lib.formattingtags import FormattingTags
 
 
 class FormattingTagController(object):
@@ -47,10 +40,10 @@ class FormattingTagController(object):
         """
         self.html_tag_regex = re.compile(
             r'<(?:(?P<close>/(?=[^\s/>]+>))?'
-            r'(?P<tag>[^\s/!\?>]+)(?:\s+[^\s=]+="[^"]*")*\s*(?P<empty>/)?'
+            r'(?P<tag>[^\s/!?>]+)(?:\s+[^\s=]+="[^"]*")*\s*(?P<empty>/)?'
             r'|(?P<cdata>!\[CDATA\[(?:(?!\]\]>).)*\]\])'
             r'|(?P<procinst>\?(?:(?!\?>).)*\?)'
-            r'|(?P<comment>!--(?:(?!-->).)*--))>', re.UNICODE)
+            r'|(?P<comment>!--(?:(?!-->).)*--))>')
         self.html_regex = re.compile(r'^(?:[^<>]*%s)*[^<>]*$' % self.html_tag_regex.pattern)
 
     def pre_save(self):
@@ -79,19 +72,19 @@ class FormattingTagController(object):
         """
         for line_number, html1 in enumerate(self.protected_tags):
             if self._strip(html1['start tag']) == tag:
-                return translate('OpenLP.FormattingTagForm', 'Tag %s already defined.') % tag
+                return translate('OpenLP.FormattingTagForm', 'Tag {tag} already defined.').format(tag=tag)
             if self._strip(html1['desc']) == desc:
-                return translate('OpenLP.FormattingTagForm', 'Description %s already defined.') % tag
+                return translate('OpenLP.FormattingTagForm', 'Description {tag} already defined.').format(tag=tag)
         for line_number, html1 in enumerate(self.custom_tags):
             if self._strip(html1['start tag']) == tag:
-                return translate('OpenLP.FormattingTagForm', 'Tag %s already defined.') % tag
+                return translate('OpenLP.FormattingTagForm', 'Tag {tag} already defined.').format(tag=tag)
             if self._strip(html1['desc']) == desc:
-                return translate('OpenLP.FormattingTagForm', 'Description %s already defined.') % tag
+                return translate('OpenLP.FormattingTagForm', 'Description {tag} already defined.').format(tag=tag)
         tag = {
             'desc': desc,
-            'start tag': '{%s}' % tag,
+            'start tag': '{{{tag}}}'.format(tag=tag),
             'start html': start_html,
-            'end tag': '{/%s}' % tag,
+            'end tag': '{{/{tag}}}'.format(tag=tag),
             'end html': end_html,
             'protected': False,
             'temporary': False
@@ -137,7 +130,7 @@ class FormattingTagController(object):
                     elif not match.group('empty'):
                         end_tags.append(tag)
                 match = self.html_tag_regex.search(start_html, match.end())
-            return ''.join(map(lambda tag: '</%s>' % tag, reversed(end_tags)))
+            return ''.join(map(lambda tag: '</{tag}>'.format(tag=tag), reversed(end_tags)))
 
     def start_tag_changed(self, start_html, end_html):
         """
@@ -153,7 +146,8 @@ class FormattingTagController(object):
         end = self.start_html_to_end_html(start_html)
         if not end_html:
             if not end:
-                return translate('OpenLP.FormattingTagForm', 'Start tag %s is not valid HTML' % start_html), None
+                return translate('OpenLP.FormattingTagForm',
+                                 'Start tag {tag} is not valid HTML').format(tag=start_html), None
             return None, end
         return None, None
 
@@ -172,6 +166,8 @@ class FormattingTagController(object):
         if not end_html:
             return None, end
         if end and end != end_html:
-            return translate('OpenLP.FormattingTagForm',
-                             'End tag %s does not match end tag for start tag %s' % (end, start_html)), None
+            return (translate('OpenLP.FormattingTagForm',
+                              'End tag {end} does not match end tag for start tag {start}').format(end=end,
+                                                                                                   start=start_html),
+                    None)
         return None, None

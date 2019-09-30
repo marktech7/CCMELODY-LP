@@ -1,41 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import Registry, Settings, UiStrings, translate
-from openlp.core.lib import SettingsTab
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
-from openlp.plugins.bibles.lib import LayoutStyle, DisplayStyle, update_reference_separators, \
-    get_reference_separator, LanguageSelection
+from openlp.plugins.bibles.lib import DisplayStyle, LanguageSelection, LayoutStyle, get_reference_separator, \
+    update_reference_separators
+
 
 log = logging.getLogger(__name__)
 
@@ -46,95 +42,109 @@ class BiblesTab(SettingsTab):
     """
     log.info('Bible Tab loaded')
 
-    def _init_(self, parent, title, visible_title, icon_path):
+    def _init_(self, *args, **kwargs):
         self.paragraph_style = True
         self.show_new_chapters = False
         self.display_style = 0
-        super(BiblesTab, self).__init__(parent, title, visible_title, icon_path)
+        super().__init__(*args, **kwargs)
 
-    def setupUi(self):
+    def setup_ui(self):
         self.setObjectName('BiblesTab')
-        super(BiblesTab, self).setupUi()
-        self.verse_display_group_box = QtGui.QGroupBox(self.left_column)
+        super(BiblesTab, self).setup_ui()
+        self.verse_display_group_box = QtWidgets.QGroupBox(self.left_column)
         self.verse_display_group_box.setObjectName('verse_display_group_box')
-        self.verse_display_layout = QtGui.QFormLayout(self.verse_display_group_box)
+        self.verse_display_layout = QtWidgets.QFormLayout(self.verse_display_group_box)
         self.verse_display_layout.setObjectName('verse_display_layout')
-        self.is_verse_number_visible_check_box = QtGui.QCheckBox(self.verse_display_group_box)
+        self.is_verse_number_visible_check_box = QtWidgets.QCheckBox(self.verse_display_group_box)
         self.is_verse_number_visible_check_box.setObjectName('is_verse_number_visible_check_box')
         self.verse_display_layout.addRow(self.is_verse_number_visible_check_box)
-        self.new_chapters_check_box = QtGui.QCheckBox(self.verse_display_group_box)
+        self.new_chapters_check_box = QtWidgets.QCheckBox(self.verse_display_group_box)
         self.new_chapters_check_box.setObjectName('new_chapters_check_box')
         self.verse_display_layout.addRow(self.new_chapters_check_box)
-        self.display_style_label = QtGui.QLabel(self.verse_display_group_box)
+        self.display_style_label = QtWidgets.QLabel(self.verse_display_group_box)
         self.display_style_label.setObjectName('display_style_label')
-        self.display_style_combo_box = QtGui.QComboBox(self.verse_display_group_box)
+        self.display_style_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
         self.display_style_combo_box.addItems(['', '', '', ''])
         self.display_style_combo_box.setObjectName('display_style_combo_box')
         self.verse_display_layout.addRow(self.display_style_label, self.display_style_combo_box)
-        self.layout_style_label = QtGui.QLabel(self.verse_display_group_box)
+        self.layout_style_label = QtWidgets.QLabel(self.verse_display_group_box)
         self.layout_style_label.setObjectName('layout_style_label')
-        self.layout_style_combo_box = QtGui.QComboBox(self.verse_display_group_box)
+        self.layout_style_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
         self.layout_style_combo_box.setObjectName('layout_style_combo_box')
         self.layout_style_combo_box.addItems(['', '', ''])
         self.verse_display_layout.addRow(self.layout_style_label, self.layout_style_combo_box)
-        self.bible_second_check_box = QtGui.QCheckBox(self.verse_display_group_box)
+        self.bible_second_check_box = QtWidgets.QCheckBox(self.verse_display_group_box)
         self.bible_second_check_box.setObjectName('bible_second_check_box')
         self.verse_display_layout.addRow(self.bible_second_check_box)
-        self.bible_theme_label = QtGui.QLabel(self.verse_display_group_box)
+        self.bible_theme_label = QtWidgets.QLabel(self.verse_display_group_box)
         self.bible_theme_label.setObjectName('BibleTheme_label')
-        self.bible_theme_combo_box = QtGui.QComboBox(self.verse_display_group_box)
-        self.bible_theme_combo_box.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
-        self.bible_theme_combo_box.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.bible_theme_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
+        self.bible_theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
+        self.bible_theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.bible_theme_combo_box.addItem('')
         self.bible_theme_combo_box.setObjectName('BibleThemecombo_box')
         self.verse_display_layout.addRow(self.bible_theme_label, self.bible_theme_combo_box)
-        self.change_note_label = QtGui.QLabel(self.verse_display_group_box)
+        self.change_note_label = QtWidgets.QLabel(self.verse_display_group_box)
         self.change_note_label.setWordWrap(True)
         self.change_note_label.setObjectName('change_note_label')
         self.verse_display_layout.addRow(self.change_note_label)
         self.left_layout.addWidget(self.verse_display_group_box)
-        self.scripture_reference_group_box = QtGui.QGroupBox(self.left_column)
+        self.scripture_reference_group_box = QtWidgets.QGroupBox(self.left_column)
         self.scripture_reference_group_box.setObjectName('scripture_reference_group_box')
-        self.scripture_reference_layout = QtGui.QGridLayout(self.scripture_reference_group_box)
-        self.verse_separator_check_box = QtGui.QCheckBox(self.scripture_reference_group_box)
+        self.scripture_reference_layout = QtWidgets.QGridLayout(self.scripture_reference_group_box)
+        self.verse_separator_check_box = QtWidgets.QCheckBox(self.scripture_reference_group_box)
         self.verse_separator_check_box.setObjectName('verse_separator_check_box')
         self.scripture_reference_layout.addWidget(self.verse_separator_check_box, 0, 0)
-        self.verse_separator_line_edit = QtGui.QLineEdit(self.scripture_reference_group_box)
+        self.verse_separator_line_edit = QtWidgets.QLineEdit(self.scripture_reference_group_box)
         self.verse_separator_line_edit.setObjectName('verse_separator_line_edit')
         self.scripture_reference_layout.addWidget(self.verse_separator_line_edit, 0, 1)
-        self.range_separator_check_box = QtGui.QCheckBox(self.scripture_reference_group_box)
+        self.range_separator_check_box = QtWidgets.QCheckBox(self.scripture_reference_group_box)
         self.range_separator_check_box.setObjectName('range_separator_check_box')
         self.scripture_reference_layout.addWidget(self.range_separator_check_box, 1, 0)
-        self.range_separator_line_edit = QtGui.QLineEdit(self.scripture_reference_group_box)
+        self.range_separator_line_edit = QtWidgets.QLineEdit(self.scripture_reference_group_box)
         self.range_separator_line_edit.setObjectName('range_separator_line_edit')
         self.scripture_reference_layout.addWidget(self.range_separator_line_edit, 1, 1)
-        self.list_separator_check_box = QtGui.QCheckBox(self.scripture_reference_group_box)
+        self.list_separator_check_box = QtWidgets.QCheckBox(self.scripture_reference_group_box)
         self.list_separator_check_box.setObjectName('list_separator_check_box')
         self.scripture_reference_layout.addWidget(self.list_separator_check_box, 2, 0)
-        self.list_separator_line_edit = QtGui.QLineEdit(self.scripture_reference_group_box)
+        self.list_separator_line_edit = QtWidgets.QLineEdit(self.scripture_reference_group_box)
         self.list_separator_line_edit.setObjectName('list_separator_line_edit')
         self.scripture_reference_layout.addWidget(self.list_separator_line_edit, 2, 1)
-        self.end_separator_check_box = QtGui.QCheckBox(self.scripture_reference_group_box)
+        self.end_separator_check_box = QtWidgets.QCheckBox(self.scripture_reference_group_box)
         self.end_separator_check_box.setObjectName('end_separator_check_box')
         self.scripture_reference_layout.addWidget(self.end_separator_check_box, 3, 0)
-        self.end_separator_line_edit = QtGui.QLineEdit(self.scripture_reference_group_box)
+        self.end_separator_line_edit = QtWidgets.QLineEdit(self.scripture_reference_group_box)
         self.end_separator_line_edit.setObjectName('end_separator_line_edit')
         self.end_separator_line_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'[^0-9]*'),
                                                   self.end_separator_line_edit))
         self.scripture_reference_layout.addWidget(self.end_separator_line_edit, 3, 1)
         self.left_layout.addWidget(self.scripture_reference_group_box)
-        self.right_column.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Preferred)
-        self.language_selection_group_box = QtGui.QGroupBox(self.right_column)
+        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        self.language_selection_group_box = QtWidgets.QGroupBox(self.right_column)
         self.language_selection_group_box.setObjectName('language_selection_group_box')
-        self.language_selection_layout = QtGui.QVBoxLayout(self.language_selection_group_box)
-        self.language_selection_label = QtGui.QLabel(self.language_selection_group_box)
+        self.language_selection_layout = QtWidgets.QVBoxLayout(self.language_selection_group_box)
+        self.language_selection_label = QtWidgets.QLabel(self.language_selection_group_box)
         self.language_selection_label.setObjectName('language_selection_label')
-        self.language_selection_combo_box = QtGui.QComboBox(self.language_selection_group_box)
+        self.language_selection_combo_box = QtWidgets.QComboBox(self.language_selection_group_box)
         self.language_selection_combo_box.setObjectName('language_selection_combo_box')
         self.language_selection_combo_box.addItems(['', '', ''])
         self.language_selection_layout.addWidget(self.language_selection_label)
         self.language_selection_layout.addWidget(self.language_selection_combo_box)
         self.right_layout.addWidget(self.language_selection_group_box)
+        self.bible_quick_settings_group_box = QtWidgets.QGroupBox(self.right_column)
+        self.bible_quick_settings_group_box.setObjectName('bible_quick_settings_group_box')
+        self.right_layout.addWidget(self.bible_quick_settings_group_box)
+        self.search_settings_layout = QtWidgets.QFormLayout(self.bible_quick_settings_group_box)
+        self.search_settings_layout.setObjectName('search_settings_layout')
+        self.reset_to_combined_quick_search_check_box = QtWidgets.QCheckBox(self.bible_quick_settings_group_box)
+        self.reset_to_combined_quick_search_check_box.setObjectName('reset_to_combined_quick_search_check_box')
+        self.search_settings_layout.addRow(self.reset_to_combined_quick_search_check_box)
+        self.hide_combined_quick_error_check_box = QtWidgets.QCheckBox(self.bible_quick_settings_group_box)
+        self.hide_combined_quick_error_check_box.setObjectName('hide_combined_quick_error_check_box')
+        self.search_settings_layout.addRow(self.hide_combined_quick_error_check_box)
+        self.bible_search_while_typing_check_box = QtWidgets.QCheckBox(self.bible_quick_settings_group_box)
+        self.bible_search_while_typing_check_box.setObjectName('bible_search_while_typing_check_box')
+        self.search_settings_layout.addRow(self.bible_search_while_typing_check_box)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
         # Signals and slots
@@ -158,8 +168,14 @@ class BiblesTab(SettingsTab):
         self.end_separator_line_edit.editingFinished.connect(self.on_end_separator_line_edit_finished)
         Registry().register_function('theme_update_list', self.update_theme_list)
         self.language_selection_combo_box.activated.connect(self.on_language_selection_combo_box_changed)
+        self.reset_to_combined_quick_search_check_box.stateChanged.connect(
+            self.on_reset_to_combined_quick_search_check_box_changed)
+        self.hide_combined_quick_error_check_box.stateChanged.connect(
+            self.on_hide_combined_quick_error_check_box_changed)
+        self.bible_search_while_typing_check_box.stateChanged.connect(
+            self.on_bible_search_while_typing_check_box_changed)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         self.verse_display_group_box.setTitle(translate('BiblesPlugin.BiblesTab', 'Verse Display'))
         self.is_verse_number_visible_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Show verse numbers'))
         self.new_chapters_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Only show new chapter numbers'))
@@ -178,13 +194,13 @@ class BiblesTab(SettingsTab):
         self.display_style_combo_box.setItemText(DisplayStyle.Square,
                                                  translate('BiblesPlugin.BiblesTab', '[ And ]'))
         self.change_note_label.setText(translate('BiblesPlugin.BiblesTab',
-                                       'Note:\nChanges do not affect verses already in the service.'))
+                                       'Note: Changes do not affect verses in the Service'))
         self.bible_second_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Display second Bible verses'))
         self.scripture_reference_group_box.setTitle(translate('BiblesPlugin.BiblesTab', 'Custom Scripture References'))
-        self.verse_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Verse Separator:'))
-        self.range_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Range Separator:'))
-        self.list_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'List Separator:'))
-        self.end_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'End Mark:'))
+        self.verse_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Verse separator:'))
+        self.range_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'Range separator:'))
+        self.list_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'List separator:'))
+        self.end_separator_check_box.setText(translate('BiblesPlugin.BiblesTab', 'End mark:'))
         tip_text = translate('BiblesPlugin.BiblesTab',
                              'Multiple alternative verse separators may be defined.\nThey have to be separated by a '
                              'vertical bar "|".\nPlease clear this edit line to use the default value.')
@@ -201,6 +217,17 @@ class BiblesTab(SettingsTab):
             LanguageSelection.Application, translate('BiblesPlugin.BiblesTab', 'Application Language'))
         self.language_selection_combo_box.setItemText(
             LanguageSelection.English, translate('BiblesPlugin.BiblesTab', 'English'))
+        self.bible_quick_settings_group_box.setTitle(translate('BiblesPlugin.BiblesTab', 'Quick Search Settings'))
+        self.reset_to_combined_quick_search_check_box.setText(translate('BiblesPlugin.BiblesTab',
+                                                                        'Reset search type to "Text or Scripture'
+                                                                        ' Reference" on startup'))
+        self.hide_combined_quick_error_check_box.setText(translate('BiblesPlugin.BiblesTab',
+                                                                   'Don\'t show error if nothing is found in "Text or '
+                                                                   'Scripture Reference"'))
+        self.bible_search_while_typing_check_box.setText(translate('BiblesPlugin.BiblesTab',
+                                                                   'Search automatically while typing (Text search must'
+                                                                   ' contain a\nminimum of {count} characters and a '
+                                                                   'space for performance reasons)').format(count='8'))
 
     def on_bible_theme_combo_box_changed(self):
         self.bible_theme = self.bible_theme_combo_box.currentText()
@@ -309,6 +336,24 @@ class BiblesTab(SettingsTab):
                 self.end_separator_line_edit.setText(get_reference_separator('sep_e_default'))
                 self.end_separator_line_edit.setPalette(self.get_grey_text_palette(True))
 
+    def on_reset_to_combined_quick_search_check_box_changed(self, check_state):
+        """
+        Event handler for the 'hide_combined_quick_error' check box
+        """
+        self.reset_to_combined_quick_search = (check_state == QtCore.Qt.Checked)
+
+    def on_hide_combined_quick_error_check_box_changed(self, check_state):
+        """
+        Event handler for the 'hide_combined_quick_error' check box
+        """
+        self.hide_combined_quick_error = (check_state == QtCore.Qt.Checked)
+
+    def on_bible_search_while_typing_check_box_changed(self, check_state):
+        """
+        Event handler for the 'hide_combined_quick_error' check box
+        """
+        self.bible_search_while_typing = (check_state == QtCore.Qt.Checked)
+
     def load(self):
         settings = Settings()
         settings.beginGroup(self.settings_section)
@@ -362,6 +407,12 @@ class BiblesTab(SettingsTab):
             self.end_separator_check_box.setChecked(True)
         self.language_selection = settings.value('book name language')
         self.language_selection_combo_box.setCurrentIndex(self.language_selection)
+        self.reset_to_combined_quick_search = settings.value('reset to combined quick search')
+        self.reset_to_combined_quick_search_check_box.setChecked(self.reset_to_combined_quick_search)
+        self.hide_combined_quick_error = settings.value('hide combined quick error')
+        self.hide_combined_quick_error_check_box.setChecked(self.hide_combined_quick_error)
+        self.bible_search_while_typing = settings.value('is search while typing enabled')
+        self.bible_search_while_typing_check_box.setChecked(self.bible_search_while_typing)
         settings.endGroup()
 
     def save(self):
@@ -393,6 +444,9 @@ class BiblesTab(SettingsTab):
         if self.language_selection != settings.value('book name language'):
             settings.setValue('book name language', self.language_selection)
             self.settings_form.register_post_process('bibles_load_list')
+        settings.setValue('reset to combined quick search', self.reset_to_combined_quick_search)
+        settings.setValue('hide combined quick error', self.hide_combined_quick_error)
+        settings.setValue('is search while typing enabled', self.bible_search_while_typing)
         settings.endGroup()
         if self.tab_visited:
             self.settings_form.register_post_process('bibles_config_updated')

@@ -1,47 +1,46 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`upgrade` module provides a way for the database and schema that is the
 backend for the Songs plugin
 """
+import json
 import logging
+from pathlib import Path
 
-from sqlalchemy import Table, Column, ForeignKey, types
-from sqlalchemy.sql.expression import func, false, null, text
+from sqlalchemy import Column, ForeignKey, Table, types
+from sqlalchemy.sql.expression import false, func, null, text
 
-from openlp.core.lib.db import get_upgrade_op
-from openlp.core.common import trace_error_handler
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.db import drop_columns
+from openlp.core.common.json import OpenLPJSONEncoder
+from openlp.core.lib.db import PathType, get_upgrade_op
+
 
 log = logging.getLogger(__name__)
-__version__ = 4
+__version__ = 7
 
 
+# TODO: When removing an upgrade path the ftw-data needs updating to the minimum supported version
 def upgrade_1(session, metadata):
     """
     Version 1 upgrade.
@@ -58,7 +57,7 @@ def upgrade_1(session, metadata):
     :param metadata:
     """
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata, autoload=True)
+    metadata.reflect()
     if 'media_files_songs' in [t.name for t in metadata.tables.values()]:
         op.drop_table('media_files_songs')
         op.add_column('media_files', Column('song_id', types.Integer(), server_default=null()))
@@ -108,18 +107,88 @@ def upgrade_4(session, metadata):
 
     This upgrade adds a column for author type to the authors_songs table
     """
-    # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
-    # and copy the old values
+    # This is now empty due to a bug in the upgrade
+    pass
+
+
+def upgrade_5(session, metadata):
+    """
+    Version 5 upgrade.
+
+    This upgrade adds support for multiple songbooks
+    """
+    # This is now empty due to a bug in the upgrade
+    pass
+
+
+def upgrade_6(session, metadata):
+    """
+    Version 6 upgrade
+
+    This version corrects the errors in upgrades 4 and 5
+    """
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata)
-    if 'author_type' not in [col.name for col in songs_table.c.values()]:
-        op.create_table('authors_songs_tmp',
-                        Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
-                        Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-                        Column('author_type', types.String(), primary_key=True,
-                               nullable=False, server_default=text('""')))
+    metadata.reflect()
+    # Move upgrade 4 to here and correct it (authors_songs table, not songs table)
+    authors_songs = Table('authors_songs', metadata, autoload=True)
+    if 'author_type' not in [col.name for col in authors_songs.c.values()]:
+        # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
+        # and copy the old values
+        op.create_table(
+            'authors_songs_tmp',
+            Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
+            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+            Column('author_type', types.Unicode(255), primary_key=True,
+                   nullable=False, server_default=text('""'))
+        )
         op.execute('INSERT INTO authors_songs_tmp SELECT author_id, song_id, "" FROM authors_songs')
         op.drop_table('authors_songs')
         op.rename_table('authors_songs_tmp', 'authors_songs')
-    else:
-        log.warning('Skipping upgrade_4 step of upgrading the song db')
+    # Move upgrade 5 here to correct it
+    if 'songs_songbooks' not in [t.name for t in metadata.tables.values()]:
+        # Create the mapping table (songs <-> songbooks)
+        op.create_table(
+            'songs_songbooks',
+            Column('songbook_id', types.Integer(), ForeignKey('song_books.id'), primary_key=True),
+            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+            Column('entry', types.Unicode(255), primary_key=True, nullable=False)
+        )
+
+        # Migrate old data
+        op.execute('INSERT INTO songs_songbooks SELECT song_book_id, id, song_number FROM songs\
+                    WHERE song_book_id IS NOT NULL AND song_number IS NOT NULL AND song_book_id <> 0')
+
+        # Drop old columns
+        if metadata.bind.url.get_dialect().name == 'sqlite':
+            drop_columns(op, 'songs', ['song_book_id', 'song_number'])
+        else:
+            op.drop_constraint('songs_ibfk_1', 'songs', 'foreignkey')
+            op.drop_column('songs', 'song_book_id')
+            op.drop_column('songs', 'song_number')
+    # Finally, clean up our mess in people's databases
+    op.execute('DELETE FROM songs_songbooks WHERE songbook_id = 0')
+
+
+def upgrade_7(session, metadata):
+    """
+    Version 7 upgrade - Move file path from old db to JSON encoded path to new db. Upgrade added in 2.5 dev
+    """
+    log.debug('Starting upgrade_7 for file_path to JSON')
+    old_table = Table('media_files', metadata, autoload=True)
+    if 'file_path' not in [col.name for col in old_table.c.values()]:
+        op = get_upgrade_op(session)
+        op.add_column('media_files', Column('file_path', PathType()))
+        conn = op.get_bind()
+        results = conn.execute('SELECT * FROM media_files')
+        data_path = AppLocation.get_data_path()
+        for row in results.fetchall():
+            file_path_json = json.dumps(Path(row.file_name), cls=OpenLPJSONEncoder, base_path=data_path)
+            sql = 'UPDATE media_files SET file_path = \'{file_path_json}\' WHERE id = {id}'.format(
+                file_path_json=file_path_json, id=row.id)
+            conn.execute(sql)
+        # Drop old columns
+        if metadata.bind.url.get_dialect().name == 'sqlite':
+            drop_columns(op, 'media_files', ['file_name', ])
+        else:
+            op.drop_constraint('media_files', 'foreignkey')
+            op.drop_column('media_files', 'filenames')

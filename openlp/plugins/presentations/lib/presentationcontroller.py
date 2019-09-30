@@ -1,40 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import logging
-import os
 import shutil
+from pathlib import Path
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 
-from openlp.core.common import Registry, AppLocation, Settings, check_directory_exists
+from openlp.core.common import md5_hash
+from openlp.core.common.applocation import AppLocation
+from openlp.core.common.path import create_paths
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib import create_thumb, validate_thumb
+
 
 log = logging.getLogger(__name__)
 
@@ -92,20 +89,27 @@ class PresentationDocument(object):
         Returns a path to an image containing a preview for the requested slide
 
     """
-    def __init__(self, controller, name):
+    def __init__(self, controller, document_path):
         """
         Constructor for the PresentationController class
+
+        :param controller:
+        :param Path document_path: Path to the document to load.
+        :rtype: None
         """
         self.controller = controller
-        self._setup(name)
+        self._setup(document_path)
 
-    def _setup(self, name):
+    def _setup(self, document_path):
         """
         Run some initial setup. This method is separate from __init__ in order to mock it out in tests.
+
+        :param Path document_path: Path to the document to load.
+        :rtype: None
         """
         self.slide_number = 0
-        self.file_path = name
-        check_directory_exists(self.get_thumbnail_folder())
+        self.file_path = document_path
+        create_paths(self.get_thumbnail_folder())
 
     def load_presentation(self):
         """
@@ -122,39 +126,56 @@ class PresentationDocument(object):
         a file, e.g. thumbnails
         """
         try:
-            if os.path.exists(self.get_thumbnail_folder()):
-                shutil.rmtree(self.get_thumbnail_folder())
-            if os.path.exists(self.get_temp_folder()):
-                shutil.rmtree(self.get_temp_folder())
+            thumbnail_folder_path = self.get_thumbnail_folder()
+            temp_folder_path = self.get_temp_folder()
+            if thumbnail_folder_path.exists():
+                shutil.rmtree(thumbnail_folder_path)
+            if temp_folder_path.exists():
+                shutil.rmtree(temp_folder_path)
         except OSError:
             log.exception('Failed to delete presentation controller files')
-
-    def get_file_name(self):
-        """
-        Return just the filename of the presentation, without the directory
-        """
-        return os.path.split(self.file_path)[1]
 
     def get_thumbnail_folder(self):
         """
         The location where thumbnail images will be stored
+
+        :return: The path to the thumbnail
+        :rtype: Path
         """
-        return os.path.join(self.controller.thumbnail_folder, self.get_file_name())
+        # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
+        #       get_temp_folder and PresentationPluginapp_startup is removed
+        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+            folder = md5_hash(bytes(self.file_path))
+        else:
+            folder = self.file_path.name
+        return Path(self.controller.thumbnail_folder, folder)
 
     def get_temp_folder(self):
         """
         The location where thumbnail images will be stored
+
+        :return: The path to the temporary file folder
+        :rtype: Path
         """
-        return os.path.join(self.controller.temp_folder, self.get_file_name())
+        # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
+        #       get_thumbnail_folder and PresentationPluginapp_startup is removed
+        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+            folder = md5_hash(bytes(self.file_path))
+        else:
+            folder = self.file_path.name
+        return Path(self.controller.temp_folder, folder)
 
     def check_thumbnails(self):
         """
-        Returns ``True`` if the thumbnail images exist and are more recent than the powerpoint file.
+        Check that the last thumbnail image exists and is valid and are more recent than the powerpoint file.
+
+        :return: If the thumbnail is valid
+        :rtype: bool
         """
-        last_image = self.get_thumbnail_path(self.get_slide_count(), True)
-        if not (last_image and os.path.isfile(last_image)):
+        last_image_path = self.get_thumbnail_path(self.get_slide_count(), True)
+        if not (last_image_path and last_image_path.is_file()):
             return False
-        return validate_thumb(self.file_path, last_image)
+        return validate_thumb(Path(self.file_path), Path(last_image_path))
 
     def close_presentation(self):
         """
@@ -227,35 +248,43 @@ class PresentationDocument(object):
     def next_step(self):
         """
         Triggers the next effect of slide on the running presentation. This might be the next animation on the current
-        slide, or the next slide
+        slide, or the next slide.
+        :rtype bool: True if we stepped beyond the slides of the presentation
         """
-        pass
+        return False
 
     def previous_step(self):
         """
         Triggers the previous slide on the running presentation
+        :rtype bool: True if we stepped beyond the slides of the presentation
         """
-        pass
+        return False
 
-    def convert_thumbnail(self, file, idx):
+    def convert_thumbnail(self, image_path, index):
         """
-        Convert the slide image the application made to a standard 320x240 .png image.
+        Convert the slide image the application made to a scaled 360px height .png image.
+
+        :param Path image_path: Path to the image to create a thumbnail of
+        :param int index: The index of the slide to create the thumbnail for.
+        :rtype: None
         """
         if self.check_thumbnails():
             return
-        if os.path.isfile(file):
-            thumb_path = self.get_thumbnail_path(idx, False)
-            create_thumb(file, thumb_path, False, QtCore.QSize(320, 240))
+        if image_path.is_file():
+            thumb_path = self.get_thumbnail_path(index, False)
+            create_thumb(image_path, thumb_path, False, QtCore.QSize(-1, 360))
 
-    def get_thumbnail_path(self, slide_no, check_exists):
+    def get_thumbnail_path(self, slide_no, check_exists=False):
         """
         Returns an image path containing a preview for the requested slide
 
-        :param slide_no: The slide an image is required for, starting at 1
-        :param check_exists:
+        :param int slide_no: The slide an image is required for, starting at 1
+        :param bool check_exists: Check if the generated path exists
+        :return: The path, or None if the :param:`check_exists` is True and the file does not exist
+        :rtype: Path | None
         """
-        path = os.path.join(self.get_thumbnail_folder(), self.controller.thumbnail_prefix + str(slide_no) + '.png')
-        if os.path.isfile(path) or not check_exists:
+        path = self.get_thumbnail_folder() / (self.controller.thumbnail_prefix + str(slide_no) + '.png')
+        if path.is_file() or not check_exists:
             return path
         else:
             return None
@@ -275,7 +304,7 @@ class PresentationDocument(object):
             prefix = 'live'
         else:
             prefix = 'preview'
-        Registry().execute('slidecontroller_%s_change' % prefix, self.slide_number - 1)
+        Registry().execute('slidecontroller_{prefix}_change'.format(prefix=prefix), self.slide_number - 1)
 
     def get_slide_text(self, slide_no):
         """
@@ -298,43 +327,38 @@ class PresentationDocument(object):
         Reads the titles from the titles file and
         the notes files and returns the content in two lists
         """
-        titles = []
         notes = []
-        titles_file = os.path.join(self.get_thumbnail_folder(), 'titles.txt')
-        if os.path.exists(titles_file):
-            try:
-                with open(titles_file) as fi:
-                    titles = fi.read().splitlines()
-            except:
-                log.exception('Failed to open/read existing titles file')
-                titles = []
+        titles_path = self.get_thumbnail_folder() / 'titles.txt'
+        try:
+            titles = titles_path.read_text().splitlines()
+        except Exception:
+            log.exception('Failed to open/read existing titles file')
+            titles = []
         for slide_no, title in enumerate(titles, 1):
-            notes_file = os.path.join(self.get_thumbnail_folder(), 'slideNotes%d.txt' % slide_no)
-            note = ''
-            if os.path.exists(notes_file):
-                try:
-                    with open(notes_file) as fn:
-                        note = fn.read()
-                except:
-                    log.exception('Failed to open/read notes file')
-                    note = ''
+            notes_path = self.get_thumbnail_folder() / 'slideNotes{number:d}.txt'.format(number=slide_no)
+            try:
+                note = notes_path.read_text()
+            except Exception:
+                log.exception('Failed to open/read notes file')
+                note = ''
             notes.append(note)
         return titles, notes
 
     def save_titles_and_notes(self, titles, notes):
         """
-        Performs the actual persisting of titles to the titles.txt
-        and notes to the slideNote%.txt
+        Performs the actual persisting of titles to the titles.txt and notes to the slideNote%.txt
+
+        :param list[str] titles: The titles to save
+        :param list[str] notes: The notes to save
+        :rtype: None
         """
         if titles:
-            titles_file = os.path.join(self.get_thumbnail_folder(), 'titles.txt')
-            with open(titles_file, mode='w') as fo:
-                fo.writelines(titles)
+            titles_path = self.get_thumbnail_folder() / 'titles.txt'
+            titles_path.write_text('\n'.join(titles))
         if notes:
             for slide_no, note in enumerate(notes, 1):
-                notes_file = os.path.join(self.get_thumbnail_folder(), 'slideNotes%d.txt' % slide_no)
-                with open(notes_file, mode='w') as fn:
-                    fn.write(note)
+                notes_path = self.get_thumbnail_folder() / 'slideNotes{number:d}.txt'.format(number=slide_no)
+                notes_path.write_text(note)
 
 
 class PresentationController(object):
@@ -388,7 +412,8 @@ class PresentationController(object):
     """
     log.info('PresentationController loaded')
 
-    def __init__(self, plugin=None, name='PresentationController', document_class=PresentationDocument):
+    def __init__(self, plugin=None, name='PresentationController', document_class=PresentationDocument,
+                 display_name=None):
         """
         This is the constructor for the presentationcontroller object. This provides an easy way for descendent plugins
 
@@ -408,14 +433,14 @@ class PresentationController(object):
         self.docs = []
         self.plugin = plugin
         self.name = name
+        self.display_name = display_name if display_name is not None else name
         self.document_class = document_class
         self.settings_section = self.plugin.settings_section
         self.available = None
-        self.temp_folder = os.path.join(AppLocation.get_section_data_path(self.settings_section), name)
-        self.thumbnail_folder = os.path.join(AppLocation.get_section_data_path(self.settings_section), 'thumbnails')
+        self.temp_folder = AppLocation.get_section_data_path(self.settings_section) / name
+        self.thumbnail_folder = AppLocation.get_section_data_path(self.settings_section) / 'thumbnails'
         self.thumbnail_prefix = 'slide'
-        check_directory_exists(self.thumbnail_folder)
-        check_directory_exists(self.temp_folder)
+        create_paths(self.thumbnail_folder, self.temp_folder)
 
     def enabled(self):
         """
@@ -450,11 +475,15 @@ class PresentationController(object):
         log.debug('Kill')
         self.close_presentation()
 
-    def add_document(self, name):
+    def add_document(self, document_path):
         """
         Called when a new presentation document is opened.
+
+        :param Path document_path: Path to the document to load
+        :return: The document
+        :rtype: PresentationDocument
         """
-        document = self.document_class(self, name)
+        document = self.document_class(self, document_path)
         self.docs.append(document)
         return document
 

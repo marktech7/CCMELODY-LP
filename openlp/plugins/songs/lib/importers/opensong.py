@@ -1,42 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import logging
 import re
 
 from lxml import objectify
 from lxml.etree import Error, LxmlError
 
-from openlp.core.common import translate
+from openlp.core.common import normalize_str
+from openlp.core.common.i18n import translate
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.ui import SongStrings
+
 
 log = logging.getLogger(__name__)
 
@@ -94,7 +89,7 @@ class OpenSongImport(SongImport):
     All verses are imported and tagged appropriately.
 
     Guitar chords can be provided "above" the lyrics (the line is preceded by a period "."), and one or more "_" can
-    be used to signify long-drawn-out words. Chords and "_" are removed by this importer. For example::
+    be used to signify long-drawn-out words. For example::
 
         . A7        Bm
         1 Some____ Words
@@ -123,12 +118,11 @@ class OpenSongImport(SongImport):
         if not isinstance(self.import_source, list):
             return
         self.import_wizard.progress_bar.setMaximum(len(self.import_source))
-        for filename in self.import_source:
+        for file_path in self.import_source:
             if self.stop_import_flag:
                 return
-            song_file = open(filename, 'rb')
-            self.do_import_file(song_file)
-            song_file.close()
+            with file_path.open('rb') as song_file:
+                self.do_import_file(song_file)
 
     def do_import_file(self, file):
         """
@@ -163,6 +157,7 @@ class OpenSongImport(SongImport):
                 ustring = str(root.__getattr__(attr))
                 if isinstance(fn_or_string, str):
                     if attr in ['ccli']:
+                        ustring = ''.join(re.findall(r'\d+', ustring))
                         if ustring:
                             setattr(self, fn_or_string, int(ustring))
                         else:
@@ -178,12 +173,12 @@ class OpenSongImport(SongImport):
         topics = set(self.topics)
         if 'theme' in fields:
             theme = str(root.theme)
-            subthemes = theme[theme.find(':')+1:].split('/')
+            subthemes = theme[theme.find(':') + 1:].split('/')
             for topic in subthemes:
                 topics.add(topic.strip())
         if 'alttheme' in fields:
             theme = str(root.alttheme)
-            subthemes = theme[theme.find(':')+1:].split('/')
+            subthemes = theme[theme.find(':') + 1:].split('/')
             for topic in subthemes:
                 topics.add(topic.strip())
         self.topics = list(topics)
@@ -201,14 +196,34 @@ class OpenSongImport(SongImport):
             lyrics = str(root.lyrics)
         else:
             lyrics = ''
+        chords = []
         for this_line in lyrics.split('\n'):
             if not this_line.strip():
                 continue
             # skip this line if it is a comment
             if this_line.startswith(';'):
                 continue
-            # skip guitar chords and page and column breaks
-            if this_line.startswith('.') or this_line.startswith('---') or this_line.startswith('-!!'):
+            # skip page and column breaks
+            if this_line.startswith('---') or this_line.startswith('-!!'):
+                continue
+            # guitar chords marker
+            if this_line.startswith('.'):
+                # Find the position of the chords so they can be inserted in the lyrics
+                chords = []
+                this_line = this_line[1:]
+                chord = ''
+                i = 0
+                while i < len(this_line):
+                    if this_line[i] != ' ':
+                        chord_pos = i
+                        chord += this_line[i]
+                        i += 1
+                        while i < len(this_line) and this_line[i] != ' ':
+                            chord += this_line[i]
+                            i += 1
+                        chords.append((chord_pos, chord))
+                        chord = ''
+                    i += 1
                 continue
             # verse/chorus/etc. marker
             if this_line.startswith('['):
@@ -217,7 +232,7 @@ class OpenSongImport(SongImport):
                 content = this_line[1:right_bracket].lower()
                 # have we got any digits? If so, verse number is everything from the digits to the end (openlp does not
                 # have concept of part verses, so just ignore any non integers on the end (including floats))
-                match = re.match('(\D*)(\d+)', content)
+                match = re.match(r'(\D*)(\d+)', content)
                 if match is not None:
                     verse_tag = match.group(1)
                     verse_num = match.group(2)
@@ -234,14 +249,22 @@ class OpenSongImport(SongImport):
             # number at start of line.. it's verse number
             if this_line[0].isdigit():
                 verse_num = this_line[0]
-                this_line = this_line[1:].strip()
+                this_line = this_line[1:]
             verses.setdefault(verse_tag, {})
             verses[verse_tag].setdefault(verse_num, {})
             if inst not in verses[verse_tag][verse_num]:
                 verses[verse_tag][verse_num][inst] = []
                 our_verse_order.append([verse_tag, verse_num, inst])
+            # If chords exists insert them
+            if chords and Settings().value('songs/enable chords') and not Settings().value(
+                    'songs/disable chords import'):
+                offset = 0
+                for (column, chord) in chords:
+                    this_line = '{pre}[{chord}]{post}'.format(pre=this_line[:offset + column], chord=chord,
+                                                              post=this_line[offset + column:])
+                    offset += len(chord) + 2
             # Tidy text and remove the ____s from extended words
-            this_line = self.tidy_text(this_line)
+            this_line = normalize_str(this_line)
             this_line = this_line.replace('_', '')
             this_line = this_line.replace('||', '\n[---]\n')
             this_line = this_line.strip()
@@ -260,8 +283,8 @@ class OpenSongImport(SongImport):
             length = 0
             while length < len(verse_num) and verse_num[length].isnumeric():
                 length += 1
-            verse_def = '%s%s' % (verse_tag, verse_num[:length])
-            verse_joints[verse_def] = '%s\n[---]\n%s' % (verse_joints[verse_def], lines) \
+            verse_def = '{tag}{number}'.format(tag=verse_tag, number=verse_num[:length])
+            verse_joints[verse_def] = '{verse}\n[---]\n{lines}'.format(verse=verse_joints[verse_def], lines=lines) \
                 if verse_def in verse_joints else lines
         # Parsing the dictionary produces the elements in a non-intuitive order.  While it "works", it's not a
         # natural layout should the user come back to edit the song.  Instead we sort by the verse type, so that we
@@ -281,7 +304,7 @@ class OpenSongImport(SongImport):
             # whitespace.
             order = order.lower().split()
             for verse_def in order:
-                match = re.match('(\D*)(\d+.*)', verse_def)
+                match = re.match(r'(\D*)(\d+.*)', verse_def)
                 if match is not None:
                     verse_tag = match.group(1)
                     verse_num = match.group(2)
@@ -293,11 +316,11 @@ class OpenSongImport(SongImport):
                     verse_num = '1'
                 verse_index = VerseType.from_loose_input(verse_tag)
                 verse_tag = VerseType.tags[verse_index]
-                verse_def = '%s%s' % (verse_tag, verse_num)
+                verse_def = '{tag}{number}'.format(tag=verse_tag, number=verse_num)
                 if verse_num in verses.get(verse_tag, {}):
                     self.verse_order_list.append(verse_def)
                 else:
-                    log.info('Got order %s but not in verse tags, dropping this item from presentation order',
-                             verse_def)
+                    log.info('Got order {order} but not in verse tags, dropping this item from presentation '
+                             'order'.format(order=verse_def))
         if not self.finish():
             self.log_error(file.name)

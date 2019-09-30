@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The XML of `Foilpresenter <http://foilpresenter.de/>`_  songs is of the format::
 
@@ -89,20 +82,19 @@ The XML of `Foilpresenter <http://foilpresenter.de/>`_  songs is of the format::
     </kategorien>
     </foilpresenterfolie>
 """
-
 import logging
 import re
-import os
 
 from lxml import etree, objectify
 
-from openlp.core.lib import translate
-from openlp.core.ui.wizard import WizardStrings
-from openlp.plugins.songs.lib import clean_song, VerseType
-from openlp.plugins.songs.lib.importers.songimport import SongImport
+from openlp.core.common.i18n import translate
+from openlp.core.widgets.wizard import WizardStrings
+from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Author, Book, Song, Topic
-from openlp.plugins.songs.lib.ui import SongStrings
+from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
+from openlp.plugins.songs.lib.ui import SongStrings
+
 
 log = logging.getLogger(__name__)
 
@@ -128,14 +120,14 @@ class FoilPresenterImport(SongImport):
         for file_path in self.import_source:
             if self.stop_import_flag:
                 return
-            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType % os.path.basename(file_path))
+            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=file_path.name))
             try:
-                parsed_file = etree.parse(file_path, parser)
+                parsed_file = etree.parse(str(file_path), parser)
                 xml = etree.tostring(parsed_file).decode()
                 self.foil_presenter.xml_to_song(xml)
             except etree.XMLSyntaxError:
                 self.log_error(file_path, SongStrings.XMLSyntaxError)
-                log.exception('XML syntax error in file %s' % file_path)
+                log.exception('XML syntax error in file {path}'.format(path=file_path))
 
 
 class FoilPresenter(object):
@@ -241,16 +233,6 @@ class FoilPresenter(object):
             clean_song(self.manager, song)
             self.manager.save_object(song)
 
-    def _child(self, element):
-        """
-        This returns the text of an element as unicode string.
-
-        :param element: The element
-        """
-        if element is not None:
-            return str(element)
-        return ''
-
     def _process_authors(self, foilpresenterfolie, song):
         """
         Adds the authors specified in the XML to the song.
@@ -260,7 +242,7 @@ class FoilPresenter(object):
         """
         authors = []
         try:
-            copyright = self._child(foilpresenterfolie.copyright.text_)
+            copyright = to_str(foilpresenterfolie.copyright.text_)
         except AttributeError:
             copyright = None
         if copyright:
@@ -292,15 +274,15 @@ class FoilPresenter(object):
             elif copyright.find('C,)') != -1:
                 temp = copyright.partition('C,)')
                 copyright = temp[0]
-            copyright = re.compile('\\n').sub(' ', copyright)
-            copyright = re.compile('\(.*\)').sub('', copyright)
+            copyright = re.compile(r'\\n').sub(' ', copyright)
+            copyright = re.compile(r'\(.*\)').sub('', copyright)
             if copyright.find('Rechte') != -1:
                 temp = copyright.partition('Rechte')
                 copyright = temp[0]
-            markers = ['Text +u\.?n?d? +Melodie[\w\,\. ]*:',
-                       'Text +u\.?n?d? +Musik', 'T & M', 'Melodie und Satz',
-                       'Text[\w\,\. ]*:', 'Melodie', 'Musik', 'Satz',
-                       'Weise', '[dD]eutsch', '[dD]t[\.\:]', 'Englisch',
+            markers = [r'Text +u\.?n?d? +Melodie[\w\,\. ]*:',
+                       r'Text +u\.?n?d? +Musik', 'T & M', 'Melodie und Satz',
+                       r'Text[\w\,\. ]*:', 'Melodie', 'Musik', 'Satz',
+                       'Weise', '[dD]eutsch', r'[dD]t[\.\:]', 'Englisch',
                        '[oO]riginal', 'Bearbeitung', '[R|r]efrain']
             for marker in markers:
                 copyright = re.compile(marker).sub('<marker>', copyright, re.U)
@@ -320,17 +302,17 @@ class FoilPresenter(object):
                     break
             author_temp = []
             for author in strings:
-                temp = re.split(',(?=\D{2})|(?<=\D),|\/(?=\D{3,})|(?<=\D);', author)
+                temp = re.split(r',(?=\D{2})|(?<=\D),|/(?=\D{3,})|(?<=\D);', author)
                 for tempx in temp:
                     author_temp.append(tempx)
                 for author in author_temp:
-                    regex = '^[\/,;\-\s\.]+|[\/,;\-\s\.]+$|\s*[0-9]{4}\s*[\-\/]?\s*([0-9]{4})?[\/,;\-\s\.]*$'
+                    regex = r'^[\/,;\-\s\.]+|[\/,;\-\s\.]+$|\s*[0-9]{4}\s*[\-\/]?\s*([0-9]{4})?[\/,;\-\s\.]*$'
                     author = re.compile(regex).sub('', author)
-                    author = re.compile('[0-9]{1,2}\.\s?J(ahr)?h\.|um\s*$|vor\s*$').sub('', author)
-                    author = re.compile('[N|n]ach.*$').sub('', author)
+                    author = re.compile(r'[0-9]{1,2}\.\s?J(ahr)?h\.|um\s*$|vor\s*$').sub('', author)
+                    author = re.compile(r'[N|n]ach.*$').sub('', author)
                     author = author.strip()
-                    if re.search('\w+\.?\s+\w{3,}\s+[a|u]nd\s|\w+\.?\s+\w{3,}\s+&\s', author, re.U):
-                        temp = re.split('\s[a|u]nd\s|\s&\s', author)
+                    if re.search(r'\w+\.?\s+\w{3,}\s+[a|u]nd\s|\w+\.?\s+\w{3,}\s+&\s', author, re.U):
+                        temp = re.split(r'\s[a|u]nd\s|\s&\s', author)
                         for tempx in temp:
                             tempx = tempx.strip()
                             authors.append(tempx)
@@ -353,7 +335,7 @@ class FoilPresenter(object):
         :param song: The song object.
         """
         try:
-            song.ccli_number = self._child(foilpresenterfolie.ccliid)
+            song.ccli_number = to_str(foilpresenterfolie.ccliid)
         except AttributeError:
             song.ccli_number = ''
 
@@ -365,7 +347,7 @@ class FoilPresenter(object):
         :param song: The song object.
         """
         try:
-            song.comments = self._child(foilpresenterfolie.notiz)
+            song.comments = to_str(foilpresenterfolie.notiz)
         except AttributeError:
             song.comments = ''
 
@@ -377,7 +359,7 @@ class FoilPresenter(object):
         :param song: The song object.
         """
         try:
-            song.copyright = self._child(foilpresenterfolie.copyright.text_)
+            song.copyright = to_str(foilpresenterfolie.copyright.text_)
         except AttributeError:
             song.copyright = ''
 
@@ -403,19 +385,19 @@ class FoilPresenter(object):
             VerseType.tags[VerseType.PreChorus]: 1
         }
         if not hasattr(foilpresenterfolie.strophen, 'strophe'):
-            self.importer.log_error(self._child(foilpresenterfolie.titel),
+            self.importer.log_error(to_str(foilpresenterfolie.titel),
                                     str(translate('SongsPlugin.FoilPresenterSongImport',
                                                   'Invalid Foilpresenter song file. No verses found.')))
             self.save_song = False
             return
         for strophe in foilpresenterfolie.strophen.strophe:
-            text = self._child(strophe.text_) if hasattr(strophe, 'text_') else ''
-            verse_name = self._child(strophe.key)
+            text = to_str(strophe.text_) if hasattr(strophe, 'text_') else ''
+            verse_name = to_str(strophe.key)
             children = strophe.getchildren()
             sortnr = False
             for child in children:
                 if child.tag == 'sortnr':
-                    verse_sortnr = self._child(strophe.sortnr)
+                    verse_sortnr = to_str(strophe.sortnr)
                     sortnr = True
                 # In older Version there is no sortnr, but we need one
             if not sortnr:
@@ -491,7 +473,7 @@ class FoilPresenter(object):
         song.song_number = ''
         try:
             for bucheintrag in foilpresenterfolie.buch.bucheintrag:
-                book_name = self._child(bucheintrag.name)
+                book_name = to_str(bucheintrag.name)
                 if book_name:
                     book = self.manager.get_object_filtered(Book, Book.name == book_name)
                     if book is None:
@@ -500,8 +482,8 @@ class FoilPresenter(object):
                         self.manager.save_object(book)
                     song.song_book_id = book.id
                     try:
-                        if self._child(bucheintrag.nummer):
-                            song.song_number = self._child(bucheintrag.nummer)
+                        if to_str(bucheintrag.nummer):
+                            song.song_number = to_str(bucheintrag.nummer)
                     except AttributeError:
                         pass
                     # We only support one song book, so take the first one.
@@ -519,13 +501,13 @@ class FoilPresenter(object):
         try:
             for title_string in foilpresenterfolie.titel.titelstring:
                 if not song.title:
-                    song.title = self._child(title_string)
+                    song.title = to_str(title_string)
                     song.alternate_title = ''
                 else:
-                    song.alternate_title = self._child(title_string)
+                    song.alternate_title = to_str(title_string)
         except AttributeError:
             # Use first line of first verse
-            first_line = self._child(foilpresenterfolie.strophen.strophe.text_)
+            first_line = to_str(foilpresenterfolie.strophen.strophe.text_)
             song.title = first_line.split('\n')[0]
 
     def _process_topics(self, foilpresenterfolie, song):
@@ -537,7 +519,7 @@ class FoilPresenter(object):
         """
         try:
             for name in foilpresenterfolie.kategorien.name:
-                topic_text = self._child(name)
+                topic_text = to_str(name)
                 if topic_text:
                     topic = self.manager.get_object_filtered(Topic, Topic.name == topic_text)
                     if topic is None:
@@ -547,3 +529,14 @@ class FoilPresenter(object):
                     song.topics.append(topic)
         except AttributeError:
             pass
+
+
+def to_str(element):
+    """
+    This returns the text of an element as unicode string.
+
+    :param element: The element
+    """
+    if element is not None:
+        return str(element)
+    return ''

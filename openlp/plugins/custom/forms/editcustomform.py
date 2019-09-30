@@ -1,47 +1,41 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Registry, translate
+from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box
-from openlp.plugins.custom.lib import CustomXMLBuilder, CustomXMLParser
+from openlp.plugins.custom.forms.editcustomdialog import Ui_CustomEditDialog
+from openlp.plugins.custom.forms.editcustomslideform import EditCustomSlideForm
+from openlp.plugins.custom.lib.customxmlhandler import CustomXMLBuilder, CustomXMLParser
 from openlp.plugins.custom.lib.db import CustomSlide
-from .editcustomdialog import Ui_CustomEditDialog
-from .editcustomslideform import EditCustomSlideForm
 
 log = logging.getLogger(__name__)
 
 
-class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
+class EditCustomForm(QtWidgets.QDialog, Ui_CustomEditDialog):
     """
     Class documentation goes here.
     """
@@ -51,10 +45,11 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
         """
         Constructor
         """
-        super(EditCustomForm, self).__init__(parent)
+        super(EditCustomForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                             QtCore.Qt.WindowCloseButtonHint)
         self.manager = manager
         self.media_item = media_item
-        self.setupUi(self)
+        self.setup_ui(self)
         # Create other objects and forms.
         self.edit_slide_form = EditCustomSlideForm(self)
         # Connecting signals and slots
@@ -108,7 +103,7 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
         """
         log.debug('accept')
         if self.save_custom():
-            QtGui.QDialog.accept(self)
+            QtWidgets.QDialog.accept(self)
 
     def save_custom(self):
         """
@@ -153,7 +148,7 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
         Add a new blank slide.
         """
         self.edit_slide_form.set_text('')
-        if self.edit_slide_form.exec_():
+        if self.edit_slide_form.exec():
             self.slide_list_view.addItems(self.edit_slide_form.get_text())
 
     def on_edit_button_clicked(self):
@@ -161,7 +156,7 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
         Edit the currently selected slide.
         """
         self.edit_slide_form.set_text(self.slide_list_view.currentItem().text())
-        if self.edit_slide_form.exec_():
+        if self.edit_slide_form.exec():
             self.update_slide_list(self.edit_slide_form.get_text())
 
     def on_edit_all_button_clicked(self):
@@ -175,7 +170,7 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
             if row != self.slide_list_view.count() - 1:
                 slide_text += '\n[===]\n'
         self.edit_slide_form.set_text(slide_text)
-        if self.edit_slide_form.exec_():
+        if self.edit_slide_form.exec():
             self.update_slide_list(self.edit_slide_form.get_text(), True)
 
     def on_preview_button_clicked(self):
@@ -205,6 +200,7 @@ class EditCustomForm(QtGui.QDialog, Ui_CustomEditDialog):
             # Insert all slides to make the old_slides list complete.
             for slide in slides:
                 old_slides.insert(old_row, slide)
+                old_row += 1
             self.slide_list_view.addItems(old_slides)
         self.slide_list_view.repaint()
 

@@ -1,41 +1,38 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the ZionWorx song importer.
 """
-
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from tests.functional import MagicMock, patch
-from openlp.plugins.songs.lib.importers.zionworx import ZionWorxImport
+from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.importers.songimport import SongImport
-from openlp.core.common import Registry
+from openlp.plugins.songs.lib.importers.zionworx import ZionWorxImport
+from tests.helpers.songfileimport import SongImportTestHelper
+from tests.utils.constants import RESOURCE_PATH
+
+
+TEST_PATH = RESOURCE_PATH / 'songs' / 'zionworx'
 
 
 class TestZionWorxImport(TestCase):
@@ -48,7 +45,7 @@ class TestZionWorxImport(TestCase):
         """
         Registry.create()
 
-    def create_importer_test(self):
+    def test_create_importer(self):
         """
         Test creating an instance of the ZionWorx file importer
         """
@@ -57,7 +54,21 @@ class TestZionWorxImport(TestCase):
             mocked_manager = MagicMock()
 
             # WHEN: An importer object is created
-            importer = ZionWorxImport(mocked_manager, filenames=[])
+            importer = ZionWorxImport(mocked_manager, file_paths=[])
 
             # THEN: The importer should be an instance of SongImport
-            self.assertIsInstance(importer, SongImport)
+            assert isinstance(importer, SongImport)
+
+
+class TestZionWorxFileImport(SongImportTestHelper):
+
+    def __init__(self, *args, **kwargs):
+        self.importer_class_name = 'ZionWorxImport'
+        self.importer_module_name = 'zionworx'
+        super(TestZionWorxFileImport, self).__init__(*args, **kwargs)
+
+    def test_song_import(self):
+        """
+        Test that loading an ZionWorx file works correctly on various files
+        """
+        self.file_import(TEST_PATH / 'zionworx.csv', self.load_external_result_data(TEST_PATH / 'zionworx.json'))

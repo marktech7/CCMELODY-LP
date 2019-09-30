@@ -1,44 +1,34 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.core.lib.settingstab` module contains the base SettingsTab class which plugins use for adding their
 own tab to the settings dialog.
 """
+from PyQt5 import QtWidgets
+
+from openlp.core.common.mixins import RegistryProperties
 
 
-from PyQt4 import QtGui
-
-
-from openlp.core.common import RegistryProperties
-
-
-class SettingsTab(QtGui.QWidget, RegistryProperties):
+class SettingsTab(QtWidgets.QWidget, RegistryProperties):
     """
     SettingsTab is a helper widget for plugins to define Tabs for the settings dialog.
     """
@@ -58,27 +48,33 @@ class SettingsTab(QtGui.QWidget, RegistryProperties):
         self.tab_visited = False
         if icon_path:
             self.icon_path = icon_path
-        self.setupUi()
-        self.retranslateUi()
+        self._setup()
+
+    def _setup(self):
+        """
+        Run some initial setup. This method is separate from __init__ in order to mock it out in tests.
+        """
+        self.setup_ui()
+        self.retranslate_ui()
         self.initialise()
         self.load()
 
-    def setupUi(self):
+    def setup_ui(self):
         """
         Setup the tab's interface.
         """
-        self.tab_layout = QtGui.QHBoxLayout(self)
+        self.tab_layout = QtWidgets.QHBoxLayout(self)
         self.tab_layout.setObjectName('tab_layout')
-        self.left_column = QtGui.QWidget(self)
+        self.left_column = QtWidgets.QWidget(self)
         self.left_column.setObjectName('left_column')
-        self.left_layout = QtGui.QVBoxLayout(self.left_column)
-        self.left_layout.setMargin(0)
+        self.left_layout = QtWidgets.QVBoxLayout(self.left_column)
+        self.left_layout.setContentsMargins(0, 0, 0, 0)
         self.left_layout.setObjectName('left_layout')
         self.tab_layout.addWidget(self.left_column)
-        self.right_column = QtGui.QWidget(self)
+        self.right_column = QtWidgets.QWidget(self)
         self.right_column.setObjectName('right_column')
-        self.right_layout = QtGui.QVBoxLayout(self.right_column)
-        self.right_layout.setMargin(0)
+        self.right_layout = QtWidgets.QVBoxLayout(self.right_column)
+        self.right_layout.setContentsMargins(0, 0, 0, 0)
         self.right_layout.setObjectName('right_layout')
         self.tab_layout.addWidget(self.right_column)
 
@@ -87,14 +83,14 @@ class SettingsTab(QtGui.QWidget, RegistryProperties):
         Resize the sides in two equal halves if the layout allows this.
         """
         if event:
-            QtGui.QWidget.resizeEvent(self, event)
+            QtWidgets.QWidget.resizeEvent(self, event)
         width = self.width() - self.tab_layout.spacing() - \
             self.tab_layout.contentsMargins().left() - self.tab_layout.contentsMargins().right()
         left_width = min(width - self.right_column.minimumSizeHint().width(), width // 2)
         left_width = max(left_width, self.left_column.minimumSizeHint().width())
         self.left_column.setFixedWidth(left_width)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         """
         Setup the interface translation strings.
         """
@@ -136,4 +132,4 @@ class SettingsTab(QtGui.QWidget, RegistryProperties):
         """
         Tab has just been made visible to the user
         """
-        self.tab_visited = True
+        pass

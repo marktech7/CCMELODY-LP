@@ -1,46 +1,46 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 
-from openlp.core.common import Settings, translate
-from openlp.core.lib import Plugin, StringContent, build_icon
+from openlp.core.state import State
+from openlp.core.api.http import register_endpoint
+from openlp.core.common.actions import ActionList
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
-from openlp.core.lib.ui import create_action, UiStrings
+from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
+from openlp.core.lib.ui import create_action
 from openlp.core.ui import AlertLocation
-from openlp.core.utils.actions import ActionList
-from openlp.plugins.alerts.lib import AlertsManager, AlertsTab
+from openlp.core.ui.icons import UiIcons
+from openlp.plugins.alerts.endpoint import api_alerts_endpoint, alerts_endpoint
+from openlp.plugins.alerts.forms.alertform import AlertForm
+from openlp.plugins.alerts.lib.alertsmanager import AlertsManager
+from openlp.plugins.alerts.lib.alertstab import AlertsTab
 from openlp.plugins.alerts.lib.db import init_schema
-from openlp.plugins.alerts.forms import AlertForm
+
 
 log = logging.getLogger(__name__)
 
@@ -96,19 +96,19 @@ JAVASCRIPT = """
     }
 """
 CSS = """
-    #alert {
+    #alert {{
         position: absolute;
         left: 0px;
         top: 0px;
         z-index: 10;
-        width: 100%%;
-        vertical-align: %s;
-        font-family: %s;
-        font-size: %spt;
-        color: %s;
-        background-color: %s;
+        width: 100%;
+        vertical-align: {vertical_align};
+        font-family: {font_family};
+        font-size: {font_size:d}pt;
+        color: {color};
+        background-color: {background_color};
         word-wrap: break-word;
-    }
+    }}
 """
 
 HTML = """
@@ -119,10 +119,16 @@ __default_settings__ = {
     'alerts/font face': QtGui.QFont().family(),
     'alerts/font size': 40,
     'alerts/db type': 'sqlite',
+    'alerts/db username': '',
+    'alerts/db password': '',
+    'alerts/db hostname': '',
+    'alerts/db database': '',
     'alerts/location': AlertLocation.Bottom,
     'alerts/background color': '#660000',
     'alerts/font color': '#ffffff',
-    'alerts/timeout': 5
+    'alerts/timeout': 10,
+    'alerts/repeat': 1,
+    'alerts/scroll': True
 }
 
 
@@ -138,11 +144,15 @@ class AlertsPlugin(Plugin):
         """
         super(AlertsPlugin, self).__init__('alerts', __default_settings__, settings_tab_class=AlertsTab)
         self.weight = -3
-        self.icon_path = ':/plugins/plugin_alerts.png'
-        self.icon = build_icon(self.icon_path)
+        self.icon_path = UiIcons().alert
+        self.icon = self.icon_path
         AlertsManager(self)
         self.manager = Manager('alerts', init_schema)
         self.alert_form = AlertForm(self)
+        register_endpoint(alerts_endpoint)
+        register_endpoint(api_alerts_endpoint)
+        State().add_service(self.name, self.weight, is_plugin=True)
+        State().update_pre_conditions(self.name, self.check_pre_conditions())
 
     def add_tools_menu_item(self, tools_menu):
         """
@@ -153,7 +163,7 @@ class AlertsPlugin(Plugin):
         log.info('add tools menu')
         self.tools_alert_item = create_action(tools_menu, 'toolsAlertItem',
                                               text=translate('AlertsPlugin', '&Alert'),
-                                              icon=':/plugins/plugin_alerts.png',
+                                              icon=UiIcons().alert,
                                               statustip=translate('AlertsPlugin', 'Show an alert message.'),
                                               visible=False, can_shortcuts=True, triggers=self.on_alerts_trigger)
         self.main_window.tools_menu.addAction(self.tools_alert_item)
@@ -191,9 +201,10 @@ class AlertsPlugin(Plugin):
         Start of the Alerts dialog triggered from the main menu.
         """
         self.alert_form.load_list()
-        self.alert_form.exec_()
+        self.alert_form.exec()
 
-    def about(self):
+    @staticmethod
+    def about():
         """
         Plugin Alerts about method
 
@@ -217,7 +228,8 @@ class AlertsPlugin(Plugin):
             'title': translate('AlertsPlugin', 'Alerts', 'container title')
         }
 
-    def get_display_javascript(self):
+    @staticmethod
+    def get_display_javascript():
         """
         Add Javascript to the main display.
         """
@@ -228,10 +240,14 @@ class AlertsPlugin(Plugin):
         Add CSS to the main display.
         """
         align = VerticalType.Names[self.settings_tab.location]
-        return CSS % (align, self.settings_tab.font_face, self.settings_tab.font_size, self.settings_tab.font_color,
-                      self.settings_tab.background_color)
+        return CSS.format(vertical_align=align,
+                          font_family=self.settings_tab.font_face,
+                          font_size=self.settings_tab.font_size,
+                          color=self.settings_tab.font_color,
+                          background_color=self.settings_tab.background_color)
 
-    def get_display_html(self):
+    @staticmethod
+    def get_display_html():
         """
         Add HTML to the main display.
         """
@@ -244,6 +260,9 @@ class AlertsPlugin(Plugin):
         :param frame: The Web frame holding the page.
         """
         align = VerticalType.Names[self.settings_tab.location]
-        frame.evaluateJavaScript('update_css("%s", "%s", "%s", "%s", "%s")' %
-                                 (align, self.settings_tab.font_face, self.settings_tab.font_size,
-                                  self.settings_tab.font_color, self.settings_tab.background_color))
+        frame.runJavaScript('update_css("{align}", "{face}", "{size}", "{color}", '
+                            '"{background}")'.format(align=align,
+                                                     face=self.settings_tab.font_face,
+                                                     size=self.settings_tab.font_size,
+                                                     color=self.settings_tab.font_color,
+                                                     background=self.settings_tab.background_color))

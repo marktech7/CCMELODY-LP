@@ -1,75 +1,69 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
-from openlp.core.lib import translate, build_icon
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box
+from openlp.core.ui.icons import UiIcons
 
 
 class Ui_SongBookDialog(object):
     """
-    The user interface for the song book dialog.
+    The user interface for the Songbook dialog.
     """
-    def setupUi(self, song_book_dialog):
+    def setup_ui(self, song_book_dialog):
         """
         Set up the user interface.
         """
         song_book_dialog.setObjectName('song_book_dialog')
-        song_book_dialog.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
+        song_book_dialog.setWindowIcon(UiIcons().main_icon)
         song_book_dialog.resize(300, 10)
-        self.dialog_layout = QtGui.QVBoxLayout(song_book_dialog)
+        self.dialog_layout = QtWidgets.QVBoxLayout(song_book_dialog)
         self.dialog_layout.setObjectName('dialog_layout')
-        self.book_layout = QtGui.QFormLayout()
+        self.book_layout = QtWidgets.QFormLayout()
         self.book_layout.setObjectName('book_layout')
-        self.name_label = QtGui.QLabel(song_book_dialog)
+        self.name_label = QtWidgets.QLabel(song_book_dialog)
         self.name_label.setObjectName('name_label')
-        self.name_edit = QtGui.QLineEdit(song_book_dialog)
+        self.name_edit = QtWidgets.QLineEdit(song_book_dialog)
         self.name_edit.setObjectName('name_edit')
         self.name_label.setBuddy(self.name_edit)
         self.book_layout.addRow(self.name_label, self.name_edit)
-        self.publisher_label = QtGui.QLabel(song_book_dialog)
+        self.publisher_label = QtWidgets.QLabel(song_book_dialog)
         self.publisher_label.setObjectName('publisher_label')
-        self.publisher_edit = QtGui.QLineEdit(song_book_dialog)
+        self.publisher_edit = QtWidgets.QLineEdit(song_book_dialog)
         self.publisher_edit.setObjectName('publisher_edit')
         self.publisher_label.setBuddy(self.publisher_edit)
         self.book_layout.addRow(self.publisher_label, self.publisher_edit)
         self.dialog_layout.addLayout(self.book_layout)
         self.button_box = create_button_box(song_book_dialog, 'button_box', ['cancel', 'save'])
         self.dialog_layout.addWidget(self.button_box)
-        self.retranslateUi(song_book_dialog)
+        self.retranslate_ui(song_book_dialog)
         song_book_dialog.setMaximumHeight(song_book_dialog.sizeHint().height())
 
-    def retranslateUi(self, song_book_dialog):
+    def retranslate_ui(self, song_book_dialog):
         """
         Translate the UI on the fly.
         """
-        song_book_dialog.setWindowTitle(translate('SongsPlugin.SongBookForm', 'Song Book Maintenance'))
+        song_book_dialog.setWindowTitle(translate('SongsPlugin.SongBookForm', 'Songbook Maintenance'))
         self.name_label.setText(translate('SongsPlugin.SongBookForm', '&Name:'))
         self.publisher_label.setText(translate('SongsPlugin.SongBookForm', '&Publisher:'))

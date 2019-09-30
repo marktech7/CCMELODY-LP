@@ -1,41 +1,32 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2013 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2013 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`powerpraiseimport` module provides the functionality for importing
 Powerpraise song files into the current database.
 """
-
-import os
 from lxml import objectify
 
-from openlp.core.ui.wizard import WizardStrings
-from .songimport import SongImport
+from openlp.core.widgets.wizard import WizardStrings
+from openlp.plugins.songs.lib.importers.songimport import SongImport
 
 
 class PowerPraiseImport(SongImport):
@@ -48,9 +39,10 @@ class PowerPraiseImport(SongImport):
         for file_path in self.import_source:
             if self.stop_import_flag:
                 return
-            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType % os.path.basename(file_path))
-            root = objectify.parse(open(file_path, 'rb')).getroot()
-            self.process_song(root)
+            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=file_path.name))
+            with file_path.open('rb') as xml_file:
+                root = objectify.parse(xml_file).getroot()
+                self.process_song(root)
 
     def process_song(self, root):
         self.set_defaults()
@@ -73,7 +65,7 @@ class PowerPraiseImport(SongImport):
             else:
                 verse_def = 'o'
             verse_count[verse_def] = verse_count.get(verse_def, 0) + 1
-            verse_def = '%s%d' % (verse_def, verse_count[verse_def])
+            verse_def = '{verse}{count:d}'.format(verse=verse_def, count=verse_count[verse_def])
             verse_text = []
             for slide in part.slide:
                 if not hasattr(slide, 'line'):

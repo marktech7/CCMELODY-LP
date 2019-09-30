@@ -1,41 +1,36 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The Themes configuration tab
 """
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-
-from PyQt4 import QtCore, QtGui
-
-from openlp.core.common import Registry, Settings, ThemeLevel, UiStrings, translate
-from openlp.core.lib import SettingsTab
+from openlp.core.common import ThemeLevel
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
+from openlp.core.ui.icons import UiIcons
 
 
 class ThemesTab(SettingsTab):
@@ -46,57 +41,57 @@ class ThemesTab(SettingsTab):
         """
         Constructor
         """
-        self.icon_path = ':/themes/theme_new.png'
+        self.icon_path = UiIcons().theme
         theme_translated = translate('OpenLP.ThemesTab', 'Themes')
         super(ThemesTab, self).__init__(parent, 'Themes', theme_translated)
 
-    def setupUi(self):
+    def setup_ui(self):
         """
         Set up the UI
         """
         self.setObjectName('ThemesTab')
-        super(ThemesTab, self).setupUi()
-        self.global_group_box = QtGui.QGroupBox(self.left_column)
+        super(ThemesTab, self).setup_ui()
+        self.global_group_box = QtWidgets.QGroupBox(self.left_column)
         self.global_group_box.setObjectName('global_group_box')
-        self.global_group_box_layout = QtGui.QVBoxLayout(self.global_group_box)
+        self.global_group_box_layout = QtWidgets.QVBoxLayout(self.global_group_box)
         self.global_group_box_layout.setObjectName('global_group_box_layout')
-        self.default_combo_box = QtGui.QComboBox(self.global_group_box)
-        self.default_combo_box.setSizeAdjustPolicy(QtGui.QComboBox.AdjustToMinimumContentsLength)
-        self.default_combo_box.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        self.default_combo_box = QtWidgets.QComboBox(self.global_group_box)
+        self.default_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
+        self.default_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.default_combo_box.setObjectName('default_combo_box')
         self.global_group_box_layout.addWidget(self.default_combo_box)
-        self.default_list_view = QtGui.QLabel(self.global_group_box)
+        self.default_list_view = QtWidgets.QLabel(self.global_group_box)
         self.default_list_view.setObjectName('default_list_view')
         self.global_group_box_layout.addWidget(self.default_list_view)
         self.left_layout.addWidget(self.global_group_box)
-        self.universal_group_box = QtGui.QGroupBox(self.left_column)
+        self.universal_group_box = QtWidgets.QGroupBox(self.left_column)
         self.universal_group_box.setObjectName('universal_group_box')
-        self.universal_group_box_layout = QtGui.QVBoxLayout(self.universal_group_box)
+        self.universal_group_box_layout = QtWidgets.QVBoxLayout(self.universal_group_box)
         self.universal_group_box_layout.setObjectName('universal_group_box_layout')
-        self.wrap_footer_check_box = QtGui.QCheckBox(self.universal_group_box)
+        self.wrap_footer_check_box = QtWidgets.QCheckBox(self.universal_group_box)
         self.wrap_footer_check_box.setObjectName('wrap_footer_check_box')
         self.universal_group_box_layout.addWidget(self.wrap_footer_check_box)
         self.left_layout.addWidget(self.universal_group_box)
         self.left_layout.addStretch()
-        self.level_group_box = QtGui.QGroupBox(self.right_column)
+        self.level_group_box = QtWidgets.QGroupBox(self.right_column)
         self.level_group_box.setObjectName('level_group_box')
-        self.level_layout = QtGui.QFormLayout(self.level_group_box)
+        self.level_layout = QtWidgets.QFormLayout(self.level_group_box)
         self.level_layout.setLabelAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.level_layout.setFormAlignment(QtCore.Qt.AlignLeft | QtCore.Qt.AlignTop)
         self.level_layout.setObjectName('level_layout')
-        self.song_level_radio_button = QtGui.QRadioButton(self.level_group_box)
+        self.song_level_radio_button = QtWidgets.QRadioButton(self.level_group_box)
         self.song_level_radio_button.setObjectName('song_level_radio_button')
-        self.song_level_label = QtGui.QLabel(self.level_group_box)
+        self.song_level_label = QtWidgets.QLabel(self.level_group_box)
         self.song_level_label.setObjectName('song_level_label')
         self.level_layout.addRow(self.song_level_radio_button, self.song_level_label)
-        self.service_level_radio_button = QtGui.QRadioButton(self.level_group_box)
+        self.service_level_radio_button = QtWidgets.QRadioButton(self.level_group_box)
         self.service_level_radio_button.setObjectName('service_level_radio_button')
-        self.service_level_label = QtGui.QLabel(self.level_group_box)
+        self.service_level_label = QtWidgets.QLabel(self.level_group_box)
         self.service_level_label.setObjectName('service_level_label')
         self.level_layout.addRow(self.service_level_radio_button, self.service_level_label)
-        self.global_level_radio_button = QtGui.QRadioButton(self.level_group_box)
+        self.global_level_radio_button = QtWidgets.QRadioButton(self.level_group_box)
         self.global_level_radio_button.setObjectName('global_level_radio_button')
-        self.global_level_label = QtGui.QLabel(self.level_group_box)
+        self.global_level_label = QtWidgets.QLabel(self.level_group_box)
         self.global_level_label.setObjectName('global_level_label')
         self.level_layout.addRow(self.global_level_radio_button, self.global_level_label)
         label_top_margin = (self.song_level_radio_button.sizeHint().height() -
@@ -114,7 +109,7 @@ class ThemesTab(SettingsTab):
         self.default_combo_box.activated.connect(self.on_default_combo_box_changed)
         Registry().register_function('theme_update_list', self.update_theme_list)
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         """
         Translate the UI on the fly
         """
@@ -193,7 +188,7 @@ class ThemesTab(SettingsTab):
         Set the global default theme
         """
         self.global_theme = self.default_combo_box.currentText()
-        self.renderer.set_global_theme()
+        # self.renderer.set_global_theme()
         self._preview_global_theme()
 
     def update_theme_list(self, theme_list):
@@ -209,17 +204,17 @@ class ThemesTab(SettingsTab):
         self.default_combo_box.clear()
         self.default_combo_box.addItems(theme_list)
         find_and_set_in_combo_box(self.default_combo_box, self.global_theme)
-        self.renderer.set_global_theme()
+        # self.renderer.set_global_theme()
         self.renderer.set_theme_level(self.theme_level)
-        if self.global_theme is not '':
+        if self.global_theme != '':
             self._preview_global_theme()
 
     def _preview_global_theme(self):
         """
         Utility method to update the global theme preview image.
         """
-        image = self.theme_manager.get_preview_image(self.global_theme)
-        preview = QtGui.QPixmap(str(image))
+        image_path = self.theme_manager.theme_path / '{file_name}.png'.format(file_name=self.global_theme)
+        preview = QtGui.QPixmap(str(image_path))
         if not preview.isNull():
             preview = preview.scaled(300, 255, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
         self.default_list_view.setPixmap(preview)

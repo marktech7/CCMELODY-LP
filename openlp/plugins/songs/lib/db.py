@@ -1,43 +1,34 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`db` module provides the database and schema that is the backend for
 the Songs plugin
 """
-
 from sqlalchemy import Column, ForeignKey, Table, types
-from sqlalchemy.orm import mapper, relation, reconstructor
+from sqlalchemy.orm import mapper, reconstructor, relation
 from sqlalchemy.sql.expression import func, text
 
-from openlp.core.lib.db import BaseModel, init_db
-from openlp.core.utils import get_natural_key
-from openlp.core.lib import translate
+from openlp.core.common.i18n import get_natural_key, translate
+from openlp.core.lib.db import BaseModel, PathType, init_db
 
 
 class Author(BaseModel):
@@ -46,7 +37,7 @@ class Author(BaseModel):
     """
     def get_display_name(self, author_type=None):
         if author_type:
-            return "%s (%s)" % (self.display_name, AuthorType.Types[author_type])
+            return "{name} ({author})".format(name=self.display_name, author=AuthorType.Types[author_type])
         return self.display_name
 
 
@@ -84,13 +75,15 @@ class AuthorType(object):
         NoType,
         Words,
         Music,
-        WordsAndMusic
+        WordsAndMusic,
+        Translation
     ]
     TranslatedTypes = [
         Types[NoType],
         Types[Words],
         Types[Music],
-        Types[WordsAndMusic]
+        Types[WordsAndMusic],
+        Types[Translation]
     ]
 
     @staticmethod
@@ -110,7 +103,9 @@ class Book(BaseModel):
     Book model
     """
     def __repr__(self):
-        return '<Book id="%s" name="%s" publisher="%s" />' % (str(self.id), self.name, self.publisher)
+        return '<Book id="{myid:d}" name="{name}" publisher="{publisher}" />'.format(myid=self.id,
+                                                                                     name=self.name,
+                                                                                     publisher=self.publisher)
 
 
 class MediaFile(BaseModel):
@@ -165,6 +160,36 @@ class Song(BaseModel):
                 self.authors_songs.remove(author_song)
                 return
 
+    def add_songbook_entry(self, songbook, entry):
+        """
+        Add a Songbook Entry to the song if it not yet exists
+
+        :param songbook: Name of the Songbook.
+        :param entry: Entry in the Songbook (usually a number)
+        """
+        for songbook_entry in self.songbook_entries:
+            if songbook_entry.songbook.name == songbook.name and songbook_entry.entry == entry:
+                return
+
+        new_songbook_entry = SongBookEntry()
+        new_songbook_entry.songbook = songbook
+        new_songbook_entry.entry = entry
+        self.songbook_entries.append(new_songbook_entry)
+
+
+class SongBookEntry(BaseModel):
+    """
+    SongBookEntry model
+    """
+    def __repr__(self):
+        return SongBookEntry.get_display_name(self.songbook.name, self.entry)
+
+    @staticmethod
+    def get_display_name(songbook_name, entry):
+        if entry:
+            return "{name} #{entry}".format(name=songbook_name, entry=entry)
+        return songbook_name
+
 
 class Topic(BaseModel):
     """
@@ -178,6 +203,7 @@ def init_schema(url):
     Setup the songs database connection and initialise the database schema.
 
     :param url: The database to setup
+
     The song database contains the following tables:
 
         * authors
@@ -186,6 +212,7 @@ def init_schema(url):
         * media_files_songs
         * song_books
         * songs
+        * songs_songbooks
         * songs_topics
         * topics
 
@@ -209,7 +236,7 @@ def init_schema(url):
 
     **media_files Table**
         * id
-        * file_name
+        * _file_path
         * type
 
     **song_books Table**
@@ -226,7 +253,6 @@ def init_schema(url):
         The *songs* table has the following columns:
 
         * id
-        * song_book_id
         * title
         * alternate_title
         * lyrics
@@ -234,10 +260,16 @@ def init_schema(url):
         * copyright
         * comments
         * ccli_number
-        * song_number
         * theme_name
         * search_title
         * search_lyrics
+
+    **songs_songsbooks Table**
+        This is a mapping table between the *songs* and the *song_books* tables. It has the following columns:
+
+        * songbook_id
+        * song_id
+        * entry  # The song number, like 120 or 550A
 
     **songs_topics Table**
         This is a bridging table between the *songs* and *topics* tables, which
@@ -271,7 +303,7 @@ def init_schema(url):
         'media_files', metadata,
         Column('id', types.Integer(), primary_key=True),
         Column('song_id', types.Integer(), ForeignKey('songs.id'), default=None),
-        Column('file_name', types.Unicode(255), nullable=False),
+        Column('file_path', PathType, nullable=False),
         Column('type', types.Unicode(64), nullable=False, default='audio'),
         Column('weight', types.Integer(), default=0)
     )
@@ -288,7 +320,6 @@ def init_schema(url):
     songs_table = Table(
         'songs', metadata,
         Column('id', types.Integer(), primary_key=True),
-        Column('song_book_id', types.Integer(), ForeignKey('song_books.id'), default=None),
         Column('title', types.Unicode(255), nullable=False),
         Column('alternate_title', types.Unicode(255)),
         Column('lyrics', types.UnicodeText, nullable=False),
@@ -296,7 +327,6 @@ def init_schema(url):
         Column('copyright', types.Unicode(255)),
         Column('comments', types.UnicodeText),
         Column('ccli_number', types.Unicode(64)),
-        Column('song_number', types.Unicode(64)),
         Column('theme_name', types.Unicode(128)),
         Column('search_title', types.Unicode(255), index=True, nullable=False),
         Column('search_lyrics', types.UnicodeText, nullable=False),
@@ -317,7 +347,15 @@ def init_schema(url):
         'authors_songs', metadata,
         Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
         Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-        Column('author_type', types.String(), primary_key=True, nullable=False, server_default=text('""'))
+        Column('author_type', types.Unicode(255), primary_key=True, nullable=False, server_default=text('""'))
+    )
+
+    # Definition of the "songs_songbooks" table
+    songs_songbooks_table = Table(
+        'songs_songbooks', metadata,
+        Column('songbook_id', types.Integer(), ForeignKey('song_books.id'), primary_key=True),
+        Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
+        Column('entry', types.Unicode(255), primary_key=True, nullable=False)
     )
 
     # Definition of the "songs_topics" table
@@ -333,7 +371,12 @@ def init_schema(url):
     mapper(AuthorSong, authors_songs_table, properties={
         'author': relation(Author)
     })
-    mapper(Book, song_books_table)
+    mapper(SongBookEntry, songs_songbooks_table, properties={
+        'songbook': relation(Book)
+    })
+    mapper(Book, song_books_table, properties={
+        'songs': relation(Song, secondary=songs_songbooks_table)
+    })
     mapper(MediaFile, media_files_table)
     mapper(Song, songs_table, properties={
         # Use the authors_songs relation when you need access to the 'author_type' attribute
@@ -341,8 +384,8 @@ def init_schema(url):
         'authors_songs': relation(AuthorSong, cascade="all, delete-orphan"),
         # Use lazy='joined' to always load authors when the song is fetched from the database (bug 1366198)
         'authors': relation(Author, secondary=authors_songs_table, viewonly=True, lazy='joined'),
-        'book': relation(Book, backref='songs'),
         'media_files': relation(MediaFile, backref='songs', order_by=media_files_table.c.weight),
+        'songbook_entries': relation(SongBookEntry, backref='song', cascade='all, delete-orphan'),
         'topics': relation(Topic, backref='songs', secondary=songs_topics_table)
     })
     mapper(Topic, topics_table)

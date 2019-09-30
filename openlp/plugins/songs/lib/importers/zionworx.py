@@ -1,44 +1,35 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`zionworx` module provides the functionality for importing ZionWorx songs into the OpenLP database.
 """
 import csv
 import logging
 
-from openlp.core.common import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
-log = logging.getLogger(__name__)
 
-# Used to strip control chars (except 10=LF, 13=CR)
-CONTROL_CHARS_MAP = dict.fromkeys(list(range(10)) + [11, 12] + list(range(14, 32)) + [127])
+log = logging.getLogger(__name__)
 
 
 class ZionWorxImport(SongImport):
@@ -82,7 +73,8 @@ class ZionWorxImport(SongImport):
         """
         Receive a CSV file (from a ZionWorx database dump) to import.
         """
-        with open(self.import_source, 'rb') as songs_file:
+        # Encoding should always be ISO-8859-1
+        with self.import_source.open('rt', encoding='ISO-8859-1') as songs_file:
             field_names = ['SongNum', 'Title1', 'Title2', 'Lyrics', 'Writer', 'Copyright', 'Keywords',
                            'DefaultStyle']
             songs_reader = csv.DictReader(songs_file, field_names)
@@ -90,48 +82,41 @@ class ZionWorxImport(SongImport):
                 records = list(songs_reader)
             except csv.Error as e:
                 self.log_error(translate('SongsPlugin.ZionWorxImport', 'Error reading CSV file.'),
-                               translate('SongsPlugin.ZionWorxImport', 'Line %d: %s') % (songs_reader.line_num, e))
+                               translate('SongsPlugin.ZionWorxImport',
+                                         'Line {number:d}: {error}').format(number=songs_reader.line_num, error=e))
                 return
             num_records = len(records)
-            log.info('%s records found in CSV file' % num_records)
+            log.info('{count} records found in CSV file'.format(count=num_records))
             self.import_wizard.progress_bar.setMaximum(num_records)
             for index, record in enumerate(records, 1):
                 if self.stop_import_flag:
                     return
                 self.set_defaults()
                 try:
-                    self.title = self._decode(record['Title1'])
+                    self.title = record['Title1']
                     if record['Title2']:
-                        self.alternate_title = self._decode(record['Title2'])
-                    self.parse_author(self._decode(record['Writer']))
-                    self.add_copyright(self._decode(record['Copyright']))
-                    lyrics = self._decode(record['Lyrics'])
+                        self.alternate_title = record['Title2']
+                    self.parse_author(record['Writer'])
+                    self.add_copyright(record['Copyright'])
+                    lyrics = record['Lyrics']
                 except UnicodeDecodeError as e:
-                    self.log_error(translate('SongsPlugin.ZionWorxImport', 'Record %d' % index),
-                                   translate('SongsPlugin.ZionWorxImport', 'Decoding error: %s') % e)
+                    self.log_error(translate('SongsPlugin.ZionWorxImport', 'Record {index}').format(index=index),
+                                   translate('SongsPlugin.ZionWorxImport', 'Decoding error: {error}').format(error=e))
                     continue
                 except TypeError as e:
-                    self.log_error(translate(
-                        'SongsPlugin.ZionWorxImport', 'File not valid ZionWorx CSV format.'), 'TypeError: %s' % e)
+                    self.log_error(translate('SongsPlugin.ZionWorxImport', 'File not valid ZionWorx CSV format.'),
+                                   'TypeError: {error}'.format(error=e))
                     return
                 verse = ''
                 for line in lyrics.splitlines():
                     if line and not line.isspace():
                         verse += line + '\n'
                     elif verse:
-                        self.add_verse(verse)
+                        self.add_verse(verse, 'v')
                         verse = ''
                 if verse:
-                    self.add_verse(verse)
+                    self.add_verse(verse, 'v')
                 title = self.title
                 if not self.finish():
-                    self.log_error(translate('SongsPlugin.ZionWorxImport', 'Record %d') % index
-                                   + (': "' + title + '"' if title else ''))
-
-    def _decode(self, str):
-        """
-        Decodes CSV input to unicode, stripping all control characters (except new lines).
-        """
-        # This encoding choice seems OK. ZionWorx has no option for setting the
-        # encoding for its songs, so we assume encoding is always the same.
-        return str(str, 'cp1252').translate(CONTROL_CHARS_MAP)
+                    self.log_error(translate('SongsPlugin.ZionWorxImport', 'Record %d') % index +
+                                   (': "' + title + '"' if title else ''))

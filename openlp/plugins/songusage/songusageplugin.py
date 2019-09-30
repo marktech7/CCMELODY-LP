@@ -1,59 +1,59 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 import logging
 from datetime import datetime
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Registry, Settings, translate
-from openlp.core.lib import Plugin, StringContent, build_icon
+from openlp.core.state import State
+from openlp.core.common.actions import ActionList
+from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
+from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
-from openlp.core.utils.actions import ActionList
-from openlp.plugins.songusage.forms import SongUsageDetailForm, SongUsageDeleteForm
+from openlp.core.ui.icons import UiIcons
+from openlp.plugins.songusage.forms.songusagedetailform import SongUsageDetailForm
+from openlp.plugins.songusage.forms.songusagedeleteform import SongUsageDeleteForm
 from openlp.plugins.songusage.lib import upgrade
-from openlp.plugins.songusage.lib.db import init_schema, SongUsageItem
+from openlp.plugins.songusage.lib.db import SongUsageItem, init_schema
+
 
 log = logging.getLogger(__name__)
 
-YEAR = QtCore.QDate().currentDate().year()
-if QtCore.QDate().currentDate().month() < 9:
-    YEAR -= 1
-
+TODAY = QtCore.QDate.currentDate()
 
 __default_settings__ = {
     'songusage/db type': 'sqlite',
+    'songusage/db username': '',
+    'songusage/db password': '',
+    'songusage/db hostname': '',
+    'songusage/db database': '',
     'songusage/active': False,
-    'songusage/to date': QtCore.QDate(YEAR, 8, 31),
-    'songusage/from date': QtCore.QDate(YEAR - 1, 9, 1),
-    'songusage/last directory export': ''
+    'songusage/to date': TODAY,
+    'songusage/from date': TODAY.addYears(-1),
+    'songusage/last directory export': None
 }
 
 
@@ -67,10 +67,10 @@ class SongUsagePlugin(Plugin):
         super(SongUsagePlugin, self).__init__('songusage', __default_settings__)
         self.manager = Manager('songusage', init_schema, upgrade_mod=upgrade)
         self.weight = -4
-        self.icon = build_icon(':/plugins/plugin_songusage.png')
-        self.active_icon = build_icon(':/songusage/song_usage_active.png')
-        self.inactive_icon = build_icon(':/songusage/song_usage_inactive.png')
+        self.icon = UiIcons().song_usage
         self.song_usage_active = False
+        State().add_service('song_usage', self.weight, is_plugin=True)
+        State().update_pre_conditions('song_usage', self.check_pre_conditions())
 
     def check_pre_conditions(self):
         """
@@ -86,7 +86,7 @@ class SongUsagePlugin(Plugin):
         """
         log.info('add tools menu')
         self.tools_menu = tools_menu
-        self.song_usage_menu = QtGui.QMenu(tools_menu)
+        self.song_usage_menu = QtWidgets.QMenu(tools_menu)
         self.song_usage_menu.setObjectName('song_usage_menu')
         self.song_usage_menu.setTitle(translate('SongUsagePlugin', '&Song Usage Tracking'))
         # SongUsage Delete
@@ -113,7 +113,7 @@ class SongUsagePlugin(Plugin):
         self.song_usage_menu.addSeparator()
         self.song_usage_menu.addAction(self.song_usage_report)
         self.song_usage_menu.addAction(self.song_usage_delete)
-        self.song_usage_active_button = QtGui.QToolButton(self.main_window.status_bar)
+        self.song_usage_active_button = QtWidgets.QToolButton(self.main_window.status_bar)
         self.song_usage_active_button.setCheckable(True)
         self.song_usage_active_button.setAutoRaise(True)
         self.song_usage_active_button.setStatusTip(translate('SongUsagePlugin', 'Toggle the tracking of song usage.'))
@@ -121,8 +121,6 @@ class SongUsagePlugin(Plugin):
         self.main_window.status_bar.insertPermanentWidget(1, self.song_usage_active_button)
         self.song_usage_active_button.hide()
         # Signals and slots
-        QtCore.QObject.connect(self.song_usage_status, QtCore.SIGNAL('visibilityChanged(bool)'),
-                               self.song_usage_status.setChecked)
         self.song_usage_active_button.toggled.connect(self.toggle_song_usage_state)
         self.song_usage_menu.menuAction().setVisible(False)
 
@@ -175,12 +173,12 @@ class SongUsagePlugin(Plugin):
         self.song_usage_active_button.blockSignals(True)
         self.song_usage_status.blockSignals(True)
         if self.song_usage_active:
-            self.song_usage_active_button.setIcon(self.active_icon)
+            self.song_usage_active_button.setIcon(UiIcons().song_usage_active)
             self.song_usage_status.setChecked(True)
             self.song_usage_active_button.setChecked(True)
             self.song_usage_active_button.setToolTip(translate('SongUsagePlugin', 'Song usage tracking is active.'))
         else:
-            self.song_usage_active_button.setIcon(self.inactive_icon)
+            self.song_usage_active_button.setIcon(UiIcons().song_usage_inactive)
             self.song_usage_status.setChecked(False)
             self.song_usage_active_button.setChecked(False)
             self.song_usage_active_button.setToolTip(translate('SongUsagePlugin', 'Song usage tracking is inactive.'))
@@ -221,7 +219,7 @@ class SongUsagePlugin(Plugin):
         """
         Request the delete form to be displayed
         """
-        self.song_usage_delete_form.exec_()
+        self.song_usage_delete_form.exec()
 
     def on_song_usage_report(self):
         """
@@ -229,9 +227,10 @@ class SongUsagePlugin(Plugin):
 
         """
         self.song_usage_detail_form.initialise()
-        self.song_usage_detail_form.exec_()
+        self.song_usage_detail_form.exec()
 
-    def about(self):
+    @staticmethod
+    def about():
         """
         The plugin about text
 

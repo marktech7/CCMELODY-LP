@@ -1,41 +1,35 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Provide the generic plugin functionality for OpenLP plugins.
 """
 import logging
 
+from openlp.core.common.i18n import UiStrings
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.registry import Registry, RegistryBase
+from openlp.core.common.settings import Settings
+from openlp.core.version import get_version
 
-from PyQt4 import QtCore
-
-from openlp.core.common import Registry, RegistryProperties, Settings, UiStrings
-from openlp.core.utils import get_application_version
 
 log = logging.getLogger(__name__)
 
@@ -65,7 +59,7 @@ class StringContent(object):
     VisibleName = 'visible_name'
 
 
-class Plugin(QtCore.QObject, RegistryProperties):
+class Plugin(RegistryBase, RegistryProperties):
     """
     Base class for openlp plugins to inherit from.
 
@@ -138,16 +132,12 @@ class Plugin(QtCore.QObject, RegistryProperties):
         :param settings_tab_class: The class name of the plugin's settings tab.
         :param version: Defaults to *None*, which means that the same version number is used as OpenLP's version number.
         """
-        log.debug('Plugin %s initialised' % name)
+        log.debug('Plugin {plugin} initialised'.format(plugin=name))
         super(Plugin, self).__init__()
         self.name = name
         self.text_strings = {}
         self.set_plugin_text_strings()
         self.name_strings = self.text_strings[StringContent.Name]
-        if version:
-            self.version = version
-        else:
-            self.version = get_application_version()['version']
         self.settings_section = self.name
         self.icon = None
         self.media_item_class = media_item_class
@@ -158,15 +148,28 @@ class Plugin(QtCore.QObject, RegistryProperties):
         self.status = PluginStatus.Inactive
         # Add the default status to the default settings.
         default_settings[name + '/status'] = PluginStatus.Inactive
-        default_settings[name + '/last directory'] = ''
+        default_settings[name + '/last directory'] = None
         # Append a setting for files in the mediamanager (note not all plugins
         # which have a mediamanager need this).
         if media_item_class is not None:
-            default_settings['%s/%s files' % (name, name)] = []
+            default_settings['{name}/{name} files'.format(name=name)] = []
         # Add settings to the dict of all settings.
         Settings.extend_default_settings(default_settings)
-        Registry().register_function('%s_add_service_item' % self.name, self.process_add_service_event)
-        Registry().register_function('%s_config_updated' % self.name, self.config_update)
+        Registry().register_function('{name}_add_service_item'.format(name=self.name), self.process_add_service_event)
+        Registry().register_function('{name}_config_updated'.format(name=self.name), self.config_update)
+        self._setup(version)
+
+    def _setup(self, version):
+        """
+        Run some initial setup. This method is separate from __init__ in order to mock it out in tests.
+
+        :param version: Defaults to *None*, which means that the same version number is used as OpenLP's version number.
+        :rtype: None
+        """
+        if version:
+            self.version = version
+        else:
+            self.version = get_version()['version']
 
     def check_pre_conditions(self):
         """
@@ -264,13 +267,14 @@ class Plugin(QtCore.QObject, RegistryProperties):
         """
         Generic Drag and drop handler triggered from service_manager.
         """
-        log.debug('process_add_service_event event called for plugin %s' % self.name)
+        log.debug('process_add_service_event event called for plugin {name}'.format(name=self.name))
         if replace:
             self.media_item.on_add_edit_click()
         else:
             self.media_item.on_add_click()
 
-    def about(self):
+    @staticmethod
+    def about():
         """
         Show a dialog when the user clicks on the 'About' button in the plugin manager.
         """
@@ -282,7 +286,7 @@ class Plugin(QtCore.QObject, RegistryProperties):
         """
         if self.media_item:
             self.media_item.initialise()
-            self.main_window.media_dock_manager.insert_dock(self.media_item, self.icon, self.weight)
+            self.main_window.media_dock_manager.add_item_to_dock(self.media_item)
 
     def finalise(self):
         """
@@ -295,13 +299,7 @@ class Plugin(QtCore.QObject, RegistryProperties):
         """
         Perform tasks on application startup
         """
-        # FIXME: Remove after 2.2 release.
-        # This is needed to load the list of media/presentation from the config saved before the settings rewrite.
-        if self.media_item_class is not None and self.name != 'images':
-            loaded_list = Settings().get_files_from_config(self)
-            # Now save the list to the config using our Settings class.
-            if loaded_list:
-                Settings().setValue('%s/%s files' % (self.settings_section, self.name), loaded_list)
+        pass
 
     def uses_theme(self, theme):
         """
@@ -325,6 +323,9 @@ class Plugin(QtCore.QObject, RegistryProperties):
         Encapsulate access of plugins translated text strings
         """
         return self.text_strings[name]
+
+    def set_plugin_text_strings(self):
+        pass
 
     def set_plugin_ui_text_strings(self, tooltips):
         """

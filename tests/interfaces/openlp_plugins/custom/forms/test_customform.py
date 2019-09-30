@@ -1,43 +1,34 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Module to test the EditCustomForm.
 """
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from PyQt4 import QtGui, QtTest, QtCore
+from PyQt5 import QtCore, QtTest, QtWidgets
 
-from openlp.core.common import Registry
-# Import needed due to import problems.
-from openlp.plugins.custom.lib.mediaitem import CustomMediaItem
+from openlp.core.common.registry import Registry
 from openlp.plugins.custom.forms.editcustomform import EditCustomForm
-from tests.interfaces import MagicMock, patch
 from tests.helpers.testmixin import TestMixin
 
 
@@ -51,7 +42,7 @@ class TestEditCustomForm(TestCase, TestMixin):
         """
         Registry.create()
         self.setup_application()
-        self.main_window = QtGui.QMainWindow()
+        self.main_window = QtWidgets.QMainWindow()
         Registry().register('main_window', self.main_window)
         media_item = MagicMock()
         manager = MagicMock()
@@ -64,7 +55,7 @@ class TestEditCustomForm(TestCase, TestMixin):
         del self.form
         del self.main_window
 
-    def load_themes_test(self):
+    def test_load_themes(self):
         """
         Test the load_themes() method.
         """
@@ -77,7 +68,7 @@ class TestEditCustomForm(TestCase, TestMixin):
         # THEN: There should be three items in the combo box.
         assert self.form.theme_combo_box.count() == 3, 'There should be three items (themes) in the combo box.'
 
-    def load_custom_test(self):
+    def test_load_custom(self):
         """
         Test the load_custom() method.
         """
@@ -85,22 +76,22 @@ class TestEditCustomForm(TestCase, TestMixin):
         self.form.load_custom(0)
 
         # THEN: The line edits should not contain any text.
-        self.assertEqual(self.form.title_edit.text(), '', 'The title edit should be empty')
-        self.assertEqual(self.form.credit_edit.text(), '', 'The credit edit should be empty')
+        assert self.form.title_edit.text() == '', 'The title edit should be empty'
+        assert self.form.credit_edit.text() == '', 'The credit edit should be empty'
 
-    def on_add_button_clicked_test(self):
+    def test_on_add_button_clicked(self):
         """
         Test the on_add_button_clicked_test method / add_button button.
         """
-        # GIVEN: A mocked QDialog.exec_() method
-        with patch('PyQt4.QtGui.QDialog.exec_') as mocked_exec:
+        # GIVEN: A mocked QDialog.exec() method
+        with patch('PyQt5.QtWidgets.QDialog.exec'):
             # WHEN: Add a new slide.
             QtTest.QTest.mouseClick(self.form.add_button, QtCore.Qt.LeftButton)
 
             # THEN: One slide should be added.
             assert self.form.slide_list_view.count() == 1, 'There should be one slide added.'
 
-    def validate_not_valid_part1_test(self):
+    def test_validate_not_valid_part1(self):
         """
         Test the _validate() method.
         """
@@ -119,7 +110,7 @@ class TestEditCustomForm(TestCase, TestMixin):
             mocked_setFocus.assert_called_with()
             mocked_critical_error_message_box.assert_called_with(message='You need to type in a title.')
 
-    def validate_not_valid_part2_test(self):
+    def test_validate_not_valid_part2(self):
         """
         Test the _validate() method.
         """
@@ -135,3 +126,19 @@ class TestEditCustomForm(TestCase, TestMixin):
             # THEN: The validate method should have returned False.
             assert not result, 'The _validate() method should have retured False'
             mocked_critical_error_message_box.assert_called_with(message='You need to add at least one slide.')
+
+    def test_update_slide_list(self):
+        """
+        Test the update_slide_list() method
+        """
+        # GIVEN: Mocked slide_list_view with a slide with 3 lines
+        self.form.slide_list_view = MagicMock()
+        self.form.slide_list_view.count.return_value = 1
+        self.form.slide_list_view.currentRow.return_value = 0
+        self.form.slide_list_view.item.return_value = MagicMock(return_value='1st Slide\n2nd Slide\n3rd Slide')
+
+        # WHEN: updating the slide by splitting the lines into slides
+        self.form.update_slide_list(['1st Slide', '2nd Slide', '3rd Slide'])
+
+        # THEN: The slides should be created in correct order
+        self.form.slide_list_view.addItems.assert_called_with(['1st Slide', '2nd Slide', '3rd Slide'])

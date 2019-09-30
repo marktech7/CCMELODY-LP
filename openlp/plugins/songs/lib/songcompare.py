@@ -1,47 +1,41 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`songcompare` module provides functionality to search for
-duplicate songs. It has one single :function:`songs_probably_equal`.
+duplicate songs. It has one single :func:`songs_probably_equal`.
 
-The algorithm is based on the diff algorithm.
-First a diffset is calculated for two songs.
-To compensate for typos all differences that are smaller than a
-limit (<max_typo_size) and are surrounded by larger equal blocks
-(>min_fragment_size) are removed and the surrounding equal parts are merged.
-Finally two conditions can qualify a song tuple to be a duplicate:
-1. There is a block of equal content that is at least min_block_size large.
-   This condition should hit for all larger songs that have a long enough
-   equal part. Even if only one verse is equal this condition should still hit.
-2. Two thirds of the smaller song is contained in the larger song.
-   This condition should hit if one of the two songs (or both) is small (smaller
-   than the min_block_size), but most of the song is contained in the other song.
+| The algorithm is based on the diff algorithm.
+| First a diffset is calculated for two songs.
+| To compensate for typos all differences that are smaller than a
+  limit (<max_typo_size) and are surrounded by larger equal blocks
+  (>min_fragment_size) are removed and the surrounding equal parts are merged.
+| Finally two conditions can qualify a song tuple to be a duplicate:
+
+    1. There is a block of equal content that is at least min_block_size large.
+       This condition should hit for all larger songs that have a long enough
+       equal part. Even if only one verse is equal this condition should still hit.
+    2. Two thirds of the smaller song is contained in the larger song.
+       This condition should hit if one of the two songs (or both) is small (smaller
+       than the min_block_size), but most of the song is contained in the other song.
 """
 
 import difflib
@@ -52,13 +46,13 @@ MIN_BLOCK_SIZE = 70
 MAX_TYPO_SIZE = 3
 
 
-def songs_probably_equal(song_tupel):
+def songs_probably_equal(song_tuple):
     """
     Calculate and return whether two songs are probably equal.
 
-    :param song_tupel: A tuple of two songs to compare.
+    :param song_tuple: A tuple of two songs to compare.
     """
-    song1, song2 = song_tupel
+    song1, song2 = song_tuple
     pos1, lyrics1 = song1
     pos2, lyrics2 = song2
     if len(lyrics1) < len(lyrics2):

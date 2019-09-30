@@ -1,52 +1,52 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.alerts.lib.alertsmanager` module contains the part of the plugin which manages storing and
 displaying of alerts.
 """
+import json
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore, QtGui
 
-from openlp.core.common import OpenLPMixin, RegistryMixin, Registry, RegistryProperties, translate
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.registry import Registry, RegistryBase
+from openlp.core.common.settings import Settings
+from openlp.core.display.screens import ScreenList
 
 
-class AlertsManager(OpenLPMixin, RegistryMixin, QtCore.QObject, RegistryProperties):
+class AlertsManager(QtCore.QObject, RegistryBase, LogMixin, RegistryProperties):
     """
     AlertsManager manages the settings of Alerts.
     """
+    alerts_text = QtCore.pyqtSignal(list)
+
     def __init__(self, parent):
-        super(AlertsManager, self).__init__(parent)
+        super(AlertsManager, self).__init__()
         self.timer_id = 0
         self.alert_list = []
         Registry().register_function('live_display_active', self.generate_alert)
         Registry().register_function('alerts_text', self.alert_text)
-        QtCore.QObject.connect(self, QtCore.SIGNAL('alerts_text'), self.alert_text)
+        self.alerts_text.connect(self.alert_text)
 
     def alert_text(self, message):
         """
@@ -55,7 +55,11 @@ class AlertsManager(OpenLPMixin, RegistryMixin, QtCore.QObject, RegistryProperti
         :param message: The message text to be displayed
         """
         if message:
-            self.display_alert(message[0])
+            text = message[0]
+            # remove line breaks as these crash javascript code on display
+            while '\n' in text:
+                text = text.replace('\n', ' ')
+            self.display_alert(text)
 
     def display_alert(self, text=''):
         """
@@ -63,7 +67,7 @@ class AlertsManager(OpenLPMixin, RegistryMixin, QtCore.QObject, RegistryProperti
 
         :param text: The text to display
         """
-        self.log_debug('display alert called %s' % text)
+        self.log_debug('display alert called {text}'.format(text=text))
         if text:
             self.alert_list.append(text)
             if self.timer_id != 0:
@@ -77,14 +81,27 @@ class AlertsManager(OpenLPMixin, RegistryMixin, QtCore.QObject, RegistryProperti
         """
         Format and request the Alert and start the timer.
         """
-        if not self.alert_list:
+        if not self.alert_list or (len(ScreenList()) == 1 and
+                                   not Settings().value('core/display on monitor')):
             return
         text = self.alert_list.pop(0)
-        alert_tab = self.parent().settings_tab
-        self.live_controller.display.alert(text, alert_tab.location)
-        # Check to see if we have a timer running.
-        if self.timer_id == 0:
-            self.timer_id = self.startTimer(int(alert_tab.timeout) * 1000)
+
+        # Get the rgb color format of the font & background hex colors from settings
+        rgb_font_color = self.hex_to_rgb(QtGui.QColor(Settings().value('alerts/font color')))
+        rgb_background_color = self.hex_to_rgb(QtGui.QColor(Settings().value('alerts/background color')))
+
+        # Put alert settings together in dict that will be passed to Display in Javascript
+        alert_settings = {
+            'backgroundColor': rgb_background_color,
+            'location': Settings().value('alerts/location'),
+            'fontFace': Settings().value('alerts/font face'),
+            'fontSize': Settings().value('alerts/font size'),
+            'fontColor': rgb_font_color,
+            'timeout': Settings().value('alerts/timeout'),
+            'repeat': Settings().value('alerts/repeat'),
+            'scroll': Settings().value('alerts/scroll')
+        }
+        self.live_controller.displays[0].alert(text, json.dumps(alert_settings))
 
     def timerEvent(self, event):
         """
@@ -98,3 +115,13 @@ class AlertsManager(OpenLPMixin, RegistryMixin, QtCore.QObject, RegistryProperti
         self.killTimer(self.timer_id)
         self.timer_id = 0
         self.generate_alert()
+
+    def hex_to_rgb(self, rgb_values):
+        """
+        Converts rgb color values from QColor to rgb string
+
+        :param rgb_values:
+        :return: rgb color string
+        :rtype: string
+        """
+        return "rgb(" + str(rgb_values.red()) + ", " + str(rgb_values.green()) + ", " + str(rgb_values.blue()) + ")"

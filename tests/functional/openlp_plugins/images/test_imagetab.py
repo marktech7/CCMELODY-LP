@@ -1,45 +1,37 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 This module contains tests for the lib submodule of the Images plugin.
 """
 from unittest import TestCase
-from PyQt4 import QtGui
+from unittest.mock import MagicMock
 
-from openlp.core.common import Settings
+from PyQt5 import QtWidgets
 
-from openlp.core.common import Registry
-from openlp.plugins.images.lib.db import ImageFilenames, ImageGroups
-from openlp.plugins.images.lib.mediaitem import ImageMediaItem
-from openlp.plugins.images.lib import ImageTab
-from tests.functional import MagicMock, patch
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.plugins.images.lib.imagetab import ImageTab
 from tests.helpers.testmixin import TestMixin
+
 
 __default_settings__ = {
     'images/db type': 'sqlite',
@@ -61,7 +53,7 @@ class TestImageMediaItem(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Settings().extend_default_settings(__default_settings__)
-        self.parent = QtGui.QMainWindow()
+        self.parent = QtWidgets.QMainWindow()
         self.form = ImageTab(self.parent, 'Images', None, None)
         self.form.settings_form.register_post_process = MagicMock()
 
@@ -73,7 +65,7 @@ class TestImageMediaItem(TestCase, TestMixin):
         del self.form
         self.destroy_settings()
 
-    def save_tab_nochange_test_test(self):
+    def test_save_tab_nochange(self):
         """
         Test no changes does not trigger post processing
         """
@@ -82,17 +74,19 @@ class TestImageMediaItem(TestCase, TestMixin):
         # WHEN: the save is invoked
         self.form.save()
         # THEN: the post process should not be requested
-        self.assertEqual(0, self.form.settings_form.register_post_process.call_count,
-                         'Image Post processing should not have been requested')
+        assert 0 == self.form.settings_form.register_post_process.call_count, \
+            'Image Post processing should not have been requested'
 
-    def save_tab_change_test_test(self):
+    def test_save_tab_change(self):
         """
-        Test a change triggers post processing.
+        Test a color change is applied and triggers post processing.
         """
         # GIVEN: Apply a change to the form.
-        self.form.background_color = '#999999'
+        self.form.on_background_color_changed('#999999')
         # WHEN: the save is invoked
         self.form.save()
         # THEN: the post process should be requested
-        self.assertEqual(1, self.form.settings_form.register_post_process.call_count,
-                         'Image Post processing should have been requested')
+        assert 1 == self.form.settings_form.register_post_process.call_count, \
+            'Image Post processing should have been requested'
+        # THEN: The color should be set
+        assert self.form.background_color == '#999999', 'The updated color should have been saved'

@@ -1,40 +1,33 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
-
-import logging
-import os
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import chardet
 import codecs
+import logging
 
-from openlp.core.lib import translate
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import VerseType
+
 from .songimport import SongImport
+
 
 log = logging.getLogger(__name__)
 
@@ -42,7 +35,10 @@ log = logging.getLogger(__name__)
 class CCLIFileImport(SongImport):
     """
     The :class:`CCLIFileImport` class provides OpenLP with the ability to import CCLI SongSelect song files in
-    both .txt and .usr formats. See `<http://www.ccli.com/>`_ for more details.
+    TEXT and USR formats. See `<http://www.ccli.com/>`_ for more details.
+
+    NOTE: Sometime before 2015, CCLI/SongSelect has changed the USR filename to a .bin extension; however,
+     the file format remained the same as the .usr file format.
     """
 
     def __init__(self, manager, **kwargs):
@@ -52,45 +48,43 @@ class CCLIFileImport(SongImport):
         :param manager: The song manager for the running OpenLP installation.
         :param kwargs:  The files to be imported.
         """
-        SongImport.__init__(self, manager, **kwargs)
+        super().__init__(manager, **kwargs)
 
     def do_import(self):
         """
-        Import either a ``.usr`` or a ``.txt`` SongSelect file.
+        Import either a USR or TEXT SongSelect file.
         """
         log.debug('Starting CCLI File Import')
         self.import_wizard.progress_bar.setMaximum(len(self.import_source))
-        for filename in self.import_source:
-            filename = str(filename)
-            log.debug('Importing CCLI File: %s', filename)
-            if os.path.isfile(filename):
-                detect_file = open(filename, 'rb')
-                detect_content = detect_file.read(2048)
-                try:
-                    str(detect_content, 'utf-8')
-                    details = {'confidence': 1, 'encoding': 'utf-8'}
-                except UnicodeDecodeError:
-                    details = chardet.detect(detect_content)
-                detect_file.close()
-                infile = codecs.open(filename, 'r', details['encoding'])
-                if not infile.read(1) == '\ufeff':
+        for file_path in self.import_source:
+            log.debug('Importing CCLI File: {name}'.format(name=file_path))
+            if file_path.is_file():
+                with file_path.open('rb') as detect_file:
+                    detect_content = detect_file.read(2048)
+                    try:
+                        str(detect_content, 'utf-8')
+                        details = {'confidence': 1, 'encoding': 'utf-8'}
+                    except UnicodeDecodeError:
+                        details = chardet.detect(detect_content)
+                in_file = codecs.open(file_path, 'r', details['encoding'])
+                if not in_file.read(1) == '\ufeff':
                     # not UTF or no BOM was found
-                    infile.seek(0)
-                lines = infile.readlines()
-                infile.close()
-                ext = os.path.splitext(filename)[1]
-                if ext.lower() == '.usr':
-                    log.info('SongSelect .usr format file found: %s', filename)
+                    in_file.seek(0)
+                lines = in_file.readlines()
+                in_file.close()
+                ext = file_path.suffix.lower()
+                if ext == '.usr' or ext == '.bin':
+                    log.info('SongSelect USR format file found: {name}'.format(name=file_path))
                     if not self.do_import_usr_file(lines):
-                        self.log_error(filename)
-                elif ext.lower() == '.txt':
-                    log.info('SongSelect .txt format file found: %s', filename)
+                        self.log_error(file_path)
+                elif ext == '.txt':
+                    log.info('SongSelect TEXT format file found: {name}'.format(name=file_path))
                     if not self.do_import_txt_file(lines):
-                        self.log_error(filename)
+                        self.log_error(file_path)
                 else:
-                    self.log_error(filename, translate('SongsPlugin.CCLIFileImport', 'The file does not have a valid '
-                                                                                     'extension.'))
-                    log.info('Extension %s is not valid', filename)
+                    self.log_error(file_path, translate('SongsPlugin.CCLIFileImport',
+                                                        'The file does not have a valid extension.'))
+                    log.info('Extension {name} is not valid'.format(name=file_path))
             if self.stop_import_flag:
                 return
 
@@ -99,7 +93,7 @@ class CCLIFileImport(SongImport):
         The :func:`doImport_usr_file` method provides OpenLP with the ability
         to import CCLI SongSelect songs in *USR* file format.
 
-        **SongSelect .usr file format**
+        **SongSelect USR file format**
 
         ``[File]``
             USR file format first line
@@ -150,9 +144,11 @@ class CCLIFileImport(SongImport):
 
         :param text_list: An array of strings containing the usr file content.
         """
-        log.debug('USR file text: %s', text_list)
+        log.debug('USR file text: {text}'.format(text=text_list))
         song_author = ''
+        song_fields = ''
         song_topics = ''
+        song_words = ''
         for line in text_list:
             if line.startswith('[S '):
                 ccli, line = line.split(']', 1)
@@ -165,7 +161,7 @@ class CCLIFileImport(SongImport):
             elif line.startswith('Author='):
                 song_author = line[7:].strip()
             elif line.startswith('Copyright='):
-                self.copyright = line[10:].strip()
+                self.add_copyright(line[10:].strip())
             elif line.startswith('Themes='):
                 song_topics = line[7:].strip().replace(' | ', '/t')
             elif line.startswith('Fields='):
@@ -197,7 +193,7 @@ class CCLIFileImport(SongImport):
             if check_first_verse_line:
                 if verse_lines[0].startswith('(PRE-CHORUS'):
                     verse_type = VerseType.tags[VerseType.PreChorus]
-                    log.debug('USR verse PRE-CHORUS: %s', verse_lines[0])
+                    log.debug('USR verse PRE-CHORUS: {lines}'.format(lines=verse_lines[0]))
                     verse_text = verse_lines[1]
                 elif verse_lines[0].startswith('(BRIDGE'):
                     verse_type = VerseType.tags[VerseType.Bridge]
@@ -252,10 +248,11 @@ class CCLIFileImport(SongImport):
                 # e.g. CCLI-Liedlizenznummer: 14 / CCLI License No. 14
 
         """
-        log.debug('TXT file text: %s', text_list)
+        log.debug('TXT file text: {text}'.format(text=text_list))
         line_number = 0
         check_first_verse_line = False
         verse_text = ''
+        verse_type = VerseType.tags[VerseType.Verse]
         song_author = ''
         verse_start = False
         for line in text_list:
@@ -267,6 +264,7 @@ class CCLIFileImport(SongImport):
                     if verse_text:
                         self.add_verse(verse_text, verse_type)
                         verse_text = ''
+                        verse_type = VerseType.tags[VerseType.Verse]
                         verse_start = False
             else:
                 # line_number=0, song title
@@ -283,7 +281,7 @@ class CCLIFileImport(SongImport):
                     elif not verse_start:
                         # We have the verse descriptor
                         verse_desc_parts = clean_line.split(' ')
-                        if len(verse_desc_parts) == 2:
+                        if len(verse_desc_parts):
                             if verse_desc_parts[0].startswith('Ver'):
                                 verse_type = VerseType.tags[VerseType.Verse]
                             elif verse_desc_parts[0].startswith('Ch'):
@@ -295,10 +293,8 @@ class CCLIFileImport(SongImport):
                                 # verse type, so set flag
                                 verse_type = VerseType.tags[VerseType.Other]
                                 check_first_verse_line = True
-                            verse_number = verse_desc_parts[1]
                         else:
                             verse_type = VerseType.tags[VerseType.Other]
-                            verse_number = 1
                         verse_start = True
                     else:
                         # check first line for verse type
@@ -322,14 +318,14 @@ class CCLIFileImport(SongImport):
                     if line_number == 2:
                         line_number += 1
                         if clean_line.startswith('©'):
-                            self.copyright = clean_line
+                            self.add_copyright(clean_line)
                         else:
                             song_author = clean_line
                     # n=3, authors
                     elif line_number == 3:
                         line_number += 1
                         if song_author:
-                            self.copyright = clean_line
+                            self.add_copyright(clean_line)
                         else:
                             song_author = clean_line
                     # line_number=4, comments lines before last line

@@ -1,42 +1,42 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 Package to test the openlp.plugins.songs.forms.editsongform package.
 """
 from unittest import TestCase
+from unittest.mock import MagicMock
 
-from PyQt4 import QtGui
+from PyQt5 import QtWidgets
 
-from openlp.core.common import Registry
+from openlp.core.common.i18n import UiStrings
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.forms.editsongform import EditSongForm
-from tests.interfaces import MagicMock
 from tests.helpers.testmixin import TestMixin
+
+
+__default_settings__ = {
+    'songs/enable chords': True,
+}
 
 
 class TestEditSongForm(TestCase, TestMixin):
@@ -50,31 +50,34 @@ class TestEditSongForm(TestCase, TestMixin):
         """
         Registry.create()
         self.setup_application()
-        self.main_window = QtGui.QMainWindow()
+        self.main_window = QtWidgets.QMainWindow()
         Registry().register('main_window', self.main_window)
         Registry().register('theme_manager', MagicMock())
+        self.build_settings()
+        Settings().extend_default_settings(__default_settings__)
         self.form = EditSongForm(MagicMock(), self.main_window, MagicMock())
 
     def tearDown(self):
         """
         Delete all the C++ objects at the end so that we don't have a segfault
         """
+        self.destroy_settings()
         del self.form
         del self.main_window
 
-    def ui_defaults_test(self):
+    def test_ui_defaults(self):
         """
         Test that the EditSongForm defaults are correct
         """
-        self.assertFalse(self.form.verse_edit_button.isEnabled(), 'The verse edit button should not be enabled')
-        self.assertFalse(self.form.verse_delete_button.isEnabled(), 'The verse delete button should not be enabled')
-        self.assertFalse(self.form.author_remove_button.isEnabled(), 'The author remove button should not be enabled')
-        self.assertFalse(self.form.topic_remove_button.isEnabled(), 'The topic remove button should not be enabled')
+        assert self.form.verse_edit_button.isEnabled() is False, 'The verse edit button should not be enabled'
+        assert self.form.verse_delete_button.isEnabled() is False, 'The verse delete button should not be enabled'
+        assert self.form.author_remove_button.isEnabled() is False, 'The author remove button should not be enabled'
+        assert self.form.topic_remove_button.isEnabled() is False, 'The topic remove button should not be enabled'
 
-    def is_verse_edit_form_executed_test(self):
+    def test_is_verse_edit_form_executed(self):
         pass
 
-    def verse_order_no_warning_test(self):
+    def test_verse_order_no_warning(self):
         """
         Test if the verse order warning is not shown
         """
@@ -95,7 +98,7 @@ class TestEditSongForm(TestCase, TestMixin):
         # THEN: No text should be shown.
         assert self.form.warning_label.text() == '', 'There should be no warning.'
 
-    def verse_order_incomplete_warning_test(self):
+    def test_verse_order_incomplete_warning(self):
         """
         Test if the verse-order-incomple warning is shown
         """
@@ -117,7 +120,7 @@ class TestEditSongForm(TestCase, TestMixin):
         assert self.form.warning_label.text() == self.form.not_all_verses_used_warning, \
             'The verse-order-incomplete warning should be shown.'
 
-    def bug_1170435_test(self):
+    def test_bug_1170435(self):
         """
         Regression test for bug 1170435 (test if "no verse order" message is shown)
         """
@@ -136,3 +139,30 @@ class TestEditSongForm(TestCase, TestMixin):
         # THEN: The no-verse-order message should be shown.
         assert self.form.warning_label.text() == self.form.no_verse_order_entered_warning,  \
             'The no-verse-order message should be shown.'
+
+    def test_bug_1404967(self):
+        """
+        Test for CCLI label showing correct text
+        """
+        # GIVEN; Mocked methods
+        form = self.form
+        # THEN: CCLI label should be CCLI song label
+        assert form.ccli_label.text() is not UiStrings().CCLINumberLabel, \
+            'CCLI label should not be "{}"'.format(UiStrings().CCLINumberLabel)
+        assert form.ccli_label.text() == UiStrings().CCLISongNumberLabel, \
+            'CCLI label text should be "{}"'.format(UiStrings().CCLISongNumberLabel)
+
+    def test_verse_order_lowercase(self):
+        """
+        Test that entering a verse order in lowercase automatically converts to uppercase
+        """
+        # GIVEN; Mocked methods
+        form = self.form
+
+        # WHEN: We enter a verse order in lowercase
+        form.verse_order_edit.setText('v1 v2 c1 v3 c1 v4 c1')
+        # Need to manually trigger this method as it is only triggered by manual input
+        form.on_verse_order_text_changed(form.verse_order_edit.text())
+
+        # THEN: The verse order should be converted to uppercase
+        assert form.verse_order_edit.text() == 'V1 V2 C1 V3 C1 V4 C1'

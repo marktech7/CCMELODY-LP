@@ -2,60 +2,49 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
 """
 This script is used to check dependencies of OpenLP. It checks availability
 of required python modules and their version. To verify availability of Python
 modules, simply run this script::
 
-    @:~$ ./check_dependencies.py
+    $ ./check_dependencies.py
 
 """
 import os
 import sys
 from distutils.version import LooseVersion
 
-# If we try to import uno before nose this will create a warning. Just try to import nose first to suppress the warning.
-try:
-    import nose
-except ImportError:
-    nose = None
-
 IS_WIN = sys.platform.startswith('win')
+IS_LIN = sys.platform.startswith('lin')
+IS_MAC = sys.platform.startswith('dar')
 
 
 VERS = {
-    'Python': '3.0',
-    'PyQt4': '4.6',
-    'Qt4': '4.6',
+    'Python': '3.6',
+    'PyQt5': '5.12',
+    'Qt5': '5.9',
+    'pymediainfo': '2.2',
     'sqlalchemy': '0.5',
-    # pyenchant 1.6 required on Windows
-    'enchant': '1.6' if IS_WIN else '1.3'
+    'enchant': '1.6'
 }
 
 # pywin32
@@ -63,38 +52,63 @@ WIN32_MODULES = [
     'win32com',
     'win32ui',
     'pywintypes',
-    'pyodbc',
-    'icu',
 ]
 
+LINUX_MODULES = [
+    # Optical drive detection.
+    'dbus',
+    'Xlib',
+]
+
+MACOSX_MODULES = [
+    'objc',
+    'Pyro4',
+    'AppKit'
+]
+
+
 MODULES = [
-    'PyQt4',
-    'PyQt4.QtCore',
-    'PyQt4.QtGui',
-    'PyQt4.QtNetwork',
-    'PyQt4.QtOpenGL',
-    'PyQt4.QtSvg',
-    'PyQt4.QtTest',
-    'PyQt4.QtWebKit',
-    'PyQt4.phonon',
+    'PyQt5',
+    'PyQt5.QtCore',
+    'PyQt5.QtGui',
+    'PyQt5.QtWidgets',
+    'PyQt5.QtNetwork',
+    'PyQt5.QtOpenGL',
+    'PyQt5.QtSvg',
+    'PyQt5.QtTest',
+    'PyQt5.QtWebEngineWidgets',
+    'PyQt5.QtMultimedia',
+    'appdirs',
     'sqlalchemy',
     'alembic',
-    'sqlite3',
     'lxml',
     'chardet',
-    'enchant',
     'bs4',
     'mako',
-    'uno',
+    'websockets',
+    'waitress',
+    'webob',
+    'requests',
+    'qtawesome',
+    'pymediainfo',
+    'vlc',
+    'zeroconf'
 ]
 
 
 OPTIONAL_MODULES = [
-    ('MySQLdb', '(MySQL support)', True),
-    ('psycopg2', '(PostgreSQL support)', True),
-    ('nose', '(testing framework)', True),
-    ('mock',  '(testing module)', sys.version_info[1] < 3),
-    ('jenkins', '(access jenkins api - package name: jenkins-webapi)', True),
+    ('qdarkstyle', '(dark style support)'),
+    ('pymysql', '(MySQL support)'),
+    ('pyodbc', '(ODBC support)'),
+    ('psycopg2', '(PostgreSQL support)'),
+    ('enchant', '(spell checker)'),
+    ('fitz', '(executable-independent PDF support)'),
+    ('pysword', '(import SWORD bibles)'),
+    ('uno', '(LibreOffice/OpenOffice support)'),
+    # development/testing modules
+    ('jenkins', '(access jenkins api)'),
+    ('pytest', '(testing framework)'),
+    ('flake8', '(linter)')
 ]
 
 w = sys.stdout.write
@@ -147,6 +161,8 @@ def check_module(mod, text='', indent='  '):
         w('OK')
     except ImportError:
         w('FAIL')
+    except Exception:
+        w('ERROR')
     w(os.linesep)
 
 
@@ -162,12 +178,12 @@ def verify_python():
 def verify_versions():
     print('Verifying version of modules...')
     try:
-        from PyQt4 import QtCore
-        check_vers(QtCore.PYQT_VERSION_STR, VERS['PyQt4'], 'PyQt4')
-        check_vers(QtCore.qVersion(), VERS['Qt4'], 'Qt4')
+        from PyQt5 import QtCore
+        check_vers(QtCore.PYQT_VERSION_STR, VERS['PyQt5'], 'PyQt5')
+        check_vers(QtCore.qVersion(), VERS['Qt5'], 'Qt5')
     except ImportError:
-        print_vers_fail(VERS['PyQt4'], 'PyQt4')
-        print_vers_fail(VERS['Qt4'], 'Qt4')
+        print_vers_fail(VERS['PyQt5'], 'PyQt5')
+        print_vers_fail(VERS['Qt5'], 'Qt5')
     try:
         import sqlalchemy
         check_vers(sqlalchemy.__version__, VERS['sqlalchemy'], 'sqlalchemy')
@@ -198,11 +214,11 @@ def print_enchant_backends_and_languages():
 
 def print_qt_image_formats():
     """
-    Print out the image formats that Qt4 supports.
+    Print out the image formats that Qt5 supports.
     """
-    w('Qt4 image formats... ')
+    w('Qt5 image formats... ')
     try:
-        from PyQt4 import QtGui
+        from PyQt5 import QtGui
         read_f = ', '.join([bytes(fmt).decode().lower() for fmt in QtGui.QImageReader.supportedImageFormats()])
         write_f = ', '.join([bytes(fmt).decode().lower() for fmt in QtGui.QImageWriter.supportedImageFormats()])
         w(os.linesep)
@@ -223,15 +239,23 @@ def main():
         check_module(m)
     print('Checking for optional modules...')
     for m in OPTIONAL_MODULES:
-        if m[2]:
-            check_module(m[0], text=m[1])
+        check_module(m[0], text=m[1])
     if IS_WIN:
         print('Checking for Windows specific modules...')
         for m in WIN32_MODULES:
             check_module(m)
+    elif IS_LIN:
+        print('Checking for Linux specific modules...')
+        for m in LINUX_MODULES:
+            check_module(m)
+    elif IS_MAC:
+        print('Checking for Mac OS X specific modules...')
+        for m in MACOSX_MODULES:
+            check_module(m)
     verify_versions()
     print_qt_image_formats()
     print_enchant_backends_and_languages()
+
 
 if __name__ == '__main__':
     main()

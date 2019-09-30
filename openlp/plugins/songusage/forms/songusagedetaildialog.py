@@ -1,96 +1,83 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
+from PyQt5 import QtCore, QtWidgets
 
-from PyQt4 import QtCore, QtGui
-
-from openlp.core.common import translate
-from openlp.core.lib import build_icon
+from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box
+from openlp.core.ui.icons import UiIcons
+from openlp.core.widgets.edits import PathEdit
+from openlp.core.widgets.enums import PathEditType
 
 
 class Ui_SongUsageDetailDialog(object):
     """
     The Song Usage report details
     """
-    def setupUi(self, song_usage_detail_dialog):
+    def setup_ui(self, song_usage_detail_dialog):
         """
         Set up the UI
 
         :param song_usage_detail_dialog:
         """
         song_usage_detail_dialog.setObjectName('song_usage_detail_dialog')
-        song_usage_detail_dialog.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
+        song_usage_detail_dialog.setWindowIcon(UiIcons().main_icon)
         song_usage_detail_dialog.resize(609, 413)
-        self.vertical_layout = QtGui.QVBoxLayout(song_usage_detail_dialog)
+        self.vertical_layout = QtWidgets.QVBoxLayout(song_usage_detail_dialog)
         self.vertical_layout.setSpacing(8)
         self.vertical_layout.setContentsMargins(8, 8, 8, 8)
         self.vertical_layout.setObjectName('vertical_layout')
-        self.date_range_group_box = QtGui.QGroupBox(song_usage_detail_dialog)
+        self.date_range_group_box = QtWidgets.QGroupBox(song_usage_detail_dialog)
         self.date_range_group_box.setObjectName('date_range_group_box')
-        self.date_horizontal_layout = QtGui.QHBoxLayout(self.date_range_group_box)
+        self.date_horizontal_layout = QtWidgets.QHBoxLayout(self.date_range_group_box)
         self.date_horizontal_layout.setSpacing(8)
         self.date_horizontal_layout.setContentsMargins(8, 8, 8, 8)
         self.date_horizontal_layout.setObjectName('date_horizontal_layout')
-        self.from_date_calendar = QtGui.QCalendarWidget(self.date_range_group_box)
+        self.from_date_calendar = QtWidgets.QCalendarWidget(self.date_range_group_box)
         self.from_date_calendar.setObjectName('from_date_calendar')
         self.date_horizontal_layout.addWidget(self.from_date_calendar)
-        self.to_label = QtGui.QLabel(self.date_range_group_box)
+        self.to_label = QtWidgets.QLabel(self.date_range_group_box)
         self.to_label.setScaledContents(False)
         self.to_label.setAlignment(QtCore.Qt.AlignCenter)
         self.to_label.setObjectName('to_label')
         self.date_horizontal_layout.addWidget(self.to_label)
-        self.to_date_calendar = QtGui.QCalendarWidget(self.date_range_group_box)
+        self.to_date_calendar = QtWidgets.QCalendarWidget(self.date_range_group_box)
         self.to_date_calendar.setObjectName('to_date_calendar')
         self.date_horizontal_layout.addWidget(self.to_date_calendar)
         self.vertical_layout.addWidget(self.date_range_group_box)
-        self.file_group_box = QtGui.QGroupBox(self.date_range_group_box)
+        self.file_group_box = QtWidgets.QGroupBox(self.date_range_group_box)
         self.file_group_box.setObjectName('file_group_box')
-        self.file_horizontal_layout = QtGui.QHBoxLayout(self.file_group_box)
+        self.file_horizontal_layout = QtWidgets.QHBoxLayout(self.file_group_box)
         self.file_horizontal_layout.setSpacing(8)
         self.file_horizontal_layout.setContentsMargins(8, 8, 8, 8)
         self.file_horizontal_layout.setObjectName('file_horizontal_layout')
-        self.file_line_edit = QtGui.QLineEdit(self.file_group_box)
-        self.file_line_edit.setObjectName('file_line_edit')
-        self.file_line_edit.setReadOnly(True)
-        self.file_horizontal_layout.addWidget(self.file_line_edit)
-        self.save_file_push_button = QtGui.QPushButton(self.file_group_box)
-        self.save_file_push_button.setMaximumWidth(self.save_file_push_button.size().height())
-        self.save_file_push_button.setIcon(build_icon(':/general/general_open.png'))
-        self.save_file_push_button.setObjectName('save_file_push_button')
-        self.file_horizontal_layout.addWidget(self.save_file_push_button)
+        self.report_path_edit = PathEdit(self.file_group_box, path_type=PathEditType.Directories, show_revert=False)
+        self.file_horizontal_layout.addWidget(self.report_path_edit)
         self.vertical_layout.addWidget(self.file_group_box)
         self.button_box = create_button_box(song_usage_detail_dialog, 'button_box', ['cancel', 'ok'])
         self.vertical_layout.addWidget(self.button_box)
-        self.retranslateUi(song_usage_detail_dialog)
-        self.save_file_push_button.clicked.connect(song_usage_detail_dialog.define_output_location)
+        self.retranslate_ui(song_usage_detail_dialog)
+        self.report_path_edit.pathChanged.connect(song_usage_detail_dialog.on_report_path_edit_path_changed)
 
-    def retranslateUi(self, song_usage_detail_dialog):
+    def retranslate_ui(self, song_usage_detail_dialog):
         """
         Retranslate the UI
 

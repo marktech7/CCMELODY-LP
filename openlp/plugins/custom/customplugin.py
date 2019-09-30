@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
 The :mod:`~openlp.plugins.custom.customplugin` module contains the Plugin class
 for the Custom Slides plugin.
@@ -33,17 +26,28 @@ for the Custom Slides plugin.
 
 import logging
 
-from openlp.core.lib import Plugin, StringContent, build_icon, translate
+from openlp.core.state import State
+from openlp.core.api.http import register_endpoint
+from openlp.core.common.i18n import translate
+from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
-from openlp.plugins.custom.lib import CustomMediaItem, CustomTab
+from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.ui.icons import UiIcons
+from openlp.plugins.custom.endpoint import api_custom_endpoint, custom_endpoint
 from openlp.plugins.custom.lib.db import CustomSlide, init_schema
-from openlp.plugins.custom.lib.mediaitem import CustomSearch
+from openlp.plugins.custom.lib.mediaitem import CustomMediaItem, CustomSearch
+from openlp.plugins.custom.lib.customtab import CustomTab
+
 
 log = logging.getLogger(__name__)
 
 __default_settings__ = {
     'custom/db type': 'sqlite',
-    'custom/last search type': CustomSearch.Titles,
+    'custom/db username': '',
+    'custom/db password': '',
+    'custom/db hostname': '',
+    'custom/db database': '',
+    'custom/last used search type': CustomSearch.Titles,
     'custom/display footer': True,
     'custom/add custom from service': True
 }
@@ -62,10 +66,15 @@ class CustomPlugin(Plugin):
         super(CustomPlugin, self).__init__('custom', __default_settings__, CustomMediaItem, CustomTab)
         self.weight = -5
         self.db_manager = Manager('custom', init_schema)
-        self.icon_path = ':/plugins/plugin_custom.png'
+        self.icon_path = UiIcons().clone
         self.icon = build_icon(self.icon_path)
+        register_endpoint(custom_endpoint)
+        register_endpoint(api_custom_endpoint)
+        State().add_service(self.name, self.weight, is_plugin=True)
+        State().update_pre_conditions(self.name, self.check_pre_conditions())
 
-    def about(self):
+    @staticmethod
+    def about():
         about_text = translate('CustomPlugin', '<strong>Custom Slide Plugin </strong><br />The custom slide plugin '
                                'provides the ability to set up custom text slides that can be displayed on the screen '
                                'the same way songs are. This plugin provides greater freedom over the songs plugin.')
@@ -75,11 +84,10 @@ class CustomPlugin(Plugin):
         """
         Called to find out if the custom plugin is currently using a theme.
 
-        Returns True if the theme is being used, otherwise returns False.
+        Returns count of the times the theme is used.
+        :param theme: Theme to be queried
         """
-        if self.db_manager.get_all_objects(CustomSlide, CustomSlide.theme_name == theme):
-            return True
-        return False
+        return len(self.db_manager.get_all_objects(CustomSlide, CustomSlide.theme_name == theme))
 
     def rename_theme(self, old_theme, new_theme):
         """

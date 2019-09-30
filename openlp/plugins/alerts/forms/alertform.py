@@ -1,41 +1,35 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 
-from PyQt4 import QtGui, QtCore
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Registry, translate
+from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
 from openlp.plugins.alerts.lib.db import AlertItem
 
 from .alertdialog import Ui_AlertDialog
 
 
-class AlertForm(QtGui.QDialog, Ui_AlertDialog):
+class AlertForm(QtWidgets.QDialog, Ui_AlertDialog):
     """
     Provide UI for the alert system
     """
@@ -43,11 +37,12 @@ class AlertForm(QtGui.QDialog, Ui_AlertDialog):
         """
         Initialise the alert form
         """
+        super(AlertForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
+                                        QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.manager = plugin.manager
         self.plugin = plugin
         self.item_id = None
-        super(AlertForm, self).__init__(Registry().get('main_window'))
-        self.setupUi(self)
+        self.setup_ui(self)
         self.display_button.clicked.connect(self.on_display_clicked)
         self.display_close_button.clicked.connect(self.on_display_close_clicked)
         self.alert_text_edit.textChanged.connect(self.on_text_changed)
@@ -57,14 +52,14 @@ class AlertForm(QtGui.QDialog, Ui_AlertDialog):
         self.alert_list_widget.clicked.connect(self.on_single_click)
         self.alert_list_widget.currentRowChanged.connect(self.on_current_row_changed)
 
-    def exec_(self):
+    def exec(self):
         """
         Execute the dialog and return the exit code.
         """
         self.display_button.setEnabled(False)
         self.display_close_button.setEnabled(False)
         self.alert_text_edit.setText('')
-        return QtGui.QDialog.exec_(self)
+        return QtWidgets.QDialog.exec(self)
 
     def load_list(self):
         """
@@ -73,10 +68,10 @@ class AlertForm(QtGui.QDialog, Ui_AlertDialog):
         self.alert_list_widget.clear()
         alerts = self.manager.get_all_objects(AlertItem, order_by_ref=AlertItem.text)
         for alert in alerts:
-            item_name = QtGui.QListWidgetItem(alert.text)
+            item_name = QtWidgets.QListWidgetItem(alert.text)
             item_name.setData(QtCore.Qt.UserRole, alert.id)
             self.alert_list_widget.addItem(item_name)
-            if alert.text == str(self.alert_text_edit.text()):
+            if alert.text == self.alert_text_edit.text():
                 self.item_id = alert.id
                 self.alert_list_widget.setCurrentRow(self.alert_list_widget.row(item_name))
 
@@ -111,11 +106,11 @@ class AlertForm(QtGui.QDialog, Ui_AlertDialog):
         Create a new alert.
         """
         if not self.alert_text_edit.text():
-            QtGui.QMessageBox.information(self,
-                                          translate('AlertsPlugin.AlertForm', 'New Alert'),
-                                          translate('AlertsPlugin.AlertForm',
-                                                    'You haven\'t specified any text for your alert. \n'
-                                                    'Please type in some text before clicking New.'))
+            QtWidgets.QMessageBox.information(self,
+                                              translate('AlertsPlugin.AlertForm', 'New Alert'),
+                                              translate('AlertsPlugin.AlertForm',
+                                                        'You haven\'t specified any text for your alert. \n'
+                                                        'Please type in some text before clicking New.'))
         else:
             alert = AlertItem()
             alert.text = self.alert_text_edit.text()
@@ -182,24 +177,23 @@ class AlertForm(QtGui.QDialog, Ui_AlertDialog):
             return False
         # We found '<>' in the alert text, but the ParameterEdit field is empty.
         if text.find('<>') != -1 and not self.parameter_edit.text() and \
-            QtGui.QMessageBox.question(self,
-                                       translate('AlertsPlugin.AlertForm', 'No Parameter Found'),
-                                       translate('AlertsPlugin.AlertForm',
-                                                 'You have not entered a parameter to be replaced.\n'
-                                                 'Do you want to continue anyway?'),
-                                       QtGui.QMessageBox.StandardButtons(
-                                           QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)) == QtGui.QMessageBox.No:
+            QtWidgets.QMessageBox.question(self,
+                                           translate('AlertsPlugin.AlertForm', 'No Parameter Found'),
+                                           translate('AlertsPlugin.AlertForm',
+                                                     'You have not entered a parameter to be replaced.\n'
+                                                     'Do you want to continue anyway?')
+                                           ) == QtWidgets.QMessageBox.No:
             self.parameter_edit.setFocus()
             return False
         # The ParameterEdit field is not empty, but we have not found '<>'
         # in the alert text.
         elif text.find('<>') == -1 and self.parameter_edit.text() and \
-            QtGui.QMessageBox.question(self,
-                                       translate('AlertsPlugin.AlertForm', 'No Placeholder Found'),
-                                       translate('AlertsPlugin.AlertForm', 'The alert text does not contain \'<>\'.\n'
-                                                 'Do you want to continue anyway?'),
-                                       QtGui.QMessageBox.StandardButtons(
-                                           QtGui.QMessageBox.No | QtGui.QMessageBox.Yes)) == QtGui.QMessageBox.No:
+            QtWidgets.QMessageBox.question(self,
+                                           translate('AlertsPlugin.AlertForm', 'No Placeholder Found'),
+                                           translate('AlertsPlugin.AlertForm',
+                                                     'The alert text does not contain \'<>\'.\n'
+                                                     'Do you want to continue anyway?')
+                                           ) == QtWidgets.QMessageBox.No:
             self.parameter_edit.setFocus()
             return False
         text = text.replace('<>', self.parameter_edit.text())

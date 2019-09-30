@@ -1,48 +1,45 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2014 Raoul Snyman                                        #
-# Portions copyright (c) 2008-2014 Tim Bentley, Gerald Britton, Jonathan      #
-# Corwin, Samuel Findlay, Michael Gorven, Scott Guerrieri, Matthias Hub,      #
-# Meinert Jordan, Armin Köhler, Erik Lundin, Edwin Lunando, Brian T. Meyer.   #
-# Joshua Miller, Stevan Pettit, Andreas Preikschat, Mattias Põldaru,          #
-# Christian Richter, Philip Ridout, Simon Scudder, Jeffrey Smith,             #
-# Maikel Stuivenberg, Martin Thompson, Jon Tibble, Dave Warnock,              #
-# Frode Woldsund, Martin Zibricky, Patrick Zimmermann                         #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2019 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 """
-The :mod:`~openlp.core.ui.shortcutlistform` module contains the form class"""
+The :mod:`~openlp.core.ui.shortcutlistform` module contains the form class
+"""
 import logging
 import re
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import RegistryProperties, Settings, translate
-from openlp.core.utils.actions import ActionList
-from .shortcutlistdialog import Ui_ShortcutListDialog
+from openlp.core.common.actions import ActionList
+from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.settings import Settings
+from openlp.core.ui.shortcutlistdialog import Ui_ShortcutListDialog
 
-REMOVE_AMPERSAND = re.compile(r'&{1}')
+
+REMOVE_AMPERSAND = re.compile(r'&')
 
 log = logging.getLogger(__name__)
 
 
-class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties):
+class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryProperties):
     """
     The shortcut list dialog
     """
@@ -51,8 +48,9 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         """
         Constructor
         """
-        super(ShortcutListForm, self).__init__(parent)
-        self.setupUi(self)
+        super(ShortcutListForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                               QtCore.Qt.WindowCloseButtonHint)
+        self.setup_ui(self)
         self.changed_actions = {}
         self.action_list = ActionList.get_instance()
         self.dialog_was_shown = False
@@ -103,11 +101,13 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         key_sequence = QtGui.QKeySequence(key_string)
         if self._validiate_shortcut(self._current_item_action(), key_sequence):
             if self.primary_push_button.isChecked():
-                self._adjust_button(self.primary_push_button, False, text=key_sequence.toString())
+                self._adjust_button(self.primary_push_button, False,
+                                    text=self.get_shortcut_string(key_sequence, for_display=True))
             elif self.alternate_push_button.isChecked():
-                self._adjust_button(self.alternate_push_button, False, text=key_sequence.toString())
+                self._adjust_button(self.alternate_push_button, False,
+                                    text=self.get_shortcut_string(key_sequence, for_display=True))
 
-    def exec_(self):
+    def exec(self):
         """
         Execute the dialog
         """
@@ -115,7 +115,7 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         self.reload_shortcut_list()
         self._adjust_button(self.primary_push_button, False, False, '')
         self._adjust_button(self.alternate_push_button, False, False, '')
-        return QtGui.QDialog.exec_(self)
+        return QtWidgets.QDialog.exec(self)
 
     def reload_shortcut_list(self):
         """
@@ -126,10 +126,10 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
             # Check if the category is for internal use only.
             if category.name is None:
                 continue
-            item = QtGui.QTreeWidgetItem([category.name])
+            item = QtWidgets.QTreeWidgetItem([category.name])
             for action in category.actions:
                 action_text = REMOVE_AMPERSAND.sub('', action.text())
-                action_item = QtGui.QTreeWidgetItem([action_text])
+                action_item = QtWidgets.QTreeWidgetItem([action_text])
                 action_item.setIcon(0, action.icon())
                 action_item.setData(0, QtCore.Qt.UserRole, action)
                 tool_tip_text = action.toolTip()
@@ -149,7 +149,7 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         This refreshes the item's shortcuts shown in the list. Note, this neither adds new actions nor removes old
         actions.
         """
-        iterator = QtGui.QTreeWidgetItemIterator(self.tree_widget)
+        iterator = QtWidgets.QTreeWidgetItemIterator(self.tree_widget)
         while iterator.value():
             item = iterator.value()
             iterator += 1
@@ -161,11 +161,11 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
                 item.setText(1, '')
                 item.setText(2, '')
             elif len(shortcuts) == 1:
-                item.setText(1, shortcuts[0].toString())
+                item.setText(1, self.get_shortcut_string(shortcuts[0], for_display=True))
                 item.setText(2, '')
             else:
-                item.setText(1, shortcuts[0].toString())
-                item.setText(2, shortcuts[1].toString())
+                item.setText(1, self.get_shortcut_string(shortcuts[0], for_display=True))
+                item.setText(2, self.get_shortcut_string(shortcuts[1], for_display=True))
         self.on_current_item_changed()
 
     def on_primary_push_button_clicked(self, toggled):
@@ -245,9 +245,9 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
             self.alternate_push_button.setChecked(False)
         else:
             if action.default_shortcuts:
-                primary_label_text = action.default_shortcuts[0].toString()
+                primary_label_text = self.get_shortcut_string(action.default_shortcuts[0], for_display=True)
                 if len(action.default_shortcuts) == 2:
-                    alternate_label_text = action.default_shortcuts[1].toString()
+                    alternate_label_text = self.get_shortcut_string(action.default_shortcuts[1], for_display=True)
             shortcuts = self._action_shortcuts(action)
             # We do not want to loose pending changes, that is why we have to keep the text when, this function has not
             # been triggered by a signal.
@@ -255,10 +255,10 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
                 primary_text = self.primary_push_button.text()
                 alternate_text = self.alternate_push_button.text()
             elif len(shortcuts) == 1:
-                primary_text = shortcuts[0].toString()
+                primary_text = self.get_shortcut_string(shortcuts[0], for_display=True)
             elif len(shortcuts) == 2:
-                primary_text = shortcuts[0].toString()
-                alternate_text = shortcuts[1].toString()
+                primary_text = self.get_shortcut_string(shortcuts[0], for_display=True)
+                alternate_text = self.get_shortcut_string(shortcuts[1], for_display=True)
         # When we are capturing a new shortcut, we do not want, the buttons to display the current shortcut.
         if self.primary_push_button.isChecked():
             primary_text = ''
@@ -280,13 +280,12 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         """
         Restores all default shortcuts.
         """
-        if self.button_box.buttonRole(button) != QtGui.QDialogButtonBox.ResetRole:
+        if self.button_box.buttonRole(button) != QtWidgets.QDialogButtonBox.ResetRole:
             return
-        if QtGui.QMessageBox.question(self, translate('OpenLP.ShortcutListDialog', 'Restore Default Shortcuts'),
-                                      translate('OpenLP.ShortcutListDialog', 'Do you want to restore all '
-                                                'shortcuts to their defaults?'),
-                                      QtGui.QMessageBox.StandardButtons(QtGui.QMessageBox.Yes |
-                                                                        QtGui.QMessageBox.No)) == QtGui.QMessageBox.No:
+        if QtWidgets.QMessageBox.question(self, translate('OpenLP.ShortcutListDialog', 'Restore Default Shortcuts'),
+                                          translate('OpenLP.ShortcutListDialog', 'Do you want to restore all '
+                                                    'shortcuts to their defaults?')
+                                          ) == QtWidgets.QMessageBox.No:
             return
         self._adjust_button(self.primary_push_button, False, text='')
         self._adjust_button(self.alternate_push_button, False, text='')
@@ -311,9 +310,9 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         primary_button_text = ''
         alternate_button_text = ''
         if temp_shortcuts:
-            primary_button_text = temp_shortcuts[0].toString()
+            primary_button_text = self.get_shortcut_string(temp_shortcuts[0], for_display=True)
         if len(temp_shortcuts) == 2:
-            alternate_button_text = temp_shortcuts[1].toString()
+            alternate_button_text = self.get_shortcut_string(temp_shortcuts[1], for_display=True)
         self.primary_push_button.setText(primary_button_text)
         self.alternate_push_button.setText(alternate_button_text)
 
@@ -324,9 +323,17 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
         """
         if not toggled:
             return
-        self.on_primary_push_button_clicked(False)
-        self.on_alternate_push_button_clicked(False)
+        action = self._current_item_action()
+        shortcuts = self._action_shortcuts(action)
         self.refresh_shortcut_list()
+        primary_button_text = ''
+        alternate_button_text = ''
+        if shortcuts:
+            primary_button_text = self.get_shortcut_string(shortcuts[0], for_display=True)
+        if len(shortcuts) == 2:
+            alternate_button_text = self.get_shortcut_string(shortcuts[1], for_display=True)
+        self.primary_push_button.setText(primary_button_text)
+        self.alternate_push_button.setText(alternate_button_text)
 
     def save(self):
         """
@@ -341,7 +348,7 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
                 continue
             for action in category.actions:
                 if action in self.changed_actions:
-                    old_shortcuts = list(map(QtGui.QKeySequence.toString, action.shortcuts()))
+                    old_shortcuts = list(map(self.get_shortcut_string, action.shortcuts()))
                     action.setShortcuts(self.changed_actions[action])
                     self.action_list.update_shortcut_map(action, old_shortcuts)
                 settings.setValue(action.objectName(), action.shortcuts())
@@ -421,17 +428,19 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
                 if changing_action.shortcutContext() in [QtCore.Qt.WindowShortcut, QtCore.Qt.ApplicationShortcut]:
                     is_valid = False
         if not is_valid:
+            text = translate('OpenLP.ShortcutListDialog',
+                             'The shortcut "{key}" is already assigned to another action,\n'
+                             'please use a different shortcut.'
+                             ).format(key=self.get_shortcut_string(key_sequence))
             self.main_window.warning_message(translate('OpenLP.ShortcutListDialog', 'Duplicate Shortcut'),
-                                             translate('OpenLP.ShortcutListDialog',
-                                                       'The shortcut "%s" is already assigned to another action, please'
-                                                       ' use a different shortcut.') % key_sequence.toString())
+                                             text)
             self.dialog_was_shown = True
         return is_valid
 
     def _action_shortcuts(self, action):
         """
         This returns the shortcuts for the given ``action``, which also includes those shortcuts which are not saved
-        yet but already assigned (as changes yre applied when closing the dialog).
+        yet but already assigned (as changes are applied when closing the dialog).
         """
         if action in self.changed_actions:
             return self.changed_actions[action]
@@ -459,3 +468,14 @@ class ShortcutListForm(QtGui.QDialog, Ui_ShortcutListDialog, RegistryProperties)
             button.setChecked(checked)
         if enabled is not None:
             button.setEnabled(enabled)
+
+    @staticmethod
+    def get_shortcut_string(shortcut, for_display=False):
+        if for_display:
+            if any(modifier in shortcut.toString() for modifier in ['Ctrl', 'Alt', 'Meta', 'Shift']):
+                sequence_format = QtGui.QKeySequence.NativeText
+            else:
+                sequence_format = QtGui.QKeySequence.PortableText
+        else:
+            sequence_format = QtGui.QKeySequence.PortableText
+        return shortcut.toString(sequence_format)
