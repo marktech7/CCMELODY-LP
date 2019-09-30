@@ -153,10 +153,8 @@ class CountdownXMLParser(object):
         return str(time_remaining)
 
     def get_countdown_item_settings(self):
-	    """
-        Returns the configuration of the current countdown timer
-        """
-        return "test"
+        test = 'test data'
+        return test
 
     def _dump_xml(self):
         """
