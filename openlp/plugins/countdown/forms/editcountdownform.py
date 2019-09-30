@@ -94,7 +94,7 @@ class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
             self.title_edit.setText(self.countdown_slide.title)
             self.credit_edit.setText(self.countdown_slide.credits)
             countdown_xml = CountdownXMLParser(self.countdown_slide.text)
-            slide_list = countdown_xml.get_verses()
+            slide_list = countdown_xml.get_countdown_item_settings()
             self.slide_list_view.addItems([slide[1] for slide in slide_list])
             theme = self.countdown_slide.theme_name
             find_and_set_in_combo_box(self.theme_combo_box, theme)

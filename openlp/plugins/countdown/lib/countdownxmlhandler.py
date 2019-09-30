@@ -152,6 +152,12 @@ class CountdownXMLParser(object):
         time_remaining = datetime.datetime(2011, 5, 5) - datetime.datetime.now()
         return str(time_remaining)
 
+    def get_countdown_item_settings(self):
+	    """
+        Returns the configuration of the current countdown timer
+        """
+        return "test"
+
     def _dump_xml(self):
         """
         Debugging aid to dump XML so that we can see what we have.
