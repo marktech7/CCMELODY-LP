@@ -27,10 +27,11 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
 ###############################################################################
 
-from PyQt4 import QtGui
+from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import UiStrings, translate
-from openlp.core.lib import SpellTextEdit, build_icon
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.widgets.edits import SpellTextEdit
+from openlp.core.lib import build_icon
 from openlp.core.lib.ui import create_button, create_button_box
 
 

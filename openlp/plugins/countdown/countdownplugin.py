@@ -36,13 +36,15 @@ for the Countdown plugin.
 
 import logging
 
-from openlp.core.lib import Plugin, StringContent, build_icon, translate
+from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.db import Manager
 from openlp.plugins.countdown.lib import CountdownMediaItem, CountdownTab
 from openlp.plugins.countdown.lib.db import CountdownSlide, init_schema
 from openlp.plugins.countdown.lib.mediaitem import CountdownSearch
-from PyQt4 import QtCore, QtGui
-from openlp.core.common import ThemeLevel, SlideLimits, UiStrings, is_win, is_linux
+from PyQt5 import QtGui,QtCore, QtWidgets
+from openlp.core.common import ThemeLevel, SlideLimits, is_win, is_linux
+from openlp.core.ui.icons import UiIcons
 
 log = logging.getLogger(__name__)
 
@@ -76,8 +78,9 @@ class CountdownPlugin(Plugin):
         self.weight = -1
         self.db_manager = Manager('countdown', init_schema)
         self.icon_path = ':/plugins/plugin_custom.png'
-        self.icon = build_icon(self.icon_path)
+        self.icon = self.icon_path
 
+    @staticmethod
     def about(self):
         about_text = translate('CountdownPlugin', '<strong>Countdown Plugin </strong><br />The countdown  plugin '
                                'provides the ability to display a live countdown to an event')

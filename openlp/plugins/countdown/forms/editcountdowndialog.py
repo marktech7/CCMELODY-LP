@@ -28,9 +28,9 @@
 ###############################################################################
 import logging
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui
 
-from openlp.core.common import UiStrings, translate
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.ui import create_button_box, create_button
 

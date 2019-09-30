@@ -29,14 +29,17 @@
 
 import logging
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QDialog
+
+from openlp.core.common.i18n import UiStrings, translate
 
 #from .editcountdownslidedialog import Ui_CountdownSlideEditDialog
 
 log = logging.getLogger(__name__)
 
 
-class EditCountdownSlideForm(QtGui.QDialog, Ui_CountdownSlideEditDialog):
+class EditCountdownSlideForm(QDialog, Ui_CountdownSlideEditDialog):
     """
     Class documentation goes here.
     """

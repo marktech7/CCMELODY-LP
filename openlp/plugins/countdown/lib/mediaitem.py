@@ -31,12 +31,17 @@ import logging
 from threading import Timer
 import time
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtWidgets import QDialog
 from sqlalchemy.sql import or_, func, and_
 
-from openlp.core.common import Registry, Settings, UiStrings, translate
-from openlp.core.lib import MediaManagerItem, ItemCapabilities, ServiceItemContext, PluginStatus, \
-    check_item_selected
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.lib.mediamanageritem import MediaManagerItem
+from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.lib.plugin import PluginStatus
+from openlp.core.lib import ServiceItemContext, check_item_selected
 from openlp.plugins.countdown.forms.editcountdownform import EditCountdownForm
 from openlp.plugins.countdown.lib import CountdownXMLParser, CountdownXMLBuilder
 from openlp.plugins.countdown.lib.db import CountdownSlide
@@ -157,7 +162,7 @@ class CountdownMediaItem(MediaManagerItem):
         valid = self.plugin.db_manager.get_object(CountdownSlide, countdown_id)
         if valid:
             self.edit_countdown_form.load_countdown(countdown_id, preview)
-            if self.edit_countdown_form.exec_() == QtGui.QDialog.Accepted:
+            if self.edit_countdown_form.exec_() == QDialog.Accepted:
                 self.remote_triggered = True
                 self.remote_countdown = countdown_id
                 self.auto_select_id = -1

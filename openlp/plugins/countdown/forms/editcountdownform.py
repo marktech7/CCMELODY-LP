@@ -29,9 +29,12 @@
 
 import logging
 
-from PyQt4 import QtGui
+from PyQt5 import QtGui
+from PyQt5.QtWidgets import QDialog
 
-from openlp.core.common import Registry, translate
+from openlp.core.common.i18n import UiStrings, translate
+
+from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box
 from openlp.plugins.countdown.lib import CountdownXMLBuilder, CountdownXMLParser
 from openlp.plugins.countdown.lib.db import CountdownSlide
@@ -41,7 +44,7 @@ from .editcountdowndialog import Ui_CountdownEditDialog
 log = logging.getLogger(__name__)
 
 
-class EditCountdownForm(QtGui.QDialog, Ui_CountdownEditDialog):
+class EditCountdownForm(QDialog, Ui_CountdownEditDialog):
     """
     Class documentation goes here.
     """

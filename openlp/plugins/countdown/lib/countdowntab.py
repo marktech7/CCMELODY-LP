@@ -31,10 +31,12 @@ The :mod:`~openlp.plugins.countdown.lib.countdowntab` module contains the settin
 for the Countdown Slides plugin, which is inserted into the configuration dialog.
 """
 
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtWidgets
+from openlp.core.common.i18n import UiStrings, translate
 
-from openlp.core.common import Settings, translate
-from openlp.core.lib import SettingsTab
+
+from openlp.core.common.settings import Settings
+from openlp.core.lib.settingstab import SettingsTab
 
 
 class CountdownTab(SettingsTab):
