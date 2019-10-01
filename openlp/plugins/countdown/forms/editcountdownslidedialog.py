@@ -27,7 +27,7 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
 ###############################################################################
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.widgets.edits import SpellTextEdit
@@ -40,7 +40,7 @@ class Ui_CountdownSlideEditDialog(object):
         countdown_slide_edit_dialog.setObjectName('countdown_slide_edit_dialog')
         countdown_slide_edit_dialog.setWindowIcon(build_icon(u':/icon/openlp-logo.svg'))
         countdown_slide_edit_dialog.resize(350, 300)
-        self.dialog_layout = QtGui.QVBoxLayout(countdown_slide_edit_dialog)
+        self.dialog_layout = QtWidgets.QVBoxLayout(countdown_slide_edit_dialog)
         self.slide_text_edit = SpellTextEdit(self)
         self.slide_text_edit.setObjectName('slide_text_edit')
         self.dialog_layout.addWidget(self.slide_text_edit)

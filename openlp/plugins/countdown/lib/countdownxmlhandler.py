@@ -148,7 +148,7 @@ class CountdownXMLParser(object):
                 if element.text is None:
                     element.text = ''
                 verse_list.append([element.attrib, str(element.text)])
-		"""
+        """
         time_remaining = datetime.datetime(2011, 5, 5) - datetime.datetime.now()
         return str(time_remaining)
 

@@ -29,12 +29,8 @@
 
 import logging
 
-from PyQt5 import QtGui
 from PyQt5.QtWidgets import QDialog
-
-from openlp.core.common.i18n import UiStrings, translate
-
-#from .editcountdownslidedialog import Ui_CountdownSlideEditDialog
+from .editcountdownslidedialog import Ui_CountdownSlideEditDialog
 
 log = logging.getLogger(__name__)
 

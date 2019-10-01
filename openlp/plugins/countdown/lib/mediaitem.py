@@ -28,10 +28,8 @@
 ###############################################################################
 
 import logging
-from threading import Timer
-import time
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtGui, QtCore, QtWidgets
 from PyQt5.QtWidgets import QDialog
 from sqlalchemy.sql import or_, func, and_
 
@@ -43,7 +41,6 @@ from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib import ServiceItemContext, check_item_selected
 from openlp.plugins.countdown.forms.editcountdownform import EditCountdownForm
-from openlp.plugins.countdown.lib import CountdownXMLParser, CountdownXMLBuilder
 from openlp.plugins.countdown.lib.db import CountdownSlide
 
 log = logging.getLogger(__name__)
@@ -91,7 +88,7 @@ class CountdownMediaItem(MediaManagerItem):
                                self.on_search_text_button_clicked)
         Registry().register_function('countdown_load_list', self.load_list)
         Registry().register_function('countdown_preview', self.on_preview_click)
-       #Registry().register_function('countdown_create_from_service', self.create_from_service_item)
+        # Registry().register_function('countdown_create_from_service', self.create_from_service_item)
 
     def config_update(self):
         """
@@ -192,13 +189,13 @@ class CountdownMediaItem(MediaManagerItem):
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
             items = self.list_view.selectedIndexes()
-            if QtGui.QMessageBox.question(self, UiStrings().ConfirmDelete,
-                                          translate('CountdownPlugin.MediaItem',
-                                                    'Are you sure you want to delete the %n selected countdown slide(s)?',
-                                                    '', QtCore.QCoreApplication.CodecForTr, len(items)),
-                                          QtGui.QMessageBox.StandardButtons(
-                                              QtGui.QMessageBox.Yes | QtGui.QMessageBox.No),
-                                          QtGui.QMessageBox.Yes) == QtGui.QMessageBox.No:
+            if QtWidgets.QMessageBox.question(self, UiStrings().ConfirmDelete,
+                                              translate('CountdownPlugin.MediaItem',
+                                                        'Are you sure you want to delete the %n selected countdown slide(s)?',
+                                                        '', QtCore.QCoreApplication.CodecForTr, len(items)),
+                                              QtWidgets.QMessageBox.StandardButtons(
+                                              QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
+                                              QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
                 return
             row_list = [item.row() for item in self.list_view.selectedIndexes()]
             row_list.sort(reverse=True)
@@ -233,17 +230,13 @@ class CountdownMediaItem(MediaManagerItem):
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         countdown_slide = self.plugin.db_manager.get_object(CountdownSlide, item_id)
         title = countdown_slide.title
-        credit = countdown_slide.credits
         service_item.edit_id = item_id
         theme = countdown_slide.theme_name
         if theme:
             service_item.theme = theme
-        countdown_xml = CountdownXMLParser(countdown_slide.text)
-        time_remaining = countdown_xml.get_time_remaining()
-        service_item.title = "Countdown until "+title
+        service_item.title = "Countdown until " + title
         service_item.processor = 'webkit'
-        service_item.add_from_text("Countdown until "+title )
-        
+        service_item.add_from_text("Countdown until " + title)
         return True
 
     def on_search_text_button_clicked(self):
@@ -292,9 +285,9 @@ class CountdownMediaItem(MediaManagerItem):
         if self.plugin.status != PluginStatus.Active:
             return
         countdown = self.plugin.db_manager.get_object_filtered(CountdownSlide, and_(CountdownSlide.title == item.title,
-                                                                              CountdownSlide.theme_name == item.theme,
-                                                                              CountdownSlide.credits ==
-                                                                              item.raw_footer[0][len(item.title) + 1:]))
+                                                                                    CountdownSlide.theme_name == item.theme,
+                                                                                    CountdownSlide.credits ==
+                                                                                    item.raw_footer[0][len(item.title) + 1:]))
         if countdown:
             item.edit_id = countdown.id
             return item

@@ -37,14 +37,12 @@ for the Countdown plugin.
 import logging
 
 from openlp.core.lib.plugin import Plugin, StringContent
-from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.i18n import translate
 from openlp.core.lib.db import Manager
-from openlp.plugins.countdown.lib import CountdownMediaItem, CountdownTab
+from openlp.plugins.countdown.lib.countdowntab import CountdownTab
 from openlp.plugins.countdown.lib.db import CountdownSlide, init_schema
-from openlp.plugins.countdown.lib.mediaitem import CountdownSearch
-from PyQt5 import QtGui,QtCore, QtWidgets
-from openlp.core.common import ThemeLevel, SlideLimits, is_win, is_linux
-from openlp.core.ui.icons import UiIcons
+from openlp.plugins.countdown.lib.mediaitem import CountdownMediaItem,CountdownSearch
+from PyQt5 import QtGui, QtCore
 
 log = logging.getLogger(__name__)
 
@@ -55,19 +53,20 @@ __default_settings__ = {
     'countdown/display legend': True,
     'shortcuts/listViewCountdownDeleteItem': [QtGui.QKeySequence(QtCore.Qt.Key_Delete)],
     'shortcuts/listViewCountdownPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Enter),
-                                                QtGui.QKeySequence(QtCore.Qt.Key_Return)],
+                                               QtGui.QKeySequence(QtCore.Qt.Key_Return)],
     'shortcuts/listViewCountdownLiveItem': [QtGui.QKeySequence(QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Enter),
-                                             QtGui.QKeySequence(QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Return)],
-     'shortcuts/listViewCountdownServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
-                                                QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
+                                            QtGui.QKeySequence(QtCore.Qt.ShiftModifier | QtCore.Qt.Key_Return)],
+    'shortcuts/listViewCountdownServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
+                                               QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
 }
 
 
 class CountdownPlugin(Plugin):
     """
-    This plugin enables the user to create, edit and display countdown timers. 
+    This plugin enables the user to create, edit and display countdown timers.
     All Countdown timers have one slide, which is dynamically updated by JavaScript running in webkit.
-    The slide manager will display only one slide for all countdown items with a textual representation of the countdown event
+    The slide manager will display only one slide for all countdown items 
+    with a textual representation of the countdown event
     Examples include countdowns until: worship time, Christmas, Easter.
     Examples do not include countdowns until: judgement day.
     """
@@ -141,6 +140,7 @@ class CountdownPlugin(Plugin):
         log.info('Countdown Finalising')
         self.db_manager.finalise()
         Plugin.finalise(self)
+
     def get_display_css(self):
         """
         Add css style sheets to htmlbuilder.
@@ -148,9 +148,9 @@ class CountdownPlugin(Plugin):
         """
         css = """
         #countdowntext{
-        
+
         }
-        """		
+        """
 
         return css
 
@@ -194,5 +194,5 @@ class CountdownPlugin(Plugin):
         HTML = """
             <div id="countdown" class="lyricstable"><h1 id="countdowntext">test</h1></div>
         """
-        HTML= ""
-        return HTML 
+        HTML = ""
+        return HTML
