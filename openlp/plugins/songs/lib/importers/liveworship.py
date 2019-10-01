@@ -27,12 +27,15 @@ a LiveWorship database into the OpenLP database.
 import logging
 
 import ctypes
-from lxml import objectify
-from lxml.etree import Error, LxmlError
+from io import StringIO, BytesIO
+from lxml import objectify, etree
+from lxml.html import tostring
+from pathlib import Path
 from tempfile import gettempdir
 
-from openlp.core.common import is_win, is_linux, is_osx
+from openlp.core.common import is_win, is_linux, is_macosx
 from openlp.core.common.i18n import translate
+from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
 # Copied from  VCSDK_Enums.h
@@ -41,6 +44,8 @@ EVDumpType_kSQL = 1
 EVDumpType_kXML = 2
 EVDataKind_kStructureAndRecords = 2
 EVDataKind_kRecordsOnly = 3
+
+pretty_print = 1
 
 log = logging.getLogger(__name__)
 
@@ -54,35 +59,24 @@ class LiveWorshipImport(SongImport):
         """
         Initialise the MediaShout importer.
         """
+        self.root = None
         super(LiveWorshipImport, self).__init__(manager, **kwargs)
 
     def do_import(self):
         """
         Receive a path to a LiveWorship (valentina) DB.
         """
-        self.dump_file = Path(gettempdir()) / 'openlp' / 'liveworship-dump.xml'
-
+        self.dump_file = Path(gettempdir()) / 'openlp-liveworship-dump.xml'
         self.dump_valentina_to_xml()
-
-        parser = etree.XMLParser(remove_blank_text=True, recover=True)
-        try:
-            tree = etree.parse(str(self.dump_file), parser)
-        except etree.XMLSyntaxError:
-            self.log_error(file_path, SongStrings.XMLSyntaxError)
-            log.exception('XML syntax error in file {path}'.format(path=file_path))
-
-        root = tree.getroot()
-
-        # TODO: convert this from json parsing to XML parsing
-        songs = extract_songs(json_data)
-        for song in songs:
-            if song['Type'] != 'song':
-                continue
-            verses = extract_verses(json_data, song['_rowid'])
-
-        self.import_wizard.progress_bar.setMaximum(len(self.import_source))
+        if not self.root:
+            return
+        self.load_xml_dump();
+        self.extract_songs()
 
     def dump_valentina_to_xml(self):
+        """
+        Load the LiveWorship database using the Valentina DB ADK for C and dump the DB content to a XML file.
+        """
         libVCSDK = None
         if is_win():
             dll_path = 'c:\\Program Files\\Paradigma Software\\VCDK_x64_9'
@@ -91,7 +85,7 @@ class LiveWorshipImport(SongImport):
             libVCSDK = ctypes.CDLL(dll_path + '/vcsdk_release_x64.dll')
         elif is_linux():
             libVCSDK = ctypes.CDLL('/opt/VCSDK/libVCSDK.so')
-        elif is_osx():
+        elif is_macosx():
             # TODO: find path on macOS
             libVCSDK = ctypes.CDLL('/opt/VCSDK/libVCSDK.so')
 
@@ -111,7 +105,7 @@ class LiveWorshipImport(SongImport):
         
         # Some debug printing
         is_open = libVCSDK.Database_IsOpen(database_ptr)
-        print('is open: %d' % is_open)
+        #print('is open: %d' % is_open)
         
         # For some reason python/valentina crashes if the code below is executed
         #encoding = libVCSDK.Database_GetStorageEncoding(database_ptr);
@@ -129,55 +123,114 @@ class LiveWorshipImport(SongImport):
         # Shutdown Valentina
         libVCSDK.Valentina_Shutdown()
 
-    def extract_songs(json_data):
-        """
-        Extract all the songs from the JSON object
-        """
-        songs = []
-        for table in json_data:
-            if table['name'] != 'SlideCol':
-                continue
-            songs.extend(table['records'])
-        return songs
+    def load_xml_dump(self):
+        # The file can contain the EOT control character which will make lxml fail, so it must be removed.
+        xml_file = open(self.dump_file, 'rt')
+        xml_content = xml_file.read()
+        xml_file.close()
+        xml_content = xml_content.replace('\4', '**EOT**').replace('CustomProperty =""', 'CustomProperty a=""', 1)
+        # Now load the XML
+        parser = etree.XMLParser(remove_blank_text=True, recover=True)
+        try:
+            self.root = etree.fromstring(xml_content, parser)
+        except etree.XMLSyntaxError:
+            self.log_error(file_path, SongStrings.XMLSyntaxError)
+            log.exception('XML syntax error in file {path}'.format(path=str(self.dump_file)))
 
-    def extract_verses(json_data, song_id):
+    def extract_songs(self):
+        """
+        Extract all the songs from the XML object
+        """
+        # Find song records
+        song_records = self.root.xpath("//BaseObjectData[@Name='SlideCol']/Record/f[@n='Type' and text()='song']/..")
+        # Song count for progress bar
+        song_count = len(song_records)
+        # set progress bar to songcount
+        self.import_wizard.progress_bar.setMaximum(song_count)
+        for record in song_records:
+            # reset to default values
+            self.set_defaults()
+            # Get song metadata
+            title = record.xpath("f[@n='Title']/text()")
+            song_rowid = record.xpath("f[@n='_rowid']/text()")
+            if title and song_rowid:
+                self.title = self.clean_string(title[0])
+                song_rowid = song_rowid[0]
+            else:
+                # if no title or no rowid we skip the song
+                continue
+            self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=self.title))
+            authors_line = record.xpath("f[@n='Author']/text()")
+            if authors_line:
+                authors = self.extract_authors(authors_line[0])
+            cpr = record.xpath("f[@n='Copyright']/text()")
+            if cpr:
+                self.add_copyright(self.clean_string(cpr[0]))
+            ccli = record.xpath("f[@n='CCLI']/text()")
+            if ccli:
+                self.ccli = self.clean_string(ccli[0])
+            # Get song tags
+            self.extract_tags(song_rowid)
+            # Get song verses
+            self.extract_verses(song_rowid)
+            if not self.finish():
+                self.log_error(self.title)
+            
+    def extract_tags(self, row_id):
+        """
+        Extract the tags for a particular song
+        """
+        tag_group_records = self.root.xpath("//BaseObjectData[@Name='TagGroup']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/..".format(rowid=row_id))
+        for record in tag_group_records:
+            tag_rowid = record.xpath("f[@n='Tag_rowid']/text()")
+            if tag_rowid:
+                tag_rowid = self.clean_string(tag_rowid[0])
+                tag = self.root.xpath("//BaseObjectData[@Name='Tag']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/../f[@n='Description']/text()".format(rowid=tag_rowid))
+                if tag:
+                    tag = self.clean_string(tag[0])
+                    # TODO: find a way to import tags
+
+    def extract_verses(self, song_id):
         """
         Extract the verses for a particular song
         """
-        verses = []
-        for table in json_data:
-            if table['name'] != 'SlideColSlides':
-                continue
-            for verse in table['records']:
-                if verse['SlideCol_rowid'] == song_id:
-                    verses.append(verse)
-        return verses
+        slides_records = self.root.xpath("//BaseObjectData[@Name='SlideColSlides']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/..".format(rowid=song_id))
+        for record in slides_records:
+            verse_text = record.xpath("f[@n='kText']/text()")
+            if verse_text:
+                verse_text = self.clean_verse(verse_text[0])
+                verse_tag = record.xpath("f[@n='Description']/text()")
+                if verse_tag:
+                    verse_tag = self.convert_verse_name(verse_tag[0])
+                else:
+                    verse_tag = 'v'
+                self.add_verse(verse_text, verse_tag)
 
-    def extract_authors(authors_line):
+    def extract_authors(self, authors_line):
         """
         Extract the authors as a list of str from the authors record
         """
         if not authors_line:
-            return ['Author Unknown']
-        authors = []
+            return
         for author_name in authors_line.split('/'):
-            name_parts = [part.strip() for part in author_name.split(',')][::-1]
-            authors.append(' '.join(name_parts))
-        return authors
+            name_parts = [self.clean_string(part) for part in author_name.split(',')][::-1]
+            self.parse_author(' '.join(name_parts))
 
-    def clean_string(string):
+    def clean_string(self, string):
         """
         Clean up the strings
         """
-        return string.replace('^`^', '\'').replace('/', '-')
+        # &#x09; is tab
+        return string.replace('^`^', '\'').replace('/', '-').replace('&#x09;', ' ').strip()
 
-    def extract_verse(verse_line):
+    def clean_verse(self, verse_line):
         """
         Extract the verse lines from the verse record
         """
-        return verse_line.replace('\r', '\n').replace('^`^', '\'')
+        # &#x0D; is carriage return
+        return self.clean_string(verse_line.replace('&#x0D;', '\n'))
 
-    def convert_verse_name(verse_name):
+    def convert_verse_name(self, verse_name):
         """
         Convert the Verse # to v#
         """
