@@ -23,20 +23,18 @@
 The :mod:`liveworship` module provides the functionality for importing
 a LiveWorship database into the OpenLP database.
 """
-
+import os
 import logging
-
 import ctypes
-from io import StringIO, BytesIO
-from lxml import objectify, etree
-from lxml.html import tostring
+
+from lxml import etree
 from pathlib import Path
 from tempfile import gettempdir
 
 from openlp.core.common import is_win, is_linux, is_macosx
-from openlp.core.common.i18n import translate
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+from openlp.plugins.songs.lib.ui import SongStrings
 
 # Copied from  VCSDK_Enums.h
 EVStorageType_kDisk = 1
@@ -70,7 +68,7 @@ class LiveWorshipImport(SongImport):
         self.dump_valentina_to_xml()
         if not self.root:
             return
-        self.load_xml_dump();
+        self.load_xml_dump()
         self.extract_songs()
 
     def dump_valentina_to_xml(self):
@@ -86,35 +84,29 @@ class LiveWorshipImport(SongImport):
         elif is_linux():
             libVCSDK = ctypes.CDLL('/opt/VCSDK/libVCSDK.so')
         elif is_macosx():
-            # TODO: find path on macOS
-            libVCSDK = ctypes.CDLL('/opt/VCSDK/libVCSDK.so')
-
+            libVCSDK = ctypes.CDLL('/Users/Shared/Paradigma Software/VCSDK_x64_9/vcsdk_x64.dylib')
         # cache size set to 1024, got no idea what this means...
         # serial numbers set to None - only 10 minutes access, should be enough :)
         libVCSDK.Valentina_Init(1024, None, None, None)
-        
         # Create a DB instance
         Database_New = libVCSDK.Database_New
         Database_New.argtypes = [ctypes.c_int]
         Database_New.restype = ctypes.c_void_p
         database = Database_New(EVStorageType_kDisk)
         database_ptr = ctypes.c_void_p(database)
-        
         # Load the file into our instance
         libVCSDK.Database_Open(database_ptr, ctypes.c_char_p(str(self.import_source).encode()))
-        
         # Some debug printing
-        is_open = libVCSDK.Database_IsOpen(database_ptr)
-        #print('is open: %d' % is_open)
-        
+        # is_open = libVCSDK.Database_IsOpen(database_ptr)
+        # print('is open: %d' % is_open)
         # For some reason python/valentina crashes if the code below is executed
-        #encoding = libVCSDK.Database_GetStorageEncoding(database_ptr);
-        #print('encoding: %s' % ctypes.c_char_p(encoding).value)
-        #table_count = libVCSDK.Database_GetTableCount(database_ptr)
-        #print('table count: %d' % table_count)
-        #name = libVCSDK.Database_GetName(database_ptr)
-        #print('name: %s' % ctypes.c_char_p(name).value)
-        
+        # encoding = libVCSDK.Database_GetStorageEncoding(database_ptr);
+        # print('encoding: %s' % ctypes.c_char_p(encoding).value)
+        # table_count = libVCSDK.Database_GetTableCount(database_ptr)
+        # print('table count: %d' % table_count)
+        # name = libVCSDK.Database_GetName(database_ptr)
+        # print('name: %s' % ctypes.c_char_p(name).value)
+
         # Dump the database to XML
         libVCSDK.Database_Dump(database_ptr, ctypes.c_char_p(str(self.dump_file).encode()), EVDumpType_kXML,
                                EVDataKind_kStructureAndRecords, pretty_print, ctypes.c_char_p(b'utf-8'))
@@ -134,7 +126,7 @@ class LiveWorshipImport(SongImport):
         try:
             self.root = etree.fromstring(xml_content, parser)
         except etree.XMLSyntaxError:
-            self.log_error(file_path, SongStrings.XMLSyntaxError)
+            self.log_error(self.dump_file, SongStrings.XMLSyntaxError)
             log.exception('XML syntax error in file {path}'.format(path=str(self.dump_file)))
 
     def extract_songs(self):
@@ -162,7 +154,7 @@ class LiveWorshipImport(SongImport):
             self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=self.title))
             authors_line = record.xpath("f[@n='Author']/text()")
             if authors_line:
-                authors = self.extract_authors(authors_line[0])
+                self.extract_authors(authors_line[0])
             cpr = record.xpath("f[@n='Copyright']/text()")
             if cpr:
                 self.add_copyright(self.clean_string(cpr[0]))
@@ -175,17 +167,20 @@ class LiveWorshipImport(SongImport):
             self.extract_verses(song_rowid)
             if not self.finish():
                 self.log_error(self.title)
-            
+
     def extract_tags(self, row_id):
         """
         Extract the tags for a particular song
         """
-        tag_group_records = self.root.xpath("//BaseObjectData[@Name='TagGroup']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/..".format(rowid=row_id))
+        xpath = "//BaseObjectData[@Name='TagGroup']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/.."
+        tag_group_records = self.root.xpath(xpath.format(rowid=row_id))
         for record in tag_group_records:
             tag_rowid = record.xpath("f[@n='Tag_rowid']/text()")
             if tag_rowid:
                 tag_rowid = self.clean_string(tag_rowid[0])
-                tag = self.root.xpath("//BaseObjectData[@Name='Tag']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/../f[@n='Description']/text()".format(rowid=tag_rowid))
+                xpath = "//BaseObjectData[@Name='Tag']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/../"\
+                        "f[@n='Description']/text()"
+                tag = self.root.xpath(xpath.format(rowid=tag_rowid))
                 if tag:
                     tag = self.clean_string(tag[0])
                     # TODO: find a way to import tags
@@ -194,7 +189,8 @@ class LiveWorshipImport(SongImport):
         """
         Extract the verses for a particular song
         """
-        slides_records = self.root.xpath("//BaseObjectData[@Name='SlideColSlides']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/..".format(rowid=song_id))
+        xpath = "//BaseObjectData[@Name='SlideColSlides']/Record/f[@n='SlideCol_rowid' and text()='{rowid}']/.."
+        slides_records = self.root.xpath(xpath.format(rowid=song_id))
         for record in slides_records:
             verse_text = record.xpath("f[@n='kText']/text()")
             if verse_text:

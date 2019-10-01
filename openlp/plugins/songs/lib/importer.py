@@ -550,4 +550,3 @@ if HAS_OPSPRO:
 
 
 __all__ = ['SongFormat', 'SongFormatSelect']
-

@@ -22,14 +22,11 @@
 """
 This module contains tests for the LiveWorship song importer.
 """
-from pathlib import Path
-
-from unittest import TestCase, skipUnless
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from tests.utils import load_external_result_data
 from tests.utils.constants import RESOURCE_PATH
-
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.importers.liveworship import LiveWorshipImport
