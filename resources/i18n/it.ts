@@ -5850,9 +5850,7 @@ not
 found in
 :
 
-{
-    path
-}
+{path}
 
 The
 location

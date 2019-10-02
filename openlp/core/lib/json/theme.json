@@ -3,6 +3,7 @@
         "border_color": "#000000",
         "color": "#000000",
         "direction": "vertical",
+      "style": false,
         "end_color": "#000000",
         "filename": null,
         "start_color": "#000000",
