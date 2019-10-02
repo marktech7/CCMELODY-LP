@@ -327,6 +327,12 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             self.image_color_button.color = self.theme.background_border_color
             self.image_path_edit.path = self.theme.background_filename
             self.setField('background_type', 2)
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+            self.video_color_button.color = self.theme.background_border_color
+            self.video_path_edit.path = self.theme.background_filename
+            self.setField('background_type', 4)
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            self.setField('background_type', 5)
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Transparent):
             self.setField('background_type', 3)
         if self.theme.background_direction == BackgroundGradientType.to_string(BackgroundGradientType.Horizontal):
@@ -405,10 +411,12 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         if self.update_theme_allowed:
             self.theme.background_type = BackgroundType.to_string(index)
             if self.theme.background_type != BackgroundType.to_string(BackgroundType.Image) and \
+                    self.theme.background_type != BackgroundType.to_string(BackgroundType.Video) and \
                     self.temp_background_filename is None:
                 self.temp_background_filename = self.theme.background_filename
                 self.theme.background_filename = None
-            if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) and \
+            if (self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or
+                self.theme.background_type != BackgroundType.to_string(BackgroundType.Video)) and \
                     self.temp_background_filename is not None:
                 self.theme.background_filename = self.temp_background_filename
                 self.temp_background_filename = None
