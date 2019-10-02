@@ -26,13 +26,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.display.render import ThemePreviewRenderer
 from openlp.core.lib.theme import BackgroundGradientType, BackgroundType, HorizontalType
 from openlp.core.lib.ui import add_welcome_page, create_valign_selection_widgets
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.layouts import AspectRatioLayout
+from openlp.core.display.render import ThemePreviewRenderer
 
 
 class Ui_ThemeWizard(object):

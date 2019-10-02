@@ -33,6 +33,7 @@ from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib import get_text_file_string, str_to_bool
 
+
 log = logging.getLogger(__name__)
 
 

@@ -36,6 +36,7 @@ from openlp.core.ui.media import VIDEO_EXT
 from openlp.core.ui.themelayoutform import ThemeLayoutForm
 from openlp.core.ui.themewizard import Ui_ThemeWizard
 
+
 log = logging.getLogger(__name__)
 
 
@@ -416,7 +417,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 self.temp_background_filename = self.theme.background_filename
                 self.theme.background_filename = None
             if (self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or
-                self.theme.background_type != BackgroundType.to_string(BackgroundType.Video)) and \
+                    self.theme.background_type != BackgroundType.to_string(BackgroundType.Video)) and \
                     self.temp_background_filename is not None:
                 self.theme.background_filename = self.temp_background_filename
                 self.temp_background_filename = None
