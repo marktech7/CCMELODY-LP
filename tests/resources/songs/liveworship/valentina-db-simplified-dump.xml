@@ -337,5 +337,26 @@
 					<f n="TextX2">       0.000000</f>
 				</Record>
 			</BaseObjectData>
+			<BaseObjectData Name="TagGroup">
+				<RecordCount>158</RecordCount>
+				<Record>
+					<f n="RecID">1</f>
+					<f n="_rowid">     854.000000</f>
+					<f n="Tag_rowid">      28.000000</f>
+					<f n="Lib_rowid">       0.000000</f>
+					<f n="gText_rowid">       0.000000</f>
+					<f n="SlideCol_rowid">    2.000000</f>
+					<f n="Presentation_rowid">       0.000000</f>
+				</Record>
+			</BaseObjectData>
+			<BaseObjectData Name="Tag">
+				<RecordCount>11</RecordCount>
+				<Record>
+					<f n="RecID">1</f>
+					<f n="_rowid">      28.000000</f>
+					<f n="MediaType_rowid">       6.000000</f>
+					<f n="Description"> Worship</f>
+				</Record>
+			</BaseObjectData>
 		</DatabaseUserData>
 </DatabaseData></Database>

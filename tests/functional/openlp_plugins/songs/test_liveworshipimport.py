@@ -78,8 +78,7 @@ class TestLiveWorshipSongImport(TestCase):
         importer = LiveWorshipImport(mocked_manager, file_paths=[])
         importer.finish = MagicMock()
         importer.import_wizard = MagicMock()
-        importer.dump_file = TEST_PATH / 'valentina-db-simplified-dumb.xml'
-        # importer.dump_file = Path('/home/tgc/Downloads/Ebenezer-dump.xml')
+        importer.dump_file = TEST_PATH / 'valentina-db-simplified-dump.xml'
 
         # WHEN: The XML is loaded and processed
         importer.load_xml_dump()
@@ -89,5 +88,6 @@ class TestLiveWorshipSongImport(TestCase):
         result_data = load_external_result_data(TEST_PATH / 'A Child Of The King.json')
         assert importer.title == _get_item(result_data, 'title')
         assert importer.verses == _get_item(result_data, 'verses')
+        assert importer.topics[0] == _get_item(result_data, 'topics')[0]
         assert importer.authors[0][0] == _get_item(result_data, 'authors')[0]
         assert importer.authors[1][0] == _get_item(result_data, 'authors')[1]
