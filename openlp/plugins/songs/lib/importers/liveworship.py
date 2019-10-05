@@ -32,7 +32,7 @@ from lxml import etree
 from pathlib import Path
 from tempfile import gettempdir
 
-from openlp.core.common import is_win, is_linux, is_macosx, delete_file
+from openlp.core.common import is_win, is_linux, is_macosx, is_64bit_instance, delete_file
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.lib.importers.songimport import SongImport
@@ -92,7 +92,7 @@ class LiveWorshipImport(SongImport):
         libVCSDK = None
         if is_win():
             # The DLL path must be set depending on the bitness of the OpenLP/Python instance
-            if sys.maxsize > 2**32:
+            if is_64bit_instance():
                 vcdk_install_folder = 'VCDK_x64_{adkver}'
                 dll_name = '/vcsdk_release_x64.dll'
             else:
@@ -127,11 +127,16 @@ class LiveWorshipImport(SongImport):
         elif os.path.exists(libVCSDK_path):
             found_dll = True
         if not found_dll:
+            adk_name = "Valentina DB ADK for C, {bitness} bit"
+            if is_64bit_instance():
+                adk_name = adk_name.format(bitness=64)
+            else:
+                adk_name = adk_name.format(bitness=32)
             critical_error_message_box(translate('SongsPlugin.LiveWorshipImport',
                                                  'Could not find Valentina DB ADK libraries '),
                                        translate('SongsPlugin.LiveWorshipImport',
                                                  'Could not find "{dllpath}", please install "{adk}"'
-                                                 .format(dllpath=libVCSDK_path, adk="Valentina DB ADK for C")))
+                                                 .format(dllpath=libVCSDK_path, adk=adk_name)))
             return False
         libVCSDK = ctypes.CDLL(libVCSDK_path)
         # cache size set to 1024, got no idea what this means...
