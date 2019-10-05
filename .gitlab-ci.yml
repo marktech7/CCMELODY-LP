@@ -34,6 +34,14 @@ test-fedora:
   script:
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
 
+test-arch:
+  stage: test
+  image: openlp/arch
+  before_script:
+    - sh scripts/generate_resources.sh
+  script:
+    - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
+
 test-macos:
   stage: test
   tags:
