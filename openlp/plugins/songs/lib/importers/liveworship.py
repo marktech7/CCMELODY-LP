@@ -24,7 +24,6 @@ The :mod:`liveworship` module provides the functionality for importing
 a LiveWorship database into the OpenLP database.
 """
 import os
-import sys
 import logging
 import ctypes
 
