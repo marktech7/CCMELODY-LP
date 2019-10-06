@@ -106,7 +106,7 @@ class LiveWorshipImport(SongImport):
             libVCSDK_path = '/opt/VCSDK/libVCSDK.so'
         elif is_macosx():
             # The DLL path must be set depending on the bitness of the OpenLP/Python instance
-            if sys.maxsize > 2**32:
+            if is_64bit_instance():
                 vcdk_install_folder = 'VCDK_x64_{adkver}'
                 dll_name = '/vcsdk_x64.dylib'
             else:
