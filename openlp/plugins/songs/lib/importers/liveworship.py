@@ -57,7 +57,7 @@ class LiveWorshipImport(SongImport):
     The approach is to use the Valentina DB ADK for C via ctypes to dump the database content to a XML
     file that is then analysed for data extraction. It would also be possible to skip the XML and
     extract the data directly from the database using ctypes, but that approach requires a lot of ctypes
-    interaction and type convertion that is rather fragile across platforms and versions, so the XML approach
+    interaction and type conversion that is rather fragile across platforms and versions, so the XML approach
     is used for now.
     It was implemented using Valentina DB ADK for C version 9.6.
     """
