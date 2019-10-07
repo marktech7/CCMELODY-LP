@@ -63,7 +63,7 @@ class LiveWorshipImport(SongImport):
     """
     def __init__(self, manager, **kwargs):
         """
-        Initialise the MediaShout importer.
+        Initialise the LiveWorship importer.
         """
         self.root = None
         super(LiveWorshipImport, self).__init__(manager, **kwargs)
