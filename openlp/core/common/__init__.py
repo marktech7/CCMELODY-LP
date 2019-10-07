@@ -222,6 +222,16 @@ def is_linux():
     return sys.platform.startswith('linux')
 
 
+def is_64bit_instance():
+    """
+    Returns true if the python/OpenLP instance running is 64 bit. If running a 32 bit instance on
+    a 64 bit system this will return false.
+
+    :return: True if the python/OpenLP instance running is 64 bit, otherwise False.
+    """
+    return (sys.maxsize > 2**32)
+
+
 def verify_ipv4(addr):
     """
     Validate an IPv4 address

@@ -34,6 +34,7 @@ from .importers.dreambeam import DreamBeamImport
 from .importers.easyslides import EasySlidesImport
 from .importers.easyworship import EasyWorshipSongImport
 from .importers.foilpresenter import FoilPresenterImport
+from .importers.liveworship import LiveWorshipImport
 from .importers.lyrix import LyrixImport
 from .importers.openlp import OpenLPSongImport
 from .importers.openlyrics import OpenLyricsImport
@@ -166,25 +167,26 @@ class SongFormat(object):
     EasyWorshipSqliteDB = 8
     EasyWorshipService = 9
     FoilPresenter = 10
-    Lyrix = 11
-    MediaShout = 12
-    OpenSong = 13
-    OPSPro = 14
-    PowerPraise = 15
-    PowerSong = 16
-    PresentationManager = 17
-    ProPresenter = 18
-    SingingTheFaith = 19
-    SongBeamer = 20
-    SongPro = 21
-    SongShowPlus = 22
-    SongsOfFellowship = 23
-    SundayPlus = 24
-    VideoPsalm = 25
-    WordsOfWorship = 26
-    WorshipAssistant = 27
-    WorshipCenterPro = 28
-    ZionWorx = 29
+    LiveWorship = 11
+    Lyrix = 12
+    MediaShout = 13
+    OpenSong = 14
+    OPSPro = 15
+    PowerPraise = 16
+    PowerSong = 17
+    PresentationManager = 18
+    ProPresenter = 19
+    SingingTheFaith = 20
+    SongBeamer = 21
+    SongPro = 22
+    SongShowPlus = 23
+    SongsOfFellowship = 24
+    SundayPlus = 25
+    VideoPsalm = 26
+    WordsOfWorship = 27
+    WorshipAssistant = 28
+    WorshipCenterPro = 29
+    ZionWorx = 30
 
     # Set optional attribute defaults
     __defaults__ = {
@@ -281,6 +283,14 @@ class SongFormat(object):
             'prefix': 'foilPresenter',
             'filter': '{text} (*.foil)'.format(text=translate('SongsPlugin.ImportWizardForm',
                                                               'Foilpresenter Song Files'))
+        },
+        LiveWorship: {
+            'class': LiveWorshipImport,
+            'name': 'LiveWorship Database',
+            'prefix': 'liveWorship',
+            'selectMode': SongFormatSelect.SingleFile,
+            'filter': '{text} (*.vdb)'.format(text=translate('SongsPlugin.ImportWizardForm',
+                                                             'LiveWorship Database'))
         },
         Lyrix: {
             'class': LyrixImport,
@@ -466,6 +476,7 @@ class SongFormat(object):
             SongFormat.EasyWorshipSqliteDB,
             SongFormat.EasyWorshipService,
             SongFormat.FoilPresenter,
+            SongFormat.LiveWorship,
             SongFormat.Lyrix,
             SongFormat.MediaShout,
             SongFormat.OpenSong,
