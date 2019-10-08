@@ -709,13 +709,6 @@ class HTTPBible(BibleImport, RegistryProperties):
             handler = BSExtract()
         return handler.get_bible_chapter(self.download_name, book, chapter)
 
-    def get_books(self):
-        """
-        Return the list of books.
-        """
-        log.debug('HTTPBible.get_books("{name}")'.format(name=Book.name))
-        return self.get_all_objects(Book, order_by_ref=Book.id)
-
     def get_chapter_count(self, book):
         """
         Return the number of chapters in a particular book.
