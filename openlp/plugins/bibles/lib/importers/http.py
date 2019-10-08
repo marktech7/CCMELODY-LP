@@ -37,7 +37,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib import SearchResults
 from openlp.plugins.bibles.lib.bibleimport import BibleImport
-from openlp.plugins.bibles.lib.db import BibleDB, BiblesResourcesDB, Book
+from openlp.plugins.bibles.lib.db import BibleDB, BiblesResourcesDB
 
 
 CLEANER_REGEX = re.compile(r'&nbsp;|<br />|\'\+\'')
