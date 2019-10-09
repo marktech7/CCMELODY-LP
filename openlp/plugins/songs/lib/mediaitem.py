@@ -509,12 +509,12 @@ class SongMediaItem(MediaManagerItem):
         Remove a song from the list and database
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
-            items = self.list_view.selectedIndexes()
+            items = self.list_view.selectedItems()
             if QtWidgets.QMessageBox.question(
                     self, UiStrings().ConfirmDelete,
                     translate('SongsPlugin.MediaItem',
-                              'Are you sure you want to delete the "{items:d}" '
-                              'selected song(s)?').format(items=len(items)),
+                              'Are you sure you want to delete the following songs?') +
+                    '\n\n- {songs}'.format(songs='\n- '.join([item.text() for item in items])),
                     defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
                 return
             self.application.set_busy_cursor()
