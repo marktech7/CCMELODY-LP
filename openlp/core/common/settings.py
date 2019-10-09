@@ -226,7 +226,7 @@ class Settings(QtCore.QSettings):
         'themes/last directory': None,
         'themes/last directory export': None,
         'themes/last directory import': None,
-        'themes/theme level': ThemeLevel.Song,
+        'themes/theme level': ThemeLevel.Global,
         'themes/wrap footer': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),

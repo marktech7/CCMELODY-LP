@@ -1,6 +1,7 @@
 stages:
   - lint
   - test
+  - deploy
 
 lint:
   stage: lint
@@ -17,6 +18,9 @@ test-debian:
     - sh scripts/generate_resources.sh
   script:
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py --cov openlp --cov-report term --cov-report html
+  artifacts:
+    paths:
+      - htmlcov
 
 test-ubuntu:
   stage: test
@@ -51,5 +55,18 @@ test-macos:
     - sh scripts/generate_resources.sh
   script:
     - python3 -m pytest --color=no --disable-warnings
+  only:
+    - master@openlp/openlp
+
+pages:
+  stage: deploy
+  script:
+    - mv htmlcov public
+  artifacts:
+    paths:
+      - public
+    expire_in: 30 days
+  dependencies:
+    - test-debian
   only:
     - master@openlp/openlp
