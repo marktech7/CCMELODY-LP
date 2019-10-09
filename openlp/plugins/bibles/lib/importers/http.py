@@ -37,7 +37,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib import SearchResults
 from openlp.plugins.bibles.lib.bibleimport import BibleImport
-from openlp.plugins.bibles.lib.db import BibleDB, BiblesResourcesDB, Book
+from openlp.plugins.bibles.lib.db import BibleDB, BiblesResourcesDB
 
 
 CLEANER_REGEX = re.compile(r'&nbsp;|<br />|\'\+\'')
@@ -708,13 +708,6 @@ class HTTPBible(BibleImport, RegistryProperties):
         elif self.download_source.lower() == 'bibleserver':
             handler = BSExtract()
         return handler.get_bible_chapter(self.download_name, book, chapter)
-
-    def get_books(self):
-        """
-        Return the list of books.
-        """
-        log.debug('HTTPBible.get_books("{name}")'.format(name=Book.name))
-        return self.get_all_objects(Book, order_by_ref=Book.id)
 
     def get_chapter_count(self, book):
         """
