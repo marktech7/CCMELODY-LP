@@ -29,7 +29,7 @@ from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
 
-@skipIf(os.environ.get('JENKINS_URL'), 'Skip Bible HTTP tests to prevent Jenkins from being blacklisted')
+@skipIf(os.environ.get('GITLAB_CI'), 'Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
 class TestBibleHTTP(TestCase):
 
     def setUp(self):

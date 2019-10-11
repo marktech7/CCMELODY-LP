@@ -26,7 +26,7 @@ import shutil
 from pathlib import Path
 from tempfile import mkdtemp
 from unittest import TestCase
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, MagicMock, patch, call
 
 from PyQt5 import QtWidgets
 
@@ -90,7 +90,7 @@ class TestThemeManager(TestCase):
         #        theme, create_paths and thememanager-attributes.
         theme_manager = ThemeManager(None)
         theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
@@ -114,7 +114,7 @@ class TestThemeManager(TestCase):
         #        theme, create_paths and thememanager-attributes.
         theme_manager = ThemeManager(None)
         theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
@@ -135,7 +135,7 @@ class TestThemeManager(TestCase):
         # GIVEN: A new theme manager instance, with mocked theme and thememanager-attributes.
         theme_manager = ThemeManager(None)
         theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = Path(self.temp_folder)
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'theme 愛 name'
@@ -195,7 +195,7 @@ class TestThemeManager(TestCase):
                 as mocked_critical_error_message_box:
             theme_manager = ThemeManager(None)
             theme_manager._create_theme_from_xml = MagicMock()
-            theme_manager.generate_and_save_image = MagicMock()
+            theme_manager.update_preview_images = MagicMock()
             theme_manager.theme_path = None
             folder_path = Path(mkdtemp())
             theme_file_path = RESOURCE_PATH / 'themes' / 'Moss_on_tree.otz'
@@ -227,3 +227,28 @@ class TestThemeManager(TestCase):
 
             # THEN: The critical_error_message_box should have been called
             assert mocked_critical_error_message_box.call_count == 1, 'Should have been called once'
+
+    def test_update_preview_images(self):
+        """
+        Test that the update_preview_images() method works correctly
+        """
+        # GIVEN: A ThemeManager
+        theme_manager = ThemeManager(None)
+        theme_manager.save_preview = MagicMock()
+        theme_manager.get_theme_data = MagicMock(return_value='theme_data')
+        theme_manager.progress_form = MagicMock(**{'get_preview.return_value': 'preview'})
+        theme_manager.load_themes = MagicMock()
+        theme_list = ['Default', 'Test']
+
+        # WHEN: ThemeManager.update_preview_images() is called
+        theme_manager.update_preview_images(theme_list)
+
+        # THEN: Things should work right
+        assert theme_manager.progress_form.theme_list == theme_list
+        theme_manager.progress_form.show.assert_called_once_with()
+        assert theme_manager.get_theme_data.call_args_list == [call('Default'), call('Test')]
+        assert theme_manager.progress_form.get_preview.call_args_list == [call('Default', 'theme_data'),
+                                                                          call('Test', 'theme_data')]
+        assert theme_manager.save_preview.call_args_list == [call('Default', 'preview'), call('Test', 'preview')]
+        theme_manager.progress_form.close.assert_called_once_with()
+        theme_manager.load_themes.assert_called_once_with()
