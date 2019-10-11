@@ -17,10 +17,11 @@ test-debian:
   before_script:
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py --cov openlp --cov-report term --cov-report html
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py --cov openlp --cov-report term
+    - mv .coverage linux.coverage
   artifacts:
     paths:
-      - htmlcov
+      - linux.coverage
 
 test-ubuntu:
   stage: test
@@ -54,19 +55,28 @@ test-macos:
     - export PATH=/opt/local/bin:$PATH
     - sh scripts/generate_resources.sh
   script:
-    - python3 -m pytest --color=no --disable-warnings
+    - python3 -m pytest --color=no --disable-warnings --cov openlp
+    - mv .coverage macos.coverage
+  artifacts:
+    paths:
+      - macos.coverage
   only:
     - master@openlp/openlp
 
 pages:
   stage: deploy
+  image: openlp/debian
   script:
+    - python3-coverage combine linux.coverage macos.coverage
+    - python3-coverage html
     - mv htmlcov public
+    - python3-coverage report
   artifacts:
     paths:
       - public
     expire_in: 30 days
   dependencies:
     - test-debian
+    - test-macos
   only:
     - master@openlp/openlp
