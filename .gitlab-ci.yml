@@ -68,6 +68,7 @@ pages:
   image: openlp/debian
   script:
     - python3-coverage combine linux.coverage macos.coverage
+    - fixpaths .coverage
     - python3-coverage html
     - mv htmlcov public
     - python3-coverage report
