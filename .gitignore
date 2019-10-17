@@ -16,10 +16,12 @@
 .cache
 .coverage
 .directory
+.eggs
 .idea
 .kdev4
 .komodotools
 .pytest_cache
+.venv
 .vscode
 OpenLP.egg-info
 \#*\#

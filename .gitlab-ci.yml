@@ -63,11 +63,24 @@ test-macos:
   only:
     - master@openlp/openlp
 
+test-windows:
+  stage: test
+  tags:
+    - windows
+  script:
+    - C:\Users\raoul\GitLab-Runner\venv\Scripts\pytest.exe --color=no --disable-warnings --cov openlp
+    - mv .coverage windows.coverage
+  artifacts:
+    paths:
+      - windows.coverage
+  only:
+    - master@openlp/openlp
+
 pages:
   stage: deploy
   image: openlp/debian
   script:
-    - python3-coverage combine linux.coverage macos.coverage
+    - python3-coverage combine linux.coverage macos.coverage windows.coverage
     - fixpaths .coverage
     - python3-coverage html
     - mv htmlcov public
@@ -79,5 +92,6 @@ pages:
   dependencies:
     - test-debian
     - test-macos
+    - test-windows
   only:
     - master@openlp/openlp
