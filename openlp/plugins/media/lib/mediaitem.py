@@ -240,7 +240,10 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             track_str = str(track)
             track_info = QtCore.QFileInfo(track_str)
             item_name = None
-            if track_str.startswith('optical:'):
+            # Dont add the live stream in when reloading the UI.
+            if track_str == UiStrings().LiveStream:
+                continue
+            elif track_str.startswith('optical:'):
                 # Handle optical based item
                 (file_name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(track_str)
                 item_name = QtWidgets.QListWidgetItem(clip_name)
