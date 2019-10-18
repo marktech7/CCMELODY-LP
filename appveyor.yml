@@ -50,16 +50,11 @@ install:
 
     # If this is trunk we should also build the manual
     - ps: >-
-        If ($env:APPVEYOR_REPO_TAG -eq $True) {
-          &"$env:PYTHON\python.exe" -m pip install sphinx
-          Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
-          7z x documentation-master.zip
-          cd packaging-master
-          &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
-        } else {
-          cd packaging-master
-          &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
-        }
+        &"$env:PYTHON\python.exe" -m pip install sphinx
+        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
+        7z x documentation-master.zip
+        cd packaging-master
+        &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
 
   artifacts:
     - path: dist\*.exe
