@@ -17,8 +17,6 @@ install:
   # Install dependencies from pypi
   - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pypiwin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc Pyro4 zeroconf"
 
-build: off
-
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   # Run the tests
@@ -26,37 +24,19 @@ test_script:
   # Go back to the user root folder
   - cd..
 
-after_test:
-  # This is where we create a package using PyInstaller
-  # Install PyInstaller 
-  - "%PYTHON%\\python.exe -m pip install pyinstaller"
-  # Disabled portable installers - can't figure out how to make them silent
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
-  # - PortableApps.comInstaller_3.4.4.paf.exe /S
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Launcher/PortableApps.comLauncher_2.2.1.paf.exe
-  # - PortableApps.comLauncher_2.2.1.paf.exe /S
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/NSIS%20Portable/NSISPortable_3.0_English.paf.exe
-  # - NSISPortable_3.0_English.paf.exe /S
-  # Download and unpack portable-bundle
-  - appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
-  - 7z x portable-setup.7z
-  # Install VLC
-  - choco install %CHOCO_VLC%
-  # Get the packaging code
-  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
-  - 7z x packaging-master.zip
-
-  # If this is trunk we should also build the manual
+build_script:
   - ps: >-
-      If ($env:APPVEYOR_REPO_TAG -eq $True) {
-        &"$env:PYTHON\python.exe" -m pip install sphinx
-        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
-        7z x documentation-master.zip
-        cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
-      } else {
-        cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+      if ($env:APPVEYOR_REPO_TAG -eq "true") {
+          &"$env:PYTHON\\python.exe" -m pip install pyinstaller sphinx
+          choco install $env:CHOCO_VLC
+          Invoke-WebRequest -Uri "https://get.openlp.org/win-sdk/portable-setup.7z" -OutFile portable-setup.7z
+          7z x portable-setup.7z
+          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          7z x packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
+          7z x documentation-master.zip
+          cd packaging-master
+          &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
       }
 
 artifacts:
