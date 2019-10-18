@@ -28,8 +28,10 @@ from unittest.mock import MagicMock
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
+IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
 
-@skipIf(os.environ.get('GITLAB_CI'), 'Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
+
+@skipIf(IS_CI, 'Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
 class TestBibleHTTP(TestCase):
 
     def setUp(self):
