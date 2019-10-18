@@ -23,6 +23,8 @@
 .pytest_cache
 .venv
 .vscode
+.eggs
+.venv
 OpenLP.egg-info
 \#*\#
 __pycache__

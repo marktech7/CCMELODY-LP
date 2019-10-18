@@ -486,6 +486,17 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             footer_html = 'Dummy footer text'
         return footer_html
 
+    def _wait_and_process(self, delay):
+        """
+        Wait while allowing things to process
+
+        :param delay: The amount of time in seconds to delay, can be a float
+        """
+        end_time = time.time() + delay
+        app = Registry().get('application')
+        while time.time() < end_time:
+            app.process_events()
+
     def generate_preview(self, theme_data, force_page=False, generate_screenshot=True):
         """
         Generate a preview of a theme.
@@ -498,7 +509,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
-            self.set_theme(theme_data)
+            self.set_theme(theme_data, is_sync=True)
             self.theme_height = theme_data.font_main_height
             slides = self.format_slide(VERSE, None)
             verses = dict()
@@ -506,10 +517,11 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             verses['text'] = render_tags(slides[0])
             verses['verse'] = 'V1'
             verses['footer'] = self.generate_footer()
-            self.load_verses([verses])
+            self.load_verses([verses], is_sync=True)
+            self._wait_and_process(1)
             self.force_page = False
             if generate_screenshot:
-                return self.save_screenshot()
+                return self.grab()
         self.force_page = False
         return None
 

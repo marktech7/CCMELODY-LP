@@ -104,7 +104,7 @@ class DisplayWindow(QtWidgets.QWidget):
     """
     This is a window to show the output
     """
-    def __init__(self, parent=None, screen=None):
+    def __init__(self, parent=None, screen=None, can_show_startup_screen=True):
         """
         Create the display window
         """
@@ -112,6 +112,7 @@ class DisplayWindow(QtWidgets.QWidget):
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False
+        self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint)
@@ -199,7 +200,8 @@ class DisplayWindow(QtWidgets.QWidget):
         """
         self.run_javascript('Display.init();')
         self._is_initialised = True
-        self.set_startup_screen()
+        if self._can_show_startup_screen:
+            self.set_startup_screen()
         # Make sure the scale is set if it was attempted set before init
         if self.scale != 1:
             self.set_scale(self.scale)
@@ -239,12 +241,12 @@ class DisplayWindow(QtWidgets.QWidget):
         """
         self.run_javascript('Display.goToSlide("{verse}");'.format(verse=verse))
 
-    def load_verses(self, verses):
+    def load_verses(self, verses, is_sync=False):
         """
         Set verses in the display
         """
         json_verses = json.dumps(verses)
-        self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses))
+        self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses), is_sync=is_sync)
 
     def load_images(self, images):
         """
@@ -324,7 +326,7 @@ class DisplayWindow(QtWidgets.QWidget):
         else:
             return pixmap
 
-    def set_theme(self, theme):
+    def set_theme(self, theme, is_sync=False):
         """
         Set the theme of the display
         """
@@ -336,7 +338,7 @@ class DisplayWindow(QtWidgets.QWidget):
             exported_theme = theme_copy.export_theme(is_js=True)
         else:
             exported_theme = theme.export_theme(is_js=True)
-        self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme))
+        self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme), is_sync=is_sync)
 
     def get_video_types(self):
         """

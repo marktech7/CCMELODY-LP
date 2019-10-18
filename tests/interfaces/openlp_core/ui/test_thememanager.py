@@ -63,7 +63,8 @@ class TestThemeManager(TestCase, TestMixin):
         Settings().setValue('themes/global theme', 'my_theme')
 
         # WHEN: the initialisation is run
-        self.theme_manager.bootstrap_initialise()
+        with patch('openlp.core.ui.thememanager.ThemeProgressForm'):
+            self.theme_manager.bootstrap_initialise()
 
         # THEN:
         self.theme_manager.setup_ui.assert_called_once_with(self.theme_manager)

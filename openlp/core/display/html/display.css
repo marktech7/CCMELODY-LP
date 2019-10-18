@@ -32,6 +32,8 @@ sup {
 }
 
 #global-background {
+  background-size: cover;
+  background-position: 50% 50%;
   display: block;
   visibility: visible;
   z-index: -1;
