@@ -212,6 +212,7 @@ class Settings(QtCore.QSettings):
         'media/vlc arguments': '',
         'media/video': '',
         'media/audio': '',
+        'media/volume': 0,
         'remotes/download version': '0.0',
         'players/background color': '#000000',
         'servicemanager/last directory': None,

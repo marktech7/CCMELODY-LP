@@ -218,7 +218,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         # stop running videos
         self.media_reset(controller)
         controller.media_info = ItemMediaInfo()
-        controller.media_info.volume = controller.volume_slider.value()
+        controller.media_info.volume = Settings().value('media/volume')
         controller.media_info.is_background = video_behind_text
         # background will always loop video.
         controller.media_info.can_loop_playback = video_behind_text
@@ -544,8 +544,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         display = self._define_display(controller)
         if controller.controller_type in self.current_media_players:
-            # if not looping_background:
-            #    display.frame.runJavaScript('show_blank("black");')
             self.current_media_players[controller.controller_type].stop(display)
             self.current_media_players[controller.controller_type].set_visible(display, False)
             controller.seek_slider.setSliderPosition(0)
@@ -579,6 +577,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         log.debug('media_volume {vol}'.format(vol=volume))
         display = self._define_display(controller)
+        Settings().setValue('media/volume', volume)
         self.current_media_players[controller.controller_type].volume(display, volume)
         controller.volume_slider.setValue(volume)
 
