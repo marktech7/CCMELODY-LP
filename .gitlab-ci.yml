@@ -17,7 +17,7 @@ test-debian:
   before_script:
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py --cov openlp --cov-report term
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term
     - mv .coverage linux.coverage
   artifacts:
     paths:
@@ -29,7 +29,7 @@ test-ubuntu:
   before_script:
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-fedora:
   stage: test
@@ -37,7 +37,7 @@ test-fedora:
   before_script:
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
+    - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-arch:
   stage: test
@@ -45,7 +45,7 @@ test-arch:
   before_script:
     - sh scripts/generate_resources.sh
   script:
-    - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings --ignore tests/functional/openlp_plugins/presentations/test_pdfcontroller.py
+    - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings
 
 test-macos:
   stage: test
