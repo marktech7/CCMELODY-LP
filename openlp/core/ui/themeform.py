@@ -565,6 +565,6 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
         # Set the theme background to the cache location
-        self.theme.background_filename = destination_path;
+        self.theme.background_filename = destination_path
         self.theme_manager.save_theme(self.theme, source_path, destination_path, self.preview_box.save_screenshot())
         return QtWidgets.QDialog.accept(self)
