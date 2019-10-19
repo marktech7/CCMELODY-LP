@@ -28,19 +28,19 @@ var GradientType = {
  * Horizontal alignment enumeration
  */
 var HorizontalAlign = {
-  Left: "left",
-  Right: "right",
-  Center: "center",
-  Justify: "justify"
+  Left: 0,
+  Right: 1,
+  Center: 2,
+  Justify: 3
 };
 
 /**
  * Vertical alignment enumeration
  */
 var VerticalAlign = {
-  Top: "top",
-  Middle: "middle",
-  Bottom: "bottom"
+  Top: 0,
+  Middle: 1,
+  Bottom: 2
 };
 
 /**
@@ -926,23 +926,33 @@ var Display = {
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
     mainStyle["color"] = theme.font_main_color;
     mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
-    mainStyle["text-align"] = theme.display_horizontal_align;
     if (theme.display_horizontal_align != HorizontalAlign.Justify) {
       mainStyle["white-space"] = "pre-wrap";
     }
-    mainStyle["vertical-align"] = theme.display_vertical_align;
+    if (theme.display_horizontal_align === HorizontalAlign.Justify ||
+        theme.display_horizontal_align === HorizontalAlign.Center) {
+      mainStyle["text-align"] = "center";
+      mainStyle['align-items'] = "center";
+    } else if (theme.display_horizontal_align === HorizontalAlign.Left) {
+      mainStyle["text-align"] = "left";
+      mainStyle['align-items'] = "flex-start";
+    } else if (theme.display_horizontal_align === HorizontalAlign.Right) {
+      mainStyle["text-align"] = "right";
+      mainStyle['align-items'] = "flex-end";
+    }
+    if (theme.display_vertical_align === VerticalAlign.Middle) {
+      mainStyle['justify-content'] = "center";
+    } else if (theme.display_vertical_align === VerticalAlign.Top) {
+      mainStyle['justify-content'] = "flex-start";
+    } else if (theme.display_vertical_align === VerticalAlign.Bottom) {
+      mainStyle['justify-content'] = "flex-end";
+    }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "px " +
                                  theme.font_main_shadow_size + "px";
     }
     mainStyle["padding-bottom"] = theme.display_vertical_align == VerticalAlign.Bottom ? "0.5em" : "0";
     mainStyle["padding-left"] = !!theme.font_main_outline ? "" + (theme.font_main_outline_size * 2) + "pt" : "0";
-    // These need to be fixed, in the Python they use a width passed in as a parameter
-    mainStyle["position"] = "absolute";
-    mainStyle["width"] = "" + (window.innerWidth - (theme.font_main_outline_size * 4)) + "px";
-    mainStyle["height"] = "" + (window.innerHeight - (theme.font_main_outline_size * 4)) + "px";
-    mainStyle["left"] = "" + theme.font_main_x + "px";
-    mainStyle["top"] = "" + theme.font_main_y + "px";
     var slidesDiv = $(".slides")[0];
     slidesDiv.style.cssText = "";
     for (var key in mainStyle) {
@@ -955,10 +965,15 @@ var Display = {
       "text-align": "left"
     };
     footerStyle["position"] = "absolute";
-    footerStyle["left"] = "" + theme.font_footer_x + "px";
-    footerStyle["top"] = "" + theme.font_footer_y + "px";
-    footerStyle["bottom"] = "" + (window.innerHeight - theme.font_footer_y - theme.font_footer_height) + "px";
-    footerStyle["width"] = "" + theme.font_footer_width + "px";
+    if (theme.font_footer_override) {
+      footerStyle["left"] = "" + theme.font_footer_x + "px";
+      footerStyle["top"] = "" + theme.font_footer_y + "px";
+      footerStyle["width"] = "" + theme.font_footer_width + "px";
+      footerStyle["height"] = "" + theme.font_footer_height + "px";
+    } else {
+      footerStyle["margin"] = "0.5em";
+      footerStyle["bottom"] = "0";
+    }
     footerStyle["font-family"] = theme.font_footer_name;
     footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
     footerStyle["color"] = theme.font_footer_color;

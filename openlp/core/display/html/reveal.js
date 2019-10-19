@@ -2231,9 +2231,6 @@
 				// Layout the contents of the slides
 				layoutSlideContents( config.width, config.height );
 
-				dom.slides.style.width = size.width + 'px';
-				dom.slides.style.height = size.height + 'px';
-
 				// Determine scale of content to fit within available space
 				scale = Math.min( size.presentationWidth / size.width, size.presentationHeight / size.height );
 
