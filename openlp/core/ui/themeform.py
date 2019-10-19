@@ -280,7 +280,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Run the wizard.
         """
         log.debug('Editing theme {name}'.format(name=self.theme.theme_name))
-        self.temp_background_filename = None
+        self.temp_background_filename = self.theme.background_source
         self.update_theme_allowed = False
         self.set_defaults()
         self.update_theme_allowed = True
@@ -325,11 +325,11 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             self.setField('background_type', 1)
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Image):
             self.image_color_button.color = self.theme.background_border_color
-            self.image_path_edit.path = self.theme.background_filename
+            self.image_path_edit.path = self.theme.background_source
             self.setField('background_type', 2)
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
             self.video_color_button.color = self.theme.background_border_color
-            self.video_path_edit.path = self.theme.background_filename
+            self.video_path_edit.path = self.theme.background_source
             self.setField('background_type', 4)
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
             self.setField('background_type', 5)
@@ -467,6 +467,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         :param pathlib.Path new_path: Path to the new image
         :rtype: None
         """
+        self.theme.background_source = new_path
         self.theme.background_filename = new_path
         self.set_background_page_values()
 
@@ -477,6 +478,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         :param pathlib.Path new_path: Path to the new video
         :rtype: None
         """
+        self.theme.background_source = new_path
         self.theme.background_filename = new_path
         self.set_background_page_values()
 
@@ -562,5 +564,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             source_path = self.theme.background_filename
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
+        # Set the theme background to the cache location
+        self.theme.background_filename = destination_path;
         self.theme_manager.save_theme(self.theme, source_path, destination_path, self.preview_box.save_screenshot())
         return QtWidgets.QDialog.accept(self)

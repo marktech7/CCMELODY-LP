@@ -329,7 +329,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         source_path = None
         if theme_data.background_type == 'image' or theme_data.background_type == 'video':
             destination_path = self.theme_path / new_theme_name / theme_data.background_filename.name
-            source_path = theme_data.background_filename
+            source_path = theme_data.background_source
         theme_data.theme_name = new_theme_name
         theme_data.extend_image_filename(self.theme_path)
         self.save_theme(theme_data, source_path, destination_path)
