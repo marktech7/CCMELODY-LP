@@ -87,19 +87,22 @@ class TestThemeManager(TestCase):
         Test that we don't try to overwrite a theme background image with itself
         """
         # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
-        #        theme, create_paths and thememanager-attributes.
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
+        theme_manager.old_background_image_path = None
         theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
         mocked_theme.extract_formatted_xml = MagicMock()
         mocked_theme.extract_formatted_xml.return_value = 'fake_theme_xml'.encode()
-
-        # WHEN: Calling save_theme with path to the same image, but the path written slightly different
         file_path_1 = RESOURCE_PATH / 'church.jpg'
-        theme_manager.save_theme(mocked_theme, file_path_1, file_path_1)
+        mocked_theme.background_filename = file_path_1
+        mocked_theme.background_source = file_path_1
+
+        # WHEN: Calling save_theme with both background paths to the same image
+        theme_manager.save_theme(mocked_theme)
 
         # THEN: The mocked_copyfile should not have been called
         assert mocked_shutil.copyfile.called is False, 'copyfile should not be called'
@@ -111,22 +114,23 @@ class TestThemeManager(TestCase):
         Test that we do overwrite a theme background image when a new is submitted
         """
         # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
-        #        theme, create_paths and thememanager-attributes.
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
+        theme_manager.old_background_image_path = None
         theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
-        mocked_theme.filename = "filename"
+        mocked_theme.background_filename = RESOURCE_PATH / 'church.jpg'
+        mocked_theme.background_source = RESOURCE_PATH / 'church2.jpg'
 
-        # WHEN: Calling save_theme with path to different images
-        file_path_1 = RESOURCE_PATH / 'church.jpg'
-        file_path_2 = RESOURCE_PATH / 'church2.jpg'
-        theme_manager.save_theme(mocked_theme, file_path_1, file_path_2)
+        # WHEN: Calling save_theme with both background paths to different images
+        theme_manager.save_theme(mocked_theme)
 
-        # THEN: The mocked_copyfile should not have been called
+        # THEN: The mocked_copyfile should have been called
         assert mocked_shutil.copyfile.called is True, 'copyfile should be called'
+
 
     def test_save_theme_special_char_name(self):
         """
@@ -134,7 +138,7 @@ class TestThemeManager(TestCase):
         """
         # GIVEN: A new theme manager instance, with mocked theme and thememanager-attributes.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
+        theme_manager.old_background_image_path = None
         theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = Path(self.temp_folder)
         mocked_theme = MagicMock()
