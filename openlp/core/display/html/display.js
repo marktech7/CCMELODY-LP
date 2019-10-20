@@ -921,8 +921,8 @@ var Display = {
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
     mainStyle["position"] = "absolute";
-    mainStyle["left"] = "" + theme.font_main_x + "px";
-    mainStyle["top"] = "" + theme.font_main_y + "px";
+    mainStyle["margin-left"] = "" + theme.font_main_x + "px";
+    mainStyle["margin-top"] = "" + theme.font_main_y + "px";
     mainStyle["width"] = "" + theme.font_main_width + "px";
     mainStyle["height"] = "" + theme.font_main_height + "px";
     mainStyle["font-family"] = theme.font_main_name;
@@ -937,13 +937,10 @@ var Display = {
     if (theme.display_horizontal_align === HorizontalAlign.Justify ||
         theme.display_horizontal_align === HorizontalAlign.Center) {
       mainStyle["text-align"] = "center";
-      mainStyle['align-items'] = "center";
     } else if (theme.display_horizontal_align === HorizontalAlign.Left) {
       mainStyle["text-align"] = "left";
-      mainStyle['align-items'] = "flex-start";
     } else if (theme.display_horizontal_align === HorizontalAlign.Right) {
       mainStyle["text-align"] = "right";
-      mainStyle['align-items'] = "flex-end";
     }
     if (theme.display_vertical_align === VerticalAlign.Middle) {
       mainStyle['justify-content'] = "center";
