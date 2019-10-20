@@ -920,6 +920,13 @@ var Display = {
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
+    if (theme.font_main_override) {
+      footerStyle["position"] = "absolute";
+      footerStyle["left"] = "" + theme.font_main_x + "px";
+      footerStyle["top"] = "" + theme.font_main_y + "px";
+      footerStyle["width"] = "" + theme.font_main_width + "px";
+      footerStyle["height"] = "" + theme.font_main_height + "px";
+    }
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
@@ -964,15 +971,14 @@ var Display = {
     footerStyle = {
       "text-align": "left"
     };
-    footerStyle["position"] = "absolute";
     if (theme.font_footer_override) {
+      footerStyle["position"] = "absolute";
       footerStyle["left"] = "" + theme.font_footer_x + "px";
       footerStyle["top"] = "" + theme.font_footer_y + "px";
       footerStyle["width"] = "" + theme.font_footer_width + "px";
       footerStyle["height"] = "" + theme.font_footer_height + "px";
     } else {
       footerStyle["margin"] = "0.5em";
-      footerStyle["bottom"] = "0";
     }
     footerStyle["font-family"] = theme.font_footer_name;
     footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
