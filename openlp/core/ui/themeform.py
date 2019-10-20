@@ -555,13 +555,11 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 translate('OpenLP.ThemeWizard', 'Theme Name Invalid'),
                 translate('OpenLP.ThemeWizard', 'Invalid theme name. Please enter one.'))
             return
-        source_path = None
         destination_path = None
         if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or \
            self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
             file_name = self.theme.background_filename.name
             destination_path = self.path / self.theme.theme_name / file_name
-            source_path = self.theme.background_filename
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
         # Set the theme background to the cache location
