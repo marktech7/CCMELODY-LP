@@ -474,13 +474,19 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         new_themes = []
         for theme_path in theme_paths:
             theme_path = self.theme_path / theme_path
-            new_themes.append(self.unzip_theme(theme_path, self.theme_path))
+            theme_name = self.unzip_theme(theme_path, self.theme_path)
+            new_themes.append(theme_name)
             delete_file(theme_path)
+            # Now set the theme size to the default screen
+            theme_data = self.get_theme_data(theme_name)
+            theme_data.set_default_header_footer()
+            self.save_theme(theme_data)
         theme_paths = AppLocation.get_files(self.settings_section, '.png')
         # No themes have been found so create one
         if not theme_paths:
             theme = Theme()
             theme.theme_name = UiStrings().Default
+            theme.set_default_header_footer()
             self.save_theme(theme)
             Settings().setValue(self.settings_section + '/global theme', theme.theme_name)
             new_themes = [theme.theme_name]
