@@ -131,6 +131,29 @@ class TestThemeManager(TestCase):
         # THEN: The mocked_copyfile should have been called
         assert mocked_shutil.copyfile.called is True, 'copyfile should be called'
 
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_delete_old_image(self, mocked_create_paths, mocked_delete_file):
+        """
+        Test that we do overwrite a theme background image when a new is submitted
+        """
+        # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = RESOURCE_PATH / 'old_church.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = RESOURCE_PATH / 'church.jpg'
+        mocked_theme.background_source = RESOURCE_PATH / 'church2.jpg'
+
+        # WHEN: Calling save_theme with both background paths to different images
+        theme_manager.save_theme(mocked_theme)
+
+        # THEN: The mocked_delete_file should have been called to delete the old cached background
+        assert mocked_delete_file.called is True, 'copyfile should be called'
 
     def test_save_theme_special_char_name(self):
         """
