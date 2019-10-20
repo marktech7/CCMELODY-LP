@@ -471,11 +471,9 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         """
         self.application.set_busy_cursor()
         theme_paths = AppLocation.get_files(self.settings_section, '.otz')
-        new_themes = []
         for theme_path in theme_paths:
             theme_path = self.theme_path / theme_path
             theme_name = self.unzip_theme(theme_path, self.theme_path)
-            new_themes.append(theme_name)
             delete_file(theme_path)
             # Now set the theme size to the default screen
             theme_data = self.get_theme_data(theme_name)
@@ -489,8 +487,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme.set_default_header_footer()
             self.save_theme(theme)
             Settings().setValue(self.settings_section + '/global theme', theme.theme_name)
-            new_themes = [theme.theme_name]
-        self.update_preview_images(new_themes)
         self.application.set_normal_cursor()
 
     def load_themes(self):
