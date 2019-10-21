@@ -668,6 +668,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             if theme.background_source != theme.background_filename:
                 try:
                     shutil.copyfile(theme.background_source, theme.background_filename)
+                except FileNotFoundError:
+                    if self.old_background_image_path:
+                        # Keep old background if one existed
+                        theme.background_filename = self.old_background_image_path
+                        self.log_debug('Specified background does not exist, retaining cached background')
+                    else:
+                        self.log_exception('Failed to save theme image, file does not exist')
                 except OSError:
                     self.log_exception('Failed to save theme image')
         if image:
