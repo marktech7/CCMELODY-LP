@@ -937,7 +937,8 @@ var Display = {
     if (theme.display_horizontal_align === HorizontalAlign.Justify ||
         theme.display_horizontal_align === HorizontalAlign.Center) {
       mainStyle["text-align"] = "center";
-    } else if (theme.display_horizontal_align === HorizontalAlign.Left) {
+    }
+    else if (theme.display_horizontal_align === HorizontalAlign.Left) {
       mainStyle["text-align"] = "left";
     } else if (theme.display_horizontal_align === HorizontalAlign.Right) {
       mainStyle["text-align"] = "right";
