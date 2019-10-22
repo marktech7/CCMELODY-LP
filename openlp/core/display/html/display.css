@@ -36,10 +36,6 @@ sup {
   margin: 0;
 }
 
-.reveal > .backgrounds > .present {
-  visibility: hidden !important;
-}
-
 #global-background {
   background-size: cover;
   background-position: 50% 50%;

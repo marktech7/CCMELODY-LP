@@ -328,6 +328,7 @@ var Display = {
   _alertState: AlertState.NotDisplaying,
   _transitionState: TransitionState.NoTransition,
   _animationState: AnimationState.NoAnimation,
+  _showing_theme: false,
   _revealConfig: {
     margin: 0.0,
     minScale: 1.0,
@@ -399,6 +400,7 @@ var Display = {
    */
   setStartupSplashScreen: function(bg_color, image) {
     Display.clearSlides();
+    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -413,7 +415,6 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
-    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -423,6 +424,7 @@ var Display = {
    */
   setFullscreenImage: function(bg_color, image) {
     Display.clearSlides();
+    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -437,7 +439,6 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
-    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -447,6 +448,7 @@ var Display = {
    */
   setFullscreenImageFromData: function(bg_color, image_data) {
     Display.clearSlides();
+    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -461,7 +463,6 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
-    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -633,9 +634,11 @@ var Display = {
       }
     }
     if ((arguments.length > 3) && (arguments[3] === true)) {
+      this.showTheme();
       this.reinit();
     }
     else if (arguments.length == 3) {
+      this.showTheme();
       this.reinit();
     }
   },
@@ -648,6 +651,7 @@ var Display = {
     slides.forEach(function (slide) {
       Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
+    Display.showTheme();
     Display.reinit();
     Display.goToSlide(0);
   },
@@ -657,6 +661,7 @@ var Display = {
    */
   setImageSlides: function (slides) {
     Display.clearSlides();
+    this.hideTheme();
     var slidesDiv = $(".slides")[0];
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
@@ -670,7 +675,6 @@ var Display = {
       slidesDiv.appendChild(section);
       Display._slides[index.toString()] = index;
     });
-    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -679,6 +683,7 @@ var Display = {
    */
   setVideo: function (video) {
     this.clearSlides();
+    this.hideTheme();
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
@@ -708,7 +713,6 @@ var Display = {
     });
     section.appendChild(videoElement);
     $(".slides")[0].appendChild(section);
-    this.setFullDisplay();
     this.reinit();
   },
   /**
@@ -864,20 +868,38 @@ var Display = {
     var dh = parseFloat(_getStyle(d, "height"));
     return Math.floor(dh / lh);
   },
+  setTheme: function (theme) {
+    this.hideTheme();
+    this._theme = theme;
+  },
   /**
    * Clear theme formatting:
    *   Removes all inline styles set by the theme on the main content,
    *   hides the footer then lets react scale to the screen size.
+   *   This method does leave the global background as is
    */
-  setFullDisplay: function () {
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.setAttribute("style", "");
-    var footerDiv = $(".footer")[0];
-    footerDiv.style.display = "none";
-    this.resetDisplaySize();
+  hideTheme: function () {
+      console.warn("Attempt to hide theme when showing theme is: " + this._showing_theme);
+    if (this._showing_theme) {
+      var footerDiv = $(".footer")[0];
+      var slidesDiv = $(".slides")[0];
+      footerDiv.style.display = "none";
+      slidesDiv.setAttribute("style", "");
+      this.resetDisplaySize();
+      this._showing_theme = false;
+    }
   },
-  setTheme: function (theme) {
-    this._theme = theme;
+  showTheme: function () {
+      console.warn("Attempt to show theme when showing theme is: " + this._showing_theme);
+    if (this._showing_theme) {
+      return;
+    }
+    var theme = this._theme;
+    if (!theme) {
+      console.warn("Tried to show theme when no theme has been set");
+      return;
+    }
+    this._showing_theme = true;
     // Set the background
     var globalBackground = $("#global-background")[0];
     var backgroundStyle = {};
