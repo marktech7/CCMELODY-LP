@@ -485,7 +485,7 @@ var Display = {
     _createStyle("#alert-background.settings", {
       backgroundColor: settings["backgroundColor"],
       fontFamily: "'" + settings["fontFace"] + "'",
-      fontSize: settings["fontSize"].toString() + "px",
+      fontSize: settings["fontSize"].toString() + "pt",
       color: settings["fontColor"]
     });
     alertBackground.classList.add("settings");
@@ -838,7 +838,7 @@ var Display = {
   },
   /**
    * Figure out how many lines can fit on a slide given the font size
-   * @param fontSize The font size in pxs
+   * @param fontSize The font size in pts
    */
   calculateLineCount: function (fontSize) {
     var p = $(".slides > section > p");
@@ -847,7 +847,7 @@ var Display = {
       p = $(".slides > section > p");
     }
     p = p[0];
-    p.style.fontSize = "" + fontSize + "px";
+    p.style.fontSize = "" + fontSize + "pt";
     var d = $(".slides")[0];
     var lh = parseFloat(_getStyle(p, "line-height"));
     var dh = parseFloat(_getStyle(d, "height"));
@@ -924,18 +924,17 @@ var Display = {
       "padding": "0"*/
     };
     if (!!theme.font_main_outline) {
-      mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "px " +
+      mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "pt " +
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
+    // This is only approximate as the font is in pt but we measure everything else in px
     var font_outline_padding = !!theme.font_main_outline ? (theme.font_main_outline_size * 2) : 0;
-    var main_bottom_padding = theme.display_vertical_align === VerticalAlign.Bottom ? (theme.font_main_size / 2) : 0;
-    this.setDisplaySize(theme.font_main_width - (font_outline_padding * 2),
-                        theme.font_main_height - (font_outline_padding * 2) - main_bottom_padding);
-    mainStyle["margin-top"] = "" + (theme.font_main_y + font_outline_padding) + "px";
+    this.setDisplaySize(theme.font_main_width - (font_outline_padding * 2), theme.font_main_height);
+    mainStyle["margin-top"] = "" + theme.font_main_y + "px";
     mainStyle["margin-left"] = "" + (theme.font_main_x + font_outline_padding) + "px";
     mainStyle["font-family"] = theme.font_main_name;
-    mainStyle["font-size"] = "" + theme.font_main_size + "px";
+    mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
     mainStyle["color"] = theme.font_main_color;
@@ -963,8 +962,8 @@ var Display = {
       mainStyle['justify-content'] = "flex-end";
     }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
-      mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "px " +
-                                 theme.font_main_shadow_size + "px";
+      mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
+                                 theme.font_main_shadow_size + "pt";
     }
     var slidesDiv = $(".slides")[0];
     slidesDiv.style.cssText = "";
@@ -983,7 +982,7 @@ var Display = {
     footerStyle["width"] = "" + theme.font_footer_width + "px";
     footerStyle["height"] = "" + theme.font_footer_height + "px";
     footerStyle["font-family"] = theme.font_footer_name;
-    footerStyle["font-size"] = "" + theme.font_footer_size + "px";
+    footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
     footerStyle["color"] = theme.font_footer_color;
     footerStyle["white-space"] = theme.font_footer_wrap ? "normal" : "nowrap";
     var footer = $(".footer")[0];
