@@ -934,8 +934,9 @@ var Display = {
     if (theme.display_horizontal_align != HorizontalAlign.Justify) {
       mainStyle["white-space"] = "pre-wrap";
     }
-    if (theme.display_horizontal_align === HorizontalAlign.Justify ||
-        theme.display_horizontal_align === HorizontalAlign.Center) {
+    if (theme.display_horizontal_align === HorizontalAlign.Justify) {
+      mainStyle["text-align"] = "justify";
+    } else if (theme.display_horizontal_align === HorizontalAlign.Center) {
       mainStyle["text-align"] = "center";
     } else if (theme.display_horizontal_align === HorizontalAlign.Left) {
       mainStyle["text-align"] = "left";
