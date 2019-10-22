@@ -372,6 +372,12 @@ var Display = {
     Reveal.configure({"width": mainWidth, "height": mainHeight});
   },
   /**
+   * Set the main display to fill the screen
+   */
+  resetDisplaySize: function () {
+    Reveal.configure({"width": "100%", "height": "100%"});
+  },
+  /**
    * Clear the current list of slides
   */
   clearSlides: function () {
@@ -407,6 +413,7 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
+    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -430,6 +437,7 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
+    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -453,6 +461,7 @@ var Display = {
     section.appendChild(img);
     slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
+    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -661,6 +670,7 @@ var Display = {
       slidesDiv.appendChild(section);
       Display._slides[index.toString()] = index;
     });
+    this.setFullDisplay();
     Display.reinit();
   },
   /**
@@ -698,6 +708,7 @@ var Display = {
     });
     section.appendChild(videoElement);
     $(".slides")[0].appendChild(section);
+    this.setFullDisplay();
     this.reinit();
   },
   /**
@@ -852,6 +863,18 @@ var Display = {
     var lh = parseFloat(_getStyle(p, "line-height"));
     var dh = parseFloat(_getStyle(d, "height"));
     return Math.floor(dh / lh);
+  },
+  /**
+   * Clear theme formatting:
+   *   Removes all inline styles set by the theme on the main content,
+   *   hides the footer then lets react scale to the screen size.
+   */
+  setFullDisplay: function () {
+    var slidesDiv = $(".slides")[0];
+    slidesDiv.setAttribute("style", "");
+    var footerDiv = $(".footer")[0];
+    footerDiv.style.display = "none";
+    this.resetDisplaySize();
   },
   setTheme: function (theme) {
     this._theme = theme;
