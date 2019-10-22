@@ -936,18 +936,23 @@ var Display = {
     }
     if (theme.display_horizontal_align === HorizontalAlign.Justify) {
       mainStyle["text-align"] = "justify";
-    } else if (theme.display_horizontal_align === HorizontalAlign.Center) {
+    }
+    else if (theme.display_horizontal_align === HorizontalAlign.Center) {
       mainStyle["text-align"] = "center";
-    } else if (theme.display_horizontal_align === HorizontalAlign.Left) {
+    }
+    else if (theme.display_horizontal_align === HorizontalAlign.Left) {
       mainStyle["text-align"] = "left";
-    } else if (theme.display_horizontal_align === HorizontalAlign.Right) {
+    }
+    else if (theme.display_horizontal_align === HorizontalAlign.Right) {
       mainStyle["text-align"] = "right";
     }
     if (theme.display_vertical_align === VerticalAlign.Middle) {
       mainStyle['justify-content'] = "center";
-    } else if (theme.display_vertical_align === VerticalAlign.Top) {
+    }
+    else if (theme.display_vertical_align === VerticalAlign.Top) {
       mainStyle['justify-content'] = "flex-start";
-    } else if (theme.display_vertical_align === VerticalAlign.Bottom) {
+    }
+    else if (theme.display_vertical_align === VerticalAlign.Bottom) {
       mainStyle['justify-content'] = "flex-end";
     }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
