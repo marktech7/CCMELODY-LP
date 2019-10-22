@@ -25,7 +25,6 @@ sup {
 .reveal .slides {
   display: flex;
   flex-direction: column;
-  margin: 0;
 }
 
 .reveal .slides > section,
