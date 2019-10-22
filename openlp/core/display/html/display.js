@@ -364,6 +364,14 @@ var Display = {
     Reveal.configure({"transition": transitionType});
   },
   /**
+   * Set the main display size
+   * @param {int} mainWidth - New main display width
+   * @param {int} mainHeight - New main display height
+   */
+  setDisplaySize: function (mainWidth, mainHeight) {
+    Reveal.configure({"width": mainWidth, "height": mainHeight});
+  },
+  /**
    * Clear the current list of slides
   */
   clearSlides: function () {
@@ -920,31 +928,30 @@ var Display = {
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
-    mainStyle["position"] = "absolute";
-    mainStyle["margin-left"] = "" + theme.font_main_x + "px";
-    mainStyle["margin-top"] = "" + theme.font_main_y + "px";
-    mainStyle["width"] = "" + theme.font_main_width + "px";
-    mainStyle["height"] = "" + theme.font_main_height + "px";
+    var font_outline_padding = !!theme.font_main_outline ? (theme.font_main_outline_size * 2) : 0;
+    var main_bottom_padding = theme.display_vertical_align === VerticalAlign.Bottom ? (theme.font_main_size / 2) : 0;
+    this.setDisplaySize(theme.font_main_width - (font_outline_padding * 2),
+                        theme.font_main_height - (font_outline_padding * 2) - main_bottom_padding);
+    mainStyle["margin-top"] = "" + (theme.font_main_y + font_outline_padding) + "px";
+    mainStyle["margin-left"] = "" + (theme.font_main_x + font_outline_padding) + "px";
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
     mainStyle["color"] = theme.font_main_color;
     mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
-    if (theme.display_horizontal_align != HorizontalAlign.Justify) {
-      mainStyle["white-space"] = "pre-wrap";
-    }
+    // Using text-align-last because there is a <br> seperating each line
     if (theme.display_horizontal_align === HorizontalAlign.Justify) {
-      mainStyle["text-align"] = "justify";
+      mainStyle["text-align-last"] = "justify";
     }
     else if (theme.display_horizontal_align === HorizontalAlign.Center) {
-      mainStyle["text-align"] = "center";
+      mainStyle["text-align-last"] = "center";
     }
     else if (theme.display_horizontal_align === HorizontalAlign.Left) {
-      mainStyle["text-align"] = "left";
+      mainStyle["text-align-last"] = "left";
     }
     else if (theme.display_horizontal_align === HorizontalAlign.Right) {
-      mainStyle["text-align"] = "right";
+      mainStyle["text-align-last"] = "right";
     }
     if (theme.display_vertical_align === VerticalAlign.Middle) {
       mainStyle['justify-content'] = "center";
@@ -959,8 +966,6 @@ var Display = {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "px " +
                                  theme.font_main_shadow_size + "px";
     }
-    mainStyle["padding-bottom"] = theme.display_vertical_align == VerticalAlign.Bottom ? "0.5em" : "0";
-    mainStyle["padding-left"] = !!theme.font_main_outline ? "" + (theme.font_main_outline_size * 2) + "pt" : "0";
     var slidesDiv = $(".slides")[0];
     slidesDiv.style.cssText = "";
     for (var key in mainStyle) {
