@@ -951,11 +951,9 @@ var Display = {
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
-    // This is only approximate as the font is in pt but we measure everything else in px
-    var font_outline_padding = !!theme.font_main_outline ? (theme.font_main_outline_size * 2) : 0;
-    this.setDisplaySize(theme.font_main_width - (font_outline_padding * 2), theme.font_main_height);
+    this.setDisplaySize(theme.font_main_width, theme.font_main_height);
     mainStyle["margin-top"] = "" + theme.font_main_y + "px";
-    mainStyle["margin-left"] = "" + (theme.font_main_x + font_outline_padding) + "px";
+    mainStyle["margin-left"] = "" + theme.font_main_x + "px";
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
