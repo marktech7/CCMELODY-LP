@@ -485,7 +485,7 @@ var Display = {
     _createStyle("#alert-background.settings", {
       backgroundColor: settings["backgroundColor"],
       fontFamily: "'" + settings["fontFace"] + "'",
-      fontSize: settings["fontSize"].toString() + "pt",
+      fontSize: settings["fontSize"].toString() + "px",
       color: settings["fontColor"]
     });
     alertBackground.classList.add("settings");
@@ -838,7 +838,7 @@ var Display = {
   },
   /**
    * Figure out how many lines can fit on a slide given the font size
-   * @param fontSize The font size in pts
+   * @param fontSize The font size in pxs
    */
   calculateLineCount: function (fontSize) {
     var p = $(".slides > section > p");
@@ -847,7 +847,7 @@ var Display = {
       p = $(".slides > section > p");
     }
     p = p[0];
-    p.style.fontSize = "" + fontSize + "pt";
+    p.style.fontSize = "" + fontSize + "px";
     var d = $(".slides")[0];
     var lh = parseFloat(_getStyle(p, "line-height"));
     var dh = parseFloat(_getStyle(d, "height"));
@@ -924,7 +924,7 @@ var Display = {
       "padding": "0"*/
     };
     if (!!theme.font_main_outline) {
-      mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "pt " +
+      mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "px " +
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
@@ -935,7 +935,7 @@ var Display = {
     mainStyle["margin-top"] = "" + (theme.font_main_y + font_outline_padding) + "px";
     mainStyle["margin-left"] = "" + (theme.font_main_x + font_outline_padding) + "px";
     mainStyle["font-family"] = theme.font_main_name;
-    mainStyle["font-size"] = "" + theme.font_main_size + "pt";
+    mainStyle["font-size"] = "" + theme.font_main_size + "px";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
     mainStyle["color"] = theme.font_main_color;
@@ -983,7 +983,7 @@ var Display = {
     footerStyle["width"] = "" + theme.font_footer_width + "px";
     footerStyle["height"] = "" + theme.font_footer_height + "px";
     footerStyle["font-family"] = theme.font_footer_name;
-    footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
+    footerStyle["font-size"] = "" + theme.font_footer_size + "px";
     footerStyle["color"] = theme.font_footer_color;
     footerStyle["white-space"] = theme.font_footer_wrap ? "normal" : "nowrap";
     var footer = $(".footer")[0];

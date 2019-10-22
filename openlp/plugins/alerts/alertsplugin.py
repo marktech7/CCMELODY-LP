@@ -74,7 +74,7 @@ JAVASCRIPT = """
 
     function update_css(align, font, size, color, bgcolor){
         var text = document.getElementById('alert');
-        text.style.fontSize = size + "pt";
+        text.style.fontSize = size + "px";
         text.style.fontFamily = font;
         text.style.color = color;
         text.style.backgroundColor = bgcolor;
@@ -103,7 +103,7 @@ CSS = """
         width: 100%;
         vertical-align: {vertical_align};
         font-family: {font_family};
-        font-size: {font_size:d}pt;
+        font-size: {font_size:d}px;
         color: {color};
         background-color: {background_color};
         word-wrap: break-word;
