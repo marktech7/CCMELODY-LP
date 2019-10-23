@@ -147,7 +147,7 @@ describe("The Display object", function () {
     Display._slides["v1"] = 0;
 
     Display.goToSlide("v1");
-    expect(Reveal.slide).toHaveBeenCalledWith(0);
+    expect(Reveal.slide).toHaveBeenCalledWith(0, 0);
   });
 
   it("should have an alert() method", function () {
@@ -458,8 +458,8 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, text, footer);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
     expect(Display.reinit).toHaveBeenCalled();
   });
 
@@ -472,8 +472,8 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, text, footer, false);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
     expect(Display.reinit).not.toHaveBeenCalled();
   });
 
@@ -484,12 +484,12 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, "Amazing grace,\nhow sweet the sound", footer, false);
     spyOn(Display, "reinit");
 
-    Display.addTextSlide(verse, text, true);
+    Display.addTextSlide(verse, text, footer, true);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
-    expect(Display.reinit).toHaveBeenCalled();
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect(Display.reinit).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -526,9 +526,9 @@ describe("Display.setTextSlides", function () {
     expect(Display.clearSlides).toHaveBeenCalledTimes(1);
     expect(Display._slides["v1"]).toEqual(0);
     expect(Display._slides["v2"]).toEqual(1);
-    expect($(".slides > section").length).toEqual(2);
+    expect($(".slides > section > section").length).toEqual(2);
     expect(Display.reinit).toHaveBeenCalledTimes(1);
-    expect(Reveal.slide).toHaveBeenCalledWith(0);
+    expect(Reveal.slide).toHaveBeenCalledWith(0, 0);
   });
 
   it("should correctly set outline width", function () {
@@ -552,7 +552,7 @@ describe("Display.setTextSlides", function () {
     Display.setTheme(theme);
     Display.setTextSlides(slides);
 
-    const slidesDiv = $(".slides")[0];
+    const slidesDiv = $(".text-slides")[0];
     expect(slidesDiv.style['-webkit-text-stroke']).toEqual('42pt red');
     expect(slidesDiv.style['-webkit-text-fill-color']).toEqual('yellow');
   })
@@ -578,7 +578,7 @@ describe("Display.setTextSlides", function () {
     Display.setTheme(theme);
     Display.setTextSlides(slides);
 
-    const slidesDiv = $(".slides")[0];
+    const slidesDiv = $(".text-slides")[0];
     expect(slidesDiv.style['text-align-last']).toEqual('justify');
     expect(slidesDiv.style['justify-content']).toEqual('center');
   })
@@ -600,16 +600,16 @@ describe("Display.setTextSlides", function () {
       'font_main_height': 4560
     };
     spyOn(Display, "reinit");
-    spyOn(Reveal, "configure");
     spyOn(Reveal, "slide");
 
     Display.setTheme(theme);
     Display.setTextSlides(slides);
 
-    const slidesDiv = $(".slides")[0];
-    expect(Reveal.configure).toHaveBeenCalledWith({'width' : 1230, 'height' : 4560});
-    expect(slidesDiv.style['margin-top']).toEqual('789px');
-    expect(slidesDiv.style['margin-left']).toEqual('1000px');
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['top']).toEqual('789px');
+    expect(slidesDiv.style['left']).toEqual('1000px');
+    expect(slidesDiv.style['width']).toEqual('1230px');
+    expect(slidesDiv.style['height']).toEqual('4560px');
   })
 });
 

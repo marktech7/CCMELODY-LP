@@ -365,20 +365,6 @@ var Display = {
     Reveal.configure({"transition": transitionType});
   },
   /**
-   * Set the main display size
-   * @param {int} mainWidth - New main display width
-   * @param {int} mainHeight - New main display height
-   */
-  setDisplaySize: function (mainWidth, mainHeight) {
-    Reveal.configure({"width": mainWidth, "height": mainHeight});
-  },
-  /**
-   * Set the main display to fill the screen
-   */
-  resetDisplaySize: function () {
-    Reveal.configure({"width": "100%", "height": "100%"});
-  },
-  /**
    * Clear the current list of slides
   */
   clearSlides: function () {
@@ -610,19 +596,27 @@ var Display = {
   },
   /**
    * Add a slide. If the slide exists but the HTML is different, update the slide.
+   * @param {HTMLElement} parent - The parent to add the slide onto
    * @param {string} verse - The verse number, e.g. "v1"
    * @param {string} text - The HTML for the verse, e.g. "line1<br>line2"
-   * @param {string} footer_text - The HTML for the footer"
+   * @param {string} footer_text - The HTML for the footer
+   * @param {bool} reinit - True if React should reinit when creating a new slide
    */
-  _addTextSlide: function (parent, verse, text, footerText) {
+  addTextSlide: function (verse, text, footerText, reinit=true) {
     var html = _prepareText(text);
     if (this._slides.hasOwnProperty(verse)) {
       var slide = $("#" + verse)[0];
       if (slide.innerHTML != html) {
         slide.innerHTML = html;
       }
-    }
-    else {
+    } else {
+      var parent = $(".text-slides");
+      if (parent.length === 0) {
+        this.clearSlides();
+        this._createTextContainer();
+        parent = $(".text-slides");
+      }
+      parent = parent[0];
       var slide = document.createElement("section");
       slide.setAttribute("id", verse);
       slide.innerHTML = html;
@@ -630,6 +624,9 @@ var Display = {
       this._slides[verse] = parent.children.length - 1;
       if (footerText) {
         $(".footer")[0].innerHTML = footerText;
+      }
+      if (reinit) {
+        this.reinit();
       }
     }
   },
@@ -639,19 +636,26 @@ var Display = {
    */
   setTextSlides: function (slides) {
     Display.clearSlides();
-    var slide_container = document.createElement("section");
-    slide_container.classList.add("text-slides");
+    this._createTextContainer();
     slides.forEach(function (slide) {
-      Display._addTextSlide(slide_container, slide.verse, slide.text, slide.footer);
+      Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.appendChild(slide_container);
     // If a theme exists, then apply it
     if (!!this._theme) {
       this.setTheme(this._theme);
     }
     Display.reinit();
     Display.goToSlide(0);
+  },
+  /**
+   * Set text slides.
+   * @param {Object[]} slides - A list of slides to add as JS objects: {"verse": "v1", "text": "line 1\nline2"}
+   */
+  _createTextContainer: function (slides) {
+    var slide_container = document.createElement("section");
+    slide_container.classList.add("text-slides");
+    var slidesDiv = $(".slides")[0];
+    slidesDiv.appendChild(slide_container);
   },
   /**
    * Set image slides
