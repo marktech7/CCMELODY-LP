@@ -375,7 +375,7 @@ var Display = {
    * Checks if the present slide content fits within the slide
   */
   doesContentFit: function () {
-    var currSlide = $(".text-slides");
+    var currSlide = $("section.text-slides");
     if (currSlide.length === 0) {
       currSlide = $(".slides");
     }
@@ -610,11 +610,10 @@ var Display = {
         slide.innerHTML = html;
       }
     } else {
-      var parent = $(".text-slides");
+      var parent = $("section.text-slides");
       if (parent.length === 0) {
-        this.clearSlides();
         this._createTextContainer();
-        parent = $(".text-slides");
+        parent = $("section.text-slides");
       }
       parent = parent[0];
       var slide = document.createElement("section");
@@ -640,10 +639,6 @@ var Display = {
     slides.forEach(function (slide) {
       Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
-    // If a theme exists, then apply it
-    if (!!this._theme) {
-      this.setTheme(this._theme);
-    }
     Display.reinit();
     Display.goToSlide(0);
   },
@@ -653,9 +648,13 @@ var Display = {
    */
   _createTextContainer: function (slides) {
     var slide_container = document.createElement("section");
-    slide_container.classList.add("text-slides");
+    slide_container.classList = "text-slides";
     var slidesDiv = $(".slides")[0];
     slidesDiv.appendChild(slide_container);
+    // Apply the current theme to the new container
+    if (!!this._theme) {
+      this.setTheme(this._theme);
+    }
   },
   /**
    * Set image slides
@@ -859,11 +858,11 @@ var Display = {
     var p = $(".slides > section > section > p");
     if (p.length == 0) {
       this.addSlide("v1", "Arky arky");
-      p = $(".slides > section > p");
+      p = $(".slides > section > section > p");
     }
     p = p[0];
     p.style.fontSize = "" + fontSize + "pt";
-    var d = $(".slides")[0];
+    var d = $(".slides > section")[0];
     var lh = parseFloat(_getStyle(p, "line-height"));
     var dh = parseFloat(_getStyle(d, "height"));
     return Math.floor(dh / lh);
@@ -984,7 +983,7 @@ var Display = {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
                                  theme.font_main_shadow_size + "pt";
     }
-    var slidesDiv = $(".text-slides");
+    var slidesDiv = $("section.text-slides");
     if (slidesDiv.length > 0) {
       slidesDiv = slidesDiv[0];
       slidesDiv.style.cssText = "";

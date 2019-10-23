@@ -28,7 +28,7 @@ sup {
   max-height: 100%;
 }
 
-.reveal .slides > .text-slides {
+.reveal .slides > section.text-slides {
   /* Need to override reveal styles to use our text aligment */
   display: flex !important;
   flex-direction: column;
