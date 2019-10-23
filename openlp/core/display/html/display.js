@@ -981,28 +981,35 @@ var Display = {
     mainStyle["color"] = theme.font_main_color;
     mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
     // Using text-align-last because there is a <br> seperating each line
-    if (theme.display_horizontal_align === HorizontalAlign.Justify) {
-      mainStyle["text-align-last"] = "justify";
+    switch (theme.display_horizontal_align) {
+      case HorizontalAlign.Justify:
+        mainStyle["text-align-last"] = "justify";
+        break;
+      case HorizontalAlign.Center:
+        mainStyle["text-align-last"] = "center";
+        break;
+      case HorizontalAlign.Left:
+        mainStyle["text-align-last"] = "left";
+        break;
+      case HorizontalAlign.Right:
+        mainStyle["text-align-last"] = "right";
+      default:
+        mainStyle["text-align-last"] = "center";
     }
-    else if (theme.display_horizontal_align === HorizontalAlign.Center) {
-      mainStyle["text-align-last"] = "center";
-    }
-    else if (theme.display_horizontal_align === HorizontalAlign.Left) {
-      mainStyle["text-align-last"] = "left";
-    }
-    else if (theme.display_horizontal_align === HorizontalAlign.Right) {
-      mainStyle["text-align-last"] = "right";
-    }
-    if (theme.display_vertical_align === VerticalAlign.Middle) {
-      mainStyle['justify-content'] = "center";
-    }
-    else if (theme.display_vertical_align === VerticalAlign.Top) {
-      mainStyle['justify-content'] = "flex-start";
-    }
-    else if (theme.display_vertical_align === VerticalAlign.Bottom) {
-      mainStyle['justify-content'] = "flex-end";
-      // This gets around the webkit scroll height bug
-      mainStyle['padding-bottom'] = "" + (theme.font_main_size / 8) + "px";
+    switch (theme.display_vertical_align) {
+      case VerticalAlign.Middle:
+        mainStyle["justify-content"] = "center";
+        break;
+      case VerticalAlign.Top:
+        mainStyle["justify-content"] = "flex-start";
+        break;
+      case VerticalAlign.Bottom:
+        mainStyle["justify-content"] = "flex-end";
+        // This gets around the webkit scroll height bug
+        mainStyle["padding-bottom"] = "" + (theme.font_main_size / 8) + "px";
+        break;
+      default:
+        mainStyle["justify-content"] = "center";
     }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
