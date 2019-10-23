@@ -193,12 +193,12 @@ class TestThemeManager(TestCase):
         assert mocked_log_exception.called is False, \
             'Should not have been an exception as the file wasn\'t changed'
 
-    @patch.object(ThemeManager, 'log_exception')
+    @patch.object(ThemeManager, 'log_warning')
     @patch('openlp.core.ui.thememanager.delete_file')
     @patch('openlp.core.ui.thememanager.create_paths')
-    def test_save_theme_missing_new(self, mocked_paths, mocked_delete, mocked_log_exception):
+    def test_save_theme_missing_new(self, mocked_paths, mocked_delete, mocked_log_warning):
         """
-        Test that we log a exception if the new background is missing
+        Test that we log a warning if the new background is missing
         """
         # GIVEN: A new theme manager instance, with invalid files. Setup as if the user
         # has changed the background to a invalid path.
@@ -216,8 +216,8 @@ class TestThemeManager(TestCase):
         # WHEN: Calling save_theme with a invalid background_filename
         theme_manager.save_theme(mocked_theme)
 
-        # THEN: A exception should have happened due to attempting to copy a missing file
-        mocked_log_exception.assert_called_once_with('Failed to save theme image, file does not exist')
+        # THEN: A warning should have happened due to attempting to copy a missing file
+        mocked_log_warning.assert_called_once_with('Background does not exist, retaining cached background')
 
     def test_save_theme_special_char_name(self):
         """
