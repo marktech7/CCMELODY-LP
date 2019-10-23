@@ -531,7 +531,7 @@ describe("Display.setTextSlides", function () {
     expect(Reveal.slide).toHaveBeenCalledWith(0);
   });
 
-  xit("should correctly set outline width (skipped for now)", function () {
+  it("should correctly set outline width", function () {
     const slides = [
       {
         "verse": "v1",
@@ -549,13 +549,38 @@ describe("Display.setTextSlides", function () {
     spyOn(Display, "reinit");
     spyOn(Reveal, "slide");
 
-    Display.setTextSlides(slides);
     Display.setTheme(theme);
+    Display.setTextSlides(slides);
 
     const slidesDiv = $(".slides")[0];
     expect(slidesDiv.style['-webkit-text-stroke']).toEqual('42pt red');
-    expect(slidesDiv.style['padding-left']).toEqual('84pt');
     expect(slidesDiv.style['-webkit-text-fill-color']).toEqual('yellow');
+  })
+
+  it("should correctly set text alignment,\
+      (check the order of alignments in the emuns are the same in both js and python)", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'display_horizontal_align': 3,
+      'display_vertical_align': 1
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".slides")[0];
+    expect(slidesDiv.style['text-align-last']).toEqual('justify');
+    expect(slidesDiv.style['justify-content']).toEqual('center');
   })
 });
 
