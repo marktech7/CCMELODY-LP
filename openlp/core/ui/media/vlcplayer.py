@@ -107,7 +107,7 @@ class VlcPlayer(MediaPlayer):
         if controller.is_live:
             controller.vlc_widget = QtWidgets.QFrame()
             controller.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool |
-                                                     QtCore.Qt.WindowStaysOnTopHint)
+                                                 QtCore.Qt.WindowStaysOnTopHint)
         else:
             controller.vlc_widget = QtWidgets.QFrame(display)
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
@@ -204,7 +204,7 @@ class VlcPlayer(MediaPlayer):
                 return False
         return True
 
-    def resize(self,  controller):
+    def resize(self, controller):
         """
         Resize the player
 
