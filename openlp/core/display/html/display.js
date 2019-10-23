@@ -85,7 +85,7 @@ var AlertLocation = {
 var AlertState = {
   Displaying: "displaying",
   NotDisplaying: "notDisplaying"
-}
+};
 
 /**
  * Alert delay enumeration
@@ -94,7 +94,7 @@ var AlertDelay = {
   FiftyMilliseconds: 50,
   OneSecond: 1000,
   OnePointFiveSeconds: 1500
-}
+};
 
 /**
  * Return an array of elements based on the selector query
@@ -180,12 +180,13 @@ function _fromCamelCase(text) {
  * @param {Object} rules - The rules to apply to the style
  */
 function _createStyle(selector, rules) {
+  var style;
   var id = selector.replace("#", "").replace(" .", "-").replace(".", "-").replace(" ", "_");
   if ($("style#" + id).length != 0) {
-    var style = $("style#" + id)[0];
+    style = $("style#" + id)[0];
   }
   else {
-    var style = document.createElement("style");
+    style = document.createElement("style");
     document.getElementsByTagName("head")[0].appendChild(style);
     style.type = "text/css";
     style.id = id;
@@ -479,10 +480,10 @@ var Display = {
     var alertText = $('#alert-text')[0];
     // create styles for the alerts from the settings
     _createStyle("#alert-background.settings", {
-      backgroundColor: settings["backgroundColor"],
-      fontFamily: "'" + settings["fontFace"] + "'",
-      fontSize: settings["fontSize"].toString() + "pt",
-      color: settings["fontColor"]
+      backgroundColor: settings.backgroundColor,
+      fontFamily: "'" + settings.fontFace + "'",
+      fontSize: settings.fontSize.toString() + "pt",
+      color: settings.fontColor
     });
     alertBackground.classList.add("settings");
     alertBackground.classList.replace("hide", "show");
@@ -601,9 +602,10 @@ var Display = {
    * @param {bool} reinit - True if React should reinit when creating a new slide
    */
   addTextSlide: function (verse, text, footerText, reinit=true) {
+    var slide;
     var html = _prepareText(text);
     if (Display._slides.hasOwnProperty(verse)) {
-      var slide = $("#" + verse)[0];
+      slide = $("#" + verse)[0];
       if (slide.innerHTML != html) {
         slide.innerHTML = html;
       }
@@ -614,7 +616,7 @@ var Display = {
         parent = $("section.text-slides");
       }
       parent = parent[0];
-      var slide = document.createElement("section");
+      slide = document.createElement("section");
       slide.setAttribute("id", verse);
       slide.innerHTML = html;
       parent.appendChild(slide);
@@ -633,7 +635,6 @@ var Display = {
    */
   setTextSlides: function (slides) {
     Display.clearSlides();
-    Display._createTextContainer();
     slides.forEach(function (slide) {
       Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
@@ -666,7 +667,7 @@ var Display = {
       section.setAttribute("data-background", "#000");
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
-      img.src = slide["path"];
+      img.src = slide.path;
       img.setAttribute("style", "max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);");
       section.appendChild(img);
       slidesDiv.appendChild(section);
@@ -683,7 +684,7 @@ var Display = {
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
-    videoElement.src = video["path"];
+    videoElement.src = video.path;
     videoElement.preload = "auto";
     videoElement.setAttribute("id", "video");
     videoElement.setAttribute("style", "height: 100%; width: 100%;");
@@ -872,39 +873,39 @@ var Display = {
     var backgroundHtml = "";
     switch (theme.background_type) {
       case BackgroundType.Transparent:
-        backgroundStyle["background"] = "transparent";
+        backgroundStyle.background = "transparent";
         break;
       case BackgroundType.Solid:
-        backgroundStyle["background"] = theme.background_color;
+        backgroundStyle.background = theme.background_color;
         break;
       case BackgroundType.Gradient:
         switch (theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundStyle["background"] = _buildLinearGradient("left top", "left bottom",
+            backgroundStyle.background = _buildLinearGradient("left top", "left bottom",
                                                                  theme.background_start_color,
                                                                  theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundStyle["background"] = _buildLinearGradient("left top", "right top",
+            backgroundStyle.background = _buildLinearGradient("left top", "right top",
                                                                  theme.background_start_color,
                                                                  theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundStyle["background"] = _buildLinearGradient("left top", "right bottom",
+            backgroundStyle.background = _buildLinearGradient("left top", "right bottom",
                                                                  theme.background_start_color,
                                                                  theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundStyle["background"] = _buildLinearGradient("left bottom", "right top",
+            backgroundStyle.background = _buildLinearGradient("left bottom", "right top",
                                                                  theme.background_start_color,
                                                                  theme.background_end_color);
             break;
           case GradientType.Circular:
-            backgroundStyle["background"] = _buildRadialGradient(window.innerWidth / 2, theme.background_start_color,
+            backgroundStyle.background = _buildRadialGradient(window.innerWidth / 2, theme.background_start_color,
                                                                  theme.background_end_color);
             break;
           default:
-            backgroundStyle["background"] = "#000";
+            backgroundStyle.background = "#000";
         }
         break;
       case BackgroundType.Image:
@@ -917,12 +918,12 @@ var Display = {
         console.warn(backgroundHtml);
         break;
       default:
-        backgroundStyle["background"] = "#000";
+        backgroundStyle.background = "#000";
     }
     globalBackground.style.cssText = "";
-    for (var key in backgroundStyle) {
-      if (backgroundStyle.hasOwnProperty(key)) {
-        globalBackground.style.setProperty(key, backgroundStyle[key]);
+    for (var bgKey in backgroundStyle) {
+      if (backgroundStyle.hasOwnProperty(bgKey)) {
+        globalBackground.style.setProperty(bgKey, backgroundStyle[bgKey]);
       }
     }
     if (!!backgroundHtml) {
@@ -936,15 +937,15 @@ var Display = {
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
     // These need to be fixed, in the Python they use a width passed in as a parameter
-    mainStyle["width"] = theme.font_main_width + "px";
-    mainStyle["height"] = theme.font_main_height + "px";
-    mainStyle["top"] = "" + theme.font_main_y + "px";
-    mainStyle["left"] = "" + theme.font_main_x + "px";
+    mainStyle.width = theme.font_main_width + "px";
+    mainStyle.height = theme.font_main_height + "px";
+    mainStyle.top = "" + theme.font_main_y + "px";
+    mainStyle.left = "" + theme.font_main_x + "px";
+    mainStyle.color = theme.font_main_color;
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
-    mainStyle["color"] = theme.font_main_color;
     mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
     // Using text-align-last because there is a <br> seperating each line
     switch (theme.display_horizontal_align) {
@@ -986,9 +987,9 @@ var Display = {
     if (slidesDiv.length > 0) {
       slidesDiv = slidesDiv[0];
       slidesDiv.style.cssText = "";
-      for (var key in mainStyle) {
-        if (mainStyle.hasOwnProperty(key)) {
-          slidesDiv.style.setProperty(key, mainStyle[key]);
+      for (var mainKey in mainStyle) {
+        if (mainStyle.hasOwnProperty(mainKey)) {
+          slidesDiv.style.setProperty(mainKey, mainStyle[mainKey]);
         }
       }
     }
@@ -996,20 +997,20 @@ var Display = {
     footerStyle = {
       "text-align": "left"
     };
-    footerStyle["position"] = "absolute";
-    footerStyle["left"] = "" + theme.font_footer_x + "px";
-    footerStyle["top"] = "" + theme.font_footer_y + "px";
-    footerStyle["width"] = "" + theme.font_footer_width + "px";
-    footerStyle["height"] = "" + theme.font_footer_height + "px";
+    footerStyle.position = "absolute";
+    footerStyle.left = "" + theme.font_footer_x + "px";
+    footerStyle.top = "" + theme.font_footer_y + "px";
+    footerStyle.width = "" + theme.font_footer_width + "px";
+    footerStyle.height = "" + theme.font_footer_height + "px";
+    footerStyle.color = theme.font_footer_color;
     footerStyle["font-family"] = theme.font_footer_name;
     footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
-    footerStyle["color"] = theme.font_footer_color;
     footerStyle["white-space"] = theme.font_footer_wrap ? "normal" : "nowrap";
     var footer = $(".footer")[0];
     footer.style.cssText = "";
-    for (var key in footerStyle) {
-      if (footerStyle.hasOwnProperty(key)) {
-        footer.style.setProperty(key, footerStyle[key]);
+    for (var footerKey in footerStyle) {
+      if (footerStyle.hasOwnProperty(footerKey)) {
+        footer.style.setProperty(footerKey, footerStyle[footerKey]);
       }
     }
   },

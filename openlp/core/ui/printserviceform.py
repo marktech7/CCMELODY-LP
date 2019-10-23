@@ -197,7 +197,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         if self.footer_text_edit.toPlainText():
             div = self._add_element('div', parent=html_data.body, class_id='customNotes')
             self._add_element(
-                'span', translate('OpenLP.ServiceManager', 'Custom Service Notes: '), div, class_id='customNotesTitle')
+                'span', translate('OpenLP.ServiceManager', 'Service Notes: '), div, class_id='customNotesTitle')
             self._add_element('span', html.escape(self.footer_text_edit.toPlainText()), div, class_id='customNotesText')
         self.document.setHtml(lxml.html.tostring(html_data).decode())
         self.preview_widget.updatePreview()
