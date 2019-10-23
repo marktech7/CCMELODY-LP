@@ -203,8 +203,8 @@ class Theme(object):
         Set the header and footer size into the current primary screen.
         10 px on each side is removed to allow for a border.
         """
-        this.set_default_header()
-        this.set_default_footer()
+        self.set_default_header()
+        self.set_default_footer()
 
     def set_default_header(self):
         current_screen_geometry = ScreenList().current.display_geometry
