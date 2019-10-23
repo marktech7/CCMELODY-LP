@@ -389,7 +389,11 @@ var Display = {
    * Checks if the present slide content fits within the slide
   */
   doesContentFit: function () {
-    var currSlide = $(".slides")[0];
+    var currSlide = $(".text-slides");
+    if (currSlide.length === 0) {
+      currSlide = $(".slides");
+    }
+    currSlide = currSlide[0];
     console.debug("scrollHeight: " + currSlide.scrollHeight + ", clientHeight: " + currSlide.clientHeight);
     return currSlide.clientHeight >= currSlide.scrollHeight;
   },
@@ -400,7 +404,6 @@ var Display = {
    */
   setStartupSplashScreen: function(bg_color, image) {
     Display.clearSlides();
-    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -424,7 +427,6 @@ var Display = {
    */
   setFullscreenImage: function(bg_color, image) {
     Display.clearSlides();
-    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -448,7 +450,6 @@ var Display = {
    */
   setFullscreenImageFromData: function(bg_color, image_data) {
     Display.clearSlides();
-    this.hideTheme();
     var globalBackground = $("#global-background")[0];
     globalBackground.style.cssText = "";
     globalBackground.style.setProperty("background", bg_color);
@@ -613,7 +614,7 @@ var Display = {
    * @param {string} text - The HTML for the verse, e.g. "line1<br>line2"
    * @param {string} footer_text - The HTML for the footer"
    */
-  addTextSlide: function (verse, text, footerText) {
+  _addTextSlide: function (parent, verse, text, footerText) {
     var html = _prepareText(text);
     if (this._slides.hasOwnProperty(verse)) {
       var slide = $("#" + verse)[0];
@@ -622,24 +623,14 @@ var Display = {
       }
     }
     else {
-      var slidesDiv = $(".slides")[0];
       var slide = document.createElement("section");
       slide.setAttribute("id", verse);
       slide.innerHTML = html;
-      slidesDiv.appendChild(slide);
-      var slides = $(".slides > section");
-      this._slides[verse] = slides.length - 1;
+      parent.appendChild(slide);
+      this._slides[verse] = parent.children.length - 1;
       if (footerText) {
         $(".footer")[0].innerHTML = footerText;
       }
-    }
-    if ((arguments.length > 3) && (arguments[3] === true)) {
-      this.showTheme();
-      this.reinit();
-    }
-    else if (arguments.length == 3) {
-      this.showTheme();
-      this.reinit();
     }
   },
   /**
@@ -648,10 +639,17 @@ var Display = {
    */
   setTextSlides: function (slides) {
     Display.clearSlides();
+    var slide_container = document.createElement("section");
+    slide_container.classList.add("text-slides");
     slides.forEach(function (slide) {
-      Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
+      Display._addTextSlide(slide_container, slide.verse, slide.text, slide.footer);
     });
-    Display.showTheme();
+    var slidesDiv = $(".slides")[0];
+    slidesDiv.appendChild(slide_container);
+    // If a theme exists, then apply it
+    if (!!this._theme) {
+      this.setTheme(this._theme);
+    }
     Display.reinit();
     Display.goToSlide(0);
   },
@@ -661,7 +659,6 @@ var Display = {
    */
   setImageSlides: function (slides) {
     Display.clearSlides();
-    this.hideTheme();
     var slidesDiv = $(".slides")[0];
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
@@ -683,7 +680,6 @@ var Display = {
    */
   setVideo: function (video) {
     this.clearSlides();
-    this.hideTheme();
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
@@ -804,20 +800,20 @@ var Display = {
    */
   goToSlide: function (slide) {
     if (this._slides.hasOwnProperty(slide)) {
-      Reveal.slide(this._slides[slide]);
+      Reveal.slide(0, this._slides[slide]);
     }
     else {
-      Reveal.slide(slide);
+      Reveal.slide(0, slide);
     }
   },
   /**
    * Go to the next slide in the list
   */
-  next: Reveal.next,
+  next: Reveal.nextFragment,
   /**
    * Go to the previous slide in the list
   */
-  prev: Reveal.prev,
+  prev: Reveal.prevFragment,
   /**
    * Blank the screen
   */
@@ -856,7 +852,7 @@ var Display = {
    * @param fontSize The font size in pts
    */
   calculateLineCount: function (fontSize) {
-    var p = $(".slides > section > p");
+    var p = $(".slides > section > section > p");
     if (p.length == 0) {
       this.addSlide("v1", "Arky arky");
       p = $(".slides > section > p");
@@ -869,35 +865,7 @@ var Display = {
     return Math.floor(dh / lh);
   },
   setTheme: function (theme) {
-    this.hideTheme();
     this._theme = theme;
-  },
-  /**
-   * Clear theme formatting:
-   *   Removes all inline styles set by the theme on the main content,
-   *   hides the footer then lets react scale to the screen size.
-   *   This method does leave the global background as is
-   */
-  hideTheme: function () {
-    if (this._showing_theme) {
-      var footerDiv = $(".footer")[0];
-      var slidesDiv = $(".slides")[0];
-      footerDiv.style.display = "none";
-      slidesDiv.setAttribute("style", "");
-      this.resetDisplaySize();
-      this._showing_theme = false;
-    }
-  },
-  showTheme: function () {
-    if (this._showing_theme) {
-      return;
-    }
-    var theme = this._theme;
-    if (!theme) {
-      console.warn("Tried to show theme when no theme has been set");
-      return;
-    }
-    this._showing_theme = true;
     // Set the background
     var globalBackground = $("#global-background")[0];
     var backgroundStyle = {};
@@ -961,19 +929,16 @@ var Display = {
       globalBackground.innerHTML = backgroundHtml;
     }
     // set up the main area
-    mainStyle = {
-      "word-wrap": "break-word",
-      /*"margin": "0",
-      "padding": "0"*/
-    };
+    mainStyle = {};
     if (!!theme.font_main_outline) {
       mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "pt " +
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
-    this.setDisplaySize(theme.font_main_width, theme.font_main_height);
-    mainStyle["margin-top"] = "" + theme.font_main_y + "px";
-    mainStyle["margin-left"] = "" + theme.font_main_x + "px";
+    mainStyle["width"] = theme.font_main_width + "px";
+    mainStyle["height"] = theme.font_main_height + "px";
+    mainStyle["top"] = "" + theme.font_main_y + "px";
+    mainStyle["left"] = "" + theme.font_main_x + "px";
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
@@ -1015,11 +980,14 @@ var Display = {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
                                  theme.font_main_shadow_size + "pt";
     }
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.style.cssText = "";
-    for (var key in mainStyle) {
-      if (mainStyle.hasOwnProperty(key)) {
-        slidesDiv.style.setProperty(key, mainStyle[key]);
+    var slidesDiv = $(".text-slides");
+    if (slidesDiv.length > 0) {
+      slidesDiv = slidesDiv[0];
+      slidesDiv.style.cssText = "";
+      for (var key in mainStyle) {
+        if (mainStyle.hasOwnProperty(key)) {
+          slidesDiv.style.setProperty(key, mainStyle[key]);
+        }
       }
     }
     // Set up the footer
