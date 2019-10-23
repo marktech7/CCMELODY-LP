@@ -348,7 +348,7 @@ var Display = {
    * Start up reveal and do any other initialisation
    */
   init: function () {
-    Reveal.initialize(this._revealConfig);
+    Reveal.initialize(Display._revealConfig);
   },
   /**
    * Reinitialise Reveal
@@ -368,7 +368,7 @@ var Display = {
   */
   clearSlides: function () {
     $(".slides")[0].innerHTML = "";
-    this._slides = {};
+    Display._slides = {};
   },
   /**
    * Checks if the present slide content fits within the slide
@@ -602,7 +602,7 @@ var Display = {
    */
   addTextSlide: function (verse, text, footerText, reinit=true) {
     var html = _prepareText(text);
-    if (this._slides.hasOwnProperty(verse)) {
+    if (Display._slides.hasOwnProperty(verse)) {
       var slide = $("#" + verse)[0];
       if (slide.innerHTML != html) {
         slide.innerHTML = html;
@@ -610,7 +610,7 @@ var Display = {
     } else {
       var parent = $("section.text-slides");
       if (parent.length === 0) {
-        this._createTextContainer();
+        Display._createTextContainer();
         parent = $("section.text-slides");
       }
       parent = parent[0];
@@ -618,12 +618,12 @@ var Display = {
       slide.setAttribute("id", verse);
       slide.innerHTML = html;
       parent.appendChild(slide);
-      this._slides[verse] = parent.children.length - 1;
+      Display._slides[verse] = parent.children.length - 1;
       if (footerText) {
         $(".footer")[0].innerHTML = footerText;
       }
       if (reinit) {
-        this.reinit();
+        Display.reinit();
       }
     }
   },
@@ -633,7 +633,7 @@ var Display = {
    */
   setTextSlides: function (slides) {
     Display.clearSlides();
-    this._createTextContainer();
+    Display._createTextContainer();
     slides.forEach(function (slide) {
       Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
@@ -649,8 +649,8 @@ var Display = {
     var slidesDiv = $(".slides")[0];
     slidesDiv.appendChild(slide_container);
     // Apply the current theme to the new container
-    if (!!this._theme) {
-      this.setTheme(this._theme);
+    if (!!Display._theme) {
+      Display.setTheme(Display._theme);
     }
   },
   /**
@@ -679,7 +679,7 @@ var Display = {
    * @param {Object} video - The video to show as a JS object: {"path": "url/to/file"}
    */
   setVideo: function (video) {
-    this.clearSlides();
+    Display.clearSlides();
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
@@ -709,7 +709,7 @@ var Display = {
     });
     section.appendChild(videoElement);
     $(".slides")[0].appendChild(section);
-    this.reinit();
+    Display.reinit();
   },
   /**
    * Play a video
@@ -799,8 +799,8 @@ var Display = {
    * @param slide The slide number or name, e.g. "v1", 0
    */
   goToSlide: function (slide) {
-    if (this._slides.hasOwnProperty(slide)) {
-      Reveal.slide(0, this._slides[slide]);
+    if (Display._slides.hasOwnProperty(slide)) {
+      Reveal.slide(0, Display._slides[slide]);
     }
     else {
       Reveal.slide(0, slide);
@@ -854,7 +854,7 @@ var Display = {
   calculateLineCount: function (fontSize) {
     var p = $(".slides > section > section > p");
     if (p.length == 0) {
-      this.addSlide("v1", "Arky arky");
+      Display.addSlide("v1", "Arky arky");
       p = $(".slides > section > section > p");
     }
     p = p[0];
@@ -865,7 +865,7 @@ var Display = {
     return Math.floor(dh / lh);
   },
   setTheme: function (theme) {
-    this._theme = theme;
+    Display._theme = theme;
     // Set the background
     var globalBackground = $("#global-background")[0];
     var backgroundStyle = {};
