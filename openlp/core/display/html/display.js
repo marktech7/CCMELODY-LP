@@ -950,18 +950,23 @@ var Display = {
     // Using text-align-last because there is a <br> seperating each line
     switch (theme.display_horizontal_align) {
       case HorizontalAlign.Justify:
+        mainStyle["text-align"] = "justify";
         mainStyle["text-align-last"] = "justify";
         break;
       case HorizontalAlign.Center:
+        mainStyle["text-align"] = "center";
         mainStyle["text-align-last"] = "center";
         break;
       case HorizontalAlign.Left:
+        mainStyle["text-align"] = "left";
         mainStyle["text-align-last"] = "left";
         break;
       case HorizontalAlign.Right:
+        mainStyle["text-align"] = "right";
         mainStyle["text-align-last"] = "right";
         break;
       default:
+        mainStyle["text-align"] = "center";
         mainStyle["text-align-last"] = "center";
     }
     switch (theme.display_vertical_align) {
