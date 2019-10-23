@@ -879,7 +879,6 @@ var Display = {
    *   This method does leave the global background as is
    */
   hideTheme: function () {
-      console.warn("Attempt to hide theme when showing theme is: " + this._showing_theme);
     if (this._showing_theme) {
       var footerDiv = $(".footer")[0];
       var slidesDiv = $(".slides")[0];
@@ -890,7 +889,6 @@ var Display = {
     }
   },
   showTheme: function () {
-      console.warn("Attempt to show theme when showing theme is: " + this._showing_theme);
     if (this._showing_theme) {
       return;
     }
@@ -1003,6 +1001,8 @@ var Display = {
     }
     else if (theme.display_vertical_align === VerticalAlign.Bottom) {
       mainStyle['justify-content'] = "flex-end";
+      // This gets around the webkit scroll height bug
+      mainStyle['padding-bottom'] = "" + (theme.font_main_size / 8) + "px";
     }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
