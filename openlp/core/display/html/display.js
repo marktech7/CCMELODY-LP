@@ -961,6 +961,7 @@ var Display = {
         break;
       case HorizontalAlign.Right:
         mainStyle["text-align-last"] = "right";
+        break;
       default:
         mainStyle["text-align-last"] = "center";
     }
