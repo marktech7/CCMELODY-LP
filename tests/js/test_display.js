@@ -582,6 +582,35 @@ describe("Display.setTextSlides", function () {
     expect(slidesDiv.style['text-align-last']).toEqual('justify');
     expect(slidesDiv.style['justify-content']).toEqual('center');
   })
+
+  it("should correctly set slide size position to theme size when adding a text slide", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_y': 789,
+      'font_main_x': 1000,
+      'font_main_width': 1230,
+      'font_main_height': 4560
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "configure");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".slides")[0];
+    expect(Reveal.configure).toHaveBeenCalledWith({'width' : 1230, 'height' : 4560});
+    expect(slidesDiv.style['margin-top']).toEqual('789px');
+    expect(slidesDiv.style['margin-left']).toEqual('1000px');
+  })
 });
 
 describe("Display.setImageSlides", function () {
