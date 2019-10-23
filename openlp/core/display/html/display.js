@@ -328,7 +328,6 @@ var Display = {
   _alertState: AlertState.NotDisplaying,
   _transitionState: TransitionState.NoTransition,
   _animationState: AnimationState.NoAnimation,
-  _showing_theme: false,
   _revealConfig: {
     margin: 0.0,
     minScale: 1.0,
@@ -596,7 +595,6 @@ var Display = {
   },
   /**
    * Add a slide. If the slide exists but the HTML is different, update the slide.
-   * @param {HTMLElement} parent - The parent to add the slide onto
    * @param {string} verse - The verse number, e.g. "v1"
    * @param {string} text - The HTML for the verse, e.g. "line1<br>line2"
    * @param {string} footer_text - The HTML for the footer
@@ -643,10 +641,9 @@ var Display = {
     Display.goToSlide(0);
   },
   /**
-   * Set text slides.
-   * @param {Object[]} slides - A list of slides to add as JS objects: {"verse": "v1", "text": "line 1\nline2"}
+   * Create the <section> that will contain text slides (vertical slides in react)
    */
-  _createTextContainer: function (slides) {
+  _createTextContainer: function () {
     var slide_container = document.createElement("section");
     slide_container.classList = "text-slides";
     var slidesDiv = $(".slides")[0];
@@ -938,6 +935,7 @@ var Display = {
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
+    // These need to be fixed, in the Python they use a width passed in as a parameter
     mainStyle["width"] = theme.font_main_width + "px";
     mainStyle["height"] = theme.font_main_height + "px";
     mainStyle["top"] = "" + theme.font_main_y + "px";
