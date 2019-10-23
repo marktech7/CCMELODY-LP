@@ -3,20 +3,25 @@ stages:
   - test
   - deploy
 
-lint:
+lint-python:
   stage: lint
   image: openlp/debian
-  before_script:
-    - sh scripts/generate_resources.sh
   script:
+    - sh scripts/generate_resources.sh
     - flake8
+
+lint-javascript:
+  stage: lint
+  image: openlp/angular
+  script:
+    - yarn install
+    - yarn lint
 
 test-debian:
   stage: test
   image: openlp/debian
-  before_script:
-    - sh scripts/generate_resources.sh
   script:
+    - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term
     - mv .coverage linux.coverage
   artifacts:
@@ -26,35 +31,31 @@ test-debian:
 test-ubuntu:
   stage: test
   image: openlp/ubuntu
-  before_script:
-    - sh scripts/generate_resources.sh
   script:
+    - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-fedora:
   stage: test
   image: openlp/fedora
-  before_script:
-    - sh scripts/generate_resources.sh
   script:
+    - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-arch:
   stage: test
   image: openlp/arch
-  before_script:
-    - sh scripts/generate_resources.sh
   script:
+    - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings
 
 test-macos:
   stage: test
   tags:
     - macos
-  before_script:
+  script:
     - export PATH=/opt/local/bin:$PATH
     - sh scripts/generate_resources.sh
-  script:
     - python3 -m pytest --color=no --disable-warnings --cov openlp
     - mv .coverage macos.coverage
   artifacts:
@@ -75,6 +76,13 @@ test-windows:
       - windows.coverage
   only:
     - master@openlp/openlp
+
+test-display:
+  stage: test
+  image: openlp/angular
+  script:
+    - yarn install
+    - yarn test --browsers ChromiumHeadlessCI
 
 pages:
   stage: deploy

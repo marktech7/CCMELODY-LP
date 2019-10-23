@@ -23,9 +23,9 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-      // source files, that you wanna generate coverage for 
-      // do not include tests or libraries 
-      // (these files will be instrumented by Istanbul) 
+      // source files, that you wanna generate coverage for
+      // do not include tests or libraries
+      // (these files will be instrumented by Istanbul)
       // "display.js": ["coverage"]
     },
 
@@ -34,7 +34,7 @@ module.exports = function(config) {
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
     reporters: ["dots", "junit"],
 
-    // configure the coverateReporter 
+    // configure the coverateReporter
     /* coverageReporter: {
       type : "html",
       dir : "htmlcov/"
@@ -64,6 +64,12 @@ module.exports = function(config) {
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
     browsers: ["Chromium"],
+    customLaunchers: {
+      ChromiumHeadlessCI: {
+        base: 'ChromiumHeadless',
+        flags: ['--no-sandbox']
+      }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
