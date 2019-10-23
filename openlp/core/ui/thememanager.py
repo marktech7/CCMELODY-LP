@@ -325,14 +325,11 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param str new_theme_name: The new theme name of the theme
         :rtype: None
         """
-        destination_path = None
-        source_path = None
         if theme_data.background_type == 'image' or theme_data.background_type == 'video':
-            destination_path = self.theme_path / new_theme_name / theme_data.background_filename.name
-            source_path = theme_data.background_filename
+            theme_data.background_filename = self.theme_path / new_theme_name / theme_data.background_filename.name
         theme_data.theme_name = new_theme_name
         theme_data.extend_image_filename(self.theme_path)
-        self.save_theme(theme_data, source_path, destination_path)
+        self.save_theme(theme_data)
         self.load_themes()
 
     def on_edit_theme(self, field=None):
@@ -648,14 +645,12 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             return False
         return True
 
-    def save_theme(self, theme, image_source_path=None, image_destination_path=None, image=None):
+    def save_theme(self, theme, image=None):
         """
-        Writes the theme to the disk and handles the background image if necessary
+        Writes the theme to the disk and including the background image and thumbnail if necessary
 
         :param Theme theme: The theme data object.
-        :param Path image_source_path: Where the theme image is currently located.
-        :param Path image_destination_path: Where the Theme Image is to be saved to
-        :param image: The example image of the theme. Optionally.
+        :param image: The theme thumbnail. Optionally.
         :rtype: None
         """
         name = theme.theme_name
@@ -667,12 +662,14 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme_path.write_text(theme_pretty)
         except OSError:
             self.log_exception('Saving theme to file failed')
-        if image_source_path and image_destination_path:
-            if self.old_background_image_path and image_destination_path != self.old_background_image_path:
+        if theme.background_source and theme.background_filename:
+            if self.old_background_image_path and theme.background_filename != self.old_background_image_path:
                 delete_file(self.old_background_image_path)
-            if image_source_path != image_destination_path:
+            if not theme.background_source.exists():
+                self.log_warning('Background does not exist, retaining cached background')
+            elif theme.background_source != theme.background_filename:
                 try:
-                    shutil.copyfile(image_source_path, image_destination_path)
+                    shutil.copyfile(theme.background_source, theme.background_filename)
                 except OSError:
                     self.log_exception('Failed to save theme image')
         if image:

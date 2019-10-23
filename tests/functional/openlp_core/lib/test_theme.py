@@ -181,4 +181,4 @@ class TestTheme(TestCase):
         assert 0 == theme.display_vertical_align, 'display_vertical_align should be 0'
         assert theme.font_footer_bold is False, 'font_footer_bold should be False'
         assert 'Arial' == theme.font_main_name, 'font_main_name should be "Arial"'
-        assert 48 == len(theme.__dict__), 'The theme should have 48 attributes'
+        assert 49 == len(theme.__dict__), 'The theme should have 49 attributes'
