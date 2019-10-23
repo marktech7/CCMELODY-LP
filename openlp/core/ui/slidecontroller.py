@@ -402,8 +402,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.mediabar.add_toolbar_widget(self.volume_slider)
         self.controller_layout.addWidget(self.mediabar)
         self.mediabar.setVisible(False)
-        if not self.is_live:
-            self.volume_slider.setEnabled(False)
         # Signals
         self.seek_slider.valueChanged.connect(self.send_to_plugins)
         self.volume_slider.valueChanged.connect(self.send_to_plugins)
