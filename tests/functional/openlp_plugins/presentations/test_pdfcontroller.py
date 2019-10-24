@@ -22,6 +22,7 @@
 This module contains tests for the PdfController
 """
 import os
+import pytest
 from pathlib import Path
 from shutil import rmtree, which
 from tempfile import mkdtemp
@@ -173,7 +174,13 @@ class TestPdfController(TestCase, TestMixin):
             if exe_path:
                 self.load_pdf(exe_path)
                 self.load_pdf_pictures(exe_path)
-        # PyMuPDF
+
+    def test_loading_pdf_using_pymupdf(self):
+        try:
+            import fitz  # noqa: F401
+        except ImportError:
+            pytest.skip('PyMuPDF is not installed')
+
         self.load_pdf(None)
         self.load_pdf_pictures(None)
 
