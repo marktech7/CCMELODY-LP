@@ -632,12 +632,12 @@ describe("Display.setImageSlides", function () {
     expect(Display.clearSlides).toHaveBeenCalledTimes(1);
     expect(Display._slides["0"]).toEqual(0);
     expect(Display._slides["1"]).toEqual(1);
-    expect($(".slides > section").length).toEqual(2);
-    expect($(".slides > section > img").length).toEqual(2);
-    expect($(".slides > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
-    expect($(".slides > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
-    expect($(".slides > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
-    expect($(".slides > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section").length).toEqual(2);
+    expect($(".slides > section > section > img").length).toEqual(2);
+    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
+    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
+    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
     expect(Display.reinit).toHaveBeenCalledTimes(1);
   });
 });
