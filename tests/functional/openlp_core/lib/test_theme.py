@@ -23,6 +23,7 @@ Package to test the openlp.core.lib.theme package.
 """
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
 from openlp.core.lib.theme import BackgroundType, Theme
 
@@ -174,6 +175,79 @@ class TestTheme(TestCase):
         lt = Theme()
         lt.load_theme(save_theme_json)
         self.check_theme(lt)
+
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_footer(self, mock_geometry):
+        """
+        Test the set_default_footer function sets the footer back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme footer with a strange area
+        mock_geometry.display_geometry = MagicMock();
+        mock_geometry.display_geometry.height.return_value = 600
+        mock_geometry.display_geometry.width.return_value = 400
+        theme = Theme()
+        theme.font_main_x = 20
+        theme.font_footer_x = 207
+        theme.font_footer_y = 25
+        theme.font_footer_width = 4253
+        theme.font_footer_height = 5423
+        
+        # WHEN: set_default_footer is called
+        theme.set_default_footer()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_main_x == 20, 'header should not have been changed'
+        assert theme.font_footer_x == 10, 'x pos should be reset to default of 10'
+        assert theme.font_footer_y == 540, 'y pos should be reset to (screen_size_height * 9 / 10)'
+        assert theme.font_footer_width == 380, 'width should have been reset to (screen_size_width - 20)'
+        assert theme.font_footer_height == 60, 'height should have been reset to (screen_size_height / 10)'
+
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_header(self, mock_geometry):
+        """
+        Test the set_default_header function sets the header back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme header with a strange area
+        mock_geometry.display_geometry = MagicMock();
+        mock_geometry.display_geometry.height.return_value = 600
+        mock_geometry.display_geometry.width.return_value = 400
+        theme = Theme()
+        theme.font_footer_x = 200
+        theme.font_main_x = 687
+        theme.font_main_y = 546
+        theme.font_main_width = 345
+        theme.font_main_height = 653
+        
+        # WHEN: set_default_header is called
+        theme.set_default_header()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_footer_x == 200, 'footer should not have been changed'
+        assert theme.font_main_x == 10, 'x pos should be reset to default of 10'
+        assert theme.font_main_y == 0, 'y pos should be reset to 0'
+        assert theme.font_main_width == 380, 'width should have been reset to (screen_size_width - 20)'
+        assert theme.font_main_height == 540, 'height should have been reset to (screen_size_height * 9 / 10)'
+
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_header_footer(self, mock_geometry):
+        """
+        Test the set_default_header_footer function sets the header and footer back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme header with a strange area
+        mock_geometry.display_geometry = MagicMock();
+        theme = Theme()
+        theme.font_footer_x = 200
+        theme.font_main_x = 687
+        
+        # WHEN: set_default_header is called
+        theme.set_default_header_footer()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_footer_x == 10, 'footer x pos should be reset to default of 10'
+        assert theme.font_main_x == 10, 'header x pos should be reset to default of 10'
 
     def check_theme(self, theme):
         assert '#000000' == theme.background_border_color, 'background_border_color should be "#000000"'
