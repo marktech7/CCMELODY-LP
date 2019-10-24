@@ -25,10 +25,18 @@ sup {
 .reveal .slides > section,
 .reveal .slides > section > section {
   padding: 0;
+  max-height: 100%;
 }
 
-.reveal > .backgrounds > .present {
-  visibility: hidden !important;
+.reveal .slides > section.text-slides {
+  /* Need to override reveal styles to use our text aligment */
+  display: flex !important;
+  flex-direction: column;
+  word-wrap: break-word;
+}
+
+.reveal .slides > section p {
+  margin: 0;
 }
 
 #global-background {

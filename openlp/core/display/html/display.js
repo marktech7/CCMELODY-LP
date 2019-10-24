@@ -28,19 +28,19 @@ var GradientType = {
  * Horizontal alignment enumeration
  */
 var HorizontalAlign = {
-  Left: "left",
-  Right: "right",
-  Center: "center",
-  Justify: "justify"
+  Left: 0,
+  Right: 1,
+  Center: 2,
+  Justify: 3
 };
 
 /**
  * Vertical alignment enumeration
  */
 var VerticalAlign = {
-  Top: "top",
-  Middle: "middle",
-  Bottom: "bottom"
+  Top: 0,
+  Middle: 1,
+  Bottom: 2
 };
 
 /**
@@ -349,7 +349,7 @@ var Display = {
    * Start up reveal and do any other initialisation
    */
   init: function () {
-    Reveal.initialize(this._revealConfig);
+    Reveal.initialize(Display._revealConfig);
   },
   /**
    * Reinitialise Reveal
@@ -369,13 +369,17 @@ var Display = {
   */
   clearSlides: function () {
     $(".slides")[0].innerHTML = "";
-    this._slides = {};
+    Display._slides = {};
   },
   /**
    * Checks if the present slide content fits within the slide
   */
   doesContentFit: function () {
-    var currSlide = $(".slides")[0];
+    var currSlide = $("section.text-slides");
+    if (currSlide.length === 0) {
+      currSlide = $(".slides");
+    }
+    currSlide = currSlide[0];
     console.debug("scrollHeight: " + currSlide.scrollHeight + ", clientHeight: " + currSlide.clientHeight);
     return currSlide.clientHeight >= currSlide.scrollHeight;
   },
@@ -594,34 +598,35 @@ var Display = {
    * Add a slide. If the slide exists but the HTML is different, update the slide.
    * @param {string} verse - The verse number, e.g. "v1"
    * @param {string} text - The HTML for the verse, e.g. "line1<br>line2"
-   * @param {string} footer_text - The HTML for the footer"
+   * @param {string} footer_text - The HTML for the footer
+   * @param {bool} reinit - True if React should reinit when creating a new slide
    */
-  addTextSlide: function (verse, text, footerText) {
+  addTextSlide: function (verse, text, footerText, reinit=true) {
     var slide;
     var html = _prepareText(text);
-    if (this._slides.hasOwnProperty(verse)) {
+    if (Display._slides.hasOwnProperty(verse)) {
       slide = $("#" + verse)[0];
       if (slide.innerHTML != html) {
         slide.innerHTML = html;
       }
-    }
-    else {
-      var slidesDiv = $(".slides")[0];
+    } else {
+      var parent = $("section.text-slides");
+      if (parent.length === 0) {
+        Display._createTextContainer();
+        parent = $("section.text-slides");
+      }
+      parent = parent[0];
       slide = document.createElement("section");
       slide.setAttribute("id", verse);
       slide.innerHTML = html;
-      slidesDiv.appendChild(slide);
-      var slides = $(".slides > section");
-      this._slides[verse] = slides.length - 1;
+      parent.appendChild(slide);
+      Display._slides[verse] = parent.children.length - 1;
       if (footerText) {
         $(".footer")[0].innerHTML = footerText;
       }
-    }
-    if ((arguments.length > 3) && (arguments[3] === true)) {
-      this.reinit();
-    }
-    else if (arguments.length == 3) {
-      this.reinit();
+      if (reinit) {
+        Display.reinit();
+      }
     }
   },
   /**
@@ -637,12 +642,26 @@ var Display = {
     Display.goToSlide(0);
   },
   /**
+   * Create the <section> that will contain text slides (vertical slides in react)
+   */
+  _createTextContainer: function () {
+    var slideContainer = document.createElement("section");
+    slideContainer.classList = "text-slides";
+    var slidesDiv = $(".slides")[0];
+    slidesDiv.appendChild(slideContainer);
+    // Apply the current theme to the new container
+    if (!!Display._theme) {
+      Display.setTheme(Display._theme);
+    }
+  },
+  /**
    * Set image slides
    * @param {Object[]} slides - A list of images to add as JS objects [{"path": "url/to/file"}]
    */
   setImageSlides: function (slides) {
     Display.clearSlides();
     var slidesDiv = $(".slides")[0];
+    var parentSection = document.createElement("section");
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
       section.setAttribute("id", index);
@@ -652,9 +671,10 @@ var Display = {
       img.src = slide.path;
       img.setAttribute("style", "max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);");
       section.appendChild(img);
-      slidesDiv.appendChild(section);
+      parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
     });
+    slidesDiv.appendChild(parentSection);
     Display.reinit();
   },
   /**
@@ -662,7 +682,7 @@ var Display = {
    * @param {Object} video - The video to show as a JS object: {"path": "url/to/file"}
    */
   setVideo: function (video) {
-    this.clearSlides();
+    Display.clearSlides();
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
@@ -692,7 +712,7 @@ var Display = {
     });
     section.appendChild(videoElement);
     $(".slides")[0].appendChild(section);
-    this.reinit();
+    Display.reinit();
   },
   /**
    * Play a video
@@ -782,21 +802,21 @@ var Display = {
    * @param slide The slide number or name, e.g. "v1", 0
    */
   goToSlide: function (slide) {
-    if (this._slides.hasOwnProperty(slide)) {
-      Reveal.slide(this._slides[slide]);
+    if (Display._slides.hasOwnProperty(slide)) {
+      Reveal.slide(0, Display._slides[slide]);
     }
     else {
-      Reveal.slide(slide);
+      Reveal.slide(0, slide);
     }
   },
   /**
    * Go to the next slide in the list
   */
-  next: Reveal.next,
+  next: Reveal.nextFragment,
   /**
    * Go to the previous slide in the list
   */
-  prev: Reveal.prev,
+  prev: Reveal.prevFragment,
   /**
    * Blank the screen
   */
@@ -835,20 +855,20 @@ var Display = {
    * @param fontSize The font size in pts
    */
   calculateLineCount: function (fontSize) {
-    var p = $(".slides > section > p");
+    var p = $(".slides > section > section > p");
     if (p.length == 0) {
-      this.addSlide("v1", "Arky arky");
-      p = $(".slides > section > p");
+      Display.addSlide("v1", "Arky arky");
+      p = $(".slides > section > section > p");
     }
     p = p[0];
     p.style.fontSize = "" + fontSize + "pt";
-    var d = $(".slides")[0];
+    var d = $(".slides > section")[0];
     var lh = parseFloat(_getStyle(p, "line-height"));
     var dh = parseFloat(_getStyle(d, "height"));
     return Math.floor(dh / lh);
   },
   setTheme: function (theme) {
-    this._theme = theme;
+    Display._theme = theme;
     // Set the background
     var globalBackground = $("#global-background")[0];
     var backgroundStyle = {};
@@ -912,44 +932,72 @@ var Display = {
       globalBackground.innerHTML = backgroundHtml;
     }
     // set up the main area
-    mainStyle = {
-      "word-wrap": "break-word",
-      /*"margin": "0",
-      "padding": "0"*/
-    };
+    mainStyle = {};
     if (!!theme.font_main_outline) {
       mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "pt " +
                                          theme.font_main_outline_color;
       mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
     }
+    // These need to be fixed, in the Python they use a width passed in as a parameter
+    mainStyle.width = theme.font_main_width + "px";
+    mainStyle.height = theme.font_main_height + "px";
+    mainStyle.top = "" + theme.font_main_y + "px";
+    mainStyle.left = "" + theme.font_main_x + "px";
+    mainStyle.color = theme.font_main_color;
     mainStyle["font-family"] = theme.font_main_name;
     mainStyle["font-size"] = "" + theme.font_main_size + "pt";
     mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
-    mainStyle.color = theme.font_main_color;
     mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
-    mainStyle["text-align"] = theme.display_horizontal_align;
-    if (theme.display_horizontal_align != HorizontalAlign.Justify) {
-      mainStyle["white-space"] = "pre-wrap";
+    // Using text-align-last because there is a <br> seperating each line
+    switch (theme.display_horizontal_align) {
+      case HorizontalAlign.Justify:
+        mainStyle["text-align"] = "justify";
+        mainStyle["text-align-last"] = "justify";
+        break;
+      case HorizontalAlign.Center:
+        mainStyle["text-align"] = "center";
+        mainStyle["text-align-last"] = "center";
+        break;
+      case HorizontalAlign.Left:
+        mainStyle["text-align"] = "left";
+        mainStyle["text-align-last"] = "left";
+        break;
+      case HorizontalAlign.Right:
+        mainStyle["text-align"] = "right";
+        mainStyle["text-align-last"] = "right";
+        break;
+      default:
+        mainStyle["text-align"] = "center";
+        mainStyle["text-align-last"] = "center";
     }
-    mainStyle["vertical-align"] = theme.display_vertical_align;
+    switch (theme.display_vertical_align) {
+      case VerticalAlign.Middle:
+        mainStyle["justify-content"] = "center";
+        break;
+      case VerticalAlign.Top:
+        mainStyle["justify-content"] = "flex-start";
+        break;
+      case VerticalAlign.Bottom:
+        mainStyle["justify-content"] = "flex-end";
+        // This gets around the webkit scroll height bug
+        mainStyle["padding-bottom"] = "" + (theme.font_main_size / 8) + "px";
+        break;
+      default:
+        mainStyle["justify-content"] = "center";
+    }
     if (theme.hasOwnProperty('font_main_shadow_size')) {
-      mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "px " +
-                                 theme.font_main_shadow_size + "px";
+      mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
+                                 theme.font_main_shadow_size + "pt";
     }
-    mainStyle["padding-bottom"] = theme.display_vertical_align == VerticalAlign.Bottom ? "0.5em" : "0";
-    mainStyle["padding-left"] = !!theme.font_main_outline ? "" + (theme.font_main_outline_size * 2) + "pt" : "0";
-    // These need to be fixed, in the Python they use a width passed in as a parameter
-    mainStyle.position = "absolute";
-    mainStyle.width = "" + (window.innerWidth - (theme.font_main_outline_size * 4)) + "px";
-    mainStyle.height = "" + (window.innerHeight - (theme.font_main_outline_size * 4)) + "px";
-    mainStyle.left = "" + theme.font_main_x + "px";
-    mainStyle.top = "" + theme.font_main_y + "px";
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.style.cssText = "";
-    for (var mainKey in mainStyle) {
-      if (mainStyle.hasOwnProperty(mainKey)) {
-        slidesDiv.style.setProperty(mainKey, mainStyle[mainKey]);
+    var slidesDiv = $("section.text-slides");
+    if (slidesDiv.length > 0) {
+      slidesDiv = slidesDiv[0];
+      slidesDiv.style.cssText = "";
+      for (var mainKey in mainStyle) {
+        if (mainStyle.hasOwnProperty(mainKey)) {
+          slidesDiv.style.setProperty(mainKey, mainStyle[mainKey]);
+        }
       }
     }
     // Set up the footer
@@ -959,11 +1007,11 @@ var Display = {
     footerStyle.position = "absolute";
     footerStyle.left = "" + theme.font_footer_x + "px";
     footerStyle.top = "" + theme.font_footer_y + "px";
-    footerStyle.bottom = "" + (window.innerHeight - theme.font_footer_y - theme.font_footer_height) + "px";
     footerStyle.width = "" + theme.font_footer_width + "px";
+    footerStyle.height = "" + theme.font_footer_height + "px";
+    footerStyle.color = theme.font_footer_color;
     footerStyle["font-family"] = theme.font_footer_name;
     footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
-    footerStyle.color = theme.font_footer_color;
     footerStyle["white-space"] = theme.font_footer_wrap ? "normal" : "nowrap";
     var footer = $(".footer")[0];
     footer.style.cssText = "";

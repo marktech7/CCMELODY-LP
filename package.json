@@ -21,6 +21,9 @@
     "test": "karma start --single-run",
     "lint": "jshint openlp/core/display/html/display.js"
   },
+  "jshintConfig": {
+    "esversion": 6
+  },
   "author": "OpenLP Developers",
   "license": "GPL-3.0-or-later"
 }
