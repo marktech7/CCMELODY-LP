@@ -645,10 +645,10 @@ var Display = {
    * Create the <section> that will contain text slides (vertical slides in react)
    */
   _createTextContainer: function () {
-    var slide_container = document.createElement("section");
-    slide_container.classList = "text-slides";
+    var slideContainer = document.createElement("section");
+    slideContainer.classList = "text-slides";
     var slidesDiv = $(".slides")[0];
-    slidesDiv.appendChild(slide_container);
+    slidesDiv.appendChild(slideContainer);
     // Apply the current theme to the new container
     if (!!Display._theme) {
       Display.setTheme(Display._theme);
@@ -661,6 +661,7 @@ var Display = {
   setImageSlides: function (slides) {
     Display.clearSlides();
     var slidesDiv = $(".slides")[0];
+    var parentSection = document.createElement("section");
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
       section.setAttribute("id", index);
@@ -670,9 +671,10 @@ var Display = {
       img.src = slide.path;
       img.setAttribute("style", "max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);");
       section.appendChild(img);
-      slidesDiv.appendChild(section);
+      parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
     });
+    slidesDiv.appendChild(parentSection);
     Display.reinit();
   },
   /**
