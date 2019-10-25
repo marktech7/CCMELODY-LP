@@ -254,10 +254,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Change state as Shadow check box changed
         """
         if self.update_theme_allowed:
-            if state == QtCore.Qt.Checked:
-                self.theme.font_main_shadow = True
-            else:
-                self.theme.font_main_shadow = False
+            self.theme.font_main_shadow = state == QtCore.Qt.Checked
             self.shadow_color_button.setEnabled(self.theme.font_main_shadow)
             self.shadow_size_spin_box.setEnabled(self.theme.font_main_shadow)
             self.calculate_lines()
@@ -283,12 +280,10 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Change state as Transitions check box is changed
         """
         if self.update_theme_allowed:
-            if state == QtCore.Qt.Checked:
-                self.theme.display_slide_transition = True
-            else:
-                self.theme.display_slide_transition = False
-            self.shadow_color_button.setEnabled(self.theme.display_slide_transition)
-            self.shadow_size_spin_box.setEnabled(self.theme.display_slide_transition)
+            self.theme.display_slide_transition = state == QtCore.Qt.Checked
+            self.transition_combo_box.setEnabled(self.theme.display_slide_transition)
+            self.transition_speed_combo_box.setEnabled(self.theme.display_slide_transition)
+            self.calculate_lines()
 
     def exec(self, edit=False):
         """
