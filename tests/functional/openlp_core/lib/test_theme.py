@@ -183,7 +183,7 @@ class TestTheme(TestCase):
         (reletive to the screen)
         """
         # GIVEN: A screen geometry object and a Theme footer with a strange area
-        mock_geometry.display_geometry = MagicMock();
+        mock_geometry.display_geometry = MagicMock()
         mock_geometry.display_geometry.height.return_value = 600
         mock_geometry.display_geometry.width.return_value = 400
         theme = Theme()
@@ -192,7 +192,7 @@ class TestTheme(TestCase):
         theme.font_footer_y = 25
         theme.font_footer_width = 4253
         theme.font_footer_height = 5423
-        
+
         # WHEN: set_default_footer is called
         theme.set_default_footer()
 
@@ -210,7 +210,7 @@ class TestTheme(TestCase):
         (reletive to the screen)
         """
         # GIVEN: A screen geometry object and a Theme header with a strange area
-        mock_geometry.display_geometry = MagicMock();
+        mock_geometry.display_geometry = MagicMock()
         mock_geometry.display_geometry.height.return_value = 600
         mock_geometry.display_geometry.width.return_value = 400
         theme = Theme()
@@ -219,7 +219,7 @@ class TestTheme(TestCase):
         theme.font_main_y = 546
         theme.font_main_width = 345
         theme.font_main_height = 653
-        
+
         # WHEN: set_default_header is called
         theme.set_default_header()
 
@@ -237,11 +237,11 @@ class TestTheme(TestCase):
         (reletive to the screen)
         """
         # GIVEN: A screen geometry object and a Theme header with a strange area
-        mock_geometry.display_geometry = MagicMock();
+        mock_geometry.display_geometry = MagicMock()
         theme = Theme()
         theme.font_footer_x = 200
         theme.font_main_x = 687
-        
+
         # WHEN: set_default_header is called
         theme.set_default_header_footer()
 
