@@ -127,6 +127,82 @@ class BackgroundGradientType(object):
             return BackgroundGradientType.LeftBottom
 
 
+class TransitionType(object):
+    """
+    Type enumeration for transition types.
+    """
+    Fade = 0
+    Slide = 1
+    Convex = 2
+    Concave = 3
+    Zoom = 4
+
+    @staticmethod
+    def to_string(transition_type):
+        """
+        Return a string representation of a transition type.
+        """
+        if gradient_type == TransitionType.Fade:
+            return 'fade'
+        elif gradient_type == TransitionType.Slide:
+            return 'slide'
+        elif gradient_type == TransitionType.Convex:
+            return 'convex'
+        elif gradient_type == TransitionType.Concave:
+            return 'concave'
+        elif gradient_type == TransitionType.Zoom:
+            return 'zoom'
+
+    @staticmethod
+    def from_string(type_string):
+        """
+        Return a transition type for the given string.
+        """
+        if type_string == 'fade':
+            return TransitionType.Fade
+        elif type_string == 'slide':
+            return TransitionType.Slide
+        elif type_string == 'convex':
+            return TransitionType.Convex
+        elif type_string == 'concave':
+            return TransitionType.Concave
+        elif type_string == 'zoom':
+            return TransitionType.Zoom
+
+
+class TransitionSpeed(object):
+    """
+    Type enumeration for transition types.
+    """
+    Default = 0
+    Fast = 1
+    Slow = 2
+
+    @staticmethod
+    def to_string(transition_speed):
+        """
+        Return a string representation of a transition type.
+        """
+        if gradient_type == TransitionType.Default:
+            return 'default'
+        elif gradient_type == TransitionType.Fast:
+            return 'fast'
+        elif gradient_type == TransitionType.Slow:
+            return 'slow'
+
+    @staticmethod
+    def from_string(type_string):
+        """
+        Return a transition type for the given string.
+        """
+        if type_string == 'default':
+            return TransitionType.Default
+        if type_string == 'fast':
+            return TransitionType.Fast
+        elif type_string == 'slow':
+            return TransitionType.Slow
+
+
 class HorizontalType(object):
     """
     Type enumeration for horizontal alignment.

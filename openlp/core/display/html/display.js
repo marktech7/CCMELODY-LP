@@ -44,6 +44,26 @@ var VerticalAlign = {
 };
 
 /**
+ * Transition type enumeration
+ */
+var TransitionType = {
+  Fade: 0,
+  Slide: 1,
+  Convex: 2,
+  Concave: 3,
+  Zoom: 4
+}
+
+/**
+ * Transition speed enumeration
+ */
+var TransitionSpeed = {
+  Default: 0,
+  Fast: 1,
+  Slow: 2
+}
+
+/**
  * Audio state enumeration
  */
 var AudioState = {
