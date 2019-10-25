@@ -477,7 +477,7 @@ class Ui_ThemeWizard(object):
         self.transition_combo_box.setItemText(TransitionType.Convex, translate('OpenLP.ThemeWizard', 'Convex'))
         self.transition_combo_box.setItemText(TransitionType.Zoom, translate('OpenLP.ThemeWizard', 'Zoom'))
         self.transition_speed_label.setText(translate('OpenLP.ThemeWizard', 'Speed:'))
-        self.transition_speed_combo_box.setItemText(TransitionSpeed.Default, translate('OpenLP.ThemeWizard', 'Normal'))
+        self.transition_speed_combo_box.setItemText(TransitionSpeed.Normal, translate('OpenLP.ThemeWizard', 'Normal'))
         self.transition_speed_combo_box.setItemText(TransitionSpeed.Fast, translate('OpenLP.ThemeWizard', 'Fast'))
         self.transition_speed_combo_box.setItemText(TransitionSpeed.Slow, translate('OpenLP.ThemeWizard', 'Slow'))
         self.area_position_page.setTitle(translate('OpenLP.ThemeWizard', 'Output Area Locations'))

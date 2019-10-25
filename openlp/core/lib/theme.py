@@ -174,7 +174,7 @@ class TransitionSpeed(object):
     """
     Type enumeration for transition types.
     """
-    Default = 0
+    Normal = 0
     Fast = 1
     Slow = 2
 
@@ -183,11 +183,11 @@ class TransitionSpeed(object):
         """
         Return a string representation of a transition type.
         """
-        if gradient_type == TransitionType.Default:
-            return 'default'
-        elif gradient_type == TransitionType.Fast:
+        if gradient_type == TransitionSpeed.Normal:
+            return 'normal'
+        elif gradient_type == TransitionSpeed.Fast:
             return 'fast'
-        elif gradient_type == TransitionType.Slow:
+        elif gradient_type == TransitionSpeed.Slow:
             return 'slow'
 
     @staticmethod
@@ -195,12 +195,12 @@ class TransitionSpeed(object):
         """
         Return a transition type for the given string.
         """
-        if type_string == 'default':
-            return TransitionType.Default
+        if type_string == 'normal':
+            return TransitionSpeed.Normal
         if type_string == 'fast':
-            return TransitionType.Fast
+            return TransitionSpeed.Fast
         elif type_string == 'slow':
-            return TransitionType.Slow
+            return TransitionSpeed.Slow
 
 
 class HorizontalType(object):
@@ -229,7 +229,7 @@ class VerticalType(object):
 BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition']
 
 INTEGER_LIST = ['size', 'line_adjustment', 'x', 'height', 'y', 'width', 'shadow_size', 'outline_size',
-                'horizontal_align', 'vertical_align', 'wrap_style']
+                'horizontal_align', 'vertical_align', 'wrap_style', 'slide_transition_type', 'slide_transition_speed']
 
 
 class Theme(object):

@@ -58,7 +58,7 @@ var TransitionType = {
  * Transition speed enumeration
  */
 var TransitionSpeed = {
-  Default: 0,
+  Normal: 0,
   Fast: 1,
   Slow: 2
 }
@@ -913,9 +913,10 @@ var Display = {
         default:
           new_transition_type = "fade";
       }
+      console.log(theme.display_slide_transition_speed)
       switch (theme.display_slide_transition_speed) {
-        case TransitionSpeed.Default:
-          new_transition_speed = "fade";
+        case TransitionSpeed.Normal:
+          new_transition_speed = "default";
           break;
         case TransitionSpeed.Fast:
           new_transition_speed = "fast";

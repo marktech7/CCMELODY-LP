@@ -98,6 +98,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.main_font_combo_box.activated.connect(self.calculate_lines)
         self.footer_font_combo_box.activated.connect(self.update_theme)
         self.footer_size_spin_box.valueChanged.connect(self.update_theme)
+        self.transitions_check_box.stateChanged.connect(self.on_transitions_check_box_state_changed)
 
     def set_defaults(self):
         """
@@ -145,6 +146,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.background_page.registerField('horizontal', self.horizontal_combo_box)
         self.background_page.registerField('vertical', self.vertical_combo_box)
         self.background_page.registerField('slide_transition', self.transitions_check_box)
+        self.background_page.registerField('slide_transition_type', self.transition_combo_box)
+        self.background_page.registerField('slide_transition_speed', self.transition_speed_combo_box)
         self.background_page.registerField('name', self.theme_name_edit)
 
     def calculate_lines(self):
@@ -275,6 +278,18 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         if self.update_theme_allowed:
             self.theme.font_footer_override = (value != QtCore.Qt.Checked)
 
+    def on_transitions_check_box_state_changed(self, state):
+        """
+        Change state as Transitions check box is changed
+        """
+        if self.update_theme_allowed:
+            if state == QtCore.Qt.Checked:
+                self.theme.display_slide_transition = True
+            else:
+                self.theme.display_slide_transition = False
+            self.shadow_color_button.setEnabled(self.theme.display_slide_transition)
+            self.shadow_size_spin_box.setEnabled(self.theme.display_slide_transition)
+
     def exec(self, edit=False):
         """
         Run the wizard.
@@ -395,6 +410,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.setField('horizontal', self.theme.display_horizontal_align)
         self.setField('vertical', self.theme.display_vertical_align)
         self.setField('slide_transition', self.theme.display_slide_transition)
+        self.setField('slide_transition_type', self.theme.display_slide_transition_type)
+        self.setField('slide_transition_speed', self.theme.display_slide_transition_speed)
 
     def set_preview_page_values(self):
         """
@@ -538,6 +555,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.display_horizontal_align = self.horizontal_combo_box.currentIndex()
         self.theme.display_vertical_align = self.vertical_combo_box.currentIndex()
         self.theme.display_slide_transition = self.field('slide_transition')
+        self.theme.display_slide_transition_type = self.field('slide_transition_type')
+        self.theme.display_slide_transition_speed = self.field('slide_transition_speed')
 
     def accept(self):
         """

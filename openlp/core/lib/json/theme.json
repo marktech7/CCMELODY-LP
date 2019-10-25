@@ -11,6 +11,8 @@
     "display" :{
         "horizontal_align": 0,
         "slide_transition": false,
+        "slide_transition_type": 0,
+        "slide_transition_speed": 0,
         "vertical_align": 0
     },
     "font": {
