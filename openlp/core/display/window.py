@@ -199,7 +199,7 @@ class DisplayWindow(QtWidgets.QWidget):
         Add stuff after page initialisation
         """
         js_is_display = str(self.is_display).lower()
-        self.run_javascript('Display.init({is_display});'.format(is_display=js_is_display))
+        self.run_javascript('Display.init({do_transitions});'.format(do_transitions=js_is_display))
         self._is_initialised = True
         if self._can_show_startup_screen:
             self.set_startup_screen()
