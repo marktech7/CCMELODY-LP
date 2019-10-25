@@ -986,7 +986,7 @@ var Display = {
       default:
         mainStyle["justify-content"] = "center";
     }
-    if (theme.hasOwnProperty('font_main_shadow_size')) {
+    if (theme.hasOwnProperty('font_main_shadow_size') && !!theme.font_main_shadow) {
       mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
                                  theme.font_main_shadow_size + "pt";
     }
