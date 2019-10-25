@@ -25,7 +25,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.theme import BackgroundGradientType, BackgroundType, HorizontalType, TransitionType, TransitionSpeed
+from openlp.core.lib.theme import (
+    BackgroundGradientType,
+    BackgroundType,
+    HorizontalType,
+    TransitionType,
+    TransitionSpeed
+)
 from openlp.core.lib.ui import add_welcome_page, create_valign_selection_widgets
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton

@@ -142,15 +142,15 @@ class TransitionType(object):
         """
         Return a string representation of a transition type.
         """
-        if gradient_type == TransitionType.Fade:
+        if transition_type == TransitionType.Fade:
             return 'fade'
-        elif gradient_type == TransitionType.Slide:
+        elif transition_type == TransitionType.Slide:
             return 'slide'
-        elif gradient_type == TransitionType.Convex:
+        elif transition_type == TransitionType.Convex:
             return 'convex'
-        elif gradient_type == TransitionType.Concave:
+        elif transition_type == TransitionType.Concave:
             return 'concave'
-        elif gradient_type == TransitionType.Zoom:
+        elif transition_type == TransitionType.Zoom:
             return 'zoom'
 
     @staticmethod
@@ -183,11 +183,11 @@ class TransitionSpeed(object):
         """
         Return a string representation of a transition type.
         """
-        if gradient_type == TransitionSpeed.Normal:
+        if transition_speed == TransitionSpeed.Normal:
             return 'normal'
-        elif gradient_type == TransitionSpeed.Fast:
+        elif transition_speed == TransitionSpeed.Fast:
             return 'fast'
-        elif gradient_type == TransitionSpeed.Slow:
+        elif transition_speed == TransitionSpeed.Slow:
             return 'slow'
 
     @staticmethod
