@@ -123,12 +123,6 @@ describe("The Display object", function () {
     expect(Display.setTransition).toBeDefined();
   });
 
-  it("should have a correctly functioning setTransition() method", function () {
-    spyOn(Reveal, "configure");
-    Display.setTransition("fade");
-    expect(Reveal.configure).toHaveBeenCalledWith({"transition": "fade"});
-  });
-
   it("should have a correctly functioning clearSlides() method", function () {
     expect(Display.clearSlides).toBeDefined();
 
@@ -152,6 +146,55 @@ describe("The Display object", function () {
 
   it("should have an alert() method", function () {
     expect(Display.alert).toBeDefined();
+  });
+
+});
+
+describe("Transitions", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    _createDiv({"class": "slides"});
+    _createDiv({"class": "footer"});
+    _createDiv({"id": "global-background"});
+    Display._slides = {};
+  });
+  afterEach(function() {
+    // Reset theme
+    Display._theme = null;
+  });
+
+  it("should have a correctly functioning setTransition() method", function () {
+    spyOn(Reveal, "configure");
+    Display.setTransition("fade", "slow");
+    expect(Reveal.configure).toHaveBeenCalledWith({"transition": "fade", "transitionSpeed": "slow"});
+  });
+
+  it("should have enabled transitions when _doTransitions is true and setTheme is run", function () {
+    spyOn(Display, "setTransition");
+    Display._doTransitions = true;
+    var theme = {
+      "display_slide_transition": true,
+      "display_slide_transition_type": TransitionType.Slide,
+      "display_slide_transition_speed": TransitionSpeed.Fast
+    }
+
+    Display.setTheme(theme);
+
+    expect(Display.setTransition).toHaveBeenCalledWith("slide", "fast");
+  });
+
+  it("should have not enabled transitions when init() with no transitions and setTheme is run", function () {
+    spyOn(Display, "setTransition");
+    Display._doTransitions = false;
+    var theme = {
+      "display_slide_transition": true,
+      "display_slide_transition_type": TransitionType.Slide,
+      "display_slide_transition_speed": TransitionSpeed.Fast,
+    }
+
+    Display.setTheme(theme);
+
+    expect(Display.setTransition).toHaveBeenCalledWith("none", "default");
   });
 
 });
