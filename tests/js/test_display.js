@@ -583,6 +583,56 @@ describe("Display.setTextSlides", function () {
     expect(slidesDiv.style['justify-content']).toEqual('center');
   })
 
+  it("should enable shadows", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_shadow': true,
+      'font_main_shadow_color': "#000",
+      'font_main_shadow_size': 5
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['text-shadow']).not.toEqual('');
+  })
+
+  it("should not enable shadows", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_shadow': false,
+      'font_main_shadow_color': "#000",
+      'font_main_shadow_size': 5
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['text-shadow']).toEqual('');
+  })
+
   it("should correctly set slide size position to theme size when adding a text slide", function () {
     const slides = [
       {
