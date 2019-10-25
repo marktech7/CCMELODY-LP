@@ -349,6 +349,7 @@ var Display = {
   _alertState: AlertState.NotDisplaying,
   _transitionState: TransitionState.NoTransition,
   _animationState: AnimationState.NoAnimation,
+  _isDisplay: false,
   _revealConfig: {
     margin: 0.0,
     minScale: 1.0,
@@ -368,7 +369,9 @@ var Display = {
   /**
    * Start up reveal and do any other initialisation
    */
-  init: function () {
+  init: function (isDisplay) {
+    console.log(isDisplay)
+    Display._isDisplay = isDisplay;
     Reveal.initialize(Display._revealConfig);
   },
   /**
@@ -893,7 +896,7 @@ var Display = {
     // Set slide transitions
     var new_transition_type = "none",
         new_transition_speed = "default";
-    if (!!theme.display_slide_transition) {
+    if (!!theme.display_slide_transition && Display._isDisplay) {
       switch (theme.display_slide_transition_type) {
         case TransitionType.Fade:
           new_transition_type = "fade";
