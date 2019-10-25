@@ -369,7 +369,7 @@ var Display = {
   /**
    * Start up reveal and do any other initialisation
    */
-  init: function (doTransitions) {
+  init: function (doTransitions=false) {
     Display._doTransitions = doTransitions;
     Reveal.initialize(Display._revealConfig);
   },
