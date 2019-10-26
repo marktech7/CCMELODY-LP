@@ -134,7 +134,7 @@ class UiIcons(metaclass=Singleton):
             'select_all': {'icon': 'fa.check-square-o'},
             'select_none': {'icon': 'fa.square-o'},
             'settings': {'icon': 'fa.cogs'},
-            'shortcuts': {'icon': 'fa.wrench'},
+            'shortcuts': {'icon': 'mdi.backspace-outline'},
             'song_usage': {'icon': 'fa.line-chart'},
             'song_usage_active': {'icon': 'op.plus_sign'},
             'song_usage_inactive': {'icon': 'op.minus_sign'},
