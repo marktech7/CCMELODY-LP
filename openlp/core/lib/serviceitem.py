@@ -344,7 +344,11 @@ class ServiceItem(RegistryProperties):
                 service_data = [slide['title'] for slide in self.slides]
         elif self.service_item_type == ServiceItemType.Command:
             for slide in self.slides:
-                service_data.append({'title': slide['title'], 'image': slide['image'], 'path': slide['path'],
+                if isinstance(slide['image'], QtGui.QIcon):
+                    image = "clapperboard"
+                else:
+                    image = slide['image']
+                service_data.append({'title': slide['title'], 'image': image, 'path': slide['path'],
                                      'display_title': slide['display_title'], 'notes': slide['notes']})
         return {'header': service_header, 'data': service_data}
 
@@ -424,6 +428,8 @@ class ServiceItem(RegistryProperties):
                     self.add_from_command(text_image['path'], text_image['title'], text_image['image'])
                 elif path:
                     self.has_original_files = False
+                    if text_image['image'] == "clapperboard":
+                        text_image['image'] = UiIcons().clapperboard
                     self.add_from_command(path, text_image['title'], text_image['image'],
                                           text_image.get('display_title', ''), text_image.get('notes', ''))
                 else:
@@ -632,6 +638,7 @@ class ServiceItem(RegistryProperties):
 
         :param set[str] suffixes: A set of valid suffixes
         """
+        print("Called")
         self.is_valid = True
         for slide in self.slides:
             if self.is_image() and not os.path.exists(slide['path']):
@@ -648,7 +655,7 @@ class ServiceItem(RegistryProperties):
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
-                        file_suffix = slide['title'].split('.')[-1]
+                        file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
                         if file_suffix.lower() not in suffixes:
                             self.is_valid = False
                             break
