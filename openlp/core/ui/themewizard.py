@@ -25,7 +25,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.theme import BackgroundGradientType, BackgroundType, HorizontalType
+from openlp.core.lib.theme import (
+    BackgroundGradientType,
+    BackgroundType,
+    HorizontalType,
+    TransitionType,
+    TransitionSpeed
+)
 from openlp.core.lib.ui import add_welcome_page, create_valign_selection_widgets
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton
@@ -271,12 +277,22 @@ class Ui_ThemeWizard(object):
         self.vertical_label.setObjectName('vertical_label')
         self.vertical_combo_box.setObjectName('vertical_combo_box')
         self.alignment_layout.addRow(self.vertical_label, self.vertical_combo_box)
-        self.transitions_label = QtWidgets.QLabel(self.alignment_page)
-        self.transitions_label.setObjectName('transitions_label')
         self.transitions_check_box = QtWidgets.QCheckBox(self.alignment_page)
         self.transitions_check_box.setObjectName('transitions_check_box')
-        self.alignment_layout.addRow(self.transitions_label, self.transitions_check_box)
-        self.alignment_layout.setItem(3, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.transition_layout = QtWidgets.QHBoxLayout()
+        self.transition_layout.setObjectName("transition_layout")
+        self.transition_combo_box = QtWidgets.QComboBox(self.alignment_page)
+        self.transition_combo_box.setObjectName("transition_combo_box")
+        self.transition_combo_box.addItems(['', '', '', '', ''])
+        self.transition_layout.addWidget(self.transition_combo_box)
+        self.transition_speed_label = QtWidgets.QLabel(self.alignment_page)
+        self.transition_speed_label.setObjectName("transition_speed_label")
+        self.transition_layout.addWidget(self.transition_speed_label)
+        self.transition_speed_combo_box = QtWidgets.QComboBox(self.alignment_page)
+        self.transition_speed_combo_box.setObjectName("transition_speed_combo_box")
+        self.transition_speed_combo_box.addItems(['', '', ''])
+        self.transition_layout.addWidget(self.transition_speed_combo_box)
+        self.alignment_layout.addRow(self.transitions_check_box, self.transition_layout)
         theme_wizard.addPage(self.alignment_page)
         # Area Position Page
         self.area_position_page = QtWidgets.QWizardPage()
@@ -460,7 +476,16 @@ class Ui_ThemeWizard(object):
         self.horizontal_combo_box.setItemText(HorizontalType.Right, translate('OpenLP.ThemeWizard', 'Right'))
         self.horizontal_combo_box.setItemText(HorizontalType.Center, translate('OpenLP.ThemeWizard', 'Center'))
         self.horizontal_combo_box.setItemText(HorizontalType.Justify, translate('OpenLP.ThemeWizard', 'Justify'))
-        self.transitions_label.setText(translate('OpenLP.ThemeWizard', 'Transitions:'))
+        self.transitions_check_box.setText(translate('OpenLP.ThemeWizard', 'Transitions:'))
+        self.transition_combo_box.setItemText(TransitionType.Fade, translate('OpenLP.ThemeWizard', 'Fade'))
+        self.transition_combo_box.setItemText(TransitionType.Slide, translate('OpenLP.ThemeWizard', 'Slide'))
+        self.transition_combo_box.setItemText(TransitionType.Concave, translate('OpenLP.ThemeWizard', 'Concave'))
+        self.transition_combo_box.setItemText(TransitionType.Convex, translate('OpenLP.ThemeWizard', 'Convex'))
+        self.transition_combo_box.setItemText(TransitionType.Zoom, translate('OpenLP.ThemeWizard', 'Zoom'))
+        self.transition_speed_label.setText(translate('OpenLP.ThemeWizard', 'Speed:'))
+        self.transition_speed_combo_box.setItemText(TransitionSpeed.Normal, translate('OpenLP.ThemeWizard', 'Normal'))
+        self.transition_speed_combo_box.setItemText(TransitionSpeed.Fast, translate('OpenLP.ThemeWizard', 'Fast'))
+        self.transition_speed_combo_box.setItemText(TransitionSpeed.Slow, translate('OpenLP.ThemeWizard', 'Slow'))
         self.area_position_page.setTitle(translate('OpenLP.ThemeWizard', 'Output Area Locations'))
         self.area_position_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Allows you to change and move the'
                                                       ' Main and Footer areas.'))

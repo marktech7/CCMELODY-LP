@@ -44,6 +44,26 @@ var VerticalAlign = {
 };
 
 /**
+ * Transition type enumeration
+ */
+var TransitionType = {
+  Fade: 0,
+  Slide: 1,
+  Convex: 2,
+  Concave: 3,
+  Zoom: 4
+};
+
+/**
+ * Transition speed enumeration
+ */
+var TransitionSpeed = {
+  Normal: 0,
+  Fast: 1,
+  Slow: 2
+};
+
+/**
  * Audio state enumeration
  */
 var AudioState = {
@@ -329,6 +349,7 @@ var Display = {
   _alertState: AlertState.NotDisplaying,
   _transitionState: TransitionState.NoTransition,
   _animationState: AnimationState.NoAnimation,
+  _doTransitions: false,
   _revealConfig: {
     margin: 0.0,
     minScale: 1.0,
@@ -348,7 +369,8 @@ var Display = {
   /**
    * Start up reveal and do any other initialisation
    */
-  init: function () {
+  init: function (doTransitions=false) {
+    Display._doTransitions = doTransitions;
     Reveal.initialize(Display._revealConfig);
   },
   /**
@@ -360,9 +382,10 @@ var Display = {
   /**
    * Set the transition type
    * @param {string} transitionType - Can be one of "none", "fade", "slide", "convex", "concave", "zoom"
+   * @param {string} transitionSpeed - Can be one of "default", "fast", "slow"
    */
-  setTransition: function (transitionType) {
-    Reveal.configure({"transition": transitionType});
+  setTransition: function (transitionType, transitionSpeed) {
+    Reveal.configure({"transition": transitionType, "transitionSpeed": transitionSpeed});
   },
   /**
    * Clear the current list of slides
@@ -869,6 +892,44 @@ var Display = {
   },
   setTheme: function (theme) {
     Display._theme = theme;
+    // Set slide transitions
+    var new_transition_type = "none",
+        new_transition_speed = "default";
+    if (!!theme.display_slide_transition && Display._doTransitions) {
+      switch (theme.display_slide_transition_type) {
+        case TransitionType.Fade:
+          new_transition_type = "fade";
+          break;
+        case TransitionType.Slide:
+          new_transition_type = "slide";
+          break;
+        case TransitionType.Convex:
+          new_transition_type = "convex";
+          break;
+        case TransitionType.Concave:
+          new_transition_type = "concave";
+          break;
+        case TransitionType.Zoom:
+          new_transition_type = "zoom";
+          break;
+        default:
+          new_transition_type = "fade";
+      }
+      switch (theme.display_slide_transition_speed) {
+        case TransitionSpeed.Normal:
+          new_transition_speed = "default";
+          break;
+        case TransitionSpeed.Fast:
+          new_transition_speed = "fast";
+          break;
+        case TransitionSpeed.Slow:
+          new_transition_speed = "slow";
+          break;
+        default:
+          new_transition_speed = "default";
+      }
+    }
+    Display.setTransition(new_transition_type, new_transition_speed);
     // Set the background
     var globalBackground = $("#global-background")[0];
     var backgroundStyle = {};
