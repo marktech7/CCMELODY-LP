@@ -1245,7 +1245,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     text = slide['title'].replace('\n', ' ')
                 else:
                     text = service_item_from_item.get_rendered_frame(slide_index)
-                child.setText(0, text[:40])
+                if (isinstance(text, str)):
+                    child.setText(0, text[:40])
+                else:
+                    child.setIcon(0, text)
                 child.setData(0, QtCore.Qt.UserRole, slide_index)
                 if service_item == item_index:
                     if item['expanded'] and service_item_child == slide_index:
