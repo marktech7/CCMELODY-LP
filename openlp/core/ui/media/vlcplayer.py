@@ -150,7 +150,8 @@ class VlcPlayer(MediaPlayer):
         """
         Load a video into VLC
 
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
+        :param output_display: The display where the media is
         :param file: file to be played or None for live streaming
         :return:
         """
@@ -164,7 +165,7 @@ class VlcPlayer(MediaPlayer):
             if is_win():
                 path = '/' + path
             controller.vlc_media = controller.vlc_instance.media_new_location('cdda://' + path)
-            controller.vlc_media_player.set_media(output_display.vlc_media)
+            controller.vlc_media_player.set_media(controller.vlc_media)
             controller.vlc_media_player.play()
             # Wait for media to start playing. In this case VLC actually returns an error.
             self.media_state_wait(output_display, vlc.State.Playing)
@@ -172,7 +173,7 @@ class VlcPlayer(MediaPlayer):
             audio_cd_tracks = controller.vlc_media.subitems()
             if not audio_cd_tracks or audio_cd_tracks.count() < 1:
                 return False
-            controller.vlc_media_player = audio_cd_tracks.item_at_index(output_display.media_info.title_track)
+            controller.vlc_media_player = audio_cd_tracks.item_at_index(controller.media_info.title_track)
         elif controller.media_info.media_type == MediaType.Stream:
             stream_cmd = Settings().value('media/stream command')
             controller.vlc_media = controller.vlc_instance.media_new_location(stream_cmd)
@@ -191,7 +192,7 @@ class VlcPlayer(MediaPlayer):
         Wait no longer than 60 seconds. (loading an iso file needs a long time)
 
         :param media_state: The state of the playing media
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
         :return:
         """
         vlc = get_vlc()
@@ -256,10 +257,10 @@ class VlcPlayer(MediaPlayer):
             if not self.media_state_wait(controller, vlc.State.Playing):
                 return False
             if controller.media_info.audio_track > 0:
-                output_display.vlc_media_player.audio_set_track(controller.media_info.audio_track)
+                controller.vlc_media_player.audio_set_track(controller.media_info.audio_track)
                 log.debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track))
             if controller.media_info.subtitle_track > 0:
-                output_display.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
+                controller.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
                 log.debug('vlc play, subtitle_track set: ' + str(controller.media_info.subtitle_track))
             if controller.media_info.start_time > 0:
                 log.debug('vlc play, starttime set: ' + str(controller.media_info.start_time))
@@ -359,7 +360,7 @@ class VlcPlayer(MediaPlayer):
             if controller.media_info.media_type == MediaType.CD \
                     or controller.media_info.media_type == MediaType.DVD:
                 controller.seek_slider.setSliderPosition(
-                    controller.vlc_media_player.get_time() - int(controller.controller.media_info.start_time))
+                    controller.vlc_media_player.get_time() - int(controller.media_info.start_time))
             else:
                 controller.seek_slider.setSliderPosition(controller.vlc_media_player.get_time())
             controller.seek_slider.blockSignals(False)

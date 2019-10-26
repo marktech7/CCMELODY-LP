@@ -214,7 +214,6 @@ class ServiceItem(RegistryProperties):
         """
         Render the frames for printing and return them
 
-        :param can_render_chords: bool Whether or not to render the chords
         """
         if not self._print_slides:
             self._print_slides = []
@@ -631,7 +630,7 @@ class ServiceItem(RegistryProperties):
         """
         Validates a service item to make sure it is valid
 
-        :param set[str] suffixes: A set of vaild suffixes
+        :param set[str] suffixes: A set of valid suffixes
         """
         self.is_valid = True
         for slide in self.slides:
