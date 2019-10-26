@@ -357,7 +357,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         if stream:
             self.resize(controller, self.vlc_player)
-            display.media_info.media_type = MediaType.Stream
+            controller.media_info.media_type = MediaType.Stream
             if self.vlc_player.load(controller, display, None):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True

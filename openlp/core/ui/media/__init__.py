@@ -91,7 +91,7 @@ def parse_optical_path(input_string):
     """
     log.debug('parse_optical_path, about to parse: "{text}"'.format(text=input_string))
     clip_info = input_string.split(sep=':')
-    title = int(clip_info[1])
+    title = str(clip_info[1])
     audio_track = int(clip_info[2])
     subtitle_track = int(clip_info[3])
     start = float(clip_info[4])
