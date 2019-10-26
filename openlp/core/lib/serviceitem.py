@@ -638,7 +638,6 @@ class ServiceItem(RegistryProperties):
 
         :param set[str] suffixes: A set of valid suffixes
         """
-        print("Called")
         self.is_valid = True
         for slide in self.slides:
             if self.is_image() and not os.path.exists(slide['path']):
