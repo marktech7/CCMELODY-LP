@@ -149,8 +149,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         else:
             self.live_timer.stop()
             self.media_stop(self.display_controllers(DisplayControllerType.Live))
-            if self.display_controllers(DisplayControllerType.Live).media_info.can_loop_playback:
-                self.media_play(self.display_controllers(DisplayControllerType.Live), True)
+            # if self.display_controllers(DisplayControllerType.Live).media_info.can_loop_playback:
+            #    self.media_play(self.display_controllers(DisplayControllerType.Live), True)
 
     def media_state_preview(self):
         """
@@ -219,9 +219,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.media_reset(controller)
         controller.media_info = ItemMediaInfo()
         if controller.is_live:
-            controller.media_info.volume = Settings().value('media/live volume')
+            controller.media_info.volume = self.settings.value('media/live volume')
         else:
-            controller.media_info.volume = Settings().value('media/preview volume')
+            controller.media_info.volume = self.settings.value('media/preview volume')
         # background will always loop video.
         controller.media_info.can_loop_playback = True
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
@@ -278,7 +278,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         elif not hidden or service_item.will_auto_start:
             autoplay = True
         # Unblank on load set
-        elif Settings().value('core/auto unblank'):
+        elif self.settings.value('core/auto unblank'):
             autoplay = True
         if autoplay:
             if not self.media_play(controller):
@@ -562,9 +562,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         log.debug('media_volume {vol}'.format(vol=volume))
         if controller.is_live:
-            Settings().setValue('media/live volume', volume)
+            self.settings.setValue('media/live volume', volume)
         else:
-            Settings().setValue('media/preview volume', volume)
+            self.settings.setValue('media/preview volume', volume)
         self.current_media_players[controller.controller_type].volume(controller, volume)
         controller.volume_slider.setValue(volume)
 
