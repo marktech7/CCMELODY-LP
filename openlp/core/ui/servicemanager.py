@@ -1241,7 +1241,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 child = QtWidgets.QTreeWidgetItem(tree_widget_item)
                 # prefer to use a display_title
                 if service_item_from_item.is_capable(ItemCapabilities.HasDisplayTitle) or \
-                        service_item_from_item.service_item_type == ServiceItemType.Image:
+                        service_item_from_item.service_item_type is not ServiceItemType.Text:
                     text = slide['title'].replace('\n', ' ')
                 else:
                     text = service_item_from_item.get_rendered_frame(slide_index)
