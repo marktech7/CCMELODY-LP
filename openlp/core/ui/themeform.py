@@ -537,15 +537,22 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         # footer page
         self.theme.font_footer_name = self.footer_font_combo_box.currentFont().family()
         self.theme.font_footer_size = self.field('footer_size_spin_box')
-        # position page
-        self.theme.font_main_x = self.field('main_position_x')
-        self.theme.font_main_y = self.field('main_position_y')
-        self.theme.font_main_height = self.field('main_position_height')
-        self.theme.font_main_width = self.field('main_position_width')
-        self.theme.font_footer_x = self.field('footer_position_x')
-        self.theme.font_footer_y = self.field('footer_position_y')
-        self.theme.font_footer_height = self.field('footer_position_height')
-        self.theme.font_footer_width = self.field('footer_position_width')
+        # position page (main)
+        if self.theme.font_main_override:
+            self.theme.font_main_x = self.field('main_position_x')
+            self.theme.font_main_y = self.field('main_position_y')
+            self.theme.font_main_height = self.field('main_position_height')
+            self.theme.font_main_width = self.field('main_position_width')
+        else:
+            self.theme.set_default_header()
+        # position page (footer)
+        if self.theme.font_footer_override:
+            self.theme.font_footer_x = self.field('footer_position_x')
+            self.theme.font_footer_y = self.field('footer_position_y')
+            self.theme.font_footer_height = self.field('footer_position_height')
+            self.theme.font_footer_width = self.field('footer_position_width')
+        else:
+            self.theme.set_default_footer()
         # position page
         self.theme.display_horizontal_align = self.horizontal_combo_box.currentIndex()
         self.theme.display_vertical_align = self.vertical_combo_box.currentIndex()
