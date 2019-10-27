@@ -193,7 +193,7 @@ class MediaPlayer(RegistryProperties):
 
     def set_state(self, state, controller):
         """
-        Set the State based on the display being processed
+        Set the State based on the display being processed within the controller
         :param state: State to be set
         :param controller: Identify the Display type
         :return: None

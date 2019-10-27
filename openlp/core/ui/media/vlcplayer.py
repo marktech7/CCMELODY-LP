@@ -209,7 +209,7 @@ class VlcPlayer(MediaPlayer):
         """
         Resize the player
 
-        :param controller: The display where the media is
+        :param controller: The display where the media is stored within the controller.
         :return:
         """
         if controller.is_live:
@@ -278,7 +278,7 @@ class VlcPlayer(MediaPlayer):
         """
         Pause the current item
 
-        :param controller: The display where the media is
+        :param controller: The controller which is managing the display
         :return:
         """
         vlc = get_vlc()
@@ -292,7 +292,7 @@ class VlcPlayer(MediaPlayer):
         """
         Stop the current item
 
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
         :return:
         """
         threading.Thread(target=controller.vlc_media_player.stop).start()
@@ -303,7 +303,7 @@ class VlcPlayer(MediaPlayer):
         Set the volume
 
         :param vol: The volume to be sets
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
         :return:
         """
         controller.vlc_media_player.audio_set_volume(vol)
@@ -313,7 +313,7 @@ class VlcPlayer(MediaPlayer):
         Go to a particular position
 
         :param seek_value: The position of where a seek goes to
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
         """
         if controller.media_info.media_type == MediaType.CD \
                 or controller.media_info.media_type == MediaType.DVD:
@@ -325,7 +325,7 @@ class VlcPlayer(MediaPlayer):
         """
         Reset the player
 
-        :param controller: The display where the media is
+        :param controller: The controller where the media is
         """
         controller.vlc_media_player.stop()
         controller.vlc_widget.setVisible(False)
@@ -335,7 +335,7 @@ class VlcPlayer(MediaPlayer):
         """
         Set the visibility
 
-        :param controller: The display where the media is
+        :param controller: The controller where the media display is
         :param status: The visibility status
         """
         controller.vlc_widget.setVisible(status)
