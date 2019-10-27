@@ -149,8 +149,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         else:
             self.live_timer.stop()
             self.media_stop(self.display_controllers(DisplayControllerType.Live))
-            # if self.display_controllers(DisplayControllerType.Live).media_info.can_loop_playback:
-            #    self.media_play(self.display_controllers(DisplayControllerType.Live), True)
 
     def media_state_preview(self):
         """
@@ -166,8 +164,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         else:
             self.preview_timer.stop()
             self.media_stop(self.display_controllers(DisplayControllerType.Preview))
-            if self.display_controllers(DisplayControllerType.Preview).media_info.can_loop_playback:
-                self.media_play(self.display_controllers(DisplayControllerType.Preview), True)
 
     def setup_display(self, controller, preview):
         """
@@ -178,8 +174,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         controller.media_info = ItemMediaInfo()
         controller.has_audio = True
-        # if display.is_live and preview:
-        #     return
         if preview:
             controller.has_audio = False
         self.vlc_player.setup(controller, self._define_display(controller), preview)
@@ -565,6 +559,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             self.settings.setValue('media/live volume', volume)
         else:
             self.settings.setValue('media/preview volume', volume)
+        controller.media_info.volume = volume
         self.current_media_players[controller.controller_type].volume(controller, volume)
         controller.volume_slider.setValue(volume)
 
