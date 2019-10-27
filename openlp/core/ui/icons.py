@@ -62,6 +62,7 @@ class UiIcons(metaclass=Singleton):
             'authentication': {'icon': 'fa.exclamation-triangle', 'attr': 'red'},
             'address': {'icon': 'fa.book'},
             'back': {'icon': 'fa.step-backward'},
+            'backspace': {'icon': 'mdi.backspace-outline'},
             'bible': {'icon': 'fa.book'},
             'blank': {'icon': 'fa.times-circle'},
             'blank_theme': {'icon': 'fa.file-image-o'},

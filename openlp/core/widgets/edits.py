@@ -64,7 +64,7 @@ class SearchEdit(QtWidgets.QLineEdit):
         self.settings_section = settings_section
         self._current_search_type = -1
         self.clear_button = QtWidgets.QToolButton(self)
-        self.clear_button.setIcon(UiIcons().shortcuts)
+        self.clear_button.setIcon(UiIcons().backspace)
         self.clear_button.setCursor(QtCore.Qt.ArrowCursor)
         self.clear_button.setStyleSheet('QToolButton { border: none; padding: 0px; }')
         self.clear_button.resize(18, 18)
