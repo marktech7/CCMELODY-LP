@@ -1170,22 +1170,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                     Registry().execute('{text}_slide'.format(text=self.service_item.name.lower()),
                                        [self.service_item, self.is_live, row])
             else:
-                # to_display = self.service_item.get_rendered_frame(row)
-                if self.service_item.is_text():
-                    for display in self.displays:
-                        display.go_to_slide(row)
-                    # self.display.text(to_display, row != old_selected_row)
-                else:
-                    if start:
-                        for display in self.displays:
-                            display.load_images(self.service_item.slides)
-                        # self.display.build_html(self.service_item, to_display)
-                    else:
-                        for display in self.displays:
-                            display.go_to_slide(row)
-                        # self.display.image(to_display)
-                    # reset the store used to display first image
-                    self.service_item.bg_image_bytes = None
+                for display in self.displays:
+                    display.go_to_slide(row)
             self.selected_row = row
             self.update_preview()
             self.preview_widget.change_slide(row)
