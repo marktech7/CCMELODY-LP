@@ -201,11 +201,10 @@ class DisplayWindow(QtWidgets.QWidget):
         js_is_display = str(self.is_display).lower()
         self.run_javascript('Display.init({do_transitions});'.format(do_transitions=js_is_display))
         self._is_initialised = True
-        if self._can_show_startup_screen:
-            self.set_startup_screen()
-        # Make sure the scale is set if it was attempted set before init
         if self.scale != 1:
             self.set_scale(self.scale)
+        if self._can_show_startup_screen:
+            self.set_startup_screen()
 
     def run_javascript(self, script, is_sync=False):
         """

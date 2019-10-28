@@ -378,6 +378,7 @@ var Display = {
    */
   reinit: function () {
     Reveal.sync();
+    // Python expects to be on first page after reinit
     Reveal.slide(0);
   },
   /**
