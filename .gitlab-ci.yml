@@ -1,17 +1,16 @@
 stages:
-  - lint
   - test
   - deploy
 
 lint-python:
-  stage: lint
+  stage: test
   image: openlp/debian
   script:
     - sh scripts/generate_resources.sh
     - flake8
 
 lint-javascript:
-  stage: lint
+  stage: test
   image: openlp/angular
   script:
     - yarn install
