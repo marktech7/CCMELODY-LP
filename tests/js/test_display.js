@@ -113,10 +113,12 @@ describe("The Display object", function () {
     expect(Display.reinit).toBeDefined();
   });
 
-  it("should re-initialise Reveal when reinit is called", function () {
-    spyOn(Reveal, "reinitialize");
+  it("should sync Reveal and set to first slide when reinit is called", function () {
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
     Display.reinit();
-    expect(Reveal.reinitialize).toHaveBeenCalled();
+    expect(Reveal.sync).toHaveBeenCalled();
+    expect(Reveal.slide).toHaveBeenCalledWith(0);
   });
 
   it("should have a setTransition() method", function () {
@@ -562,7 +564,6 @@ describe("Display.setTextSlides", function () {
     ];
     spyOn(Display, "clearSlides");
     spyOn(Display, "reinit");
-    spyOn(Reveal, "slide");
 
     Display.setTextSlides(slides);
 
@@ -571,7 +572,6 @@ describe("Display.setTextSlides", function () {
     expect(Display._slides["v2"]).toEqual(1);
     expect($(".slides > section > section").length).toEqual(2);
     expect(Display.reinit).toHaveBeenCalledTimes(1);
-    expect(Reveal.slide).toHaveBeenCalledWith(0, 0);
   });
 
   it("should correctly set outline width", function () {

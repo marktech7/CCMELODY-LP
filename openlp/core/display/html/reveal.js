@@ -442,14 +442,6 @@
 	}
 
 	/**
-	 * Restarts up the presentation if the client is capable.
-	 */
-    function reinitialize() {
-        initialized = false;
-        initialize(config);
-    }
-
-	/**
 	 * Inspect the client to see what it's capable of, this
 	 * should only happens once per runtime.
 	 */
@@ -5814,7 +5806,6 @@
 		VERSION: VERSION,
 
 		initialize: initialize,
-		reinitialize: reinitialize,
 		configure: configure,
 
 		sync: sync,

@@ -377,7 +377,9 @@ var Display = {
    * Reinitialise Reveal
    */
   reinit: function () {
-    Reveal.reinitialize();
+    Reveal.sync();
+    // Python expects to be on first page after reinit
+    Reveal.slide(0);
   },
   /**
    * Set the transition type
@@ -662,7 +664,6 @@ var Display = {
       Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
     });
     Display.reinit();
-    Display.goToSlide(0);
   },
   /**
    * Create the <section> that will contain text slides (vertical slides in react)
