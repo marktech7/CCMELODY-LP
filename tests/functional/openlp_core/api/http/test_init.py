@@ -158,8 +158,8 @@ class TestInit(TestCase, TestMixin):
         wrapped_function = requires_auth(func)
         value = wrapped_function(0)
 
-        # THEN: the result will be as expected
-        assert str(value).startswith("401 Unauthorized")
+        # THEN: the result will be as expected (unauthorized)
+        assert str(value) == str(authenticate())
 
 
 def func(field=None):
