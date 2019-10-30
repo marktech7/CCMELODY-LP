@@ -58,14 +58,14 @@ class TestDisplayWindow(TestCase, TestMixin):
 
     def test_x11_override_off(self, mocked_webengine, mocked_addWidget):
         """
-        Test that the x11 override option bit is set
+        Test that the x11 override option bit is not set when setting if off
         """
-        # GIVEN: x11 bypass is on
+        # GIVEN: x11 bypass is off
         Settings().setValue('advanced/x11 bypass wm', False)
 
         # WHEN: A DisplayWindow is generated
         display_window = DisplayWindow()
 
-        # THEN: The x11 override flag should be set
+        # THEN: The x11 override flag should not be set
         x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
         assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
