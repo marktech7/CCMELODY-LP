@@ -30,10 +30,10 @@ from PyQt5 import QtCore
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.common.registry import Registry
 from openlp.core.display.window import DisplayWindow
 from tests.helpers.testmixin import TestMixin
 from openlp.core.common.settings import Settings
+
 
 @patch('PyQt5.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
@@ -50,7 +50,7 @@ class TestDisplayWindow(TestCase, TestMixin):
         Settings().setValue('advanced/x11 bypass wm', True)
 
         # WHEN: A DisplayWindow is generated
-        display_window = DisplayWindow();
+        display_window = DisplayWindow()
 
         # THEN: The x11 override flag should be set
         x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
@@ -64,7 +64,7 @@ class TestDisplayWindow(TestCase, TestMixin):
         Settings().setValue('advanced/x11 bypass wm', False)
 
         # WHEN: A DisplayWindow is generated
-        display_window = DisplayWindow();
+        display_window = DisplayWindow()
 
         # THEN: The x11 override flag should be set
         x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
