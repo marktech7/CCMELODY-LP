@@ -109,13 +109,17 @@ class DisplayWindow(QtWidgets.QWidget):
         Create the display window
         """
         super(DisplayWindow, self).__init__(parent)
+        # Gather all flags for the display window
+        flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
+        if Settings().value('advanced/x11 bypass wm'):
+            flags |= QtCore.Qt.X11BypassWindowManagerHint
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
-        self.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint)
+        self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setAutoFillBackground(True)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
