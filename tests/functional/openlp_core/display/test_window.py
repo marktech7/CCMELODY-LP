@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.lib.screenlist package.
+Package to test the openlp.core.display.window package.
 """
 import sys
 
@@ -27,6 +27,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
+
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
