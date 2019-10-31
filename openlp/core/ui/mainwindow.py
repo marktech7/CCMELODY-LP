@@ -670,6 +670,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.application.process_events()
                 plugin.first_time()
         self.application.process_events()
+        # Load the themes from files
+        self.theme_manager_contents.load_first_time_themes()
+        # Update the theme widget
+        self.theme_manager_contents.load_themes()
         temp_path = Path(gettempdir(), 'openlp')
         shutil.rmtree(temp_path, True)
 
@@ -714,10 +718,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                     self.active_plugin.toggle_status(PluginStatus.Inactive)
         # Set global theme and
         Registry().execute('theme_update_global')
-        # Load the themes from files
-        self.theme_manager_contents.load_first_time_themes()
-        # Update the theme widget
-        self.theme_manager_contents.load_themes()
         # Check if any Bibles downloaded.  If there are, they will be processed.
         Registry().execute('bibles_load_list')
         self.application.set_normal_cursor()

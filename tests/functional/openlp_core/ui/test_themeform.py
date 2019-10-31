@@ -28,9 +28,9 @@ from unittest.mock import MagicMock, patch
 from openlp.core.ui.themeform import ThemeForm
 
 
-class TestThemeManager(TestCase):
+class TestThemeForm(TestCase):
     """
-    Test the functions in the ThemeManager Class
+    Test the functions in the ThemeForm Class
     """
     def setUp(self):
         with patch('openlp.core.ui.themeform.ThemeForm._setup'):

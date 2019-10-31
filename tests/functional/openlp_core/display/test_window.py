@@ -33,22 +33,24 @@ sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.display.window import DisplayWindow
 from tests.helpers.testmixin import TestMixin
-from openlp.core.common.settings import Settings
 
 
 @patch('PyQt5.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
+@patch('openlp.core.display.window.Settings')
 class TestDisplayWindow(TestCase, TestMixin):
     """
     A test suite to test the functions in DisplayWindow
     """
 
-    def test_x11_override_on(self, mocked_webengine, mocked_addWidget):
+    def test_x11_override_on(self, MockSettings, mocked_webengine, mocked_addWidget):
         """
         Test that the x11 override option bit is set
         """
         # GIVEN: x11 bypass is on
-        Settings().setValue('advanced/x11 bypass wm', True)
+        mocked_settings = MagicMock()
+        mocked_settings.value.return_value = True
+        MockSettings.return_value = mocked_settings
 
         # WHEN: A DisplayWindow is generated
         display_window = DisplayWindow()
@@ -57,12 +59,14 @@ class TestDisplayWindow(TestCase, TestMixin):
         x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
         assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
-    def test_x11_override_off(self, mocked_webengine, mocked_addWidget):
+    def test_x11_override_off(self, MockSettings, mocked_webengine, mocked_addWidget):
         """
         Test that the x11 override option bit is not set when setting if off
         """
         # GIVEN: x11 bypass is off
-        Settings().setValue('advanced/x11 bypass wm', False)
+        mocked_settings = MagicMock()
+        mocked_settings.value.return_value = False
+        MockSettings.return_value = mocked_settings
 
         # WHEN: A DisplayWindow is generated
         display_window = DisplayWindow()
