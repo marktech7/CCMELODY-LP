@@ -324,7 +324,7 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
             return
         action = self._current_item_action()
         if action is None:
-            QtWidgets.QMessageBox.information(self, translate('OpenLP.ShortcutListForm', 'Information'),
+            QtWidgets.QMessageBox.information(self, translate('OpenLP.ShortcutListForm', 'Select an Action'),
                                               translate('OpenLP.ShortcutListForm', 'Select an action and click one '
                                                         'of the buttons below to start '
                                                         'capturing a new primary or alternate shortcut, respectively.'))
