@@ -941,10 +941,8 @@ class TestInfoLabel(TestCase):
         """
         Test the paintEvent method when text fits the label
         """
-        font = QtGui.QFont()
-        metrics = QtGui.QFontMetrics(font)
-
         with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
+                patch('openlp.core.ui.slidecontroller.QtGui.QFontMetrics') as MockFontMetrics, \
                 patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
 
             # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
@@ -957,9 +955,11 @@ class TestInfoLabel(TestCase):
             info_label.rect = mocked_rect
             info_label.text = mocked_text
             info_label.width = mocked_width
+            mocked_font_metrics = MagicMock()
+            mocked_font_metrics.elidedText.return_value = test_string
+            MockFontMetrics.return_value = mocked_font_metrics
 
             # WHEN: The instance is wider than its text, and the paintEvent method is called
-            info_label.width.return_value = metrics.boundingRect(test_string).width() + 10
             info_label.paintEvent(MagicMock())
 
             # THEN: The text should be drawn centered with the complete test_string
@@ -969,15 +969,14 @@ class TestInfoLabel(TestCase):
         """
         Test the paintEvent method when text fits the label
         """
-        font = QtGui.QFont()
-        metrics = QtGui.QFontMetrics(font)
-
         with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
+                patch('openlp.core.ui.slidecontroller.QtGui.QFontMetrics') as MockFontMetrics, \
                 patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
 
             # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
             info_label = InfoLabel()
             test_string = 'Label Text'
+            elided_test_string = test_string[0:5] + '...'
             mocked_rect = MagicMock()
             mocked_text = MagicMock()
             mocked_width = MagicMock()
@@ -985,14 +984,14 @@ class TestInfoLabel(TestCase):
             info_label.rect = mocked_rect
             info_label.text = mocked_text
             info_label.width = mocked_width
+            mocked_font_metrics = MagicMock()
+            mocked_font_metrics.elidedText.return_value = elided_test_string
+            MockFontMetrics.return_value = mocked_font_metrics
 
             # WHEN: The instance is narrower than its text, and the paintEvent method is called
-            label_width = metrics.boundingRect(test_string).width() - 10
-            info_label.width.return_value = label_width
             info_label.paintEvent(MagicMock())
 
             # THEN: The text should be drawn aligned left with an elided test_string
-            elided_test_string = metrics.elidedText(test_string, QtCore.Qt.ElideRight, label_width)
             mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, elided_test_string)
 
     @patch('builtins.super')
