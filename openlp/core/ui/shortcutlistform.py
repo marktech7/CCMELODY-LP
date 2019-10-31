@@ -323,16 +323,23 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         if not toggled:
             return
         action = self._current_item_action()
-        shortcuts = self._action_shortcuts(action)
-        self.refresh_shortcut_list()
-        primary_button_text = ''
-        alternate_button_text = ''
-        if shortcuts:
-            primary_button_text = self.get_shortcut_string(shortcuts[0], for_display=True)
-        if len(shortcuts) == 2:
-            alternate_button_text = self.get_shortcut_string(shortcuts[1], for_display=True)
-        self.primary_push_button.setText(primary_button_text)
-        self.alternate_push_button.setText(alternate_button_text)
+        if action is None:
+            QtWidgets.QMessageBox.information(self, translate('OpenLP.ShortcutListForm', 'Information'),
+                                              translate('OpenLP.ShortcutListForm', 'Select an action and click one '
+                                                        'of the buttons below to start '
+                                                        'capturing a new primary or alternate shortcut, respectively.'))
+
+        else:
+            shortcuts = self._action_shortcuts(action)
+            self.refresh_shortcut_list()
+            primary_button_text = ''
+            alternate_button_text = ''
+            if shortcuts:
+                primary_button_text = self.get_shortcut_string(shortcuts[0], for_display=True)
+            if len(shortcuts) == 2:
+                alternate_button_text = self.get_shortcut_string(shortcuts[1], for_display=True)
+            self.primary_push_button.setText(primary_button_text)
+            self.alternate_push_button.setText(alternate_button_text)
 
     def save(self):
         """
