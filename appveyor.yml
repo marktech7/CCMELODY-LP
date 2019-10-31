@@ -8,9 +8,9 @@ image:
 
 environment:
   matrix:
-    - PYTHON: C:\\Python38-x64
+    - PYTHON: C:\\Python37-x64
       CHOCO_VLC: vlc
-    - PYTHON: C:\\Python38
+    - PYTHON: C:\\Python37
       CHOCO_VLC: vlc --forcex86
 
 install:
