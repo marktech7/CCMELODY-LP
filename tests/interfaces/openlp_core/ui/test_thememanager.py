@@ -58,19 +58,16 @@ class TestThemeManager(TestCase, TestMixin):
         # GIVEN: A new a call to initialise
         self.theme_manager.setup_ui = MagicMock()
         self.theme_manager.build_theme_path = MagicMock()
-        self.theme_manager.load_first_time_themes = MagicMock()
         self.theme_manager.upgrade_themes = MagicMock()
         Settings().setValue('themes/global theme', 'my_theme')
 
         # WHEN: the initialisation is run
-        with patch('openlp.core.ui.thememanager.ThemeProgressForm'):
-            self.theme_manager.bootstrap_initialise()
+        self.theme_manager.bootstrap_initialise()
 
         # THEN:
         self.theme_manager.setup_ui.assert_called_once_with(self.theme_manager)
         assert self.theme_manager.global_theme == 'my_theme'
         self.theme_manager.build_theme_path.assert_called_once_with()
-        self.theme_manager.load_first_time_themes.assert_called_once_with()
         self.theme_manager.upgrade_themes.assert_called_once_with()
 
     @patch('openlp.core.ui.thememanager.create_paths')
@@ -117,7 +114,8 @@ class TestThemeManager(TestCase, TestMixin):
         self.theme_manager.theme_path = MagicMock()
 
         # WHEN:
-        self.theme_manager.bootstrap_post_set_up()
+        with patch('openlp.core.ui.thememanager.ThemeProgressForm'):
+            self.theme_manager.bootstrap_post_set_up()
 
         # THEN:
         assert 1 == self.theme_manager.load_themes.call_count, "load_themes should have been called once"

@@ -149,16 +149,15 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         process the bootstrap initialise setup request
         """
         self.setup_ui(self)
-        self.progress_form = ThemeProgressForm(self)
         self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.build_theme_path()
-        self.load_first_time_themes()
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
 
     def bootstrap_post_set_up(self):
         """
         process the bootstrap post setup request
         """
+        self.progress_form = ThemeProgressForm(self)
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
@@ -481,7 +480,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             self.save_theme(theme)
             Settings().setValue(self.settings_section + '/global theme', theme.theme_name)
             new_themes = [theme.theme_name]
-        self.update_preview_images(new_themes)
+        if new_themes:
+            self.update_preview_images(new_themes)
         self.application.set_normal_cursor()
 
     def load_themes(self):

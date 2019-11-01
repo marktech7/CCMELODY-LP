@@ -36,6 +36,8 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
         super().__init__(parent)
         self.setup_ui(self)
         self._theme_list = []
+
+    def show(self):
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(0)
         self.progress_bar.setValue(0)
@@ -45,6 +47,7 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
         except ZeroDivisionError:
             self.ratio = 16 / 9
         self.theme_preview_layout.aspect_ratio = self.ratio
+        return super().show()
 
     def get_preview(self, theme_name, theme_data):
         self.label.setText(theme_name)
