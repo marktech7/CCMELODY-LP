@@ -27,6 +27,7 @@ import os
 import sys
 import threading
 from datetime import datetime
+from time import sleep
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -198,6 +199,7 @@ class VlcPlayer(MediaPlayer):
         vlc = get_vlc()
         start = datetime.now()
         while media_state != controller.vlc_media.get_state():
+            sleep(0.1)
             if controller.vlc_media.get_state() == vlc.State.Error:
                 return False
             self.application.process_events()
@@ -215,7 +217,7 @@ class VlcPlayer(MediaPlayer):
         if controller.is_live:
             controller.vlc_widget.setGeometry(ScreenList().current.display_geometry)
         else:
-            controller.vlc_widget.resize(controller.size())
+            controller.vlc_widget.resize(controller.preview_display.size())
 
     def play(self, controller, output_display):
         """
