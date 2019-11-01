@@ -1003,8 +1003,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.application.set_busy_cursor()
         self.image_manager.update_display()
-        # self.renderer.update_display()
+        self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
         self.preview_controller.screen_size_changed()
+        self.live_controller.setup_displays()
         self.live_controller.screen_size_changed()
         self.setFocus()
         self.activateWindow()
