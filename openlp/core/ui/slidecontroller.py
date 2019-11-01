@@ -175,6 +175,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             if screen.is_display:
                 display = DisplayWindow(self, screen)
                 self.displays.append(display)
+        if self.display:
+            self.__add_actions_to_widget(self.display)
 
     @property
     def display(self):
@@ -639,9 +641,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.is_live and self.displays:
             for display in self.displays:
                 display.resize(self.screens.current.display_geometry.size())
-        # if self.is_live:
-        #     self.__add_actions_to_widget(self.display)
-        # The SlidePreview's ratio.
 
     def __add_actions_to_widget(self, widget):
         """
