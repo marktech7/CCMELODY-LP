@@ -163,6 +163,7 @@ class ProxyDialog(QtWidgets.QDialog):
         self.layout.addWidget(self.button_box)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+        self.retranslate_ui()
 
     def accept(self):
         """
@@ -351,10 +352,10 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         for screen in self.screens:
             screen_button = ScreenButton(self.screen_frame, screen)
             screen_button.clicked.connect(self.on_screen_button_clicked)
-            if not self.current_screen or screen.is_display:
-                screen_button.click()
             self.screen_frame_layout.addWidget(screen_button)
             self.screen_button_group.addButton(screen_button)
+            if screen.number == 0:
+                screen_button.click()
         self.screen_frame_layout.addStretch()
 
     def save(self):
@@ -394,7 +395,7 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
             label = QtWidgets.QLabel(None)
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setText(str(screen))
-            label.setStyleSheet('font-size: 24pt; font-weight: bold;'
+            label.setStyleSheet('font-size: 24pt; font-weight: bold; '
                                 'background-color: #0C0; color: #000; border: 5px solid #000;')
             label.setGeometry(QtCore.QRect(screen.geometry.x(), screen.geometry.y(), screen.geometry.width(), 100))
             label.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint |

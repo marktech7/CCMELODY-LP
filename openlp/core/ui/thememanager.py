@@ -472,7 +472,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme_path = self.theme_path / theme_path
             new_themes.append(self.unzip_theme(theme_path, self.theme_path))
             delete_file(theme_path)
-        theme_paths = AppLocation.get_files(self.settings_section, '.png')
         # No themes have been found so create one
         if not theme_paths:
             theme = Theme()
