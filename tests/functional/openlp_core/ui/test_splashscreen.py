@@ -21,8 +21,9 @@
 """
 Package to test the openlp.core.ui package.
 """
-from openlp.core.ui.splashscreen import SplashScreen
 from PyQt5 import QtCore
+
+from openlp.core.ui.splashscreen import SplashScreen
 
 
 class TestSplashScreen():
