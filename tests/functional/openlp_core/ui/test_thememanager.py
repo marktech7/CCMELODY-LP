@@ -219,6 +219,35 @@ class TestThemeManager(TestCase):
         # THEN: A warning should have happened due to attempting to copy a missing file
         mocked_log_warning.assert_called_once_with('Background does not exist, retaining cached background')
 
+    @patch('openlp.core.ui.thememanager.shutil')
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_background_override(self, mocked_paths, mocked_delete, mocked_shutil):
+        """
+        Test that we log a warning if the new background is missing
+        """
+        # GIVEN: A new theme manager instance, with invalid files. Setup as if the user
+        # has changed the background to a invalid path.
+        # Not using resource dir because I could potentially copy a file
+        folder_path = Path(mkdtemp())
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = folder_path / 'old.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = folder_path / 'new_cached.png'
+        # mocked_theme.background_source.exists() will return True
+        mocked_theme.background_source = MagicMock()
+        # override_background.exists() will return True
+        override_background = MagicMock()
+
+        # WHEN: Calling save_theme with a background override
+        theme_manager.save_theme(mocked_theme, background_override=override_background)
+
+        # THEN: The override_background should have been copied rather than the background_source
+        mocked_shutil.copyfile.assert_called_once_with(override_background, mocked_theme.background_filename)
+
     def test_save_theme_special_char_name(self):
         """
         Test that we can save themes with special characters in the name
