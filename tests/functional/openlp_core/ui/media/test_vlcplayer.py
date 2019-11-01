@@ -570,7 +570,7 @@ class TestVLCPlayer(TestCase, TestMixin):
         """
         # GIVEN: A display object and a VlcPlayer instance
         mocked_controller = MagicMock()
-        mocked_controller.size.return_value = (10, 10)
+        mocked_controller.preview_display.size.return_value = (10, 10)
         mocked_controller.is_live = False
         vlc_player = VlcPlayer(None)
 
@@ -578,7 +578,7 @@ class TestVLCPlayer(TestCase, TestMixin):
         vlc_player.resize(mocked_controller)
 
         # THEN: The right methods should have been called
-        mocked_controller.size.assert_called_with()
+        mocked_controller.preview_display.size.assert_called_with()
         mocked_controller.vlc_widget.resize.assert_called_with((10, 10))
 
     @patch('openlp.core.ui.media.vlcplayer.threading')
