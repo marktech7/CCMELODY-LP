@@ -229,13 +229,16 @@ class ScreenList(metaclass=Singleton):
         }
         Settings.extend_default_settings(screen_settings)
         screen_settings = Settings().value('core/screens')
-        for number, screen_dict in screen_settings.items():
-            # Sometimes this loads as a string instead of an int
-            number = int(number)
-            if self.has_screen(number):
-                self[number].update(screen_dict)
-            else:
-                self.screens.append(Screen.from_dict(screen_dict))
+        if screen_settings:
+            for number, screen_dict in screen_settings.items():
+                # Sometimes this loads as a string instead of an int
+                number = int(number)
+                if self.has_screen(number):
+                    self[number].update(screen_dict)
+                else:
+                    self.screens.append(Screen.from_dict(screen_dict))
+        else:
+            self[len(self) - 1].is_display = True
 
     def save_screen_settings(self):
         """
