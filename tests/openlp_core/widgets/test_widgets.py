@@ -480,3 +480,48 @@ class TestScreenSelectionWidget(TestCase, TestMixin):
         mocked_label.show.assert_called_once()
         assert instance.identify_labels == [mocked_label]
         instance.timer.start.assert_called_once()
+
+    def test_on_display_clicked_with_checked(self):
+        """
+        Test that the on_display_clicked() sets the first screen as display when the checkbx is checked
+        """
+        # GIVEN: A ScreenSelectionWidget and a bunch o' mocks
+        instance = ScreenSelectionWidget()
+        mocked_screen_1 = MagicMock()
+        mocked_screen_2 = MagicMock()
+        mocked_screen_2.is_display = True
+        instance.screens = [mocked_screen_1, mocked_screen_2]
+        instance.current_screen = mocked_screen_1
+
+        # WHEN: on_display_clicked() is called when the checkbox is checked
+        instance.on_display_clicked(True)
+
+        # THEN: The first screen should be marked as a display
+        assert mocked_screen_1.is_display is True
+        assert mocked_screen_2.is_display is False
+
+    def test_on_display_clicked_with_unchecked(self):
+        """
+        Test that the on_display_clicked() disallows the checkbox to be unchecked
+        """
+        # GIVEN: A ScreenSelectionWidget and a bunch o' mocks
+        instance = ScreenSelectionWidget()
+        mocked_screen_1 = MagicMock()
+        mocked_screen_2 = MagicMock()
+        mocked_screen_2.is_display = True
+        instance.screens = [mocked_screen_1, mocked_screen_2]
+        instance.current_screen = mocked_screen_2
+
+        # WHEN: on_display_clicked() is called when the checkbox is checked
+        with patch('openlp.core.widgets.widgets.translate') as mocked_translate, \
+                patch('openlp.core.widgets.widgets.critical_error_message_box') as mocked_error:
+            mocked_translate.side_effect = lambda c, s: s
+            instance.on_display_clicked(False)
+
+        # THEN: The first screen should be marked as a display
+        mocked_error.assert_called_once_with('Select a Display',
+                                             'You need to select at least one screen to be used as a display. '
+                                             'Select the screen you wish to use as a display, and check the '
+                                             'checkbox for that screen.', parent=instance, question=False)
+        assert instance.use_screen_check_box.isChecked() is True
+        assert instance.display_group_box.isChecked() is True
