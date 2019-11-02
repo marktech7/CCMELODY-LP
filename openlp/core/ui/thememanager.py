@@ -324,11 +324,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param str new_theme_name: The new theme name of the theme
         :rtype: None
         """
+        old_background = None
         if theme_data.background_type == 'image' or theme_data.background_type == 'video':
+            old_background = theme_data.background_filename
             theme_data.background_filename = self.theme_path / new_theme_name / theme_data.background_filename.name
         theme_data.theme_name = new_theme_name
         theme_data.extend_image_filename(self.theme_path)
-        self.save_theme(theme_data)
+        self.save_theme(theme_data, background_override=old_background)
         self.load_themes()
 
     def on_edit_theme(self, field=None):
@@ -644,12 +646,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             return False
         return True
 
-    def save_theme(self, theme, image=None):
+    def save_theme(self, theme, image=None, background_override=None):
         """
         Writes the theme to the disk and including the background image and thumbnail if necessary
 
         :param Theme theme: The theme data object.
         :param image: The theme thumbnail. Optionally.
+        :param background_override: Background to use rather than background_source. Optionally.
         :rtype: None
         """
         name = theme.theme_name
@@ -662,13 +665,17 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         except OSError:
             self.log_exception('Saving theme to file failed')
         if theme.background_source and theme.background_filename:
+            background_file = background_override
+            # Use theme source image if override doesn't exist
+            if not background_file or not background_file.exists():
+                background_file = theme.background_source
             if self.old_background_image_path and theme.background_filename != self.old_background_image_path:
                 delete_file(self.old_background_image_path)
-            if not theme.background_source.exists():
+            if not background_file.exists():
                 self.log_warning('Background does not exist, retaining cached background')
-            elif theme.background_source != theme.background_filename:
+            elif background_file != theme.background_filename:
                 try:
-                    shutil.copyfile(theme.background_source, theme.background_filename)
+                    shutil.copyfile(background_file, theme.background_filename)
                 except OSError:
                     self.log_exception('Failed to save theme image')
         if image:
