@@ -152,7 +152,7 @@ class ImpressController(PresentationController):
             self.toggle_presentation_screen(False)
             return desktop
         except Exception:
-            log.warning('Failed to get UNO desktop')
+            log.exception('Failed to get UNO desktop')
             return None
 
     def get_com_desktop(self):
