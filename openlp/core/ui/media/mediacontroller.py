@@ -429,7 +429,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.volume_slider.blockSignals(False)
         controller.media_info.is_playing = True
         display = self._define_display(controller)
-        display.setVisible(True)
+        if controller.is_live:
+            display.setVisible(False)
+            controller.preview_display.hide()
+        else:
+            display.setVisible(True)
         return True
 
     def tick(self, controller):
@@ -524,6 +528,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].stop(controller)
             self.current_media_players[controller.controller_type].set_visible(controller, False)
+            controller.preview_display.hide()
             controller.seek_slider.setSliderPosition(0)
             total_seconds = controller.media_info.length // 1000
             total_minutes = total_seconds // 60
