@@ -144,7 +144,7 @@ class OpenOfficeImport(SongImport):
         """
         self.file_path = file_path
         url = file_path.as_uri()
-        properties = tuple(self.create_property('Hidden', True))
+        properties = (self.create_property('Hidden', True),)
         try:
             self.document = self.desktop.loadComponentFromURL(url, '_blank', 0, properties)
             if not self.document.supportsService("com.sun.star.presentation.PresentationDocument") and not \
