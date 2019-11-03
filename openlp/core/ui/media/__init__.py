@@ -70,7 +70,7 @@ class ItemMediaInfo(object):
     file_info = None
     volume = 100
     is_background = False
-    can_loop_playback = False
+    is_looping_playback = False
     length = 0
     start_time = 0
     end_time = 0

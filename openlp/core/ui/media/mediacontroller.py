@@ -217,7 +217,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         else:
             controller.media_info.volume = self.settings.value('media/preview volume')
         # background will always loop video.
-        controller.media_info.can_loop_playback = True
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
@@ -443,7 +442,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.media_info.is_playing and controller.media_info.length > 0:
             if controller.media_info.timer > controller.media_info.length:
                 self.media_stop(controller)
-                if controller.media_info.can_loop_playback:
+                if controller.media_info.is_looping_playback:
                     start_again = True
             controller.media_info.timer += TICK_TIME
             seconds = controller.media_info.timer // 1000
@@ -499,8 +498,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param controller: The controller that needs to be stopped
         """
-        controller.media_info.can_loop_playback = not controller.media_info.can_loop_playback
-        controller.mediabar.actions['playbackLoop'].setChecked(controller.media_info.can_loop_playback)
+        controller.media_info.is_looping_playback = not controller.media_info.is_looping_playback
+        controller.mediabar.actions['playbackLoop'].setChecked(controller.media_info.is_looping_playback)
 
     def media_stop_msg(self, msg):
         """
