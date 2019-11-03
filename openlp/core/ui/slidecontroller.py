@@ -883,6 +883,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
             self.preview_display.load_verses(service_item.rendered_slides)
+            self.preview_display.show()
             for display in self.displays:
                 display.load_verses(service_item.rendered_slides)
             for slide_index, slide in enumerate(self.service_item.display_slides):
@@ -1481,7 +1482,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Respond to a request to close the Video
         """
         self.media_controller.media_reset(self)
-        self.preview_display.show()
 
     def _reset_blank(self, no_theme):
         """
