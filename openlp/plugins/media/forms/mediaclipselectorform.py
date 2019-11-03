@@ -256,7 +256,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             titles = self.vlc_media_player.video_get_title_description()
             self.titles_combo_box.clear()
             for title in titles:
-                self.titles_combo_box.addItem(title[1].decode(), title[0])
+                self.titles_combo_box.addItem(title.name.decode(), title.id)
             # Re-enable signals
             self.blockSignals(False)
             # Main title is usually title #1
@@ -626,6 +626,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         vlc = get_vlc()
         start = datetime.now()
         while media_state != self.vlc_media_player.get_state():
+            sleep(0.1)
             if self.vlc_media_player.get_state() == vlc.State.Error:
                 return False
             if (datetime.now() - start).seconds > 15:

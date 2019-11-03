@@ -138,9 +138,9 @@ class TestMedia(TestCase, TestMixin):
         (device_path, title_track, audio_track, subtitle_track, start, end, name) = parse_optical_path(path)
 
         # THEN: The return values should match the original values
-        assert org_title_track == title_track, 'Returned title_track should match the original'
+        assert org_title_track == int(title_track), 'Returned title_track should match the original'
         assert org_audio_track == audio_track, 'Returned audio_track should match the original'
-        assert org_subtitle_track == subtitle_track, 'Returned subtitle_track should match the original'
+        assert org_subtitle_track == int(subtitle_track), 'Returned subtitle_track should match the original'
         assert org_start == start, 'Returned start should match the original'
         assert org_end == end, 'Returned end should match the original'
         assert org_name == name, 'Returned end should match the original'
@@ -166,9 +166,9 @@ class TestMedia(TestCase, TestMixin):
         (device_path, title_track, audio_track, subtitle_track, start, end, name) = parse_optical_path(path)
 
         # THEN: The return values should match the original values
-        assert org_title_track == title_track, 'Returned title_track should match the original'
+        assert org_title_track == int(title_track), 'Returned title_track should match the original'
         assert org_audio_track == audio_track, 'Returned audio_track should match the original'
-        assert org_subtitle_track == subtitle_track, 'Returned subtitle_track should match the original'
+        assert org_subtitle_track == int(subtitle_track), 'Returned subtitle_track should match the original'
         assert org_start == start, 'Returned start should match the original'
         assert org_end == end, 'Returned end should match the original'
         assert org_name == name, 'Returned end should match the original'

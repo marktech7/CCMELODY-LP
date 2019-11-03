@@ -70,7 +70,7 @@ class ItemMediaInfo(object):
     file_info = None
     volume = 100
     is_background = False
-    can_loop_playback = False
+    is_looping_playback = False
     length = 0
     start_time = 0
     end_time = 0
@@ -91,7 +91,7 @@ def parse_optical_path(input_string):
     """
     log.debug('parse_optical_path, about to parse: "{text}"'.format(text=input_string))
     clip_info = input_string.split(sep=':')
-    title = int(clip_info[1])
+    title = str(clip_info[1])
     audio_track = int(clip_info[2])
     subtitle_track = int(clip_info[3])
     start = float(clip_info[4])
