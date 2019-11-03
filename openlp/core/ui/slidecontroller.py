@@ -907,17 +907,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             for slide_index, slide in enumerate(self.service_item.slides):
                 row += 1
                 self.slide_list[str(row)] = row - 1
-                # If current slide set background to image
-                # if not self.service_item.is_command() and slide_index == slide_no:
-                #     self.service_item.bg_image_bytes = \
-                #         self.image_manager.get_image_bytes(slide['filename'], ImageSource.ImagePlugin)
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
-        # Pass to display for viewing.
-        # Postpone image build, we need to do this later to avoid the theme
-        # flashing on the screen
-        # if not self.service_item.is_image():
-        #     self.display.build_html(self.service_item)
         if self.service_item.is_media():
             self.on_media_start(self.service_item)
         self.slide_selected(True)
@@ -1395,25 +1386,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
         self.on_toggle_loop()
 
-    # def set_audio_items_visibility(self, visible):
-    #    """
-    #    Set the visibility of the audio stuff
-    #    """
-    #    self.toolbar.set_widget_visible(AUDIO_LIST, visible)
-
-    # def set_audio_pause_clicked(self, checked):
-    #    """
-    #   Pause the audio player
-
-    #   :param checked: is the check box checked.
-    #   """
-    #   if not self.audio_pause_item.isVisible():
-    #       return
-    #   if checked:
-    #       self.display.audio_player.pause()
-    #   else:
-    #       self.display.audio_player.play()
-
     def timerEvent(self, event):
         """
         If the timer event is for this window select next slide
@@ -1509,12 +1481,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Respond to a request to close the Video
         """
         self.media_controller.media_reset(self)
-        self.preview_display.hide()
+        self.preview_display.show()
 
     def _reset_blank(self, no_theme):
         """
-        Used by command items which provide their own displays to reset the
-        screen hide attributes
+        Used by command items which provide their own displays to reset the screen hide attributes
 
         :param no_theme: Does the new item support theme-blanking.
         """
@@ -1546,30 +1517,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return HideMode.Screen
         else:
             return None
-
-    # def on_next_track_clicked(self):
-    #     """
-    #     Go to the next track when next is clicked
-    #     """
-    #     self.display.audio_player.next()
-    #
-    # def on_audio_time_remaining(self, time):
-    #     """
-    #     Update how much time is remaining
-    #
-    #     :param time: the time remaining
-    #     """
-    #     seconds = (self.display.audio_player.player.duration() - self.display.audio_player.player.position()) // 1000
-    #     minutes = seconds // 60
-    #     seconds %= 60
-    #     self.audio_time_label.setText(' %02d:%02d ' % (minutes, seconds))
-    #
-    # def on_track_triggered(self, field=None):
-    #     """
-    #     Start playing a track
-    #     """
-    #     action = self.sender()
-    #     self.display.audio_player.go_to(action.data())
 
 
 class PreviewController(RegistryBase, SlideController):
