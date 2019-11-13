@@ -432,7 +432,7 @@ def main():
             except OSError:
                 QtWidgets.QMessageBox.warning(
                     None, translate('OpenLP', 'Settings Upgrade'),
-                    translate('OpenLP', 'Settings back up failed.\n\nContinuining to upgrade.'))
+                    translate('OpenLP', 'Settings back up failed.\n\nContinuing to upgrade.'))
         settings.upgrade_settings()
     # First time checks in settings
     if not Settings().value('core/has run wizard'):
