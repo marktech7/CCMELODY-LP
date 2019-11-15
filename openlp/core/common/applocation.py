@@ -61,13 +61,14 @@ class AppLocation(object):
         :rtype: Path
         """
         if dir_type == AppLocation.AppDir or dir_type == AppLocation.VersionDir:
-            return get_frozen_path(FROZEN_APP_PATH, APP_PATH)
+            path = get_frozen_path(FROZEN_APP_PATH, APP_PATH)
         elif dir_type == AppLocation.PluginsDir:
-            return get_frozen_path(FROZEN_APP_PATH, APP_PATH) / 'plugins'
+            path = get_frozen_path(FROZEN_APP_PATH, APP_PATH) / 'plugins'
         elif dir_type == AppLocation.LanguageDir:
-            return get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
+            path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
-            return _get_os_dir_path(dir_type)
+            path = _get_os_dir_path(dir_type)
+        return path.resolve()
 
     @staticmethod
     def get_data_path():
@@ -83,7 +84,7 @@ class AppLocation(object):
         else:
             path = AppLocation.get_directory(AppLocation.DataDir)
             create_paths(path)
-        return path
+        return path.resolve()
 
     @staticmethod
     def get_files(section=None, extension=''):
