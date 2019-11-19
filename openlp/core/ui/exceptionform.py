@@ -114,7 +114,7 @@ class ExceptionForm(QtWidgets.QDialog, Ui_ExceptionDialog, RegistryProperties):
                 log.exception('Failed to write crash report')
                 QtWidgets.QMessageBox.warning(
                     self, translate('OpenLP.ExceptionDialog', 'Failed to Save Report'),
-                    translate('OpenLP.ExceptionDialog', 'The following error occured when saving the report.\n\n'
+                    translate('OpenLP.ExceptionDialog', 'The following error occurred when saving the report.\n\n'
                                                         '{exception}').format(file_name=file_path, exception=e))
 
     def on_send_report_button_clicked(self):
