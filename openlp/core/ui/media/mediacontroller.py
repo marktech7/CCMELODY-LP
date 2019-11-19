@@ -259,8 +259,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                                        translate('MediaPlugin.MediaItem', 'Unsupported File'))
             return False
         log.debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
-        # dont care about actual theme, set a black background
-        # now start playing - Preview is autoplay!
         autoplay = False
         if service_item.is_capable(ItemCapabilities.CanStream):
             autoplay = True
@@ -608,10 +606,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         is_live = msg[1]
         if not is_live:
             return
-        display = self._define_display(self.live_controller)
         if self.live_controller.controller_type in self.current_media_players and \
                 self.current_media_players[self.live_controller.controller_type].get_live_state() == MediaState.Playing:
-            self.media_pause(display.controller)
+            self.media_pause(self.live_controller)
             self.current_media_players[self.live_controller.controller_type].set_visible(self.live_controller, False)
 
     def media_blank(self, msg):
@@ -626,10 +623,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if not is_live:
             return
         Registry().execute('live_display_hide', hide_mode)
-        display = self._define_display(self.live_controller)
         if self.live_controller.controller_type in self.current_media_players and \
                 self.current_media_players[self.live_controller.controller_type].get_live_state() == MediaState.Playing:
-            self.media_pause(display.controller)
+            self.media_pause(self.live_controller)
             self.current_media_players[self.live_controller.controller_type].set_visible(self.live_controller, False)
 
     def media_unblank(self, msg):
@@ -643,11 +639,10 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         is_live = msg[1]
         if not is_live:
             return
-        display = self._define_display(self.live_controller)
         if self.live_controller.controller_type in self.current_media_players and \
                 self.current_media_players[self.live_controller.controller_type].get_live_state() != \
                 MediaState.Playing:
-            if self.media_play(display.controller):
+            if self.media_play(self.live_controller):
                 self.current_media_players[self.live_controller.controller_type].set_visible(self.live_controller, True)
                 # Start Timer for ui updates
                 if not self.live_timer.isActive():
