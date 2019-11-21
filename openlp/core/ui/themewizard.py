@@ -25,19 +25,15 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.theme import (
-    BackgroundGradientType,
-    BackgroundType,
-    HorizontalType,
-    TransitionType,
+from openlp.core.display.render import ThemePreviewRenderer
+from openlp.core.lib.theme import BackgroundGradientType, BackgroundType, HorizontalType, TransitionType, \
     TransitionSpeed
-)
 from openlp.core.lib.ui import add_welcome_page, create_valign_selection_widgets
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.layouts import AspectRatioLayout
-from openlp.core.display.render import ThemePreviewRenderer
+from openlp.core.widgets.widgets import FontSelectWidget
 
 
 class Ui_ThemeWizard(object):
@@ -54,7 +50,7 @@ class Ui_ThemeWizard(object):
         theme_wizard.setOptions(QtWidgets.QWizard.IndependentPages |
                                 QtWidgets.QWizard.NoBackButtonOnStartPage | QtWidgets.QWizard.HaveCustomButton1)
         theme_wizard.setFixedWidth(640)
-        if is_macosx():
+        if is_macosx():     # pragma: no cover
             theme_wizard.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
         else:
             theme_wizard.setWizardStyle(QtWidgets.QWizard.ModernStyle)
@@ -160,83 +156,10 @@ class Ui_ThemeWizard(object):
         # Main Area Page
         self.main_area_page = QtWidgets.QWizardPage()
         self.main_area_page.setObjectName('main_area_page')
-        self.main_area_layout = QtWidgets.QFormLayout(self.main_area_page)
+        self.main_area_layout = QtWidgets.QVBoxLayout(self.main_area_page)
         self.main_area_layout.setObjectName('main_area_layout')
-        self.main_font_label = QtWidgets.QLabel(self.main_area_page)
-        self.main_font_label.setObjectName('main_font_label')
-        self.main_font_combo_box = QtWidgets.QFontComboBox(self.main_area_page)
-        self.main_font_combo_box.setObjectName('main_font_combo_box')
-        self.main_area_layout.addRow(self.main_font_label, self.main_font_combo_box)
-        self.main_color_label = QtWidgets.QLabel(self.main_area_page)
-        self.main_color_label.setObjectName('main_color_label')
-        self.main_properties_layout = QtWidgets.QHBoxLayout()
-        self.main_properties_layout.setObjectName('main_properties_layout')
-        self.main_color_button = ColorButton(self.main_area_page)
-        self.main_color_button.setObjectName('main_color_button')
-        self.main_properties_layout.addWidget(self.main_color_button)
-        self.main_properties_layout.addSpacing(20)
-        self.main_bold_check_box = QtWidgets.QCheckBox(self.main_area_page)
-        self.main_bold_check_box.setObjectName('main_bold_check_box')
-        self.main_properties_layout.addWidget(self.main_bold_check_box)
-        self.main_properties_layout.addSpacing(20)
-        self.main_italics_check_box = QtWidgets.QCheckBox(self.main_area_page)
-        self.main_italics_check_box.setObjectName('MainItalicsCheckBox')
-        self.main_properties_layout.addWidget(self.main_italics_check_box)
-        self.main_area_layout.addRow(self.main_color_label, self.main_properties_layout)
-        self.main_size_label = QtWidgets.QLabel(self.main_area_page)
-        self.main_size_label.setObjectName('main_size_label')
-        self.main_size_layout = QtWidgets.QHBoxLayout()
-        self.main_size_layout.setObjectName('main_size_layout')
-        self.main_size_spin_box = QtWidgets.QSpinBox(self.main_area_page)
-        self.main_size_spin_box.setMaximum(999)
-        self.main_size_spin_box.setValue(16)
-        self.main_size_spin_box.setObjectName('main_size_spin_box')
-        self.main_size_layout.addWidget(self.main_size_spin_box)
-        self.main_line_count_label = QtWidgets.QLabel(self.main_area_page)
-        self.main_line_count_label.setObjectName('main_line_count_label')
-        self.main_size_layout.addWidget(self.main_line_count_label)
-        self.main_area_layout.addRow(self.main_size_label, self.main_size_layout)
-        self.line_spacing_label = QtWidgets.QLabel(self.main_area_page)
-        self.line_spacing_label.setObjectName('line_spacing_label')
-        self.line_spacing_spin_box = QtWidgets.QSpinBox(self.main_area_page)
-        self.line_spacing_spin_box.setMinimum(-250)
-        self.line_spacing_spin_box.setMaximum(250)
-        self.line_spacing_spin_box.setObjectName('line_spacing_spin_box')
-        self.main_area_layout.addRow(self.line_spacing_label, self.line_spacing_spin_box)
-        self.outline_check_box = QtWidgets.QCheckBox(self.main_area_page)
-        self.outline_check_box.setObjectName('outline_check_box')
-        self.outline_layout = QtWidgets.QHBoxLayout()
-        self.outline_layout.setObjectName('outline_layout')
-        self.outline_color_button = ColorButton(self.main_area_page)
-        self.outline_color_button.setEnabled(False)
-        self.outline_color_button.setObjectName('Outline_color_button')
-        self.outline_layout.addWidget(self.outline_color_button)
-        self.outline_layout.addSpacing(20)
-        self.outline_size_label = QtWidgets.QLabel(self.main_area_page)
-        self.outline_size_label.setObjectName('outline_size_label')
-        self.outline_layout.addWidget(self.outline_size_label)
-        self.outline_size_spin_box = QtWidgets.QSpinBox(self.main_area_page)
-        self.outline_size_spin_box.setEnabled(False)
-        self.outline_size_spin_box.setObjectName('outline_size_spin_box')
-        self.outline_layout.addWidget(self.outline_size_spin_box)
-        self.main_area_layout.addRow(self.outline_check_box, self.outline_layout)
-        self.shadow_check_box = QtWidgets.QCheckBox(self.main_area_page)
-        self.shadow_check_box.setObjectName('shadow_check_box')
-        self.shadow_layout = QtWidgets.QHBoxLayout()
-        self.shadow_layout.setObjectName('shadow_layout')
-        self.shadow_color_button = ColorButton(self.main_area_page)
-        self.shadow_color_button.setEnabled(False)
-        self.shadow_color_button.setObjectName('shadow_color_button')
-        self.shadow_layout.addWidget(self.shadow_color_button)
-        self.shadow_layout.addSpacing(20)
-        self.shadow_size_label = QtWidgets.QLabel(self.main_area_page)
-        self.shadow_size_label.setObjectName('shadow_size_label')
-        self.shadow_layout.addWidget(self.shadow_size_label)
-        self.shadow_size_spin_box = QtWidgets.QSpinBox(self.main_area_page)
-        self.shadow_size_spin_box.setEnabled(False)
-        self.shadow_size_spin_box.setObjectName('shadow_size_spin_box')
-        self.shadow_layout.addWidget(self.shadow_size_spin_box)
-        self.main_area_layout.addRow(self.shadow_check_box, self.shadow_layout)
+        self.main_font = FontSelectWidget(self.main_area_page)
+        self.main_area_layout.addWidget(self.main_font)
         theme_wizard.addPage(self.main_area_page)
         # Footer Area Page
         self.footer_area_page = QtWidgets.QWizardPage()
@@ -391,10 +314,6 @@ class Ui_ThemeWizard(object):
         theme_wizard.addPage(self.preview_page)
         self.retranslate_ui(theme_wizard)
         self.background_combo_box.currentIndexChanged.connect(self.background_stack.setCurrentIndex)
-        self.outline_check_box.toggled.connect(self.outline_color_button.setEnabled)
-        self.outline_check_box.toggled.connect(self.outline_size_spin_box.setEnabled)
-        self.shadow_check_box.toggled.connect(self.shadow_color_button.setEnabled)
-        self.shadow_check_box.toggled.connect(self.shadow_size_spin_box.setEnabled)
         self.main_position_check_box.toggled.connect(self.main_x_spin_box.setDisabled)
         self.main_position_check_box.toggled.connect(self.main_y_spin_box.setDisabled)
         self.main_position_check_box.toggled.connect(self.main_width_spin_box.setDisabled)
@@ -444,20 +363,6 @@ class Ui_ThemeWizard(object):
         self.main_area_page.setTitle(translate('OpenLP.ThemeWizard', 'Main Area Font Details'))
         self.main_area_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                   'characteristics for the Display text'))
-        self.main_font_label.setText(translate('OpenLP.ThemeWizard', 'Font:'))
-        self.main_color_label.setText(translate('OpenLP.ThemeWizard', 'color:'))
-        self.main_size_label.setText(translate('OpenLP.ThemeWizard', 'Size:'))
-        self.main_size_spin_box.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
-        self.line_spacing_label.setText(translate('OpenLP.ThemeWizard', 'Line Spacing:'))
-        self.line_spacing_spin_box.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
-        self.outline_check_box.setText(translate('OpenLP.ThemeWizard', '&Outline:'))
-        self.outline_size_label.setText(translate('OpenLP.ThemeWizard', 'Size:'))
-        self.outline_size_spin_box.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
-        self.shadow_check_box.setText(translate('OpenLP.ThemeWizard', '&Shadow:'))
-        self.shadow_size_label.setText(translate('OpenLP.ThemeWizard', 'Size:'))
-        self.shadow_size_spin_box.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
-        self.main_bold_check_box.setText(translate('OpenLP.ThemeWizard', 'Bold'))
-        self.main_italics_check_box.setText(translate('OpenLP.ThemeWizard', 'Italic'))
         self.footer_area_page.setTitle(translate('OpenLP.ThemeWizard', 'Footer Area Font Details'))
         self.footer_area_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                     'characteristics for the Footer text'))

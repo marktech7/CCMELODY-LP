@@ -80,22 +80,19 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                                                            visible=visible_formats, actual=actual_formats)
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
         self.video_path_edit.pathChanged.connect(self.on_video_path_edit_path_changed)
-        self.main_color_button.colorChanged.connect(self.on_main_color_changed)
-        self.outline_color_button.colorChanged.connect(self.on_outline_color_changed)
-        self.shadow_color_button.colorChanged.connect(self.on_shadow_color_changed)
-        self.outline_check_box.stateChanged.connect(self.on_outline_check_check_box_state_changed)
-        self.shadow_check_box.stateChanged.connect(self.on_shadow_check_check_box_state_changed)
         self.footer_color_button.colorChanged.connect(self.on_footer_color_changed)
         self.customButtonClicked.connect(self.on_custom_1_button_clicked)
         self.main_position_check_box.stateChanged.connect(self.on_main_position_check_box_state_changed)
         self.footer_position_check_box.stateChanged.connect(self.on_footer_position_check_box_state_changed)
         self.currentIdChanged.connect(self.on_current_id_changed)
         Registry().register_function('theme_line_count', self.update_lines_text)
-        self.main_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.line_spacing_spin_box.valueChanged.connect(self.calculate_lines)
-        self.outline_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.shadow_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.main_font_combo_box.activated.connect(self.calculate_lines)
+        self.main_font.font_name_changed.connect(self.calculate_lines)
+        self.main_font.font_size_changed.connect(self.calculate_lines)
+        self.main_font.line_spacing_changed.connect(self.calculate_lines)
+        self.main_font.is_outline_enabled_changed.connect(self.on_outline_toggled)
+        self.main_font.outline_size_changed.connect(self.calculate_lines)
+        self.main_font.is_shadow_enabled_changed.connect(self.on_shadow_toggled)
+        self.main_font.shadow_size_changed.connect(self.calculate_lines)
         self.footer_font_combo_box.activated.connect(self.update_theme)
         self.footer_size_spin_box.valueChanged.connect(self.update_theme)
         self.transitions_check_box.stateChanged.connect(self.on_transitions_check_box_state_changed)
@@ -123,17 +120,6 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.background_page.registerField('background_image', self.image_path_edit,
                                            'path', self.image_path_edit.pathChanged)
         self.background_page.registerField('gradient', self.gradient_combo_box)
-        self.main_area_page.registerField('main_color_button', self.main_color_button)
-        self.main_area_page.registerField('main_size_spin_box', self.main_size_spin_box)
-        self.main_area_page.registerField('line_spacing_spin_box', self.line_spacing_spin_box)
-        self.main_area_page.registerField('outline_check_box', self.outline_check_box)
-        self.main_area_page.registerField('outline_color_button', self.outline_color_button)
-        self.main_area_page.registerField('outline_size_spin_box', self.outline_size_spin_box)
-        self.main_area_page.registerField('shadow_check_box', self.shadow_check_box)
-        self.main_area_page.registerField('main_bold_check_box', self.main_bold_check_box)
-        self.main_area_page.registerField('main_italics_check_box', self.main_italics_check_box)
-        self.main_area_page.registerField('shadow_color_button', self.shadow_color_button)
-        self.main_area_page.registerField('shadow_size_spin_box', self.shadow_size_spin_box)
         self.main_area_page.registerField('footer_size_spin_box', self.footer_size_spin_box)
         self.area_position_page.registerField('main_position_x', self.main_x_spin_box)
         self.area_position_page.registerField('main_position_y', self.main_y_spin_box)
@@ -150,7 +136,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.background_page.registerField('slide_transition_speed', self.transition_speed_combo_box)
         self.background_page.registerField('name', self.theme_name_edit)
 
-    def calculate_lines(self):
+    def calculate_lines(self, *args):
         """
         Calculate the number of lines on a page by rendering text
         """
@@ -239,24 +225,20 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         paint.end()
         self.theme_layout_form.exec(pixmap)
 
-    def on_outline_check_check_box_state_changed(self, state):
+    def on_outline_toggled(self, is_enabled):
         """
         Change state as Outline check box changed
         """
         if self.update_theme_allowed:
-            self.theme.font_main_outline = state == QtCore.Qt.Checked
-            self.outline_color_button.setEnabled(self.theme.font_main_outline)
-            self.outline_size_spin_box.setEnabled(self.theme.font_main_outline)
+            self.theme.font_main_outline = is_enabled
             self.calculate_lines()
 
-    def on_shadow_check_check_box_state_changed(self, state):
+    def on_shadow_toggled(self, is_enabled):
         """
         Change state as Shadow check box changed
         """
         if self.update_theme_allowed:
-            self.theme.font_main_shadow = state == QtCore.Qt.Checked
-            self.shadow_color_button.setEnabled(self.theme.font_main_shadow)
-            self.shadow_size_spin_box.setEnabled(self.theme.font_main_shadow)
+            self.theme.font_main_shadow = is_enabled
             self.calculate_lines()
 
     def on_main_position_check_box_state_changed(self, value):
@@ -360,18 +342,18 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         Handle the display and state of the Main Area page.
         """
-        self.main_font_combo_box.setCurrentFont(QtGui.QFont(self.theme.font_main_name))
-        self.main_color_button.color = self.theme.font_main_color
-        self.setField('main_size_spin_box', self.theme.font_main_size)
-        self.setField('line_spacing_spin_box', self.theme.font_main_line_adjustment)
-        self.setField('outline_check_box', self.theme.font_main_outline)
-        self.outline_color_button.color = self.theme.font_main_outline_color
-        self.setField('outline_size_spin_box', self.theme.font_main_outline_size)
-        self.setField('shadow_check_box', self.theme.font_main_shadow)
-        self.shadow_color_button.color = self.theme.font_main_shadow_color
-        self.setField('shadow_size_spin_box', self.theme.font_main_shadow_size)
-        self.setField('main_bold_check_box', self.theme.font_main_bold)
-        self.setField('main_italics_check_box', self.theme.font_main_italics)
+        self.main_font.font_name = self.theme.font_main_name
+        self.main_font.font_color = self.theme.font_main_color
+        self.main_font.font_size = self.theme.font_main_size
+        self.main_font.line_spacing = self.theme.font_main_line_adjustment
+        self.main_font.is_outline_enabled = self.theme.font_main_outline
+        self.main_font.outline_color = self.theme.font_main_outline_color
+        self.main_font.outline_size = self.theme.font_main_outline_size
+        self.main_font.is_shadow_enabled = self.theme.font_main_shadow
+        self.main_font.shadow_color = self.theme.font_main_shadow_color
+        self.main_font.shadow_size = self.theme.font_main_shadow_size
+        self.main_font.is_bold = self.theme.font_main_bold
+        self.main_font.is_italic = self.theme.font_main_italics
 
     def set_footer_area_page_values(self):
         """
@@ -494,24 +476,6 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.background_filename = new_path
         self.set_background_page_values()
 
-    def on_main_color_changed(self, color):
-        """
-        Set the main colour value
-        """
-        self.theme.font_main_color = color
-
-    def on_outline_color_changed(self, color):
-        """
-        Set the outline colour value
-        """
-        self.theme.font_main_outline_color = color
-
-    def on_shadow_color_changed(self, color):
-        """
-        Set the shadow colour value
-        """
-        self.theme.font_main_shadow_color = color
-
     def on_footer_color_changed(self, color):
         """
         Set the footer colour value
@@ -527,13 +491,13 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             return
         log.debug('update_theme')
         # main page
-        self.theme.font_main_name = self.main_font_combo_box.currentFont().family()
-        self.theme.font_main_size = self.field('main_size_spin_box')
-        self.theme.font_main_line_adjustment = self.field('line_spacing_spin_box')
-        self.theme.font_main_outline_size = self.field('outline_size_spin_box')
-        self.theme.font_main_shadow_size = self.field('shadow_size_spin_box')
-        self.theme.font_main_bold = self.field('main_bold_check_box')
-        self.theme.font_main_italics = self.field('main_italics_check_box')
+        self.theme.font_main_name = self.main_font.font_name
+        self.theme.font_main_size = self.main_font.font_size
+        self.theme.font_main_line_adjustment = self.main_font.line_spacing
+        self.theme.font_main_outline_size = self.main_font.outline_size
+        self.theme.font_main_shadow_size = self.main_font.shadow_size
+        self.theme.font_main_bold = self.main_font.is_bold
+        self.theme.font_main_italics = self.main_font.is_italic
         # footer page
         self.theme.font_footer_name = self.footer_font_combo_box.currentFont().family()
         self.theme.font_footer_size = self.field('footer_size_spin_box')
