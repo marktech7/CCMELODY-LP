@@ -167,45 +167,32 @@ def test_parse_options_file_and_debug():
     assert args.rargs == ['dummy_temp'], 'The service file should not be blank'
 
 
-@patch('openlp.core.app.QtWidgets.QMessageBox.critical')
-@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
-def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_critical, openlp):
+def test_process_events(openlp):
     """
-    Test the is_already_running() method when OpenLP IS running and the user chooses to continue
+    Test that the app.process_events() method simply calls the Qt method
     """
-    # GIVEN: An OpenLP app and some mocks
-    mocked_shared_memory = MagicMock()
-    mocked_shared_memory.attach.return_value = True
-    MockedStandardButtons.return_value = 0
-    mocked_critical.return_value = QtWidgets.QMessageBox.Ok
+    # GIVEN: An app
+    # WHEN: process_events() is called
+    with patch.object(openlp, 'processEvents') as mocked_processEvents:
+        openlp.process_events()
 
-    # WHEN: is_already_running() is called
-    openlp.is_already_running()
-
-    # THEN: The result should be false
-    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
-    mocked_critical.assert_called_once_with(None, 'Error',
-                                            'OpenLP is already running on this machine. \nClosing this instance', 0)
+    # THEN: processEvents was called
+    mocked_processEvents.assert_called_once_with()
 
 
-@patch('openlp.core.app.QtWidgets.QMessageBox.critical')
-@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
-def test_is_already_running_is_running_stop(MockedStandardButtons, mocked_critical, openlp):
+def test_set_busy_cursor(openlp):
     """
-    Test the is_already_running() method when OpenLP IS running and the user chooses to stop
+    Test that the set_busy_cursor() method sets the cursor
     """
-    # GIVEN: An OpenLP app and some mocks
-    MockedStandardButtons.return_value = 0
-    mocked_critical.return_value = QtWidgets.QMessageBox.Ok
+    # GIVEN: An app
+    # WHEN: set_busy_cursor() is called
+    with patch.object(openlp, 'setOverrideCursor') as mocked_setOverrideCursor, \
+            patch.object(openlp, 'processEvents') as mocked_processEvents:
+        openlp.set_busy_cursor()
 
-    # WHEN: is_already_running() is called
-    openlp.is_already_running()
-
-    # THEN: The result should be false
-    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
-    mocked_critical.assert_called_once_with(None, 'Error',
-                                            'OpenLP is already running on this machine. \nClosing this instance', 0)
-
+    # THEN: The cursor should have been set
+    mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.BusyCursor)
+    mocked_processEvents.assert_called_once_with()
 
 
 @skip('Figure out why this is causing a segfault')
