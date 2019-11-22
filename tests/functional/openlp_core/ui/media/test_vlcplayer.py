@@ -25,14 +25,12 @@ import os
 import sys
 import pytest
 from datetime import timedelta
-from unittest import TestCase, skip
 from unittest.mock import MagicMock, call, patch
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 from tests.helpers import MockDateTime
-from tests.helpers.testmixin import TestMixin
 
 
 @pytest.yield_fixture
@@ -281,659 +279,668 @@ def test_setup_osx(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_ma
     mocked_media_player_new.set_nsobject.assert_called_with(2)
 
 
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_check_available( mocked_get_vlc):
+    """
+    Check that when the "vlc" module is available, then VLC is set as available
+    """
+    # GIVEN: A mocked out get_vlc() method and a VlcPlayer instance
+    mocked_get_vlc.return_value = MagicMock()
+    vlc_player = VlcPlayer(None)
 
-    class TestVLCPlayer(TestCase, TestMixin):
-        """
-        Test the functions in the :mod:`vlcplayer` module.
-        """
+    # WHEN: vlc
+    is_available = vlc_player.check_available()
 
-        def setUp(self):
-            """
-            Common setup for all the tests
-            """
-            if 'VLC_PLUGIN_PATH' in os.environ:
-                del os.environ['VLC_PLUGIN_PATH']
-            if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
-                del sys.modules['openlp.core.ui.media.vendor.vlc']
-            MockDateTime.revert()
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_check_available(self, mocked_get_vlc):
-        """
-        Check that when the "vlc" module is available, then VLC is set as available
-        """
-        # GIVEN: A mocked out get_vlc() method and a VlcPlayer instance
-        mocked_get_vlc.return_value = MagicMock()
-        vlc_player = VlcPlayer(None)
+    # THEN: VLC should be available
+    assert is_available is True
 
-        # WHEN: vlc
-        is_available = vlc_player.check_available()
 
-        # THEN: VLC should be available
-        assert is_available is True
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_check_not_available( mocked_get_vlc):
+    """
+    Check that when the "vlc" module is not available, then VLC is set as unavailable
+    """
+    # GIVEN: A mocked out get_vlc() method and a VlcPlayer instance
+    mocked_get_vlc.return_value = None
+    vlc_player = VlcPlayer(None)
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_check_not_available(self, mocked_get_vlc):
-        """
-        Check that when the "vlc" module is not available, then VLC is set as unavailable
-        """
-        # GIVEN: A mocked out get_vlc() method and a VlcPlayer instance
-        mocked_get_vlc.return_value = None
-        vlc_player = VlcPlayer(None)
+    # WHEN: vlc
+    is_available = vlc_player.check_available()
 
-        # WHEN: vlc
-        is_available = vlc_player.check_available()
+    # THEN: VLC should NOT be available
+    assert is_available is False
 
-        # THEN: VLC should NOT be available
-        assert is_available is False
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-    def test_load(self, mocked_normcase, mocked_get_vlc):
-        """
-        Test loading a video into VLC
-        """
-        # GIVEN: A mocked out get_vlc() method
-        media_path = '/path/to/media.mp4'
-        mocked_normcase.side_effect = lambda x: x
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.volume = 100
-        mocked_controller.media_info.media_type = MediaType.Video
-        mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
-        mocked_vlc_media = MagicMock()
-        mocked_media = MagicMock()
-        mocked_media.get_duration.return_value = 10000
-        mocked_controller.vlc_instance.media_new_path.return_value = mocked_vlc_media
-        mocked_controller.vlc_media_player.get_media.return_value = mocked_media
-        vlc_player = VlcPlayer(None)
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
+def test_load( mocked_normcase, mocked_get_vlc):
+    """
+    Test loading a video into VLC
+    """
+    # GIVEN: A mocked out get_vlc() method
+    media_path = '/path/to/media.mp4'
+    mocked_normcase.side_effect = lambda x: x
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.media_type = MediaType.Video
+    mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
+    mocked_vlc_media = MagicMock()
+    mocked_media = MagicMock()
+    mocked_media.get_duration.return_value = 10000
+    mocked_controller.vlc_instance.media_new_path.return_value = mocked_vlc_media
+    mocked_controller.vlc_media_player.get_media.return_value = mocked_media
+    vlc_player = VlcPlayer(None)
 
-        # WHEN: A video is loaded into VLC
-        with patch.object(vlc_player, 'volume') as mocked_volume:
-            result = vlc_player.load(mocked_controller, mocked_display, media_path)
+    # WHEN: A video is loaded into VLC
+    with patch.object(vlc_player, 'volume') as mocked_volume:
+        result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
-        # THEN: The video should be loaded
-        mocked_normcase.assert_called_with(media_path)
-        mocked_controller.vlc_instance.media_new_path.assert_called_with(media_path)
-        assert mocked_vlc_media == mocked_controller.vlc_media
-        mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
-        mocked_vlc_media.parse.assert_called_with()
-        mocked_volume.assert_called_with(mocked_controller, 100)
-        assert result is True
+    # THEN: The video should be loaded
+    mocked_normcase.assert_called_with(media_path)
+    mocked_controller.vlc_instance.media_new_path.assert_called_with(media_path)
+    assert mocked_vlc_media == mocked_controller.vlc_media
+    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
+    mocked_vlc_media.parse.assert_called_with()
+    mocked_volume.assert_called_with(mocked_controller, 100)
+    assert result is True
 
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-    def test_load_audio_cd(self, mocked_normcase, mocked_get_vlc, mocked_is_win):
-        """
-        Test loading an audio CD into VLC
-        """
-        # GIVEN: A mocked out get_vlc() method
-        mocked_is_win.return_value = False
-        media_path = '/dev/sr0'
-        mocked_normcase.side_effect = lambda x: x
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.volume = 100
-        mocked_controller.media_info.media_type = MediaType.CD
-        mocked_controller.media_info.title_track = 1
-        mocked_vlc_media = MagicMock()
-        mocked_media = MagicMock()
-        mocked_media.get_duration.return_value = 10000
-        mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
-        mocked_controller.vlc_media_player.get_media.return_value = mocked_media
-        mocked_subitems = MagicMock()
-        mocked_subitems.count.return_value = 1
-        mocked_subitems.item_at_index.return_value = mocked_vlc_media
-        mocked_vlc_media.subitems.return_value = mocked_subitems
-        vlc_player = VlcPlayer(None)
 
-        # WHEN: An audio CD is loaded into VLC
-        with patch.object(vlc_player, 'volume') as mocked_volume, \
-                patch.object(vlc_player, 'media_state_wait'):
-            result = vlc_player.load(mocked_controller, mocked_display, media_path)
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
+def test_load_audio_cd( mocked_normcase, mocked_get_vlc, mocked_is_win):
+    """
+    Test loading an audio CD into VLC
+    """
+    # GIVEN: A mocked out get_vlc() method
+    mocked_is_win.return_value = False
+    media_path = '/dev/sr0'
+    mocked_normcase.side_effect = lambda x: x
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.media_type = MediaType.CD
+    mocked_controller.media_info.title_track = 1
+    mocked_vlc_media = MagicMock()
+    mocked_media = MagicMock()
+    mocked_media.get_duration.return_value = 10000
+    mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
+    mocked_controller.vlc_media_player.get_media.return_value = mocked_media
+    mocked_subitems = MagicMock()
+    mocked_subitems.count.return_value = 1
+    mocked_subitems.item_at_index.return_value = mocked_vlc_media
+    mocked_vlc_media.subitems.return_value = mocked_subitems
+    vlc_player = VlcPlayer(None)
 
-        # THEN: The video should be loaded
-        mocked_normcase.assert_called_with(media_path)
-        mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda://' + media_path)
-        assert mocked_vlc_media == mocked_controller.vlc_media
-        mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
-        mocked_vlc_media.parse.assert_called_with()
-        mocked_volume.assert_called_with(mocked_controller, 100)
-        assert result is True
+    # WHEN: An audio CD is loaded into VLC
+    with patch.object(vlc_player, 'volume') as mocked_volume, \
+            patch.object(vlc_player, 'media_state_wait'):
+        result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-    def test_load_audio_cd_on_windows(self, mocked_normcase, mocked_get_vlc, mocked_is_win):
-        """
-        Test loading an audio CD into VLC on Windows
-        """
-        # GIVEN: A mocked out get_vlc() method
-        mocked_is_win.return_value = True
-        media_path = '/dev/sr0'
-        mocked_normcase.side_effect = lambda x: x
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.volume = 100
-        mocked_controller.media_info.media_type = MediaType.CD
-        mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
-        mocked_controller.media_info.title_track = 1
-        mocked_vlc_media = MagicMock()
-        mocked_media = MagicMock()
-        mocked_media.get_duration.return_value = 10000
-        mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
-        mocked_controller.vlc_media_player.get_media.return_value = mocked_media
-        mocked_subitems = MagicMock()
-        mocked_subitems.count.return_value = 1
-        mocked_subitems.item_at_index.return_value = mocked_vlc_media
-        mocked_vlc_media.subitems.return_value = mocked_subitems
-        vlc_player = VlcPlayer(None)
+    # THEN: The video should be loaded
+    mocked_normcase.assert_called_with(media_path)
+    mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda://' + media_path)
+    assert mocked_vlc_media == mocked_controller.vlc_media
+    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
+    mocked_vlc_media.parse.assert_called_with()
+    mocked_volume.assert_called_with(mocked_controller, 100)
+    assert result is True
 
-        # WHEN: An audio CD is loaded into VLC
-        with patch.object(vlc_player, 'volume') as mocked_volume, \
-                patch.object(vlc_player, 'media_state_wait'):
-            result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
-        # THEN: The video should be loaded
-        mocked_normcase.assert_called_with(media_path)
-        mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda:///' + media_path)
-        assert mocked_vlc_media == mocked_controller.vlc_media
-        mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
-        mocked_vlc_media.parse.assert_called_with()
-        mocked_volume.assert_called_with(mocked_controller, 100)
-        assert result is True
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
+def test_load_audio_cd_on_windows( mocked_normcase, mocked_get_vlc, mocked_is_win):
+    """
+    Test loading an audio CD into VLC on Windows
+    """
+    # GIVEN: A mocked out get_vlc() method
+    mocked_is_win.return_value = True
+    media_path = '/dev/sr0'
+    mocked_normcase.side_effect = lambda x: x
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.media_type = MediaType.CD
+    mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
+    mocked_controller.media_info.title_track = 1
+    mocked_vlc_media = MagicMock()
+    mocked_media = MagicMock()
+    mocked_media.get_duration.return_value = 10000
+    mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
+    mocked_controller.vlc_media_player.get_media.return_value = mocked_media
+    mocked_subitems = MagicMock()
+    mocked_subitems.count.return_value = 1
+    mocked_subitems.item_at_index.return_value = mocked_vlc_media
+    mocked_vlc_media.subitems.return_value = mocked_subitems
+    vlc_player = VlcPlayer(None)
 
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-    def test_load_audio_cd_no_tracks(self, mocked_normcase, mocked_get_vlc, mocked_is_win):
-        """
-        Test loading an audio CD that has no tracks into VLC
-        """
-        # GIVEN: A mocked out get_vlc() method
-        mocked_is_win.return_value = False
-        media_path = '/dev/sr0'
-        mocked_normcase.side_effect = lambda x: x
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.volume = 100
-        mocked_controller.media_info.media_type = MediaType.CD
-        mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
-        mocked_controller.media_info.title_track = 1
-        mocked_vlc_media = MagicMock()
-        mocked_vlc_media_player = MagicMock()
-        mocked_controller.vlc_media = mocked_vlc_media
-        mocked_controller.vlc_media_player = mocked_vlc_media_player
-        mocked_media = MagicMock()
-        mocked_media.get_duration.return_value = 10000
-        mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
-        mocked_controller.vlc_media_player.get_media.return_value = mocked_media
-        mocked_subitems = MagicMock()
-        mocked_subitems.count.return_value = 0
-        mocked_subitems.item_at_index.return_value = mocked_vlc_media
-        mocked_vlc_media.subitems.return_value = mocked_subitems
-        vlc_player = VlcPlayer(None)
+    # WHEN: An audio CD is loaded into VLC
+    with patch.object(vlc_player, 'volume') as mocked_volume, \
+            patch.object(vlc_player, 'media_state_wait'):
+        result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
-        # WHEN: An audio CD is loaded into VLC
-        with patch.object(vlc_player, 'volume'), patch.object(vlc_player, 'media_state_wait'):
-            result = vlc_player.load(mocked_controller, mocked_display, media_path)
+    # THEN: The video should be loaded
+    mocked_normcase.assert_called_with(media_path)
+    mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda:///' + media_path)
+    assert mocked_vlc_media == mocked_controller.vlc_media
+    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
+    mocked_vlc_media.parse.assert_called_with()
+    mocked_volume.assert_called_with(mocked_controller, 100)
+    assert result is True
 
-        # THEN: The video should be loaded
-        mocked_normcase.assert_called_with(media_path)
-        mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda://' + media_path)
-        assert mocked_vlc_media == mocked_controller.vlc_media
-        assert 0 == mocked_subitems.item_at_index.call_count
-        mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
-        assert 0 == mocked_vlc_media.parse.call_count
-        assert result is False
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-    def test_media_state_wait(self, mocked_get_vlc):
-        """
-        Check that waiting for a state change works
-        """
-        # GIVEN: A mocked out get_vlc method
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Error = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 2
-        Registry.create()
-        mocked_application = MagicMock()
-        Registry().register('application', mocked_application)
-        vlc_player = VlcPlayer(None)
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
+def test_load_audio_cd_no_tracks( mocked_normcase, mocked_get_vlc, mocked_is_win):
+    """
+    Test loading an audio CD that has no tracks into VLC
+    """
+    # GIVEN: A mocked out get_vlc() method
+    mocked_is_win.return_value = False
+    media_path = '/dev/sr0'
+    mocked_normcase.side_effect = lambda x: x
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.media_type = MediaType.CD
+    mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
+    mocked_controller.media_info.title_track = 1
+    mocked_vlc_media = MagicMock()
+    mocked_vlc_media_player = MagicMock()
+    mocked_controller.vlc_media = mocked_vlc_media
+    mocked_controller.vlc_media_player = mocked_vlc_media_player
+    mocked_media = MagicMock()
+    mocked_media.get_duration.return_value = 10000
+    mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
+    mocked_controller.vlc_media_player.get_media.return_value = mocked_media
+    mocked_subitems = MagicMock()
+    mocked_subitems.count.return_value = 0
+    mocked_subitems.item_at_index.return_value = mocked_vlc_media
+    mocked_vlc_media.subitems.return_value = mocked_subitems
+    vlc_player = VlcPlayer(None)
 
-        # WHEN: media_state_wait() is called
-        result = vlc_player.media_state_wait(mocked_display, 2)
+    # WHEN: An audio CD is loaded into VLC
+    with patch.object(vlc_player, 'volume'), patch.object(vlc_player, 'media_state_wait'):
+        result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
-        # THEN: The results should be True
-        assert result is True
+    # THEN: The video should be loaded
+    mocked_normcase.assert_called_with(media_path)
+    mocked_controller.vlc_instance.media_new_location.assert_called_with('cdda://' + media_path)
+    assert mocked_vlc_media == mocked_controller.vlc_media
+    assert 0 == mocked_subitems.item_at_index.call_count
+    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
+    assert 0 == mocked_vlc_media.parse.call_count
+    assert result is False
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-    def test_media_state_wait_error(self, mocked_get_vlc):
-        """
-        Check that getting an error when waiting for a state change returns False
-        """
-        # GIVEN: A mocked out get_vlc method
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Error = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 1
-        Registry.create()
-        mocked_application = MagicMock()
-        Registry().register('application', mocked_application)
-        vlc_player = VlcPlayer(None)
 
-        # WHEN: media_state_wait() is called
-        result = vlc_player.media_state_wait(mocked_display, 2)
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
+def test_media_state_wait( mocked_get_vlc):
+    """
+    Check that waiting for a state change works
+    """
+    # GIVEN: A mocked out get_vlc method
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Error = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 2
+    Registry.create()
+    mocked_application = MagicMock()
+    Registry().register('application', mocked_application)
+    vlc_player = VlcPlayer(None)
 
-        # THEN: The results should be True
-        assert result is False
+    # WHEN: media_state_wait() is called
+    result = vlc_player.media_state_wait(mocked_display, 2)
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-    def test_media_state_wait_times_out(self, mocked_get_vlc):
-        """
-        Check that waiting for a state returns False when it times out after 60 seconds
-        """
-        # GIVEN: A mocked out get_vlc method
-        timeout = MockDateTime.return_values[0] + timedelta(seconds=61)
-        MockDateTime.return_values.append(timeout)
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Error = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 2
-        Registry.create()
-        mocked_application = MagicMock()
-        Registry().register('application', mocked_application)
-        vlc_player = VlcPlayer(None)
+    # THEN: The results should be True
+    assert result is True
 
-        # WHEN: media_state_wait() is called
-        result = vlc_player.media_state_wait(mocked_display, 3)
 
-        # THEN: The results should be True
-        assert result is False
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
+def test_media_state_wait_error( mocked_get_vlc):
+    """
+    Check that getting an error when waiting for a state change returns False
+    """
+    # GIVEN: A mocked out get_vlc method
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Error = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 1
+    Registry.create()
+    mocked_application = MagicMock()
+    Registry().register('application', mocked_application)
+    vlc_player = VlcPlayer(None)
 
-    def test_resize(self):
-        """
-        Test resizing the player
-        """
-        # GIVEN: A display object and a VlcPlayer instance
-        mocked_controller = MagicMock()
-        mocked_controller.preview_display.size.return_value = (10, 10)
-        mocked_controller.is_live = False
-        vlc_player = VlcPlayer(None)
+    # WHEN: media_state_wait() is called
+    result = vlc_player.media_state_wait(mocked_display, 2)
 
-        # WHEN: resize is called
-        vlc_player.resize(mocked_controller)
+    # THEN: The results should be True
+    assert result is False
 
-        # THEN: The right methods should have been called
-        mocked_controller.preview_display.size.assert_called_with()
-        mocked_controller.vlc_widget.resize.assert_called_with((10, 10))
 
-    @patch('openlp.core.ui.media.vlcplayer.threading')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_play(self, mocked_get_vlc, mocked_threading):
-        """
-        Test the play() method
-        """
-        # GIVEN: A bunch of mocked out things
-        mocked_thread = MagicMock()
-        mocked_threading.Thread.return_value = mocked_thread
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_media = MagicMock()
-        mocked_media.get_duration.return_value = 50000
-        mocked_controller.media_info.start_time = 0
-        mocked_controller.media_info.media_type = MediaType.Video
-        mocked_controller.media_info.volume = 100
-        mocked_controller.vlc_media_player.get_media.return_value = mocked_media
-        vlc_player = VlcPlayer(None)
-        vlc_player.set_state(MediaState.Paused, mocked_controller)
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
+def test_media_state_wait_times_out( mocked_get_vlc):
+    """
+    Check that waiting for a state returns False when it times out after 60 seconds
+    """
+    # GIVEN: A mocked out get_vlc method
+    timeout = MockDateTime.return_values[0] + timedelta(seconds=61)
+    MockDateTime.return_values.append(timeout)
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Error = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 2
+    Registry.create()
+    mocked_application = MagicMock()
+    Registry().register('application', mocked_application)
+    vlc_player = VlcPlayer(None)
 
-        # WHEN: play() is called
-        with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait, \
-                patch.object(vlc_player, 'volume') as mocked_volume:
-            mocked_media_state_wait.return_value = True
-            result = vlc_player.play(mocked_controller, mocked_display)
+    # WHEN: media_state_wait() is called
+    result = vlc_player.media_state_wait(mocked_display, 3)
 
-        # THEN: A bunch of things should happen to play the media
-        mocked_thread.start.assert_called_with()
-        mocked_volume.assert_called_with(mocked_controller, 100)
-        assert MediaState.Playing == vlc_player.get_live_state()
-        mocked_controller.vlc_widget.raise_.assert_called_with()
-        assert result is True, 'The value returned from play() should be True'
+    # THEN: The results should be True
+    assert result is False
 
-    @patch('openlp.core.ui.media.vlcplayer.threading')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_play_media_wait_state_not_playing(self, mocked_get_vlc, mocked_threading):
-        """
-        Test the play() method when media_wait_state() returns False
-        """
-        # GIVEN: A bunch of mocked out things
-        mocked_thread = MagicMock()
-        mocked_threading.Thread.return_value = mocked_thread
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.start_time = 0
-        mocked_output_display = MagicMock()
-        vlc_player = VlcPlayer(None)
-        vlc_player.set_state(MediaState.Paused, mocked_output_display)
 
-        # WHEN: play() is called
-        with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait, \
-                patch.object(vlc_player, 'volume'):
-            mocked_media_state_wait.return_value = False
-            result = vlc_player.play(mocked_controller, mocked_output_display)
+def test_resize():
+    """
+    Test resizing the player
+    """
+    # GIVEN: A display object and a VlcPlayer instance
+    mocked_controller = MagicMock()
+    mocked_controller.preview_display.size.return_value = (10, 10)
+    mocked_controller.is_live = False
+    vlc_player = VlcPlayer(None)
 
-        # THEN: A thread should be started, but the method should return False
-        mocked_thread.start.assert_called_with()
-        assert result is False
+    # WHEN: resize is called
+    vlc_player.resize(mocked_controller)
 
-    @patch('openlp.core.ui.media.vlcplayer.threading')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_play_dvd(self, mocked_get_vlc, mocked_threading):
-        """
-        Test the play() method with a DVD
-        """
-        # GIVEN: A bunch of mocked out things
-        mocked_thread = MagicMock()
-        mocked_threading.Thread.return_value = mocked_thread
-        mocked_vlc = MagicMock()
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_controller = MagicMock()
-        mocked_output_display = MagicMock()
-        mocked_controller.media_info = ItemMediaInfo()
-        mocked_controller.media_info.start_time = 0
-        mocked_controller.media_info.end_time = 50
-        mocked_controller.media_info.media_type = MediaType.DVD
-        mocked_controller.media_info.volume = 100
-        mocked_controller.media_info.title_track = 1
-        mocked_controller.media_info.audio_track = 1
-        mocked_controller.media_info.subtitle_track = 1
-        vlc_player = VlcPlayer(None)
-        vlc_player.set_state(MediaState.Paused, mocked_output_display)
+    # THEN: The right methods should have been called
+    mocked_controller.preview_display.size.assert_called_with()
+    mocked_controller.vlc_widget.resize.assert_called_with((10, 10))
 
-        # WHEN: play() is called
-        with patch.object(vlc_player, 'media_state_wait', return_value=True), \
-                patch.object(vlc_player, 'volume') as mocked_volume, \
-                patch.object(vlc_player, 'get_live_state', return_value=MediaState.Loaded):
-            result = vlc_player.play(mocked_controller, mocked_output_display)
 
-        # THEN: A bunch of things should happen to play the media
-        mocked_thread.start.assert_called_with()
-        mocked_controller.vlc_media_player.set_title.assert_called_with(1)
-        mocked_controller.vlc_media_player.play.assert_called_with()
-        mocked_controller.vlc_media_player.audio_set_track.assert_called_with(1)
-        mocked_controller.vlc_media_player.video_set_spu.assert_called_with(1)
-        mocked_volume.assert_called_with(mocked_controller, 100)
-        assert MediaState.Playing == vlc_player.get_live_state()
-        mocked_controller.vlc_widget.raise_.assert_called_with()
-        assert result is True, 'The value returned from play() should be True'
+@patch('openlp.core.ui.media.vlcplayer.threading')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_play( mocked_get_vlc, mocked_threading):
+    """
+    Test the play() method
+    """
+    # GIVEN: A bunch of mocked out things
+    mocked_thread = MagicMock()
+    mocked_threading.Thread.return_value = mocked_thread
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_media = MagicMock()
+    mocked_media.get_duration.return_value = 50000
+    mocked_controller.media_info.start_time = 0
+    mocked_controller.media_info.media_type = MediaType.Video
+    mocked_controller.media_info.volume = 100
+    mocked_controller.vlc_media_player.get_media.return_value = mocked_media
+    vlc_player = VlcPlayer(None)
+    vlc_player.set_state(MediaState.Paused, mocked_controller)
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_pause(self, mocked_get_vlc):
-        """
-        Test that the pause method works correctly
-        """
-        # GIVEN: A mocked out get_vlc method
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Playing = 1
-        mocked_vlc.State.Paused = 2
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 1
-        vlc_player = VlcPlayer(None)
+    # WHEN: play() is called
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait, \
+            patch.object(vlc_player, 'volume') as mocked_volume:
+        mocked_media_state_wait.return_value = True
+        result = vlc_player.play(mocked_controller, mocked_display)
 
-        # WHEN: The media is paused
-        with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
-            mocked_media_state_wait.return_value = True
-            vlc_player.pause(mocked_display)
+    # THEN: A bunch of things should happen to play the media
+    mocked_thread.start.assert_called_with()
+    mocked_volume.assert_called_with(mocked_controller, 100)
+    assert MediaState.Playing == vlc_player.get_live_state()
+    mocked_controller.vlc_widget.raise_.assert_called_with()
+    assert result is True, 'The value returned from play() should be True'
 
-        # THEN: The pause method should exit early
-        mocked_display.vlc_media.get_state.assert_called_with()
-        mocked_display.vlc_media_player.pause.assert_called_with()
-        mocked_media_state_wait.assert_called_with(mocked_display, 2)
-        assert MediaState.Paused == vlc_player.get_live_state()
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_pause_not_playing(self, mocked_get_vlc):
-        """
-        Test the pause method when the player is not playing
-        """
-        # GIVEN: A mocked out get_vlc method
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Playing = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 2
-        vlc_player = VlcPlayer(None)
+@patch('openlp.core.ui.media.vlcplayer.threading')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_play_media_wait_state_not_playing( mocked_get_vlc, mocked_threading):
+    """
+    Test the play() method when media_wait_state() returns False
+    """
+    # GIVEN: A bunch of mocked out things
+    mocked_thread = MagicMock()
+    mocked_threading.Thread.return_value = mocked_thread
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.start_time = 0
+    mocked_output_display = MagicMock()
+    vlc_player = VlcPlayer(None)
+    vlc_player.set_state(MediaState.Paused, mocked_output_display)
 
-        # WHEN: The media is paused
+    # WHEN: play() is called
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait, \
+            patch.object(vlc_player, 'volume'):
+        mocked_media_state_wait.return_value = False
+        result = vlc_player.play(mocked_controller, mocked_output_display)
+
+    # THEN: A thread should be started, but the method should return False
+    mocked_thread.start.assert_called_with()
+    assert result is False
+
+
+@patch('openlp.core.ui.media.vlcplayer.threading')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_play_dvd( mocked_get_vlc, mocked_threading):
+    """
+    Test the play() method with a DVD
+    """
+    # GIVEN: A bunch of mocked out things
+    mocked_thread = MagicMock()
+    mocked_threading.Thread.return_value = mocked_thread
+    mocked_vlc = MagicMock()
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_controller = MagicMock()
+    mocked_output_display = MagicMock()
+    mocked_controller.media_info = ItemMediaInfo()
+    mocked_controller.media_info.start_time = 0
+    mocked_controller.media_info.end_time = 50
+    mocked_controller.media_info.media_type = MediaType.DVD
+    mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.title_track = 1
+    mocked_controller.media_info.audio_track = 1
+    mocked_controller.media_info.subtitle_track = 1
+    vlc_player = VlcPlayer(None)
+    vlc_player.set_state(MediaState.Paused, mocked_output_display)
+
+    # WHEN: play() is called
+    with patch.object(vlc_player, 'media_state_wait', return_value=True), \
+            patch.object(vlc_player, 'volume') as mocked_volume, \
+            patch.object(vlc_player, 'get_live_state', return_value=MediaState.Loaded):
+        result = vlc_player.play(mocked_controller, mocked_output_display)
+
+    # THEN: A bunch of things should happen to play the media
+    mocked_thread.start.assert_called_with()
+    mocked_controller.vlc_media_player.set_title.assert_called_with(1)
+    mocked_controller.vlc_media_player.play.assert_called_with()
+    mocked_controller.vlc_media_player.audio_set_track.assert_called_with(1)
+    mocked_controller.vlc_media_player.video_set_spu.assert_called_with(1)
+    mocked_volume.assert_called_with(mocked_controller, 100)
+    assert MediaState.Playing == vlc_player.get_live_state()
+    mocked_controller.vlc_widget.raise_.assert_called_with()
+    assert result is True, 'The value returned from play() should be True'
+
+
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_pause( mocked_get_vlc):
+    """
+    Test that the pause method works correctly
+    """
+    # GIVEN: A mocked out get_vlc method
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Playing = 1
+    mocked_vlc.State.Paused = 2
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 1
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: The media is paused
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
+        mocked_media_state_wait.return_value = True
         vlc_player.pause(mocked_display)
 
-        # THEN: The pause method should exit early
-        mocked_display.vlc_media.get_state.assert_called_with()
-        assert 0 == mocked_display.vlc_media_player.pause.call_count
+    # THEN: The pause method should exit early
+    mocked_display.vlc_media.get_state.assert_called_with()
+    mocked_display.vlc_media_player.pause.assert_called_with()
+    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    assert MediaState.Paused == vlc_player.get_live_state()
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_pause_fail(self, mocked_get_vlc):
-        """
-        Test the pause method when the player fails to pause the media
-        """
-        # GIVEN: A mocked out get_vlc method
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Playing = 1
-        mocked_vlc.State.Paused = 2
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_display = MagicMock()
-        mocked_display.vlc_media.get_state.return_value = 1
-        vlc_player = VlcPlayer(None)
 
-        # WHEN: The media is paused
-        with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
-            mocked_media_state_wait.return_value = False
-            vlc_player.pause(mocked_display)
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_pause_not_playing( mocked_get_vlc):
+    """
+    Test the pause method when the player is not playing
+    """
+    # GIVEN: A mocked out get_vlc method
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Playing = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 2
+    vlc_player = VlcPlayer(None)
 
-        # THEN: The pause method should exit early
-        mocked_display.vlc_media.get_state.assert_called_with()
-        mocked_display.vlc_media_player.pause.assert_called_with()
-        mocked_media_state_wait.assert_called_with(mocked_display, 2)
-        assert MediaState.Paused is not vlc_player.state
+    # WHEN: The media is paused
+    vlc_player.pause(mocked_display)
 
-    @patch('openlp.core.ui.media.vlcplayer.threading')
-    def test_stop(self, mocked_threading):
-        """
-        Test stopping the current item
-        """
-        # GIVEN: A display object and a VlcPlayer instance and some mocked threads
-        mocked_thread = MagicMock()
-        mocked_threading.Thread.return_value = mocked_thread
-        mocked_stop = MagicMock()
-        mocked_display = MagicMock()
-        mocked_display.vlc_media_player.stop = mocked_stop
-        vlc_player = VlcPlayer(None)
+    # THEN: The pause method should exit early
+    mocked_display.vlc_media.get_state.assert_called_with()
+    assert 0 == mocked_display.vlc_media_player.pause.call_count
 
-        # WHEN: stop is called
-        vlc_player.stop(mocked_display)
 
-        # THEN: A thread should have been started to stop VLC
-        mocked_threading.Thread.assert_called_with(target=mocked_stop)
-        mocked_thread.start.assert_called_with()
-        assert MediaState.Stopped == vlc_player.get_live_state()
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_pause_fail( mocked_get_vlc):
+    """
+    Test the pause method when the player fails to pause the media
+    """
+    # GIVEN: A mocked out get_vlc method
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Playing = 1
+    mocked_vlc.State.Paused = 2
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_display = MagicMock()
+    mocked_display.vlc_media.get_state.return_value = 1
+    vlc_player = VlcPlayer(None)
 
-    def test_volume(self):
-        """
-        Test setting the volume
-        """
-        # GIVEN: A display object and a VlcPlayer instance
-        mocked_display = MagicMock()
-        mocked_display.has_audio = True
-        vlc_player = VlcPlayer(None)
+    # WHEN: The media is paused
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
+        mocked_media_state_wait.return_value = False
+        vlc_player.pause(mocked_display)
 
-        # WHEN: The volume is set
-        vlc_player.volume(mocked_display, 10)
+    # THEN: The pause method should exit early
+    mocked_display.vlc_media.get_state.assert_called_with()
+    mocked_display.vlc_media_player.pause.assert_called_with()
+    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    assert MediaState.Paused is not vlc_player.state
 
-        # THEN: The volume should have been set
-        mocked_display.vlc_media_player.audio_set_volume.assert_called_with(10)
 
-    def test_seek_unseekable_media(self):
-        """
-        Test seeking something that can't be seeked
-        """
-        # GIVEN: Unseekable media
-        mocked_display = MagicMock()
-        mocked_display.controller.media_info.media_type = MediaType.Audio
-        mocked_display.vlc_media_player.is_seekable.return_value = False
-        vlc_player = VlcPlayer(None)
+@patch('openlp.core.ui.media.vlcplayer.threading')
+def test_stop( mocked_threading):
+    """
+    Test stopping the current item
+    """
+    # GIVEN: A display object and a VlcPlayer instance and some mocked threads
+    mocked_thread = MagicMock()
+    mocked_threading.Thread.return_value = mocked_thread
+    mocked_stop = MagicMock()
+    mocked_display = MagicMock()
+    mocked_display.vlc_media_player.stop = mocked_stop
+    vlc_player = VlcPlayer(None)
 
-        # WHEN: seek() is called
-        vlc_player.seek(mocked_display, 100)
+    # WHEN: stop is called
+    vlc_player.stop(mocked_display)
 
-        # THEN: nothing should happen
-        mocked_display.vlc_media_player.is_seekable.assert_called_with()
-        assert 0 == mocked_display.vlc_media_player.set_time.call_count
+    # THEN: A thread should have been started to stop VLC
+    mocked_threading.Thread.assert_called_with(target=mocked_stop)
+    mocked_thread.start.assert_called_with()
+    assert MediaState.Stopped == vlc_player.get_live_state()
 
-    def test_seek_seekable_media(self):
-        """
-        Test seeking something that is seekable, but not a DVD
-        """
-        # GIVEN: Unseekable media
-        mocked_display = MagicMock()
-        mocked_display.controller.media_info.media_type = MediaType.Audio
-        mocked_display.vlc_media_player.is_seekable.return_value = True
-        vlc_player = VlcPlayer(None)
 
-        # WHEN: seek() is called
-        vlc_player.seek(mocked_display, 100)
+def test_volume():
+    """
+    Test setting the volume
+    """
+    # GIVEN: A display object and a VlcPlayer instance
+    mocked_display = MagicMock()
+    mocked_display.has_audio = True
+    vlc_player = VlcPlayer(None)
 
-        # THEN: nothing should happen
-        mocked_display.vlc_media_player.is_seekable.assert_called_with()
-        mocked_display.vlc_media_player.set_time.assert_called_with(100)
+    # WHEN: The volume is set
+    vlc_player.volume(mocked_display, 10)
 
-    def test_seek_dvd(self):
-        """
-        Test seeking a DVD
-        """
-        # GIVEN: Unseekable media
-        mocked_display = MagicMock()
-        mocked_display.controller.media_info.media_type = MediaType.DVD
-        mocked_display.vlc_media_player.is_seekable.return_value = True
-        mocked_display.controller.media_info.start_time = 3000
-        vlc_player = VlcPlayer(None)
+    # THEN: The volume should have been set
+    mocked_display.vlc_media_player.audio_set_volume.assert_called_with(10)
 
-        # WHEN: seek() is called
-        vlc_player.seek(mocked_display, 2000)
 
-        # THEN: nothing should happen
-        mocked_display.vlc_media_player.is_seekable.assert_called_with()
-        mocked_display.vlc_media_player.set_time.assert_called_with(2000)
+def test_seek_unseekable_media():
+    """
+    Test seeking something that can't be seeked
+    """
+    # GIVEN: Unseekable media
+    mocked_display = MagicMock()
+    mocked_display.controller.media_info.media_type = MediaType.Audio
+    mocked_display.vlc_media_player.is_seekable.return_value = False
+    vlc_player = VlcPlayer(None)
 
-    def test_reset(self):
-        """
-        Test the reset() method
-        """
-        # GIVEN: Some mocked out stuff
-        mocked_display = MagicMock()
-        vlc_player = VlcPlayer(None)
+    # WHEN: seek() is called
+    vlc_player.seek(mocked_display, 100)
 
-        # WHEN: reset() is called
-        vlc_player.reset(mocked_display)
+    # THEN: nothing should happen
+    mocked_display.vlc_media_player.is_seekable.assert_called_with()
+    assert 0 == mocked_display.vlc_media_player.set_time.call_count
 
-        # THEN: The media should be stopped and invisible
-        mocked_display.vlc_media_player.stop.assert_called_with()
-        mocked_display.vlc_widget.setVisible.assert_called_with(False)
-        assert MediaState.Off == vlc_player.get_live_state()
 
-    def test_set_visible_has_own_widget(self):
-        """
-        Test the set_visible() method when the player has its own widget
-        """
-        # GIVEN: Some mocked out stuff
-        mocked_display = MagicMock()
-        vlc_player = VlcPlayer(None)
-        vlc_player.has_own_widget = True
+def test_seek_seekable_media():
+    """
+    Test seeking something that is seekable, but not a DVD
+    """
+    # GIVEN: Unseekable media
+    mocked_display = MagicMock()
+    mocked_display.controller.media_info.media_type = MediaType.Audio
+    mocked_display.vlc_media_player.is_seekable.return_value = True
+    vlc_player = VlcPlayer(None)
 
-        # WHEN: reset() is called
-        vlc_player.set_visible(mocked_display, True)
+    # WHEN: seek() is called
+    vlc_player.seek(mocked_display, 100)
 
-        # THEN: The media should be stopped and invsibile
-        mocked_display.vlc_widget.setVisible.assert_called_with(True)
+    # THEN: nothing should happen
+    mocked_display.vlc_media_player.is_seekable.assert_called_with()
+    mocked_display.vlc_media_player.set_time.assert_called_with(100)
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_update_ui(self, mocked_get_vlc):
-        """
-        Test updating the UI
-        """
-        # GIVEN: A whole bunch of mocks
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Ended = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_controller = MagicMock()
-        mocked_controller.media_info.end_time = 300
-        mocked_controller.seek_slider.isSliderDown.return_value = False
-        mocked_display = MagicMock()
-        mocked_controller.vlc_media.get_state.return_value = 1
-        mocked_controller.vlc_media_player.get_time.return_value = 400000
-        vlc_player = VlcPlayer(None)
 
-        # WHEN: update_ui() is called
-        with patch.object(vlc_player, 'stop') as mocked_stop, \
-                patch.object(vlc_player, 'set_visible') as mocked_set_visible:
-            vlc_player.update_ui(mocked_controller, mocked_display)
+def test_seek_dvd():
+    """
+    Test seeking a DVD
+    """
+    # GIVEN: Unseekable media
+    mocked_display = MagicMock()
+    mocked_display.controller.media_info.media_type = MediaType.DVD
+    mocked_display.vlc_media_player.is_seekable.return_value = True
+    mocked_display.controller.media_info.start_time = 3000
+    vlc_player = VlcPlayer(None)
 
-        # THEN: Certain methods should be called
-        mocked_stop.assert_called_with(mocked_controller)
-        assert 2 == mocked_stop.call_count
-        mocked_controller.vlc_media_player.get_time.assert_called_with()
-        mocked_set_visible.assert_called_with(mocked_controller, False)
-        mocked_controller.seek_slider.setSliderPosition.assert_called_with(400000)
-        expected_calls = [call(True), call(False)]
-        assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
+    # WHEN: seek() is called
+    vlc_player.seek(mocked_display, 2000)
 
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    def test_update_ui_dvd(self, mocked_get_vlc):
-        """
-        Test updating the UI for a CD or DVD
-        """
-        # GIVEN: A whole bunch of mocks
-        mocked_vlc = MagicMock()
-        mocked_vlc.State.Ended = 1
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_controller = MagicMock()
-        mocked_controller.media_info = ItemMediaInfo()
-        mocked_controller.media_info.start_time = 100
-        mocked_controller.media_info.end_time = 300
-        mocked_controller.seek_slider.isSliderDown.return_value = False
-        mocked_display = MagicMock()
-        mocked_controller.vlc_media.get_state.return_value = 1
-        mocked_controller.vlc_media_player.get_time.return_value = 300
-        mocked_controller.media_info.media_type = MediaType.DVD
-        vlc_player = VlcPlayer(None)
+    # THEN: nothing should happen
+    mocked_display.vlc_media_player.is_seekable.assert_called_with()
+    mocked_display.vlc_media_player.set_time.assert_called_with(2000)
 
-        # WHEN: update_ui() is called
-        with patch.object(vlc_player, 'stop') as mocked_stop:
-            vlc_player.update_ui(mocked_controller, mocked_display)
 
-        # THEN: Certain methods should be called
-        mocked_stop.assert_called_with(mocked_controller)
-        assert 1 == mocked_stop.call_count
-        mocked_controller.vlc_media_player.get_time.assert_called_with()
-        mocked_controller.seek_slider.setSliderPosition.assert_called_with(200)
-        expected_calls = [call(True), call(False)]
-        assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
+def test_reset():
+    """
+    Test the reset() method
+    """
+    # GIVEN: Some mocked out stuff
+    mocked_display = MagicMock()
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: reset() is called
+    vlc_player.reset(mocked_display)
+
+    # THEN: The media should be stopped and invisible
+    mocked_display.vlc_media_player.stop.assert_called_with()
+    mocked_display.vlc_widget.setVisible.assert_called_with(False)
+    assert MediaState.Off == vlc_player.get_live_state()
+
+
+def test_set_visible_has_own_widget():
+    """
+    Test the set_visible() method when the player has its own widget
+    """
+    # GIVEN: Some mocked out stuff
+    mocked_display = MagicMock()
+    vlc_player = VlcPlayer(None)
+    vlc_player.has_own_widget = True
+
+    # WHEN: reset() is called
+    vlc_player.set_visible(mocked_display, True)
+
+    # THEN: The media should be stopped and invsibile
+    mocked_display.vlc_widget.setVisible.assert_called_with(True)
+
+
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_update_ui( mocked_get_vlc):
+    """
+    Test updating the UI
+    """
+    # GIVEN: A whole bunch of mocks
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Ended = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.end_time = 300
+    mocked_controller.seek_slider.isSliderDown.return_value = False
+    mocked_display = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.vlc_media_player.get_time.return_value = 400000
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: update_ui() is called
+    with patch.object(vlc_player, 'stop') as mocked_stop, \
+            patch.object(vlc_player, 'set_visible') as mocked_set_visible:
+        vlc_player.update_ui(mocked_controller, mocked_display)
+
+    # THEN: Certain methods should be called
+    mocked_stop.assert_called_with(mocked_controller)
+    assert 2 == mocked_stop.call_count
+    mocked_controller.vlc_media_player.get_time.assert_called_with()
+    mocked_set_visible.assert_called_with(mocked_controller, False)
+    mocked_controller.seek_slider.setSliderPosition.assert_called_with(400000)
+    expected_calls = [call(True), call(False)]
+    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
+
+
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+def test_update_ui_dvd( mocked_get_vlc):
+    """
+    Test updating the UI for a CD or DVD
+    """
+    # GIVEN: A whole bunch of mocks
+    mocked_vlc = MagicMock()
+    mocked_vlc.State.Ended = 1
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_controller = MagicMock()
+    mocked_controller.media_info = ItemMediaInfo()
+    mocked_controller.media_info.start_time = 100
+    mocked_controller.media_info.end_time = 300
+    mocked_controller.seek_slider.isSliderDown.return_value = False
+    mocked_display = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.vlc_media_player.get_time.return_value = 300
+    mocked_controller.media_info.media_type = MediaType.DVD
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: update_ui() is called
+    with patch.object(vlc_player, 'stop') as mocked_stop:
+        vlc_player.update_ui(mocked_controller, mocked_display)
+
+    # THEN: Certain methods should be called
+    mocked_stop.assert_called_with(mocked_controller)
+    assert 1 == mocked_stop.call_count
+    mocked_controller.vlc_media_player.get_time.assert_called_with()
+    mocked_controller.seek_slider.setSliderPosition.assert_called_with(200)
+    expected_calls = [call(True), call(False)]
+    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
