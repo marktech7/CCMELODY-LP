@@ -45,7 +45,7 @@ def vlc_env():
 
 @patch.dict(os.environ)
 @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-def test_not_osx_fix_vlc_22_plugin_path( mocked_is_macosx):
+def test_not_osx_fix_vlc_22_plugin_path(mocked_is_macosx):
     """
     Test that on Linux or some other non-OS X we do not set the VLC plugin path
     """
@@ -280,7 +280,7 @@ def test_setup_osx(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_ma
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_check_available( mocked_get_vlc):
+def test_check_available(mocked_get_vlc):
     """
     Check that when the "vlc" module is available, then VLC is set as available
     """
@@ -296,7 +296,7 @@ def test_check_available( mocked_get_vlc):
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_check_not_available( mocked_get_vlc):
+def test_check_not_available(mocked_get_vlc):
     """
     Check that when the "vlc" module is not available, then VLC is set as unavailable
     """
@@ -313,7 +313,7 @@ def test_check_not_available( mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load( mocked_normcase, mocked_get_vlc):
+def test_load(mocked_normcase, mocked_get_vlc):
     """
     Test loading a video into VLC
     """
@@ -351,7 +351,7 @@ def test_load( mocked_normcase, mocked_get_vlc):
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_audio_cd( mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     """
     Test loading an audio CD into VLC
     """
@@ -395,7 +395,7 @@ def test_load_audio_cd( mocked_normcase, mocked_get_vlc, mocked_is_win):
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_audio_cd_on_windows( mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win):
     """
     Test loading an audio CD into VLC on Windows
     """
@@ -440,7 +440,7 @@ def test_load_audio_cd_on_windows( mocked_normcase, mocked_get_vlc, mocked_is_wi
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_audio_cd_no_tracks( mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_audio_cd_no_tracks(mocked_normcase, mocked_get_vlc, mocked_is_win):
     """
     Test loading an audio CD that has no tracks into VLC
     """
@@ -486,7 +486,7 @@ def test_load_audio_cd_no_tracks( mocked_normcase, mocked_get_vlc, mocked_is_win
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-def test_media_state_wait( mocked_get_vlc):
+def test_media_state_wait(mocked_get_vlc):
     """
     Check that waiting for a state change works
     """
@@ -510,7 +510,7 @@ def test_media_state_wait( mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-def test_media_state_wait_error( mocked_get_vlc):
+def test_media_state_wait_error(mocked_get_vlc):
     """
     Check that getting an error when waiting for a state change returns False
     """
@@ -534,7 +534,7 @@ def test_media_state_wait_error( mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-def test_media_state_wait_times_out( mocked_get_vlc):
+def test_media_state_wait_times_out(mocked_get_vlc):
     """
     Check that waiting for a state returns False when it times out after 60 seconds
     """
@@ -578,7 +578,7 @@ def test_resize():
 
 @patch('openlp.core.ui.media.vlcplayer.threading')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_play( mocked_get_vlc, mocked_threading):
+def test_play(mocked_get_vlc, mocked_threading):
     """
     Test the play() method
     """
@@ -614,7 +614,7 @@ def test_play( mocked_get_vlc, mocked_threading):
 
 @patch('openlp.core.ui.media.vlcplayer.threading')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_play_media_wait_state_not_playing( mocked_get_vlc, mocked_threading):
+def test_play_media_wait_state_not_playing(mocked_get_vlc, mocked_threading):
     """
     Test the play() method when media_wait_state() returns False
     """
@@ -642,7 +642,7 @@ def test_play_media_wait_state_not_playing( mocked_get_vlc, mocked_threading):
 
 @patch('openlp.core.ui.media.vlcplayer.threading')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_play_dvd( mocked_get_vlc, mocked_threading):
+def test_play_dvd(mocked_get_vlc, mocked_threading):
     """
     Test the play() method with a DVD
     """
@@ -683,7 +683,7 @@ def test_play_dvd( mocked_get_vlc, mocked_threading):
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_pause( mocked_get_vlc):
+def test_pause(mocked_get_vlc):
     """
     Test that the pause method works correctly
     """
@@ -709,7 +709,7 @@ def test_pause( mocked_get_vlc):
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_pause_not_playing( mocked_get_vlc):
+def test_pause_not_playing(mocked_get_vlc):
     """
     Test the pause method when the player is not playing
     """
@@ -730,7 +730,7 @@ def test_pause_not_playing( mocked_get_vlc):
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_pause_fail( mocked_get_vlc):
+def test_pause_fail(mocked_get_vlc):
     """
     Test the pause method when the player fails to pause the media
     """
@@ -756,7 +756,7 @@ def test_pause_fail( mocked_get_vlc):
 
 
 @patch('openlp.core.ui.media.vlcplayer.threading')
-def test_stop( mocked_threading):
+def test_stop(mocked_threading):
     """
     Test stopping the current item
     """
@@ -882,7 +882,7 @@ def test_set_visible_has_own_widget():
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_update_ui( mocked_get_vlc):
+def test_update_ui(mocked_get_vlc):
     """
     Test updating the UI
     """
@@ -914,7 +914,7 @@ def test_update_ui( mocked_get_vlc):
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_update_ui_dvd( mocked_get_vlc):
+def test_update_ui_dvd(mocked_get_vlc):
     """
     Test updating the UI for a CD or DVD
     """
