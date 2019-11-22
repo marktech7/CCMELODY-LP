@@ -37,7 +37,6 @@ from openlp.core.api.http import register_endpoint
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType
@@ -64,7 +63,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.live_timer.setInterval(TICK_TIME)
         self.preview_timer = QtCore.QTimer()
         self.preview_timer.setInterval(TICK_TIME)
-        self.settings = Settings()
         # Signals
         self.live_timer.timeout.connect(self.media_state_live)
         self.preview_timer.timeout.connect(self.media_state_preview)
