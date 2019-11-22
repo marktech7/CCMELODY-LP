@@ -400,6 +400,8 @@ def main():
     Registry.create()
     Registry().register('application', application)
     Registry().set_flag('no_web_server', args.no_web_server)
+    # Upgrade settings.
+    settings = Settings()
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     server = Server()
@@ -414,8 +416,6 @@ def main():
     if application.is_data_path_missing():
         server.close_server()
         sys.exit()
-    # Upgrade settings.
-    settings = Settings()
     if settings.can_upgrade():
         now = datetime.now()
         # Only back up if OpenLP has previously run.
