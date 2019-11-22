@@ -19,7 +19,6 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
-import pytest
 
 from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
@@ -33,14 +32,6 @@ from openlp.core.app import OpenLP, parse_options
 from openlp.core.common import is_win
 from openlp.core.common.settings import Settings
 from tests.utils.constants import RESOURCE_PATH
-
-
-@pytest.yield_fixture
-def openlp():
-    """An instance of OpenLP"""
-    openlp = OpenLP([])
-    yield openlp
-    del openlp
 
 
 def test_parse_options_basic():
@@ -167,34 +158,8 @@ def test_parse_options_file_and_debug():
     assert args.rargs == ['dummy_temp'], 'The service file should not be blank'
 
 
-def test_process_events(openlp):
-    """
-    Test that the app.process_events() method simply calls the Qt method
-    """
-    # GIVEN: An app
-    # WHEN: process_events() is called
-    with patch.object(openlp, 'processEvents') as mocked_processEvents:
-        openlp.process_events()
-
-    # THEN: processEvents was called
-    mocked_processEvents.assert_called_once_with()
-
-
-def test_set_busy_cursor(openlp):
-    """
-    Test that the set_busy_cursor() method sets the cursor
-    """
-    # GIVEN: An app
-    # WHEN: set_busy_cursor() is called
-    with patch.object(openlp, 'setOverrideCursor') as mocked_setOverrideCursor, \
-            patch.object(openlp, 'processEvents') as mocked_processEvents:
-        openlp.set_busy_cursor()
-
-    # THEN: The cursor should have been set
-    mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.BusyCursor)
-    mocked_processEvents.assert_called_once_with()
-
-
+# Problem seems to be with the what the OpenLP object is defined.
+# Running each test on its own is fine but as a block you get seg faults in strange places.
 @skip('Figure out why this is causing a segfault')
 class TestOpenLP(TestCase):
     """
