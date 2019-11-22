@@ -435,7 +435,7 @@ def main():
                     translate('OpenLP', 'Settings back up failed.\n\nContinuining to upgrade.'))
         settings.upgrade_settings()
     # First time checks in settings
-    if not Settings().value('core/has run wizard'):
+    if not settings.value('core/has run wizard'):
         if not FirstTimeLanguageForm().exec():
             # if cancel then stop processing
             server.close_server()
