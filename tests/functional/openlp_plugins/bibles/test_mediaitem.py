@@ -738,14 +738,14 @@ class TestMediaItem(TestCase, TestMixin):
         Test on_style_combo_box_index_changed
         """
         # GIVEN: An instance of :class:`MediaManagerItem` a mocked media_item.settings
-        self.media_item.settings = MagicMock()
+        self.media_item.settings_tab = MagicMock()
 
         # WHEN: Calling on_style_combo_box_index_changed
         self.media_item.on_style_combo_box_index_changed(2)
 
         # THEN: The layout_style setting should have been set
-        assert self.media_item.settings.layout_style == 2
-        self.media_item.settings.layout_style_combo_box.setCurrentIndex.assert_called_once_with(2)
+        assert self.media_item.settings_tab.layout_style == 2
+        self.media_item.settings_tab.layout_style_combo_box.setCurrentIndex.assert_called_once_with(2)
         self.mocked_settings_instance.setValue.assert_called_once_with('bibles/verse layout style', 2)
 
     def test_on_version_combo_box_index_changed_no_bible(self):
