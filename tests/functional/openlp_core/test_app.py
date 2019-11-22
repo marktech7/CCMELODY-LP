@@ -19,6 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
+import pytest
+
 from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
@@ -31,6 +33,14 @@ from openlp.core.app import OpenLP, parse_options
 from openlp.core.common import is_win
 from openlp.core.common.settings import Settings
 from tests.utils.constants import RESOURCE_PATH
+
+
+@pytest.yield_fixture
+def openlp():
+    """An instance of OpenLP"""
+    openlp = OpenLP([])
+    yield openlp
+    del openlp
 
 
 def test_parse_options_basic():
@@ -155,6 +165,47 @@ def test_parse_options_file_and_debug():
     assert args.no_error_form is False, 'The no_error_form should be set to False'
     assert args.portable is False, 'The portable flag should be set to false'
     assert args.rargs == ['dummy_temp'], 'The service file should not be blank'
+
+
+@patch('openlp.core.app.QtWidgets.QMessageBox.critical')
+@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
+def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_critical, openlp):
+    """
+    Test the is_already_running() method when OpenLP IS running and the user chooses to continue
+    """
+    # GIVEN: An OpenLP app and some mocks
+    mocked_shared_memory = MagicMock()
+    mocked_shared_memory.attach.return_value = True
+    MockedStandardButtons.return_value = 0
+    mocked_critical.return_value = QtWidgets.QMessageBox.Ok
+
+    # WHEN: is_already_running() is called
+    openlp.is_already_running()
+
+    # THEN: The result should be false
+    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
+    mocked_critical.assert_called_once_with(None, 'Error',
+                                            'OpenLP is already running on this machine. \nClosing this instance', 0)
+
+
+@patch('openlp.core.app.QtWidgets.QMessageBox.critical')
+@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
+def test_is_already_running_is_running_stop(MockedStandardButtons, mocked_critical, openlp):
+    """
+    Test the is_already_running() method when OpenLP IS running and the user chooses to stop
+    """
+    # GIVEN: An OpenLP app and some mocks
+    MockedStandardButtons.return_value = 0
+    mocked_critical.return_value = QtWidgets.QMessageBox.Ok
+
+    # WHEN: is_already_running() is called
+    openlp.is_already_running()
+
+    # THEN: The result should be false
+    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
+    mocked_critical.assert_called_once_with(None, 'Error',
+                                            'OpenLP is already running on this machine. \nClosing this instance', 0)
+
 
 
 @skip('Figure out why this is causing a segfault')
