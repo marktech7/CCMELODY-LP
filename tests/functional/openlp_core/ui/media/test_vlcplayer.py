@@ -41,6 +41,7 @@ def vlc_env():
     if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
         del sys.modules['openlp.core.ui.media.vendor.vlc']
     yield
+    MockDateTime.revert()
 
 
 @patch.dict(os.environ)
@@ -510,7 +511,7 @@ def test_media_state_wait(mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-def test_media_state_wait_error(mocked_get_vlc):
+def test_media_state_wait_error(mocked_get_vlc, vlc_env):
     """
     Check that getting an error when waiting for a state change returns False
     """
@@ -534,7 +535,7 @@ def test_media_state_wait_error(mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.datetime', MockDateTime)
-def test_media_state_wait_times_out(mocked_get_vlc):
+def test_media_state_wait_times_out(mocked_get_vlc, vlc_env):
     """
     Check that waiting for a state returns False when it times out after 60 seconds
     """
