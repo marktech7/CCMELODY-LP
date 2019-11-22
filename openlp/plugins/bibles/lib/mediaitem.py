@@ -131,7 +131,6 @@ class BibleMediaItem(MediaManagerItem):
         self.bibles_go_live.connect(self.go_live_remote)
         self.bibles_add_to_service.connect(self.add_to_service_remote)
         # Place to store the search results for both bibles.
-        self.settings = self.plugin.settings_tab
         self.quick_preview_allowed = True
         self.has_search = True
         self.search_results = []

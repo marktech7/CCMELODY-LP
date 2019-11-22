@@ -23,6 +23,7 @@ Package to test the openlp.core.ui.media.vlcplayer package.
 """
 import os
 import sys
+import pytest
 from datetime import timedelta
 from unittest import TestCase, skip
 from unittest.mock import MagicMock, call, patch
@@ -34,266 +35,267 @@ from tests.helpers import MockDateTime
 from tests.helpers.testmixin import TestMixin
 
 
-class TestVLCPlayer(TestCase, TestMixin):
+@pytest.yield_fixture
+def vlc_env():
+    """An instance of OpenLP"""
+    if 'VLC_PLUGIN_PATH' in os.environ:
+        del os.environ['VLC_PLUGIN_PATH']
+    if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
+        del sys.modules['openlp.core.ui.media.vendor.vlc']
+    yield
+
+
+@patch.dict(os.environ)
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+def test_not_osx_fix_vlc_22_plugin_path( mocked_is_macosx):
     """
-    Test the functions in the :mod:`vlcplayer` module.
+    Test that on Linux or some other non-OS X we do not set the VLC plugin path
     """
-    def setUp(self):
+    # GIVEN: We're not on OS X and we don't have the VLC plugin path set
+    mocked_is_macosx.return_value = False
+
+    # WHEN: An checking if the player is available
+    get_vlc()
+
+    # THEN: The extra environment variable should NOT be there
+    assert 'VLC_PLUGIN_PATH' not in os.environ, 'The plugin path should NOT be in the environment variables'
+
+
+def test_init():
+    """
+    Test that the VLC player class initialises correctly
+    """
+    # GIVEN: A mocked out list of extensions
+    # TODO: figure out how to mock out the lists of extensions
+
+    # WHEN: The VlcPlayer class is instantiated
+    vlc_player = VlcPlayer(None)
+
+    # THEN: The correct variables are set
+    assert 'VLC' == vlc_player.original_name
+    assert '&VLC' == vlc_player.display_name
+    assert vlc_player.parent is None
+    assert vlc_player.can_folder is True
+
+
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.QtWidgets')
+@patch('openlp.core.ui.media.vlcplayer.Settings')
+def test_setup(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
+    """
+    Test the setup method
+    """
+    # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
+    mocked_is_macosx.return_value = False
+    mocked_is_win.return_value = False
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = ''
+    MockedSettings.return_value = mocked_settings
+    mocked_qframe = MagicMock()
+    mocked_qframe.winId.return_value = 2
+    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.return_value = mocked_qframe
+    mocked_media_player_new = MagicMock()
+    mocked_instance = MagicMock()
+    mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_vlc = MagicMock()
+    mocked_vlc.Instance.return_value = mocked_instance
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_output_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.is_live = True
+    mocked_output_display.size.return_value = (10, 10)
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: setup() is run
+    vlc_player.setup(mocked_output_display, mocked_controller, True)
+
+    # THEN: The VLC widget should be set up correctly
+    assert mocked_output_display.vlc_widget == mocked_qframe
+    mocked_qframe.setFrameStyle.assert_called_with(1)
+    mocked_settings.value.assert_any_call('advanced/hide mouse')
+    mocked_settings.value.assert_any_call('media/vlc arguments')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+    assert mocked_output_display.vlc_instance == mocked_instance
+    mocked_instance.media_player_new.assert_called_with()
+    assert mocked_output_display.vlc_media_player == mocked_media_player_new
+    mocked_output_display.size.assert_called_with()
+    mocked_qframe.resize.assert_called_with((10, 10))
+    mocked_qframe.raise_.assert_called_with()
+    mocked_qframe.hide.assert_called_with()
+    mocked_media_player_new.set_xwindow.assert_called_with(2)
+    assert vlc_player.has_own_widget is True
+
+
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.QtWidgets')
+@patch('openlp.core.ui.media.vlcplayer.Settings')
+def test_setup_has_audio(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
+    """
+    Test the setup method when has_audio is True
+    """
+    # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
+    mocked_is_macosx.return_value = False
+    mocked_is_win.return_value = False
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = ''
+    MockedSettings.return_value = mocked_settings
+    mocked_qframe = MagicMock()
+    mocked_qframe.winId.return_value = 2
+    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.return_value = mocked_qframe
+    mocked_media_player_new = MagicMock()
+    mocked_instance = MagicMock()
+    mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_vlc = MagicMock()
+    mocked_vlc.Instance.return_value = mocked_instance
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_output_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.is_live = True
+    mocked_output_display.size.return_value = (10, 10)
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: setup() is run
+    vlc_player.setup(mocked_output_display, mocked_controller, True)
+
+    # THEN: The VLC instance should be created with the correct options
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+
+
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.QtWidgets')
+@patch('openlp.core.ui.media.vlcplayer.Settings')
+def test_setup_visible_mouse(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
+    """
+    Test the setup method when Settings().value("hide mouse") is False
+    """
+    # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
+    mocked_is_macosx.return_value = False
+    mocked_is_win.return_value = False
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = ''
+    MockedSettings.return_value = mocked_settings
+    mocked_qframe = MagicMock()
+    mocked_qframe.winId.return_value = 2
+    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.return_value = mocked_qframe
+    mocked_media_player_new = MagicMock()
+    mocked_instance = MagicMock()
+    mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_vlc = MagicMock()
+    mocked_vlc.Instance.return_value = mocked_instance
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_output_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.is_live = True
+    mocked_output_display.size.return_value = (10, 10)
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: setup() is run
+    vlc_player.setup(mocked_output_display, mocked_controller, True)
+
+    # THEN: The VLC instance should be created with the correct options
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+
+
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.QtWidgets')
+@patch('openlp.core.ui.media.vlcplayer.Settings')
+def test_setup_windows(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
+    """
+    Test the setup method when running on Windows
+    """
+    # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
+    mocked_is_macosx.return_value = False
+    mocked_is_win.return_value = True
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = False
+    MockedSettings.return_value = mocked_settings
+    mocked_qframe = MagicMock()
+    mocked_qframe.winId.return_value = 2
+    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.return_value = mocked_qframe
+    mocked_media_player_new = MagicMock()
+    mocked_instance = MagicMock()
+    mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_vlc = MagicMock()
+    mocked_vlc.Instance.return_value = mocked_instance
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_output_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.is_live = True
+    mocked_output_display.size.return_value = (10, 10)
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: setup() is run
+    vlc_player.setup(mocked_output_display, mocked_controller, True)
+
+    # THEN: set_hwnd should be called
+    mocked_media_player_new.set_hwnd.assert_called_with(2)
+
+
+@patch('openlp.core.ui.media.vlcplayer.is_win')
+@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.vlcplayer.get_vlc')
+@patch('openlp.core.ui.media.vlcplayer.QtWidgets')
+@patch('openlp.core.ui.media.vlcplayer.Settings')
+def test_setup_osx(MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
+    """
+    Test the setup method when running on OS X
+    """
+    # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
+    mocked_is_macosx.return_value = True
+    mocked_is_win.return_value = False
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = False
+    MockedSettings.return_value = mocked_settings
+    mocked_qframe = MagicMock()
+    mocked_qframe.winId.return_value = 2
+    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.return_value = mocked_qframe
+    mocked_media_player_new = MagicMock()
+    mocked_instance = MagicMock()
+    mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_vlc = MagicMock()
+    mocked_vlc.Instance.return_value = mocked_instance
+    mocked_get_vlc.return_value = mocked_vlc
+    mocked_output_display = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.is_live = True
+    mocked_output_display.size.return_value = (10, 10)
+    vlc_player = VlcPlayer(None)
+
+    # WHEN: setup() is run
+    vlc_player.setup(mocked_output_display, mocked_controller, True)
+
+    # THEN: set_nsobject should be called
+    mocked_media_player_new.set_nsobject.assert_called_with(2)
+
+
+
+    class TestVLCPlayer(TestCase, TestMixin):
         """
-        Common setup for all the tests
+        Test the functions in the :mod:`vlcplayer` module.
         """
-        if 'VLC_PLUGIN_PATH' in os.environ:
-            del os.environ['VLC_PLUGIN_PATH']
-        if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
-            del sys.modules['openlp.core.ui.media.vendor.vlc']
-        MockDateTime.revert()
 
-    @skip('No way to test this')
-    @patch('openlp.core.ui.media.vlcplayer.vlc')
-    def test_get_vlc_fails_and_removes_module(self, mocked_vlc):
-        """
-        Test that when the VLC import fails, it removes the module from sys.modules
-        """
-        # GIVEN: We're on OS X and we don't have the VLC plugin path set
-        mocked_vlc.Instance.side_effect = NameError
-        mocked_vlc.libvlc_get_version.return_value = b'0.0.0'
-
-        # WHEN: An checking if the player is available
-        get_vlc()
-
-        # THEN: The extra environment variable should be there
-        assert 'openlp.core.ui.media.vendor.vlc' not in sys.modules
-
-    @patch.dict(os.environ)
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    def test_not_osx_fix_vlc_22_plugin_path(self, mocked_is_macosx):
-        """
-        Test that on Linux or some other non-OS X we do not set the VLC plugin path
-        """
-        # GIVEN: We're not on OS X and we don't have the VLC plugin path set
-        mocked_is_macosx.return_value = False
-
-        # WHEN: An checking if the player is available
-        get_vlc()
-
-        # THEN: The extra environment variable should NOT be there
-        assert 'VLC_PLUGIN_PATH' not in os.environ, 'The plugin path should NOT be in the environment variables'
-
-    def test_init(self):
-        """
-        Test that the VLC player class initialises correctly
-        """
-        # GIVEN: A mocked out list of extensions
-        # TODO: figure out how to mock out the lists of extensions
-
-        # WHEN: The VlcPlayer class is instantiated
-        vlc_player = VlcPlayer(None)
-
-        # THEN: The correct variables are set
-        assert 'VLC' == vlc_player.original_name
-        assert '&VLC' == vlc_player.display_name
-        assert vlc_player.parent is None
-        assert vlc_player.can_folder is True
-
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
-    @patch('openlp.core.ui.media.vlcplayer.Settings')
-    def test_setup(self, MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
-        """
-        Test the setup method
-        """
-        # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
-        mocked_is_macosx.return_value = False
-        mocked_is_win.return_value = False
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = ''
-        MockedSettings.return_value = mocked_settings
-        mocked_qframe = MagicMock()
-        mocked_qframe.winId.return_value = 2
-        MockedQtWidgets.QFrame.NoFrame = 1
-        MockedQtWidgets.QFrame.return_value = mocked_qframe
-        mocked_media_player_new = MagicMock()
-        mocked_instance = MagicMock()
-        mocked_instance.media_player_new.return_value = mocked_media_player_new
-        mocked_vlc = MagicMock()
-        mocked_vlc.Instance.return_value = mocked_instance
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_output_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.is_live = True
-        mocked_output_display.size.return_value = (10, 10)
-        vlc_player = VlcPlayer(None)
-
-        # WHEN: setup() is run
-        vlc_player.setup(mocked_output_display, mocked_controller, True)
-
-        # THEN: The VLC widget should be set up correctly
-        assert mocked_output_display.vlc_widget == mocked_qframe
-        mocked_qframe.setFrameStyle.assert_called_with(1)
-        mocked_settings.value.assert_any_call('advanced/hide mouse')
-        mocked_settings.value.assert_any_call('media/vlc arguments')
-        mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
-        assert mocked_output_display.vlc_instance == mocked_instance
-        mocked_instance.media_player_new.assert_called_with()
-        assert mocked_output_display.vlc_media_player == mocked_media_player_new
-        mocked_output_display.size.assert_called_with()
-        mocked_qframe.resize.assert_called_with((10, 10))
-        mocked_qframe.raise_.assert_called_with()
-        mocked_qframe.hide.assert_called_with()
-        mocked_media_player_new.set_xwindow.assert_called_with(2)
-        assert vlc_player.has_own_widget is True
-
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
-    @patch('openlp.core.ui.media.vlcplayer.Settings')
-    def test_setup_has_audio(self, MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
-        """
-        Test the setup method when has_audio is True
-        """
-        # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
-        mocked_is_macosx.return_value = False
-        mocked_is_win.return_value = False
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = ''
-        MockedSettings.return_value = mocked_settings
-        mocked_qframe = MagicMock()
-        mocked_qframe.winId.return_value = 2
-        MockedQtWidgets.QFrame.NoFrame = 1
-        MockedQtWidgets.QFrame.return_value = mocked_qframe
-        mocked_media_player_new = MagicMock()
-        mocked_instance = MagicMock()
-        mocked_instance.media_player_new.return_value = mocked_media_player_new
-        mocked_vlc = MagicMock()
-        mocked_vlc.Instance.return_value = mocked_instance
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_output_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.is_live = True
-        mocked_output_display.size.return_value = (10, 10)
-        vlc_player = VlcPlayer(None)
-
-        # WHEN: setup() is run
-        vlc_player.setup(mocked_output_display, mocked_controller, True)
-
-        # THEN: The VLC instance should be created with the correct options
-        mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
-
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
-    @patch('openlp.core.ui.media.vlcplayer.Settings')
-    def test_setup_visible_mouse(self, MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx,
-                                 mocked_is_win):
-        """
-        Test the setup method when Settings().value("hide mouse") is False
-        """
-        # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
-        mocked_is_macosx.return_value = False
-        mocked_is_win.return_value = False
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = ''
-        MockedSettings.return_value = mocked_settings
-        mocked_qframe = MagicMock()
-        mocked_qframe.winId.return_value = 2
-        MockedQtWidgets.QFrame.NoFrame = 1
-        MockedQtWidgets.QFrame.return_value = mocked_qframe
-        mocked_media_player_new = MagicMock()
-        mocked_instance = MagicMock()
-        mocked_instance.media_player_new.return_value = mocked_media_player_new
-        mocked_vlc = MagicMock()
-        mocked_vlc.Instance.return_value = mocked_instance
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_output_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.is_live = True
-        mocked_output_display.size.return_value = (10, 10)
-        vlc_player = VlcPlayer(None)
-
-        # WHEN: setup() is run
-        vlc_player.setup(mocked_output_display, mocked_controller, True)
-
-        # THEN: The VLC instance should be created with the correct options
-        mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
-
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
-    @patch('openlp.core.ui.media.vlcplayer.Settings')
-    def test_setup_windows(self, MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
-        """
-        Test the setup method when running on Windows
-        """
-        # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
-        mocked_is_macosx.return_value = False
-        mocked_is_win.return_value = True
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = False
-        MockedSettings.return_value = mocked_settings
-        mocked_qframe = MagicMock()
-        mocked_qframe.winId.return_value = 2
-        MockedQtWidgets.QFrame.NoFrame = 1
-        MockedQtWidgets.QFrame.return_value = mocked_qframe
-        mocked_media_player_new = MagicMock()
-        mocked_instance = MagicMock()
-        mocked_instance.media_player_new.return_value = mocked_media_player_new
-        mocked_vlc = MagicMock()
-        mocked_vlc.Instance.return_value = mocked_instance
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_output_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.is_live = True
-        mocked_output_display.size.return_value = (10, 10)
-        vlc_player = VlcPlayer(None)
-
-        # WHEN: setup() is run
-        vlc_player.setup(mocked_output_display, mocked_controller, True)
-
-        # THEN: set_hwnd should be called
-        mocked_media_player_new.set_hwnd.assert_called_with(2)
-
-    @patch('openlp.core.ui.media.vlcplayer.is_win')
-    @patch('openlp.core.ui.media.vlcplayer.is_macosx')
-    @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-    @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
-    @patch('openlp.core.ui.media.vlcplayer.Settings')
-    def test_setup_osx(self, MockedSettings, MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win):
-        """
-        Test the setup method when running on OS X
-        """
-        # GIVEN: A bunch of mocked out stuff and a VlcPlayer object
-        mocked_is_macosx.return_value = True
-        mocked_is_win.return_value = False
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = False
-        MockedSettings.return_value = mocked_settings
-        mocked_qframe = MagicMock()
-        mocked_qframe.winId.return_value = 2
-        MockedQtWidgets.QFrame.NoFrame = 1
-        MockedQtWidgets.QFrame.return_value = mocked_qframe
-        mocked_media_player_new = MagicMock()
-        mocked_instance = MagicMock()
-        mocked_instance.media_player_new.return_value = mocked_media_player_new
-        mocked_vlc = MagicMock()
-        mocked_vlc.Instance.return_value = mocked_instance
-        mocked_get_vlc.return_value = mocked_vlc
-        mocked_output_display = MagicMock()
-        mocked_controller = MagicMock()
-        mocked_controller.is_live = True
-        mocked_output_display.size.return_value = (10, 10)
-        vlc_player = VlcPlayer(None)
-
-        # WHEN: setup() is run
-        vlc_player.setup(mocked_output_display, mocked_controller, True)
-
-        # THEN: set_nsobject should be called
-        mocked_media_player_new.set_nsobject.assert_called_with(2)
-
+        def setUp(self):
+            """
+            Common setup for all the tests
+            """
+            if 'VLC_PLUGIN_PATH' in os.environ:
+                del os.environ['VLC_PLUGIN_PATH']
+            if 'openlp.core.ui.media.vendor.vlc' in sys.modules:
+                del sys.modules['openlp.core.ui.media.vendor.vlc']
+            MockDateTime.revert()
     @patch('openlp.core.ui.media.vlcplayer.get_vlc')
     def test_check_available(self, mocked_get_vlc):
         """

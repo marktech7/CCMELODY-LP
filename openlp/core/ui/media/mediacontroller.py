@@ -64,7 +64,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.live_timer.setInterval(TICK_TIME)
         self.preview_timer = QtCore.QTimer()
         self.preview_timer.setInterval(TICK_TIME)
-        self.settings = Settings()
         # Signals
         self.live_timer.timeout.connect(self.media_state_live)
         self.preview_timer.timeout.connect(self.media_state_preview)
