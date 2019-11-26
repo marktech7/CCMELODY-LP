@@ -78,7 +78,7 @@ def test_zeroconf_worker_stop():
     worker.stop()
 
     # THEN: _can_run should be False
-    assert worker._can_run is False
+    assert worker.can_run() is False
 
 
 @patch('openlp.core.api.zeroconf.get_network_interfaces')
