@@ -488,13 +488,21 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
 
     def wait_till_loaded(self):
         """
-        Wait while allowing things to process
-
-        :param delay: The amount of time in seconds to delay, can be a float
+        Wait until web engine page loaded
+        :return boolean: True on success, False on timeout
         """
+        # Timeout in 10 seconds
+        end_time = time.time() + 10
         app = Registry().get('application')
+        success = True
         while not self._is_initialised:
+            if time.time() > end_time:
+                log.error('Timed out waiting for web engine page to load')
+                success = False
+                break;
+            time.sleep(0.1)
             app.process_events()
+        return success
 
     def _wait_and_process(self, delay):
         """
