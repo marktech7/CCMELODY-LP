@@ -554,7 +554,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         wait_dialog.setAutoClose(False)
         wait_dialog.setCancelButton(None)
         wait_dialog.show()
-        thread_names = self.application.worker_threads.keys()
+        thread_names = list(self.application.worker_threads.keys())
         for thread_name in thread_names:
             if thread_name not in self.application.worker_threads.keys():
                 continue

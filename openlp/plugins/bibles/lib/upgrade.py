@@ -43,7 +43,7 @@ def upgrade_1(session, metadata):
 
     This upgrade renamed a number of keys to a single naming convention.
     """
-    log.info('No upgrades to perform')
+    log.info('No upgrades to perform')      # pragma: no cover
 
 
 def upgrade_2(session, metadata):
