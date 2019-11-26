@@ -499,7 +499,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             if time.time() > end_time:
                 log.error('Timed out waiting for web engine page to load')
                 success = False
-                break;
+                break
             time.sleep(0.1)
             app.process_events()
         return success
