@@ -486,6 +486,16 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             footer_html = 'Dummy footer text'
         return footer_html
 
+    def wait_till_loaded(self):
+        """
+        Wait while allowing things to process
+
+        :param delay: The amount of time in seconds to delay, can be a float
+        """
+        app = Registry().get('application')
+        while not self._is_initialised:
+            app.process_events()
+
     def _wait_and_process(self, delay):
         """
         Wait while allowing things to process

@@ -706,6 +706,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         theme_list = theme_list or self.theme_list
         self.progress_form.theme_list = theme_list
         self.progress_form.show()
+        self.progress_form.theme_display.wait_till_loaded()
         for theme_name in theme_list:
             theme_data = self.get_theme_data(theme_name)
             preview_pixmap = self.progress_form.get_preview(theme_name, theme_data)
