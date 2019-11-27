@@ -125,6 +125,7 @@ class RegistryProperties(object):
     _settings_form = None
     _alerts_manager = None
     _projector_manager = None
+    _settings = None
 
     @property
     def application(self):
@@ -246,3 +247,12 @@ class RegistryProperties(object):
         if not hasattr(self, '_projector_manager') or not self._projector_manager:
             self._projector_manager = Registry().get('projector_manager')
         return self._projector_manager
+
+    @property
+    def settings(self):
+        """
+        Adds the projector manager to the class dynamically
+        """
+        if not hasattr(self, '_settings') or not self._settings:
+            self._settings = Registry().get('settings')
+        return self._settings
