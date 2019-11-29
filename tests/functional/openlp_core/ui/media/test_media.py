@@ -22,6 +22,7 @@
 Package to test the openlp.core.ui package.
 """
 from openlp.core.ui.media import parse_optical_path
+from openlp.core.ui.media import format_milliseconds
 
 
 def test_parse_optical_path_linux():
@@ -80,3 +81,18 @@ def test_parse_optical_path_win():
     assert org_end == end, 'Returned end should match the original'
     assert org_name == name, 'Returned end should match the original'
     assert org_device_path == device_path, 'Returned device_path should match the original'
+
+
+def test_format_milliseconds():
+    """
+    Test that format_milliseconds(...) makes an expected human readable time string
+    """
+
+    # GIVEN: 200 million milliseconds (Revelation 9:16)
+    num_soldiers_on_horses_as_milliseconds = 200 * 1000 * 1000
+
+    # WHEN: converting milliseconds to human readable string
+    num_soldiers_on_horses_as_formatted_time_string = format_milliseconds(num_soldiers_on_horses_as_milliseconds)
+
+    # THEN: The formatted time string should be 55 hours, 33 minutes, 20 seconds, and 000 milliseconds
+    assert num_soldiers_on_horses_as_formatted_time_string == "55:33:20,000"
