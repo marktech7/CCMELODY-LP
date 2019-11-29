@@ -25,6 +25,7 @@
 .vscode
 .eggs
 .venv
+.mypy_cache
 OpenLP.egg-info
 \#*\#
 __pycache__
