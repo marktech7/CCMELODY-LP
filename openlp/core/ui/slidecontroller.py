@@ -34,7 +34,6 @@ from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ServiceItemAction, image_to_byte
@@ -324,7 +323,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once = create_action(self, 'playSlidesOnce', text=UiStrings().PlaySlidesToEnd,
                                                   icon=UiIcons().clock, checked=False, can_shortcuts=True,
                                                   category=self.category, triggers=self.on_play_slides_once)
-            if Settings().value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
+            if self.settings.value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
                 self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             else:
                 self.play_slides_menu.setDefaultAction(self.play_slides_once)
@@ -697,13 +696,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Adjusts the value of the ``delay_spin_box`` to the given one.
         """
-        self.delay_spin_box.setValue(Settings().value('core/loop delay'))
+        self.delay_spin_box.setValue(self.settings.value('core/loop delay'))
 
     def update_slide_limits(self):
         """
         Updates the Slide Limits variable from the settings.
         """
-        self.slide_limits = Settings().value(self.main_window.advanced_settings_section + '/slide limits')
+        self.slide_limits = self.settings.value(self.main_window.advanced_settings_section + '/slide limits')
 
     def enable_tool_bar(self, item):
         """
@@ -737,7 +736,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.play_slides_loop.setIcon(UiIcons().clock)
         self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         if item.is_text():
-            if (Settings().value(self.main_window.songs_settings_section + '/display songbar') and
+            if (self.settings.value(self.main_window.songs_settings_section + '/display songbar') and
                     not self.song_menu.menu().isEmpty()):
                 self.toolbar.set_widget_visible('song_menu', True)
         if item.is_capable(ItemCapabilities.CanLoop) and len(item.slides) > 1:
@@ -1015,9 +1014,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(False)
         self.desktop_screen.setChecked(False)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'blanked')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'blanked')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.blank_plugin()
         self.update_preview()
         self.on_toggle_loop()
@@ -1036,9 +1035,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(checked)
         self.desktop_screen.setChecked(False)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'themed')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'themed')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.blank_plugin()
         self.update_preview()
         self.on_toggle_loop()
@@ -1058,9 +1057,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(False)
         self.desktop_screen.setChecked(checked)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'hidden')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'hidden')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.hide_plugin(checked)
         self.update_preview()
         self.on_toggle_loop()
@@ -1147,7 +1146,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return
         # If "click live slide to unblank" is enabled, unblank the display. And start = Item is sent to Live.
         # Note: If this if statement is placed at the bottom of this function instead of top slide transitions are lost.
-        if self.is_live and Settings().value('core/click live slide to unblank'):
+        if self.is_live and self.settings.value('core/click live slide to unblank'):
             if not start:
                 Registry().execute('slidecontroller_live_unblank')
         row = self.preview_widget.current_slide_number()
@@ -1355,7 +1354,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
             self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             self.play_slides_once.setChecked(False)
-            if Settings().value('core/click live slide to unblank'):
+            if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
             self.play_slides_loop.setIcon(UiIcons().clock)
@@ -1380,7 +1379,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
             self.play_slides_menu.setDefaultAction(self.play_slides_once)
             self.play_slides_loop.setChecked(False)
-            if Settings().value('core/click live slide to unblank'):
+            if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
             self.play_slides_once.setIcon(UiIcons().clock)
@@ -1425,7 +1424,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Triggered when a preview slide item is double clicked
         """
         if self.service_item:
-            if Settings().value('advanced/double click live') and Settings().value('core/auto unblank'):
+            if self.settings.value('advanced/double click live') and self.settings.value('core/auto unblank'):
                 # Live and Preview have issues if we have video or presentations
                 # playing in both at the same time.
                 if self.service_item.is_command():
