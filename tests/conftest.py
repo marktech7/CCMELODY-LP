@@ -23,6 +23,7 @@ All the tests
 """
 import os
 from tempfile import mkstemp
+from unittest.mock import MagicMock
 
 import pytest
 from PyQt5 import QtCore, QtWidgets
@@ -49,11 +50,22 @@ def settings(qapp):
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
-    Registry().register('settings', set)
+    Registry().register('settings', sets)
     yield sets
     del sets
     os.close(fd)
     os.unlink(Settings().fileName())
+
+
+@pytest.yield_fixture
+def mock_settings():
+    """A Mock Settings() instance"""
+    Registry.create()
+    # Create and register a mock settings object to work with
+    mock_settings = MagicMock()
+    Registry().register('settings', mock_settings)
+    yield mock_settings
+    del mock_settings
 
 
 @pytest.fixture
