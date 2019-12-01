@@ -21,6 +21,7 @@
 """
 Package to test the openlp.core.ui.slidecontroller package.
 """
+from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtGui
@@ -471,6 +472,7 @@ def test_refresh_service_item_not_image_or_text():
     assert 0 == mocked_service_item.render.call_count, 'The render() method should not have been called'
     assert 0 == mocked_process_item.call_count, 'The mocked_process_item() method should not have been called'
 
+
 def test_add_service_item_with_song_edit():
     """
     Test the add_service_item() method when song_edit is True
@@ -554,6 +556,7 @@ def test_replace_service_manager_item_same_item():
     mocked_preview_widget.current_slide_number.assert_called_with()
     mocked_process_item.assert_called_once_with(mocked_item, 7)
 
+
 def test_on_slide_blank():
     """
     Test on_slide_blank
@@ -567,6 +570,7 @@ def test_on_slide_blank():
 
     # THEN: on_blank_display should have been called with True
     slide_controller.on_blank_display.assert_called_once_with(True)
+
 
 def test_on_slide_unblank():
     """
@@ -582,6 +586,7 @@ def test_on_slide_unblank():
     # THEN: on_blank_display should have been called with False
     slide_controller.on_blank_display.assert_called_once_with(False)
 
+
 def test_on_slide_selected_index_no_service_item():
     """
     Test that when there is no service item, the on_slide_selected_index() method returns immediately
@@ -596,6 +601,7 @@ def test_on_slide_selected_index_no_service_item():
 
     # THEN: It should have exited early
     assert 0 == mocked_item.is_command.call_count, 'The service item should have not been called'
+
 
 @patch.object(Registry, 'execute')
 def test_on_slide_selected_index_service_item_command(mocked_execute):
@@ -976,53 +982,54 @@ def test_paint_event_text_fits():
         mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignCenter, test_string)
 
 
-def test_paint_event_text_doesnt_fit():
-    """
-    Test the paintEvent method when text fits the label
-    """
-    font = QtGui.QFont()
-    metrics = QtGui.QFontMetrics(font)
+class TestInfoLabel(TestCase):
 
-    with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
-            patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
+    def test_paint_event_text_doesnt_fit(self):
+        """
+        Test the paintEvent method when text fits the label
+        """
+        font = QtGui.QFont()
+        metrics = QtGui.QFontMetrics(font)
 
-        # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
+        with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
+                patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
+
+            # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
+            info_label = InfoLabel()
+            test_string = 'Label Text'
+            mocked_rect = MagicMock()
+            mocked_text = MagicMock()
+            mocked_width = MagicMock()
+            mocked_text.return_value = test_string
+            info_label.rect = mocked_rect
+            info_label.text = mocked_text
+            info_label.width = mocked_width
+
+            # WHEN: The instance is narrower than its text, and the paintEvent method is called
+            label_width = metrics.boundingRect(test_string).width() - 10
+            info_label.width.return_value = label_width
+            info_label.paintEvent(MagicMock())
+
+            # THEN: The text should be drawn aligned left with an elided test_string
+            elided_test_string = metrics.elidedText(test_string, QtCore.Qt.ElideRight, label_width)
+            mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, elided_test_string)
+
+    @patch('builtins.super')
+    def test_set_text(self, mocked_super):
+        """
+        Test the reimplemented setText method
+        """
+        # GIVEN: An instance of InfoLabel and mocked setToolTip method
         info_label = InfoLabel()
-        test_string = 'Label Text'
-        mocked_rect = MagicMock()
-        mocked_text = MagicMock()
-        mocked_width = MagicMock()
-        mocked_text.return_value = test_string
-        info_label.rect = mocked_rect
-        info_label.text = mocked_text
-        info_label.width = mocked_width
+        set_tool_tip_mock = MagicMock()
+        info_label.setToolTip = set_tool_tip_mock
 
-        # WHEN: The instance is narrower than its text, and the paintEvent method is called
-        label_width = metrics.boundingRect(test_string).width() - 10
-        info_label.width.return_value = label_width
-        info_label.paintEvent(MagicMock())
+        # WHEN: Calling the instance method setText
+        info_label.setText('Label Text')
 
-        # THEN: The text should be drawn aligned left with an elided test_string
-        elided_test_string = metrics.elidedText(test_string, QtCore.Qt.ElideRight, label_width)
-        mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, elided_test_string)
-
-
-@patch('builtins.super')
-def test_set_text(mocked_super):
-    """
-    Test the reimplemented setText method
-    """
-    # GIVEN: An instance of InfoLabel and mocked setToolTip method
-    info_label = InfoLabel()
-    set_tool_tip_mock = MagicMock()
-    info_label.setToolTip = set_tool_tip_mock
-
-    # WHEN: Calling the instance method setText
-    info_label.setText('Label Text')
-
-    # THEN: The setToolTip and super class setText methods should have been called with the same text
-    set_tool_tip_mock.assert_called_once_with('Label Text')
-    mocked_super().setText.assert_called_once_with('Label Text')
+        # THEN: The setToolTip and super class setText methods should have been called with the same text
+        set_tool_tip_mock.assert_called_once_with('Label Text')
+        mocked_super().setText.assert_called_once_with('Label Text')
 
 
 def test_initial_live_controller():
