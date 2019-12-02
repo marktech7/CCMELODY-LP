@@ -150,7 +150,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference that has no from_chapter in the second range
         results = parse_reference('1 Timothy 1:1,3', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a two tuple verse array should be returned
-        assert [(54, 1, 1, 1),(54, 1, 3, 3)] == results, "The bible verses should match the expected results"
+        assert [(54, 1, 1, 1), (54, 1, 3, 3)] == results, "The bible verses should match the expected results"
 
     def test_parse_reference_to_chapter_less_than_from_chapter(self):
         """
@@ -170,7 +170,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference with no from_chapter specified
         results = parse_reference('1 Timothy :1-2', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a two tuple verse array should be returned with the bible verse references treated as chapter references
-        assert [(54, 1, 1, -1),(54, 2, 1, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 1, -1), (54, 2, 1, -1)] == results, "The bible verses should matches the expected results"
 
     def test_parse_reference_three_chapters(self):
         """
@@ -180,7 +180,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference with three chapters
         results = parse_reference('1 Timothy 1-3', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a three tuple verse array should be returned
-        assert [(54, 1, 1, -1),(54, 2, 1, -1),(54, 3, 1, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 1, -1), (54, 2, 1, -1), (54, 3, 1, -1)] == results, "The bible verses should matches the expected results"
 
     def test_parse_reference_non_regexp_matching_reference(self):
         """
@@ -191,4 +191,3 @@ class TestBibleManager(TestCase, TestMixin):
         results = parse_reference('1 Timothy', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN an empty verse array should be returned
         assert [] == results, "The bible verse list should be empty"
-
