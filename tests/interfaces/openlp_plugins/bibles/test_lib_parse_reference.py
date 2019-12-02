@@ -70,7 +70,7 @@ class TestBibleManager(TestCase, TestMixin):
         del self.manager
         self.destroy_settings()
 
-    def test_parse_reference_one(self):
+    def test_parse_reference_numbered_book_single_range_single_chapter_no_verse_reference(self):
         """
         Test the parse_reference method with 1 Timothy 1
         """
@@ -80,7 +80,7 @@ class TestBibleManager(TestCase, TestMixin):
         # THEN a verse array should be returned
         assert [(54, 1, 1, -1)] == results, "The bible verses should matches the expected results"
 
-    def test_parse_reference_two(self):
+    def test_parse_reference_numbered_book_single_range_single_chapter_multiple_verses(self):
         """
         Test the parse_reference method with 1 Timothy 1:1-2
         """
@@ -90,7 +90,7 @@ class TestBibleManager(TestCase, TestMixin):
         # THEN a verse array should be returned
         assert [(54, 1, 1, 2)] == results, "The bible verses should matches the expected results"
 
-    def test_parse_reference_three(self):
+    def test_parse_reference_numbered_book_single_range_multiple_chapters_specific_verses(self):
         """
         Test the parse_reference method with 1 Timothy 1:1-2
         """
@@ -101,7 +101,7 @@ class TestBibleManager(TestCase, TestMixin):
         assert [(54, 1, 1, -1), (54, 2, 1, 1)] == results, \
             "The bible verses should match the expected results"
 
-    def test_parse_reference_four(self):
+    def test_parse_reference_invalid_book(self):
         """
         Test the parse_reference method with non existence book
         """
@@ -111,7 +111,7 @@ class TestBibleManager(TestCase, TestMixin):
         # THEN a verse array should be returned
         assert [] == results, "The bible Search should return an empty list"
 
-    def test_parse_reference_five(self):
+    def test_parse_reference_numbered_book_single_range_single_chapter_end_reference(self):
         """
         Test the parse_reference method with 1 Timothy 1:3-end
         """
@@ -121,7 +121,7 @@ class TestBibleManager(TestCase, TestMixin):
         # THEN a verse array should be returned
         assert [(54, 1, 3, -1)] == results, "The bible verses should matches the expected results"
 
-    def test_parse_reference_six(self):
+    def test_parse_reference_numbered_book_single_range_single_chapter_end_reference_no_bible_ref_id(self):
         """
         Test the parse_reference method with 1 Timothy 1:3-end without a bible ref id to match
         how the GUI does the search.  This is logged in issue #282
@@ -131,3 +131,44 @@ class TestBibleManager(TestCase, TestMixin):
         results = parse_reference('1 Timothy 1:3-end', self.manager.db_cache['tests'], 0)
         # THEN a verse array should be returned
         assert [(54, 1, 3, -1)] == results, "The bible verses should matches the expected results"
+
+    def test_parse_reference_numbered_book_single_range_single_chapter_single_verse_book_ref_id_invalid(self):
+        """
+        Test the parse_reference method with 1 Timothy 1:1
+        """
+        # GIVEN given a bible in the bible manager
+        # WHEN asking to parse the bible reference
+        results = parse_reference('1 Timothy 1:1', self.manager.db_cache['tests'], MagicMock(), -666)
+        # THEN a verse array should be returned
+        assert [] == results, "The bible verse list should be empty"
+
+    def test_parse_reference_no_from_chapter_in_second_range(self):
+        """
+        Test the parse_reference method with Philemon
+        """
+        # GIVEN given a bible in the bible manager
+        # WHEN asking to parse the bible reference
+        results = parse_reference('1 Timothy 1:1,3', self.manager.db_cache['tests'], MagicMock(), 54)
+        # THEN a verse array should be returned
+        assert [(54, 1, 1, 1),(54, 1, 3, 3)] == results, "The bible verses should matches the expected results"
+
+    def test_parse_reference_to_chapter_less_than_from_chapter(self):
+        """
+        Test the parse_reference method with Philemon
+        """
+        # GIVEN given a bible in the bible manager
+        # WHEN asking to parse the bible reference
+        results = parse_reference('1 Timothy 2:1-1:1', self.manager.db_cache['tests'], MagicMock(), 54)
+        # THEN a verse array should be returned
+        assert [] == results, "The bible verse list should be empty"
+
+    def test_parse_reference_no_from_chapter_specified(self):
+        """
+        Test the parse_reference method with Philemon
+        """
+        # GIVEN given a bible in the bible manager
+        # WHEN asking to parse the bible reference
+        results = parse_reference('1 Timothy :1-2', self.manager.db_cache['tests'], MagicMock(), 54)
+        # THEN a verse array should be returned with the verse references treated as chapter references
+        assert [(54, 1, 1, -1),(54, 2, 1, -1)] == results, "The bible verses should matches the expected results"
+
