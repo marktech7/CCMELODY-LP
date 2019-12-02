@@ -68,7 +68,7 @@ class AppLocation(object):
             path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
             path = _get_os_dir_path(dir_type)
-        return path.resolve()
+        return path
 
     @staticmethod
     def get_data_path():
@@ -84,7 +84,7 @@ class AppLocation(object):
         else:
             path = AppLocation.get_directory(AppLocation.DataDir)
             create_paths(path)
-        return path.resolve()
+        return path
 
     @staticmethod
     def get_files(section=None, extension=''):

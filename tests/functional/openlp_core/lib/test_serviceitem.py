@@ -24,10 +24,10 @@ Package to test the openlp.core.lib package.
 import os
 from pathlib import Path
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import Mock, MagicMock, patch
 
 from openlp.core.state import State
-from openlp.core.common import md5_hash
+from openlp.core.common import ThemeLevel, md5_hash
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.formattingtags import FormattingTags
@@ -342,3 +342,125 @@ class TestServiceItem(TestCase, TestMixin):
             '"’Twas grace that taught my hea" has been returned as the title'
         assert Path('/test/amazing_grace.mp3') == service_item.background_audio[0], \
             '"/test/amazing_grace.mp3" should be in the background_audio list'
+
+    def test_service_item_get_theme_data_global_level(self):
+        """
+        Test the service item - get theme data when set to global theme level
+        """
+        # GIVEN: A service item with a theme and theme level set to global
+        service_item = ServiceItem(None)
+        service_item.theme = 'song_theme'
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Global)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the global theme
+        assert theme == mocked_theme_manager.global_theme
+
+    def test_service_item_get_theme_data_service_level_service_undefined(self):
+        """
+        Test the service item - get theme data when set to service theme level
+        """
+        # GIVEN: A service item with a theme and theme level set to service
+        service_item = ServiceItem(None)
+        service_item.theme = 'song_theme'
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Service)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the global theme
+        assert theme == mocked_theme_manager.global_theme
+
+    def test_service_item_get_theme_data_service_level_service_defined(self):
+        """
+        Test the service item - get theme data when set to service theme level
+        """
+        # GIVEN: A service item with a theme and theme level set to service
+        service_item = ServiceItem(None)
+        service_item.theme = 'song_theme'
+        service_item.from_service = True
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Service)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the service theme
+        assert theme == Settings().value('servicemanager/service theme')
+
+    def test_service_item_get_theme_data_song_level(self):
+        """
+        Test the service item - get theme data when set to song theme level
+        """
+        # GIVEN: A service item with a theme and theme level set to song
+        service_item = ServiceItem(None)
+        service_item.theme = 'song_theme'
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Song)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the song theme
+        assert theme == service_item.theme
+
+    def test_service_item_get_theme_data_song_level_service_fallback(self):
+        """
+        Test the service item - get theme data when set to song theme level
+                                but the song theme doesn't exist
+        """
+        # GIVEN: A service item with a theme and theme level set to song
+        service_item = ServiceItem(None)
+        service_item.from_service = True
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Song)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the serice theme
+        assert theme == Settings().value('servicemanager/service theme')
+
+    def test_service_item_get_theme_data_song_level_global_fallback(self):
+        """
+        Test the service item - get theme data when set to song theme level
+                                but the song and service theme don't exist
+        """
+        # GIVEN: A service item with a theme and theme level set to song
+        service_item = ServiceItem(None)
+        mocked_theme_manager = MagicMock()
+        mocked_theme_manager.global_theme = 'global_theme'
+        mocked_theme_manager.get_theme_data = Mock(side_effect=lambda value: value)
+        Registry().register('theme_manager', mocked_theme_manager)
+        Settings().setValue('servicemanager/service theme', 'service_theme')
+        Settings().setValue('themes/theme level', ThemeLevel.Song)
+
+        # WHEN: Get theme data is run
+        theme = service_item.get_theme_data()
+
+        # THEN: theme should be the global theme
+        assert theme == mocked_theme_manager.global_theme

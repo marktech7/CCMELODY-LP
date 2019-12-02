@@ -197,7 +197,7 @@ class TestFirstTimeForm(TestCase, TestMixin):
                 patch('openlp.core.ui.firsttimeform.create_paths') as mocked_create_paths, \
                 patch.object(frw.application, 'set_normal_cursor'):
             mocked_plugin_manager = MagicMock()
-            mocked_theme_manager = MagicMock(**{'get_themes.return_value': ['b', 'a', 'c']})
+            mocked_theme_manager = MagicMock(**{'get_theme_names.return_value': ['b', 'a', 'c']})
             Registry().register('plugin_manager', mocked_plugin_manager)
             Registry().register('theme_manager', mocked_theme_manager)
 
@@ -212,7 +212,7 @@ class TestFirstTimeForm(TestCase, TestMixin):
             mocked_settings.value.assert_has_calls([call('core/has run wizard'), call('themes/global theme')])
             mocked_gettempdir.assert_called_once()
             mocked_create_paths.assert_called_once_with(Path('temp', 'openlp'))
-            mocked_theme_manager.get_themes.assert_called_once()
+            mocked_theme_manager.get_theme_names.assert_called_once()
             mocked_theme_combo_box.clear.assert_called_once()
             mocked_plugin_manager.get_plugin_by_name.assert_has_calls(
                 [call('songs'), call('bibles'), call('presentations'), call('images'), call('media'), call('custom'),

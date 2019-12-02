@@ -131,7 +131,7 @@ class BibleMediaItem(MediaManagerItem):
         self.bibles_go_live.connect(self.go_live_remote)
         self.bibles_add_to_service.connect(self.add_to_service_remote)
         # Place to store the search results for both bibles.
-        self.settings = self.plugin.settings_tab
+        self.settings_tab = self.plugin.settings_tab
         self.quick_preview_allowed = True
         self.has_search = True
         self.search_results = []
@@ -557,8 +557,8 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         # TODO: Change layout_style to a property
-        self.settings.layout_style = index
-        self.settings.layout_style_combo_box.setCurrentIndex(index)
+        self.settings_tab.layout_style = index
+        self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
         Settings().setValue('{section}/verse layout style'.format(section=self.settings_section), index)
 
     def on_version_combo_box_index_changed(self):
@@ -945,12 +945,12 @@ class BibleMediaItem(MediaManagerItem):
                 raw_slides.append(bible_text.rstrip())
                 bible_text = ''
             # If we are 'Verse Per Slide' then create a new slide.
-            elif self.settings.layout_style == LayoutStyle.VersePerSlide:
+            elif self.settings_tab.layout_style == LayoutStyle.VersePerSlide:
                 bible_text = '{first_version}{data[text]}'.format(first_version=verse_text, data=data)
                 raw_slides.append(bible_text.rstrip())
                 bible_text = ''
             # If we are 'Verse Per Line' then force a new line.
-            elif self.settings.layout_style == LayoutStyle.VersePerLine:
+            elif self.settings_tab.layout_style == LayoutStyle.VersePerLine:
                 bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
             # We have to be 'Continuous'.
             else:
@@ -966,7 +966,7 @@ class BibleMediaItem(MediaManagerItem):
         if bible_text:
             raw_slides.append(bible_text.lstrip())
         # Service Item: Capabilities
-        if self.settings.layout_style == LayoutStyle.Continuous and not data['second_bible']:
+        if self.settings_tab.layout_style == LayoutStyle.Continuous and not data['second_bible']:
             # Split the line but do not replace line breaks in renderer.
             service_item.add_capability(ItemCapabilities.NoLineBreaks)
         service_item.add_capability(ItemCapabilities.CanPreview)
@@ -976,8 +976,8 @@ class BibleMediaItem(MediaManagerItem):
         # Service Item: Title
         service_item.title = '{verse} {version}'.format(verse=verses.format_verses(), version=verses.format_versions())
         # Service Item: Theme
-        if self.settings.bible_theme:
-            service_item.theme = self.settings.bible_theme
+        if self.settings_tab.bible_theme:
+            service_item.theme = self.settings_tab.bible_theme
         for slide in raw_slides:
             service_item.add_from_text(slide)
         return True
@@ -994,10 +994,10 @@ class BibleMediaItem(MediaManagerItem):
         :param verse: The verse number (int).
         :return: An empty or formatted string
         """
-        if not self.settings.is_verse_number_visible:
+        if not self.settings_tab.is_verse_number_visible:
             return ''
         verse_separator = get_reference_separators()['verse']
-        if not self.settings.show_new_chapters or old_chapter != chapter:
+        if not self.settings_tab.show_new_chapters or old_chapter != chapter:
             verse_text = '{chapter}{sep}{verse}'.format(chapter=chapter, sep=verse_separator, verse=verse)
         else:
             verse_text = verse
@@ -1006,7 +1006,7 @@ class BibleMediaItem(MediaManagerItem):
             DisplayStyle.Round: ('(', ')'),
             DisplayStyle.Curly: ('{', '}'),
             DisplayStyle.Square: ('[', ']')
-        }[self.settings.display_style]
+        }[self.settings_tab.display_style]
         return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
 
     def search(self, string, show_error=True):

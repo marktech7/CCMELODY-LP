@@ -246,7 +246,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.alert_check_box.setChecked(self.plugin_manager.get_plugin_by_name('alerts').is_active())
             # Add any existing themes to list.
             self.theme_combo_box.insertSeparator(0)
-            self.theme_combo_box.addItems(sorted(self.theme_manager.get_themes()))
+            self.theme_combo_box.addItems(sorted(self.theme_manager.get_theme_names()))
             default_theme = Settings().value('themes/global theme')
             # Pre-select the current default theme.
             index = self.theme_combo_box.findText(default_theme)
@@ -351,7 +351,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         existing_themes = []
         if self.theme_manager:
-            existing_themes = self.theme_manager.get_themes()
+            existing_themes = self.theme_manager.get_theme_names()
         for list_index in range(self.themes_list_widget.count()):
             item = self.themes_list_widget.item(list_index)
             if item.text() not in existing_themes:

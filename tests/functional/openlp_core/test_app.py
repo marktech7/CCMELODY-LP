@@ -19,6 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
+
 from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
@@ -157,6 +158,8 @@ def test_parse_options_file_and_debug():
     assert args.rargs == ['dummy_temp'], 'The service file should not be blank'
 
 
+# Problem seems to be with the what the OpenLP object is defined.
+# Running each test on its own is fine but as a block you get seg faults in strange places.
 @skip('Figure out why this is causing a segfault')
 class TestOpenLP(TestCase):
     """

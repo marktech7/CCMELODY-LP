@@ -21,20 +21,10 @@
 """
 Test the :mod:`~openlp.core.display.render` package.
 """
-import sys
+from unittest.mock import patch
 
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
-
-from openlp.core.common import ThemeLevel
-from tests.helpers.testmixin import TestMixin
-
-from PyQt5 import QtWidgets
-sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
-
-from openlp.core.common.registry import Registry
 from openlp.core.display.render import compare_chord_lyric_width, find_formatting_tags, remove_tags, render_chords, \
-    render_chords_for_printing, render_tags, ThemePreviewRenderer
+    render_chords_for_printing, render_tags
 from openlp.core.lib.formattingtags import FormattingTags
 
 
@@ -217,101 +207,3 @@ def test_find_formatting_tags():
 
     # THEN: The list of active tags should contain only 'st'
     assert active_tags == ['st'], 'The list of active tags should contain only "st"'
-
-
-class TestThemePreviewRenderer(TestMixin, TestCase):
-
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        # Create the Registry
-        self.application = QtWidgets.QApplication.instance()
-        Registry.create()
-        self.application.setOrganizationName('OpenLP-tests')
-        self.application.setOrganizationDomain('openlp.org')
-
-    def test_get_theme_global(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        Registry().register('theme_manager', mocked_theme_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Global
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(MagicMock())
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_theme_manager.global_theme, 'The Theme returned is not that of the global theme'
-
-    def test_get_theme_service(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Service
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(MagicMock())
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_service_manager.service_theme, 'The Theme returned is not that of the Service theme'
-
-    def test_get_theme_item_level_none(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        mocked_item = MagicMock()
-        mocked_item.theme = None
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Song
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(mocked_item)
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_theme_manager.global_theme, 'The Theme returned is not that of the global theme'
-
-    def test_get_theme_item_level_set(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        mocked_item = MagicMock()
-        mocked_item.theme = "my_item_theme"
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Song
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(mocked_item)
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_item.theme, 'The Theme returned is not that of the item theme'

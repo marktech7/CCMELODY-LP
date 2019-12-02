@@ -26,7 +26,7 @@ import shutil
 from pathlib import Path
 from tempfile import mkdtemp
 from unittest import TestCase
-from unittest.mock import ANY, MagicMock, patch, call
+from unittest.mock import ANY, Mock, MagicMock, patch, call
 
 from PyQt5 import QtWidgets
 
@@ -353,12 +353,14 @@ class TestThemeManager(TestCase):
         Test that the update_preview_images() method works correctly
         """
         # GIVEN: A ThemeManager
+        def get_theme_data(value):
+            return '{}_theme_data'.format(value)
         theme_manager = ThemeManager(None)
         theme_manager.save_preview = MagicMock()
-        theme_manager.get_theme_data = MagicMock(return_value='theme_data')
+        theme_manager._get_theme_data = Mock(side_effect=get_theme_data)
         theme_manager.progress_form = MagicMock(**{'get_preview.return_value': 'preview'})
         theme_manager.load_themes = MagicMock()
-        theme_list = ['Default', 'Test']
+        theme_list = {'Default': get_theme_data('Default'), 'Test': get_theme_data('Test')}
 
         # WHEN: ThemeManager.update_preview_images() is called
         theme_manager.update_preview_images(theme_list)
@@ -366,9 +368,8 @@ class TestThemeManager(TestCase):
         # THEN: Things should work right
         assert theme_manager.progress_form.theme_list == theme_list
         theme_manager.progress_form.show.assert_called_once_with()
-        assert theme_manager.get_theme_data.call_args_list == [call('Default'), call('Test')]
-        assert theme_manager.progress_form.get_preview.call_args_list == [call('Default', 'theme_data'),
-                                                                          call('Test', 'theme_data')]
+        assert theme_manager.progress_form.get_preview.call_args_list == [call('Default', get_theme_data('Default')),
+                                                                          call('Test', get_theme_data('Test'))]
         assert theme_manager.save_preview.call_args_list == [call('Default', 'preview'), call('Test', 'preview')]
         theme_manager.progress_form.close.assert_called_once_with()
         theme_manager.load_themes.assert_called_once_with()

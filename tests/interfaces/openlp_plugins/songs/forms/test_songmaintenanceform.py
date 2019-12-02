@@ -232,7 +232,7 @@ class TestSongMaintenanceForm(TestCase, TestMixin):
         expected_widget_item_calls = [call('John Wesley'), call('John Newton')]
         mocked_authors_list_widget.clear.assert_called_once_with()
         self.mocked_manager.get_all_objects.assert_called_once_with(MockedAuthor)
-        assert MockedQListWidgetItem.call_args_list == expected_widget_item_calls, MockedQListWidgetItem.call_args_list
+        self.assertCountEqual(MockedQListWidgetItem.call_args_list, expected_widget_item_calls)
         mocked_author_item1.setData.assert_called_once_with(QtCore.Qt.UserRole, 2)
         mocked_author_item2.setData.assert_called_once_with(QtCore.Qt.UserRole, 1)
         mocked_authors_list_widget.addItem.assert_has_calls([

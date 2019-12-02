@@ -141,8 +141,22 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         super(ThemeManager, self).__init__(parent)
         self.settings_section = 'themes'
         # Variables
-        self.theme_list = []
+        self._theme_list = {}
         self.old_background_image_path = None
+
+    def get_global_theme(self):
+        return self.get_theme_data(self.global_theme)
+
+    def get_theme_data(self, theme_name):
+        """
+        Gets a theme given a name, returns the default theme if missing
+        """
+        theme = Theme()
+        if theme_name in self._theme_list:
+            theme = self._theme_list[theme_name]
+        else:
+            self.log_warning('Missing requested theme data for "{}", using default theme'.format(theme_name))
+        return theme
 
     def bootstrap_initialise(self):
         """
@@ -375,7 +389,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
 
         :param theme: The theme to delete.
         """
-        self.theme_list.remove(theme)
+        self._theme_list.pop(theme)
         thumb = '{name}.png'.format(name=theme)
         delete_file(self.theme_path / thumb)
         delete_file(self.thumb_path / thumb)
@@ -491,9 +505,9 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         events for the plugins.
         The plugins will call back in to get the real list if they want it.
         """
-        self.theme_list = []
+        self._theme_list.clear()
         self.theme_list_widget.clear()
-        files = AppLocation.get_files(self.settings_section, '.png')
+        files = AppLocation.get_files(self.settings_section, '/*.json')
         # Sort the themes by its name considering language specific
         files.sort(key=lambda file_name: get_locale_key(str(file_name)))
         # now process the file list of png files
@@ -515,22 +529,22 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 item_name.setIcon(icon)
                 item_name.setData(QtCore.Qt.UserRole, text_name)
                 self.theme_list_widget.addItem(item_name)
-                self.theme_list.append(text_name)
+                self._theme_list[text_name] = self._get_theme_data(text_name)
         self._push_themes()
 
     def _push_themes(self):
         """
         Notify listeners that the theme list has been updated
         """
-        Registry().execute('theme_update_list', self.get_themes())
+        Registry().execute('theme_update_list', self.get_theme_names())
 
-    def get_themes(self):
+    def get_theme_names(self):
         """
         Return the list of loaded themes
         """
-        return self.theme_list
+        return [theme_name for theme_name in self._theme_list]
 
-    def get_theme_data(self, theme_name):
+    def _get_theme_data(self, theme_name):
         """
         Returns a theme object from a JSON file
 
@@ -699,16 +713,18 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         thumb_path = self.thumb_path / '{name}.png'.format(name=theme_name)
         create_thumb(sample_path_name, thumb_path, False)
 
-    def update_preview_images(self, theme_list=None):
+    def update_preview_images(self, theme_name_list=None):
         """
         Called to update the themes' preview images.
+
+        :param theme_name_list: A list of theme names in the theme data folder
         """
-        theme_list = theme_list or self.theme_list
-        self.progress_form.theme_list = theme_list
+        theme_name_list = theme_name_list or self.get_theme_names()
+        self.progress_form.theme_list = theme_name_list
         self.progress_form.show()
         self.progress_form.theme_display.wait_till_loaded()
-        for theme_name in theme_list:
-            theme_data = self.get_theme_data(theme_name)
+        for theme_name in theme_name_list:
+            theme_data = self._get_theme_data(theme_name)
             preview_pixmap = self.progress_form.get_preview(theme_name, theme_data)
             self.save_preview(theme_name, preview_pixmap)
         self.progress_form.close()

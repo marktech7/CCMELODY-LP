@@ -30,7 +30,6 @@ from openlp.core.common.applocation import AppLocation
 
 
 FILE_LIST = ['file1', 'file2', 'file3.txt', 'file4.txt', 'file5.mp3', 'file6.mp3']
-BASE_DIR = (AppLocation.get_directory(AppLocation.AppDir) / '..').resolve()
 
 
 @patch('openlp.core.common.applocation.Settings')
@@ -54,7 +53,7 @@ def test_get_data_path(mocked_os, mocked_create_paths, mocked_get_directory, Moc
     MockSettings.return_value.contains.assert_called_with('advanced/data path')
     mocked_get_directory.assert_called_with(AppLocation.DataDir)
     mocked_create_paths.assert_called_with(Path('tests', 'dir'))
-    assert data_path == Path(BASE_DIR, 'tests', 'dir'), 'Result should be "tests/dir"'
+    assert data_path == Path('tests', 'dir'), 'Result should be "tests/dir"'
 
 
 @patch('openlp.core.common.applocation.Settings')
@@ -72,7 +71,7 @@ def test_get_data_path_with_custom_location(MockSettings):
     # THEN: the mocked Settings methods were called and the value returned was our set up value
     MockSettings.return_value.contains.assert_called_with('advanced/data path')
     MockSettings.return_value.value.assert_called_with('advanced/data path')
-    assert data_path == Path(BASE_DIR, 'custom', 'dir'), 'Result should be "custom/dir"'
+    assert data_path == Path('custom', 'dir'), 'Result should be "custom/dir"'
 
 
 @patch('openlp.core.common.applocation.Path.glob')
@@ -141,7 +140,7 @@ def test_get_directory_for_app_dir(mocked_get_frozen_path):
     directory = AppLocation.get_directory(AppLocation.AppDir)
 
     # THEN: check that the correct directory is returned
-    assert directory == Path(BASE_DIR, 'app', 'dir'), 'Directory should be "app/dir"'
+    assert directory == Path('app', 'dir'), 'Directory should be "app/dir"'
 
 
 @patch('openlp.core.common.applocation.get_frozen_path')
@@ -163,7 +162,7 @@ def test_get_directory_for_plugins_dir(mocked_sys, mocked_split, mocked_abspath,
     directory = AppLocation.get_directory(AppLocation.PluginsDir)
 
     # THEN: The correct directory should be returned
-    assert directory == Path(BASE_DIR, 'dir', 'plugins'), 'Directory should be "dir/plugins"'
+    assert directory == Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
 
 
 @patch('openlp.core.common.sys')
