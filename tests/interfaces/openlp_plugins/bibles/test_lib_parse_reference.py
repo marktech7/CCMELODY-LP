@@ -119,7 +119,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference
         results = parse_reference('1 Timothy 1:3-end', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a one tuple verse array should be returned
-        assert [(54, 1, 3, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 3, -1)] == results, "The bible verses should match the expected results"
 
     def test_parse_reference_numbered_book_single_range_single_chapter_with_end_reference_no_bible_ref_id(self):
         """
@@ -130,7 +130,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference in Language 0 (english)
         results = parse_reference('1 Timothy 1:3-end', self.manager.db_cache['tests'], 0)
         # THEN a one tuple verse array should be returned
-        assert [(54, 1, 3, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 3, -1)] == results, "The bible verses should match the expected results"
 
     def test_parse_reference_book_ref_id_invalid(self):
         """
@@ -170,7 +170,7 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference with no from_chapter specified
         results = parse_reference('1 Timothy :1-2', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a two tuple verse array should be returned with the bible verse references treated as chapter references
-        assert [(54, 1, 1, -1), (54, 2, 1, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 1, -1), (54, 2, 1, -1)] == results, "The bible verses should match the expected results"
 
     def test_parse_reference_three_chapters(self):
         """
@@ -180,7 +180,8 @@ class TestBibleManager(TestCase, TestMixin):
         # WHEN asking to parse the bible reference with three chapters
         results = parse_reference('1 Timothy 1-3', self.manager.db_cache['tests'], MagicMock(), 54)
         # THEN a three tuple verse array should be returned
-        assert [(54, 1, 1, -1), (54, 2, 1, -1), (54, 3, 1, -1)] == results, "The bible verses should matches the expected results"
+        assert [(54, 1, 1, -1), (54, 2, 1, -1), (54, 3, 1, -1)] == results, \
+            "The bible verses should match the expected results"
 
     def test_parse_reference_non_regexp_matching_reference(self):
         """
