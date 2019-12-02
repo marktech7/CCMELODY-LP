@@ -402,7 +402,9 @@ class DisplayWindow(QtWidgets.QWidget):
         Set the HTML scale
         """
         self.scale = scale
-        self.run_javascript('Display.setScale({scale});'.format(scale=scale * 100))
+        # Only scale if initialised (scale run again once initialised)
+        if self._is_initialised:
+            self.run_javascript('Display.setScale({scale});'.format(scale=scale * 100))
 
     def alert(self, text, settings):
         """

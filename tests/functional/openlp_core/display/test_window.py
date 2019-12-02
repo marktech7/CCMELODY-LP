@@ -74,3 +74,33 @@ class TestDisplayWindow(TestCase, TestMixin):
         # THEN: The x11 override flag should not be set
         x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
         assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
+
+    def test_set_scale_not_initialised(self, MockSettings, mocked_webengine, mocked_addWidget):
+        """
+        Test that the scale js is not run if the page is not initialised
+        """
+        # GIVEN: A display window not yet initialised
+        display_window = DisplayWindow()
+        display_window._is_initialised = False
+        display_window.run_javascript = MagicMock()
+
+        # WHEN: set scale is run
+        display_window.set_scale(0.5)
+
+        # THEN: javascript should not be run
+        display_window.run_javascript.assert_not_called()
+
+    def test_set_scale_initialised(self, MockSettings, mocked_webengine, mocked_addWidget):
+        """
+        Test that the scale js is not run if the page is not initialised
+        """
+        # GIVEN: A display window not yet initialised
+        display_window = DisplayWindow()
+        display_window._is_initialised = True
+        display_window.run_javascript = MagicMock()
+
+        # WHEN: set scale is run
+        display_window.set_scale(0.5)
+
+        # THEN: javascript should not be run
+        display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
