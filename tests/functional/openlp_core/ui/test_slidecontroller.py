@@ -21,7 +21,6 @@
 """
 Package to test the openlp.core.ui.slidecontroller package.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtGui
