@@ -975,61 +975,60 @@ def test_paint_event_text_fits():
         info_label.width = mocked_width
 
         # WHEN: The instance is wider than its text, and the paintEvent method is called
-        info_label.width.return_value = metrics.boundingRect(test_string).width() + 10
+        info_label.width.return_value = metrics.boundingRect(test_string).width() + 20
         info_label.paintEvent(MagicMock())
 
         # THEN: The text should be drawn centered with the complete test_string
         mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignCenter, test_string)
 
 
-class TestInfoLabel(TestCase):
+def test_paint_event_text_doesnt_fit():
+    """
+    Test the paintEvent method when text fits the label
+    """
+    font = QtGui.QFont()
+    metrics = QtGui.QFontMetrics(font)
 
-    def test_paint_event_text_doesnt_fit(self):
-        """
-        Test the paintEvent method when text fits the label
-        """
-        font = QtGui.QFont()
-        metrics = QtGui.QFontMetrics(font)
+    with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
+            patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
 
-        with patch('openlp.core.ui.slidecontroller.QtWidgets.QLabel'), \
-                patch('openlp.core.ui.slidecontroller.QtGui.QPainter') as mocked_qpainter:
-
-            # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
-            info_label = InfoLabel()
-            test_string = 'Label Text'
-            mocked_rect = MagicMock()
-            mocked_text = MagicMock()
-            mocked_width = MagicMock()
-            mocked_text.return_value = test_string
-            info_label.rect = mocked_rect
-            info_label.text = mocked_text
-            info_label.width = mocked_width
-
-            # WHEN: The instance is narrower than its text, and the paintEvent method is called
-            label_width = metrics.boundingRect(test_string).width() - 10
-            info_label.width.return_value = label_width
-            info_label.paintEvent(MagicMock())
-
-            # THEN: The text should be drawn aligned left with an elided test_string
-            elided_test_string = metrics.elidedText(test_string, QtCore.Qt.ElideRight, label_width)
-            mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, elided_test_string)
-
-    @patch('builtins.super')
-    def test_set_text(self, mocked_super):
-        """
-        Test the reimplemented setText method
-        """
-        # GIVEN: An instance of InfoLabel and mocked setToolTip method
+        # GIVEN: An instance of InfoLabel, with mocked text return, width and rect methods
         info_label = InfoLabel()
-        set_tool_tip_mock = MagicMock()
-        info_label.setToolTip = set_tool_tip_mock
+        test_string = 'Label Text'
+        mocked_rect = MagicMock()
+        mocked_text = MagicMock()
+        mocked_width = MagicMock()
+        mocked_text.return_value = test_string
+        info_label.rect = mocked_rect
+        info_label.text = mocked_text
+        info_label.width = mocked_width
 
-        # WHEN: Calling the instance method setText
-        info_label.setText('Label Text')
+        # WHEN: The instance is narrower than its text, and the paintEvent method is called
+        label_width = metrics.boundingRect(test_string).width() - 20
+        info_label.width.return_value = label_width
+        info_label.paintEvent(MagicMock())
 
-        # THEN: The setToolTip and super class setText methods should have been called with the same text
-        set_tool_tip_mock.assert_called_once_with('Label Text')
-        mocked_super().setText.assert_called_once_with('Label Text')
+        # THEN: The text should be drawn aligned left with an elided test_string
+        elided_test_string = metrics.elidedText(test_string, QtCore.Qt.ElideRight, label_width)
+        mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, elided_test_string)
+
+
+@patch('builtins.super')
+def test_set_text(mocked_super):
+    """
+    Test the reimplemented setText method
+    """
+    # GIVEN: An instance of InfoLabel and mocked setToolTip method
+    info_label = InfoLabel()
+    set_tool_tip_mock = MagicMock()
+    info_label.setToolTip = set_tool_tip_mock
+
+    # WHEN: Calling the instance method setText
+    info_label.setText('Label Text')
+
+    # THEN: The setToolTip and super class setText methods should have been called with the same text
+    set_tool_tip_mock.assert_called_once_with('Label Text')
+    mocked_super().setText.assert_called_once_with('Label Text')
 
 
 def test_initial_live_controller():
