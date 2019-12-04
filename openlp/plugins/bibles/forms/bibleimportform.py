@@ -43,7 +43,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
 from openlp.plugins.bibles.lib.db import clean_filename
-from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
+from openlp.plugins.bibles.lib.importers.http import BGExtract, CWExtract
 from openlp.plugins.bibles.lib.manager import BibleFormat
 
 
@@ -404,7 +404,7 @@ class BibleImportForm(OpenLPWizard):
         self.web_source_combo_box.setItemText(WebDownload.BibleGateway, translate('BiblesPlugin.ImportWizardForm',
                                                                                   'BibleGateway'))
         # NOTE: BibleServer support has been disabled since we can't currently parse it. Re-add if/when fixed.
-        #self.web_source_combo_box.setItemText(WebDownload.Bibleserver, translate('BiblesPlugin.ImportWizardForm',
+        # self.web_source_combo_box.setItemText(WebDownload.Bibleserver, translate('BiblesPlugin.ImportWizardForm',
         #                                                                         'Bibleserver'))
         self.web_translation_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bible:'))
         self.sword_bible_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bibles:'))
