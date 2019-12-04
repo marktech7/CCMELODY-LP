@@ -56,6 +56,7 @@ WIN32_MODULES = [
 LINUX_MODULES = [
     # Optical drive detection.
     'dbus',
+    'distro',
     'Xlib',
 ]
 
