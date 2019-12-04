@@ -310,7 +310,7 @@ class PresentationMediaItem(MediaManagerItem):
                     image_path = doc.get_temp_folder() / 'mainslide{number:0>3d}.png'.format(number=i)
                     thumbnail_path = doc.get_thumbnail_folder() / 'slide{number:d}.png'.format(number=i)
                     while image_path.is_file():
-                        service_item.add_from_image(str(image_path), file_name, thumbnail=str(thumbnail_path))
+                        service_item.add_from_image(image_path, file_name, thumbnail=str(thumbnail_path))
                         i += 1
                         image_path = doc.get_temp_folder() / 'mainslide{number:0>3d}.png'.format(number=i)
                         thumbnail_path = doc.get_thumbnail_folder() / 'slide{number:d}.png'.format(number=i)
