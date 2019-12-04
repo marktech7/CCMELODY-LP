@@ -59,7 +59,8 @@ class WebDownload(object):
     BibleGateway = 1
     Bibleserver = 2
 
-    Names = ['Crosswalk', 'BibleGateway', 'Bibleserver']
+    # NOTE: BibleServer support has been disabled since we can't currently parse it. Re-add if/when fixed.
+    Names = ['Crosswalk', 'BibleGateway']
 
 
 class BibleImportForm(OpenLPWizard):
@@ -227,7 +228,8 @@ class BibleImportForm(OpenLPWizard):
         self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.web_source_label)
         self.web_source_combo_box = QtWidgets.QComboBox(self.web_widget)
         self.web_source_combo_box.setObjectName('WebSourceComboBox')
-        self.web_source_combo_box.addItems(['', '', ''])
+        # NOTE: Set to 2 items since BibleServer has been disabled. Set to 3 if/when fixed
+        self.web_source_combo_box.addItems(['', ''])
         self.web_source_combo_box.setEnabled(False)
         self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.web_source_combo_box)
         self.web_translation_label = QtWidgets.QLabel(self.web_bible_tab)
@@ -239,7 +241,8 @@ class BibleImportForm(OpenLPWizard):
         self.web_translation_combo_box.setEnabled(False)
         self.web_bible_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.web_translation_combo_box)
         self.web_progress_bar = QtWidgets.QProgressBar(self)
-        self.web_progress_bar.setRange(0, 3)
+        # NOTE: Set to 2 since BibleServer has been disabled. Set to 3 if/when fixed
+        self.web_progress_bar.setRange(0, 2)
         self.web_progress_bar.setObjectName('WebTranslationProgressBar')
         self.web_progress_bar.setVisible(False)
         self.web_bible_layout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.web_progress_bar)
@@ -400,8 +403,9 @@ class BibleImportForm(OpenLPWizard):
                                                                                'Crosswalk'))
         self.web_source_combo_box.setItemText(WebDownload.BibleGateway, translate('BiblesPlugin.ImportWizardForm',
                                                                                   'BibleGateway'))
-        self.web_source_combo_box.setItemText(WebDownload.Bibleserver, translate('BiblesPlugin.ImportWizardForm',
-                                                                                 'Bibleserver'))
+        # NOTE: BibleServer support has been disabled since we can't currently parse it. Re-add if/when fixed.
+        #self.web_source_combo_box.setItemText(WebDownload.Bibleserver, translate('BiblesPlugin.ImportWizardForm',
+        #                                                                         'Bibleserver'))
         self.web_translation_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bible:'))
         self.sword_bible_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bibles:'))
         self.sword_folder_label.setText(translate('BiblesPlugin.ImportWizardForm', 'SWORD data folder:'))
@@ -578,9 +582,9 @@ class BibleImportForm(OpenLPWizard):
         self.web_progress_bar.setVisible(True)
         self.web_progress_bar.setValue(0)
         # TODO: Where does critical_error_message_box get %s string from?
+        # NOTE: BibleServer support has been disabled since we can't currently parse it. Re-add if/when fixed.
         for (download_type, extractor) in ((WebDownload.Crosswalk, CWExtract()),
-                                           (WebDownload.BibleGateway, BGExtract()),
-                                           (WebDownload.Bibleserver, BSExtract())):
+                                           (WebDownload.BibleGateway, BGExtract())):
             try:
                 bibles = extractor.get_bibles_from_http()
             except (urllib.error.URLError, ConnectionError):
