@@ -22,7 +22,7 @@
     Package to test the openlp.plugin.bible.lib.https package.
 """
 import os
-from unittest import TestCase, skipIf
+from unittest import TestCase, skipIf, skip
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
@@ -122,6 +122,7 @@ class TestBibleHTTP(TestCase):
         # THEN: We should get back a valid service item
         assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
 
+    @skip("We can't currently parse BibelServer")
     def test_bibleserver_get_bibles(self):
         """
         Test getting list of bibles from BibleServer.com
