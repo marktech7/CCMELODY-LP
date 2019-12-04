@@ -23,6 +23,7 @@ All the tests
 """
 import os
 from tempfile import mkstemp
+from unittest.mock import MagicMock
 
 import pytest
 from PyQt5 import QtCore, QtWidgets
@@ -39,24 +40,34 @@ def qapp():
     del app
 
 
+@pytest.fixture
+def registry():
+    """An instance of the Registry"""
+    Registry.create()
+
+
 @pytest.yield_fixture
-def settings(qapp):
+def settings(qapp, registry):
     """A Settings() instance"""
     fd, ini_file = mkstemp('.ini')
     Settings.set_filename(ini_file)
-    Registry.create()
     Settings().setDefaultFormat(QtCore.QSettings.IniFormat)
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
-    Registry().register('settings', set)
+    Registry().register('settings', sets)
     yield sets
     del sets
     os.close(fd)
     os.unlink(Settings().fileName())
 
 
-@pytest.fixture
-def registry():
-    """An instance of the Registry"""
-    Registry.create()
+@pytest.yield_fixture
+def mock_settings(registry):
+    """A Mock Settings() instance"""
+    # Create and register a mock settings object to work with
+    mock_settings = MagicMock()
+    Registry().register('settings', mock_settings)
+    yield mock_settings
+    Registry().remove('settings')
+    del mock_settings
