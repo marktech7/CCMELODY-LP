@@ -34,6 +34,7 @@ from PyQt5 import QtCore
 
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
+from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
@@ -89,23 +90,35 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.vlc_player = VlcPlayer(self)
         State().add_service('mediacontroller', 0)
         State().add_service('media_live', 0)
-        getvlc = get_vlc()
-        if getvlc and pymediainfo_available:
+        has_vlc = get_vlc()
+        if has_vlc and pymediainfo_available:
             State().update_pre_conditions('mediacontroller', True)
             State().update_pre_conditions('media_live', True)
         else:
             if hasattr(self.main_window, 'splash') and self.main_window.splash.isVisible():
                 self.main_window.splash.hide()
-            text_vlc = translate('OpenLP.MediaController',
-                                 'The media integration library is missing (python - vlc is not installed)')
-            text_info = translate('OpenLP.MediaController',
-                                  'The media integration library is missing (python - pymediainfo is not installed)')
-            if not getvlc and not pymediainfo_available:
-                State().missing_text('media_live', "{text}\n{base}".format(text=text_vlc, base=text_info))
-            if getvlc and not pymediainfo_available:
-                State().missing_text('media_live', "{text}".format(text=text_info))
-            if not getvlc and pymediainfo_available:
-                State().missing_text('media_live', "{text}".format(text=text_vlc))
+            generic_message = translate('OpenLP.MediaController',
+                                        'OpenLP requires the following libraries in order to show videos and other '
+                                        'media, but they are not installed. Please install these libraries to enable '
+                                        'media playback in OpenLP.')
+            fedora_rpmfusion = translate('OpenLP.MediaController',
+                                         'To install these libraries, you will need to enable the RPMFusion '
+                                         'repository: https://rpmfusion.org/')
+            message = ''
+            if is_macosx():
+                message = translate('OpenLP.MediaController',
+                                    'macOS is missing VLC. Please download and install from the VLC web site: '
+                                    'https://www.videolan.org/vlc/')
+            else:
+                packages = []
+                if not has_vlc:
+                    packages.append('python3-vlc')
+                if not pymediainfo_available:
+                    packages.append('python3-pymediainfo')
+                message = generic_message + '\n\n' + ', '.join(packages)
+                if not has_vlc and is_linux(distro='fedora'):
+                    message += '\n\n' + fedora_rpmfusion
+            State().missing_text('media_live', message)
         return True
 
     def bootstrap_post_set_up(self):
