@@ -25,6 +25,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.ui import DisplayControllerType
 from openlp.core.ui.media.mediacontroller import MediaController
 from openlp.core.ui.media import ItemMediaInfo
 from tests.helpers.testmixin import TestMixin
@@ -202,3 +203,122 @@ class TestMediaController(TestCase, TestMixin):
 
             # THEN you can determine the run time
             assert results == test_data[1], 'The correct duration is returned for ' + test_data[0]
+
+    def test_on_media_play(self):
+        """
+        Test the on_media_play method
+        """
+        # GIVEN: A mocked live controller and a mocked media_play() method
+        mocked_live_controller = MagicMock()
+        Registry().register('live_controller', mocked_live_controller)
+        media_controller = MediaController()
+        media_controller.media_play = MagicMock()
+
+        # WHEN: the on_media_play() method is called
+        media_controller.on_media_play()
+
+        # The mocked live controller should be called
+        media_controller.media_play.assert_called_once_with(mocked_live_controller, False)
+
+    def test_on_media_pause(self):
+        """
+        Test the on_media_pause method
+        """
+        # GIVEN: A mocked live controller and a mocked media_pause() method
+        mocked_live_controller = MagicMock()
+        Registry().register('live_controller', mocked_live_controller)
+        media_controller = MediaController()
+        media_controller.media_pause = MagicMock()
+
+        # WHEN: the on_media_pause() method is called
+        media_controller.on_media_pause()
+
+        # The mocked live controller should be called
+        media_controller.media_pause.assert_called_once_with(mocked_live_controller)
+
+    def test_on_media_stop(self):
+        """
+        Test the on_media_stop method
+        """
+        # GIVEN: A mocked live controller and a mocked media_stop() method
+        mocked_live_controller = MagicMock()
+        Registry().register('live_controller', mocked_live_controller)
+        media_controller = MediaController()
+        media_controller.media_stop = MagicMock()
+
+        # WHEN: the on_media_stop() method is called
+        media_controller.on_media_stop()
+
+        # The mocked live controller should be called
+        media_controller.media_stop.assert_called_once_with(mocked_live_controller)
+
+    def test_display_controllers_live(self):
+        """
+        Test that the display_controllers() method returns the live controller when requested
+        """
+        # GIVEN: A mocked live controller
+        media_controller = MediaController()
+        mocked_live_controller = MagicMock()
+        mocked_preview_controller = MagicMock()
+        Registry().register('live_controller', mocked_live_controller)
+        Registry().register('preview_controller', mocked_preview_controller)
+
+        # WHEN: display_controllers() is called with DisplayControllerType.Live
+        controller = media_controller.display_controllers(DisplayControllerType.Live)
+
+        # THEN: the controller should be the live controller
+        assert controller is mocked_live_controller
+
+    def test_display_controllers_preview(self):
+        """
+        Test that the display_controllers() method returns the preview controller when requested
+        """
+        # GIVEN: A mocked live controller
+        media_controller = MediaController()
+        mocked_live_controller = MagicMock()
+        mocked_preview_controller = MagicMock()
+        Registry().register('live_controller', mocked_live_controller)
+        Registry().register('preview_controller', mocked_preview_controller)
+
+        # WHEN: display_controllers() is called with DisplayControllerType.Preview
+        controller = media_controller.display_controllers(DisplayControllerType.Preview)
+
+        # THEN: the controller should be the live controller
+        assert controller is mocked_preview_controller
+
+    def test_set_controls_visible(self):
+        """
+        Test that "set_controls_visible" sets the media controls on the controller to be visible or not
+        """
+        # GIVEN: A mocked controller
+        mocked_controller = MagicMock()
+
+        # WHEN: Set to visible
+        MediaController.set_controls_visible(mocked_controller, True)
+
+        # THEN: The media controls should have been set to visible
+        mocked_controller.mediabar.setVisible.assert_called_once_with(True)
+
+    @patch('openlp.core.ui.media.mediacontroller.ItemMediaInfo')
+    def test_setup_display(self, MockItemMediaInfo):
+        """
+        Test that the display/controllers are set up correctly
+        """
+        # GIVEN: A media controller object and some mocks
+        mocked_media_info = MagicMock()
+        MockItemMediaInfo.return_value = mocked_media_info
+        media_controller = MediaController()
+        media_controller.vlc_player = MagicMock()
+        mocked_display = MagicMock()
+        media_controller._define_display = MagicMock(return_value=mocked_display)
+        media_controller.vlc_player = MagicMock()
+        controller = MagicMock()
+
+        # WHEN: setup_display() is called
+        media_controller.setup_display(controller, True)
+
+        # THEN: The right calls should have been made
+        assert controller.media_info == mocked_media_info
+        assert controller.has_audio is False
+        media_controller._define_display.assert_called_once_with(controller)
+        media_controller.vlc_player.setup(controller, mocked_display, False)

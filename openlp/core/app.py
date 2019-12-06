@@ -385,17 +385,12 @@ def main():
         application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
     # Set the libvlc environment variable if we're frozen
-    if getattr(sys, 'frozen', False):
-        if is_macosx():
-            vlc_lib = 'libvlc.dylib'
-        elif is_win():
-            vlc_lib = 'libvlc.dll'
-        # Path to libvlc
-        os.environ['PYTHON_VLC_LIB_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc' / vlc_lib)
-        log.debug('VLC Path: {}'.format(os.environ['PYTHON_VLC_LIB_PATH']))
-        # Path to VLC directory containing VLC's "plugins" directory
+    if getattr(sys, 'frozen', False) and is_win():
+        # Path to libvlc and the plugins
+        os.environ['PYTHON_VLC_LIB_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc' / 'libvlc.dll')
         os.environ['PYTHON_VLC_MODULE_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
         log.debug('VLC Path: {}'.format(os.environ['PYTHON_VLC_LIB_PATH']))
+        log.debug('VLC Plugins Path: {}'.format(os.environ['PYTHON_VLC_MODULE_PATH']))
     # Initialise the Registry
     Registry.create()
     Registry().register('application', application)
