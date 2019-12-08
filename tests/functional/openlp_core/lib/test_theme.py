@@ -25,78 +25,160 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from openlp.core.lib.theme import BackgroundType, Theme
+from openlp.core.lib.theme import BackgroundType, BackgroundGradientType, TransitionType, TransitionSpeed, Theme
 
 
-class TestBackgroundType(TestCase):
+class ThemeEnumerationTypes(TestCase):
     """
-    Test the BackgroundType enum methods.
+    Test the theme enum methods.
     """
-    def test_solid_to_string(self):
+    def test_background_type_to_string(self):
         """
         Test the to_string method of :class:`BackgroundType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Solid
+        # GIVEN: The BackgroundType members
+        background_type_solid = BackgroundType.Solid
+        background_type_gradient = BackgroundType.Gradient
+        background_type_image = BackgroundType.Image
+        background_type_transparent = BackgroundType.Transparent
+        background_type_video = BackgroundType.Video
+        background_type_stream = BackgroundType.Stream
 
         # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'solid'
+        # THEN: The string equivalents should be returned
+        assert BackgroundType.to_string(background_type_solid) == 'solid'
+        assert BackgroundType.to_string(background_type_gradient) == 'gradient'
+        assert BackgroundType.to_string(background_type_image) == 'image'
+        assert BackgroundType.to_string(background_type_transparent) == 'transparent'
+        assert BackgroundType.to_string(background_type_video) == 'video'
+        assert BackgroundType.to_string(background_type_stream) == 'stream'
 
-    def test_gradient_to_string(self):
+    def test_background_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`BackgroundType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Gradient
+        # GIVEN: The BackgroundType strings
+        background_type_solid = 'solid'
+        background_type_gradient = 'gradient'
+        background_type_image = 'image'
+        background_type_transparent = 'transparent'
+        background_type_video = 'video'
+        background_type_stream = 'stream'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'gradient'
+        # WHEN: Calling BackgroundType.from_string
+        # THEN: The enum equivalents should be returned
+        assert BackgroundType.from_string(background_type_solid) == BackgroundType.Solid
+        assert BackgroundType.from_string(background_type_gradient) == BackgroundType.Gradient
+        assert BackgroundType.from_string(background_type_image) == BackgroundType.Image
+        assert BackgroundType.from_string(background_type_transparent) == BackgroundType.Transparent
+        assert BackgroundType.from_string(background_type_video) == BackgroundType.Video
+        assert BackgroundType.from_string(background_type_stream) == BackgroundType.Stream
 
-    def test_image_to_string(self):
+    def test_background_gradient_type_to_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the to_string method of :class:`BackgroundGradientType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Image
+        # GIVEN: The BackgroundGradientType member
+        background_gradient_horizontal = BackgroundGradientType.Horizontal
+        background_gradient_vertical = BackgroundGradientType.Vertical
+        background_gradient_circular = BackgroundGradientType.Circular
+        background_gradient_left_top = BackgroundGradientType.LeftTop
+        background_gradient_left_bottom = BackgroundGradientType.LeftBottom
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'image'
+        # WHEN: Calling BackgroundGradientType.to_string
+        # THEN: The string equivalents should be returned
+        assert BackgroundGradientType.to_string(background_gradient_horizontal) == 'horizontal'
+        assert BackgroundGradientType.to_string(background_gradient_vertical) == 'vertical'
+        assert BackgroundGradientType.to_string(background_gradient_circular) == 'circular'
+        assert BackgroundGradientType.to_string(background_gradient_left_top) == 'leftTop'
+        assert BackgroundGradientType.to_string(background_gradient_left_bottom) == 'leftBottom'
 
-    def test_transparent_to_string(self):
+    def test_background_gradient_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`BackgroundGradientType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Transparent
+        # GIVEN: The BackgroundGradientType strings
+        background_gradient_horizontal = 'horizontal'
+        background_gradient_vertical = 'vertical'
+        background_gradient_circular = 'circular'
+        background_gradient_left_top = 'leftTop'
+        background_gradient_left_bottom = 'leftBottom'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'transparent'
+        # WHEN: Calling BackgroundGradientType.from_string
+        # THEN: The enum equivalents should be returned
+        assert BackgroundGradientType.from_string(background_gradient_horizontal) == BackgroundGradientType.Horizontal
+        assert BackgroundGradientType.from_string(background_gradient_vertical) == BackgroundGradientType.Vertical
+        assert BackgroundGradientType.from_string(background_gradient_circular) == BackgroundGradientType.Circular
+        assert BackgroundGradientType.from_string(background_gradient_left_top) == BackgroundGradientType.LeftTop
+        assert BackgroundGradientType.from_string(background_gradient_left_bottom) == BackgroundGradientType.LeftBottom
 
-    def test_video_to_string(self):
+    def test_transition_type_to_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the to_string method of :class:`TransitionType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Video
+        # GIVEN: The TransitionType member
+        transition_type_fade = TransitionType.Fade
+        transition_type_slide = TransitionType.Slide
+        transition_type_convex = TransitionType.Convex
+        transition_type_concave = TransitionType.Concave
+        transition_type_zoom = TransitionType.Zoom
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'video'
+        # WHEN: Calling TransitionType.to_string
+        # THEN: The string equivalents should be returned
+        assert TransitionType.to_string(transition_type_fade) == 'fade'
+        assert TransitionType.to_string(transition_type_slide) == 'slide'
+        assert TransitionType.to_string(transition_type_convex) == 'convex'
+        assert TransitionType.to_string(transition_type_concave) == 'concave'
+        assert TransitionType.to_string(transition_type_zoom) == 'zoom'
 
-    def test_stream_to_string(self):
+    def test_transition_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`TransitionType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Stream
+        # GIVEN: The TransitionType strings
+        transition_type_fade = 'fade'
+        transition_type_slide = 'slide'
+        transition_type_convex = 'convex'
+        transition_type_concave = 'concave'
+        transition_type_zoom = 'zoom'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'stream'
+        # WHEN: Calling TransitionType.from_string
+        # THEN: The enum equivalents should be returned
+        assert TransitionType.from_string(transition_type_fade) == TransitionType.Fade
+        assert TransitionType.from_string(transition_type_slide) == TransitionType.Slide
+        assert TransitionType.from_string(transition_type_convex) == TransitionType.Convex
+        assert TransitionType.from_string(transition_type_concave) == TransitionType.Concave
+        assert TransitionType.from_string(transition_type_zoom) == TransitionType.Zoom
+
+    def test_transition_speed_to_string(self):
+        """
+        Test the to_string method of :class:`TransitionSpeed`
+        """
+        # GIVEN: The TransitionSpeed member
+        transition_speed_normal = TransitionSpeed.Normal
+        transition_speed_fast = TransitionSpeed.Fast
+        transition_speed_slow = TransitionSpeed.Slow
+
+        # WHEN: Calling TransitionSpeed.to_string
+        # THEN: The string equivalents should be returned
+        assert TransitionSpeed.to_string(transition_speed_normal) == 'normal'
+        assert TransitionSpeed.to_string(transition_speed_fast) == 'fast'
+        assert TransitionSpeed.to_string(transition_speed_slow) == 'slow'
+
+    def test_transition_speed_from_string(self):
+        """
+        Test the from_string method of :class:`TransitionSpeed`
+        """
+        # GIVEN: The TransitionSpeed strings
+        transition_speed_normal = 'normal'
+        transition_speed_fast = 'fast'
+        transition_speed_slow = 'slow'
+
+        # WHEN: Calling TransitionSpeed.from_string
+        # THEN: The enum equivalents should be returned
+        assert TransitionSpeed.from_string(transition_speed_normal) == TransitionSpeed.Normal
+        assert TransitionSpeed.from_string(transition_speed_fast) == TransitionSpeed.Fast
+        assert TransitionSpeed.from_string(transition_speed_slow) == TransitionSpeed.Slow
 
 
 class TestTheme(TestCase):
