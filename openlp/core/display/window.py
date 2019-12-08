@@ -25,6 +25,7 @@ import json
 import logging
 import os
 import copy
+import time
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
@@ -142,6 +143,8 @@ class DisplayWindow(QtWidgets.QWidget):
         self.is_display = False
         self.scale = 1
         self.hide_mode = None
+        self.__script_done = True
+        self.__script_result = None
         if screen and screen.is_display:
             Registry().register_function('live_display_hide', self.hide_display)
             Registry().register_function('live_display_show', self.show_display)
@@ -218,6 +221,10 @@ class DisplayWindow(QtWidgets.QWidget):
         :param is_sync: Run the script synchronously. Defaults to False
         """
         log.debug(script)
+        # Wait for other scripts to finish
+        while not self.__script_done:
+            time.sleep(0.1)
+            self.application.process_events()
         if not is_sync:
             self.webview.page().runJavaScript(script)
         else:
@@ -234,7 +241,7 @@ class DisplayWindow(QtWidgets.QWidget):
             self.webview.page().runJavaScript(script, handle_result)
             while not self.__script_done:
                 # TODO: Figure out how to break out of a potentially infinite loop
-                QtWidgets.QApplication.instance().processEvents()
+                self.application.processEvents()
             return self.__script_result
 
     def go_to_slide(self, verse):
