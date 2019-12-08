@@ -129,11 +129,11 @@ class TestDisplayWindow(TestCase, TestMixin):
         test a synced script is run on the webview and immediately returns a result
         """
         # GIVEN: A (fake) webengine page with a js callback fn
+        def save_callback(script, callback):
+            callback(1234)
         display_window = DisplayWindow()
         display_window.webview = MagicMock()
         webengine_page = MagicMock()
-        def save_callback(script, callback):
-            callback(1234)
         webengine_page.runJavaScript.side_effect = save_callback
         display_window.webview.page.return_value = webengine_page
 
