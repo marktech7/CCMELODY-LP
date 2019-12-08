@@ -22,6 +22,7 @@
 Package to test the openlp.core.display.window package.
 """
 import sys
+import time
 
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
@@ -104,3 +105,42 @@ class TestDisplayWindow(TestCase, TestMixin):
 
         # THEN: javascript should not be run
         display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
+
+    @patch.object(time, 'time')
+    def test_run_javascript_no_sync_no_wait(self, MockSettings, mocked_webengine, mocked_addWidget, mock_time):
+        """
+        test a script is run on the webview
+        """
+        # GIVEN: A (fake) webengine page
+        display_window = DisplayWindow()
+        webengine_page = MagicMock()
+        display_window.webview.page = MagicMock(return_value=webengine_page)
+
+        # WHEN: javascript is requested to run
+        display_window.run_javascript('javascript to execute')
+
+        # THEN: javascript should be run with no delay
+        webengine_page.runJavaScript.assert_called_once_with('javascript to execute')
+        mock_time.sleep.assert_not_called()
+
+    @patch.object(time, 'time')
+    def test_run_javascript_sync_no_wait(self, MockSettings, mocked_webengine, mocked_addWidget, mock_time):
+        """
+        test a synced script is run on the webview and immediately returns a result
+        """
+        # GIVEN: A (fake) webengine page with a js callback fn
+        display_window = DisplayWindow()
+        display_window.webview = MagicMock()
+        webengine_page = MagicMock()
+        def save_callback(script, callback):
+            callback(1234)
+        webengine_page.runJavaScript.side_effect = save_callback
+        display_window.webview.page.return_value = webengine_page
+
+        # WHEN: javascript is requested to run
+        result = display_window.run_javascript('javascript to execute', True)
+
+        # THEN: javascript should be run with no delay and return with the correct result
+        assert result == 1234
+        webengine_page.runJavaScript.assert_called_once()
+        mock_time.sleep.assert_not_called()
