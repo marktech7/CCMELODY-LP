@@ -31,6 +31,7 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
 from openlp.core.ui.icons import UiIcons
+from openlp.core.widgets.labels import FormLabel
 
 
 log = logging.getLogger(__name__)
@@ -306,7 +307,7 @@ def create_valign_selection_widgets(parent):
 
     :param parent: The parent object. This should be a ``QWidget`` descendant.
     """
-    label = QtWidgets.QLabel(parent)
+    label = FormLabel(parent)
     label.setText(translate('OpenLP.Ui', '&Vertical Align:'))
     combo_box = QtWidgets.QComboBox(parent)
     combo_box.addItems([UiStrings().Top, UiStrings().Middle, UiStrings().Bottom])
