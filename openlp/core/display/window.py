@@ -25,6 +25,7 @@ import json
 import logging
 import os
 import copy
+import time
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
@@ -35,6 +36,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
 from openlp.core.ui import HideMode
 from openlp.core.display.screens import ScreenList
+from openlp.core.common.mixins import RegistryProperties
 
 log = logging.getLogger(__name__)
 
@@ -100,7 +102,7 @@ class MediaWatcher(QtCore.QObject):
         self.muted.emit(is_muted)
 
 
-class DisplayWindow(QtWidgets.QWidget):
+class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
     """
     This is a window to show the output
     """
@@ -142,6 +144,8 @@ class DisplayWindow(QtWidgets.QWidget):
         self.is_display = False
         self.scale = 1
         self.hide_mode = None
+        self.__script_done = True
+        self.__script_result = None
         if screen and screen.is_display:
             Registry().register_function('live_display_hide', self.hide_display)
             Registry().register_function('live_display_show', self.show_display)
@@ -218,6 +222,14 @@ class DisplayWindow(QtWidgets.QWidget):
         :param is_sync: Run the script synchronously. Defaults to False
         """
         log.debug(script)
+        # Wait for other scripts to finish
+        end_time = time.time() + 10
+        while not self.__script_done:
+            if time.time() > end_time:
+                log.error('Timed out waiting for preivous javascript script to finish')
+                break
+            time.sleep(0.1)
+            self.application.process_events()
         if not is_sync:
             self.webview.page().runJavaScript(script)
         else:
@@ -232,9 +244,14 @@ class DisplayWindow(QtWidgets.QWidget):
                 self.__script_result = result
 
             self.webview.page().runJavaScript(script, handle_result)
+            end_time = time.time() + 10
             while not self.__script_done:
-                # TODO: Figure out how to break out of a potentially infinite loop
-                QtWidgets.QApplication.instance().processEvents()
+                if time.time() > end_time:
+                    self.__script_done = True
+                    log.error('Timed out waiting for javascript script to finish')
+                    break
+                time.sleep(0.001)
+                self.application.process_events()
             return self.__script_result
 
     def go_to_slide(self, verse):

@@ -33,7 +33,7 @@ from PyQt5 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import translate
-from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
@@ -797,7 +797,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             return pixmap
 
 
-class Renderer(RegistryBase, RegistryProperties, ThemePreviewRenderer):
+class Renderer(RegistryBase, ThemePreviewRenderer):
     """
     A virtual display used for rendering thumbnails and other offscreen tasks
     """
