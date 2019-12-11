@@ -245,16 +245,13 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
 
             self.webview.page().runJavaScript(script, handle_result)
             end_time = time.time() + 10
-            counter = 0
             while not self.__script_done:
-                counter += 1
                 if time.time() > end_time:
                     self.__script_done = True
                     log.error('Timed out waiting for javascript script to finish')
                     break
                 time.sleep(0.001)
                 self.application.process_events()
-            log.debug('The script loop ran {} times'.format(counter))
             return self.__script_result
 
     def go_to_slide(self, verse):
