@@ -214,6 +214,20 @@ class HorizontalType(object):
 
     Names = ['left', 'right', 'center', 'justify']
 
+    @staticmethod
+    def to_string(align):
+        """
+        Return a string representation of the alignment
+        """
+        return HorizontalType.Names[align]
+
+    @staticmethod
+    def from_string(align):
+        """
+        Return an alignment for a given string
+        """
+        return HorizontalType.Names.index(align)
+
 
 class VerticalType(object):
     """
@@ -224,6 +238,20 @@ class VerticalType(object):
     Bottom = 2
 
     Names = ['top', 'middle', 'bottom']
+
+    @staticmethod
+    def to_string(align):
+        """
+        Return a string representation of the alignment
+        """
+        return VerticalType.Names[align]
+
+    @staticmethod
+    def from_string(align):
+        """
+        Return an alignment for a given string
+        """
+        return VerticalType.Names.index(align)
 
 
 BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition']
