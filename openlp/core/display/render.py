@@ -797,7 +797,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             return pixmap
 
 
-class Renderer(RegistryBase, RegistryProperties, ThemePreviewRenderer):
+class Renderer(RegistryBase, ThemePreviewRenderer):
     """
     A virtual display used for rendering thumbnails and other offscreen tasks
     """

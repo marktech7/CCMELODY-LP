@@ -36,6 +36,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
 from openlp.core.ui import HideMode
 from openlp.core.display.screens import ScreenList
+from openlp.core.common.mixins import RegistryProperties
 
 log = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ class MediaWatcher(QtCore.QObject):
         self.muted.emit(is_muted)
 
 
-class DisplayWindow(QtWidgets.QWidget):
+class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
     """
     This is a window to show the output
     """
@@ -222,7 +223,11 @@ class DisplayWindow(QtWidgets.QWidget):
         """
         log.debug(script)
         # Wait for other scripts to finish
+        end_time = time.time() + 10
         while not self.__script_done:
+            if time.time() > end_time:
+                log.error('Timed out waiting for preivous javascript script to finish')
+                break
             time.sleep(0.1)
             self.application.process_events()
         if not is_sync:
@@ -239,9 +244,17 @@ class DisplayWindow(QtWidgets.QWidget):
                 self.__script_result = result
 
             self.webview.page().runJavaScript(script, handle_result)
+            end_time = time.time() + 10
+            counter = 0
             while not self.__script_done:
-                # TODO: Figure out how to break out of a potentially infinite loop
-                self.application.processEvents()
+                counter += 1
+                if time.time() > end_time:
+                    self.__script_done = True
+                    log.error('Timed out waiting for javascript script to finish')
+                    break
+                time.sleep(0.001)
+                self.application.process_events()
+            log.debug('The script loop ran {} times'.format(counter))
             return self.__script_result
 
     def go_to_slide(self, verse):
