@@ -27,6 +27,7 @@ import logging
 
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
+from openlp.core.common.enum import CustomSearch
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
@@ -34,7 +35,7 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.custom.endpoint import api_custom_endpoint, custom_endpoint
 from openlp.plugins.custom.lib.db import CustomSlide, init_schema
-from openlp.plugins.custom.lib.mediaitem import CustomMediaItem, CustomSearch
+from openlp.plugins.custom.lib.mediaitem import CustomMediaItem
 from openlp.plugins.custom.lib.customtab import CustomTab
 
 

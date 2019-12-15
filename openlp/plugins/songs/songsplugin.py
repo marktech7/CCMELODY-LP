@@ -33,6 +33,7 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
+from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
@@ -48,7 +49,7 @@ from openlp.plugins.songs.lib import clean_song, upgrade
 from openlp.plugins.songs.lib.db import Song, init_schema
 from openlp.plugins.songs.lib.importer import SongFormat
 from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
-from openlp.plugins.songs.lib.mediaitem import SongMediaItem, SongSearch
+from openlp.plugins.songs.lib.mediaitem import SongMediaItem
 from openlp.plugins.songs.lib.songstab import SongsTab
 
 

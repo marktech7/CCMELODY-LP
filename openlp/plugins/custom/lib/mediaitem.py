@@ -41,14 +41,6 @@ from openlp.plugins.custom.lib.db import CustomSlide
 log = logging.getLogger(__name__)
 
 
-class CustomSearch(object):
-    """
-    An enumeration for custom search methods.
-    """
-    Titles = 1
-    Themes = 2
-
-
 class CustomMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Custom Slides.

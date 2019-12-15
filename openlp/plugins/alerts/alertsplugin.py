@@ -26,13 +26,13 @@ from PyQt5 import QtGui
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
+from openlp.core.common.enum import AlertLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
 from openlp.core.lib.ui import create_action
-from openlp.core.ui import AlertLocation
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.alerts.endpoint import api_alerts_endpoint, alerts_endpoint
 from openlp.plugins.alerts.forms.alertform import AlertForm

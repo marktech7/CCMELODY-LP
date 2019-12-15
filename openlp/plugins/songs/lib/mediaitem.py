@@ -51,21 +51,6 @@ from openlp.plugins.songs.lib.ui import SongStrings
 log = logging.getLogger(__name__)
 
 
-class SongSearch(object):
-    """
-    An enumeration for song search methods.
-    """
-    Entire = 1
-    Titles = 2
-    Lyrics = 3
-    Authors = 4
-    Topics = 5
-    Books = 6
-    Themes = 7
-    Copyright = 8
-    CCLInumber = 9
-
-
 class SongMediaItem(MediaManagerItem):
     """
     This is the custom media manager item for Songs.
