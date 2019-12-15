@@ -228,8 +228,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :param media: The media
         :param target_group:
         """
-        # TODO needs to be fixed as no idea why this fails
-        # media.sort(key=lambda file_path: get_natural_key(file_path.name))
+        media.sort(key=lambda file_path: get_natural_key(os.path.split(str(file_path))[1]))
         file_name = translate('MediaPlugin.MediaItem', 'Live Stream')
         item_name = QtWidgets.QListWidgetItem(file_name)
         item_name.setIcon(UiIcons().video)
@@ -281,13 +280,13 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :return: The media list
         """
         media_file_paths = Settings().value(self.settings_section + '/media files')
-        media_file_paths.sort(key=lambda file_path: get_natural_key(file_path.name))
+        media_file_paths.sort(key=lambda file_path: get_natural_key(os.path.split(str(file_path))[1]))
         if media_type == MediaType.Audio:
             extension = AUDIO_EXT
         else:
             extension = VIDEO_EXT
         extension = [x[1:] for x in extension]
-        media = [x for x in media_file_paths if x.suffix in extension]
+        media = [x for x in media_file_paths if os.path.splitext(x)[1] in extension]
         return media
 
     def search(self, string, show_error):
