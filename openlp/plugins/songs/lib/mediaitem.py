@@ -28,6 +28,7 @@ from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
