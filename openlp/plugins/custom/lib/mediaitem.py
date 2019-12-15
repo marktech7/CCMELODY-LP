@@ -24,6 +24,7 @@ import logging
 from PyQt5 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, func, or_
 
+from openlp.core.common.enum import CustomSearch
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
@@ -39,14 +40,6 @@ from openlp.plugins.custom.lib.db import CustomSlide
 
 
 log = logging.getLogger(__name__)
-
-
-class CustomSearch(object):
-    """
-    An enumeration for custom search methods.
-    """
-    Titles = 1
-    Themes = 2
 
 
 class CustomMediaItem(MediaManagerItem):

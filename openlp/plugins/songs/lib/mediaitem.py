@@ -28,6 +28,7 @@ from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
@@ -49,21 +50,6 @@ from openlp.plugins.songs.lib.ui import SongStrings
 
 
 log = logging.getLogger(__name__)
-
-
-class SongSearch(object):
-    """
-    An enumeration for song search methods.
-    """
-    Entire = 1
-    Titles = 2
-    Lyrics = 3
-    Authors = 4
-    Topics = 5
-    Books = 6
-    Themes = 7
-    Copyright = 8
-    CCLInumber = 9
 
 
 class SongMediaItem(MediaManagerItem):

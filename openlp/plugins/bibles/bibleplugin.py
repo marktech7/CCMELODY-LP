@@ -24,15 +24,15 @@ import logging
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
+from openlp.core.common.enum import BibleSearch, LayoutStyle, DisplayStyle, LanguageSelection
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.ui.icons import UiIcons
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.plugins.bibles.endpoint import api_bibles_endpoint, bibles_endpoint
-from openlp.plugins.bibles.lib import LayoutStyle, DisplayStyle, LanguageSelection
 from openlp.plugins.bibles.lib.biblestab import BiblesTab
 from openlp.plugins.bibles.lib.manager import BibleManager
-from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem, BibleSearch
+from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem
 
 
 log = logging.getLogger(__name__)

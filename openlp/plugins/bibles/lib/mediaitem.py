@@ -25,6 +25,7 @@ from enum import IntEnum, unique
 
 from PyQt5 import QtCore, QtWidgets
 
+from openlp.core.common.enum import BibleSearch, DisplayStyle, LayoutStyle
 from openlp.core.common.i18n import UiStrings, get_locale_key, translate
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
@@ -37,8 +38,7 @@ from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.edits import SearchEdit
 from openlp.plugins.bibles.forms.bibleimportform import BibleImportForm
 from openlp.plugins.bibles.forms.editbibleform import EditBibleForm
-from openlp.plugins.bibles.lib import DisplayStyle, LayoutStyle, get_reference_match, \
-    get_reference_separator
+from openlp.plugins.bibles.lib import get_reference_match, get_reference_separator
 from openlp.plugins.bibles.lib.versereferencelist import VerseReferenceList
 
 log = logging.getLogger(__name__)
@@ -51,16 +51,6 @@ def get_reference_separators():
     return {'verse': get_reference_separator('sep_v_display'),
             'range': get_reference_separator('sep_r_display'),
             'list': get_reference_separator('sep_l_display')}
-
-
-@unique
-class BibleSearch(IntEnum):
-    """
-    Enumeration class for the different search types for the "Search" tab.
-    """
-    Reference = 1
-    Text = 2
-    Combined = 3
 
 
 @unique

@@ -36,34 +36,6 @@ REFERENCE_MATCHES = {}
 REFERENCE_SEPARATORS = {}
 
 
-class LayoutStyle(object):
-    """
-    An enumeration for bible screen layout styles.
-    """
-    VersePerSlide = 0
-    VersePerLine = 1
-    Continuous = 2
-
-
-class DisplayStyle(object):
-    """
-    An enumeration for bible text bracket display styles.
-    """
-    NoBrackets = 0
-    Round = 1
-    Curly = 2
-    Square = 3
-
-
-class LanguageSelection(object):
-    """
-    An enumeration for bible bookname language. And standard strings for use throughout the bibles plugin.
-    """
-    Bible = 0
-    Application = 1
-    English = 2
-
-
 class BibleStrings(metaclass=Singleton):
     """
     Provide standard strings for objects to use.
