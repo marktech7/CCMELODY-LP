@@ -23,13 +23,13 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.common.enum import DisplayStyle, LanguageSelection, LayoutStyle
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
-from openlp.plugins.bibles.lib import DisplayStyle, LanguageSelection, LayoutStyle, get_reference_separator, \
-    update_reference_separators
+from openlp.plugins.bibles.lib import get_reference_separator, update_reference_separators
 
 
 log = logging.getLogger(__name__)
