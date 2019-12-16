@@ -8,14 +8,15 @@ image:
 
 environment:
   matrix:
-    - PYTHON: C:\\Python37-x64
+    - PYTHON: C:\\Python38-x64
       CHOCO_VLC: vlc
-    - PYTHON: C:\\Python37
+    - PYTHON: C:\\Python38
       CHOCO_VLC: vlc --forcex86
 
 install:
   # Install dependencies from pypi
-  - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pypiwin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF==1.16.7 QDarkStyle python-vlc Pyro4 zeroconf"
+  - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pywin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF==1.16.7 QDarkStyle python-vlc Pyro4 zeroconf"
+  - "%PYTHON%\\python.exe %PYTHON%\\Scripts\\pywin32_postinstall.py -install"
 
 build: off
 
@@ -29,7 +30,8 @@ test_script:
 after_test:
   # This is where we create a package using PyInstaller
   # Install PyInstaller 
-  - "%PYTHON%\\python.exe -m pip install pyinstaller"
+  #- "%PYTHON%\\python.exe -m pip install pyinstaller"
+  - "%PYTHON%\\python.exe -m pip install https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz"
   # Disabled portable installers - can't figure out how to make them silent
   # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
   # - PortableApps.comInstaller_3.4.4.paf.exe /S
