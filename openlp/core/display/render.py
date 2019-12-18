@@ -36,6 +36,7 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ItemCapabilities
@@ -486,35 +487,6 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             footer_html = 'Dummy footer text'
         return footer_html
 
-    def wait_till_loaded(self):
-        """
-        Wait until web engine page loaded
-        :return boolean: True on success, False on timeout
-        """
-        # Timeout in 10 seconds
-        end_time = time.time() + 10
-        app = Registry().get('application')
-        success = True
-        while not self._is_initialised:
-            if time.time() > end_time:
-                log.error('Timed out waiting for web engine page to load')
-                success = False
-                break
-            time.sleep(0.1)
-            app.process_events()
-        return success
-
-    def _wait_and_process(self, delay):
-        """
-        Wait while allowing things to process
-
-        :param delay: The amount of time in seconds to delay, can be a float
-        """
-        end_time = time.time() + delay
-        app = Registry().get('application')
-        while time.time() < end_time:
-            app.process_events()
-
     def generate_preview(self, theme_data, force_page=False, generate_screenshot=True):
         """
         Generate a preview of a theme.
@@ -535,7 +507,8 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             verses['verse'] = 'V1'
             verses['footer'] = self.generate_footer()
             self.load_verses([verses], is_sync=True)
-            self._wait_and_process(1)
+            # Wait for a second
+            wait_for(lambda: False, timeout=1)
             self.force_page = False
             if generate_screenshot:
                 return self.grab()
@@ -550,8 +523,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         :param item: The :class:`~openlp.core.lib.serviceitem.ServiceItem` item object.
 
         """
-        while not self._is_initialised:
-            QtWidgets.QApplication.instance().processEvents()
+        wait_for(lambda: self._is_initialised)
         self.log_debug('format slide')
         if item:
             # Set theme for preview
@@ -771,8 +743,10 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         :param text:  The text to check. It may contain HTML tags.
         """
         self.clear_slides()
+        self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
         self.run_javascript('Display.addTextSlide("v1", "{text}", "Dummy Footer");'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
+        self.log_debug('_text_fits_on_slide: 2')
         does_text_fits = self.run_javascript('Display.doesContentFit();', is_sync=True)
         return does_text_fits
 

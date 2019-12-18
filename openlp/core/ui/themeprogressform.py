@@ -23,12 +23,13 @@ The theme regeneration progress dialog
 """
 from PyQt5 import QtWidgets
 
+from openlp.core.common.mixins import RegistryProperties, LogMixin
+from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui.themeprogressdialog import UiThemeProgressDialog
-from openlp.core.common.mixins import RegistryProperties
 
 
-class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProperties):
+class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProperties, LogMixin):
     """
     The theme regeneration progress dialog
     """
@@ -38,9 +39,9 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
         self._theme_list = []
 
     def show(self):
+        self.progress_bar.setValue(0)
         self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(0)
-        self.progress_bar.setValue(0)
         try:
             screens = ScreenList()
             self.ratio = screens.current.display_geometry.width() / screens.current.display_geometry.height()
@@ -52,6 +53,7 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
     def get_preview(self, theme_name, theme_data):
         self.label.setText(theme_name)
         self.progress_bar.setValue(self.progress_bar.value() + 1)
+        wait_for(lambda: self.theme_display.is_initialised)
         self.theme_display.set_scale(float(self.theme_display.width()) / self.renderer.width())
         return self.theme_display.generate_preview(theme_data, generate_screenshot=True)
 

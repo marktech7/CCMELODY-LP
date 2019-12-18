@@ -58,7 +58,6 @@ class TestThemeManager(TestCase, TestMixin):
         # GIVEN: A new a call to initialise
         self.theme_manager.setup_ui = MagicMock()
         self.theme_manager.build_theme_path = MagicMock()
-        self.theme_manager.upgrade_themes = MagicMock()
         Settings().setValue('themes/global theme', 'my_theme')
 
         # WHEN: the initialisation is run
@@ -68,7 +67,6 @@ class TestThemeManager(TestCase, TestMixin):
         self.theme_manager.setup_ui.assert_called_once_with(self.theme_manager)
         assert self.theme_manager.global_theme == 'my_theme'
         self.theme_manager.build_theme_path.assert_called_once_with()
-        self.theme_manager.upgrade_themes.assert_called_once_with()
 
     @patch('openlp.core.ui.thememanager.create_paths')
     @patch('openlp.core.ui.thememanager.AppLocation.get_section_data_path')
@@ -110,7 +108,6 @@ class TestThemeManager(TestCase, TestMixin):
         Test the functions of bootstrap_post_setup are called.
         """
         # GIVEN:
-        self.theme_manager.load_themes = MagicMock()
         self.theme_manager.theme_path = MagicMock()
 
         # WHEN:
@@ -118,4 +115,21 @@ class TestThemeManager(TestCase, TestMixin):
             self.theme_manager.bootstrap_post_set_up()
 
         # THEN:
-        assert 1 == self.theme_manager.load_themes.call_count, "load_themes should have been called once"
+        assert self.theme_manager.progress_form is not None
+        assert self.theme_manager.theme_form is not None
+        assert self.theme_manager.file_rename_form is not None
+
+    def test_bootstrap_completion(self):
+        """
+        Test the functions of bootstrap_post_setup are called.
+        """
+        # GIVEN:
+        self.theme_manager.load_themes = MagicMock()
+        self.theme_manager.upgrade_themes = MagicMock()
+
+        # WHEN:
+        self.theme_manager.bootstrap_completion()
+
+        # THEN:
+        self.theme_manager.upgrade_themes.assert_called_once()
+        self.theme_manager.load_themes.assert_called_once()

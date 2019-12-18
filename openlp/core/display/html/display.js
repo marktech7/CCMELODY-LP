@@ -383,6 +383,7 @@ var Display = {
   init: function (doTransitions=false) {
     Display._doTransitions = doTransitions;
     Reveal.initialize(Display._revealConfig);
+    displayWatcher.setInitialised(true);
   },
   /**
    * Reinitialise Reveal
@@ -1134,4 +1135,5 @@ var Display = {
 };
 new QWebChannel(qt.webChannelTransport, function (channel) {
   window.mediaWatcher = channel.objects.mediaWatcher;
+  window.displayWatcher = channel.objects.displayWatcher;
 });

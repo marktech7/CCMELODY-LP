@@ -37,6 +37,7 @@ from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
 from openlp.core.lib import build_icon, check_item_selected, create_thumb, get_text_file_string, validate_thumb
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.theme import Theme
@@ -165,7 +166,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.setup_ui(self)
         self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.build_theme_path()
-        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
 
     def bootstrap_post_set_up(self):
         """
@@ -175,8 +175,14 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
-        Registry().register_function('theme_update_global', self.change_global_from_tab)
+
+    def bootstrap_completion(self):
+        """
+        process the bootstrap completion request
+        """
+        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
+        Registry().register_function('theme_update_global', self.change_global_from_tab)
 
     def upgrade_themes(self):
         """
@@ -184,6 +190,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
 
         :rtype: None
         """
+        # Wait for 2 seconds to allow some other things to start processing first
+        wait_for(lambda: False, timeout=1)
         xml_file_paths = AppLocation.get_section_data_path('themes').glob('*/*.xml')
         for xml_file_path in xml_file_paths:
             theme_data = get_text_file_string(xml_file_path)
@@ -722,7 +730,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         theme_name_list = theme_name_list or self.get_theme_names()
         self.progress_form.theme_list = theme_name_list
         self.progress_form.show()
-        self.progress_form.theme_display.wait_till_loaded()
         for theme_name in theme_name_list:
             theme_data = self._get_theme_data(theme_name)
             preview_pixmap = self.progress_form.get_preview(theme_name, theme_data)

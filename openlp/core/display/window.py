@@ -25,18 +25,18 @@ import json
 import logging
 import os
 import copy
-import time
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
-from openlp.core.common.i18n import translate
-from openlp.core.common.path import path_to_str
-from openlp.core.common.settings import Settings
-from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
-from openlp.core.ui import HideMode
-from openlp.core.display.screens import ScreenList
+from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.path import path_to_str
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
+from openlp.core.display.screens import ScreenList
+from openlp.core.ui import HideMode
 
 log = logging.getLogger(__name__)
 
@@ -102,6 +102,21 @@ class MediaWatcher(QtCore.QObject):
         self.muted.emit(is_muted)
 
 
+class DisplayWatcher(QtCore.QObject):
+    """
+    This facilitates communication from the Display object in the browser back to the Python
+    """
+    initialised = QtCore.pyqtSignal(bool)
+
+    @QtCore.pyqtSlot(bool)
+    def setInitialised(self, is_initialised):
+        """
+        This method is called from the JS in the browser to set the _is_initialised attribute
+        """
+        log.info('Display is initialised: {init}'.format(init=is_initialised))
+        self.initialised.emit(is_initialised)
+
+
 class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
     """
     This is a window to show the output
@@ -137,10 +152,13 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         self.checkerboard_path = display_base_path / 'checkerboard.png'
         self.openlp_splash_screen_path = display_base_path / 'openlp-splash-screen.png'
         self.set_url(QtCore.QUrl.fromLocalFile(path_to_str(self.display_path)))
-        self.media_watcher = MediaWatcher(self)
         self.channel = QtWebChannel.QWebChannel(self)
+        self.media_watcher = MediaWatcher(self)
         self.channel.registerObject('mediaWatcher', self.media_watcher)
+        self.display_watcher = DisplayWatcher(self)
+        self.channel.registerObject('displayWatcher', self.display_watcher)
         self.webview.page().setWebChannel(self.channel)
+        self.display_watcher.initialised.connect(self.on_initialised)
         self.is_display = False
         self.scale = 1
         self.hide_mode = None
@@ -154,6 +172,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) > 1 or Settings().value('core/display on monitor'):
                 self.show()
+
+    @property
+    def is_initialised(self):
+        return self._is_initialised
+
+    def on_initialised(self, is_initialised):
+        """
+        Update the initialised status
+        """
+        self._is_initialised = is_initialised
 
     def update_from_screen(self, screen):
         """
@@ -208,7 +236,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         """
         js_is_display = str(self.is_display).lower()
         self.run_javascript('Display.init({do_transitions});'.format(do_transitions=js_is_display))
-        self._is_initialised = True
+        wait_for(lambda: self._is_initialised)
         if self.scale != 1:
             self.set_scale(self.scale)
         if self._can_show_startup_screen:
@@ -222,14 +250,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         :param is_sync: Run the script synchronously. Defaults to False
         """
         log.debug(script)
-        # Wait for other scripts to finish
-        end_time = time.time() + 10
-        while not self.__script_done:
-            if time.time() > end_time:
-                log.error('Timed out waiting for preivous javascript script to finish')
-                break
-            time.sleep(0.1)
-            self.application.process_events()
+        # Wait for previous scripts to finish
+        wait_for(lambda: self.__script_done)
         if not is_sync:
             self.webview.page().runJavaScript(script)
         else:
@@ -244,14 +266,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                 self.__script_result = result
 
             self.webview.page().runJavaScript(script, handle_result)
-            end_time = time.time() + 10
-            while not self.__script_done:
-                if time.time() > end_time:
-                    self.__script_done = True
-                    log.error('Timed out waiting for javascript script to finish')
-                    break
-                time.sleep(0.001)
-                self.application.process_events()
+            # Wait for script to finish
+            if not wait_for(lambda: self.__script_done):
+                self.__script_done = True
             return self.__script_result
 
     def go_to_slide(self, verse):
