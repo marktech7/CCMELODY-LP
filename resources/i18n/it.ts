@@ -122,7 +122,7 @@ Vuoi continuare comunque?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="119"/>
         <source>Font Settings</source>
-        <translation type="unfinished"/>
+        <translation>Impostazione Carattere</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="120"/>
@@ -142,12 +142,12 @@ Vuoi continuare comunque?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="125"/>
         <source>Background Settings</source>
-        <translation type="unfinished"/>
+        <translation>Impostazione Sfondo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="126"/>
         <source>Other Settings</source>
-        <translation type="unfinished"/>
+        <translation>Altre Impostazioni</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="127"/>
@@ -157,12 +157,12 @@ Vuoi continuare comunque?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="129"/>
         <source>Repeat (no. of times):</source>
-        <translation type="unfinished"/>
+        <translation>Ripeti (numero di volte):</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="130"/>
         <source>Enable Scrolling</source>
-        <translation type="unfinished"/>
+        <translation>Abilita lo scorrimento</translation>
     </message>
 </context>
 <context>
@@ -836,17 +836,17 @@ Questo significa che la Bibbia selezionata è una Bibbia online.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="180"/>
         <source>Only show new chapter numbers</source>
-        <translation>Mostra solo i numeri del nuovo capitolo</translation>
+        <translation>Mostra solo i numeri dei nuovi capitoli</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="183"/>
         <source>Bible theme:</source>
-        <translation>Tema della Bibbia</translation>
+        <translation>Tema della Bibbia:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="187"/>
         <source>No Brackets</source>
-        <translation>Senza Parentesi Quadre</translation>
+        <translation>Senza Parentesi</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="189"/>
@@ -871,7 +871,7 @@ Questo significa che la Bibbia selezionata è una Bibbia online.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="197"/>
         <source>Display second Bible verses</source>
-        <translation>Visualizza i Secondi versetti della Bibbia</translation>
+        <translation>Mostra i versetti della seconda Bibbia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="198"/>
@@ -881,7 +881,7 @@ Questo significa che la Bibbia selezionata è una Bibbia online.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="199"/>
         <source>Verse separator:</source>
-        <translation>Separatori Versi:</translation>
+        <translation>Separatore di versi:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="200"/>
@@ -891,21 +891,21 @@ Questo significa che la Bibbia selezionata è una Bibbia online.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="201"/>
         <source>List separator:</source>
-        <translation>Separatore Lista:</translation>
+        <translation>Separatore elenco:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="202"/>
         <source>End mark:</source>
-        <translation>Segno di Fine:</translation>
+        <translation>Segno di fine:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="203"/>
         <source>Multiple alternative verse separators may be defined.
 They have to be separated by a vertical bar &quot;|&quot;.
 Please clear this edit line to use the default value.</source>
-        <translation>Possono essere definiti molteplici separatori di versetti.
+        <translation>È possibile definire più separatori di versi alternativi.
 Devono essere separati da una barra verticale &quot;|&quot;.
-Lasciare la riga vuota per usare il valore di default.</translation>
+Lasciare la riga vuota per usare il valore predefinito.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="210"/>
@@ -942,21 +942,19 @@ nei risultati e a schermo:</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="220"/>
         <source>Reset search type to &quot;Text or Scripture Reference&quot; on startup</source>
-        <translation>Resetta tipo di ricerca all&apos;avvio in &quot;Testo o Scrittura Riferimento&quot; 
-</translation>
+        <translation>Resetta il tipo di ricerca in &quot;Testo o Riferimento biblico&quot; all&apos;avvio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="223"/>
         <source>Don&apos;t show error if nothing is found in &quot;Text or Scripture Reference&quot;</source>
-        <translation>Non mostrare errore se non viene trovato nulla nel &quot;Testo o Riferimento Scrittura&quot;
-</translation>
+        <translation>Non mostrare errori se non si trova nulla in &quot;Testo o Riferimento biblico&quot;</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="226"/>
         <source>Search automatically while typing (Text search must contain a
 minimum of {count} characters and a space for performance reasons)</source>
-        <translation>Ricerca automaticamente durante la digitazione (la ricerca di testo deve contenere
-un minimo di {count} caratteri e uno spazio per motivi di prestazioni)</translation>
+        <translation>Cerca automaticamente durante la digitazione (la ricerca del testo deve contenere
+un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translation>
     </message>
 </context>
 <context>
@@ -969,7 +967,7 @@ un minimo di {count} caratteri e uno spazio per motivi di prestazioni)</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="85"/>
         <source>The following book name cannot be matched up internally. Please select the corresponding name from the list.</source>
-        <translation>Il nome del libro seguente non può essere abbinato automaticamente. Selezionare il corrispondente nome dalla lista.</translation>
+        <translation>Il seguente libro non può essere abbinato automaticamente. Selezionare il nome corrispondente dall&apos;elenco.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="88"/>
@@ -1040,7 +1038,7 @@ un minimo di {count} caratteri e uno spazio per motivi di prestazioni)</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="137"/>
         <source>Version name:</source>
-        <translation>Nome Versione:</translation>
+        <translation>Nome della Versione:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="138"/>
@@ -1065,8 +1063,7 @@ un minimo di {count} caratteri e uno spazio per motivi di prestazioni)</translat
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="142"/>
         <source>Book name language in search field, search results and on display:</source>
-        <translation>Lingua per i nomi dei libri nel campo di ricerca,
-nei risultati e a schermo:</translation>
+        <translation>Lingua per il nome del libro nel campo di ricerca, nei risultati e sullo schermo:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="145"/>
@@ -2329,7 +2326,7 @@ Prosegue l&apos;aggiornamento.</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="103"/>
         <source>&lt;p&gt;OpenLP {{version}}{{revision}} - Open Source Lyrics Projection&lt;br&gt;Copyright {crs} 2004-{yr} OpenLP Developers&lt;/p&gt;&lt;p&gt;Find out more about OpenLP: &lt;a href=&quot;https://openlp.org/&quot;&gt;https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt;https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;OpenLP {{version}}{{revision}} - Proiezione di testi open source&lt;br&gt; Copyright {crs} 2004-{yr} Sviluppo OpenLP&lt;/p&gt;&lt;p&gt;Per saperne di più su OpenLP&lt;a href=&quot;https://openlp.org/&quot;&gt;: https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Questo programma è un software libero: potete ridistribuirlo e/o modificarlo secondo i termini della GNU General Public License pubblicata dalla Free Software Foundation, sia la versione 3 della licenza, o (a vostra scelta) qualsiasi versione successiva. &lt;/p&gt;&lt;p&gt;Questo programma è distribuito nella speranza che sia utile, ma SENZA GARANZIA; senza nemmeno la garanzia implicita di COMMERCIABILITÀ o IDONEITÀ PER UN PARTICOLARE SCOPO. Si veda la GNU General Public License per maggiori dettagli. &lt;/p&gt;&lt;p&gt; Si dovrebbe aver ricevuto una copia della GNU General Public License insieme a questo programma. In caso contrario, si veda &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt; https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="118"/>
@@ -2906,7 +2903,7 @@ La cartella dati sarà cambiata quando OpenLP verrà chiuso.</translation>
     <message>
         <location filename="../../openlp/core/display/window.py" line="121"/>
         <source>Display Window</source>
-        <translation type="unfinished"/>
+        <translation>Finestra di visualizzazione</translation>
     </message>
 </context>
 <context>
@@ -4022,7 +4019,7 @@ Se si fa clic sul &apos;{finish_button}&apos; pulsante è possibile scaricare i 
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="550"/>
         <source>Please Wait</source>
-        <translation type="unfinished"/>
+        <translation>Attendere Prego</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="631"/>
@@ -4201,17 +4198,17 @@ Database: {db_name}</source>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="100"/>
         <source>The media integration library is missing (python - vlc is not installed)</source>
-        <translation type="unfinished"/>
+        <translation>Manca la libreria di integrazione multimediale (python - vlc non è installato)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="102"/>
         <source>The media integration library is missing (python - pymediainfo is not installed)</source>
-        <translation type="unfinished"/>
+        <translation>Manca la libreria di integrazione multimediale (python - pymediainfo non è installato)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="122"/>
         <source>No Displays have been configured, so Live Media has been disabled</source>
-        <translation type="unfinished"/>
+        <translation>Nessun display è stato configurato, quindi Live Media è stato disabilitato.</translation>
     </message>
 </context>
 <context>
@@ -4583,7 +4580,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="69"/>
         <source>Copy as Text</source>
-        <translation type="unfinished"/>
+        <translation>Copia come testo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="71"/>
@@ -4618,7 +4615,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="142"/>
         <source>Service Note Text:</source>
-        <translation type="unfinished"/>
+        <translation>Testo nota di servizio:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="143"/>
@@ -5612,7 +5609,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printserviceform.py" line="199"/>
         <source>Service Notes: </source>
-        <translation type="unfinished"/>
+        <translation>Note di servizio: </translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printserviceform.py" line="246"/>
@@ -6014,7 +6011,7 @@ usare una scelta-rapida diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistform.py" line="327"/>
         <source>Select an Action</source>
-        <translation type="unfinished"/>
+        <translation>Scegliere una Azione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistform.py" line="327"/>
@@ -6802,47 +6799,47 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="480"/>
         <source>Fade</source>
-        <translation type="unfinished"/>
+        <translation>Dissolvenza</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="481"/>
         <source>Slide</source>
-        <translation type="unfinished"/>
+        <translation>Diapositiva</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="482"/>
         <source>Concave</source>
-        <translation type="unfinished"/>
+        <translation>Concavo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="483"/>
         <source>Convex</source>
-        <translation type="unfinished"/>
+        <translation>Convesso</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="484"/>
         <source>Zoom</source>
-        <translation type="unfinished"/>
+        <translation>Ingrandimento</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="485"/>
         <source>Speed:</source>
-        <translation type="unfinished"/>
+        <translation>Velocità:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="486"/>
         <source>Normal</source>
-        <translation type="unfinished"/>
+        <translation>Normale</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="487"/>
         <source>Fast</source>
-        <translation type="unfinished"/>
+        <translation>Veloce</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="488"/>
         <source>Slow</source>
-        <translation type="unfinished"/>
+        <translation>Lento</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="489"/>
@@ -6925,12 +6922,12 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themeprogressdialog.py" line="74"/>
         <source>Recreating Theme Thumbnails</source>
-        <translation type="unfinished"/>
+        <translation>Ricrea icone Temi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeprogressdialog.py" line="75"/>
         <source>TextLabel</source>
-        <translation type="unfinished"/>
+        <translation>Etichetta di testo</translation>
     </message>
 </context>
 <context>
@@ -9332,7 +9329,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="291"/>
         <source>LiveWorship Database</source>
-        <translation type="unfinished"/>
+        <translation>Archivio LiveWorship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="298"/>
@@ -9387,12 +9384,12 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="361"/>
         <source>Singing The Faith Exported Files</source>
-        <translation type="unfinished"/>
+        <translation>File Canti della Fede esportati</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="363"/>
         <source>First use Singing The Faith Electonic edition to export the song(s) in Text format.</source>
-        <translation type="unfinished"/>
+        <translation>Primo utilizzo Canti della Fede edizione digitale esporta il brano (o i brani) in formato testo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="371"/>
@@ -9495,17 +9492,17 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="87"/>
         <source>Extracting data from database</source>
-        <translation type="unfinished"/>
+        <translation>Estrazione dei dati dall&apos;archivio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="133"/>
         <source>Could not find Valentina DB ADK libraries </source>
-        <translation type="unfinished"/>
+        <translation>Non sono riuscito a trovare le biblioteche Valentina DB ADK </translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="161"/>
         <source>Loading the extracting data</source>
-        <translation type="unfinished"/>
+        <translation>Caricamento dei dati estratti</translation>
     </message>
 </context>
 <context>
@@ -9614,7 +9611,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="512"/>
         <source>Are you sure you want to delete the following songs?</source>
-        <translation type="unfinished"/>
+        <translation>Sei sicuro di voler cancellare i brani seguenti?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="540"/>
@@ -9731,12 +9728,12 @@ Vedi log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/singingthefaith.py" line="192"/>
         <source>Unknown hint {hint}</source>
-        <translation type="unfinished"/>
+        <translation>Suggerimento sconosciuto {hint}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/singingthefaith.py" line="287"/>
         <source>File {file}</source>
-        <translation type="unfinished"/>
+        <translation>File {file}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/singingthefaith.py" line="287"/>
@@ -10684,7 +10681,7 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Fiji</source>
         <comment>Language code: fj</comment>
-        <translation>Fiji</translation>
+        <translation>Figiano</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
@@ -10816,7 +10813,7 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Inupiak</source>
         <comment>Language code: ik</comment>
-        <translation>Inuktitut</translation>
+        <translation>Inupiaq</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
@@ -10876,7 +10873,7 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Kekchí </source>
         <comment>Language code: kek</comment>
-        <translation>Kekchí</translation>
+        <translation>Q&apos;eqchi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
@@ -11242,7 +11239,7 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Tegulu</source>
         <comment>Language code: te</comment>
-        <translation>Tegulu</translation>
+        <translation>Telugu</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
@@ -11260,13 +11257,13 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Tigrinya</source>
         <comment>Language code: ti</comment>
-        <translation>Tigrinya</translation>
+        <translation>Tigrino</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Tonga</source>
         <comment>Language code: to</comment>
-        <translation>Tonga</translation>
+        <translation>Tongano</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
@@ -11350,7 +11347,7 @@ Vedi log per i dettagli</translation>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>
         <source>Xhosa</source>
         <comment>Language code: xh</comment>
-        <translation>Xosa</translation>
+        <translation>Xhosa</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="54"/>

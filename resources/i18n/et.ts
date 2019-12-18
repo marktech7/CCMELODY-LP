@@ -122,7 +122,7 @@ Kas tahad siiski jätkata?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="119"/>
         <source>Font Settings</source>
-        <translation type="unfinished"/>
+        <translation>Fondi sätted</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="120"/>
@@ -142,12 +142,12 @@ Kas tahad siiski jätkata?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="125"/>
         <source>Background Settings</source>
-        <translation type="unfinished"/>
+        <translation>Tausta sätted</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="126"/>
         <source>Other Settings</source>
-        <translation type="unfinished"/>
+        <translation>Muud sätted</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="127"/>
@@ -157,12 +157,12 @@ Kas tahad siiski jätkata?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="129"/>
         <source>Repeat (no. of times):</source>
-        <translation type="unfinished"/>
+        <translation>Korratakse (mitu korda):</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="130"/>
         <source>Enable Scrolling</source>
-        <translation type="unfinished"/>
+        <translation>Kerimise lubamine</translation>
     </message>
 </context>
 <context>
@@ -728,7 +728,7 @@ Kas tahad siiski jätkata?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="69"/>
         <source>both</source>
-        <translation type="unfinished"/>
+        <translation>mõlemad</translation>
     </message>
 </context>
 <context>
@@ -953,7 +953,8 @@ otsingutulemustes ja ekraanil:</translation>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="226"/>
         <source>Search automatically while typing (Text search must contain a
 minimum of {count} characters and a space for performance reasons)</source>
-        <translation>Automaatne otsing tippimise ajal (tekstiotsing peab sisaldama vähemalt [count] märki ning tühikut parema jõudluse nimel)</translation>
+        <translation>Automaatne otsing tippimise ajal (tekstiotsing peab sisaldama
+vähemalt [count] märki ning tühikut parema jõudluse nimel)</translation>
     </message>
 </context>
 <context>
@@ -2221,7 +2222,7 @@ Kas tahad teised pildid sellest hoolimata lisada?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="97"/>
         <source>VLC arguments</source>
-        <translation type="unfinished"/>
+        <translation>VLC argumendid</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="98"/>
@@ -3999,12 +4000,12 @@ If you click the &apos;{finish_button}&apos; button you can download the data at
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="548"/>
         <source>Waiting for some things to finish...</source>
-        <translation type="unfinished"/>
+        <translation>Mõnede tegevuste lõppemise järel ootamine...</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="550"/>
         <source>Please Wait</source>
-        <translation type="unfinished"/>
+        <translation>Palun oota</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="631"/>
@@ -6566,7 +6567,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="153"/>
         <source>Select Video</source>
-        <translation type="unfinished"/>
+        <translation>Video valimine</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="411"/>
@@ -6786,27 +6787,27 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="484"/>
         <source>Zoom</source>
-        <translation type="unfinished"/>
+        <translation>Suurendus</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="485"/>
         <source>Speed:</source>
-        <translation type="unfinished"/>
+        <translation>Kiirus:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="486"/>
         <source>Normal</source>
-        <translation type="unfinished"/>
+        <translation>Tavaline</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="487"/>
         <source>Fast</source>
-        <translation type="unfinished"/>
+        <translation>Kiire</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="488"/>
         <source>Slow</source>
-        <translation type="unfinished"/>
+        <translation>Aeglane</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="489"/>
@@ -7529,12 +7530,12 @@ Closing this instance</source>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="455"/>
         <source>Book Chapter</source>
-        <translation type="unfinished"/>
+        <translation>Raamat peatükk</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="456"/>
         <source>Chapter</source>
-        <translation type="unfinished"/>
+        <translation>Peatükk</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="457"/>
@@ -7544,7 +7545,7 @@ Closing this instance</source>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="459"/>
         <source>Psalm</source>
-        <translation type="unfinished"/>
+        <translation>Psalm</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="460"/>
@@ -8160,7 +8161,7 @@ Closing this instance</source>
     <message>
         <location filename="../../openlp/plugins/songs/reporting.py" line="45"/>
         <source>CSV format (*.csv)</source>
-        <translation type="unfinished"/>
+        <translation>CSV vorming (*.csv)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/reporting.py" line="82"/>

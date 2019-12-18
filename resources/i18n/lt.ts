@@ -2325,7 +2325,7 @@ Tęsiamas naujinimas.</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="103"/>
         <source>&lt;p&gt;OpenLP {{version}}{{revision}} - Open Source Lyrics Projection&lt;br&gt;Copyright {crs} 2004-{yr} OpenLP Developers&lt;/p&gt;&lt;p&gt;Find out more about OpenLP: &lt;a href=&quot;https://openlp.org/&quot;&gt;https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt;https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</source>
-        <translation type="unfinished"/>
+        <translation>&lt;p&gt;OpenLP {{version}}{{revision}} - Atvirojo kodo giesmių žodžių projekcija&lt;br&gt;Autorių teisės {crs} 2004-{yr} OpenLP plėtotojai&lt;/p&gt;&lt;p&gt;Sužinokite daugiau apie OpenLP: &lt;a href=&quot;https://openlp.org/&quot;&gt;https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Ši programa yra laisva programinė įranga: jūs galite ją platinti ir/arba modifikuoti, remdamiesi Free Software Foundation paskelbtomis GNU Bendrosios Viešosios Licencijos sąlygomis, licencijos 3 versijos, arba (jūsų nuožiūra) bet kurios vėlesnės versijos sąlygomis.&lt;/p&gt;&lt;p&gt;Ši programa platinama, tikintis, kad ji bus naudinga, tačiau be JOKIŲ GARANTIJŲ; netgi be numanomos PARDAVIMO ar TINKAMUMO TAM TIKRAM TIKSLUI garantijos. Išsamesnei informacijai, žiūrėkite GNU Bendrąją Viešąją Licenciją.&lt;/p&gt;&lt;p&gt;GNU Bendrosios Viešosios Licencijos kopiją turėjote gauti kartu su šia programa. Jei negavote, žiūrėkite &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt;https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="118"/>
@@ -2902,7 +2902,7 @@ Duomenų katalogas bus pakeistas, uždarius OpenLP.</translation>
     <message>
         <location filename="../../openlp/core/display/window.py" line="121"/>
         <source>Display Window</source>
-        <translation type="unfinished"/>
+        <translation>Ekrano langas</translation>
     </message>
 </context>
 <context>
@@ -4197,17 +4197,17 @@ Duomenų bazė: {db_name}</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="100"/>
         <source>The media integration library is missing (python - vlc is not installed)</source>
-        <translation type="unfinished"/>
+        <translation>Trūksta medijos integracijos bibliotekos (python - vlc nėra įdiegta)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="102"/>
         <source>The media integration library is missing (python - pymediainfo is not installed)</source>
-        <translation type="unfinished"/>
+        <translation>Trūksta medijos integracijos bibliotekos (python - pymediainfo nėra įdiegta)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="122"/>
         <source>No Displays have been configured, so Live Media has been disabled</source>
-        <translation type="unfinished"/>
+        <translation>Nėra sukonfigūruotų ekranų, todėl Tiesioginė medija yra išjungta</translation>
     </message>
 </context>
 <context>
@@ -4614,7 +4614,7 @@ Failo prievardis nėra palaikomas</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="142"/>
         <source>Service Note Text:</source>
-        <translation type="unfinished"/>
+        <translation>Pamaldų programos pastabų tekstas:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="143"/>
@@ -5608,7 +5608,7 @@ Failo prievardis nėra palaikomas</translation>
     <message>
         <location filename="../../openlp/core/ui/printserviceform.py" line="199"/>
         <source>Service Notes: </source>
-        <translation type="unfinished"/>
+        <translation>Pamaldų programos pastabos: </translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printserviceform.py" line="246"/>
@@ -6010,7 +6010,7 @@ prašome pasirinkti kitą spartųjį klavišą.</translation>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistform.py" line="327"/>
         <source>Select an Action</source>
-        <translation type="unfinished"/>
+        <translation>Pasirinkti veiksmą</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/shortcutlistform.py" line="327"/>
@@ -6798,27 +6798,27 @@ Failas yra pažeistas, neprieinamas arba tai nėra tinkamas apipavidalinimas.</t
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="480"/>
         <source>Fade</source>
-        <translation type="unfinished"/>
+        <translation>Išblukimas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="481"/>
         <source>Slide</source>
-        <translation type="unfinished"/>
+        <translation>Slinkimas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="482"/>
         <source>Concave</source>
-        <translation type="unfinished"/>
+        <translation>Įgaubtas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="483"/>
         <source>Convex</source>
-        <translation type="unfinished"/>
+        <translation>Iškilas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="484"/>
         <source>Zoom</source>
-        <translation type="unfinished"/>
+        <translation>Mastelis</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="485"/>
@@ -6921,12 +6921,12 @@ Failas yra pažeistas, neprieinamas arba tai nėra tinkamas apipavidalinimas.</t
     <message>
         <location filename="../../openlp/core/ui/themeprogressdialog.py" line="74"/>
         <source>Recreating Theme Thumbnails</source>
-        <translation type="unfinished"/>
+        <translation>Iš naujo sukuriamos apipavidalinimo miniatiūros</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeprogressdialog.py" line="75"/>
         <source>TextLabel</source>
-        <translation type="unfinished"/>
+        <translation>Teksto etiketė</translation>
     </message>
 </context>
 <context>
@@ -9330,7 +9330,7 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="291"/>
         <source>LiveWorship Database</source>
-        <translation type="unfinished"/>
+        <translation>LiveWorship duomenų bazė</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="298"/>
@@ -9385,12 +9385,12 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="361"/>
         <source>Singing The Faith Exported Files</source>
-        <translation type="unfinished"/>
+        <translation>Singing The Faith eksportuoti failai</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="363"/>
         <source>First use Singing The Faith Electonic edition to export the song(s) in Text format.</source>
-        <translation type="unfinished"/>
+        <translation>Iš pradžių, naudokite Singing The Faith elektroninę laidą, kad eksportuotumėte giesmę(-es) tekstiniu formatu.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="371"/>
@@ -9493,17 +9493,17 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="87"/>
         <source>Extracting data from database</source>
-        <translation type="unfinished"/>
+        <translation>Išskleidžiami duomenys iš duomenų bazės</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="133"/>
         <source>Could not find Valentina DB ADK libraries </source>
-        <translation type="unfinished"/>
+        <translation>Nepavyko rasti Valentina DB ADK bibliotekų </translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="161"/>
         <source>Loading the extracting data</source>
-        <translation type="unfinished"/>
+        <translation>Įkeliami išskleidimo duomenys</translation>
     </message>
 </context>
 <context>
@@ -9729,7 +9729,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/singingthefaith.py" line="192"/>
         <source>Unknown hint {hint}</source>
-        <translation type="unfinished"/>
+        <translation>Nežinomas patarimas {hint}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/singingthefaith.py" line="287"/>
