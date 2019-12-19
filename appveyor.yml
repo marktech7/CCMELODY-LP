@@ -42,6 +42,8 @@ after_test:
   - 7z x portable-setup.7z
   # Install VLC
   - choco install %CHOCO_VLC%
+  # Install HTML Help Workshop
+  - choco install html-help-workshop
   # Get the packaging code
   - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
   - 7z x packaging-master.zip
