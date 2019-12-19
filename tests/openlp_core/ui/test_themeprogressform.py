@@ -134,5 +134,6 @@ class TestThemeProgressForm(TestCase, TestMixin):
         theme_list = form.theme_list
 
         # THEN: The theme list should be correct
+        form.progress_bar.setMinimum.assert_called_once_with(0)
         form.progress_bar.setMaximum.assert_called_once_with(2)
         assert theme_list == test_theme_list
