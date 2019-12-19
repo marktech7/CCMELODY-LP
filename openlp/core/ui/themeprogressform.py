@@ -40,8 +40,6 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
 
     def show(self):
         self.progress_bar.setValue(0)
-        self.progress_bar.setMinimum(0)
-        self.progress_bar.setMaximum(0)
         try:
             screens = ScreenList()
             self.ratio = screens.current.display_geometry.width() / screens.current.display_geometry.height()
@@ -64,6 +62,7 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
     def _set_theme_list(self, value):
         """Property setter"""
         self._theme_list = value
+        self.progress_bar.setMinimum(0)
         self.progress_bar.setMaximum(len(self._theme_list))
 
     theme_list = property(_get_theme_list, _set_theme_list)

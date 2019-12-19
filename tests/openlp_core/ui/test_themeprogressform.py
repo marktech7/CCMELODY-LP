@@ -71,8 +71,6 @@ class TestThemeProgressForm(TestCase, TestMixin):
 
         # THEN: The correct display ratio is calculated and the form is shown
         expected_ratio = 16 / 9
-        form.progress_bar.setMinimum.assert_called_once_with(0)
-        form.progress_bar.setMaximum.assert_called_once_with(0)
         form.progress_bar.setValue.assert_called_once_with(0)
         assert form.ratio == expected_ratio
         assert form.theme_preview_layout.aspect_ratio == expected_ratio
@@ -96,8 +94,6 @@ class TestThemeProgressForm(TestCase, TestMixin):
 
         # THEN: The correct display ratio is calculated and the form is shown
         expected_ratio = 16 / 9
-        form.progress_bar.setMinimum.assert_called_once_with(0)
-        form.progress_bar.setMaximum.assert_called_once_with(0)
         form.progress_bar.setValue.assert_called_once_with(0)
         assert form.ratio == expected_ratio
         assert form.theme_preview_layout.aspect_ratio == expected_ratio
@@ -138,5 +134,6 @@ class TestThemeProgressForm(TestCase, TestMixin):
         theme_list = form.theme_list
 
         # THEN: The theme list should be correct
+        form.progress_bar.setMinimum.assert_called_once_with(0)
         form.progress_bar.setMaximum.assert_called_once_with(2)
         assert theme_list == test_theme_list
