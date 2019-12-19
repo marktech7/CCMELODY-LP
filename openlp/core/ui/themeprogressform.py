@@ -42,6 +42,7 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
         self.progress_bar.setMaximum(0)
 
     def show(self):
+        self.progress_bar.setValue(0)
         try:
             screens = ScreenList()
             self.ratio = screens.current.display_geometry.width() / screens.current.display_geometry.height()
