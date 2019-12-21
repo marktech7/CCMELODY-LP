@@ -31,10 +31,8 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.custom.lib.db import CustomSlide
 from openlp.plugins.planningcenter.forms.selectplanform import SelectPlanForm
 from openlp.plugins.planningcenter.lib.planningcentertab import PlanningCenterTab
-from openlp.plugins.songs.lib.db import Song
 
 log = logging.getLogger(__name__)
 
@@ -150,15 +148,4 @@ class PlanningCenterPlugin(Plugin):
         """
         log.info('PlanningCenter Finalising')
         self.import_planning_center.setVisible(False)
-        self.new_service_created()
-        # call songs plugin manager to delete temporary songs
-        songs_manager = Registry().get('songs').plugin.manager
-        songs = songs_manager.get_all_objects(Song, Song.temporary == True)  # noqa: E712
-        for song in songs:
-            songs_manager.delete_object(Song, song.id)
-        # call custom manager to delete pco slides
-        custom_manager = Registry().get('custom').plugin.db_manager
-        pco_slides = custom_manager.get_all_objects(CustomSlide, CustomSlide.credits == 'pco')
-        for slide in pco_slides:
-            custom_manager.delete_object(CustomSlide, slide.id)
         super(PlanningCenterPlugin, self).finalise()
