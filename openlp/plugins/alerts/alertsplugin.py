@@ -21,8 +21,6 @@
 
 import logging
 
-from PyQt5 import QtGui
-
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList

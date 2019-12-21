@@ -25,8 +25,6 @@ presentations from a variety of document formats.
 import logging
 import os
 
-from PyQt5 import QtCore
-
 from openlp.core.api.http import register_endpoint
 from openlp.core.common import extension_loader
 from openlp.core.common.i18n import translate
