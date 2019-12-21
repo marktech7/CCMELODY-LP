@@ -43,18 +43,6 @@ log = logging.getLogger(__name__)
 
 TODAY = QtCore.QDate.currentDate()
 
-__default_settings__ = {
-    'songusage/db type': 'sqlite',
-    'songusage/db username': '',
-    'songusage/db password': '',
-    'songusage/db hostname': '',
-    'songusage/db database': '',
-    'songusage/active': False,
-    'songusage/to date': TODAY,
-    'songusage/from date': TODAY.addYears(-1),
-    'songusage/last directory export': None
-}
-
 
 class SongUsagePlugin(Plugin):
     """
@@ -63,7 +51,7 @@ class SongUsagePlugin(Plugin):
     log.info('SongUsage Plugin loaded')
 
     def __init__(self):
-        super(SongUsagePlugin, self).__init__('songusage', __default_settings__)
+        super(SongUsagePlugin, self).__init__('songusage', None)
         self.manager = Manager('songusage', init_schema, upgrade_mod=upgrade)
         self.weight = -4
         self.icon = UiIcons().song_usage

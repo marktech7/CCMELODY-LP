@@ -24,7 +24,6 @@ import logging
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
-from openlp.core.common.enum import BibleSearch, LayoutStyle, DisplayStyle, LanguageSelection
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.ui.icons import UiIcons
 from openlp.core.lib.plugin import Plugin, StringContent
@@ -38,32 +37,6 @@ from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem
 log = logging.getLogger(__name__)
 
 
-__default_settings__ = {
-    'bibles/db type': 'sqlite',
-    'bibles/db username': '',
-    'bibles/db password': '',
-    'bibles/db hostname': '',
-    'bibles/db database': '',
-    'bibles/last used search type': BibleSearch.Combined,
-    'bibles/reset to combined quick search': True,
-    'bibles/verse layout style': LayoutStyle.VersePerSlide,
-    'bibles/book name language': LanguageSelection.Bible,
-    'bibles/display brackets': DisplayStyle.NoBrackets,
-    'bibles/is verse number visible': True,
-    'bibles/display new chapter': False,
-    'bibles/second bibles': True,
-    'bibles/primary bible': '',
-    'bibles/bible theme': '',
-    'bibles/verse separator': '',
-    'bibles/range separator': '',
-    'bibles/list separator': '',
-    'bibles/end separator': '',
-    'bibles/last directory import': None,
-    'bibles/hide combined quick error': False,
-    'bibles/is search while typing enabled': True
-}
-
-
 class BiblePlugin(Plugin):
     """
     The Bible plugin provides a plugin for managing and displaying Bibles.
@@ -71,7 +44,7 @@ class BiblePlugin(Plugin):
     log.info('Bible Plugin loaded')
 
     def __init__(self):
-        super(BiblePlugin, self).__init__('bibles', __default_settings__, BibleMediaItem, BiblesTab)
+        super(BiblePlugin, self).__init__('bibles', None, BibleMediaItem, BiblesTab)
         self.weight = -9
         self.icon_path = UiIcons().bible
         self.icon = UiIcons().bible
