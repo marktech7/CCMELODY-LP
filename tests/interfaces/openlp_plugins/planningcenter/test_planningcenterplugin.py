@@ -151,22 +151,3 @@ class TestPlanningCenterPlugin(TestCase, TestMixin):
         return_value = self.plugin.about()
         # THEN:
         self.assertGreater(len(return_value), 0, "About function returned some text")
-
-    def test_finalise(self):
-        """
-        Test finalise function
-        """
-        # GIVEN: A PlanningCenterPlugin Class
-        # WHEN:  finalise() is called
-        with patch('openlp.core.common.registry.Registry.get') as mock_get, \
-                patch('openlp.plugins.planningcenter.planningcenterplugin.Song'), \
-                patch('openlp.plugins.planningcenter.planningcenterplugin.CustomSlide'), \
-                patch('openlp.plugins.planningcenter.planningcenterplugin.PlanningCenterPlugin.import_planning_center',
-                      create=True):
-            mock_get.return_value.plugin.manager.get_all_objects.return_value = [MagicMock()]
-            mock_get.return_value.plugin.db_manager.get_all_objects.return_value = [MagicMock()]
-            self.plugin.finalise()
-        self.assertEqual(mock_get.return_value.plugin.manager.get_all_objects.call_count, 1, 'Get All Object Counts')
-        self.assertEqual(mock_get.return_value.plugin.manager.delete_object.call_count, 1, 'Get All Object Counts')
-        self.assertEqual(mock_get.return_value.plugin.db_manager.get_all_objects.call_count, 1, 'Get All Object Counts')
-        self.assertEqual(mock_get.return_value.plugin.db_manager.delete_object.call_count, 1, 'Delete Object Counts')
