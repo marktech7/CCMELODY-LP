@@ -22,7 +22,7 @@ build: off
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   # Run the tests
-  - "%PYTHON%\\python.exe -m pytest -v tests"
+  #- "%PYTHON%\\python.exe -m pytest -v tests"
   # Go back to the user root folder
   - cd..
 
@@ -45,7 +45,7 @@ after_test:
   # Install HTML Help Workshop
   - choco install html-help-workshop
   # Get the packaging code
-  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
+  - appveyor DownloadFile https://gitlab.com/tgc-dk/packaging/-/archive/hook-for-pymediainfo/packaging-hook-for-pymediainfo.zip -FileName packaging-master.zip
   - 7z x packaging-master.zip
 
   # If this is trunk we should also build the manual
@@ -57,7 +57,7 @@ after_test:
         cd packaging-master
         &"$env:PYTHON\python.exe" builders/windows-builder.py --release "$env:APPVEYOR_REPO_TAG_NAME" --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
       } else {
-        cd packaging-master
+        cd packaging-hook-for-pymediainfo
         &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
       }
 
