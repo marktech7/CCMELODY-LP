@@ -251,7 +251,7 @@ class RegistryProperties(object):
     @property
     def settings(self):
         """
-        Adds the projector manager to the class dynamically
+        Adds the settings object to the class dynamically
         """
         if not hasattr(self, '_settings') or not self._settings:
             self._settings = Registry().get('settings')

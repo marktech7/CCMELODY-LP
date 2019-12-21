@@ -132,7 +132,7 @@ class SongsPlugin(Plugin):
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
         if not self.settings.value('songs/last import type'):
-            self.settings.value('songs/last import type', SongFormat.OpenLyrics)
+            self.settings.setValue('songs/last import type', SongFormat.OpenLyrics)
 
     def check_pre_conditions(self):
         """
