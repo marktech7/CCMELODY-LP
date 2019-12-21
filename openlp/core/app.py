@@ -389,8 +389,8 @@ def main():
         # Path to libvlc and the plugins
         os.environ['PYTHON_VLC_LIB_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc' / 'libvlc.dll')
         os.environ['PYTHON_VLC_MODULE_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
+        os.environ['PATH'] += ';' + str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
         log.debug('VLC Path: {}'.format(os.environ['PYTHON_VLC_LIB_PATH']))
-        log.debug('VLC Plugins Path: {}'.format(os.environ['PYTHON_VLC_MODULE_PATH']))
     # Initialise the Registry
     Registry.create()
     Registry().register('application', application)
