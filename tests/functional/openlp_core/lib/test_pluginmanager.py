@@ -50,6 +50,7 @@ class TestPluginManager(TestCase):
         Registry().register('service_list', MagicMock())
         Registry().register('main_window', self.mocked_main_window)
         Registry().register('settings_form', self.mocked_settings_form)
+        Registry().register('settings', MagicMock())
 
     def test_bootstrap_initialise(self):
         """
