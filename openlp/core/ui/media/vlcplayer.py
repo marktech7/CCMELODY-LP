@@ -147,7 +147,7 @@ class VlcPlayer(MediaPlayer):
         """
         return get_vlc() is not None
 
-    def load(self, controller, output_display, file):
+    def load(self, controller, output_display, file=None):
         """
         Load a video into VLC
 

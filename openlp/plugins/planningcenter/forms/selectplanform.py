@@ -81,7 +81,7 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         self.on_plan_selection_combobox_changed()
         # Set the 2 lists of themes
         theme_manager = Registry().get('theme_manager')
-        for theme in theme_manager.get_themes():
+        for theme in theme_manager.get_theme_names():
             self.song_theme_selection_combo_box.addItem(theme)
             self.slide_theme_selection_combo_box.addItem(theme)
 

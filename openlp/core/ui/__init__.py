@@ -74,4 +74,4 @@ class SingleColumnTableWidget(QtWidgets.QTableWidget):
             self.resizeRowsToContents()
 
 
-__all__ = ['AlertLocation', 'DisplayControllerType', 'HideMode', 'SingleColumnTableWidget']
+__all__ = ['DisplayControllerType', 'HideMode', 'SingleColumnTableWidget']

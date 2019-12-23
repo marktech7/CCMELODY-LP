@@ -75,8 +75,8 @@ class TestSelectPlanForm(TestCase, TestMixin):
         self.form.planning_center_api.airplane_mode = True
         self.form.planning_center_api.airplane_mode_directory = TEST_PATH
         self.theme_manager = ThemeManager(None)
-        self.theme_manager.get_themes = MagicMock()
-        self.theme_manager.get_themes.return_value = ['themeA', 'themeB']
+        self.theme_manager.get_theme_names = MagicMock()
+        self.theme_manager.get_theme_names.return_value = ['themeA', 'themeB']
 
     def tearDown(self):
         """
