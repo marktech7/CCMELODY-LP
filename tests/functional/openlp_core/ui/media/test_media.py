@@ -29,7 +29,6 @@ def test_parse_optical_path_linux():
     """
     Test that test_parse_optical_path() parses a optical path with linux device path correctly
     """
-
     # GIVEN: An optical formatted path
     org_title_track = 1
     org_audio_track = 2
@@ -58,7 +57,6 @@ def test_parse_optical_path_win():
     """
     Test that test_parse_optical_path() parses a optical path with windows device path correctly
     """
-
     # GIVEN: An optical formatted path
     org_title_track = 1
     org_audio_track = 2
