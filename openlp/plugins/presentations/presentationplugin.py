@@ -25,8 +25,6 @@ presentations from a variety of document formats.
 import logging
 import os
 
-from PyQt5 import QtCore
-
 from openlp.core.api.http import register_endpoint
 from openlp.core.common import extension_loader
 from openlp.core.common.i18n import translate
@@ -44,22 +42,6 @@ from openlp.plugins.presentations.lib.presentationtab import PresentationTab
 log = logging.getLogger(__name__)
 
 
-__default_settings__ = {
-    'presentations/override app': QtCore.Qt.Unchecked,
-    'presentations/enable_pdf_program': QtCore.Qt.Unchecked,
-    'presentations/pdf_program': None,
-    'presentations/maclo': QtCore.Qt.Checked,
-    'presentations/Impress': QtCore.Qt.Checked,
-    'presentations/Powerpoint': QtCore.Qt.Checked,
-    'presentations/Pdf': QtCore.Qt.Checked,
-    'presentations/presentations files': [],
-    'presentations/thumbnail_scheme': '',
-    'presentations/powerpoint slide click advance': QtCore.Qt.Unchecked,
-    'presentations/powerpoint control window': QtCore.Qt.Unchecked,
-    'presentations/last directory': None
-}
-
-
 class PresentationPlugin(Plugin):
     """
     This plugin allowed a Presentation to be opened, controlled and displayed on the output display. The plugin controls
@@ -73,7 +55,7 @@ class PresentationPlugin(Plugin):
         """
         log.debug('Initialised')
         self.controllers = {}
-        Plugin.__init__(self, 'presentations', __default_settings__, __default_settings__)
+        Plugin.__init__(self, 'presentations', None, None)
         self.weight = -8
         self.icon_path = UiIcons().presentation
         self.icon = build_icon(self.icon_path)

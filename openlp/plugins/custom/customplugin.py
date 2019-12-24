@@ -27,7 +27,6 @@ import logging
 
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
-from openlp.core.common.enum import CustomSearch
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
@@ -41,17 +40,6 @@ from openlp.plugins.custom.lib.customtab import CustomTab
 
 log = logging.getLogger(__name__)
 
-__default_settings__ = {
-    'custom/db type': 'sqlite',
-    'custom/db username': '',
-    'custom/db password': '',
-    'custom/db hostname': '',
-    'custom/db database': '',
-    'custom/last used search type': CustomSearch.Titles,
-    'custom/display footer': True,
-    'custom/add custom from service': True
-}
-
 
 class CustomPlugin(Plugin):
     """
@@ -63,7 +51,7 @@ class CustomPlugin(Plugin):
     log.info('Custom Plugin loaded')
 
     def __init__(self):
-        super(CustomPlugin, self).__init__('custom', __default_settings__, CustomMediaItem, CustomTab)
+        super(CustomPlugin, self).__init__('custom', None, CustomMediaItem, CustomTab)
         self.weight = -5
         self.db_manager = Manager('custom', init_schema)
         self.icon_path = UiIcons().clone

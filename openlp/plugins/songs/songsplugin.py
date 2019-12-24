@@ -33,7 +33,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
-from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
@@ -55,26 +54,6 @@ from openlp.plugins.songs.lib.songstab import SongsTab
 
 log = logging.getLogger(__name__)
 __default_settings__ = {
-    'songs/db type': 'sqlite',
-    'songs/db username': '',
-    'songs/db password': '',
-    'songs/db hostname': '',
-    'songs/db database': '',
-    'songs/last used search type': SongSearch.Entire,
-    'songs/last import type': SongFormat.OpenLyrics,
-    'songs/update service on edit': False,
-    'songs/add song from service': True,
-    'songs/add songbook slide': False,
-    'songs/display songbar': True,
-    'songs/last directory import': None,
-    'songs/last directory export': None,
-    'songs/songselect username': '',
-    'songs/songselect password': '',
-    'songs/songselect searches': '',
-    'songs/enable chords': True,
-    'songs/chord notation': 'english',  # Can be english, german or neo-latin
-    'songs/mainview chords': False,
-    'songs/disable chords import': False,
     'songs/footer template': """\
 ${title}<br/>
 
@@ -152,6 +131,8 @@ class SongsPlugin(Plugin):
         register_endpoint(api_songs_endpoint)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
+        if not self.settings.value('songs/last import type'):
+            self.settings.setValue('songs/last import type', SongFormat.OpenLyrics)
 
     def check_pre_conditions(self):
         """

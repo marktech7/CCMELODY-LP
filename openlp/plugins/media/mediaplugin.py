@@ -37,11 +37,6 @@ log = logging.getLogger(__name__)
 
 
 # Some settings starting with "media" are in core, because they are needed for core functionality.
-__default_settings__ = {
-    'media/media files': [],
-    'media/last directory': None
-}
-
 
 class MediaPlugin(Plugin):
     """
@@ -50,7 +45,7 @@ class MediaPlugin(Plugin):
     log.info('{name} MediaPlugin loaded'.format(name=__name__))
 
     def __init__(self):
-        super(MediaPlugin, self).__init__('media', __default_settings__, MediaMediaItem)
+        super(MediaPlugin, self).__init__('media', None, MediaMediaItem)
         self.weight = -6
         self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)

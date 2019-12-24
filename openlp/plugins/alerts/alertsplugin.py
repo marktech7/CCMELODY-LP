@@ -21,12 +21,9 @@
 
 import logging
 
-from PyQt5 import QtGui
-
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
-from openlp.core.common.enum import AlertLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
@@ -114,22 +111,6 @@ HTML = """
     <div id="alert" style="visibility:hidden"></div>
 """
 
-__default_settings__ = {
-    'alerts/font face': QtGui.QFont().family(),
-    'alerts/font size': 40,
-    'alerts/db type': 'sqlite',
-    'alerts/db username': '',
-    'alerts/db password': '',
-    'alerts/db hostname': '',
-    'alerts/db database': '',
-    'alerts/location': AlertLocation.Bottom,
-    'alerts/background color': '#660000',
-    'alerts/font color': '#ffffff',
-    'alerts/timeout': 10,
-    'alerts/repeat': 1,
-    'alerts/scroll': True
-}
-
 
 class AlertsPlugin(Plugin):
     """
@@ -141,7 +122,7 @@ class AlertsPlugin(Plugin):
         """
         Class __init__ method
         """
-        super(AlertsPlugin, self).__init__('alerts', __default_settings__, settings_tab_class=AlertsTab)
+        super(AlertsPlugin, self).__init__('alerts', None, settings_tab_class=AlertsTab)
         self.weight = -3
         self.icon_path = UiIcons().alert
         self.icon = self.icon_path

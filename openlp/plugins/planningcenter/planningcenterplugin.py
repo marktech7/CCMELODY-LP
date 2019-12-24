@@ -38,11 +38,6 @@ from openlp.plugins.songs.lib.db import Song
 
 log = logging.getLogger(__name__)
 
-__default_settings__ = {
-    'planningcenter/application_id': '',
-    'planningcenter/secret': ''
-}
-
 
 class PlanningCenterPlugin(Plugin):
     """
@@ -54,8 +49,7 @@ class PlanningCenterPlugin(Plugin):
         """
         Create and set up the PlanningCenter plugin.
         """
-        super(PlanningCenterPlugin, self).__init__('planningcenter', __default_settings__,
-                                                   settings_tab_class=PlanningCenterTab)
+        super(PlanningCenterPlugin, self).__init__('planningcenter', None, settings_tab_class=PlanningCenterTab)
         self.planningcenter_form = None
         self.icon = UiIcons().planning_center
         self.icon_path = self.icon

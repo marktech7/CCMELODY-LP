@@ -94,6 +94,16 @@ class LanguageSelection(IntEnum):
 
 
 @unique
+class PluginStatus(IntEnum):
+    """
+    Defines the status of the plugin
+    """
+    Active = 1
+    Inactive = 0
+    Disabled = -1
+
+
+@unique
 class SongSearch(IntEnum):
     """
     An enumeration for song search methods.

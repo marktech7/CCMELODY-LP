@@ -27,10 +27,8 @@ from unittest import TestCase, SkipTest
 from unittest.mock import MagicMock, patch, call
 
 from openlp.core.common import is_macosx
-from openlp.core.common.settings import Settings
 from openlp.core.common.path import Path
 from openlp.plugins.presentations.lib.maclocontroller import MacLOController, MacLODocument
-from openlp.plugins.presentations.presentationplugin import __default_settings__
 
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import TEST_RESOURCES_PATH
@@ -159,7 +157,6 @@ class TestMacLODocument(TestCase):
     def setUp(self):
         mocked_plugin = MagicMock()
         mocked_plugin.settings_section = 'presentations'
-        Settings().extend_default_settings(__default_settings__)
         self.file_name = Path(TEST_RESOURCES_PATH) / 'presentations' / 'test.odp'
         self.mocked_client = MagicMock()
         with patch('openlp.plugins.presentations.lib.maclocontroller.MacLOController._start_server'):
