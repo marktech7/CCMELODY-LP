@@ -48,8 +48,7 @@ if is_win():
     uno_available = False
     try:
         service_manager = Dispatch('com.sun.star.ServiceManager')
-        service_manager._FlagAsMethod('Bridge_GetStruct')
-        XSlideShowListenerObj = service_manager.Bridge_GetStruct('com.sun.star.presentation.XSlideShowListener')
+        XSlideShowListenerObj = service_manager.createInstance('com.sun.star.presentation.XSlideShowListener')
 
         class SlideShowListenerImport(XSlideShowListenerObj.__class__):
             pass
