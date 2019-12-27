@@ -90,7 +90,16 @@ class LanguageSelection(IntEnum):
     """
     Bible = 0
     Application = 1
-    English = 2
+
+
+@unique
+class ServiceItemType(IntEnum):
+    """
+    Defines the type of service item
+    """
+    Text = 1
+    Image = 2
+    Command = 3
 
 
 @unique

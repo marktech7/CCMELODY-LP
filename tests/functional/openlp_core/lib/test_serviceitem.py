@@ -28,10 +28,11 @@ from unittest.mock import Mock, MagicMock, patch
 
 from openlp.core.state import State
 from openlp.core.common import ThemeLevel, md5_hash
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.formattingtags import FormattingTags
-from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem, ServiceItemType
+from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from tests.helpers.testmixin import TestMixin
 from tests.utils import convert_file_service_item
 from tests.utils.constants import RESOURCE_PATH

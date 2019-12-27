@@ -29,6 +29,7 @@ import copy
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.path import path_to_str
@@ -37,6 +38,7 @@ from openlp.core.common.settings import Settings
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui import HideMode
+
 
 log = logging.getLogger(__name__)
 
@@ -252,9 +254,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         log.debug(script)
         # Wait for previous scripts to finish
         wait_for(lambda: self.__script_done)
-        if not is_sync:
-            self.webview.page().runJavaScript(script)
-        else:
+        if is_sync:
             self.__script_done = False
             self.__script_result = None
 
@@ -270,6 +270,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             if not wait_for(lambda: self.__script_done):
                 self.__script_done = True
             return self.__script_result
+        else:
+            self.webview.page().runJavaScript(script)
 
     def go_to_slide(self, verse):
         """
@@ -364,15 +366,24 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         else:
             return pixmap
 
-    def set_theme(self, theme, is_sync=False):
+    def set_theme(self, theme, is_sync=False, service_item_type=False):
         """
         Set the theme of the display
         """
+        print(service_item_type)
+        print(theme.background_type)
+        print(self.is_display)
         # If background is transparent and this is not a display, inject checkerboard background image instead
         if theme.background_type == 'transparent' and not self.is_display:
             theme_copy = copy.deepcopy(theme)
             theme_copy.background_type = 'image'
             theme_copy.background_filename = self.checkerboard_path
+            exported_theme = theme_copy.export_theme(is_js=True)
+        # If review Display for media so we need to display black box.
+        elif not self.is_display and service_item_type == ServiceItemType.Command:
+            theme_copy = copy.deepcopy(theme)
+            theme_copy.background_type = 'solid'
+
             exported_theme = theme_copy.export_theme(is_js=True)
         else:
             exported_theme = theme.export_theme(is_js=True)
