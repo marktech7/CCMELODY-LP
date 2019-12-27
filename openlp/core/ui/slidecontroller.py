@@ -39,6 +39,7 @@ from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ServiceItemAction, image_to_byte
 from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.ui.media import media_empty_song
 from openlp.core.lib.ui import create_action
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
@@ -917,6 +918,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.enable_tool_bar(self.service_item)
         if self.service_item.is_media():
             self._set_theme(service_item)
+            self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
         self.slide_selected(True)
         if self.service_item.from_service:
