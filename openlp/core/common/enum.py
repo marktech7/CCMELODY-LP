@@ -90,6 +90,7 @@ class LanguageSelection(IntEnum):
     """
     Bible = 0
     Application = 1
+    English = 2
 
 
 @unique

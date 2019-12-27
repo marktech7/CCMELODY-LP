@@ -34,7 +34,6 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui import HideMode
@@ -130,7 +129,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         super(DisplayWindow, self).__init__(parent)
         # Gather all flags for the display window
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
-        if Settings().value('advanced/x11 bypass wm'):
+        if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
@@ -172,7 +171,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             self.update_from_screen(screen)
             self.is_display = True
             # Only make visible on single monitor setup if setting enabled.
-            if len(ScreenList()) > 1 or Settings().value('core/display on monitor'):
+            if len(ScreenList()) > 1 or self.settings.value('core/display on monitor'):
                 self.show()
 
     @property
@@ -208,8 +207,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                             '"{image_data}");'.format(bg_color=bg_color, image_data=image_data))
 
     def set_startup_screen(self):
-        bg_color = Settings().value('core/logo background color')
-        image = Settings().value('core/logo file')
+        bg_color = self.settings.value('core/logo background color')
+        image = self.settings.value('core/logo file')
         if path_to_str(image).startswith(':'):
             image = self.openlp_splash_screen_path
         image_uri = image.as_uri()
@@ -286,6 +285,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         Set verses in the display
         """
         json_verses = json.dumps(verses)
+        print(json_verses)
         self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses), is_sync=is_sync)
 
     def load_images(self, images):
@@ -373,17 +373,20 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         print(service_item_type)
         print(theme.background_type)
         print(self.is_display)
+        # If review Display for media so we need to display black box.
+        if not self.is_display and service_item_type == ServiceItemType.Command:
+            theme_copy = copy.deepcopy(theme)
+            theme_copy.background_type = 'solid'
+            theme_copy.background_start_color = '#090909'
+            theme_copy.background_end_color = '#090909'
+            theme_copy.background_main_color = '#090909'
+            theme_copy.background_footer_color = '#090909'
+            exported_theme = theme_copy.export_theme(is_js=True)
         # If background is transparent and this is not a display, inject checkerboard background image instead
-        if theme.background_type == 'transparent' and not self.is_display:
+        elif theme.background_type == 'transparent' and not self.is_display:
             theme_copy = copy.deepcopy(theme)
             theme_copy.background_type = 'image'
             theme_copy.background_filename = self.checkerboard_path
-            exported_theme = theme_copy.export_theme(is_js=True)
-        # If review Display for media so we need to display black box.
-        elif not self.is_display and service_item_type == ServiceItemType.Command:
-            theme_copy = copy.deepcopy(theme)
-            theme_copy.background_type = 'solid'
-
             exported_theme = theme_copy.export_theme(is_js=True)
         else:
             exported_theme = theme.export_theme(is_js=True)
@@ -401,12 +404,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         """
         if self.is_display:
             # Only make visible on single monitor setup if setting enabled.
-            if len(ScreenList()) == 1 and not Settings().value('core/display on monitor'):
+            if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
         self.run_javascript('Display.show();')
         # Check if setting for hiding logo on startup is enabled.
         # If it is, display should remain hidden, otherwise logo is shown. (from def setup)
-        if self.isHidden() and not Settings().value('core/logo hide on startup'):
+        if self.isHidden() and not self.settings.value('core/logo hide on startup'):
             self.setVisible(True)
         self.hide_mode = None
         # Trigger actions when display is active again.
@@ -428,7 +431,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         log.debug('hide_display mode = {mode:d}'.format(mode=mode))
         if self.is_display:
             # Only make visible on single monitor setup if setting enabled.
-            if len(ScreenList()) == 1 and not Settings().value('core/display on monitor'):
+            if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
         if mode == HideMode.Screen:
             self.setVisible(False)
