@@ -31,6 +31,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
@@ -837,6 +838,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.delay_spin_box.setValue(int(item.timed_slide_interval))
                 self.on_play_slides_once()
 
+    def _set_theme(self, service_item):
+        """
+        Set up the theme from the service item.
+
+        :param service_item: The current service item
+        """
+        # Get theme
+        theme_data = service_item.get_theme_data()
+        # Set theme for preview
+        self.preview_display.set_theme(theme_data)
+        # Set theme for displays
+        for display in self.displays:
+            display.set_theme(service_item.get_theme_data(), service_item_type=ServiceItemType.Command)
+
     def _process_item(self, service_item, slide_no):
         """
         Loads a ServiceItem into the system from ServiceManager. Display the slide number passed.
@@ -856,14 +871,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 '{text}_start'.format(text=service_item.name.lower()),
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
-            # Get theme
-            theme_data = service_item.get_theme_data()
-            # Set theme for preview
-            self.preview_display.set_theme(theme_data)
-            # Set theme for displays
-            for display in self.displays:
-                display.set_theme(theme_data)
-
+            self._set_theme(service_item)
         # Reset blanking if needed
         if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
                                           self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
@@ -908,6 +916,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
         if self.service_item.is_media():
+            self._set_theme(service_item)
             self.on_media_start(self.service_item)
         self.slide_selected(True)
         if self.service_item.from_service:

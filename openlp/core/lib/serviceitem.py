@@ -35,6 +35,7 @@ from PyQt5 import QtGui
 from openlp.core.state import State
 from openlp.core.common import ThemeLevel, md5_hash
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.settings import Settings
@@ -45,15 +46,6 @@ from openlp.core.ui.icons import UiIcons
 
 
 log = logging.getLogger(__name__)
-
-
-class ServiceItemType(object):
-    """
-    Defines the type of service item
-    """
-    Text = 1
-    Image = 2
-    Command = 3
 
 
 class ServiceItem(RegistryProperties):

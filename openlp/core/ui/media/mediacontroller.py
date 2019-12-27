@@ -104,7 +104,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             fedora_rpmfusion = translate('OpenLP.MediaController',
                                          'To install these libraries, you will need to enable the RPMFusion '
                                          'repository: https://rpmfusion.org/')
-            message = ''
             if is_macosx():
                 message = translate('OpenLP.MediaController',
                                     'macOS is missing VLC. Please download and install from the VLC web site: '
@@ -132,8 +131,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             except AttributeError:
                 State().update_pre_conditions('media_live', False)
                 State().missing_text('media_live', translate(
-                    'OpenLP.MediaController',
-                    'No Displays have been configured, so Live Media has been disabled'))
+                    'OpenLP.MediaController', 'No Displays have been configured, so Live Media has been disabled'))
             self.setup_display(self.preview_controller, True)
 
     def display_controllers(self, controller_type):
