@@ -41,25 +41,20 @@ from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument, \
     TextType
 
-# Load the XSlideShowListener class so we can inherit from it
+# Declare the XSlideShowListener class so we can inherit from it below
 if is_win():
     from win32com.client import Dispatch
     import pywintypes
     uno_available = False
-    try:
-        service_manager = Dispatch('com.sun.star.ServiceManager')
-        XSlideShowListenerObj = service_manager.createInstance('com.sun.star.presentation.XSlideShowListener')
 
-        class SlideShowListenerImport(XSlideShowListenerObj.__class__):
-            pass
-    except (AttributeError, pywintypes.com_error):
-        class SlideShowListenerImport(object):
-            pass
+    class SlideShowListenerImport:
+        pass
 
     # Declare an empty exception to match the exception imported from UNO
     class ErrorCodeIOException(Exception):
         pass
 else:
+    # Load the XSlideShowListener class so we can inherit from it below
     try:
         import uno
         import unohelper
@@ -74,7 +69,7 @@ else:
     except ImportError:
         uno_available = False
 
-        class SlideShowListenerImport(object):
+        class SlideShowListenerImport:
             pass
 
 log = logging.getLogger(__name__)
@@ -575,6 +570,9 @@ class SlideShowListener(SlideShowListenerImport):
         :param document: The ImpressDocument being presented
         """
         self.document = document
+        # On windows this is done instead of inheriting from the actual XSlideShowListener interface
+        if is_win():
+            self._implementedInterfaces = ['com.sun.star.presentation.XSlideShowListener']
 
     def paused(self):
         """
