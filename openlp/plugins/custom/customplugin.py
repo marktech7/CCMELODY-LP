@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -120,5 +120,9 @@ class CustomPlugin(Plugin):
         Time to tidy up on exit
         """
         log.info('Custom Finalising')
+        # call custom manager to delete pco slides
+        pco_slides = self.db_manager.get_all_objects(CustomSlide, CustomSlide.credits == 'pco')
+        for slide in pco_slides:
+            self.db_manager.delete_object(CustomSlide, slide.id)
         self.db_manager.finalise()
         Plugin.finalise(self)
