@@ -848,10 +848,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Get theme
         theme_data = service_item.get_theme_data()
         # Set theme for preview
-        self.preview_display.set_theme(theme_data)
+        self.preview_display.set_theme(theme_data, service_item_type=service_item.service_item_type)
         # Set theme for displays
         for display in self.displays:
-            display.set_theme(service_item.get_theme_data(), service_item_type=ServiceItemType.Command)
+            display.set_theme(service_item.get_theme_data(), service_item_type=service_item.service_item_type)
 
     def _process_item(self, service_item, slide_no):
         """

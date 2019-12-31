@@ -285,7 +285,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         Set verses in the display
         """
         json_verses = json.dumps(verses)
-        print(json_verses)
         self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses), is_sync=is_sync)
 
     def load_images(self, images):
@@ -372,24 +371,24 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         """
         print(service_item_type)
         print(theme.background_type)
-        print(self.is_display)
-        # If review Display for media so we need to display black box.
-        if not self.is_display and service_item_type == ServiceItemType.Command:
-            theme_copy = copy.deepcopy(theme)
-            theme_copy.background_type = 'solid'
-            theme_copy.background_start_color = '#090909'
-            theme_copy.background_end_color = '#090909'
-            theme_copy.background_main_color = '#090909'
-            theme_copy.background_footer_color = '#090909'
-            exported_theme = theme_copy.export_theme(is_js=True)
-        # If background is transparent and this is not a display, inject checkerboard background image instead
-        elif theme.background_type == 'transparent' and not self.is_display:
-            theme_copy = copy.deepcopy(theme)
-            theme_copy.background_type = 'image'
-            theme_copy.background_filename = self.checkerboard_path
-            exported_theme = theme_copy.export_theme(is_js=True)
+        theme_copy = copy.deepcopy(theme)
+        if self.is_display:
+            if service_item_type == ServiceItemType.Text:
+                if theme.background_type == 'video' or theme.background_type == 'live':
+                    theme_copy.background_type = 'transparent'
         else:
-            exported_theme = theme.export_theme(is_js=True)
+            # If review Display for media so we need to display black box.
+            if service_item_type == ServiceItemType.Command:
+                theme_copy.background_type = 'solid'
+                theme_copy.background_start_color = '#090909'
+                theme_copy.background_end_color = '#090909'
+                theme_copy.background_main_color = '#090909'
+                theme_copy.background_footer_color = '#090909'
+            # If background is transparent and this is not a display, inject checkerboard background image instead
+            elif theme.background_type == 'transparent':
+                theme_copy.background_type = 'image'
+                theme_copy.background_filename = self.checkerboard_path
+        exported_theme = theme_copy.export_theme(is_js=True)
         self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme), is_sync=is_sync)
 
     def get_video_types(self):

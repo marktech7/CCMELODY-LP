@@ -120,4 +120,4 @@ def format_milliseconds(milliseconds):
                                                                          millis=millis)
 
 
-media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ">"}]
+media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ""}]
