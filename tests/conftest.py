@@ -22,11 +22,13 @@
 All the tests
 """
 import os
+import sys
 from tempfile import mkstemp
 from unittest.mock import MagicMock
 
 import pytest
 from PyQt5 import QtCore, QtWidgets  # noqa
+sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.app import OpenLP
 from openlp.core.common.registry import Registry
