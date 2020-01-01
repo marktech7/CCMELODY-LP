@@ -273,6 +273,7 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp):
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()
 
+
 # Problem seems to be with the what the OpenLP object is defined.
 # Running each test on its own is fine but as a block you get seg faults in strange places.
 @skip('Figure out why this is causing a segfault')
@@ -291,47 +292,6 @@ class TestOpenLP(TestCase):
         self.destroy_settings()
         del self.openlp
         self.openlp = None
-
-    def test_exec(self):
-        """
-        Test the exec method
-        """
-        # GIVEN: An app
-        self.openlp.shared_memory = MagicMock()
-        self.mocked_qapplication.exec.return_value = False
-
-        # WHEN: exec() is called
-        result = self.openlp.exec()
-
-        # THEN: The right things should be called
-        assert self.openlp.is_event_loop_active is True
-        self.mocked_qapplication.exec.assert_called_once_with()
-        self.openlp.shared_memory.detach.assert_called_once_with()
-        assert result is False
-
-    @patch('openlp.core.app.QtCore.QSharedMemory')
-    def test_is_already_running_not_running(self, MockedSharedMemory):
-        """
-        Test the is_already_running() method when OpenLP is NOT running
-        """
-        # GIVEN: An OpenLP app and some mocks
-        mocked_shared_memory = MagicMock()
-        mocked_shared_memory.attach.return_value = False
-        MockedSharedMemory.return_value = mocked_shared_memory
-
-        # WHEN: is_already_running() is called
-        result = self.openlp.is_already_running()
-
-        # THEN: The result should be false
-        MockedSharedMemory.assert_called_once_with('OpenLP')
-        mocked_shared_memory.attach.assert_called_once_with()
-        mocked_shared_memory.create.assert_called_once_with(1)
-        assert result is False
-
-
-
-
-
 
     def test_event(self):
         """
@@ -369,4 +329,3 @@ class TestOpenLP(TestCase):
         # THEN:
         assert result is True, "The method should have returned True."
         # assert self.openlp.main_window.isMinimized() is False
-

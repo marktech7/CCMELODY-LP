@@ -26,7 +26,7 @@ from tempfile import mkstemp
 from unittest.mock import MagicMock
 
 import pytest
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWebEngineWidgets, QtWidgets  # noqa
 
 from openlp.core.app import OpenLP
 from openlp.core.common.registry import Registry
