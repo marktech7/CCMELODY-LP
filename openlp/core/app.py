@@ -40,6 +40,7 @@ from PyQt5 import QtCore, QtWebEngineWidgets, QtWidgets  # noqa
 from openlp.core.state import State
 from openlp.core.common import is_macosx, is_win
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.mixins import LogMixin
 from openlp.core.loader import loader
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.path import create_paths
@@ -63,10 +64,40 @@ __all__ = ['OpenLP', 'main']
 log = logging.getLogger()
 
 
-class OpenLP(QtWidgets.QApplication):
+class OpenLPQT(QtWidgets.QApplication):
     """
     The core application class. This class inherits from Qt's QApplication
     class in order to provide the core of the application.
+    """
+    def event(self, event):
+        """
+        Enables platform specific event handling i.e. direct file opening on OS X
+
+        :param event: The event
+        """
+        if event.type() == QtCore.QEvent.FileOpen:
+            file_name = event.file()
+            log.debug('Got open file event for {name}!'.format(name=file_name))
+            self.args.insert(0, file_name)
+            return True
+        # Mac OS X should restore app window when user clicked on the OpenLP icon
+        # in the Dock bar. However, OpenLP consists of multiple windows and this
+        # does not work. This workaround fixes that.
+        # The main OpenLP window is restored when it was previously minimized.
+        elif event.type() == QtCore.QEvent.ApplicationActivate:
+            if is_macosx() and hasattr(self, 'main_window'):
+                if self.main_window.isMinimized():
+                    # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
+                    # while preserving its maximized and/or full-screen state.
+                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowMinimized |
+                                                    QtCore.Qt.WindowActive)
+                    return True
+        return QtWidgets.QApplication.event(self, event)
+
+
+class OpenLP(QtCore.QObject, LogMixin):
+    """
+    The core worker class. This class that holds the whole system together.
     """
     args = []
     worker_threads = {}
@@ -95,7 +126,7 @@ class OpenLP(QtWidgets.QApplication):
             args.remove('OpenLP')
         self.args.extend(args)
         # Decide how many screens we have and their size
-        screens = ScreenList.create(self.desktop())
+        screens = ScreenList.create(QtWidgets.QApplication.desktop())
         # First time checks in settings
         has_run_wizard = Settings().value('core/has run wizard')
         if not has_run_wizard:
@@ -115,7 +146,7 @@ class OpenLP(QtWidgets.QApplication):
             self.splash = SplashScreen()
             self.splash.show()
         # make sure Qt really display the splash screen
-        self.processEvents()
+        QtWidgets.QApplication.processEvents()
         # Check if OpenLP has been upgrade and if a backup of data should be created
         self.backup_on_upgrade(has_run_wizard, can_show_splash)
         # start the main app window
@@ -132,9 +163,9 @@ class OpenLP(QtWidgets.QApplication):
             self.splash.close()
             log.debug('Splashscreen closed')
         # make sure Qt really display the splash screen
-        self.processEvents()
+        QtWidgets.QApplication.processEvents()
         self.main_window.repaint()
-        self.processEvents()
+        QtWidgets.QApplication.processEvents()
         if not has_run_wizard:
             self.main_window.first_time()
         if Settings().value('core/update check'):
@@ -246,46 +277,21 @@ class OpenLP(QtWidgets.QApplication):
         """
         Wrapper to make ProcessEvents visible and named correctly
         """
-        self.processEvents()
+        QtWidgets.QApplication.processEvents()
 
     def set_busy_cursor(self):
         """
         Sets the Busy Cursor for the Application
         """
-        self.setOverrideCursor(QtCore.Qt.BusyCursor)
-        self.processEvents()
+        QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.BusyCursor)
+        QtWidgets.QApplication.processEvents()
 
     def set_normal_cursor(self):
         """
         Sets the Normal Cursor for the Application
         """
-        self.restoreOverrideCursor()
-        self.processEvents()
-
-    def event(self, event):
-        """
-        Enables platform specific event handling i.e. direct file opening on OS X
-
-        :param event: The event
-        """
-        if event.type() == QtCore.QEvent.FileOpen:
-            file_name = event.file()
-            log.debug('Got open file event for {name}!'.format(name=file_name))
-            self.args.insert(0, file_name)
-            return True
-        # Mac OS X should restore app window when user clicked on the OpenLP icon
-        # in the Dock bar. However, OpenLP consists of multiple windows and this
-        # does not work. This workaround fixes that.
-        # The main OpenLP window is restored when it was previously minimized.
-        elif event.type() == QtCore.QEvent.ApplicationActivate:
-            if is_macosx() and hasattr(self, 'main_window'):
-                if self.main_window.isMinimized():
-                    # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
-                    # while preserving its maximized and/or full-screen state.
-                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowMinimized |
-                                                    QtCore.Qt.WindowActive)
-                    return True
-        return QtWidgets.QApplication.event(self, event)
+        QtWidgets.QApplication.restoreOverrideCursor()
+        QtWidgets.QApplication.processEvents()
 
 
 def parse_options():
@@ -350,7 +356,7 @@ def main():
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
-    application = OpenLP(qt_args)
+    application = OpenLPQT(qt_args)
     application.setOrganizationName('OpenLP')
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
@@ -391,9 +397,11 @@ def main():
         os.environ['PYTHON_VLC_MODULE_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
         os.environ['PATH'] += ';' + str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
         log.debug('VLC Path: {}'.format(os.environ['PYTHON_VLC_LIB_PATH']))
+    app = OpenLP()
     # Initialise the Registry
     Registry.create()
-    Registry().register('application', application)
+    Registry().register('application-qt', application)
+    Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
     settings = Settings()
@@ -402,14 +410,14 @@ def main():
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     server = Server()
     if server.is_another_instance_running():
-        application.is_already_running()
+        app.is_already_running()
         server.post_to_server(qt_args)
         sys.exit()
     else:
         server.start_server()
-        application.server = server
+        app.server = server
     # If the custom data path is missing and the user wants to restore the data path, quit OpenLP.
-    if application.is_data_path_missing():
+    if app.is_data_path_missing():
         server.close_server()
         sys.exit()
     if settings.can_upgrade():
@@ -441,9 +449,9 @@ def main():
     translators = LanguageManager.get_translators(language)
     for translator in translators:
         if not translator.isEmpty():
-            application.installTranslator(translator)
+            app.installTranslator(translator)
     if not translators:
         log.debug('Could not find translators.')
     if args and not args.no_error_form:
-        sys.excepthook = application.hook_exception
-    sys.exit(application.run(qt_args))
+        sys.excepthook = app.hook_exception
+    sys.exit(app.run(qt_args))

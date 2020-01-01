@@ -46,7 +46,7 @@ def download_sha256():
     """
     Download the config file to extract the sha256 and version number
     """
-    user_agent = 'OpenLP/' + Registry().get('application').applicationVersion()
+    user_agent = 'OpenLP/' + Registry().get('application-qt').applicationVersion()
     try:
         web_config = get_web_page('https://get.openlp.org/webclient/download.cfg', headers={'User-Agent': user_agent})
     except ConnectionError:

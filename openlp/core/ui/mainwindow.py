@@ -476,7 +476,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         super(MainWindow, self).__init__()
         Registry().register('main_window', self)
-        self.clipboard = self.application.clipboard()
+        self.clipboard = QtWidgets.QApplication.clipboard()
         # Set up settings sections for the main application (not for use by plugins).
         self.ui_settings_section = 'user interface'
         self.general_settings_section = 'core'
@@ -559,7 +559,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             if thread_name not in self.application.worker_threads.keys():
                 continue
             self.log_debug('Waiting for thread %s' % thread_name)
-            self.application.processEvents()
+            QtWidgets.QApplication.processEvents()
             thread = self.application.worker_threads[thread_name]['thread']
             worker = self.application.worker_threads[thread_name]['worker']
             try:
@@ -571,7 +571,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                     retry = 0
                     while thread.isRunning() and retry < 50:
                         # Make the GUI responsive while we wait
-                        self.application.processEvents()
+                        QtWidgets.QApplication.processEvents()
                         thread.wait(100)
                         retry += 1
                     if thread.isRunning():

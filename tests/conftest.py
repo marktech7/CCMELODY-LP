@@ -28,6 +28,7 @@ from unittest.mock import MagicMock
 import pytest
 from PyQt5 import QtCore, QtWidgets
 
+from openlp.core.app import OpenLP
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
@@ -35,7 +36,15 @@ from openlp.core.common.settings import Settings
 @pytest.yield_fixture
 def qapp():
     """An instance of QApplication"""
-    app = QtWidgets.QApplication([])
+    app = OpenLP()
+    yield app
+    del app
+
+
+@pytest.yield_fixture
+def mocked_qapp():
+    """An instance of QApplication"""
+    app = MagicMock()
     yield app
     del app
 
