@@ -369,8 +369,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         """
         Set the theme of the display
         """
-        print(service_item_type)
-        print(theme.background_type)
         theme_copy = copy.deepcopy(theme)
         if self.is_display:
             if service_item_type == ServiceItemType.Text:
