@@ -22,6 +22,7 @@
 All the tests
 """
 import os
+import sys
 from tempfile import mkstemp
 from unittest.mock import MagicMock
 
