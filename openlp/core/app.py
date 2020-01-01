@@ -273,20 +273,23 @@ class OpenLP(QtCore.QObject, LogMixin):
             if can_show_splash:
                 self.splash.show()
 
-    def process_events(self):
+    @staticmethod
+    def process_events():
         """
         Wrapper to make ProcessEvents visible and named correctly
         """
         QtWidgets.QApplication.processEvents()
 
-    def set_busy_cursor(self):
+    @staticmethod
+    def set_busy_cursor():
         """
         Sets the Busy Cursor for the Application
         """
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.BusyCursor)
         QtWidgets.QApplication.processEvents()
 
-    def set_normal_cursor(self):
+    @staticmethod
+    def set_normal_cursor():
         """
         Sets the Normal Cursor for the Application
         """
