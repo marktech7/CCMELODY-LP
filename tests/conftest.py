@@ -43,7 +43,7 @@ def qapp():
 
 @pytest.yield_fixture
 def mocked_qapp():
-    """An instance of QApplication"""
+    """A mocked instance of QApplication"""
     app = MagicMock()
     yield app
     del app

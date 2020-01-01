@@ -169,13 +169,109 @@ def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_cr
     mocked_critical.return_value = QtWidgets.QMessageBox.Yes
 
     # WHEN: is_already_running() is called
-    result = qapp.is_already_running()
+    qapp.is_already_running()
 
     # THEN: The result should be false
     MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
     mocked_critical.assert_called_once_with(None, 'Error',
                                             'OpenLP is already running on this machine. \nClosing this instance', 0)
 
+
+@patch('openlp.core.app.QtWidgets.QApplication.processEvents')
+def test_process_events(mocked_processEvents, qapp):
+    """
+    Test that the app.process_events() method simply calls the Qt method
+    """
+    # GIVEN: An app
+    # WHEN: process_events() is called
+    qapp.process_events()
+
+    # THEN: processEvents was called
+    mocked_processEvents.assert_called_once_with()
+
+
+@patch('openlp.core.app.QtWidgets.QApplication.setOverrideCursor')
+@patch('openlp.core.app.QtWidgets.QApplication.processEvents')
+def test_set_busy_cursor(mocked_processEvents, mocked_setOverrideCursor, qapp):
+    """
+    Test that the set_busy_cursor() method sets the cursor
+    """
+    # GIVEN: An app
+    # WHEN: set_busy_cursor() is called
+    qapp.set_busy_cursor()
+
+    # THEN: The cursor should have been set
+    mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.BusyCursor)
+    mocked_processEvents.assert_called_once_with()
+
+
+@patch('openlp.core.app.QtWidgets.QApplication.restoreOverrideCursor')
+@patch('openlp.core.app.QtWidgets.QApplication.processEvents')
+def test_set_normal_cursor(mocked_restoreOverrideCursor, mocked_processEvents, qapp):
+    """
+    Test that the set_normal_cursor() method resets the cursor
+    """
+    # GIVEN: An app
+    # WHEN: set_normal_cursor() is called
+    qapp.set_normal_cursor()
+
+    # THEN: The cursor should have been set
+    mocked_restoreOverrideCursor.assert_called_once_with()
+    mocked_processEvents.assert_called_once_with()
+
+
+@patch('openlp.core.app.get_version')
+@patch('openlp.core.app.QtWidgets.QMessageBox.question')
+def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qapp):
+    """
+    Test that we don't try to backup on a new install
+    """
+    # GIVEN: Mocked data version and OpenLP version which are the same
+    old_install = False
+    MOCKED_VERSION = {
+        'full': '2.4.0-bzr000',
+        'version': '2.4.0',
+        'build': 'bzr000'
+    }
+    Settings().setValue('core/application version', '2.4.0')
+    mocked_get_version.return_value = MOCKED_VERSION
+    mocked_question.return_value = QtWidgets.QMessageBox.No
+
+    # WHEN: We check if a backup should be created
+    qapp.backup_on_upgrade(old_install, False)
+
+    # THEN: It should not ask if we want to create a backup
+    assert Settings().value('core/application version') == '2.4.0', 'Version should be the same!'
+    assert mocked_question.call_count == 0, 'No question should have been asked!'
+
+
+@patch('openlp.core.app.get_version')
+@patch('openlp.core.app.QtWidgets.QMessageBox.question')
+def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp):
+    """
+    Test that we try to backup on a new install
+    """
+    # GIVEN: Mocked data version and OpenLP version which are different
+    old_install = True
+    MOCKED_VERSION = {
+        'full': '2.4.0-bzr000',
+        'version': '2.4.0',
+        'build': 'bzr000'
+    }
+    Settings().setValue('core/application version', '2.0.5')
+    qapp.splash = MagicMock()
+    qapp.splash.isVisible.return_value = True
+    mocked_get_version.return_value = MOCKED_VERSION
+    mocked_question.return_value = QtWidgets.QMessageBox.No
+
+    # WHEN: We check if a backup should be created
+    qapp.backup_on_upgrade(old_install, True)
+
+    # THEN: It should ask if we want to create a backup
+    assert Settings().value('core/application version') == '2.4.0', 'Version should be upgraded!'
+    assert mocked_question.call_count == 1, 'A question should have been asked!'
+    qapp.splash.hide.assert_called_once_with()
+    qapp.splash.show.assert_called_once_with()
 
 # Problem seems to be with the what the OpenLP object is defined.
 # Running each test on its own is fine but as a block you get seg faults in strange places.
@@ -234,69 +330,8 @@ class TestOpenLP(TestCase):
 
 
 
-    @patch('openlp.core.app.QtWidgets.QMessageBox.critical')
-    @patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
-    @patch('openlp.core.app.QtCore.QSharedMemory')
-    def test_is_already_running_is_running_stop(self, MockedSharedMemory, MockedStandardButtons, mocked_critical):
-        """
-        Test the is_already_running() method when OpenLP IS running and the user chooses to stop
-        """
-        # GIVEN: An OpenLP app and some mocks
-        mocked_shared_memory = MagicMock()
-        mocked_shared_memory.attach.return_value = True
-        MockedSharedMemory.return_value = mocked_shared_memory
-        MockedStandardButtons.return_value = 0
-        mocked_critical.return_value = QtWidgets.QMessageBox.No
 
-        # WHEN: is_already_running() is called
-        result = self.openlp.is_already_running()
 
-        # THEN: The result should be false
-        MockedSharedMemory.assert_called_once_with('OpenLP')
-        mocked_shared_memory.attach.assert_called_once_with()
-        MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No)
-        mocked_critical.assert_called_once_with(None, 'Error', 'OpenLP is already running. Do you wish to continue?', 0)
-        assert result is True
-
-    def test_process_events(self):
-        """
-        Test that the app.process_events() method simply calls the Qt method
-        """
-        # GIVEN: An app
-        # WHEN: process_events() is called
-        with patch.object(self.openlp, 'processEvents') as mocked_processEvents:
-            self.openlp.process_events()
-
-        # THEN: processEvents was called
-        mocked_processEvents.assert_called_once_with()
-
-    def test_set_busy_cursor(self):
-        """
-        Test that the set_busy_cursor() method sets the cursor
-        """
-        # GIVEN: An app
-        # WHEN: set_busy_cursor() is called
-        with patch.object(self.openlp, 'setOverrideCursor') as mocked_setOverrideCursor, \
-                patch.object(self.openlp, 'processEvents') as mocked_processEvents:
-            self.openlp.set_busy_cursor()
-
-        # THEN: The cursor should have been set
-        mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.BusyCursor)
-        mocked_processEvents.assert_called_once_with()
-
-    def test_set_normal_cursor(self):
-        """
-        Test that the set_normal_cursor() method resets the cursor
-        """
-        # GIVEN: An app
-        # WHEN: set_normal_cursor() is called
-        with patch.object(self.openlp, 'restoreOverrideCursor') as mocked_restoreOverrideCursor, \
-                patch.object(self.openlp, 'processEvents') as mocked_processEvents:
-            self.openlp.set_normal_cursor()
-
-        # THEN: The cursor should have been set
-        mocked_restoreOverrideCursor.assert_called_once_with()
-        mocked_processEvents.assert_called_once_with()
 
     def test_event(self):
         """
@@ -335,54 +370,3 @@ class TestOpenLP(TestCase):
         assert result is True, "The method should have returned True."
         # assert self.openlp.main_window.isMinimized() is False
 
-    @patch('openlp.core.app.get_version')
-    @patch('openlp.core.app.QtWidgets.QMessageBox.question')
-    def test_backup_on_upgrade_first_install(self, mocked_question, mocked_get_version):
-        """
-        Test that we don't try to backup on a new install
-        """
-        # GIVEN: Mocked data version and OpenLP version which are the same
-        old_install = False
-        MOCKED_VERSION = {
-            'full': '2.4.0-bzr000',
-            'version': '2.4.0',
-            'build': 'bzr000'
-        }
-        Settings().setValue('core/application version', '2.4.0')
-        mocked_get_version.return_value = MOCKED_VERSION
-        mocked_question.return_value = QtWidgets.QMessageBox.No
-
-        # WHEN: We check if a backup should be created
-        self.openlp.backup_on_upgrade(old_install, False)
-
-        # THEN: It should not ask if we want to create a backup
-        assert Settings().value('core/application version') == '2.4.0', 'Version should be the same!'
-        assert mocked_question.call_count == 0, 'No question should have been asked!'
-
-    @patch('openlp.core.app.get_version')
-    @patch('openlp.core.app.QtWidgets.QMessageBox.question')
-    def test_backup_on_upgrade(self, mocked_question, mocked_get_version):
-        """
-        Test that we try to backup on a new install
-        """
-        # GIVEN: Mocked data version and OpenLP version which are different
-        old_install = True
-        MOCKED_VERSION = {
-            'full': '2.4.0-bzr000',
-            'version': '2.4.0',
-            'build': 'bzr000'
-        }
-        Settings().setValue('core/application version', '2.0.5')
-        self.openlp.splash = MagicMock()
-        self.openlp.splash.isVisible.return_value = True
-        mocked_get_version.return_value = MOCKED_VERSION
-        mocked_question.return_value = QtWidgets.QMessageBox.No
-
-        # WHEN: We check if a backup should be created
-        self.openlp.backup_on_upgrade(old_install, True)
-
-        # THEN: It should ask if we want to create a backup
-        assert Settings().value('core/application version') == '2.4.0', 'Version should be upgraded!'
-        assert mocked_question.call_count == 1, 'A question should have been asked!'
-        self.openlp.splash.hide.assert_called_once_with()
-        self.openlp.splash.show.assert_called_once_with()
