@@ -31,7 +31,6 @@ sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 from openlp.core.app import OpenLP, parse_options
 from openlp.core.common import is_win
 from openlp.core.common.settings import Settings
-from tests.utils.constants import RESOURCE_PATH
 
 
 def test_parse_options_basic():

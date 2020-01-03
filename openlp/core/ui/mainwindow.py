@@ -1054,6 +1054,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             # If we just did a settings import, close without saving changes.
             self.clean_up(save_settings=not self.settings_imported)
 
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.FileOpen:
+            file_name = event.file()
+            self.log_debug('Got open file event for {name}!'.format(name=file_name))
+            self.application.args.insert(0, file_name)
+            return True
+        # Mac OS X should restore app window when user clicked on the OpenLP icon
+        # in the Dock bar. However, OpenLP consists of multiple windows and this
+        # does not work. This workaround fixes that.
+        # The main OpenLP window is restored when it was previously minimized.
+        elif event.type() == QtCore.QEvent.ApplicationActivate:
+            if is_macosx() and hasattr(self, 'main_window'):
+                if self.main_window.isMinimized():
+                    # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
+                    # while preserving its maximized and/or full-screen state.
+                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowMinimized |
+                                                    QtCore.Qt.WindowActive)
+                    return True
+
+        return super(MainWindow, self).eventFilter(obj, event)
+
     def clean_up(self, save_settings=True):
         """
         Runs all the cleanup code before OpenLP shuts down.
