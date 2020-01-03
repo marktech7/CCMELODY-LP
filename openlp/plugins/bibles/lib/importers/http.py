@@ -52,28 +52,82 @@ UGLY_CHARS = {
 }
 VERSE_NUMBER_REGEX = re.compile(r'v(\d{1,2})(\d{3})(\d{3}) verse.*')
 
+
+# Manually extracted from https://www.bibleserver.com/webmasters
+BIBLESERVER_TRANSLATIONS = {
+    'ESV': {'name': 'English Standard Version', 'lang': 'English', 'sections': ['OT', 'NT']},
+    'NIV': {'name': 'New International Version', 'lang': 'English', 'sections': ['OT', 'NT']},
+    'NIRV': {'name': 'New Int. Readers Version', 'lang': 'English', 'sections': ['OT', 'NT']},
+    'KJV': {'name': 'King James Version', 'lang': 'English', 'sections': ['OT', 'NT']},
+    'LUT': {'name': 'Lutherbibel 2017', 'lang': 'German', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'ELB': {'name': 'Elberfelder Bibel', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'HFA': {'name': 'Hoffnung für Alle', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'SLT': {'name': 'Schlachter 2000', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'ZB': {'name': 'Zürcher Bibel', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'NGÜ': {'name': 'Neue Genfer Übersetzung', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'GNB': {'name': 'Gute Nachricht Bibel', 'lang': 'German', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'EU': {'name': 'Einheitsübersetzung 2016', 'lang': 'German', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'NLB': {'name': 'Neues Leben. Die Bibel', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'NeÜ': {'name': 'Neue evangelistische Übersetzung', 'lang': 'German', 'sections': ['OT', 'NT']},
+    'MENG': {'name': 'Menge Bibel', 'lang': 'German', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'BDS': {'name': 'Bible du Semeur', 'lang': 'French', 'sections': ['OT', 'NT']},
+    'S21': {'name': 'Segond 21', 'lang': 'French', 'sections': ['OT', 'NT']},
+    'ITA': {'name': 'La Parola è Vita', 'lang': 'Italian', 'sections': ['OT', 'NT']},
+    'NRS': {'name': 'Nuova Riveduta 2006', 'lang': 'Italian', 'sections': ['OT', 'NT']},
+    'HTB': {'name': 'Het Boek', 'lang': 'Dutch', 'sections': ['OT', 'NT']},
+    'LSG': {'name': 'Louis Segond 1910', 'lang': 'French', 'sections': ['OT', 'NT']},
+    'CST': {'name': 'Nueva Versión Internacional (Castilian) ', 'lang': 'Spanish', 'sections': ['OT', 'NT']},
+    'NVI': {'name': 'Nueva Versión Internacional', 'lang': 'Spanish', 'sections': ['OT', 'NT']},
+    'BTX': {'name': 'La Biblia Textual', 'lang': 'Spanish', 'sections': ['OT', 'NT']},
+    'PRT': {'name': 'O Livro', 'lang': 'Portuguese', 'sections': ['OT', 'NT']},
+    'NOR': {'name': 'En Levende Bok', 'lang': 'Norwegian', 'sections': ['OT', 'NT']},
+    'BSV': {'name': 'Nya Levande Bibeln', 'lang': 'Swedish', 'sections': ['OT', 'NT']},
+    'DK': {'name': 'Bibelen på hverdagsdansk', 'lang': 'Danish', 'sections': ['OT', 'NT']},
+    'PSZ': {'name': 'Słowo Życia', 'lang': 'Polish', 'sections': ['OT', 'NT']},
+    'CEP': {'name': 'Český ekumenický překlad', 'lang': 'Czech', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'SNC': {'name': 'Slovo na cestu', 'lang': 'Czech', 'sections': ['OT', 'NT']},
+    'B21': {'name': 'Bible, překlad 21. století', 'lang': 'Czech', 'sections': ['OT', 'NT', 'Apocrypha']},
+    'BKR': {'name': 'Bible Kralická', 'lang': 'Czech', 'sections': ['OT', 'NT']},
+    'NPK': {'name': 'Nádej pre kazdého', 'lang': 'Slovak', 'sections': ['OT', 'NT']},
+    'KAR': {'name': 'IBS-fordítás (Új Károli) ', 'lang': 'Hungarian', 'sections': ['OT']},
+    'HUN': {'name': 'Hungarian', 'lang': 'Hungarian', 'sections': ['OT', 'NT']},
+    'NTR': {'name': 'Noua traducere în limba românã', 'lang': 'Romanian', 'sections': ['OT', 'NT']},
+    'BGV': {'name': 'Верен', 'lang': 'Bulgarian', 'sections': ['OT', 'NT']},
+    'CBT': {'name': 'Библия, нов превод от оригиналните езици', 'lang': 'Bulgarian', 'sections': ['OT', 'NT',
+                                                                                                  'Apocrypha']},
+    'CKK': {'name': 'Knjiga O Kristu', 'lang': 'Croatian', 'sections': ['OT', 'NT']},
+    'RSZ': {'name': 'Новый перевод на русский язык', 'lang': 'Russian', 'sections': ['OT', 'NT']},
+    'CARS': {'name': 'Священное Писание, Восточный перевод', 'lang': 'Russian', 'sections': ['OT', 'NT']},
+    'TR': {'name': 'Türkçe', 'lang': 'Turkish', 'sections': ['OT', 'NT']},
+    'NAV': {'name': 'Ketab El Hayat', 'lang': 'Arabic', 'sections': ['OT', 'NT']},
+    'FCB': {'name': 'کتاب مقدس، ترجمه تفسیری', 'lang': 'Persian', 'sections': ['OT', 'NT']},
+    'CUVS': {'name': '中文和合本（简体） ', 'lang': 'Chinese (Simplified)', 'sections': ['OT', 'NT']},
+    'CCBT': {'name': '聖經當代譯本修訂版', 'lang': 'Chinese (Simplified)', 'sections': ['OT', 'NT']},
+}
+
 BIBLESERVER_LANGUAGE_CODE = {
-    'fl_1': 'de',
-    'fl_2': 'en',
-    'fl_3': 'fr',
-    'fl_4': 'it',
-    'fl_5': 'es',
-    'fl_6': 'pt',
-    'fl_7': 'ru',
-    'fl_8': 'sv',
-    'fl_9': 'no',
-    'fl_10': 'nl',
-    'fl_11': 'cs',
-    'fl_12': 'sk',
-    'fl_13': 'ro',
-    'fl_14': 'hr',
-    'fl_15': 'hu',
-    'fl_16': 'bg',
-    'fl_17': 'ar',
-    'fl_18': 'tr',
-    'fl_19': 'pl',
-    'fl_20': 'da',
-    'fl_21': 'zh'
+    'German': 'de',
+    'English': 'en',
+    'French': 'fr',
+    'Italian': 'it',
+    'Spanish': 'es',
+    'Portuguese': 'pt',
+    'Russian': 'ru',
+    'Swedish': 'sv',
+    'Norwegian': 'no',
+    'Dutch': 'nl',
+    'Czech': 'cs',
+    'Slovak': 'sk',
+    'Romanian': 'ro',
+    'Croatian': 'hr',
+    'Hungarian': 'hu',
+    'Bulgarian': 'bg',
+    'Arabic': 'ar',
+    'Turkish': 'tr',
+    'Polish': 'pl',
+    'Danish': 'da',
+    'Chinese (Simplified)': 'zh',
+    'Persian': 'fa'
 }
 
 CROSSWALK_LANGUAGES = {
@@ -363,7 +417,7 @@ class BSExtract(RegistryProperties):
 
     def get_bible_chapter(self, version, book_name, chapter):
         """
-        Access and decode bibles via Bibleserver mobile website
+        Access and decode bibles via Bibleserver AMP website
 
         :param version: The version of the bible like NIV for New International Version
         :param book_name: Text name of bible book e.g. Genesis, 1. John, 1John or Offenbarung
@@ -374,46 +428,44 @@ class BSExtract(RegistryProperties):
                                                                                            chapter=chapter))
         url_version = urllib.parse.quote(version.encode("utf-8"))
         url_book_name = urllib.parse.quote(book_name.encode("utf-8"))
-        chapter_url = 'http://m.bibleserver.com/text/{version}/{name}{chapter:d}'.format(version=url_version,
-                                                                                         name=url_book_name,
-                                                                                         chapter=chapter)
-        header = ('Accept-Language', 'en')
-        soup = get_soup_for_bible_ref(chapter_url, header)
+        chapter_url = 'https://bibleserver.com/amp/{version}/{name}{chapter:d}'.format(version=url_version,
+                                                                                       name=url_book_name,
+                                                                                       chapter=chapter)
+        soup = get_soup_for_bible_ref(chapter_url)
         if not soup:
             return None
         self.application.process_events()
-        content = soup.find('div', 'content')
+        content = soup.find_all('span', 'chapter-wrapper__verse')
         if not content:
             log.error('No verses found in the Bibleserver response.')
             send_error_message('parse')
             return None
-        content = content.find('div').find_all('div')
         verses = {}
         for verse in content:
             self.application.process_events()
-            versenumber = int(VERSE_NUMBER_REGEX.sub(r'\3', ' '.join(verse['class'])))
-            verses[versenumber] = verse.contents[1].rstrip('\n')
+            versenumber = int(verse.find('span', 'chapter-wrapper__verse__number').get_text())
+            verses[versenumber] = verse.find('span', 'chapter-wrapper__verse__content').get_text()
         return SearchResults(book_name, chapter, verses)
 
     def get_books_from_http(self, version):
         """
-        Load a list of all books a Bible contains from Bibleserver mobile website.
+        Load a list of all books a Bible contains from BiblesResourcesDB.
 
         :param version: The version of the Bible like NIV for New International Version
         """
         log.debug('BSExtract.get_books_from_http("{version}")'.format(version=version))
-        url_version = urllib.parse.quote(version.encode("utf-8"))
-        chapter_url = 'http://m.bibleserver.com/overlay/selectBook?translation={version}'.format(version=url_version)
-        soup = get_soup_for_bible_ref(chapter_url)
-        if not soup:
-            return None
-        content = soup.find('ul')
-        if not content:
-            log.error('No books found in the Bibleserver response.')
-            send_error_message('parse')
-            return None
-        content = content.find_all('li')
-        return [book.contents[0].contents[0] for book in content if len(book.contents[0].contents)]
+        # Parsing the book list from the website is near impossible, so we use the list from BiblesResourcesDB
+        bible = BIBLESERVER_TRANSLATIONS[version]
+        all_books = BiblesResourcesDB.get_books()
+        books = []
+        for book in all_books:
+            if book['testament_id'] == 1 and 'OT' in bible['sections']:
+                books.append(book['name'])
+            elif book['testament_id'] == 2 and 'NT' in bible['sections']:
+                books.append(book['name'])
+            elif book['testament_id'] == 3 and 'Apocrypha' in bible['sections']:
+                books.append(book['name'])
+        return books
 
     def get_bibles_from_http(self):
         """
@@ -422,34 +474,12 @@ class BSExtract(RegistryProperties):
         returns a list in the form [(biblename, biblekey, language_code)]
         """
         log.debug('BSExtract.get_bibles_from_http')
-        bible_url = 'http://www.bibleserver.com/index.php?language=2'
-        soup = get_soup_for_bible_ref(bible_url)
-        if not soup:
-            return None
-        bible_links = soup.find_all('a', {'class': 'trlCell'})
-        if not bible_links:
-            log.debug('No a tags found - did site change?')
-            return None
+        # we need to cheat a bit and load it from a hardcoded list since the website is not parsable anymore...
         bibles = []
-        for link in bible_links:
-            bible_name = link.get_text()
-            # Skip any audio
-            if 'audio' in bible_name.lower():
-                continue
-            try:
-                bible_link = link['href']
-                bible_key = bible_link[bible_link.rfind('/') + 1:]
-                css_classes = link['class']
-            except KeyError:
-                log.debug('No href/class attribute found - did site change?')
-            language_code = ''
-            for css_class in css_classes:
-                if css_class.startswith('fl_'):
-                    try:
-                        language_code = BIBLESERVER_LANGUAGE_CODE[css_class]
-                    except KeyError:
-                        language_code = ''
-            bibles.append((bible_name, bible_key, language_code))
+        for bible in BIBLESERVER_TRANSLATIONS.keys():
+            bible_item = BIBLESERVER_TRANSLATIONS[bible]
+            bible_tuple = (bible_item['name'], bible, BIBLESERVER_LANGUAGE_CODE[bible_item['lang']])
+            bibles.append(bible_tuple)
         return bibles
 
 
