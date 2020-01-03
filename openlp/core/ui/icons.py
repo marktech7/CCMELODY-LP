@@ -64,7 +64,7 @@ class UiIcons(metaclass=Singleton):
             'authentication': {'icon': 'fa.exclamation-triangle', 'attr': 'red'},
             'address': {'icon': 'fa.book'},
             'back': {'icon': 'fa.step-backward'},
-            'backspace': {'icon': 'mdi.backspace-outline'},
+            'backspace': {'icon': 'fa-times-circle'},
             'bible': {'icon': 'fa.book'},
             'blank': {'icon': 'fa.times-circle'},
             'blank_theme': {'icon': 'fa.file-image-o'},
@@ -102,7 +102,7 @@ class UiIcons(metaclass=Singleton):
             'new_group': {'icon': 'fa.folder'},
             'notes': {'icon': 'fa.sticky-note'},
             'open': {'icon': 'fa.folder-open'},
-            'optical': {'icon': 'fa.file-video-o'},
+            'optical': {'icon': 'fa.circle-thin'},
             'pause': {'icon': 'fa.pause'},
             'planning_center': {'icon': 'fa.cloud-download'},
             'play': {'icon': 'fa.play'},
@@ -147,6 +147,7 @@ class UiIcons(metaclass=Singleton):
             'sort': {'icon': 'fa.sort'},
             'stop': {'icon': 'fa.stop'},
             'square': {'icon': 'fa.square'},
+            'stream': {'icon': 'fa.video-camera'},
             'text': {'icon': 'op.file-text'},
             'time': {'icon': 'fa.history'},
             'theme': {'icon': 'fa.paint-brush'},
@@ -181,9 +182,9 @@ class UiIcons(metaclass=Singleton):
                 except Exception:
                     import sys
                     log.error('Unexpected error: %s' % sys.exc_info())
-                    setattr(self, key, qta.icon('fa.plus-circle', color='red'))
+                    setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
             except Exception:
-                setattr(self, key, qta.icon('fa.plus-circle', color='red'))
+                setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
 
     @staticmethod
     def _print_icons():

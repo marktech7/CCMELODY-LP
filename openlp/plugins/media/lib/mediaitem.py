@@ -41,6 +41,7 @@ from openlp.core.ui.media.vlcplayer import get_vlc
 
 if get_vlc() is not None:
     from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
+    from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
 
 
 log = logging.getLogger(__name__)
@@ -125,6 +126,12 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                                                 text=optical_button_text,
                                                                 tooltip=optical_button_tooltip,
                                                                 triggers=self.on_load_optical)
+            stream_button_text = translate('MediaPlugin.MediaItem', 'Open Stream')
+            stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open Stream')
+            self.open_stream = self.toolbar.add_toolbar_action('open_stream', icon=UiIcons().stream,
+                                                                text=stream_button_text,
+                                                                tooltip=stream_button_tooltip,
+                                                                triggers=self.on_open_stream)
 
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
@@ -309,7 +316,6 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         """
         When the load optical button is clicked, open the clip selector window.
         """
-        # self.media_clip_selector_form.exec()
         if get_vlc():
             media_clip_selector_form = MediaClipSelectorForm(self, self.main_window, None)
             media_clip_selector_form.exec()
@@ -332,4 +338,32 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         # Append the optical string to the media list
         file_paths.append(optical)
         self.load_list([str(optical)])
+        Settings().setValue(self.settings_section + '/media files', file_paths)
+
+    def on_open_stream(self):
+        """
+        When the open stream button is clicked, open the stream selector window.
+        """
+        if get_vlc():
+            stream_selector_form = StreamSelectorForm(self, self.main_window, None)
+            stream_selector_form.exec()
+            del stream_selector_form
+        else:
+            QtWidgets.QMessageBox.critical(self, 'VLC is not available', 'VLC is not available')
+
+    def add_stream(self, stream):
+        """
+        Add a stream based clip to the mediamanager, called from stream_selector_form.
+
+        :param stream: The clip to add.
+        """
+        file_paths = self.get_file_list()
+        # If the clip already is in the media list it isn't added and an error message is displayed.
+        if stream in file_paths:
+            critical_error_message_box(translate('MediaPlugin.MediaItem', 'Stream already saved'),
+                                       translate('MediaPlugin.MediaItem', 'This stream has already been saved'))
+            return
+        # Append the optical string to the media list
+        file_paths.append(stream)
+        self.load_list([str(stream)])
         Settings().setValue(self.settings_section + '/media files', file_paths)
