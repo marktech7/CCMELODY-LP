@@ -20,7 +20,6 @@
 ##########################################################################
 import sys
 
-from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtWidgets
@@ -28,7 +27,7 @@ from PyQt5 import QtCore, QtWidgets
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.app import OpenLP, parse_options
+from openlp.core.app import parse_options
 from openlp.core.common import is_win
 from openlp.core.common.settings import Settings
 
@@ -271,60 +270,3 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp):
     assert mocked_question.call_count == 1, 'A question should have been asked!'
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()
-
-
-# Problem seems to be with the what the OpenLP object is defined.
-# Running each test on its own is fine but as a block you get seg faults in strange places.
-@skip('Figure out why this is causing a segfault')
-class TestOpenLP(TestCase):
-    """
-    Test the OpenLP app class
-    """
-    def setUp(self):
-        self.build_settings()
-        self.qapplication_patcher = patch('openlp.core.app.QtGui.QApplication')
-        self.mocked_qapplication = self.qapplication_patcher.start()
-        self.openlp = OpenLP([])
-
-    def tearDown(self):
-        self.qapplication_patcher.stop()
-        self.destroy_settings()
-        del self.openlp
-        self.openlp = None
-
-    def test_event(self):
-        """
-        Test the reimplemented event method
-        """
-        # GIVEN: A file path and a QEvent.
-        file_path = str(RESOURCE_PATH / 'church.jpg')
-        mocked_file_method = MagicMock(return_value=file_path)
-        event = QtCore.QEvent(QtCore.QEvent.FileOpen)
-        event.file = mocked_file_method
-
-        # WHEN: Call the vent method.
-        result = self.openlp.event(event)
-
-        # THEN: The path should be inserted.
-        assert result is True, "The method should have returned True."
-        mocked_file_method.assert_called_once_with()
-        assert self.openlp.args[0] == file_path, "The path should be in args."
-
-    @patch('openlp.core.app.is_macosx')
-    def test_application_activate_event(self, mocked_is_macosx):
-        """
-        Test that clicking on the dock icon on Mac OS X restores the main window if it is minimized
-        """
-        # GIVEN: Mac OS X and an ApplicationActivate event
-        mocked_is_macosx.return_value = True
-        event = MagicMock()
-        event.type.return_value = QtCore.QEvent.ApplicationActivate
-        mocked_main_window = MagicMock()
-        self.openlp.main_window = mocked_main_window
-
-        # WHEN: The icon in the dock is clicked
-        result = self.openlp.event(event)
-
-        # THEN:
-        assert result is True, "The method should have returned True."
-        # assert self.openlp.main_window.isMinimized() is False
