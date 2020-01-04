@@ -41,7 +41,7 @@ from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument, \
     TextType
 
-# Declare the XSlideShowListener class so we can inherit from it below
+# Declare the XSlideShowListener class so we can inherit from it below, won't really use in on windows.
 if is_win():
     from win32com.client import Dispatch
     import pywintypes
@@ -439,8 +439,9 @@ class ImpressDocument(PresentationDocument):
                 sleep_count += 1
                 self.control = self.presentation.getController()
             window.setVisible(False)
-            listener = SlideShowListener(self)
-            self.control.getSlideShow().addSlideShowListener(listener)
+            if not is_win():
+                listener = SlideShowListener(self)
+                self.control.getSlideShow().addSlideShowListener(listener)
         else:
             self.control.activate()
             self.goto_slide(1)
@@ -570,9 +571,6 @@ class SlideShowListener(SlideShowListenerImport):
         :param document: The ImpressDocument being presented
         """
         self.document = document
-        # On windows this is done instead of inheriting from the actual XSlideShowListener interface
-        if is_win():
-            self._implementedInterfaces = ['com.sun.star.presentation.XSlideShowListener']
 
     def paused(self):
         """
