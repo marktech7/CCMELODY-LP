@@ -285,6 +285,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         Set verses in the display
         """
         json_verses = json.dumps(verses)
+        print(json_verses)
         self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses), is_sync=is_sync)
 
     def load_images(self, images):
