@@ -417,7 +417,7 @@ class BSExtract(RegistryProperties):
 
     def get_bible_chapter(self, version, book_name, chapter):
         """
-        Access and decode bibles via Bibleserver AMP website
+        Access and decode bibles via Bibleserver website
 
         :param version: The version of the bible like NIV for New International Version
         :param book_name: Text name of bible book e.g. Genesis, 1. John, 1John or Offenbarung
@@ -428,23 +428,30 @@ class BSExtract(RegistryProperties):
                                                                                            chapter=chapter))
         url_version = urllib.parse.quote(version.encode("utf-8"))
         url_book_name = urllib.parse.quote(book_name.encode("utf-8"))
-        chapter_url = 'https://bibleserver.com/amp/{version}/{name}{chapter:d}'.format(version=url_version,
-                                                                                       name=url_book_name,
-                                                                                       chapter=chapter)
+        chapter_url = 'https://bibleserver.com/{version}/{name}{chapter:d}'.format(version=url_version,
+                                                                                   name=url_book_name,
+                                                                                   chapter=chapter)
         soup = get_soup_for_bible_ref(chapter_url)
         if not soup:
             return None
         self.application.process_events()
-        content = soup.find_all('span', 'chapter-wrapper__verse')
+        content = soup.find('article', 'chapter')
         if not content:
             log.error('No verses found in the Bibleserver response.')
             send_error_message('parse')
             return None
+        # remove spans with footnotes
+        for span in soup.find_all('span', 'footnote-tooltip'):
+            span.decompose()
+        # remove noscript tags
+        for noscript in soup.find_all('noscript'):
+            noscript.decompose()
+        content = soup.find_all('span', 'verse')
         verses = {}
         for verse in content:
             self.application.process_events()
-            versenumber = int(verse.find('span', 'chapter-wrapper__verse__number').get_text())
-            verses[versenumber] = verse.find('span', 'chapter-wrapper__verse__content').get_text()
+            versenumber = int(verse.find('span', 'verse-number__group').get_text().strip())
+            verses[versenumber] = verse.find('span', 'verse-content--hover').get_text().strip()
         return SearchResults(book_name, chapter, verses)
 
     def get_books_from_http(self, version):
