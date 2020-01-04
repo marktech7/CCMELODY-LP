@@ -476,7 +476,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         super(MainWindow, self).__init__()
         Registry().register('main_window', self)
-        self.clipboard = self.application.clipboard()
+        self.clipboard = QtWidgets.QApplication.clipboard()
         # Set up settings sections for the main application (not for use by plugins).
         self.ui_settings_section = 'user interface'
         self.general_settings_section = 'core'
@@ -559,7 +559,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             if thread_name not in self.application.worker_threads.keys():
                 continue
             self.log_debug('Waiting for thread %s' % thread_name)
-            self.application.processEvents()
+            QtWidgets.QApplication.processEvents()
             thread = self.application.worker_threads[thread_name]['thread']
             worker = self.application.worker_threads[thread_name]['worker']
             try:
@@ -571,7 +571,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                     retry = 0
                     while thread.isRunning() and retry < 50:
                         # Make the GUI responsive while we wait
-                        self.application.processEvents()
+                        QtWidgets.QApplication.processEvents()
                         thread.wait(100)
                         retry += 1
                     if thread.isRunning():
@@ -1053,6 +1053,27 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self._wait_for_threads()
             # If we just did a settings import, close without saving changes.
             self.clean_up(save_settings=not self.settings_imported)
+
+    def eventFilter(self, obj, event):
+        if event.type() == QtCore.QEvent.FileOpen:
+            file_name = event.file()
+            self.log_debug('Got open file event for {name}!'.format(name=file_name))
+            self.application.args.insert(0, file_name)
+            return True
+        # Mac OS X should restore app window when user clicked on the OpenLP icon
+        # in the Dock bar. However, OpenLP consists of multiple windows and this
+        # does not work. This workaround fixes that.
+        # The main OpenLP window is restored when it was previously minimized.
+        elif event.type() == QtCore.QEvent.ApplicationActivate:
+            if is_macosx() and hasattr(self, 'main_window'):
+                if self.main_window.isMinimized():
+                    # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
+                    # while preserving its maximized and/or full-screen state.
+                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowMinimized |
+                                                    QtCore.Qt.WindowActive)
+                    return True
+
+        return super(MainWindow, self).eventFilter(obj, event)
 
     def clean_up(self, save_settings=True):
         """
