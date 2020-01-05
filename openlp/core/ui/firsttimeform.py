@@ -103,6 +103,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         super(FirstTimeForm, self).__init__(parent)
         self.web_access = True
         self.web = ''
+        self.index_downloaded = False
         self.setup_ui(self)
         self.customButtonClicked.connect(self._on_custom_button_clicked)
         self.themes_list_widget.itemSelectionChanged.connect(self.on_themes_list_widget_selection_changed)
@@ -164,11 +165,14 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Download the configuration file and kick off the theme screenshot download threads
         """
+        # Check if the index file has already been downloaded
+        if self.index_downloaded:
+            return
         # check to see if we have web access
         self.web_access = False
         self.config = ''
         web_config = None
-        user_agent = 'OpenLP/' + Registry().get('application').applicationVersion()
+        user_agent = 'OpenLP/' + QtWidgets.QApplication.applicationVersion()
         self.application.process_events()
         try:
             web_config = get_web_page('{host}{name}'.format(host=self.web, name='download_3.0.json'),
@@ -183,6 +187,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.application.process_events()
         self.downloading = translate('OpenLP.FirstTimeWizard', 'Downloading {name}...')
         self.application.set_normal_cursor()
+        self.index_downloaded = True
 
     def _parse_config(self, web_config):
         try:
