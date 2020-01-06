@@ -166,7 +166,7 @@ class UiIcons(metaclass=Singleton):
         """
         Load the list of icons to be processed
         """
-        dark_style = (HAS_DARK_STYLE and Settings().value('advanced/use_dark_style'))
+        is_dark = (HAS_DARK_STYLE and Settings().value('advanced/use_dark_style'))
         for key in icon_list:
             try:
                 icon = icon_list[key]['icon']
@@ -174,7 +174,7 @@ class UiIcons(metaclass=Singleton):
                     attr = icon_list[key]['attr']
                     setattr(self, key, qta.icon(icon, color=attr))
                 except KeyError:
-                    if dark_style:
+                    if is_dark:
                         setattr(self, key, qta.icon(icon, color='white'))
                     else:
                         setattr(self, key, qta.icon(icon, color='black'))
