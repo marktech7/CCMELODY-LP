@@ -121,7 +121,7 @@ class TestFirstTimeForm(TestCase, TestMixin):
 
         # THEN: The screens should be set up, and the default values initialised
         assert expected_screens == frw.screens, 'The screens should be correct'
-        assert frw.web_access is True, 'The default value of self.web_access should be True'
+        assert frw.has_web_access is True, 'The default value of self.web_access should be True'
         assert [] == frw.thumbnail_download_threads, 'The list of threads should be empty'
         assert frw.has_run_wizard is False, 'has_run_wizard should be False'
 

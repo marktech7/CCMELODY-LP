@@ -173,6 +173,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             if len(ScreenList()) > 1 or Settings().value('core/display on monitor'):
                 self.show()
 
+    def deregister_display(self):
+        """
+        De-register this displays callbacks in the registry to be able to remove it
+        """
+        if self.is_display:
+            Registry().remove_function('live_display_hide', self.hide_display)
+            Registry().remove_function('live_display_show', self.show_display)
+
     @property
     def is_initialised(self):
         return self._is_initialised
