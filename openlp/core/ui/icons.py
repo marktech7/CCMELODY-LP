@@ -177,7 +177,7 @@ class UiIcons(metaclass=Singleton):
                     if is_dark:
                         setattr(self, key, qta.icon(icon, color='white'))
                     else:
-                        setattr(self, key, qta.icon(icon, color='black'))
+                        setattr(self, key, qta.icon(icon))
                 except Exception:
                     import sys
                     log.error('Unexpected error: %s' % sys.exc_info())
