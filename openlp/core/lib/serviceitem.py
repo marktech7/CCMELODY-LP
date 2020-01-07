@@ -38,7 +38,6 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import ItemCapabilities
