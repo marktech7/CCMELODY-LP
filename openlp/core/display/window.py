@@ -285,7 +285,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         Set verses in the display
         """
         json_verses = json.dumps(verses)
-        print(json_verses)
         self.run_javascript('Display.setTextSlides({verses});'.format(verses=json_verses), is_sync=is_sync)
 
     def load_images(self, images):
@@ -379,8 +378,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             # If review Display for media so we need to display black box.
             if service_item_type == ServiceItemType.Command:
                 theme_copy.background_type = 'solid'
-                theme_copy.background_start_color = '#090909'
-                theme_copy.background_end_color = '#090909'
+                theme_copy.background_start_color = '#590909'
+                theme_copy.background_end_color = '#590909'
                 theme_copy.background_main_color = '#090909'
                 theme_copy.background_footer_color = '#090909'
             # If background is transparent and this is not a display, inject checkerboard background image instead

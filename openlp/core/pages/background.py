@@ -51,7 +51,7 @@ class BackgroundPage(GridLayoutPage):
         self.background_label.setObjectName('background_label')
         self.layout.addWidget(self.background_label, 0, 0)
         self.background_combo_box = QtWidgets.QComboBox(self)
-        self.background_combo_box.addItems(['', '', '', ''])
+        self.background_combo_box.addItems(['', '', '', '', '', ''])
         self.background_combo_box.setObjectName('background_combo_box')
         self.layout.addWidget(self.background_combo_box, 0, 1, 1, 3)
         # color
@@ -130,8 +130,11 @@ class BackgroundPage(GridLayoutPage):
         self.background_combo_box.setItemText(BackgroundType.Solid, translate('OpenLP.ThemeWizard', 'Solid color'))
         self.background_combo_box.setItemText(BackgroundType.Gradient, translate('OpenLP.ThemeWizard', 'Gradient'))
         self.background_combo_box.setItemText(BackgroundType.Image, UiStrings().Image)
+        self.background_combo_box.setItemText(BackgroundType.Video, UiStrings().Video)
         self.background_combo_box.setItemText(BackgroundType.Transparent,
                                               translate('OpenLP.ThemeWizard', 'Transparent'))
+        self.background_combo_box.setItemText(BackgroundType.Stream,
+                                              translate('OpenLP.ThemeWizard', 'Live Stream'))
         self.color_label.setText(translate('OpenLP.ThemeWizard', 'Color:'))
         self.gradient_start_label.setText(translate('OpenLP.ThemeWizard', 'Starting color:'))
         self.gradient_end_label.setText(translate('OpenLP.ThemeWizard', 'Ending color:'))
