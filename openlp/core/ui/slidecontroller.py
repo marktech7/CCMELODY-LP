@@ -885,7 +885,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.slide_list = {}
         if old_item and old_item.requires_media():
             self.on_media_close()
-        #if self.is_live:
+        # if self.is_live:
         #    self.song_menu.menu().clear()
         #    if self.service_item.requires_media():
         #        self.on_media_start(service_item)
