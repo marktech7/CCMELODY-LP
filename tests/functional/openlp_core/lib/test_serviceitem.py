@@ -79,6 +79,7 @@ class TestServiceItem(TestCase, TestMixin):
         Registry.create()
         # Mock the renderer and its format_slide method
         mocked_renderer = MagicMock()
+        Registry().register('settings', Settings())
 
         def side_effect_return_arg(arg1, arg2):
             return [arg1]

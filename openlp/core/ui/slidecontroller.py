@@ -31,7 +31,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder
-from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
