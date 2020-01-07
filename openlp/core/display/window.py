@@ -384,7 +384,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                     theme_copy.background_type = 'transparent'
         else:
             # If review Display for media so we need to display black box.
-            if service_item_type == ServiceItemType.Command:
+            if service_item_type == ServiceItemType.Command or theme.background_type == 'video' or \
+                    theme.background_type == 'live':
                 theme_copy.background_type = 'solid'
                 theme_copy.background_start_color = '#590909'
                 theme_copy.background_end_color = '#590909'

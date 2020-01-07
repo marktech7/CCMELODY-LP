@@ -41,6 +41,7 @@ from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import ItemCapabilities
+from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.icons import UiIcons
 
 
@@ -143,6 +144,14 @@ class ServiceItem(RegistryProperties):
         :param capability: The capability to add
         """
         self.capabilities.append(capability)
+
+    def remove_capability(self, capability):
+        """
+        Remove an ItemCapability from a ServiceItem
+
+        :param capability: The capability to remove
+        """
+        self.capabilities.remove(capability)
 
     def is_capable(self, capability):
         """
@@ -629,6 +638,14 @@ class ServiceItem(RegistryProperties):
         """
         self.theme_overwritten = (theme is None)
         self.theme = theme
+        # Clean up capabilities and reload from the theme.
+        if self.is_text():
+            self.remove_capability(ItemCapabilities.CanStream)
+            self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if self.theme.background_type == BackgroundType.Stream:
+                self.add_capability(ItemCapabilities.CanStream)
+            if self.theme.background_type == BackgroundType.Video:
+                self.add_capability(ItemCapabilities.HasBackgroundVideo)
         self._new_item()
 
     def remove_invalid_frames(self, invalid_paths=None):
@@ -639,6 +656,11 @@ class ServiceItem(RegistryProperties):
             for frame in self.get_frames():
                 if self.get_frame_path(frame=frame) in invalid_paths:
                     self.remove_frame(frame)
+
+    def requires_media(self):
+        return self.is_capable(ItemCapabilities.HasBackgroundAudio) or \
+            self.is_capable(ItemCapabilities.HasBackgroundVideo) or \
+            self.is_capable(ItemCapabilities.CanStream)
 
     def missing_frames(self):
         """

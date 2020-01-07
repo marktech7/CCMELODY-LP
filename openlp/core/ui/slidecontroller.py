@@ -883,12 +883,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self._reset_blank(self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay))
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
-        if old_item and old_item.is_capable(ItemCapabilities.HasBackgroundAudio):
+        if old_item and old_item.requires_media():
             self.on_media_close()
-        if self.is_live:
-            self.song_menu.menu().clear()
-            if self.service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
-                self.on_media_start(service_item)
+        #if self.is_live:
+        #    self.song_menu.menu().clear()
+        #    if self.service_item.requires_media():
+        #        self.on_media_start(service_item)
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
@@ -920,7 +920,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.slide_list[str(row)] = row - 1
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
-        if self.service_item.is_media():
+        if self.service_item.is_media() or self.service_item.requires_media():
             self._set_theme(service_item)
             self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
