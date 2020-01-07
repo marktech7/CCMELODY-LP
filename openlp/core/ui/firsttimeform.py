@@ -101,8 +101,9 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         Create and set up the first time wizard.
         """
         super(FirstTimeForm, self).__init__(parent)
-        self.web_access = True
+        self.has_web_access = True
         self.web = ''
+        self.is_index_downloaded = False
         self.setup_ui(self)
         self.customButtonClicked.connect(self._on_custom_button_clicked)
         self.themes_list_widget.itemSelectionChanged.connect(self.on_themes_list_widget_selection_changed)
@@ -132,7 +133,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         self.application.process_events()
         if self.currentId() == FirstTimePage.Download:
-            if not self.web_access:
+            if not self.has_web_access:
                 return FirstTimePage.NoInternet
             else:
                 return FirstTimePage.Songs
@@ -164,11 +165,14 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Download the configuration file and kick off the theme screenshot download threads
         """
+        # Check if the index file has already been downloaded
+        if self.is_index_downloaded:
+            return
         # check to see if we have web access
-        self.web_access = False
+        self.has_web_access = False
         self.config = ''
         web_config = None
-        user_agent = 'OpenLP/' + Registry().get('application').applicationVersion()
+        user_agent = 'OpenLP/' + QtWidgets.QApplication.applicationVersion()
         self.application.process_events()
         try:
             web_config = get_web_page('{host}{name}'.format(host=self.web, name='download_3.0.json'),
@@ -179,10 +183,11 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
                                                      'to connect to retrieve initial configuration information'),
                                            QtWidgets.QMessageBox.Ok)
         if web_config and self._parse_config(web_config):
-            self.web_access = True
+            self.has_web_access = True
         self.application.process_events()
         self.downloading = translate('OpenLP.FirstTimeWizard', 'Downloading {name}...')
         self.application.set_normal_cursor()
+        self.is_index_downloaded = True
 
     def _parse_config(self, web_config):
         try:
@@ -419,7 +424,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
                                                  'download, so further downloads will be skipped. Try to re-run the '
                                                  'First Time Wizard later.'))
             self.max_progress = 0
-            self.web_access = None
+            self.has_web_access = None
         if self.max_progress:
             # Add on 2 for plugins status setting plus a "finished" point.
             self.max_progress += 2
@@ -465,7 +470,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         Run the tasks in the wizard.
         """
 
-        if self.web_access:
+        if self.has_web_access:
             if not self._download_selected():
                 critical_error_message_box(translate('OpenLP.FirstTimeWizard', 'Download Error'),
                                            translate('OpenLP.FirstTimeWizard', 'There was a connection problem while '

@@ -171,11 +171,16 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return
         if self.displays:
             # Delete any existing displays
-            del self.displays[:]
+            for display in self.displays:
+                display.deregister_display()
+                display.setParent(None)
+                del display
+            self.displays = []
         for screen in self.screens:
             if screen.is_display:
                 display = DisplayWindow(self, screen)
                 self.displays.append(display)
+                self._reset_blank(False)
         if self.display:
             self.__add_actions_to_widget(self.display)
 

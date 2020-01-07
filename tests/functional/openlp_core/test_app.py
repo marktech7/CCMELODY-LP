@@ -220,16 +220,16 @@ def test_set_normal_cursor(mocked_restoreOverrideCursor, mocked_processEvents, q
 
 @patch('openlp.core.app.get_version')
 @patch('openlp.core.app.QtWidgets.QMessageBox.question')
-def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qapp):
+def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qapp, settings):
     """
     Test that we don't try to backup on a new install
     """
     # GIVEN: Mocked data version and OpenLP version which are the same
     old_install = False
     MOCKED_VERSION = {
-        'full': '2.4.0-bzr000',
+        'full': '2.4.0',
         'version': '2.4.0',
-        'build': 'bzr000'
+        'build': None
     }
     Settings().setValue('core/application version', '2.4.0')
     mocked_get_version.return_value = MOCKED_VERSION
@@ -245,18 +245,18 @@ def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qa
 
 @patch('openlp.core.app.get_version')
 @patch('openlp.core.app.QtWidgets.QMessageBox.question')
-def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp):
+def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
     """
     Test that we try to backup on a new install
     """
     # GIVEN: Mocked data version and OpenLP version which are different
     old_install = True
     MOCKED_VERSION = {
-        'full': '2.4.0-bzr000',
-        'version': '2.4.0',
-        'build': 'bzr000'
+        'full': '2.9.0.dev2963+97ba02d1f',
+        'version': '2.9.0',
+        'build': '97ba02d1f'
     }
-    Settings().setValue('core/application version', '2.0.5')
+    Settings().setValue('core/application version', '2.4.6')
     qapp.splash = MagicMock()
     qapp.splash.isVisible.return_value = True
     mocked_get_version.return_value = MOCKED_VERSION
@@ -266,7 +266,7 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp):
     qapp.backup_on_upgrade(old_install, True)
 
     # THEN: It should ask if we want to create a backup
-    assert Settings().value('core/application version') == '2.4.0', 'Version should be upgraded!'
+    assert Settings().value('core/application version') == '2.9.0', 'Version should be upgraded!'
     assert mocked_question.call_count == 1, 'A question should have been asked!'
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()

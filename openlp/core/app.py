@@ -106,10 +106,6 @@ class OpenLP(QtCore.QObject, LogMixin):
             else:
                 QtCore.QCoreApplication.exit()
                 sys.exit()
-        # Correct stylesheet bugs
-        application_stylesheet = get_application_stylesheet()
-        if application_stylesheet:
-            self.setStyleSheet(application_stylesheet)
         can_show_splash = Settings().value('core/show splash')
         if can_show_splash:
             self.splash = SplashScreen()
@@ -122,6 +118,10 @@ class OpenLP(QtCore.QObject, LogMixin):
         loader()
         self.main_window = MainWindow()
         self.main_window.installEventFilter(self.main_window)
+        # Correct stylesheet bugs
+        application_stylesheet = get_application_stylesheet()
+        if application_stylesheet:
+            self.main_window.setStyleSheet(application_stylesheet)
         Registry().execute('bootstrap_initialise')
         State().flush_preconditions()
         Registry().execute('bootstrap_post_set_up')
