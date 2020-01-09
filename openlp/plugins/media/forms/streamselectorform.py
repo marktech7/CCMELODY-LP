@@ -53,7 +53,7 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         super(StreamSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
         self.setup_ui(self)
-        self.insert_devices()
+        #self.insert_devices()
 
     def exec(self):
         """
@@ -104,21 +104,21 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
             # allow time for devices to be discovered
             sleep(3)
             if audio_discoverer:
-                audio_discoverer.stop()
                 media_list = audio_discoverer.media_list()
                 for i in range(media_list.count()):
                     media = media_list.item_at_index(i)
                     #print(media.get_type())
                     print(media.get_mrl())
                     self.audio_devices_combo_box.addItem(media.get_mrl())
+                audio_discoverer.stop()
             if video_discoverer:
-                video_discoverer.stop()
                 media_list = video_discoverer.media_list()
                 for i in range(media_list.count()):
                     media = media_list.item_at_index(i)
                     #print(media.get_type())
                     print(media.get_mrl())
                     self.video_devices_combo_box.addItem(media.get_mrl())
+                video_discoverer.stop()
         else:
             print('No VLC discoverer for audio or video found!')
         # clean up
