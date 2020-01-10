@@ -36,7 +36,7 @@ from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import parse_optical_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
+from openlp.core.ui.media import parse_optical_path, parse_devicestream_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.media.vlcplayer import get_vlc
 
 if get_vlc() is not None:
@@ -126,12 +126,12 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                                                 text=optical_button_text,
                                                                 tooltip=optical_button_tooltip,
                                                                 triggers=self.on_load_optical)
-            stream_button_text = translate('MediaPlugin.MediaItem', 'Open Stream')
-            stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open Stream')
-            self.open_stream = self.toolbar.add_toolbar_action('open_stream', icon=UiIcons().stream,
-                                                                text=stream_button_text,
-                                                                tooltip=stream_button_tooltip,
-                                                                triggers=self.on_open_stream)
+            device_stream_button_text = translate('MediaPlugin.MediaItem', 'Open Device Stream')
+            device_stream_button_text = translate('MediaPlugin.MediaItem', 'Open DeviceStream')
+            self.open_stream = self.toolbar.add_toolbar_action('open_device_stream', icon=UiIcons().device_stream,
+                                                               text=device_stream_button_text,
+                                                               tooltip=device_stream_button_text,
+                                                               triggers=self.on_open_device_stream)
 
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
@@ -172,6 +172,12 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             service_item.start_time = start
             service_item.end_time = end
             service_item.add_capability(ItemCapabilities.IsOptical)
+        elif filename.startswith('devicestream:'):
+            (name, mrl, options) = parse_devicestream_path(filename)
+            service_item.processor = 'vlc'
+            service_item.add_from_command(filename, name, CLAPPERBOARD)
+            service_item.title = name
+            service_item.add_capability(ItemCapabilities.CanStream)
         else:
             if not os.path.exists(filename):
                 if not remote:
@@ -258,6 +264,12 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                 item_name.setToolTip('{name}@{start}-{end}'.format(name=file_name,
                                                                    start=format_milliseconds(start),
                                                                    end=format_milliseconds(end)))
+            elif track_str.startswith('devicestream:'):
+                (name, mrl, options) = parse_devicestream_path(track_str)
+                item_name = QtWidgets.QListWidgetItem(name)
+                item_name.setIcon(UiIcons().device_stream)
+                item_name.setData(QtCore.Qt.UserRole, track)
+                item_name.setToolTip(mrl)
             elif not os.path.exists(track):
                 # File doesn't exist, mark as error.
                 file_name = os.path.split(track_str)[1]
@@ -340,9 +352,9 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         self.load_list([str(optical)])
         Settings().setValue(self.settings_section + '/media files', file_paths)
 
-    def on_open_stream(self):
+    def on_open_device_stream(self):
         """
-        When the open stream button is clicked, open the stream selector window.
+        When the open device stream button is clicked, open the stream selector window.
         """
         if get_vlc():
             stream_selector_form = StreamSelectorForm(self, self.main_window, None)
@@ -351,9 +363,9 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         else:
             QtWidgets.QMessageBox.critical(self, 'VLC is not available', 'VLC is not available')
 
-    def add_stream(self, stream):
+    def add_device_stream(self, stream):
         """
-        Add a stream based clip to the mediamanager, called from stream_selector_form.
+        Add a device stream based clip to the mediamanager, called from stream_selector_form.
 
         :param stream: The clip to add.
         """
@@ -363,7 +375,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'Stream already saved'),
                                        translate('MediaPlugin.MediaItem', 'This stream has already been saved'))
             return
-        # Append the optical string to the media list
+        # Append the device stream string to the media list
         file_paths.append(stream)
         self.load_list([str(stream)])
         Settings().setValue(self.settings_section + '/media files', file_paths)

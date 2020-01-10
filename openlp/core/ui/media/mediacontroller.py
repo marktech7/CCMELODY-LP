@@ -42,7 +42,8 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, VIDEO_EXT, AUDIO_EXT
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path,\
+    VIDEO_EXT, AUDIO_EXT
 from openlp.core.ui.media.endpoint import media_endpoint
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 
@@ -243,33 +244,43 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         display = self._define_display(controller)
         if controller.is_live:
             # if this is an optical device use special handling
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                is_valid = self._check_file_type(controller, display, True)
-                controller.media_info.media_type = MediaType.Stream
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and live')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                log.debug('video is stream and live')
+                path = service_item.get_frame_path()
+                (name, mrl, options) = parse_devicestream_path(path)
+                #is_valid = self._check_file_type(controller, display, True)
+                controller.media_info.media_type = MediaType.Stream
+                #is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
+                #                                    controller)
             else:
-                log.debug('video is not optical and live')
+                log.debug('video is not optical or stream, but live')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
             controller.media_info.start_time = service_item.start_time
             controller.media_info.end_time = service_item.end_time
         elif controller.preview_display:
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.media_type = MediaType.Stream
-                is_valid = self._check_file_type(controller, display, True)
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and preview')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                log.debug('video is stream and preview')
+                path = service_item.get_frame_path()
+                (name, mrl, options) = parse_devicestream_path(path)
+                controller.media_info.media_type = MediaType.Stream
+                #is_valid = self._check_file_type(controller, display, True)
+                #is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
+                #                                    controller)
             else:
-                log.debug('video is not optical and preview')
+                log.debug('video is not optical or stream, but preview')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
         if not is_valid:

@@ -104,6 +104,22 @@ def parse_optical_path(input_string):
     return filename, title, audio_track, subtitle_track, start, end, clip_name
 
 
+def parse_devicestream_path(input_string):
+    """
+    Split the device stream path info.
+
+    :param input_string: The string to parse
+    :return: The elements extracted from the string:  streamname, MRL, VLC-options
+    """
+    log.debug('parse_devicestream_path, about to parse: "{text}"'.format(text=input_string))
+    # skip the header: 'devicestream:', split at '%%'
+    stream_info = input_string[len('devicestream:'):].split('&&')
+    name = stream_info[0]
+    mrl = stream_info[1]
+    options = stream_info[2]
+    return name, mrl, options
+
+
 def format_milliseconds(milliseconds):
     """
     Format milliseconds into a human readable time string.

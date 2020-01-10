@@ -19,59 +19,70 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
+#
+# Most of this file is heavily inspired by (and in some cases copied from)
+# the VLC open capture GUIs, available in the VLC source tree at:
+# * modules/gui/qt/dialogs/open/open_panels.cpp (Linux/Windows)
+# * modules/gui/macosx/windows/VLCOpenWindowController.m (Mac)
+# Both are licensed under GPL2 or later.
+#
+
 import glob
 import re
 from PyQt5 import QtCore, QtWidgets
+from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
 from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
-from openlp.core.ui.icons import UiIcons
 
 # Copied from VLC source code: modules/access/v4l2/v4l2.c
 VIDEO_STANDARDS_VLC = [
-    "", "ALL",
+    '', 'ALL',
     # Pseudo standards
-    "PAL", "PAL_BG", "PAL_DK",
-    "NTSC",
-    "SECAM", "SECAM_DK",
-    "MTS", "525_60", "625_50",
-    "ATSC",
-
+    'PAL', 'PAL_BG', 'PAL_DK',
+    'NTSC',
+    'SECAM', 'SECAM_DK',
+    'MTS', '525_60', '625_50',
+    'ATSC',
     # Chroma-agnostic ITU standards (PAL/NTSC or PAL/SECAM)
-    "B",              "G",               "H",               "L",
-    "GH",             "DK",              "BG",              "MN",
-
+    'B', 'G', 'H', 'L',
+    'GH', 'DK', 'BG', 'MN',
     # Individual standards
-    "PAL_B",          "PAL_B1",          "PAL_G",           "PAL_H",
-    "PAL_I",          "PAL_D",           "PAL_D1",          "PAL_K",
-    "PAL_M",          "PAL_N",           "PAL_Nc",          "PAL_60",
-    "NTSC_M",         "NTSC_M_JP",       "NTSC_443",        "NTSC_M_KR",
-    "SECAM_B",        "SECAM_D",         "SECAM_G",         "SECAM_H",
-    "SECAM_K",        "SECAM_K1",        "SECAM_L",         "SECAM_LC",
-    "ATSC_8_VSB",     "ATSC_16_VSB",
+    'PAL_B', 'PAL_B1', 'PAL_G', 'PAL_H',
+    'PAL_I', 'PAL_D', 'PAL_D1', 'PAL_K',
+    'PAL_M', 'PAL_N', 'PAL_Nc', 'PAL_60',
+    'NTSC_M', 'NTSC_M_JP', 'NTSC_443', 'NTSC_M_KR',
+    'SECAM_B', 'SECAM_D', 'SECAM_G', 'SECAM_H',
+    'SECAM_K', 'SECAM_K1', 'SECAM_L', 'SECAM_LC',
+    'ATSC_8_VSB', 'ATSC_16_VSB',
 ]
 VIDEO_STANDARDS_USER = [
-    "Undefined", "All",
-    "PAL",            "PAL B/G",         "PAL D/K",
-    "NTSC",
-    "SECAM",          "SECAM D/K",
-    "Multichannel television sound (MTS)",
-    "525 lines / 60 Hz", "625 lines / 50 Hz",
-    "ATSC",
-
-    "PAL/SECAM B",    "PAL/SECAM G",     "PAL/SECAM H",     "PAL/SECAM L",
-    "PAL/SECAM G/H",  "PAL/SECAM D/K",   "PAL/SECAM B/G",   "PAL/NTSC M/N",
-
-    "PAL B",          "PAL B1",          "PAL G",           "PAL H",
-    "PAL I",          "PAL D",           "PAL D1",          "PAL K",
-    "PAL M",          "PAL N",           "PAL N Argentina", "PAL 60",
-    "NTSC M",        "NTSC M Japan", "NTSC 443",  "NTSC M South Korea",
-    "SECAM B",        "SECAM D",         "SECAM G",         "SECAM H",
-    "SECAM K",        "SECAM K1",        "SECAM L",         "SECAM L/C",
-    "ATSC 8-VSB",     "ATSC 16-VSB",
+    'Undefined', 'All',
+    'PAL', 'PAL B/G', 'PAL D/K',
+    'NTSC',
+    'SECAM', 'SECAM D/K',
+    'Multichannel television sound (MTS)',
+    '525 lines / 60 Hz', '625 lines / 50 Hz',
+    'ATSC',
+    'PAL/SECAM B', 'PAL/SECAM G', 'PAL/SECAM H', 'PAL/SECAM L',
+    'PAL/SECAM G/H', 'PAL/SECAM D/K', 'PAL/SECAM B/G', 'PAL/NTSC M/N',
+    'PAL B', 'PAL B1', 'PAL G', 'PAL H',
+    'PAL I', 'PAL D', 'PAL D1', 'PAL K',
+    'PAL M', 'PAL N', 'PAL N Argentina', 'PAL 60',
+    'NTSC M', 'NTSC M Japan', 'NTSC 443', 'NTSC M South Korea',
+    'SECAM B', 'SECAM D', 'SECAM G', 'SECAM H',
+    'SECAM K', 'SECAM K1', 'SECAM L', 'SECAM L/C',
+    'ATSC 8-VSB', 'ATSC 16-VSB',
 ]
+# Copied from VLC source code: modules/gui/qt/dialogs/open/open_panels.cpp
+DIGITAL_TV_STANDARDS = [('DVB-T', 'dvb-t'), ('DVB-T2', 'dvb-t2'), ('DVB-C', 'dvb-c'), ('DVB-S', 'dvb-s'),
+                        ('DVB-S2', 'dvb-s2'), ('ATSC', 'atsc'), ('Clear QAM', 'cqam')]
+DIGITAL_TV_BANDWIDTH = [('Automatic', '0'), ('10 MHz', '10'), ('8 MHz', '8'), ('7 MHz', '7'), ('6 MHz', '6'),
+                        ('5 MHz', '5'), ('1.712 MHz', '2')]
+DIGITAL_TV_QAM = [('Automatic', 'QAM'), ('256-QAM', '256QAM'), ('128-QAM', '128QAM'), ('64-QAM', '64QAM'),
+                  ('32-QAM', '32QAM'), ('16-QAM', '16QAM')]
+DIGITAL_TV_PSK = [('QPSK', 'QPSK'), ('DQPSK', 'DQPSK'), ('8-PSK', '8PSK'), ('16-APSK', '16APSK'), ('32-APSK', '32APSK')]
 
-DIGITAL_TV_STANDARDS = ['DVB-T', 'DVB-C', 'DVB-S', 'DVB-S2', 'DVB-T2', 'ATSC', 'Clear QAM']
 
 class CaptureModeWidget(QtWidgets.QWidget):
     """
@@ -84,7 +95,7 @@ class CaptureModeWidget(QtWidgets.QWidget):
     def setup_ui(self):
         self.setObjectName('capture_mode_widget')
         self.capture_mode_widget_layout = QtWidgets.QVBoxLayout(self)
-        self.setObjectName('capture_mode_widget_layout')
+        self.capture_mode_widget_layout.setObjectName('capture_mode_widget_layout')
         self.device_group = QtWidgets.QGroupBox(self)
         self.device_group.setObjectName('device_group')
         self.device_group_layout = QtWidgets.QFormLayout(self.device_group)
@@ -102,6 +113,15 @@ class CaptureModeWidget(QtWidgets.QWidget):
 
     def find_devices(self):
         pass
+
+    def update_mrl(self):
+        pass
+
+    def colon_escape(self, s):
+        return s.replace(':', '\\:')
+
+    def set_callback(self, callback):
+        self.callback = callback
 
 
 class CaptureVideoWidget(CaptureModeWidget):
@@ -131,6 +151,9 @@ class CaptureVideoWidget(CaptureModeWidget):
         if is_linux():
             self.audio_devices_combo_box.setEditable(True)
         self.device_group_layout.addRow(self.audio_devices_label, self.audio_devices_combo_box)
+        # connect
+        self.video_devices_combo_box.currentIndexChanged.connect(self.update_mrl)
+        self.audio_devices_combo_box.currentIndexChanged.connect(self.update_mrl)
 
     def retranslate_ui(self):
         super().retranslate_ui()
@@ -154,18 +177,12 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
         self.video_std_combobox.setObjectName('video_std_combobox')
         self.video_std_combobox.addItems(VIDEO_STANDARDS_USER)
         self.options_group_layout.addRow(self.video_std_label, self.video_std_combobox)
+        # connect
+        self.video_std_combobox.currentIndexChanged.connect(self.update_mrl)
 
     def retranslate_ui(self):
         super().retranslate_ui()
         self.video_std_label.setText(translate('MediaPlugin.StreamSelector', 'Video standard'))
-
-
-class CaptureVideoLinuxV4L2Widget(CaptureVideoLinuxWidget):
-    """
-    Widget inherits groupboxes from CaptureVideoWidget and inserts widgets for linux
-    """
-    def __init__(self, parent=None):
-        super().__init__(parent)
 
     def find_devices(self):
         """
@@ -181,8 +198,18 @@ class CaptureVideoLinuxV4L2Widget(CaptureVideoLinuxWidget):
             vlc_audio_devs.append(vlc_dev)
         self.audio_devices_combo_box.addItems(vlc_audio_devs)
 
+    def update_mrl(self):
+        vdev = self.video_devices_combo_box.currentText().strip()
+        adev = self.audio_devices_combo_box.currentText().strip()
+        vstd = VIDEO_STANDARDS_VLC[self.video_std_combobox.currentIndex()]
+        main_file = 'v4l2://{vdev}'.format(vdev=vdev)
+        options = ':v4l2-standard={vstd} '.format(vstd=vstd)
+        if adev:
+            options += ' :input-slave={adev}'.format(adev=adev)
+        self.callback(main_file, options)
 
-class CaptureAnalogTVWidget(CaptureVideoLinuxV4L2Widget):
+
+class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
     """
     """
     def __init__(self, parent=None):
@@ -197,14 +224,28 @@ class CaptureAnalogTVWidget(CaptureVideoLinuxV4L2Widget):
         self.freq.setAlignment(QtCore.Qt.AlignRight)
         self.freq.setSuffix(' kHz')
         self.freq.setSingleStep(1)
-        self.freq.setMaximum(99999999) # Got no idea about this...
+        self.freq.setMaximum(2147483647)  # Max value
         self.options_group_layout.addRow(self.freq_label, self.freq)
-        self.audio_devices_combo_box.clearEditText()
+        # connect
+        self.freq.valueChanged.connect(self.update_mrl)
 
     def retranslate_ui(self):
         super().retranslate_ui()
         self.video_std_label.setText(translate('MediaPlugin.StreamSelector', 'Video standard'))
         self.freq_label.setText(translate('MediaPlugin.StreamSelector', 'Frequency'))
+
+    def update_mrl(self):
+        vdev = self.video_devices_combo_box.currentText().strip()
+        adev = self.audio_devices_combo_box.currentText().strip()
+        freq = self.freq.value()
+        vstd = VIDEO_STANDARDS_VLC[self.video_std_combobox.currentIndex()]
+        main_file = 'v4l2://{vdev}'.format(vdev=vdev)
+        options = ':v4l2-standard={vstd} '.format(vstd=vstd)
+        if freq:
+            options += ':v4l2-tuner-frequency={freq}'.format(freq=freq)
+        if adev:
+            options += ' :input-slave={adev}'.format(adev=adev)
+        self.callback(main_file, options)
 
 
 class CaptureDigitalTVWidget(CaptureModeWidget):
@@ -229,7 +270,8 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.delivery_system_label = QtWidgets.QLabel(self)
         self.delivery_system_label.setObjectName('delivery_system_label')
         self.delivery_system_combo_box = QtWidgets.QComboBox(self)
-        self.delivery_system_combo_box.addItems(DIGITAL_TV_STANDARDS)
+        for std in DIGITAL_TV_STANDARDS:
+            self.delivery_system_combo_box.addItem(*std)
         self.delivery_system_combo_box.setObjectName('delivery_system_combo_box')
         self.device_group_layout.addRow(self.delivery_system_label, self.delivery_system_combo_box)
         # Options
@@ -240,16 +282,105 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.dvb_freq.setAlignment(QtCore.Qt.AlignRight)
         self.dvb_freq.setSuffix(' kHz')
         self.dvb_freq.setSingleStep(1000)
-        self.dvb_freq.setMaximum(99999999) # Got no idea about this...
-        # setSpinBoxFreq( dvbFreq  ); ?
+        self.dvb_freq.setMaximum(2147483647)  # Max value
         self.options_group_layout.addRow(self.dvb_freq_label, self.dvb_freq)
         # Bandwidth
         self.dvb_bandwidth_label = QtWidgets.QLabel(self)
         self.dvb_bandwidth_label.setObjectName('dvb_bandwidth_label')
         self.dvb_bandwidth_combo_box = QtWidgets.QComboBox(self)
-        self.dvb_bandwidth_combo_box.addItems(['Automatic', '10 MHz', '8 MHz', '7 MHz', '6 MHz', '5 MHz', '1.712 MHz'])
+        for bandwidth in DIGITAL_TV_BANDWIDTH:
+            self.dvb_bandwidth_combo_box.addItem(*bandwidth)
         self.dvb_bandwidth_combo_box.setObjectName('dvb_bandwidth_combo_box')
         self.options_group_layout.addRow(self.dvb_bandwidth_label, self.dvb_bandwidth_combo_box)
+        # QAM
+        self.qam_label = QtWidgets.QLabel(self)
+        self.qam_label.setObjectName('qam_label')
+        self.qam_combo_box = QtWidgets.QComboBox(self)
+        for bandwidth in DIGITAL_TV_QAM:
+            self.qam_combo_box.addItem(*bandwidth)
+        self.qam_combo_box.setObjectName('dvb_bandwidth_combo_box')
+        self.options_group_layout.addRow(self.qam_label, self.qam_combo_box)
+        # PSK
+        self.psk_label = QtWidgets.QLabel(self)
+        self.psk_label.setObjectName('psk_label')
+        self.psk_combo_box = QtWidgets.QComboBox(self)
+        for bandwidth in DIGITAL_TV_PSK:
+            self.psk_combo_box.addItem(*bandwidth)
+        self.psk_combo_box.setObjectName('dvb_bandwidth_combo_box')
+        self.options_group_layout.addRow(self.psk_label, self.psk_combo_box)
+        # DVB-S baud rate
+        self.dvbs_rate_label = QtWidgets.QLabel(self)
+        self.dvbs_rate_label.setObjectName('dvbs_rate_label')
+        self.dvbs_rate = QtWidgets.QSpinBox(self)
+        self.dvbs_rate.setObjectName('dvbs_rate')
+        self.dvbs_rate.setAlignment(QtCore.Qt.AlignRight)
+        self.dvbs_rate.setSuffix(' bauds')
+        self.options_group_layout.addRow(self.dvbs_rate_label, self.dvbs_rate)
+        # connect
+        self.delivery_system_combo_box.currentIndexChanged.connect(self.update_dvb_widget)
+        self.delivery_system_combo_box.currentIndexChanged.connect(self.update_mrl)
+        self.tuner_card.valueChanged.connect(self.update_mrl)
+        self.dvb_freq.valueChanged.connect(self.update_mrl)
+        self.dvb_bandwidth_combo_box.currentIndexChanged.connect(self.update_mrl)
+        self.qam_combo_box.currentIndexChanged.connect(self.update_mrl)
+        self.psk_combo_box.currentIndexChanged.connect(self.update_mrl)
+        self.dvbs_rate.valueChanged.connect(self.update_mrl)
+        # Arrange the widget
+        self.update_dvb_widget()
+
+    def update_mrl(self):
+        card = self.tuner_card.value()
+        system = self.delivery_system_combo_box.currentData()
+        freq = self.dvb_freq.value()
+        qam = self.qam_combo_box.currentData()
+        psk = self.psk_combo_box.currentData()
+        dvbs_rate = self.dvbs_rate.value()
+        dvb_bandwidth = self.dvb_bandwidth_combo_box.currentData()
+        main_file = '{system}://frequency={freq}000'.format(system=system, freq=freq)
+        if system in ['dvb-c', 'cqam']:
+            main_file += ':modulation={qam}'.format(qam=qam)
+        if system == 'dvb-s2':
+            main_file += ':modulation={psk}'.format(psk=psk)
+        if system in ['dvb-c', 'dvb-s', 'dvb-s2']:
+            main_file += ':srate={rate}'.format(rate=dvbs_rate)
+        if system in ['dvb-t', 'dvb-t2']:
+            main_file += ':bandwidth={bandwidth}'.format(bandwidth=dvb_bandwidth)
+        options = ' :dvb-adapter={card}'.format(card=card)
+        self.callback(main_file, options)
+
+    def update_dvb_widget(self):
+        """
+        Show and hides widgets if they are needed with the current selected system
+        """
+        system = self.delivery_system_combo_box.currentText()
+        # Bandwidth
+        if system in ['DVB-T', 'DVB-T2']:
+            self.dvb_bandwidth_label.show()
+            self.dvb_bandwidth_combo_box.show()
+        else:
+            self.dvb_bandwidth_label.hide()
+            self.dvb_bandwidth_combo_box.hide()
+        # QAM
+        if system == 'DVB-C':
+            self.qam_label.show()
+            self.qam_combo_box.show()
+        else:
+            self.qam_label.hide()
+            self.qam_combo_box.hide()
+        # PSK
+        if system == 'DVB-S2':
+            self.psk_label.show()
+            self.psk_combo_box.show()
+        else:
+            self.psk_label.hide()
+            self.psk_combo_box.hide()
+        # Baud rate
+        if system in ['DVB-C', 'DVB-S', 'DVB-S2']:
+            self.dvbs_rate_label.show()
+            self.dvbs_rate.show()
+        else:
+            self.dvbs_rate_label.hide()
+            self.dvbs_rate.hide()
 
     def retranslate_ui(self):
         super().retranslate_ui()
@@ -257,6 +388,9 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.delivery_system_label.setText(translate('MediaPlugin.StreamSelector', 'Delivery system'))
         self.dvb_freq_label.setText(translate('MediaPlugin.StreamSelector', 'Transponder/multiplexer frequency'))
         self.dvb_bandwidth_label.setText(translate('MediaPlugin.StreamSelector', 'Bandwidth'))
+        self.qam_label.setText(translate('MediaPlugin.StreamSelector', 'Modulation / Constellation'))
+        self.psk_label.setText(translate('MediaPlugin.StreamSelector', 'Modulation / Constellation'))
+        self.dvbs_rate_label.setText(translate('MediaPlugin.StreamSelector', 'Transponder symbol rate'))
 
 
 class JackAudioKitWidget(CaptureModeWidget):
@@ -286,17 +420,50 @@ class JackAudioKitWidget(CaptureModeWidget):
         self.channels.setAlignment(QtCore.Qt.AlignRight)
         self.device_group_layout.addRow(self.channels_label, self.channels)
         # Options
-        self.jack_pace = QtWidgets.QCheckBox(translate('MediaPlugin.StreamSelector', 'Use VLC pace'));
-        self.jack_connect = QtWidgets.QCheckBox(translate('MediaPlugin.StreamSelector', 'Auto connection'));
+        self.jack_pace = QtWidgets.QCheckBox(translate('MediaPlugin.StreamSelector', 'Use VLC pace'))
+        self.jack_connect = QtWidgets.QCheckBox(translate('MediaPlugin.StreamSelector', 'Auto connection'))
         self.options_group_layout.addRow(self.jack_pace, self.jack_connect)
+        # connect
+        self.ports.editingFinished.connect(self.update_mrl)
+        self.channels.valueChanged.connect(self.update_mrl)
+        self.jack_pace.stateChanged.connect(self.update_mrl)
+        self.jack_connect.stateChanged.connect(self.update_mrl)
 
     def retranslate_ui(self):
         super().retranslate_ui()
         self.ports_label.setText(translate('MediaPlugin.StreamSelector', 'Selected ports'))
         self.channels_label.setText(translate('MediaPlugin.StreamSelector', 'Channels'))
 
+    def update_mrl(self):
+        ports = self.ports.text().strip()
+        channels = self.channels.value()
+        main_file = 'jack://channels={channel}:ports={ports}'.format(channel=channels, ports=ports)
+        options = ''
+        if self.jack_pace.isChecked():
+            options += ' :jack-input-use-vlc-pace'
+        if self.jack_connect.isChecked():
+            options += ' :jack-input-auto-connect'
+        self.callback(main_file, options)
 
-class MacInputWidget(CaptureVideoWidget):
+
+class CaptureVideoQtDetectWidget(CaptureVideoWidget):
+    """
+    Widget inherits groupboxes from CaptureVideoWidget and detects device using Qt
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def find_devices(self):
+        """
+        Insert devices detected by Qt
+        """
+        for cam in QCameraInfo.availableCameras():
+            self.video_devices_combo_box.addItem(cam.description(), cam.deviceName())
+        for au in QAudioDeviceInfo.availableDevices(QAudio.AudioInput):
+            self.video_devices_combo_box.addItem(au.deviceName())
+
+
+class MacInputWidget(CaptureVideoQtDetectWidget):
     """
     Widget for macOS
 https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/modules/gui/macosx/windows/VLCOpenWindowController.m#L472
@@ -306,22 +473,61 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
 
     def setup_ui(self):
         super().setup_ui()
+        # There are no options available on Mac
+        self.options_group.hide()
+
+    def update_mrl(self):
+        vdev = self.video_devices_combo_box.currentData().strip()
+        # adev = self.audio_devices_combo_box.currentText().strip()
+        main_file = 'avcapture://{vdev}'.format(vdev=vdev)
+        # options = 'input-slave=qtsound://{adev}'.format(adev=adev)
+        self.callback(main_file, '')
 
 
+class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
+    """
+    Widget for directshow input
+    """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+
+    def setup_ui(self):
+        super().setup_ui()
+        # Options
+        self.video_size_label = QtWidgets.QLabel(self)
+        self.video_size_label.setObjectName('video_size_label')
+        self.video_size_lineedit = QtWidgets.QLineEdit(self)
+        self.video_size_lineedit.setObjectName('video_size_lineedit')
+        self.options_group_layout.addRow(self.video_size_label, self.video_size_lineedit)
+        # connect
+        self.video_size_lineedit.editingFinished.connect(self.update_mrl)
+
+    def retranslate_ui(self):
+        super().retranslate_ui()
+        self.video_size_label.setText(translate('MediaPlugin.StreamSelector', 'Video size'))
+
+    def update_mrl(self):
+        vdev = self.video_devices_combo_box.currentText().strip()
+        adev = self.audio_devices_combo_box.currentText().strip()
+        vsize = self.video_size_lineedit.text().strip()
+        main_file = 'dshow://'
+        options = ':dshow-vdev={vdev} '.format(vdev=self.colon_escape(vdev))
+        options += ':dshow-adev={adev} '.format(vdev=self.colon_escape(adev))
+        if vsize:
+            options += ':dshow-size={vsize}'.format(vsize)
+        self.callback(main_file, options)
 
 
 class Ui_StreamSelector(object):
     def setup_ui(self, stream_selector):
         stream_selector.setObjectName('stream_selector')
-        #stream_selector.resize(554, 654)
         self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
                                                           QtWidgets.QSizePolicy.Fixed)
         stream_selector.setSizePolicy(
             QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding))
         self.main_layout = QtWidgets.QVBoxLayout(stream_selector)
-        #self.main_layout.setSpacing(8)
         self.main_layout.setObjectName('main_layout')
-        
+
         self.top_widget = QtWidgets.QWidget(stream_selector)
         self.top_widget.setObjectName('top_widget')
         self.top_layout = QtWidgets.QFormLayout(self.top_widget)
@@ -346,51 +552,88 @@ class Ui_StreamSelector(object):
         self.stacked_modes_layout.setObjectName('stacked_modes_layout')
         # Widget for DirectShow - Windows only
         if is_win():
-            self.direct_show_widget = CaptureVideoWidget(stream_selector)
-            # Options
-            self.direct_show_widget.video_size_label = QtWidgets.QLabel(self.direct_show_widget)
-            self.direct_show_widget.video_size_label.setObjectName('video_size_label')
-            self.direct_show_widget.video_size_lineedit = QtWidgets.QLineEdit(self.direct_show_widget)
-            self.direct_show_widget.video_size_lineedit.setObjectName('video_size_lineedit')
-            self.direct_show_widget.options_group_layout.addRow(self.direct_show_widget.video_size_label,
-                                                                self.direct_show_widget.video_size_lineedit)
+            self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.direct_show_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'));
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
         elif is_linux():
             # Widget for V4L2 - Linux only
-            self.v4l2_widget = CaptureVideoLinuxV4L2Widget(stream_selector)
+            self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.v4l2_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Video Camera'));
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Video Camera'))
             # Widget for analog TV - Linux only
             self.analog_tv_widget = CaptureAnalogTVWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.analog_tv_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - analog'));
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - analog'))
             # Widget for JACK - Linux only
             self.jack_widget = JackAudioKitWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.jack_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'JACK Audio Connection Kit'));
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'JACK Audio Connection Kit'))
         # Digital TV - both linux and windows
         if is_win() or is_linux():
             self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.digital_tv_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'));
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
+        # for macs
+        if is_macosx():
+            self.mac_input_widget = CaptureDigitalTVWidget(stream_selector)
+            self.stacked_modes_layout.addWidget(self.mac_input_widget)
+            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))
         # Setup the stacked widgets
         self.main_layout.addWidget(self.stacked_modes)
         self.stacked_modes_layout.setCurrentIndex(0)
         for i in range(self.stacked_modes_layout.count()):
             self.stacked_modes_layout.widget(i).find_devices()
             self.stacked_modes_layout.widget(i).retranslate_ui()
+        # Groupbox for more options
+        self.more_options_group = QtWidgets.QGroupBox(self)
+        self.more_options_group.setObjectName('more_options_group')
+        self.more_options_group_layout = QtWidgets.QFormLayout(self.more_options_group)
+        self.more_options_group_layout.setObjectName('more_options_group_layout')
+        # Caching spinbox
+        self.caching_label = QtWidgets.QLabel(self)
+        self.caching_label.setObjectName('caching_label')
+        self.caching = QtWidgets.QSpinBox(self)
+        self.caching.setAlignment(QtCore.Qt.AlignRight)
+        self.caching.setSuffix(' ms')
+        self.caching.setSingleStep(100)
+        self.caching.setMaximum(65535)
+        self.caching.setValue(300)
+        self.more_options_group_layout.addRow(self.caching_label, self.caching)
+        # MRL
+        self.mrl_label = QtWidgets.QLabel(self)
+        self.mrl_label.setObjectName('mrl_label')
+        self.mrl_lineedit = QtWidgets.QLineEdit(self)
+        self.mrl_lineedit.setObjectName('mrl_lineedit')
+        self.more_options_group_layout.addRow(self.mrl_label, self.mrl_lineedit)
+        # VLC options
+        self.vlc_options_label = QtWidgets.QLabel(self)
+        self.vlc_options_label.setObjectName('vlc_options_label')
+        self.vlc_options_lineedit = QtWidgets.QLineEdit(self)
+        self.vlc_options_lineedit.setObjectName('vlc_options_lineedit')
+        self.more_options_group_layout.addRow(self.vlc_options_label, self.vlc_options_lineedit)
+        # Add groupbox for more options to main layout
+        self.main_layout.addWidget(self.more_options_group)
+        # Save and close buttons
+        self.button_box = QtWidgets.QDialogButtonBox(stream_selector)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.Save)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.Close)
+        self.close_button = self.button_box.button(QtWidgets.QDialogButtonBox.Close)
+        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
+        self.main_layout.addWidget(self.button_box)
+
         # translate
         self.retranslate_ui(stream_selector)
         # connect
-        self.capture_mode_combo_box.currentIndexChanged.connect(self.on_capture_mode_combo_box)
+        self.capture_mode_combo_box.currentIndexChanged.connect(stream_selector.on_capture_mode_combo_box)
+        self.caching.valueChanged.connect(stream_selector.on_capture_mode_combo_box)
+        self.button_box.accepted.connect(stream_selector.accept)
+        self.button_box.rejected.connect(stream_selector.reject)
 
     def retranslate_ui(self, stream_selector):
         stream_selector.setWindowTitle(translate('MediaPlugin.StreamSelector', 'Select Input Stream'))
         self.stream_name_label.setText(translate('MediaPlugin.StreamSelector', 'Stream name'))
         self.capture_mode_label.setText(translate('MediaPlugin.StreamSelector', 'Capture Mode'))
-        if is_win():
-            self.direct_show_widget.video_size_label.setText(translate('MediaPlugin.StreamSelector', 'Video size'))
-
-    def on_capture_mode_combo_box(self):
-        self.stacked_modes_layout.setCurrentIndex(self.capture_mode_combo_box.currentIndex())
+        self.more_options_group.setTitle(translate('MediaPlugin.StreamSelector', 'More options'))
+        self.caching_label.setText(translate('MediaPlugin.StreamSelector', 'Caching'))
+        self.mrl_label.setText(translate('MediaPlugin.StreamSelector', 'MRL'))
+        self.vlc_options_label.setText(translate('MediaPlugin.StreamSelector', 'VLC options'))

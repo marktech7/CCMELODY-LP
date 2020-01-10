@@ -18,24 +18,14 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+
 import logging
-import os
-import re
-import ctypes
-from datetime import datetime
-from pathlib import Path
-from time import sleep
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import is_linux, is_macosx, is_win
-from openlp.core.common.i18n import translate
-from openlp.core.common.mixins import RegistryProperties
-from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.streamselectordialog import Ui_StreamSelector
-
+from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.common.i18n import translate
 
 log = logging.getLogger(__name__)
 
@@ -52,8 +42,12 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         """
         super(StreamSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        self.media_item = media_item
         self.setup_ui(self)
-        #self.insert_devices()
+        # setup callbacks
+        for i in range(self.stacked_modes_layout.count()):
+            self.stacked_modes_layout.widget(i).set_callback(self.update_mrl_options)
+        self.stacked_modes_layout.currentWidget().update_mrl()
 
     def exec(self):
         """
@@ -66,62 +60,29 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         Saves the current stream as a clip to the mediamanager
         """
         log.debug('in StreamSelectorForm.accept')
-        self.media_item.add_stream(None)
+        # Verify that a stream name exists
+        if not self.stream_name_edit.text().strip():
+            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed!'),
+                                       parent=self)
+            return
+        # Verify that a MRL exists
+        if not self.mrl_lineedit.text().strip():
+            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A MRL is needed!'), parent=self)
+            return
+        stream_string = 'devicestream:{name}&&{mrl}&&{options}'.format(name=self.stream_name_edit.text().strip(),
+                                                                       mrl=self.mrl_lineedit.text().strip(),
+                                                                       options=self.vlc_options_lineedit.text().strip())
+        self.media_item.add_device_stream(stream_string)
+        return QtWidgets.QDialog.accept(self)
 
-    def insert_devices(self):
+    def update_mrl_options(self, mrl, options):
         """
-        Read device list and insert into comboboxes
+        Callback method used to fill the MRL and Options text fields
         """
-        vlc = get_vlc()
-        vlc_instance = vlc.Instance('')
-        # Create an instance of a pointer-pointer to a vlc.MediaDiscovererDescription
-        services_pp = ctypes.POINTER(ctypes.POINTER(vlc.MediaDiscovererDescription))()
-        # Create a pointer of the instance above
-        services_ppp = ctypes.pointer(services_pp)
-        # Due to a bug(?) in vlc.py we need to cast to a wrong type to make vlc.py accept the input
-        services_fake_pp = ctypes.cast(services_ppp, ctypes.POINTER(ctypes.POINTER(vlc.MediaDiscovererDescription)))
-        service_count = vlc_instance.media_discoverer_list_get(vlc.MediaDiscovererCategory.devices, services_fake_pp)
-        list_services = []
-        for i in range(service_count):
-            print('item : %d' % i)
-            list_services.append(services_pp[i].contents)
-            print(services_pp[i].contents.cat)
-            print(ctypes.c_char_p(services_pp[i].contents.name).value)
-            print(ctypes.c_char_p(services_pp[i].contents.longname).value)
+        options += ' :live-caching={cache}'.format(cache=self.caching.value())
+        self.mrl_lineedit.setText(mrl)
+        self.vlc_options_lineedit.setText(options)
 
-        # Find audio/video devices
-        audio_discoverer = None
-        video_discoverer = None
-        for service in list_services:
-            longname = service.longname.decode().lower()
-            if 'audio' in longname:
-                audio_discoverer = vlc_instance.media_discoverer_new(service.longname)
-                audio_discoverer.start()
-            elif 'video' in longname:
-                video_discoverer = vlc_instance.media_discoverer_new(service.longname)
-                video_discoverer.start()
-        if audio_discoverer or video_discoverer:
-            # allow time for devices to be discovered
-            sleep(3)
-            if audio_discoverer:
-                media_list = audio_discoverer.media_list()
-                for i in range(media_list.count()):
-                    media = media_list.item_at_index(i)
-                    #print(media.get_type())
-                    print(media.get_mrl())
-                    self.audio_devices_combo_box.addItem(media.get_mrl())
-                audio_discoverer.stop()
-            if video_discoverer:
-                media_list = video_discoverer.media_list()
-                for i in range(media_list.count()):
-                    media = media_list.item_at_index(i)
-                    #print(media.get_type())
-                    print(media.get_mrl())
-                    self.video_devices_combo_box.addItem(media.get_mrl())
-                video_discoverer.stop()
-        else:
-            print('No VLC discoverer for audio or video found!')
-        # clean up
-        vlc.libvlc_media_discoverer_list_release(ctypes.cast(services_pp,
-                                                             ctypes.POINTER(vlc.MediaDiscovererDescription)),
-                                                 service_count)
+    def on_capture_mode_combo_box(self):
+        self.stacked_modes_layout.setCurrentIndex(self.capture_mode_combo_box.currentIndex())
+        self.stacked_modes_layout.currentWidget().update_mrl()
