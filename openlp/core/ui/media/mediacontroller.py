@@ -37,6 +37,7 @@ from openlp.core.api.http import register_endpoint
 from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
@@ -229,7 +230,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            controller.media_info.file_info = [service_item.get_frame_path()]
+            if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+                controller.media_info.file_info = [service_item.video_file_name]
+                service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
+            else:
+                controller.media_info.file_info = [service_item.get_frame_path()]
         display = self._define_display(controller)
         if controller.is_live:
             # if this is an optical device use special handling

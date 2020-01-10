@@ -128,6 +128,17 @@ class ServiceItem(RegistryProperties):
             if theme_level == ThemeLevel.Song and self.theme:
                 theme = self.theme
         theme = theme_manager.get_theme_data(theme)
+        # Clean up capabilities and reload from the theme.
+        if self.is_text():
+            if self.is_capable(ItemCapabilities.CanStream):
+                self.remove_capability(ItemCapabilities.CanStream)
+            if self.is_capable(ItemCapabilities.HasBackgroundVideo):
+                self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+                self.add_capability(ItemCapabilities.CanStream)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+                self.video_file_name = theme.background_filename
+                self.add_capability(ItemCapabilities.HasBackgroundVideo)
         return theme
 
     def _new_item(self):
@@ -638,14 +649,6 @@ class ServiceItem(RegistryProperties):
         """
         self.theme_overwritten = (theme is None)
         self.theme = theme
-        # Clean up capabilities and reload from the theme.
-        if self.is_text():
-            self.remove_capability(ItemCapabilities.CanStream)
-            self.remove_capability(ItemCapabilities.HasBackgroundVideo)
-            if self.theme.background_type == BackgroundType.Stream:
-                self.add_capability(ItemCapabilities.CanStream)
-            if self.theme.background_type == BackgroundType.Video:
-                self.add_capability(ItemCapabilities.HasBackgroundVideo)
         self._new_item()
 
     def remove_invalid_frames(self, invalid_paths=None):
