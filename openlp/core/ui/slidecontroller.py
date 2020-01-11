@@ -885,10 +885,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.slide_list = {}
         if old_item and old_item.requires_media():
             self.on_media_close()
-        # if self.is_live:
-        #    self.song_menu.menu().clear()
-        #    if self.service_item.requires_media():
-        #        self.on_media_start(service_item)
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
@@ -922,7 +918,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.enable_tool_bar(self.service_item)
         if self.service_item.is_media() or self.service_item.requires_media():
             self._set_theme(service_item)
-            self.preview_display.load_verses(media_empty_song, True)
+            if self.service_item.is_command():
+                self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
         self.slide_selected(True)
         if self.service_item.from_service:

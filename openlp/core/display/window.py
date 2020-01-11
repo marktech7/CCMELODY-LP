@@ -279,6 +279,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             return self.__script_result
         else:
             self.webview.page().runJavaScript(script)
+        self.raise_()
 
     def go_to_slide(self, verse):
         """

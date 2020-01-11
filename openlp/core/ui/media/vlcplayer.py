@@ -32,7 +32,6 @@ from time import sleep
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import is_linux, is_macosx, is_win
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui.media import MediaState, MediaType
 from openlp.core.ui.media.mediaplayer import MediaPlayer
@@ -114,10 +113,10 @@ class VlcPlayer(MediaPlayer):
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # creating a basic vlc instance
         command_line_options = '--no-video-title-show '
-        if Settings().value('advanced/hide mouse') and live_display:
+        if self.settings.value('advanced/hide mouse') and live_display:
             command_line_options += '--mouse-hide-timeout=0 '
-        if Settings().value('media/vlc arguments'):
-            command_line_options += Settings().value('media/vlc arguments')
+        if self.settings.value('media/vlc arguments'):
+            command_line_options += self.settings.value('media/vlc arguments')
         controller.vlc_instance = vlc.Instance(command_line_options)
         # creating an empty vlc media player
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
@@ -176,7 +175,7 @@ class VlcPlayer(MediaPlayer):
                 return False
             controller.vlc_media_player = audio_cd_tracks.item_at_index(controller.media_info.title_track)
         elif controller.media_info.media_type == MediaType.Stream:
-            stream_cmd = Settings().value('media/stream command')
+            stream_cmd = self.settings.value('media/stream command')
             controller.vlc_media = controller.vlc_instance.media_new_location(stream_cmd)
         else:
             controller.vlc_media = controller.vlc_instance.media_new_path(path)

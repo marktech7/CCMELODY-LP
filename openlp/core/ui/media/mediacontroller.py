@@ -233,6 +233,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
                 service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
+                controller.media_info.is_looping_playback = True
+                controller.media_info.is_background = True
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                controller.media_info.file_info = []
+                controller.media_info.is_background = True
             else:
                 controller.media_info.file_info = [service_item.get_frame_path()]
         display = self._define_display(controller)
@@ -440,12 +445,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.seek_slider.blockSignals(False)
         controller.volume_slider.blockSignals(False)
         controller.media_info.is_playing = True
-        display = self._define_display(controller)
-        if controller.is_live:
+        if not controller.media_info.is_background:
+            display = self._define_display(controller)
             display.setVisible(False)
-            # controller.preview_display.hide()
-        else:
-            display.setVisible(True)
         return True
 
     def tick(self, controller):
