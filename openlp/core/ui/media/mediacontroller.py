@@ -542,7 +542,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].stop(controller)
             self.current_media_players[controller.controller_type].set_visible(controller, False)
-            # controller.preview_display.hide()
             controller.seek_slider.setSliderPosition(0)
             total_seconds = controller.media_info.length // 1000
             total_minutes = total_seconds // 60
