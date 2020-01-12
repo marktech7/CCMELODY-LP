@@ -27,6 +27,7 @@ from unittest.mock import MagicMock, patch
 from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.state import State
 from openlp.core.widgets.views import ListPreviewWidget
@@ -52,6 +53,7 @@ class TestListPreviewWidget(TestCase, TestMixin):
         self.image_manager.get_image.return_value = self.image
         Registry().register('image_manager', self.image_manager)
         self.preview_widget = ListPreviewWidget(self.main_window, 2)
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         """

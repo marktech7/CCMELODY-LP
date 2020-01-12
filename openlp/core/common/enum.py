@@ -94,6 +94,16 @@ class LanguageSelection(IntEnum):
 
 
 @unique
+class ServiceItemType(IntEnum):
+    """
+    Defines the type of service item
+    """
+    Text = 1
+    Image = 2
+    Command = 3
+
+
+@unique
 class PluginStatus(IntEnum):
     """
     Defines the status of the plugin

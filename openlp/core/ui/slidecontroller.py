@@ -38,6 +38,7 @@ from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ServiceItemAction, image_to_byte
 from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.ui.media import media_empty_song
 from openlp.core.lib.ui import create_action
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
@@ -842,6 +843,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.delay_spin_box.setValue(int(item.timed_slide_interval))
                 self.on_play_slides_once()
 
+    def _set_theme(self, service_item):
+        """
+        Set up the theme from the service item.
+
+        :param service_item: The current service item
+        """
+        # Get theme
+        theme_data = service_item.get_theme_data()
+        # Set theme for preview
+        self.preview_display.set_theme(theme_data, service_item_type=service_item.service_item_type)
+        # Set theme for displays
+        for display in self.displays:
+            display.set_theme(service_item.get_theme_data(), service_item_type=service_item.service_item_type)
+
     def _process_item(self, service_item, slide_no):
         """
         Loads a ServiceItem into the system from ServiceManager. Display the slide number passed.
@@ -861,26 +876,15 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 '{text}_start'.format(text=service_item.name.lower()),
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
-            # Get theme
-            theme_data = service_item.get_theme_data()
-            # Set theme for preview
-            self.preview_display.set_theme(theme_data)
-            # Set theme for displays
-            for display in self.displays:
-                display.set_theme(theme_data)
-
+            self._set_theme(service_item)
         # Reset blanking if needed
         if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
                                           self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
             self._reset_blank(self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay))
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
-        if old_item and old_item.is_capable(ItemCapabilities.HasBackgroundAudio):
+        if old_item and old_item.requires_media():
             self.on_media_close()
-        if self.is_live:
-            self.song_menu.menu().clear()
-            if self.service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
-                self.on_media_start(service_item)
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
@@ -912,7 +916,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.slide_list[str(row)] = row - 1
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
-        if self.service_item.is_media():
+        if self.service_item.is_media() or self.service_item.requires_media():
+            self._set_theme(service_item)
+            if self.service_item.is_command():
+                self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
         self.slide_selected(True)
         if self.service_item.from_service:

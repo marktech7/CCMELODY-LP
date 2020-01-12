@@ -118,3 +118,6 @@ def format_milliseconds(milliseconds):
                                                                          minutes=minutes,
                                                                          seconds=seconds,
                                                                          millis=millis)
+
+
+media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ""}]

@@ -24,7 +24,6 @@ Package to test the openlp.core.display.window package.
 import sys
 import time
 
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
@@ -33,114 +32,117 @@ from PyQt5 import QtCore
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.display.window import DisplayWindow
-from tests.helpers.testmixin import TestMixin
 
 
 @patch('PyQt5.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
-@patch('openlp.core.display.window.Settings')
-class TestDisplayWindow(TestCase, TestMixin):
+def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     """
-    A test suite to test the functions in DisplayWindow
+    Test that the x11 override option bit is set
     """
+    # GIVEN: x11 bypass is on
+    mock_settings.value.return_value = True
 
-    def test_x11_override_on(self, MockSettings, mocked_webengine, mocked_addWidget):
-        """
-        Test that the x11 override option bit is set
-        """
-        # GIVEN: x11 bypass is on
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = True
-        MockSettings.return_value = mocked_settings
+    # WHEN: A DisplayWindow is generated
+    display_window = DisplayWindow()
 
-        # WHEN: A DisplayWindow is generated
-        display_window = DisplayWindow()
+    # THEN: The x11 override flag should be set
+    x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
+    assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
-        # THEN: The x11 override flag should be set
-        x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
-        assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
-    def test_x11_override_off(self, MockSettings, mocked_webengine, mocked_addWidget):
-        """
-        Test that the x11 override option bit is not set when setting if off
-        """
-        # GIVEN: x11 bypass is off
-        mocked_settings = MagicMock()
-        mocked_settings.value.return_value = False
-        MockSettings.return_value = mocked_settings
+@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the x11 override option bit is not set when setting if off
+    """
+    # GIVEN: x11 bypass is off
+    mock_settings.value.return_value = False
 
-        # WHEN: A DisplayWindow is generated
-        display_window = DisplayWindow()
+    # WHEN: A DisplayWindow is generated
+    display_window = DisplayWindow()
 
-        # THEN: The x11 override flag should not be set
-        x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
-        assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
+    # THEN: The x11 override flag should not be set
+    x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
+    assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
 
-    def test_set_scale_not_initialised(self, MockSettings, mocked_webengine, mocked_addWidget):
-        """
-        Test that the scale js is not run if the page is not initialised
-        """
-        # GIVEN: A display window not yet initialised
-        display_window = DisplayWindow()
-        display_window._is_initialised = False
-        display_window.run_javascript = MagicMock()
 
-        # WHEN: set scale is run
-        display_window.set_scale(0.5)
+@patch('PyQt5.QtWidgets.QVBoxLayout')
+def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
+    """
+    Test that the scale js is not run if the page is not initialised
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = False
+    display_window.run_javascript = MagicMock()
 
-        # THEN: javascript should not be run
-        display_window.run_javascript.assert_not_called()
+    # WHEN: set scale is run
+    display_window.set_scale(0.5)
 
-    def test_set_scale_initialised(self, MockSettings, mocked_webengine, mocked_addWidget):
-        """
-        Test that the scale js is not run if the page is not initialised
-        """
-        # GIVEN: A display window not yet initialised
-        display_window = DisplayWindow()
-        display_window._is_initialised = True
-        display_window.run_javascript = MagicMock()
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_not_called()
 
-        # WHEN: set scale is run
-        display_window.set_scale(0.5)
 
-        # THEN: javascript should not be run
-        display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
+@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the scale js is not run if the page is not initialised
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
 
-    @patch.object(time, 'time')
-    def test_run_javascript_no_sync_no_wait(self, MockSettings, mocked_webengine, mocked_addWidget, mock_time):
-        """
-        test a script is run on the webview
-        """
-        # GIVEN: A (fake) webengine page
-        display_window = DisplayWindow()
-        webengine_page = MagicMock()
-        display_window.webview.page = MagicMock(return_value=webengine_page)
+    # WHEN: set scale is run
+    display_window.set_scale(0.5)
 
-        # WHEN: javascript is requested to run
-        display_window.run_javascript('javascript to execute')
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
 
-        # THEN: javascript should be run with no delay
-        webengine_page.runJavaScript.assert_called_once_with('javascript to execute')
-        mock_time.sleep.assert_not_called()
 
-    @patch.object(time, 'time')
-    def test_run_javascript_sync_no_wait(self, MockSettings, mocked_webengine, mocked_addWidget, mock_time):
-        """
-        test a synced script is run on the webview and immediately returns a result
-        """
-        # GIVEN: A (fake) webengine page with a js callback fn
-        def save_callback(script, callback):
-            callback(1234)
-        display_window = DisplayWindow()
-        display_window.webview = MagicMock()
-        webengine_page = MagicMock()
-        webengine_page.runJavaScript.side_effect = save_callback
-        display_window.webview.page.return_value = webengine_page
+@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+@patch.object(time, 'time')
+def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    test a script is run on the webview
+    """
+    # GIVEN: A (fake) webengine page
+    display_window = DisplayWindow()
+    webengine_page = MagicMock()
+    display_window.webview.page = MagicMock(return_value=webengine_page)
 
-        # WHEN: javascript is requested to run
-        result = display_window.run_javascript('javascript to execute', True)
+    # WHEN: javascript is requested to run
+    display_window.run_javascript('javascript to execute')
 
-        # THEN: javascript should be run with no delay and return with the correct result
-        assert result == 1234
-        webengine_page.runJavaScript.assert_called_once()
-        mock_time.sleep.assert_not_called()
+    # THEN: javascript should be run with no delay
+    webengine_page.runJavaScript.assert_called_once_with('javascript to execute')
+    mock_time.sleep.assert_not_called()
+
+
+@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+@patch.object(time, 'time')
+def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    test a synced script is run on the webview and immediately returns a result
+    """
+    # GIVEN: A (fake) webengine page with a js callback fn
+    def save_callback(script, callback):
+        callback(1234)
+    display_window = DisplayWindow()
+    display_window.webview = MagicMock()
+    webengine_page = MagicMock()
+    webengine_page.runJavaScript.side_effect = save_callback
+    display_window.webview.page.return_value = webengine_page
+
+    # WHEN: javascript is requested to run
+    result = display_window.run_javascript('javascript to execute', True)
+
+    # THEN: javascript should be run with no delay and return with the correct result
+    assert result == 1234
+    webengine_page.runJavaScript.assert_called_once()
+    mock_time.sleep.assert_not_called()

@@ -37,6 +37,7 @@ from openlp.core.api.http import register_endpoint
 from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
@@ -104,7 +105,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             fedora_rpmfusion = translate('OpenLP.MediaController',
                                          'To install these libraries, you will need to enable the RPMFusion '
                                          'repository: https://rpmfusion.org/')
-            message = ''
             if is_macosx():
                 message = translate('OpenLP.MediaController',
                                     'macOS is missing VLC. Please download and install from the VLC web site: '
@@ -132,8 +132,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             except AttributeError:
                 State().update_pre_conditions('media_live', False)
                 State().missing_text('media_live', translate(
-                    'OpenLP.MediaController',
-                    'No Displays have been configured, so Live Media has been disabled'))
+                    'OpenLP.MediaController', 'No Displays have been configured, so Live Media has been disabled'))
             self.setup_display(self.preview_controller, True)
 
     def display_controllers(self, controller_type):
@@ -231,7 +230,16 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            controller.media_info.file_info = [service_item.get_frame_path()]
+            if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+                controller.media_info.file_info = [service_item.video_file_name]
+                service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
+                controller.media_info.is_looping_playback = True
+                controller.media_info.is_background = True
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                controller.media_info.file_info = []
+                controller.media_info.is_background = True
+            else:
+                controller.media_info.file_info = [service_item.get_frame_path()]
         display = self._define_display(controller)
         if controller.is_live:
             # if this is an optical device use special handling
@@ -271,7 +279,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             return False
         log.debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
         autoplay = False
-        if service_item.is_capable(ItemCapabilities.CanStream):
+        if service_item.requires_media():
             autoplay = True
         # Preview requested
         if not controller.is_live:
@@ -437,12 +445,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.seek_slider.blockSignals(False)
         controller.volume_slider.blockSignals(False)
         controller.media_info.is_playing = True
-        display = self._define_display(controller)
-        if controller.is_live:
+        if not controller.media_info.is_background:
+            display = self._define_display(controller)
             display.setVisible(False)
-            controller.preview_display.hide()
-        else:
-            display.setVisible(True)
         return True
 
     def tick(self, controller):
@@ -537,7 +542,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].stop(controller)
             self.current_media_players[controller.controller_type].set_visible(controller, False)
-            controller.preview_display.hide()
             controller.seek_slider.setSliderPosition(0)
             total_seconds = controller.media_info.length // 1000
             total_minutes = total_seconds // 60

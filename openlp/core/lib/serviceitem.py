@@ -35,25 +35,17 @@ from PyQt5 import QtGui
 from openlp.core.state import State
 from openlp.core.common import ThemeLevel, md5_hash
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import ItemCapabilities
+from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.icons import UiIcons
 
 
 log = logging.getLogger(__name__)
-
-
-class ServiceItemType(object):
-    """
-    Defines the type of service item
-    """
-    Text = 1
-    Image = 2
-    Command = 3
 
 
 class ServiceItem(RegistryProperties):
@@ -123,12 +115,12 @@ class ServiceItem(RegistryProperties):
                             the value in Settings is used when this value is missinig
         """
         if theme_level is None:
-            theme_level = Settings().value('themes/theme level')
+            theme_level = self.settings.value('themes/theme level')
         theme_manager = Registry().get('theme_manager')
         # Just assume we use the global theme.
         theme = theme_manager.global_theme
         if theme_level != ThemeLevel.Global:
-            service_theme = Settings().value('servicemanager/service theme')
+            service_theme = self.settings.value('servicemanager/service theme')
             # Service or Song level, so assume service theme (if it exists and item in service)
             # but use song theme if level is song (and it exists)
             if service_theme and self.from_service:
@@ -136,6 +128,17 @@ class ServiceItem(RegistryProperties):
             if theme_level == ThemeLevel.Song and self.theme:
                 theme = self.theme
         theme = theme_manager.get_theme_data(theme)
+        # Clean up capabilities and reload from the theme.
+        if self.is_text():
+            if self.is_capable(ItemCapabilities.CanStream):
+                self.remove_capability(ItemCapabilities.CanStream)
+            if self.is_capable(ItemCapabilities.HasBackgroundVideo):
+                self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+                self.add_capability(ItemCapabilities.CanStream)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+                self.video_file_name = theme.background_filename
+                self.add_capability(ItemCapabilities.HasBackgroundVideo)
         return theme
 
     def _new_item(self):
@@ -152,6 +155,14 @@ class ServiceItem(RegistryProperties):
         :param capability: The capability to add
         """
         self.capabilities.append(capability)
+
+    def remove_capability(self, capability):
+        """
+        Remove an ItemCapability from a ServiceItem
+
+        :param capability: The capability to remove
+        """
+        self.capabilities.remove(capability)
 
     def is_capable(self, capability):
         """
@@ -433,7 +444,7 @@ class ServiceItem(RegistryProperties):
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
             settings_section = service_item['serviceitem']['header']['name']
-            background = QtGui.QColor(Settings().value(settings_section + '/background color'))
+            background = QtGui.QColor(self.settings.value(settings_section + '/background color'))
             if path:
                 self.has_original_files = False
                 for text_image in service_item['serviceitem']['data']:
@@ -648,6 +659,11 @@ class ServiceItem(RegistryProperties):
             for frame in self.get_frames():
                 if self.get_frame_path(frame=frame) in invalid_paths:
                     self.remove_frame(frame)
+
+    def requires_media(self):
+        return self.is_capable(ItemCapabilities.HasBackgroundAudio) or \
+            self.is_capable(ItemCapabilities.HasBackgroundVideo) or \
+            self.is_capable(ItemCapabilities.CanStream)
 
     def missing_frames(self):
         """
