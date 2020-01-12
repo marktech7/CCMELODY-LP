@@ -279,7 +279,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             return False
         log.debug('video media type: {tpe} '.format(tpe=str(controller.media_info.media_type)))
         autoplay = False
-        if service_item.is_capable(ItemCapabilities.CanStream):
+        if service_item.requires_media():
             autoplay = True
         # Preview requested
         if not controller.is_live:
