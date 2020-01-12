@@ -30,8 +30,12 @@ from openlp.core.common import is_linux, is_win
 from openlp.core.common.i18n import translate
 from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
+from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 
+VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' --no-help ',' -H ', '--full-help ', ' --no-full-help ', ' --longhelp ',
+                          ' --no-longhelp ', ' --help-verbose ', ' --no-help-verbose ', ' -l ', ' --list ',
+                          ' --no-list ',  ' --list-verbose ', ' --no-list-verbose ']
 LINUX_STREAM = 'v4l2://{video}:v4l2-standard= :input-slave=alsa://{audio} :live-caching=300'
 WIN_STREAM = 'dshow://:dshow-vdev={video} :dshow-adev={audio} :live-caching=300'
 OSX_STREAM = 'avcapture://{video}:qtsound://{audio} :live-caching=300'
@@ -128,6 +132,15 @@ class MediaTab(SettingsTab):
         """
         Save the settings
         """
+        # Verify that there is no blacklisted arguments in entered that could cause issues, like shutting down OpenLP.
+        arguments = ' ' + self.vlc_arguments_edit.toPlainText() + ' '
+        for blacklisted in VLC_ARGUMENT_BLACKLIST:
+            if blacklisted in arguments:
+                critical_error_message_box(message=translate('MediaPlugin.MediaTab',
+                                                             'The argument {arg} must not be used for VLC!'.format(
+                                                                 arg=blacklisted.strip())), parent=self)
+                self.vlc_arguments_edit.setFocus()
+                return False
         setting_key = self.settings_section + '/media auto start'
         if Settings().value(setting_key) != self.auto_start_check_box.checkState():
             Settings().setValue(setting_key, self.auto_start_check_box.checkState())
