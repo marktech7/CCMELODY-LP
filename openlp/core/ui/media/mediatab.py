@@ -33,9 +33,8 @@ from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 
-VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' --no-help ',' -H ', '--full-help ', ' --no-full-help ', ' --longhelp ',
-                          ' --no-longhelp ', ' --help-verbose ', ' --no-help-verbose ', ' -l ', ' --list ',
-                          ' --no-list ',  ' --list-verbose ', ' --no-list-verbose ']
+VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' -H ', '--full-help ',  ' --longhelp ', ' --help-verbose ', ' -l ',
+                          ' --list ', ' --list-verbose ']
 LINUX_STREAM = 'v4l2://{video}:v4l2-standard= :input-slave=alsa://{audio} :live-caching=300'
 WIN_STREAM = 'dshow://:dshow-vdev={video} :dshow-adev={audio} :live-caching=300'
 OSX_STREAM = 'avcapture://{video}:qtsound://{audio} :live-caching=300'
@@ -86,11 +85,13 @@ class MediaTab(SettingsTab):
         self.vlc_arguments_layout = QtWidgets.QHBoxLayout(self.vlc_arguments_group_box)
         self.vlc_arguments_layout.setObjectName('vlc_arguments_layout')
         self.vlc_arguments_layout.setContentsMargins(0, 0, 0, 0)
-        self.vlc_arguments_edit = QtWidgets.QPlainTextEdit(self)
+        self.vlc_arguments_edit = QtWidgets.QLineEdit(self)
         self.vlc_arguments_layout.addWidget(self.vlc_arguments_edit)
         self.left_layout.addWidget(self.vlc_arguments_group_box)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
+        # Connect vlc_arguments_edit content validator
+        self.vlc_arguments_edit.editingFinished.connect(self.on_vlc_arguments_edit_finished)
 
     def retranslate_ui(self):
         """
@@ -111,7 +112,7 @@ class MediaTab(SettingsTab):
         self.video_edit.setText(Settings().value(self.settings_section + '/video'))
         if not self.stream_cmd.text():
             self.set_base_stream()
-        self.vlc_arguments_edit.setPlainText(Settings().value(self.settings_section + '/vlc arguments'))
+        self.vlc_arguments_edit.setText(Settings().value(self.settings_section + '/vlc arguments'))
         if Settings().value('advanced/experimental'):
             # vlc.MediaPlayer().audio_output_device_enum()
             for cam in QCameraInfo.availableCameras():
@@ -132,20 +133,11 @@ class MediaTab(SettingsTab):
         """
         Save the settings
         """
-        # Verify that there is no blacklisted arguments in entered that could cause issues, like shutting down OpenLP.
-        arguments = ' ' + self.vlc_arguments_edit.toPlainText() + ' '
-        for blacklisted in VLC_ARGUMENT_BLACKLIST:
-            if blacklisted in arguments:
-                critical_error_message_box(message=translate('MediaPlugin.MediaTab',
-                                                             'The argument {arg} must not be used for VLC!'.format(
-                                                                 arg=blacklisted.strip())), parent=self)
-                self.vlc_arguments_edit.setFocus()
-                return False
         setting_key = self.settings_section + '/media auto start'
         if Settings().value(setting_key) != self.auto_start_check_box.checkState():
             Settings().setValue(setting_key, self.auto_start_check_box.checkState())
         Settings().setValue(self.settings_section + '/stream command', self.stream_cmd.text())
-        Settings().setValue(self.settings_section + '/vlc arguments', self.vlc_arguments_edit.toPlainText())
+        Settings().setValue(self.settings_section + '/vlc arguments', self.vlc_arguments_edit.text())
         Settings().setValue(self.settings_section + '/video', self.video_edit.text())
         Settings().setValue(self.settings_section + '/audio', self.audio_edit.text())
         self.stream_cmd.setText(self.stream_cmd.text().format(video=self.video_edit.text(),
@@ -161,3 +153,24 @@ class MediaTab(SettingsTab):
 
     def on_revert(self):
         pass
+
+    def on_vlc_arguments_edit_finished(self):
+        """
+        Verify that there is no blacklisted arguments in entered that could cause issues, like shutting down OpenLP.
+        """
+        # This weird modified checking and setting is needed to prevent an infinite loop due to setting the focus
+        # back to vlc_arguments_edit triggers the editingFinished signal.
+        if not self.vlc_arguments_edit.isModified():
+            self.vlc_arguments_edit.setModified(True)
+            return
+        self.vlc_arguments_edit.setModified(False)
+        # Check for blacklisted arguments
+        arguments = ' ' + self.vlc_arguments_edit.text() + ' '
+        self.vlc_arguments_edit.setModified(False)
+        for blacklisted in VLC_ARGUMENT_BLACKLIST:
+            if blacklisted in arguments:
+                critical_error_message_box(message=translate('MediaPlugin.MediaTab',
+                                                             'The argument {arg} must not be used for VLC!'.format(
+                                                                 arg=blacklisted.strip())), parent=self)
+                self.vlc_arguments_edit.setFocus()
+                return
