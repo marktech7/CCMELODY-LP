@@ -252,12 +252,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
                 log.debug('video is stream and live')
-                path = service_item.get_frame_path()
-                (name, mrl, options) = parse_devicestream_path(path)
-                #is_valid = self._check_file_type(controller, display, True)
+                path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
-                #is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
-                #                                    controller)
+                (name, mrl, options) = parse_devicestream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
                 log.debug('video is not optical or stream, but live')
                 controller.media_info.length = service_item.media_length
@@ -272,13 +271,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
-                log.debug('video is stream and preview')
-                path = service_item.get_frame_path()
-                (name, mrl, options) = parse_devicestream_path(path)
+                path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
-                #is_valid = self._check_file_type(controller, display, True)
-                #is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
-                #                                    controller)
+                (name, mrl, options) = parse_devicestream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
                 log.debug('video is not optical or stream, but preview')
                 controller.media_info.length = service_item.media_length
@@ -368,21 +365,19 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.media_type = MediaType.DVD
         return True
 
-    def _check_file_type(self, controller, display, stream=False):
+    def _check_file_type(self, controller, display):
         """
         Select the correct media Player type from the prioritized Player list
 
         :param controller: First element is the controller which should be used
         :param display: Which display to use
-        :param stream: Are we streaming or not
         """
-        if stream:
+        if controller.media_info.media_type == MediaType.Stream:
             self.resize(controller, self.vlc_player)
-            controller.media_info.media_type = MediaType.Stream
-            if self.vlc_player.load(controller, display, None):
+            if self.vlc_player.load(controller, display, controller.media_info.file_info):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True
-            return True
+            return False
         for file in controller.media_info.file_info:
             if file.is_file:
                 suffix = '*%s' % file.suffix.lower()

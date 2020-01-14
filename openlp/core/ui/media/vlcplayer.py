@@ -160,13 +160,13 @@ class VlcPlayer(MediaPlayer):
         """
         return get_vlc() is not None
 
-    def load(self, controller, output_display, file=None):
+    def load(self, controller, output_display, file):
         """
         Load a video into VLC
 
         :param controller: The controller where the media is
         :param output_display: The display where the media is
-        :param file: file to be played or None for live streaming
+        :param file: file/stream to be played
         :return:
         """
         if not controller.vlc_instance:
@@ -174,7 +174,7 @@ class VlcPlayer(MediaPlayer):
         vlc = get_vlc()
         log.debug('load vid in Vlc Controller')
         path = None
-        if file:
+        if file and not controller.media_info.media_type == MediaType.Stream:
             path = os.path.normcase(file)
         # create the media
         if controller.media_info.media_type == MediaType.CD:
@@ -191,8 +191,8 @@ class VlcPlayer(MediaPlayer):
                 return False
             controller.vlc_media_player = audio_cd_tracks.item_at_index(controller.media_info.title_track)
         elif controller.media_info.media_type == MediaType.Stream:
-            stream_cmd = self.settings.value('media/stream command')
-            controller.vlc_media = controller.vlc_instance.media_new_location(stream_cmd)
+            controller.vlc_media = controller.vlc_instance.media_new_location(file[0])
+            controller.vlc_media.add_options(file[1])
         else:
             controller.vlc_media = controller.vlc_instance.media_new_path(path)
         # put the media in the media player

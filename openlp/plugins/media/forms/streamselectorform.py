@@ -36,13 +36,14 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
     """
     log.info('{name} StreamSelectorForm loaded'.format(name=__name__))
 
-    def __init__(self, media_item, parent, manager):
+    def __init__(self, parent, callback, theme_stream=False):
         """
         Constructor
         """
         super(StreamSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
-        self.media_item = media_item
+        self.callback = callback
+        self.theme_stream = theme_stream
         self.setup_ui(self)
         # setup callbacks
         for i in range(self.stacked_modes_layout.count()):
@@ -60,19 +61,22 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         Saves the current stream as a clip to the mediamanager
         """
         log.debug('in StreamSelectorForm.accept')
-        # Verify that a stream name exists
-        if not self.stream_name_edit.text().strip():
-            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed!'),
-                                       parent=self)
-            return
+        if not self.theme_stream:
+            # Verify that a stream name exists
+            if not self.stream_name_edit.text().strip():
+                critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed!'))
+                return
+            stream_name = self.stream_name_edit.text().strip()
+        else:
+            stream_name = ' '
         # Verify that a MRL exists
         if not self.mrl_lineedit.text().strip():
             critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A MRL is needed!'), parent=self)
             return
-        stream_string = 'devicestream:{name}&&{mrl}&&{options}'.format(name=self.stream_name_edit.text().strip(),
+        stream_string = 'devicestream:{name}&&{mrl}&&{options}'.format(name=stream_name,
                                                                        mrl=self.mrl_lineedit.text().strip(),
                                                                        options=self.vlc_options_lineedit.text().strip())
-        self.media_item.add_device_stream(stream_string)
+        self.callback(stream_string)
         return QtWidgets.QDialog.accept(self)
 
     def update_mrl_options(self, mrl, options):

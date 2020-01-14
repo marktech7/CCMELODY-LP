@@ -124,16 +124,31 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         Validate the current page
         """
-        background_image = BackgroundType.to_string(BackgroundType.Image)
-        if self.page(self.currentId()) == self.background_page and \
-                self.background_page.background_type == background_image and \
-                is_not_image_file(self.background_page.image_path):
-            QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
-                                           translate('OpenLP.ThemeWizard', 'You have not selected a '
-                                                     'background image. Please select one before continuing.'))
-            return False
-        else:
-            return True
+        if self.page(self.currentId()) == self.background_page:
+            background_image = BackgroundType.to_string(BackgroundType.Image)
+            background_video = BackgroundType.to_string(BackgroundType.Video)
+            background_stream = BackgroundType.to_string(BackgroundType.Stream)
+            if self.background_page.background_type == background_image and \
+                    is_not_image_file(self.background_page.image_path):
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background image. Please select one before continuing.'))
+                return False
+            elif self.background_page.background_type == background_video and \
+                    not self.background_page.video_path.strip():
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Video Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background video. Please select one before continuing.'))
+                return False
+            elif self.background_page.background_type == background_stream and \
+                    not self.background_page.stream_mrl.strip():
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Stream Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background stream. Please select one before continuing.'))
+                return False
+            else:
+                return True
+        return True
 
     def on_current_id_changed(self, page_id):
         """

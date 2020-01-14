@@ -33,7 +33,7 @@ from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 
-VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' -H ', '--full-help ',  ' --longhelp ', ' --help-verbose ', ' -l ',
+VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' -H ', '--full-help ', ' --longhelp ', ' --help-verbose ', ' -l ',
                           ' --list ', ' --list-verbose ']
 LINUX_STREAM = 'v4l2://{video}:v4l2-standard= :input-slave=alsa://{audio} :live-caching=300'
 WIN_STREAM = 'dshow://:dshow-vdev={video} :dshow-adev={audio} :live-caching=300'
@@ -99,7 +99,7 @@ class MediaTab(SettingsTab):
         """
         self.live_media_group_box.setTitle(translate('MediaPlugin.MediaTab', 'Live Media'))
         self.stream_media_group_box.setTitle(translate('MediaPlugin.MediaTab', 'Stream Media Command'))
-        self.vlc_arguments_group_box.setTitle(translate('MediaPlugin.MediaTab', 'VLC arguments'))
+        self.vlc_arguments_group_box.setTitle(translate('MediaPlugin.MediaTab', 'VLC arguments (requires restart)'))
         self.auto_start_check_box.setText(translate('MediaPlugin.MediaTab', 'Start Live items automatically'))
 
     def load(self):

@@ -533,11 +533,12 @@ class Ui_StreamSelector(object):
         self.top_layout = QtWidgets.QFormLayout(self.top_widget)
         self.top_layout.setObjectName('top_layout')
         # Stream name
-        self.stream_name_label = QtWidgets.QLabel(self.top_widget)
-        self.stream_name_label.setObjectName('stream_name_label')
-        self.stream_name_edit = QtWidgets.QLineEdit(self.top_widget)
-        self.stream_name_edit.setObjectName('stream_name_edit')
-        self.top_layout.addRow(self.stream_name_label, self.stream_name_edit)
+        if not self.theme_stream:
+            self.stream_name_label = QtWidgets.QLabel(self.top_widget)
+            self.stream_name_label.setObjectName('stream_name_label')
+            self.stream_name_edit = QtWidgets.QLineEdit(self.top_widget)
+            self.stream_name_edit.setObjectName('stream_name_edit')
+            self.top_layout.addRow(self.stream_name_label, self.stream_name_edit)
         # Mode combobox
         self.capture_mode_label = QtWidgets.QLabel(self.top_widget)
         self.capture_mode_label.setObjectName('capture_mode_label')
@@ -631,7 +632,8 @@ class Ui_StreamSelector(object):
 
     def retranslate_ui(self, stream_selector):
         stream_selector.setWindowTitle(translate('MediaPlugin.StreamSelector', 'Select Input Stream'))
-        self.stream_name_label.setText(translate('MediaPlugin.StreamSelector', 'Stream name'))
+        if not self.theme_stream:
+            self.stream_name_label.setText(translate('MediaPlugin.StreamSelector', 'Stream name'))
         self.capture_mode_label.setText(translate('MediaPlugin.StreamSelector', 'Capture Mode'))
         self.more_options_group.setTitle(translate('MediaPlugin.StreamSelector', 'More options'))
         self.caching_label.setText(translate('MediaPlugin.StreamSelector', 'Caching'))

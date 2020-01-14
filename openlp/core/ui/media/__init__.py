@@ -112,7 +112,7 @@ def parse_devicestream_path(input_string):
     :return: The elements extracted from the string:  streamname, MRL, VLC-options
     """
     log.debug('parse_devicestream_path, about to parse: "{text}"'.format(text=input_string))
-    # skip the header: 'devicestream:', split at '%%'
+    # skip the header: 'devicestream:', split at '&&'
     stream_info = input_string[len('devicestream:'):].split('&&')
     name = stream_info[0]
     mrl = stream_info[1]
