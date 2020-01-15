@@ -35,9 +35,6 @@ from openlp.core.ui.icons import UiIcons
 
 VLC_ARGUMENT_BLACKLIST = [' -h ', ' --help ', ' -H ', '--full-help ', ' --longhelp ', ' --help-verbose ', ' -l ',
                           ' --list ', ' --list-verbose ']
-LINUX_STREAM = 'v4l2://{video}:v4l2-standard= :input-slave=alsa://{audio} :live-caching=300'
-WIN_STREAM = 'dshow://:dshow-vdev={video} :dshow-adev={audio} :live-caching=300'
-OSX_STREAM = 'avcapture://{video}:qtsound://{audio} :live-caching=300'
 
 log = logging.getLogger(__name__)
 
@@ -68,18 +65,6 @@ class MediaTab(SettingsTab):
         self.auto_start_check_box.setObjectName('auto_start_check_box')
         self.media_layout.addWidget(self.auto_start_check_box)
         self.left_layout.addWidget(self.live_media_group_box)
-        self.stream_media_group_box = QtWidgets.QGroupBox(self.left_column)
-        self.stream_media_group_box.setObjectName('stream_media_group_box')
-        self.stream_media_layout = QtWidgets.QFormLayout(self.stream_media_group_box)
-        self.stream_media_layout.setObjectName('stream_media_layout')
-        self.stream_media_layout.setContentsMargins(0, 0, 0, 0)
-        self.video_edit = QtWidgets.QLineEdit(self)
-        self.stream_media_layout.addRow(translate('MediaPlugin.MediaTab', 'Video:'), self.video_edit)
-        self.audio_edit = QtWidgets.QLineEdit(self)
-        self.stream_media_layout.addRow(translate('MediaPlugin.MediaTab', 'Audio:'), self.audio_edit)
-        self.stream_cmd = QtWidgets.QLabel(self)
-        self.stream_media_layout.addWidget(self.stream_cmd)
-        self.left_layout.addWidget(self.stream_media_group_box)
         self.vlc_arguments_group_box = QtWidgets.QGroupBox(self.left_column)
         self.vlc_arguments_group_box.setObjectName('vlc_arguments_group_box')
         self.vlc_arguments_layout = QtWidgets.QHBoxLayout(self.vlc_arguments_group_box)
@@ -98,7 +83,6 @@ class MediaTab(SettingsTab):
         Translate the UI on the fly
         """
         self.live_media_group_box.setTitle(translate('MediaPlugin.MediaTab', 'Live Media'))
-        self.stream_media_group_box.setTitle(translate('MediaPlugin.MediaTab', 'Stream Media Command'))
         self.vlc_arguments_group_box.setTitle(translate('MediaPlugin.MediaTab', 'VLC arguments (requires restart)'))
         self.auto_start_check_box.setText(translate('MediaPlugin.MediaTab', 'Start Live items automatically'))
 
@@ -107,11 +91,6 @@ class MediaTab(SettingsTab):
         Load the settings
         """
         self.auto_start_check_box.setChecked(Settings().value(self.settings_section + '/media auto start'))
-        self.stream_cmd.setText(Settings().value(self.settings_section + '/stream command'))
-        self.audio_edit.setText(Settings().value(self.settings_section + '/audio'))
-        self.video_edit.setText(Settings().value(self.settings_section + '/video'))
-        if not self.stream_cmd.text():
-            self.set_base_stream()
         self.vlc_arguments_edit.setText(Settings().value(self.settings_section + '/vlc arguments'))
         if Settings().value('advanced/experimental'):
             # vlc.MediaPlayer().audio_output_device_enum()
@@ -121,14 +100,6 @@ class MediaTab(SettingsTab):
             for au in QAudioDeviceInfo.availableDevices(QAudio.AudioInput):
                 log.debug(au.deviceName())
 
-    def set_base_stream(self):
-        if is_linux:
-            self.stream_cmd.setText(LINUX_STREAM)
-        elif is_win:
-            self.stream_cmd.setText(WIN_STREAM)
-        else:
-            self.stream_cmd.setText(OSX_STREAM)
-
     def save(self):
         """
         Save the settings
@@ -136,12 +107,7 @@ class MediaTab(SettingsTab):
         setting_key = self.settings_section + '/media auto start'
         if Settings().value(setting_key) != self.auto_start_check_box.checkState():
             Settings().setValue(setting_key, self.auto_start_check_box.checkState())
-        Settings().setValue(self.settings_section + '/stream command', self.stream_cmd.text())
         Settings().setValue(self.settings_section + '/vlc arguments', self.vlc_arguments_edit.text())
-        Settings().setValue(self.settings_section + '/video', self.video_edit.text())
-        Settings().setValue(self.settings_section + '/audio', self.audio_edit.text())
-        self.stream_cmd.setText(self.stream_cmd.text().format(video=self.video_edit.text(),
-                                                              audio=self.audio_edit.text()))
 
     def post_set_up(self, post_update=False):
         """
