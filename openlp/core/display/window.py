@@ -386,7 +386,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         else:
             # If review Display for media so we need to display black box.
             if theme.background_type == 'stream':
-                theme_copy.background_type = 'transparent'
+                theme_copy.background_type = 'image'
+                theme_copy.background_filename = self.checkerboard_path
             elif service_item_type == ServiceItemType.Command or theme.background_type == 'video' or \
                     theme.background_type == 'live':
                 theme_copy.background_type = 'solid'

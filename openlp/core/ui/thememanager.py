@@ -686,7 +686,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme_path.write_text(theme_pretty)
         except OSError:
             self.log_exception('Saving theme to file failed')
-        if theme.background_source and theme.background_filename:
+        if theme.background_source and theme.background_filename and theme.background_type != 'stream':
             background_file = background_override
             # Use theme source image if override doesn't exist
             if not background_file or not background_file.exists():

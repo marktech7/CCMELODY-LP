@@ -135,7 +135,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                                                          'background image. Please select one before continuing.'))
                 return False
             elif self.background_page.background_type == background_video and \
-                    not self.background_page.video_path.strip():
+                    not self.background_page.video_path:
                 QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Video Empty'),
                                                translate('OpenLP.ThemeWizard', 'You have not selected a '
                                                          'background video. Please select one before continuing.'))
@@ -268,6 +268,9 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 self.background_page.video_path = self.theme.background_source
             else:
                 self.background_page.video_path = self.theme.background_filename
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            self.background_page.stream_color = self.theme.background_border_color
+            self.background_page.stream_mrl = self.theme.background_source
 
     def set_main_area_page_values(self):
         """
@@ -353,6 +356,10 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             self.theme.background_border_color = self.background_page.video_color
             self.theme.background_source = self.background_page.video_path
             self.theme.background_filename = self.background_page.video_path
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            self.theme.background_border_color = self.background_page.stream_color
+            self.theme.background_source = self.background_page.stream_mrl
+            self.theme.background_filename = self.background_page.stream_mrl
         # main page
         self.theme.font_main_name = self.main_area_page.font_name
         self.theme.font_main_size = self.main_area_page.font_size
@@ -412,6 +419,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
             file_name = self.theme.background_filename.name
             destination_path = self.path / self.theme.theme_name / file_name
+        if self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            destination_path = self.theme.background_source
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
         # Set the theme background to the cache location

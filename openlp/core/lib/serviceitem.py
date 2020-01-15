@@ -136,6 +136,8 @@ class ServiceItem(RegistryProperties):
                 self.remove_capability(ItemCapabilities.HasBackgroundVideo)
             if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
                 self.add_capability(ItemCapabilities.CanStream)
+                self.add_capability(ItemCapabilities.HasBackgroundVideo)
+                self.stream_mrl = theme.background_filename
             if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
                 self.video_file_name = theme.background_filename
                 self.add_capability(ItemCapabilities.HasBackgroundVideo)

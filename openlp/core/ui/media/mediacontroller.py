@@ -231,13 +231,16 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            if service_item.is_capable(ItemCapabilities.CanStream) and \
+                    service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+                (name, mrl, options) = parse_devicestream_path(service_item.stream_mrl)
+                controller.media_info.file_info = (mrl, options)
+                controller.media_info.is_background = True
+                controller.media_info.media_type = MediaType.Stream
+            elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
                 service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
                 controller.media_info.is_looping_playback = True
-                controller.media_info.is_background = True
-            elif service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.file_info = []
                 controller.media_info.is_background = True
             else:
                 controller.media_info.file_info = [service_item.get_frame_path()]
@@ -250,7 +253,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
-            elif service_item.is_capable(ItemCapabilities.CanStream):
+            elif service_item.is_capable(ItemCapabilities.CanStream) and \
+                    not service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 log.debug('video is stream and live')
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
@@ -270,7 +274,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
-            elif service_item.is_capable(ItemCapabilities.CanStream):
+            elif service_item.is_capable(ItemCapabilities.CanStream) and \
+                    not service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
                 (name, mrl, options) = parse_devicestream_path(path)
