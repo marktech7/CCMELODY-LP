@@ -322,7 +322,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             del media_clip_selector_form
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-                                       translate('MediaPlugin.MediaItem', 'Optical device support requires VLC!'))
+                                       translate('MediaPlugin.MediaItem', 'Optical device support requires VLC.'))
 
     def add_optical_clip(self, optical):
         """
@@ -351,7 +351,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             del stream_selector_form
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-                                       translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC!'))
+                                       translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
 
     def add_device_stream(self, stream):
         """

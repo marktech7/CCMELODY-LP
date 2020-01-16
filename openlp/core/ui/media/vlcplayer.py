@@ -125,7 +125,7 @@ class VlcPlayer(MediaPlayer):
                 controller.vlc_instance = vlc.Instance(command_line_options)
                 if controller.vlc_instance:
                     critical_error_message_box(message=translate('MediaPlugin.VlcPlayer',
-                                                                 'The VLC arguments are invalid!'))
+                                                                 'The VLC arguments are invalid.'))
                 else:
                     return
         else:

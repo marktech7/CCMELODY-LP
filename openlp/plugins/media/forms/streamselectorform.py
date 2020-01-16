@@ -64,14 +64,14 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         if not self.theme_stream:
             # Verify that a stream name exists
             if not self.stream_name_edit.text().strip():
-                critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed!'))
+                critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed.'))
                 return
             stream_name = self.stream_name_edit.text().strip()
         else:
             stream_name = ' '
         # Verify that a MRL exists
         if not self.mrl_lineedit.text().strip():
-            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A MRL is needed!'), parent=self)
+            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A MRL is needed.'), parent=self)
             return
         stream_string = 'devicestream:{name}&&{mrl}&&{options}'.format(name=stream_name,
                                                                        mrl=self.mrl_lineedit.text().strip(),

@@ -42,7 +42,7 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path,\
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path, \
     VIDEO_EXT, AUDIO_EXT
 from openlp.core.ui.media.endpoint import media_endpoint
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc

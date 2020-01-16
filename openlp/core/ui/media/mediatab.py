@@ -26,7 +26,6 @@ import logging
 from PyQt5 import QtWidgets
 from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
-from openlp.core.common import is_linux, is_win
 from openlp.core.common.i18n import translate
 from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab

@@ -216,7 +216,7 @@ class BackgroundPage(GridLayoutPage):
             del stream_selector_form
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
-                                       translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC!'))
+                                       translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
 
     def set_stream(self, stream_str):
         """
