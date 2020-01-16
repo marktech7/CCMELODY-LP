@@ -75,6 +75,7 @@ class TestController(TestCase):
         self.mocked_renderer.format_slide = self.mocked_slide_formater
         Registry().register('live_controller', self.mocked_live_controller)
         Registry().register('renderer', self.mocked_renderer)
+        Registry().register('settings', MagicMock(**{'value.return_value': 'english'}))
 
     def test_controller_text_empty(self):
         """
