@@ -92,8 +92,8 @@ class CustomMediaItem(MediaManagerItem):
         Config has been updated so reload values
         """
         log.debug('Config loaded')
-        self.add_custom_from_service = Settings().value(self.settings_section + '/add custom from service')
-        self.is_search_as_you_type_enabled = Settings().value('advanced/search as type')
+        self.add_custom_from_service = self.settings.value(self.settings_section + '/add custom from service')
+        self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
 
     def retranslate_ui(self):
         """
@@ -238,7 +238,7 @@ class CustomMediaItem(MediaManagerItem):
         service_item.title = title
         for slide in raw_slides:
             service_item.add_from_text(slide)
-        if Settings().value(self.settings_section + '/display footer') or credit:
+        if self.settings.value(self.settings_section + '/display footer') or credit:
             service_item.raw_footer.append(' '.join([title, credit]))
         else:
             service_item.raw_footer.append('')

@@ -128,6 +128,8 @@ class TestMediaItem(TestCase, TestMixin):
         self.mocked_settings = settings_patcher.start()
 
         Registry.create()
+        Registry().register('settings', self.mocked_settings_instance)
+
 
         # self.setup_application()
         self.mocked_application = MagicMock()
