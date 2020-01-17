@@ -27,7 +27,6 @@ from sqlalchemy.sql import and_, func, or_
 from openlp.core.common.enum import CustomSearch
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import check_item_selected
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.plugin import PluginStatus
