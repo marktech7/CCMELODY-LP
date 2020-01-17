@@ -130,7 +130,6 @@ class TestMediaItem(TestCase, TestMixin):
         Registry.create()
         Registry().register('settings', self.mocked_settings_instance)
 
-
         # self.setup_application()
         self.mocked_application = MagicMock()
         Registry().register('application', self.mocked_application)
