@@ -51,7 +51,7 @@ class CustomPlugin(Plugin):
     log.info('Custom Plugin loaded')
 
     def __init__(self):
-        super(CustomPlugin, self).__init__('custom', None, CustomMediaItem, CustomTab)
+        super(CustomPlugin, self).__init__('custom', CustomMediaItem, CustomTab)
         self.weight = -5
         self.db_manager = Manager('custom', init_schema)
         self.icon_path = UiIcons().clone

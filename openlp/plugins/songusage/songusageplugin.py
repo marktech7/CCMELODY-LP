@@ -51,7 +51,7 @@ class SongUsagePlugin(Plugin):
     log.info('SongUsage Plugin loaded')
 
     def __init__(self):
-        super(SongUsagePlugin, self).__init__('songusage', None)
+        super(SongUsagePlugin, self).__init__('songusage')
         self.manager = Manager('songusage', init_schema, upgrade_mod=upgrade)
         self.weight = -4
         self.icon = UiIcons().song_usage

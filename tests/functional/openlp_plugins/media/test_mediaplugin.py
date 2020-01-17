@@ -29,7 +29,7 @@ from openlp.plugins.media.mediaplugin import MediaPlugin
 from tests.helpers.testmixin import TestMixin
 
 
-class MediaPluginTest(TestCase, TestMixin):
+class TestMediaPlugin(TestCase, TestMixin):
     """
     Test the media plugin
     """
