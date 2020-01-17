@@ -43,7 +43,7 @@ def mocked_media_item(mock_settings):
     Registry().register('live_controller', MagicMock())
     mocked_plugin = MagicMock()
     with patch('openlp.plugins.images.lib.mediaitem.MediaManagerItem._setup'), \
-         patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.setup_item'):
+            patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.setup_item'):
         media_item = ImageMediaItem(None, mocked_plugin)
         media_item.settings_section = 'images'
     yield media_item

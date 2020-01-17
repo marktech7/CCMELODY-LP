@@ -144,8 +144,7 @@ class TestMediaItem(TestCase, TestMixin):
 
     @patch('openlp.plugins.presentations.lib.mediaitem.MediaManagerItem._setup')
     @patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item')
-    @patch('openlp.plugins.presentations.lib.mediaitem.Settings')
-    def test_search(self, mocked_settings, *unreferenced_mocks):
+    def test_search(self, *unreferenced_mocks):
         """
         Test that the search method finds the correct results
         """
@@ -156,7 +155,7 @@ class TestMediaItem(TestCase, TestMixin):
         path_3 = Path('another_dir', 'ppt_file')
         mocked_returned_settings = MagicMock()
         mocked_returned_settings.value.return_value = [path_1, path_2, path_3]
-        mocked_settings.return_value = mocked_returned_settings
+        Registry().register('settings', mocked_returned_settings)
         media_item = PresentationMediaItem(None, MagicMock(), None)
         media_item.settings_section = ''
 
