@@ -21,10 +21,9 @@
 """
 The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
-from PyQt5 import QtGui
+from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import is_win
-from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
 
@@ -88,7 +87,7 @@ def get_application_stylesheet():
         stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     else:
         if not Settings().value('advanced/alternate rows'):
-            base_color = Registry().get('application').palette().color(QtGui.QPalette.Active, QtGui.QPalette.Base)
+            base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.Active, QtGui.QPalette.Base)
             alternate_rows_repair_stylesheet = \
                 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: ' + base_color.name() + ';}\n'
             stylesheet += alternate_rows_repair_stylesheet

@@ -22,11 +22,15 @@
 The :mod:`songpro` module provides the functionality for importing SongPro
 songs into the OpenLP database.
 """
+import logging
 import re
 from pathlib import Path
 
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import strip_rtf
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+
+log = logging.getLogger(__name__)
 
 
 class SongProImport(SongImport):
@@ -82,7 +86,13 @@ class SongProImport(SongImport):
                     break
                 file_text = file_line.rstrip()
                 if file_text and file_text[0] == '#':
-                    self.process_section(tag, text.rstrip())
+                    try:
+                        self.process_section(tag, text.rstrip())
+                    except ValueError:
+                        log.exception('Missing data in {name}'.format(name=self.import_source))
+                        self.log_error(self.import_source, translate('SongsPlugin.SongProImport',
+                                                                     'File is not a valid SongPro file.'))
+                        return
                     tag = file_text[1:]
                     text = ''
                 else:

@@ -40,6 +40,7 @@ from openlp.core.common.settings import Settings
 from openlp.core.lib.db import delete_database
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.widgets.enums import PathEditType
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
 from openlp.plugins.bibles.lib.db import clean_filename
@@ -276,6 +277,7 @@ class BibleImportForm(OpenLPWizard):
         self.sword_folder_label.setObjectName('SwordFolderLabel')
         self.sword_folder_path_edit = PathEdit(
             self.sword_folder_tab,
+            path_type=PathEditType.Directories,
             default_path=Settings().value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.SWORD),
             show_revert=False,
@@ -502,6 +504,11 @@ class BibleImportForm(OpenLPWizard):
                         self.sword_folder_path_edit.setFocus()
                         return False
                     key = self.sword_bible_combo_box.itemData(self.sword_bible_combo_box.currentIndex())
+                    if not key:
+                        critical_error_message_box(UiStrings().NFSs,
+                                                   WizardStrings.YouSpecifyFolder % WizardStrings.SWORD)
+                        self.sword_folder_path_edit.setFocus()
+                        return False
                     if 'description' in self.pysword_folder_modules_json[key]:
                         self.version_name_edit.setText(self.pysword_folder_modules_json[key]['description'])
                     if 'distributionlicense' in self.pysword_folder_modules_json[key]:

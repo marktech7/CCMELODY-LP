@@ -48,7 +48,8 @@ class TestWordProjectImport(TestCase):
         self.manager_patcher.start()
 
     @patch.object(Path, 'read_text')
-    def test_process_books(self, mocked_read_text):
+    @patch.object(Path, 'exists')
+    def test_process_books(self, mocked_exists, mocked_read_text):
         """
         Test the process_books() method
         """
@@ -58,11 +59,14 @@ class TestWordProjectImport(TestCase):
         importer.stop_import_flag = False
         importer.language_id = 'en'
         mocked_read_text.return_value = INDEX_PAGE
+        mocked_exists.return_value = True
 
         # WHEN: process_books() is called
-        with patch.object(importer, 'find_and_create_book') as mocked_find_and_create_book, \
+        with patch.object(importer, '_unzip_file') as mocked_unzip_file, \
+                patch.object(importer, 'find_and_create_book') as mocked_find_and_create_book, \
                 patch.object(importer, 'process_chapters') as mocked_process_chapters, \
                 patch.object(importer, 'session') as mocked_session:
+            mocked_unzip_file.return_value = True
             importer.process_books()
 
         # THEN: The right methods should have been called
@@ -173,6 +177,8 @@ class TestWordProjectImport(TestCase):
                 patch.object(importer, 'get_language_id') as mocked_get_language_id, \
                 patch.object(importer, 'process_books') as mocked_process_books, \
                 patch.object(importer, '_cleanup') as mocked_cleanup:
+            mocked_unzip_file.return_value = True
+            mocked_process_books.return_value = True
             mocked_get_language_id.return_value = 1
             result = importer.do_import()
 

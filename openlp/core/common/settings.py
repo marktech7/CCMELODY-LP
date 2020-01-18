@@ -306,7 +306,7 @@ class Settings(QtCore.QSettings):
         'songs/db hostname': '',
         'songs/db database': '',
         'songs/last used search type': SongSearch.Entire,
-        'songs/last import type': None,
+        'songs/last import type': 0,
         'songs/update service on edit': False,
         'songs/add song from service': True,
         'songs/add songbook slide': False,
