@@ -87,21 +87,30 @@ class DreamBeamImport(SongImport):
                     return
                 self.set_defaults()
                 author_copyright = ''
-                parser = etree.XMLParser(remove_blank_text=True)
+                parser = etree.XMLParser(remove_blank_text=True, recover=True)
                 try:
                     with file_path.open('r') as xml_file:
                         parsed_file = etree.parse(xml_file, parser)
                 except etree.XMLSyntaxError:
-                    log.exception('XML syntax error in file_path {name}'.format(name=file_path))
+                    log.exception('XML syntax error in file {name}'.format(name=file_path))
                     self.log_error(file_path, SongStrings.XMLSyntaxError)
                     continue
-                xml = etree.tostring(parsed_file).decode()
+                except UnicodeDecodeError:
+                    log.exception('Unreadable characters in {name}'.format(name=file_path))
+                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    continue
+                file_str = etree.tostring(parsed_file)
+                if not file_str:
+                    log.exception('Could not find XML in file {name}'.format(name=file_path))
+                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    continue
+                xml = file_str.decode()
                 song_xml = objectify.fromstring(xml)
                 if song_xml.tag != 'DreamSong':
                     self.log_error(
                         file_path,
                         translate('SongsPlugin.DreamBeamImport',
-                                  'Invalid DreamBeam song file_path. Missing DreamSong tag.'))
+                                  'Invalid DreamBeam song file. Missing DreamSong tag.'))
                     continue
                 if hasattr(song_xml, 'Version'):
                     self.version = float(song_xml.Version.text)

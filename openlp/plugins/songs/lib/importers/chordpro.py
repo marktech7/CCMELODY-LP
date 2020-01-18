@@ -25,6 +25,7 @@ ChordPro files into the current database.
 import logging
 import re
 
+from openlp.core.common.i18n import translate
 from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.db import AuthorType
@@ -60,7 +61,12 @@ class ChordProImport(SongImport):
         """
         self.set_defaults()
         # Loop over the lines of the file
-        file_content = song_file.read()
+        try:
+            file_content = song_file.read()
+        except UnicodeDecodeError:
+            self.log_error(song_file.name, translate('SongsPlugin.CCLIFileImport',
+                                                     'The file contains unreadable characters.'))
+            return
         current_verse = ''
         current_verse_type = 'v'
         skip_block = False
@@ -181,7 +187,7 @@ class ChordProImport(SongImport):
                 current_verse = re.sub(r'\[.*?\]', '', current_verse)
             self.add_verse(current_verse.rstrip(), current_verse_type)
         # if no title was in directives, get it from the first line
-        if not self.title:
+        if not self.title and self.verses:
             (verse_def, verse_text, lang) = self.verses[0]
             # strip any chords from the title
             self.title = re.sub(r'\[.*?\]', '', verse_text.split('\n')[0])

@@ -127,6 +127,10 @@ class FoilPresenterImport(SongImport):
             except etree.XMLSyntaxError:
                 self.log_error(file_path, SongStrings.XMLSyntaxError)
                 log.exception('XML syntax error in file {path}'.format(path=file_path))
+            except AttributeError:
+                self.log_error(file_path, translate('SongsPlugin.FoilPresenterSongImport',
+                                                    'Invalid Foilpresenter song file. Missing expected tags'))
+                log.exception('Missing content in file {path}'.format(path=file_path))
 
 
 class FoilPresenter(object):
