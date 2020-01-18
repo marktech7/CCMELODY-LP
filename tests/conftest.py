@@ -36,7 +36,7 @@ from openlp.core.common.settings import Settings
 
 
 @pytest.yield_fixture
-def qapp(qbot):
+def qapp(qtbot):
     """An instance of QApplication"""
     app = OpenLP()
     yield app
@@ -44,7 +44,7 @@ def qapp(qbot):
 
 
 @pytest.yield_fixture
-def mocked_qapp(qbot):
+def mocked_qapp(qtbot):
     """A mocked instance of QApplication"""
     app = MagicMock()
     yield app
