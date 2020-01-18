@@ -97,7 +97,7 @@ def mocked_media_item(mock_settings):
     Registry().register('main_window', MagicMock())
     mocked_plugin = MagicMock()
     with patch('openlp.core.lib.mediamanageritem.MediaManagerItem._setup'), \
-         patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__'):
+            patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__'):
         media_item = SongMediaItem(None, mocked_plugin)
         media_item.save_auto_select_id = MagicMock()
         media_item.list_view = MagicMock()

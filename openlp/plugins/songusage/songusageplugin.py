@@ -116,7 +116,7 @@ class SongUsagePlugin(Plugin):
         super(SongUsagePlugin, self).initialise()
         Registry().register_function('slidecontroller_live_started', self.display_song_usage)
         Registry().register_function('print_service_started', self.print_song_usage)
-        self.song_usage_active = Settings().value(self.settings_section + '/active')
+        self.song_usage_active = self.settings.value(self.settings_section + '/active')
         # Set the button and checkbox state
         self.set_button_state()
         action_list = ActionList.get_instance()
@@ -150,7 +150,7 @@ class SongUsagePlugin(Plugin):
         the UI when necessary,
         """
         self.song_usage_active = not self.song_usage_active
-        Settings().setValue(self.settings_section + '/active', self.song_usage_active)
+        self.settings.setValue(self.settings_section + '/active', self.song_usage_active)
         self.set_button_state()
 
     def set_button_state(self):
