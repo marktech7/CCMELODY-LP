@@ -122,12 +122,9 @@ class TestMediaItem(TestCase, TestMixin):
 
         self.mocked_settings_instance = MagicMock()
         self.mocked_settings_instance.value.side_effect = lambda key: self.setting_values[key]
-        settings_patcher = patch(
-            'openlp.plugins.bibles.lib.mediaitem.Settings', return_value=self.mocked_settings_instance)
-        self.addCleanup(settings_patcher.stop)
-        self.mocked_settings = settings_patcher.start()
 
         Registry.create()
+        Registry().register('settings', self.mocked_settings_instance)
 
         # self.setup_application()
         self.mocked_application = MagicMock()

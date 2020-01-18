@@ -122,7 +122,7 @@ class AlertsPlugin(Plugin):
         """
         Class __init__ method
         """
-        super(AlertsPlugin, self).__init__('alerts', None, settings_tab_class=AlertsTab)
+        super(AlertsPlugin, self).__init__('alerts', settings_tab_class=AlertsTab)
         self.weight = -3
         self.icon_path = UiIcons().alert
         self.icon = self.icon_path

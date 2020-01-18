@@ -32,7 +32,6 @@ from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext, check_item_selected, create_separated_list
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.plugin import PluginStatus
@@ -115,9 +114,9 @@ class SongMediaItem(MediaManagerItem):
         Is triggered when the songs config is updated
         """
         log.debug('config_updated')
-        self.is_search_as_you_type_enabled = Settings().value('advanced/search as type')
-        self.update_service_on_edit = Settings().value(self.settings_section + '/update service on edit')
-        self.add_song_from_service = Settings().value(self.settings_section + '/add song from service')
+        self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
+        self.update_service_on_edit = self.settings.value(self.settings_section + '/update service on edit')
+        self.add_song_from_service = self.settings.value(self.settings_section + '/add song from service')
 
     def retranslate_ui(self):
         self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))
@@ -564,7 +563,7 @@ class SongMediaItem(MediaManagerItem):
         service_item.theme = song.theme_name
         service_item.edit_id = item_id
         verse_list = SongXML().get_verses(song.lyrics)
-        if Settings().value('songs/add songbook slide') and song.songbook_entries:
+        if self.settings.value('songs/add songbook slide') and song.songbook_entries:
             first_slide = '\n'
             for songbook_entry in song.songbook_entries:
                 first_slide += '{book} #{num}'.format(book=songbook_entry.songbook.name,
@@ -681,10 +680,10 @@ class SongMediaItem(MediaManagerItem):
         songbooks = [str(songbook_entry) for songbook_entry in song.songbook_entries]
         if song.songbook_entries:
             item.raw_footer.append(", ".join(songbooks))
-        if Settings().value('core/ccli number'):
+        if self.settings.value('core/ccli number'):
             item.raw_footer.append(translate('SongsPlugin.MediaItem', 'CCLI License: ') +
-                                   Settings().value('core/ccli number'))
-        footer_template = Settings().value('songs/footer template')
+                                   self.settings.value('core/ccli number'))
+        footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
             'title': song.title,
@@ -703,7 +702,7 @@ class SongMediaItem(MediaManagerItem):
             'authors_music_all': authors_music + authors_words_music,
             'copyright': song.copyright,
             'songbook_entries': songbooks,
-            'ccli_license': Settings().value('core/ccli number'),
+            'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': song.ccli_number,
             'topics': [topic.name for topic in song.topics]

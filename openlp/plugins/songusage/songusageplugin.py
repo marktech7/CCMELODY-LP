@@ -28,7 +28,6 @@ from openlp.core.state import State
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
@@ -51,7 +50,7 @@ class SongUsagePlugin(Plugin):
     log.info('SongUsage Plugin loaded')
 
     def __init__(self):
-        super(SongUsagePlugin, self).__init__('songusage', None)
+        super(SongUsagePlugin, self).__init__('songusage')
         self.manager = Manager('songusage', init_schema, upgrade_mod=upgrade)
         self.weight = -4
         self.icon = UiIcons().song_usage
@@ -116,7 +115,7 @@ class SongUsagePlugin(Plugin):
         super(SongUsagePlugin, self).initialise()
         Registry().register_function('slidecontroller_live_started', self.display_song_usage)
         Registry().register_function('print_service_started', self.print_song_usage)
-        self.song_usage_active = Settings().value(self.settings_section + '/active')
+        self.song_usage_active = self.settings.value(self.settings_section + '/active')
         # Set the button and checkbox state
         self.set_button_state()
         action_list = ActionList.get_instance()
@@ -150,7 +149,7 @@ class SongUsagePlugin(Plugin):
         the UI when necessary,
         """
         self.song_usage_active = not self.song_usage_active
-        Settings().setValue(self.settings_section + '/active', self.song_usage_active)
+        self.settings.setValue(self.settings_section + '/active', self.song_usage_active)
         self.set_button_state()
 
     def set_button_state(self):
