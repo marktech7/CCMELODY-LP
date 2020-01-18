@@ -31,6 +31,7 @@ from PyQt5 import QtCore, QtWidgets  # noqa
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.app import OpenLP
+from openlp.core.state import State
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
@@ -82,3 +83,8 @@ def mock_settings(registry):
     yield mock_settings
     Registry().remove('settings')
     del mock_settings
+
+
+@pytest.fixture(scope='function')
+def state():
+    State().load_settings()
