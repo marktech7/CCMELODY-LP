@@ -29,7 +29,6 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext, build_icon, check_item_selected, create_thumb, validate_thumb
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.plugin import StringContent
