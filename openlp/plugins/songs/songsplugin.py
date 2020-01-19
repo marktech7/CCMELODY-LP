@@ -53,7 +53,7 @@ from openlp.plugins.songs.lib.songstab import SongsTab
 
 
 log = logging.getLogger(__name__)
-__default_settings__ = {
+song_footer = {
     'songs/footer template': """\
 ${title}<br/>
 
@@ -121,12 +121,13 @@ class SongsPlugin(Plugin):
         """
         Create and set up the Songs plugin.
         """
-        super(SongsPlugin, self).__init__('songs', __default_settings__, SongMediaItem, SongsTab)
+        super(SongsPlugin, self).__init__('songs', SongMediaItem, SongsTab)
         self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
         self.weight = -10
         self.icon_path = UiIcons().music
         self.icon = build_icon(self.icon_path)
         self.songselect_form = None
+        self.settings.extend_default_settings(song_footer)
         register_endpoint(songs_endpoint)
         register_endpoint(api_songs_endpoint)
         State().add_service(self.name, self.weight, is_plugin=True)

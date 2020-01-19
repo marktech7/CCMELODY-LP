@@ -75,11 +75,12 @@ class TestServiceItem(TestCase, TestMixin):
         Set up the Registry
         """
         self.build_settings()
-        Settings().extend_default_settings(__default_settings__)
+        self.setting.extend_default_settings(__default_settings__)
+        self.setting.setValue('songs/chord notation', 'english')
         Registry.create()
+        Registry().register('settings', self.setting)
         # Mock the renderer and its format_slide method
         mocked_renderer = MagicMock()
-        Registry().register('settings', Settings())
 
         def side_effect_return_arg(arg1, arg2):
             return [arg1]

@@ -45,7 +45,7 @@ class MediaPlugin(Plugin):
     log.info('{name} MediaPlugin loaded'.format(name=__name__))
 
     def __init__(self):
-        super(MediaPlugin, self).__init__('media', None, MediaMediaItem)
+        super(MediaPlugin, self).__init__('media', MediaMediaItem)
         self.weight = -6
         self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)

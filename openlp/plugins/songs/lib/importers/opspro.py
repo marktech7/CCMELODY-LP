@@ -58,7 +58,7 @@ class OPSProImport(SongImport):
         try:
             conn = pyodbc.connect('DRIVER={{Microsoft Access Driver (*.mdb)}};DBQ={source};'
                                   'PWD={password}'.format(source=self.import_source, password=password))
-        except (pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError, pyodbc.OperationalError) as e:
+        except Exception as e:
             log.warning('Unable to connect the OPS Pro database {source}. {error}'.format(source=self.import_source,
                                                                                           error=str(e)))
             # Unfortunately no specific exception type

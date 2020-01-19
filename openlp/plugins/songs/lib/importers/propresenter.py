@@ -25,11 +25,13 @@ ProPresenter song files into the current installation database.
 import base64
 import logging
 
-from lxml import objectify
+from lxml import objectify, etree
 
+from openlp.core.common.i18n import translate
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib import strip_rtf
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+from openlp.plugins.songs.lib.ui import SongStrings
 
 
 log = logging.getLogger(__name__)
@@ -48,8 +50,23 @@ class ProPresenterImport(SongImport):
             self.import_wizard.increment_progress_bar(
                 WizardStrings.ImportingType.format(source=file_path.name))
             with file_path.open('rb') as xml_file:
-                root = objectify.parse(xml_file).getroot()
-                self.process_song(root, file_path)
+                try:
+                    root = objectify.parse(xml_file).getroot()
+                except etree.XMLSyntaxError:
+                    log.exception('XML syntax error in file {name}'.format(name=file_path))
+                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    continue
+                except UnicodeDecodeError:
+                    log.exception('Unreadable characters in {name}'.format(name=file_path))
+                    self.log_error(file_path, SongStrings.XMLSyntaxError)
+                    continue
+                try:
+                    self.process_song(root, file_path)
+                except AttributeError:
+                    log.exception('XML syntax error in file {name}'.format(name=file_path))
+                    self.log_error(file_path, translate('SongsPlugin.ProPresenterImport',
+                                                        'File is not a valid ProPresenter XMl file.'))
+                    continue
 
     def process_song(self, root, file_path):
         """
@@ -62,7 +79,7 @@ class ProPresenterImport(SongImport):
         # Extract ProPresenter versionNumber
         try:
             self.version = int(root.get('versionNumber'))
-        except ValueError:
+        except (ValueError, TypeError):
             log.debug('ProPresenter versionNumber invalid or missing')
             return
 

@@ -54,7 +54,12 @@ class ZefaniaBible(BibleImport):
             if not language_id:
                 return False
             no_of_books = int(xmlbible.xpath('count(//BIBLEBOOK)'))
-            self.wizard.progress_bar.setMaximum(int(xmlbible.xpath('count(//CHAPTER)')))
+            no_of_chap = int(xmlbible.xpath('count(//CHAPTER)'))
+            if not no_of_books or not no_of_chap:
+                critical_error_message_box(message=translate('BiblesPlugin.ZefaniaImport',
+                                                             'Incorrect Bible file type. Expected data is missing.'))
+                return False
+            self.wizard.progress_bar.setMaximum(no_of_chap)
             for BIBLEBOOK in xmlbible:
                 if self.stop_import_flag:
                     break

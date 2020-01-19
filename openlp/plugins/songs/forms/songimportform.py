@@ -396,7 +396,10 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
                 dialog_caption = WizardStrings.OpenTypeFolder.format(folder_name=format_name)
             path_edit = PathEdit(
                 parent=import_widget, path_type=path_type, dialog_caption=dialog_caption, show_revert=False)
-            path_edit.filters = path_edit.filters + filters
+            if path_edit.filters:
+                path_edit.filters = filters + ';;' + path_edit.filters
+            else:
+                path_edit.filters = filters
             path_edit.path = Settings().value(self.plugin.settings_section + '/last directory import')
             file_path_layout.addWidget(path_edit)
             import_layout.addLayout(file_path_layout)

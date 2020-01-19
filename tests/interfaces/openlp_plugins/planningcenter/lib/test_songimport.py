@@ -23,7 +23,7 @@ Package to test the openlp.plugins.planningcenter.lib.songimport package.
 """
 import datetime
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.planningcenter.lib.songimport import PlanningCenterSongImport
@@ -38,16 +38,18 @@ class TestSongImport(TestCase, TestMixin):
         """
         Create the class
         """
-        self.registry = Registry()
+        mocked_settings = MagicMock()
+        mocked_settings.value.return_value = 'english'
         Registry.create()
-        with patch('openlp.core.common.registry.Registry.get'):
-            self.song_import = PlanningCenterSongImport()
+        self.registry = Registry()
+        self.registry.register('settings', mocked_settings)
+        self.registry.register('songs', MagicMock())
+        self.song_import = PlanningCenterSongImport()
 
     def tearDown(self):
         """
         Delete all the C++ objects at the end so that we don't have a segfault
         """
-        del self.registry
         del self.song_import
 
     def test_add_song_without_lyrics(self):
