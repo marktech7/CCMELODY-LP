@@ -8,6 +8,7 @@
 *.nja
 *.orig
 *.pyc
+*.qm
 *.rej
 *.ropeproject
 *.~\?~
@@ -15,12 +16,16 @@
 .cache
 .coverage
 .directory
+.eggs
 .idea
 .kdev4
 .komodotools
-.pylint.d
 .pytest_cache
+.venv
 .vscode
+.eggs
+.venv
+.mypy_cache
 OpenLP.egg-info
 \#*\#
 __pycache__

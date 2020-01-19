@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -81,7 +80,7 @@ class VersionWorker(ThreadWorker):
 
         **Rules around versions and version files:**
 
-        * If a version number has a build (i.e. -bzr1234), then it is a nightly.
+        * If a version number has a revision hash (i.e. g9034d140b), then it is a nightly.
         * If a version number's minor version is an odd number, it is a development release.
         * If a version number's minor version is an even number, it is a stable release.
         """
@@ -144,7 +143,9 @@ def get_version():
     """
     Returns the application version of the running instance of OpenLP::
 
-        {'full': '1.9.4-bzr1249', 'version': '1.9.4', 'build': 'bzr1249'}
+        {'full': '2.9.0.dev2963+97ba02d1f', 'version': '2.9.0', 'build': '97ba02d1f'}
+        or
+        {'full': '2.9.0', 'version': '2.9.0', 'build': None}
     """
     global APPLICATION_VERSION
     if APPLICATION_VERSION:
@@ -155,11 +156,11 @@ def get_version():
     except OSError:
         log.exception('Error in version file.')
         full_version = '0.0.0'
-    bits = full_version.split('-')
+    bits = full_version.split('.dev')
     APPLICATION_VERSION = {
         'full': full_version,
         'version': bits[0],
-        'build': bits[1] if len(bits) > 1 else None
+        'build': full_version.split('+')[1] if '+' in full_version else None
     }
     if APPLICATION_VERSION['build']:
         log.info('OpenLP version {version} build {build}'.format(version=APPLICATION_VERSION['version'],

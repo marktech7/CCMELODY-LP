@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,10 +21,11 @@
 
 from PyQt5 import QtCore, QtWidgets
 
+from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.bibles.lib import BibleStrings, LanguageSelection
+from openlp.plugins.bibles.lib import BibleStrings
 from openlp.plugins.bibles.lib.db import BiblesResourcesDB
 
 

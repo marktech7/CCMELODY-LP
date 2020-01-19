@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,79 +23,162 @@ Package to test the openlp.core.lib.theme package.
 """
 from pathlib import Path
 from unittest import TestCase
+from unittest.mock import MagicMock, patch
 
-from openlp.core.lib.theme import BackgroundType, Theme
+from openlp.core.lib.theme import BackgroundType, BackgroundGradientType, TransitionType, TransitionSpeed, Theme
 
 
-class TestBackgroundType(TestCase):
+class ThemeEnumerationTypes(TestCase):
     """
-    Test the BackgroundType enum methods.
+    Test the theme enum methods.
     """
-    def test_solid_to_string(self):
+    def test_background_type_to_string(self):
         """
         Test the to_string method of :class:`BackgroundType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Solid
+        # GIVEN: The BackgroundType members
+        background_type_solid = BackgroundType.Solid
+        background_type_gradient = BackgroundType.Gradient
+        background_type_image = BackgroundType.Image
+        background_type_transparent = BackgroundType.Transparent
+        background_type_video = BackgroundType.Video
+        background_type_stream = BackgroundType.Stream
 
         # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'solid'
+        # THEN: The string equivalents should be returned
+        assert BackgroundType.to_string(background_type_solid) == 'solid'
+        assert BackgroundType.to_string(background_type_gradient) == 'gradient'
+        assert BackgroundType.to_string(background_type_image) == 'image'
+        assert BackgroundType.to_string(background_type_transparent) == 'transparent'
+        assert BackgroundType.to_string(background_type_video) == 'video'
+        assert BackgroundType.to_string(background_type_stream) == 'stream'
 
-    def test_gradient_to_string(self):
+    def test_background_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`BackgroundType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Gradient
+        # GIVEN: The BackgroundType strings
+        background_type_solid = 'solid'
+        background_type_gradient = 'gradient'
+        background_type_image = 'image'
+        background_type_transparent = 'transparent'
+        background_type_video = 'video'
+        background_type_stream = 'stream'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'gradient'
+        # WHEN: Calling BackgroundType.from_string
+        # THEN: The enum equivalents should be returned
+        assert BackgroundType.from_string(background_type_solid) == BackgroundType.Solid
+        assert BackgroundType.from_string(background_type_gradient) == BackgroundType.Gradient
+        assert BackgroundType.from_string(background_type_image) == BackgroundType.Image
+        assert BackgroundType.from_string(background_type_transparent) == BackgroundType.Transparent
+        assert BackgroundType.from_string(background_type_video) == BackgroundType.Video
+        assert BackgroundType.from_string(background_type_stream) == BackgroundType.Stream
 
-    def test_image_to_string(self):
+    def test_background_gradient_type_to_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the to_string method of :class:`BackgroundGradientType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Image
+        # GIVEN: The BackgroundGradientType member
+        background_gradient_horizontal = BackgroundGradientType.Horizontal
+        background_gradient_vertical = BackgroundGradientType.Vertical
+        background_gradient_circular = BackgroundGradientType.Circular
+        background_gradient_left_top = BackgroundGradientType.LeftTop
+        background_gradient_left_bottom = BackgroundGradientType.LeftBottom
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'image'
+        # WHEN: Calling BackgroundGradientType.to_string
+        # THEN: The string equivalents should be returned
+        assert BackgroundGradientType.to_string(background_gradient_horizontal) == 'horizontal'
+        assert BackgroundGradientType.to_string(background_gradient_vertical) == 'vertical'
+        assert BackgroundGradientType.to_string(background_gradient_circular) == 'circular'
+        assert BackgroundGradientType.to_string(background_gradient_left_top) == 'leftTop'
+        assert BackgroundGradientType.to_string(background_gradient_left_bottom) == 'leftBottom'
 
-    def test_transparent_to_string(self):
+    def test_background_gradient_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`BackgroundGradientType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Transparent
+        # GIVEN: The BackgroundGradientType strings
+        background_gradient_horizontal = 'horizontal'
+        background_gradient_vertical = 'vertical'
+        background_gradient_circular = 'circular'
+        background_gradient_left_top = 'leftTop'
+        background_gradient_left_bottom = 'leftBottom'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'transparent'
+        # WHEN: Calling BackgroundGradientType.from_string
+        # THEN: The enum equivalents should be returned
+        assert BackgroundGradientType.from_string(background_gradient_horizontal) == BackgroundGradientType.Horizontal
+        assert BackgroundGradientType.from_string(background_gradient_vertical) == BackgroundGradientType.Vertical
+        assert BackgroundGradientType.from_string(background_gradient_circular) == BackgroundGradientType.Circular
+        assert BackgroundGradientType.from_string(background_gradient_left_top) == BackgroundGradientType.LeftTop
+        assert BackgroundGradientType.from_string(background_gradient_left_bottom) == BackgroundGradientType.LeftBottom
 
-    def test_video_to_string(self):
+    def test_transition_type_to_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the to_string method of :class:`TransitionType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Video
+        # GIVEN: The TransitionType member
+        transition_type_fade = TransitionType.Fade
+        transition_type_slide = TransitionType.Slide
+        transition_type_convex = TransitionType.Convex
+        transition_type_concave = TransitionType.Concave
+        transition_type_zoom = TransitionType.Zoom
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'video'
+        # WHEN: Calling TransitionType.to_string
+        # THEN: The string equivalents should be returned
+        assert TransitionType.to_string(transition_type_fade) == 'fade'
+        assert TransitionType.to_string(transition_type_slide) == 'slide'
+        assert TransitionType.to_string(transition_type_convex) == 'convex'
+        assert TransitionType.to_string(transition_type_concave) == 'concave'
+        assert TransitionType.to_string(transition_type_zoom) == 'zoom'
 
-    def test_stream_to_string(self):
+    def test_transition_type_from_string(self):
         """
-        Test the to_string method of :class:`BackgroundType`
+        Test the from_string method of :class:`TransitionType`
         """
-        # GIVEN: A BackgroundType member
-        background_type = BackgroundType.Stream
+        # GIVEN: The TransitionType strings
+        transition_type_fade = 'fade'
+        transition_type_slide = 'slide'
+        transition_type_convex = 'convex'
+        transition_type_concave = 'concave'
+        transition_type_zoom = 'zoom'
 
-        # WHEN: Calling BackgroundType.to_string
-        # THEN: The string equivalent should have been returned
-        assert BackgroundType.to_string(background_type) == 'stream'
+        # WHEN: Calling TransitionType.from_string
+        # THEN: The enum equivalents should be returned
+        assert TransitionType.from_string(transition_type_fade) == TransitionType.Fade
+        assert TransitionType.from_string(transition_type_slide) == TransitionType.Slide
+        assert TransitionType.from_string(transition_type_convex) == TransitionType.Convex
+        assert TransitionType.from_string(transition_type_concave) == TransitionType.Concave
+        assert TransitionType.from_string(transition_type_zoom) == TransitionType.Zoom
+
+    def test_transition_speed_to_string(self):
+        """
+        Test the to_string method of :class:`TransitionSpeed`
+        """
+        # GIVEN: The TransitionSpeed member
+        transition_speed_normal = TransitionSpeed.Normal
+        transition_speed_fast = TransitionSpeed.Fast
+        transition_speed_slow = TransitionSpeed.Slow
+
+        # WHEN: Calling TransitionSpeed.to_string
+        # THEN: The string equivalents should be returned
+        assert TransitionSpeed.to_string(transition_speed_normal) == 'normal'
+        assert TransitionSpeed.to_string(transition_speed_fast) == 'fast'
+        assert TransitionSpeed.to_string(transition_speed_slow) == 'slow'
+
+    def test_transition_speed_from_string(self):
+        """
+        Test the from_string method of :class:`TransitionSpeed`
+        """
+        # GIVEN: The TransitionSpeed strings
+        transition_speed_normal = 'normal'
+        transition_speed_fast = 'fast'
+        transition_speed_slow = 'slow'
+
+        # WHEN: Calling TransitionSpeed.from_string
+        # THEN: The enum equivalents should be returned
+        assert TransitionSpeed.from_string(transition_speed_normal) == TransitionSpeed.Normal
+        assert TransitionSpeed.from_string(transition_speed_fast) == TransitionSpeed.Fast
+        assert TransitionSpeed.from_string(transition_speed_slow) == TransitionSpeed.Slow
 
 
 class TestTheme(TestCase):
@@ -176,10 +258,83 @@ class TestTheme(TestCase):
         lt.load_theme(save_theme_json)
         self.check_theme(lt)
 
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_footer(self, mock_geometry):
+        """
+        Test the set_default_footer function sets the footer back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme footer with a strange area
+        mock_geometry.display_geometry = MagicMock()
+        mock_geometry.display_geometry.height.return_value = 600
+        mock_geometry.display_geometry.width.return_value = 400
+        theme = Theme()
+        theme.font_main_x = 20
+        theme.font_footer_x = 207
+        theme.font_footer_y = 25
+        theme.font_footer_width = 4253
+        theme.font_footer_height = 5423
+
+        # WHEN: set_default_footer is called
+        theme.set_default_footer()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_main_x == 20, 'header should not have been changed'
+        assert theme.font_footer_x == 10, 'x pos should be reset to default of 10'
+        assert theme.font_footer_y == 540, 'y pos should be reset to (screen_size_height * 9 / 10)'
+        assert theme.font_footer_width == 380, 'width should have been reset to (screen_size_width - 20)'
+        assert theme.font_footer_height == 60, 'height should have been reset to (screen_size_height / 10)'
+
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_header(self, mock_geometry):
+        """
+        Test the set_default_header function sets the header back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme header with a strange area
+        mock_geometry.display_geometry = MagicMock()
+        mock_geometry.display_geometry.height.return_value = 600
+        mock_geometry.display_geometry.width.return_value = 400
+        theme = Theme()
+        theme.font_footer_x = 200
+        theme.font_main_x = 687
+        theme.font_main_y = 546
+        theme.font_main_width = 345
+        theme.font_main_height = 653
+
+        # WHEN: set_default_header is called
+        theme.set_default_header()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_footer_x == 200, 'footer should not have been changed'
+        assert theme.font_main_x == 10, 'x pos should be reset to default of 10'
+        assert theme.font_main_y == 0, 'y pos should be reset to 0'
+        assert theme.font_main_width == 380, 'width should have been reset to (screen_size_width - 20)'
+        assert theme.font_main_height == 540, 'height should have been reset to (screen_size_height * 9 / 10)'
+
+    @patch('openlp.core.display.screens.ScreenList.current')
+    def test_set_default_header_footer(self, mock_geometry):
+        """
+        Test the set_default_header_footer function sets the header and footer back to default
+        (reletive to the screen)
+        """
+        # GIVEN: A screen geometry object and a Theme header with a strange area
+        mock_geometry.display_geometry = MagicMock()
+        theme = Theme()
+        theme.font_footer_x = 200
+        theme.font_main_x = 687
+
+        # WHEN: set_default_header is called
+        theme.set_default_header_footer()
+
+        # THEN: footer should be set, header should not have changed
+        assert theme.font_footer_x == 10, 'footer x pos should be reset to default of 10'
+        assert theme.font_main_x == 10, 'header x pos should be reset to default of 10'
+
     def check_theme(self, theme):
         assert '#000000' == theme.background_border_color, 'background_border_color should be "#000000"'
         assert 'solid' == theme.background_type, 'background_type should be "solid"'
         assert 0 == theme.display_vertical_align, 'display_vertical_align should be 0'
         assert theme.font_footer_bold is False, 'font_footer_bold should be False'
         assert 'Arial' == theme.font_main_name, 'font_main_name should be "Arial"'
-        assert 48 == len(theme.__dict__), 'The theme should have 48 attributes'
+        assert 53 == len(theme.__dict__), 'The theme should have 53 attributes'

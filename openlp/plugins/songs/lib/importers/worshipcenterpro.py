@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -53,7 +52,7 @@ class WorshipCenterProImport(SongImport):
         try:
             conn = pyodbc.connect('DRIVER={{Microsoft Access Driver (*.mdb)}};'
                                   'DBQ={source}'.format(source=self.import_source))
-        except (pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError, pyodbc.OperationalError) as e:
+        except Exception as e:
             log.warning('Unable to connect the WorshipCenter Pro '
                         'database {source}. {error}'.format(source=self.import_source, error=str(e)))
             # Unfortunately no specific exception type

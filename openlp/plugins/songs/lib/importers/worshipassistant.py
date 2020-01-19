@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -92,6 +91,10 @@ class WorshipAssistantImport(SongImport):
                                translate('SongsPlugin.WorshipAssistantImport',
                                          'Line {number:d}: {error}').format(number=songs_reader.line_num, error=e))
                 return
+            except UnicodeDecodeError as e:
+                self.log_error(translate('SongsPlugin.WorshipAssistantImport',
+                                         'Decoding error: {error}').format(error=e))
+                return
         num_records = len(records)
         log.info('{count} records found in CSV file'.format(count=num_records))
         self.import_wizard.progress_bar.setMaximum(num_records)
@@ -104,11 +107,11 @@ class WorshipAssistantImport(SongImport):
             record = dict((field.upper(), value) for field, value in record.items())
             # The CSV file has a line in the middle of the file where the headers are repeated.
             #  We need to skip this line.
-            if record['TITLE'] == "TITLE" and record['AUTHOR'] == 'AUTHOR' and record['LYRICS2'] == 'LYRICS2':
-                continue
-            self.set_defaults()
-            verse_order_list = []
             try:
+                if record['TITLE'] == "TITLE" and record['AUTHOR'] == 'AUTHOR' and record['LYRICS2'] == 'LYRICS2':
+                    continue
+                self.set_defaults()
+                verse_order_list = []
                 self.title = record['TITLE']
                 if record['AUTHOR'] != EMPTY_STR:
                     self.parse_author(record['AUTHOR'])
@@ -128,6 +131,11 @@ class WorshipAssistantImport(SongImport):
                 self.log_error(translate('SongsPlugin.WorshipAssistantImport',
                                          'File not valid WorshipAssistant CSV format.'),
                                'TypeError: {error}'.format(error=e))
+                return
+            except KeyError as e:
+                self.log_error(translate('SongsPlugin.WorshipAssistantImport',
+                                         'File not valid WorshipAssistant CSV format.'),
+                               'KeyError: {error}'.format(error=e))
                 return
             verse = ''
             used_verses = []

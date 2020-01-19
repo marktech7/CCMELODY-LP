@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,6 +21,7 @@
 """
 This module contains tests for the lib submodule of the Images plugin.
 """
+import pytest
 from pathlib import Path
 from unittest import TestCase
 from unittest.mock import ANY, MagicMock, patch
@@ -31,6 +31,22 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common.registry import Registry
 from openlp.plugins.images.lib.db import ImageFilenames, ImageGroups
 from openlp.plugins.images.lib.mediaitem import ImageMediaItem
+
+
+@pytest.yield_fixture
+def mocked_media_item(mock_settings):
+    """Local test setup"""
+    mocked_main_window = MagicMock()
+    Registry().register('application', MagicMock())
+    Registry().register('service_list', MagicMock())
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('live_controller', MagicMock())
+    mocked_plugin = MagicMock()
+    with patch('openlp.plugins.images.lib.mediaitem.MediaManagerItem._setup'), \
+            patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.setup_item'):
+        media_item = ImageMediaItem(None, mocked_plugin)
+        media_item.settings_section = 'images'
+    yield media_item
 
 
 class TestImageMediaItem(TestCase):
@@ -50,40 +66,6 @@ class TestImageMediaItem(TestCase):
                 patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.setup_item'):
             self.media_item = ImageMediaItem(None, mocked_plugin)
             self.media_item.settings_section = 'images'
-
-    @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_list')
-    @patch('openlp.plugins.images.lib.mediaitem.Settings')
-    def test_validate_and_load(self, mocked_settings, mocked_load_list):
-        """
-        Test that the validate_and_load_test() method when called without a group
-        """
-        # GIVEN: A list of files
-        file_list = [Path('path1', 'image1.jpg'), Path('path2', 'image2.jpg')]
-
-        # WHEN: Calling validate_and_load with the list of files
-        self.media_item.validate_and_load(file_list)
-
-        # THEN: load_list should have been called with the file list and None,
-        #       the directory should have been saved to the settings
-        mocked_load_list.assert_called_once_with(file_list, None)
-        mocked_settings().setValue.assert_called_once_with(ANY, Path('path1'))
-
-    @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_list')
-    @patch('openlp.plugins.images.lib.mediaitem.Settings')
-    def test_validate_and_load_group(self, mocked_settings, mocked_load_list):
-        """
-        Test that the validate_and_load_test() method when called with a group
-        """
-        # GIVEN: A list of files
-        file_list = [Path('path1', 'image1.jpg'), Path('path2', 'image2.jpg')]
-
-        # WHEN: Calling validate_and_load with the list of files and a group
-        self.media_item.validate_and_load(file_list, 'group')
-
-        # THEN: load_list should have been called with the file list and the group name,
-        #       the directory should have been saved to the settings
-        mocked_load_list.assert_called_once_with(file_list, 'group')
-        mocked_settings().setValue.assert_called_once_with(ANY, Path('path1'))
 
     @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_full_list')
     def test_save_new_images_list_empty_list(self, mocked_load_full_list):
@@ -281,3 +263,37 @@ class TestImageMediaItem(TestCase):
         assert isinstance(item_data, ImageFilenames)
         assert 1 == item_data.id
         assert Path('/', 'tmp', 'test_file_1.jpg') == item_data.file_path
+
+
+@patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_list')
+def test_validate_and_load(mocked_load_list, mocked_media_item):
+    """
+    Test that the validate_and_load_test() method when called without a group
+    """
+    # GIVEN: A list of files
+    file_list = [Path('path1', 'image1.jpg'), Path('path2', 'image2.jpg')]
+
+    # WHEN: Calling validate_and_load with the list of files
+    mocked_media_item.validate_and_load(file_list)
+
+    # THEN: load_list should have been called with the file list and None,
+    #       the directory should have been saved to the settings
+    mocked_load_list.assert_called_once_with(file_list, None)
+    Registry().get('settings').setValue.assert_called_once_with(ANY, Path('path1'))
+
+
+@patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_list')
+def test_validate_and_load_group(mocked_load_list, mocked_media_item):
+    """
+    Test that the validate_and_load_test() method when called with a group
+    """
+    # GIVEN: A list of files
+    file_list = [Path('path1', 'image1.jpg'), Path('path2', 'image2.jpg')]
+
+    # WHEN: Calling validate_and_load with the list of files and a group
+    mocked_media_item.validate_and_load(file_list, 'group')
+
+    # THEN: load_list should have been called with the file list and the group name,
+    #       the directory should have been saved to the settings
+    mocked_load_list.assert_called_once_with(file_list, 'group')
+    Registry().get('settings').setValue.assert_called_once_with(ANY, Path('path1'))

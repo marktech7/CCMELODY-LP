@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -198,7 +197,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         if self.footer_text_edit.toPlainText():
             div = self._add_element('div', parent=html_data.body, class_id='customNotes')
             self._add_element(
-                'span', translate('OpenLP.ServiceManager', 'Custom Service Notes: '), div, class_id='customNotesTitle')
+                'span', translate('OpenLP.ServiceManager', 'Service Notes: '), div, class_id='customNotesTitle')
             self._add_element('span', html.escape(self.footer_text_edit.toPlainText()), div, class_id='customNotesText')
         self.document.setHtml(lxml.html.tostring(html_data).decode())
         self.preview_widget.updatePreview()

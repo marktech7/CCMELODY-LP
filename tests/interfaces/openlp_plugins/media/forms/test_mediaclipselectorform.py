@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -53,6 +52,8 @@ class TestMediaClipSelectorForm(TestCase, TestMixin):
         # Mock VLC so we don't actually use it
         self.vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
         self.vlc_patcher.start()
+        self.timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
+        self.timer_patcher.start()
         Registry().register('application', self.app)
         # Mock the media item
         self.mock_media_item = MagicMock()
@@ -71,6 +72,7 @@ class TestMediaClipSelectorForm(TestCase, TestMixin):
         """
         del self.form
         self.vlc_patcher.stop()
+        self.timer_patcher.stop()
         del self.main_window
 
     def test_basic(self):

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,11 +33,12 @@ from sqlalchemy.orm import class_mapper, mapper, relation
 from sqlalchemy.orm.exc import UnmappedClassError
 
 from openlp.core.common import clean_filename
+from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
 from openlp.core.lib.db import BaseModel, Manager, init_db
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.plugins.bibles.lib import BibleStrings, LanguageSelection, upgrade
+from openlp.plugins.bibles.lib import BibleStrings, upgrade
 
 
 log = logging.getLogger(__name__)
@@ -308,7 +308,8 @@ class BibleDB(Manager):
         :rtype: list[int]
         """
         log.debug('get_book_ref_id_by_localised_name("{book}", "{lang}")'.format(book=book, lang=language_selection))
-        from openlp.plugins.bibles.lib import LanguageSelection, BibleStrings
+        from openlp.core.common.enum import LanguageSelection
+        from openlp.plugins.bibles.lib import BibleStrings
         book_names = BibleStrings().BookNames
         # escape reserved characters
         for character in RESERVED_CHARACTERS:

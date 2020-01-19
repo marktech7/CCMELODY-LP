@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,22 +34,11 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.custom.endpoint import api_custom_endpoint, custom_endpoint
 from openlp.plugins.custom.lib.db import CustomSlide, init_schema
-from openlp.plugins.custom.lib.mediaitem import CustomMediaItem, CustomSearch
+from openlp.plugins.custom.lib.mediaitem import CustomMediaItem
 from openlp.plugins.custom.lib.customtab import CustomTab
 
 
 log = logging.getLogger(__name__)
-
-__default_settings__ = {
-    'custom/db type': 'sqlite',
-    'custom/db username': '',
-    'custom/db password': '',
-    'custom/db hostname': '',
-    'custom/db database': '',
-    'custom/last used search type': CustomSearch.Titles,
-    'custom/display footer': True,
-    'custom/add custom from service': True
-}
 
 
 class CustomPlugin(Plugin):
@@ -63,7 +51,7 @@ class CustomPlugin(Plugin):
     log.info('Custom Plugin loaded')
 
     def __init__(self):
-        super(CustomPlugin, self).__init__('custom', __default_settings__, CustomMediaItem, CustomTab)
+        super(CustomPlugin, self).__init__('custom', CustomMediaItem, CustomTab)
         self.weight = -5
         self.db_manager = Manager('custom', init_schema)
         self.icon_path = UiIcons().clone
@@ -132,5 +120,9 @@ class CustomPlugin(Plugin):
         Time to tidy up on exit
         """
         log.info('Custom Finalising')
+        # call custom manager to delete pco slides
+        pco_slides = self.db_manager.get_all_objects(CustomSlide, CustomSlide.credits == 'pco')
+        for slide in pco_slides:
+            self.db_manager.delete_object(CustomSlide, slide.id)
         self.db_manager.finalise()
         Plugin.finalise(self)

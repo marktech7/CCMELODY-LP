@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -144,6 +143,23 @@ class TestInit(TestCase, TestMixin):
 
         # THEN: the result will be as expected - try again
         assert str(value) == 'called'
+
+    def test_requires_auth_missing_credentials(self):
+        """
+        Test the requires_auth wrapper with enabled security and authorization taken place and and error
+        :return:
+        """
+        # GIVEN: An enabled security and a known user
+        Settings().setValue('api/authentication enabled', True)
+        Settings().setValue('api/user id', 'superfly')
+        Settings().setValue('api/password', 'lamas')
+
+        # WHEN: I call the function with no password
+        wrapped_function = requires_auth(func)
+        value = wrapped_function(0)
+
+        # THEN: the result will be as expected (unauthorized)
+        assert str(value) == str(authenticate())
 
 
 def func(field=None):

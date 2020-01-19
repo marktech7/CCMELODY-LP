@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -42,26 +41,20 @@ from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument, \
     TextType
 
-# Load the XSlideShowListener class so we can inherit from it
+# Declare the XSlideShowListener class so we can inherit from it below, won't really use in on windows.
 if is_win():
     from win32com.client import Dispatch
     import pywintypes
     uno_available = False
-    try:
-        service_manager = Dispatch('com.sun.star.ServiceManager')
-        service_manager._FlagAsMethod('Bridge_GetStruct')
-        XSlideShowListenerObj = service_manager.Bridge_GetStruct('com.sun.star.presentation.XSlideShowListener')
 
-        class SlideShowListenerImport(XSlideShowListenerObj.__class__):
-            pass
-    except (AttributeError, pywintypes.com_error):
-        class SlideShowListenerImport(object):
-            pass
+    class SlideShowListenerImport:
+        pass
 
     # Declare an empty exception to match the exception imported from UNO
     class ErrorCodeIOException(Exception):
         pass
 else:
+    # Load the XSlideShowListener class so we can inherit from it below
     try:
         import uno
         import unohelper
@@ -76,7 +69,7 @@ else:
     except ImportError:
         uno_available = False
 
-        class SlideShowListenerImport(object):
+        class SlideShowListenerImport:
             pass
 
 log = logging.getLogger(__name__)
@@ -153,7 +146,7 @@ class ImpressController(PresentationController):
             self.toggle_presentation_screen(False)
             return desktop
         except Exception:
-            log.warning('Failed to get UNO desktop')
+            log.exception('Failed to get UNO desktop')
             return None
 
     def get_com_desktop(self):
@@ -233,7 +226,7 @@ class ImpressController(PresentationController):
                 self.conf_provider = self.manager.createInstanceWithContext(
                     'com.sun.star.configuration.ConfigurationProvider', uno.getComponentContext())
         # Setup lookup properties to get Impress settings
-        properties = tuple(self.create_property('nodepath', 'org.openoffice.Office.Impress'))
+        properties = (self.create_property('nodepath', 'org.openoffice.Office.Impress'),)
         try:
             # Get an updateable configuration view
             impress_conf_props = self.conf_provider.createInstanceWithArguments(
@@ -309,7 +302,7 @@ class ImpressDocument(PresentationDocument):
         if desktop is None:
             return False
         self.desktop = desktop
-        properties = tuple(self.controller.create_property('Hidden', True))
+        properties = (self.controller.create_property('Hidden', True),)
         try:
             self.document = desktop.loadComponentFromURL(url, '_blank', 0, properties)
         except Exception:
@@ -334,7 +327,7 @@ class ImpressDocument(PresentationDocument):
             return
         temp_folder_path = self.get_temp_folder()
         thumb_dir_url = temp_folder_path.as_uri()
-        properties = tuple(self.controller.create_property('FilterName', 'impress_png_Export'))
+        properties = (self.controller.create_property('FilterName', 'impress_png_Export'),)
         doc = self.document
         pages = doc.getDrawPages()
         if not pages:
@@ -446,8 +439,9 @@ class ImpressDocument(PresentationDocument):
                 sleep_count += 1
                 self.control = self.presentation.getController()
             window.setVisible(False)
-            listener = SlideShowListener(self)
-            self.control.getSlideShow().addSlideShowListener(listener)
+            if not is_win():
+                listener = SlideShowListener(self)
+                self.control.getSlideShow().addSlideShowListener(listener)
         else:
             self.control.activate()
             self.goto_slide(1)

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,6 +37,7 @@ from openlp.core.state import State
 from openlp.core.common import ThemeLevel, delete_file
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, format_time, translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.common.mixins import LogMixin, RegistryProperties
@@ -46,7 +46,7 @@ from openlp.core.common.settings import Settings
 from openlp.core.lib import build_icon
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.plugin import PluginStatus
-from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem, ServiceItemType
+from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box, find_and_set_in_combo_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT
@@ -1242,7 +1242,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 child = QtWidgets.QTreeWidgetItem(tree_widget_item)
                 # prefer to use a display_title
                 if service_item_from_item.is_capable(ItemCapabilities.HasDisplayTitle) or \
-                        service_item_from_item.service_item_type == ServiceItemType.Image:
+                        service_item_from_item.service_item_type is not ServiceItemType.Text:
                     text = slide['title'].replace('\n', ' ')
                 else:
                     text = service_item_from_item.get_rendered_frame(slide_index)

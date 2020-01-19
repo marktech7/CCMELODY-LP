@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -76,6 +75,7 @@ class ThemeListWidget(QtWidgets.QListWidget):
         :param QtGui.QResizeEvent event: Not used
         :return: None
         """
+        super().resizeEvent(event)
         nominal_width = 141  # Icon width of 133 + 4 each side
         max_items_per_row = self.viewport().width() // nominal_width or 1  # or 1 to avoid divide by 0 errors
         col_size = (self.viewport().width() - 1) // max_items_per_row
@@ -94,7 +94,7 @@ class UiFirstTimeWizard(object):
         """
         first_time_wizard.setObjectName('first_time_wizard')
         first_time_wizard.setWindowIcon(UiIcons().main_icon)
-        first_time_wizard.resize(550, 386)
+        first_time_wizard.resize(640, 400)
         first_time_wizard.setModal(True)
         first_time_wizard.setOptions(QtWidgets.QWizard.IndependentPages | QtWidgets.QWizard.NoBackButtonOnStartPage |
                                      QtWidgets.QWizard.NoBackButtonOnLastPage | QtWidgets.QWizard.HaveCustomButton1)

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,7 +25,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext, build_icon, check_item_selected, create_thumb, validate_thumb
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
@@ -126,7 +124,7 @@ class PresentationMediaItem(MediaManagerItem):
         Populate the media manager tab
         """
         self.list_view.setIconSize(QtCore.QSize(88, 50))
-        file_paths = Settings().value(self.settings_section + '/presentations files')
+        file_paths = self.settings.value(self.settings_section + '/presentations files')
         self.load_list(file_paths, initial_load=True)
         self.populate_display_types()
 
@@ -146,7 +144,7 @@ class PresentationMediaItem(MediaManagerItem):
         if self.display_type_combo_box.count() > 1:
             self.display_type_combo_box.insertItem(0, self.automatic, userData='automatic')
             self.display_type_combo_box.setCurrentIndex(0)
-        if Settings().value(self.settings_section + '/override app') == QtCore.Qt.Checked:
+        if self.settings.value(self.settings_section + '/override app') == QtCore.Qt.Checked:
             self.presentation_widget.show()
         else:
             self.presentation_widget.hide()
@@ -234,7 +232,7 @@ class PresentationMediaItem(MediaManagerItem):
             self.main_window.finished_progress_bar()
             for row in row_list:
                 self.list_view.takeItem(row)
-            Settings().setValue(self.settings_section + '/presentations files', self.get_file_list())
+            self.settings.setValue(self.settings_section + '/presentations files', self.get_file_list())
             self.application.set_normal_cursor()
 
     def clean_up_thumbnails(self, file_path, clean_for_update=False):
@@ -311,7 +309,7 @@ class PresentationMediaItem(MediaManagerItem):
                     image_path = doc.get_temp_folder() / 'mainslide{number:0>3d}.png'.format(number=i)
                     thumbnail_path = doc.get_thumbnail_folder() / 'slide{number:d}.png'.format(number=i)
                     while image_path.is_file():
-                        service_item.add_from_image(str(image_path), file_name, thumbnail=str(thumbnail_path))
+                        service_item.add_from_image(image_path, file_name, thumbnail=str(thumbnail_path))
                         i += 1
                         image_path = doc.get_temp_folder() / 'mainslide{number:0>3d}.png'.format(number=i)
                         thumbnail_path = doc.get_thumbnail_folder() / 'slide{number:d}.png'.format(number=i)
@@ -413,7 +411,7 @@ class PresentationMediaItem(MediaManagerItem):
         :param show_error: not used
         :return:
         """
-        file_paths = Settings().value(self.settings_section + '/presentations files')
+        file_paths = self.settings.value(self.settings_section + '/presentations files')
         results = []
         string = string.lower()
         for file_path in file_paths:

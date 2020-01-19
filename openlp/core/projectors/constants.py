@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -460,14 +459,14 @@ STATUS_MSG = {
     E_UNFINISHED_SOCKET_OPERATION: translate('OpenLP.ProjectorConstants',
                                              'The last operation attempted has not finished yet '
                                              '(still in progress in the background)'),
-    E_UNKNOWN: translate('OpenLP.ProjectorConstants', 'Unknown condiction detected'),
+    E_UNKNOWN: translate('OpenLP.ProjectorConstants', 'Unknown condition detected'),
     E_UNKNOWN_SOCKET_ERROR: translate('OpenLP.ProjectorConstants', 'An unidentified socket error occurred'),
     E_UNSUPPORTED_SOCKET_OPERATION: translate('OpenLP.ProjectorConstants',
                                               'The requested socket operation is not supported by the local '
                                               'operating system (e.g., lack of IPv6 support)'),
     E_WARN: translate('OpenLP.ProjectorConstants', 'Warning condition detected'),
     S_AUTHENTICATE: translate('OpenLP.ProjectorConstants', 'Connection initializing with pin'),
-    S_BOUND: translate('OpenLP.ProjectorConstants', 'Socket is bount to an address or port'),
+    S_BOUND: translate('OpenLP.ProjectorConstants', 'Socket is bound to an address or port'),
     S_CONNECT: translate('OpenLP.ProjectorConstants', 'Connection initializing'),
     S_CLOSING: translate('OpenLP.ProjectorConstants', 'Socket is about to close'),
     S_CONNECTED: translate('OpenLP.ProjectorConstants', 'Connected'),
@@ -477,7 +476,7 @@ STATUS_MSG = {
     S_HOST_LOOKUP: translate('OpenLP.ProjectorConstants', 'Performing a host name lookup'),
     S_INFO: translate('OpenLP.ProjectorConstants', 'Projector Information available'),
     S_INITIALIZE: translate('OpenLP.ProjectorConstants', 'Initialize in progress'),
-    S_LISTENING: translate('OpenLP.ProjectorConstants', 'Socket it listening (internal use only)'),
+    S_LISTENING: translate('OpenLP.ProjectorConstants', 'Socket is listening (internal use only)'),
     S_NETWORK_IDLE: translate('OpenLP.ProjectorConstants', 'No network activity at this time'),
     S_NETWORK_RECEIVING: translate('OpenLP.ProjectorConstants', 'Received data'),
     S_NETWORK_SENDING: translate('OpenLP.ProjectorConstants', 'Sending data'),

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,10 +28,10 @@ from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import SongSearch
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext, check_item_selected, create_separated_list
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.plugin import PluginStatus
@@ -50,21 +49,6 @@ from openlp.plugins.songs.lib.ui import SongStrings
 
 
 log = logging.getLogger(__name__)
-
-
-class SongSearch(object):
-    """
-    An enumeration for song search methods.
-    """
-    Entire = 1
-    Titles = 2
-    Lyrics = 3
-    Authors = 4
-    Topics = 5
-    Books = 6
-    Themes = 7
-    Copyright = 8
-    CCLInumber = 9
 
 
 class SongMediaItem(MediaManagerItem):
@@ -130,9 +114,9 @@ class SongMediaItem(MediaManagerItem):
         Is triggered when the songs config is updated
         """
         log.debug('config_updated')
-        self.is_search_as_you_type_enabled = Settings().value('advanced/search as type')
-        self.update_service_on_edit = Settings().value(self.settings_section + '/update service on edit')
-        self.add_song_from_service = Settings().value(self.settings_section + '/add song from service')
+        self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
+        self.update_service_on_edit = self.settings.value(self.settings_section + '/update service on edit')
+        self.add_song_from_service = self.settings.value(self.settings_section + '/add song from service')
 
     def retranslate_ui(self):
         self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))
@@ -509,12 +493,12 @@ class SongMediaItem(MediaManagerItem):
         Remove a song from the list and database
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
-            items = self.list_view.selectedIndexes()
+            items = self.list_view.selectedItems()
             if QtWidgets.QMessageBox.question(
                     self, UiStrings().ConfirmDelete,
                     translate('SongsPlugin.MediaItem',
-                              'Are you sure you want to delete the "{items:d}" '
-                              'selected song(s)?').format(items=len(items)),
+                              'Are you sure you want to delete the following songs?') +
+                    '\n\n- {songs}'.format(songs='\n- '.join([item.text() for item in items])),
                     defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
                 return
             self.application.set_busy_cursor()
@@ -580,7 +564,7 @@ class SongMediaItem(MediaManagerItem):
         service_item.theme = song.theme_name
         service_item.edit_id = item_id
         verse_list = SongXML().get_verses(song.lyrics)
-        if Settings().value('songs/add songbook slide') and song.songbook_entries:
+        if self.settings.value('songs/add songbook slide') and song.songbook_entries:
             first_slide = '\n'
             for songbook_entry in song.songbook_entries:
                 first_slide += '{book} #{num}'.format(book=songbook_entry.songbook.name,
@@ -697,10 +681,10 @@ class SongMediaItem(MediaManagerItem):
         songbooks = [str(songbook_entry) for songbook_entry in song.songbook_entries]
         if song.songbook_entries:
             item.raw_footer.append(", ".join(songbooks))
-        if Settings().value('core/ccli number'):
+        if self.settings.value('core/ccli number'):
             item.raw_footer.append(translate('SongsPlugin.MediaItem', 'CCLI License: ') +
-                                   Settings().value('core/ccli number'))
-        footer_template = Settings().value('songs/footer template')
+                                   self.settings.value('core/ccli number'))
+        footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
             'title': song.title,
@@ -719,7 +703,7 @@ class SongMediaItem(MediaManagerItem):
             'authors_music_all': authors_music + authors_words_music,
             'copyright': song.copyright,
             'songbook_entries': songbooks,
-            'ccli_license': Settings().value('core/ccli number'),
+            'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': song.ccli_number,
             'topics': [topic.name for topic in song.topics]

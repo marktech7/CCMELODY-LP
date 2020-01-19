@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,13 +23,13 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.common.enum import DisplayStyle, LanguageSelection, LayoutStyle
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
-from openlp.plugins.bibles.lib import DisplayStyle, LanguageSelection, LayoutStyle, get_reference_separator, \
-    update_reference_separators
+from openlp.plugins.bibles.lib import get_reference_separator, update_reference_separators
 
 
 log = logging.getLogger(__name__)

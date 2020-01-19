@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,34 +34,6 @@ log = logging.getLogger(__name__)
 
 REFERENCE_MATCHES = {}
 REFERENCE_SEPARATORS = {}
-
-
-class LayoutStyle(object):
-    """
-    An enumeration for bible screen layout styles.
-    """
-    VersePerSlide = 0
-    VersePerLine = 1
-    Continuous = 2
-
-
-class DisplayStyle(object):
-    """
-    An enumeration for bible text bracket display styles.
-    """
-    NoBrackets = 0
-    Round = 1
-    Curly = 2
-    Square = 3
-
-
-class LanguageSelection(object):
-    """
-    An enumeration for bible bookname language. And standard strings for use throughout the bibles plugin.
-    """
-    Bible = 0
-    Application = 1
-    English = 2
 
 
 class BibleStrings(metaclass=Singleton):

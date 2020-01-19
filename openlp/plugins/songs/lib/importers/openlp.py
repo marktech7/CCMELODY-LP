@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -131,13 +130,18 @@ class OpenLPSongImport(SongImport):
         else:
             has_authors_songs = False
         # Load up the tabls and map them out
-        source_authors_table = source_meta.tables['authors']
-        source_song_books_table = source_meta.tables['song_books']
-        source_songs_table = source_meta.tables['songs']
-        source_topics_table = source_meta.tables['topics']
-        source_authors_songs_table = source_meta.tables['authors_songs']
-        source_songs_topics_table = source_meta.tables['songs_topics']
-        source_media_files_songs_table = None
+        try:
+            source_authors_table = source_meta.tables['authors']
+            source_song_books_table = source_meta.tables['song_books']
+            source_songs_table = source_meta.tables['songs']
+            source_topics_table = source_meta.tables['topics']
+            source_authors_songs_table = source_meta.tables['authors_songs']
+            source_songs_topics_table = source_meta.tables['songs_topics']
+            source_media_files_songs_table = None
+        except KeyError:
+            self.log_error(self.import_source, translate('SongsPlugin.OpenLPSongImport',
+                                                         'Not a valid OpenLP 2 song database.'))
+            return
         # Set up media_files relations
         if has_media_files:
             source_media_files_table = source_meta.tables['media_files']

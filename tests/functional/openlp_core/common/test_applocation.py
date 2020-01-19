@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -43,9 +42,9 @@ def test_get_data_path(mocked_os, mocked_create_paths, mocked_get_directory, Moc
     """
     # GIVEN: A mocked out Settings class and a mocked out AppLocation.get_directory()
     MockSettings.return_value.contains.return_value = False
-    mocked_get_directory.return_value = os.path.join('tests', 'dir')
+    mocked_get_directory.return_value = Path('tests', 'dir')
     mocked_create_paths.return_value = True
-    mocked_os.path.normpath.return_value = os.path.join('tests', 'dir')
+    mocked_os.path.normpath.return_value = Path('tests', 'dir')
 
     # WHEN: we call AppLocation.get_data_path()
     data_path = AppLocation.get_data_path()
@@ -53,8 +52,8 @@ def test_get_data_path(mocked_os, mocked_create_paths, mocked_get_directory, Moc
     # THEN: check that all the correct methods were called, and the result is correct
     MockSettings.return_value.contains.assert_called_with('advanced/data path')
     mocked_get_directory.assert_called_with(AppLocation.DataDir)
-    mocked_create_paths.assert_called_with(os.path.join('tests', 'dir'))
-    assert data_path == os.path.join('tests', 'dir'), 'Result should be "tests/dir"'
+    mocked_create_paths.assert_called_with(Path('tests', 'dir'))
+    assert data_path == Path('tests', 'dir'), 'Result should be "tests/dir"'
 
 
 @patch('openlp.core.common.applocation.Settings')

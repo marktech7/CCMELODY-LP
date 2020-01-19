@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,39 +29,12 @@ from openlp.core.ui.icons import UiIcons
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.plugins.bibles.endpoint import api_bibles_endpoint, bibles_endpoint
-from openlp.plugins.bibles.lib import LayoutStyle, DisplayStyle, LanguageSelection
 from openlp.plugins.bibles.lib.biblestab import BiblesTab
 from openlp.plugins.bibles.lib.manager import BibleManager
-from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem, BibleSearch
+from openlp.plugins.bibles.lib.mediaitem import BibleMediaItem
 
 
 log = logging.getLogger(__name__)
-
-
-__default_settings__ = {
-    'bibles/db type': 'sqlite',
-    'bibles/db username': '',
-    'bibles/db password': '',
-    'bibles/db hostname': '',
-    'bibles/db database': '',
-    'bibles/last used search type': BibleSearch.Combined,
-    'bibles/reset to combined quick search': True,
-    'bibles/verse layout style': LayoutStyle.VersePerSlide,
-    'bibles/book name language': LanguageSelection.Bible,
-    'bibles/display brackets': DisplayStyle.NoBrackets,
-    'bibles/is verse number visible': True,
-    'bibles/display new chapter': False,
-    'bibles/second bibles': True,
-    'bibles/primary bible': '',
-    'bibles/bible theme': '',
-    'bibles/verse separator': '',
-    'bibles/range separator': '',
-    'bibles/list separator': '',
-    'bibles/end separator': '',
-    'bibles/last directory import': None,
-    'bibles/hide combined quick error': False,
-    'bibles/is search while typing enabled': True
-}
 
 
 class BiblePlugin(Plugin):
@@ -72,7 +44,7 @@ class BiblePlugin(Plugin):
     log.info('Bible Plugin loaded')
 
     def __init__(self):
-        super(BiblePlugin, self).__init__('bibles', __default_settings__, BibleMediaItem, BiblesTab)
+        super(BiblePlugin, self).__init__('bibles', BibleMediaItem, BiblesTab)
         self.weight = -9
         self.icon_path = UiIcons().bible
         self.icon = UiIcons().bible

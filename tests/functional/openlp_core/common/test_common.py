@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,11 +22,11 @@
 Functional tests to test the AppLocation class and related methods.
 """
 from pathlib import Path
-from unittest import TestCase
+from unittest import TestCase, skipUnless
 from unittest.mock import MagicMock, call, patch
 
 from openlp.core.common import Singleton, clean_button_text, de_hump, extension_loader, is_linux, is_macosx, is_win, \
-    normalize_str, path_to_module, trace_error_handler
+    is_64bit_instance, normalize_str, path_to_module, trace_error_handler
 
 
 class TestCommonFunctions(TestCase):
@@ -244,7 +243,7 @@ class TestCommonFunctions(TestCase):
         # GIVEN: Mocked out objects
         with patch('openlp.core.common.os') as mocked_os, patch('openlp.core.common.sys') as mocked_sys:
 
-            # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'linux3' repectivly
+            # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'linux3' repectively
             mocked_os.name = 'posix'
             mocked_sys.platform = 'linux3'
 
@@ -252,6 +251,40 @@ class TestCommonFunctions(TestCase):
             assert is_linux() is True, 'is_linux() should return True'
             assert is_win() is False, 'is_win() should return False'
             assert is_macosx() is False, 'is_macosx() should return False'
+
+    @skipUnless(is_linux(), 'This can only run on Linux')
+    def test_is_linux_distro(self):
+        """
+        Test the is_linux() function for a particular Linux distribution
+        """
+        # GIVEN: Mocked out objects
+        with patch('openlp.core.common.os') as mocked_os, \
+                patch('openlp.core.common.sys') as mocked_sys, \
+                patch('openlp.core.common.distro_id') as mocked_distro_id:
+
+            # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'linux3' repectively
+            #       and the distro is Fedora
+            mocked_os.name = 'posix'
+            mocked_sys.platform = 'linux3'
+            mocked_distro_id.return_value = 'fedora'
+
+            # THEN: The three platform functions should perform properly
+            assert is_linux(distro='fedora') is True, 'is_linux(distro="fedora") should return True'
+            assert is_win() is False, 'is_win() should return False'
+            assert is_macosx() is False, 'is_macosx() should return False'
+
+    def test_is_64bit_instance(self):
+        """
+        Test the is_64bit_instance() function
+        """
+        # GIVEN: Mocked out objects
+        with patch('openlp.core.common.sys') as mocked_sys:
+
+            # WHEN: The mocked sys.maxsize is set to 32-bit
+            mocked_sys.maxsize = 2**32
+
+            # THEN: The result should be False
+            assert is_64bit_instance() is False, 'is_64bit_instance() should return False'
 
     def test_normalize_str_leaves_newlines(self):
         # GIVEN: a string containing newlines

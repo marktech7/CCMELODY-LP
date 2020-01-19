@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -62,13 +61,14 @@ class AppLocation(object):
         :rtype: Path
         """
         if dir_type == AppLocation.AppDir or dir_type == AppLocation.VersionDir:
-            return get_frozen_path(FROZEN_APP_PATH, APP_PATH)
+            path = get_frozen_path(FROZEN_APP_PATH, APP_PATH)
         elif dir_type == AppLocation.PluginsDir:
-            return get_frozen_path(FROZEN_APP_PATH, APP_PATH) / 'plugins'
+            path = get_frozen_path(FROZEN_APP_PATH, APP_PATH) / 'plugins'
         elif dir_type == AppLocation.LanguageDir:
-            return get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
+            path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
-            return _get_os_dir_path(dir_type)
+            path = _get_os_dir_path(dir_type)
+        return path
 
     @staticmethod
     def get_data_path():

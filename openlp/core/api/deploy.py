@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,10 +22,10 @@
 Download and "install" the remote web client
 """
 from zipfile import ZipFile
+from PyQt5 import QtWidgets
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import download_file, get_url_file_size, get_web_page
-from openlp.core.common.registry import Registry
 
 
 def deploy_zipfile(app_root_path, zip_name):
@@ -47,7 +46,7 @@ def download_sha256():
     """
     Download the config file to extract the sha256 and version number
     """
-    user_agent = 'OpenLP/' + Registry().get('application').applicationVersion()
+    user_agent = 'OpenLP/' + QtWidgets.QApplication.applicationVersion()
     try:
         web_config = get_web_page('https://get.openlp.org/webclient/download.cfg', headers={'User-Agent': user_agent})
     except ConnectionError:

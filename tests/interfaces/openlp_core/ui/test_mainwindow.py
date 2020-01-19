@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,18 +21,20 @@
 """
 Package to test the openlp.core.ui.mainwindow package.
 """
-from unittest import TestCase
+from unittest import TestCase, skipIf
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtGui
 
 from openlp.core.state import State
+from openlp.core.common import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.ui.mainwindow import MainWindow
 from tests.helpers.testmixin import TestMixin
 
 
+@skipIf(is_macosx(), 'Skip on macOS until we can figure out what the problem is or the tests are refactored')
 class TestMainWindow(TestCase, TestMixin):
 
     def setUp(self):

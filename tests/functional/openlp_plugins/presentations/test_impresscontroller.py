@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,11 +24,9 @@ Functional tests to test the Impress class and related methods.
 import shutil
 from tempfile import mkdtemp
 from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock, call, patch
 
-from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.impresscontroller import ImpressController, ImpressDocument, TextType
-from openlp.plugins.presentations.presentationplugin import __default_settings__
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import RESOURCE_PATH
 
@@ -87,7 +84,7 @@ class TestImpressController(TestCase, TestMixin):
             assert result is False
 
     @patch('openlp.plugins.presentations.lib.impresscontroller.log')
-    def test_check_available1(self, mocked_log):
+    def test_check_available_on_windows(self, mocked_log):
         """
         Test `ImpressController.check_available` on Windows
         """
@@ -107,7 +104,7 @@ class TestImpressController(TestCase, TestMixin):
 
     @patch('openlp.plugins.presentations.lib.impresscontroller.log')
     @patch('openlp.plugins.presentations.lib.impresscontroller.is_win', return_value=False)
-    def test_check_available2(self, mocked_is_win, mocked_log):
+    def test_check_available_on_linux(self, mocked_is_win, mocked_log):
         """
         Test `ImpressController.check_available` when not on Windows
         """
@@ -123,6 +120,44 @@ class TestImpressController(TestCase, TestMixin):
             assert mocked_get_com_servicemanager.called is False
             assert result is True
 
+    @patch('openlp.plugins.presentations.lib.impresscontroller.is_win', return_value=True)
+    def test_start_process_on_windows(self, mocked_is_win):
+        """
+        Test that start_process() on Windows starts the process
+        """
+        # GIVEN: An ImpressController object
+        controller = ImpressController(plugin=self.mock_plugin)
+        controller.get_com_servicemanager = MagicMock(return_value=MagicMock())
+
+        # WHEN: start_process() is called
+        controller.start_process()
+
+        # THEN: The correct methods should have been called
+        controller.get_com_servicemanager.assert_called_once()
+        assert controller.manager._FlagAsMethod.call_args_list == [call('Bridge_GetStruct'),
+                                                                   call('Bridge_GetValueObject')]
+
+    @patch('openlp.plugins.presentations.lib.impresscontroller.is_win', return_value=False)
+    @patch('openlp.plugins.presentations.lib.impresscontroller.get_uno_command', return_value='libreoffice')
+    @patch('openlp.plugins.presentations.lib.impresscontroller.QtCore.QProcess')
+    def test_start_process_on_linux(self, MockQProcess, mocked_get_uno_command, mocked_is_win):
+        """
+        Test that start_process() on Linux starts the process
+        """
+        # GIVEN: An ImpressController object
+        mocked_process = MagicMock()
+        MockQProcess.return_value = mocked_process
+        controller = ImpressController(plugin=self.mock_plugin)
+
+        # WHEN: start_process() is called
+        controller.start_process()
+
+        # THEN: The correct methods should have been called
+        mocked_get_uno_command.assert_called_once()
+        MockQProcess.assert_called_once()
+        assert controller.process is mocked_process
+        mocked_process.startDetached.assert_called_once_with('libreoffice')
+
 
 class TestImpressDocument(TestCase):
     """
@@ -131,7 +166,6 @@ class TestImpressDocument(TestCase):
     def setUp(self):
         mocked_plugin = MagicMock()
         mocked_plugin.settings_section = 'presentations'
-        Settings().extend_default_settings(__default_settings__)
         self.file_name = RESOURCE_PATH / 'presentations' / 'test.pptx'
         self.ppc = ImpressController(mocked_plugin)
         self.doc = ImpressDocument(self.ppc, self.file_name)

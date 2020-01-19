@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,9 +33,10 @@ from PyQt5 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import translate
-from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ItemCapabilities
@@ -45,14 +45,15 @@ from openlp.core.lib.formattingtags import FormattingTags
 
 log = logging.getLogger(__name__)
 
+ENGLISH_NOTES = '[CDEFGAB]'
+GERMAN_NOTES = '[CDEFGAH]'
+NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si)'
+CHORD_SUFFIXES = '(b|bb)?(#)?(m|maj7|maj|min7|min|sus)?(1|2|3|4|5|6|7|8|9)?'
 SLIM_CHARS = 'fiíIÍjlĺľrtť.,;/ ()|"\'!:\\'
-CHORD_LINE_MATCH = re.compile(r'\[(.*?)\]([\u0080-\uFFFF,\w]*)'
-                              r'([\u0080-\uFFFF\w\s\.\,\!\?\;\:\|\"\'\-\_]*)(\Z)?')
 CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
 FIRST_CHORD_TEMPLATE = '<span class="chordline firstchordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
-
 VERSE = 'The Lord said to {r}Noah{/r}: \n' \
     'There\'s gonna be a {su}floody{/su}, {sb}floody{/sb}\n' \
     'The Lord said to {g}Noah{/g}:\n' \
@@ -66,6 +67,72 @@ AUTHOR = 'John Doe'
 FOOTER_COPYRIGHT = 'Public Domain'
 CCLI_NO = '123456'
 
+# Just so we can cache the regular expression objects
+_chord_cache = {}
+_line_cache = {}
+
+
+def _construct_chord_regex(notes):
+    """
+    Create the regex for a particular set of notes
+
+    :param notes: The regular expression for a set of valid notes
+    :return: An expanded regular expression for valid chords
+    """
+    chord = notes + CHORD_SUFFIXES
+    return '(' + chord + '(/' + chord + ')?)'
+
+
+def _construct_chord_match(notes):
+    """
+    Construct chord matching regular expression object
+
+    :param notes: The regular expression for a set of valid notes
+    :return: A compiled regular expression object
+    """
+    return re.compile(r'\[' + _construct_chord_regex(notes) + r'\]')
+
+
+def _construct_chord_line_match(notes):
+    """
+    Construct a chord line matching regular expression object
+
+    :param notes: The regular expression for a set of valid notes
+    :return: A compiled regular expression object
+    """
+    return re.compile(r'\[' + _construct_chord_regex(notes) + r'\]([\u0080-\uFFFF,\w]*)'
+                      r'([\u0080-\uFFFF\w\s\.\,\!\?\;\:\|\"\'\-\_]*)(\Z)?')
+
+
+def _get_chord_match():
+    """
+    Get the right chord_match object based on the current chord notation
+    """
+    notation = Registry().get('settings').value('songs/chord notation')
+    if notation not in _chord_cache.keys():
+        if notation == 'german':
+            _chord_cache[notation] = _construct_chord_match(GERMAN_NOTES)
+        elif notation == 'neo-latin':
+            _chord_cache[notation] = _construct_chord_match(NEOLATIN_NOTES)
+        else:
+            _chord_cache[notation] = _construct_chord_match(ENGLISH_NOTES)
+    return _chord_cache[notation]
+
+
+def _get_line_match():
+    """
+    Get the right chold line match based on the current chord notation
+    """
+    notation = Registry().get('settings').value('songs/chord notation')
+    if notation not in _line_cache.keys():
+        if notation == 'german':
+            _line_cache[notation] = _construct_chord_line_match(GERMAN_NOTES)
+        elif notation == 'neo-latin':
+            _line_cache[notation] = _construct_chord_line_match(NEOLATIN_NOTES)
+        else:
+            _line_cache[notation] = _construct_chord_line_match(ENGLISH_NOTES)
+    return _line_cache[notation]
+
 
 def remove_chords(text):
     """
@@ -73,7 +140,7 @@ def remove_chords(text):
 
     :param text: Text to be cleaned
     """
-    return re.sub(r'\[.+?\]', r'', text)
+    return _get_chord_match().sub(r'', text)
 
 
 def remove_tags(text, can_remove_chords=False):
@@ -120,11 +187,11 @@ def render_chords_in_line(match):
     # The actual chord, would be "G" in match "[G]sweet the "
     chord = match.group(1)
     # The tailing word of the chord, would be "sweet" in match "[G]sweet the "
-    tail = match.group(2)
+    tail = match.group(11)
     # The remainder of the line, until line end or next chord. Would be " the " in match "[G]sweet the "
-    remainder = match.group(3)
+    remainder = match.group(12)
     # Line end if found, else None
-    end = match.group(4)
+    end = match.group(13)
     # Based on char width calculate width of chord
     for chord_char in chord:
         if chord_char not in SLIM_CHARS:
@@ -186,6 +253,7 @@ def render_chords(text):
     :returns str: The text containing the rendered chords
     """
     text_lines = text.split('{br}')
+    chord_line_match = _get_line_match()
     rendered_lines = []
     chords_on_prev_line = False
     for line in text_lines:
@@ -197,7 +265,7 @@ def render_chords(text):
                 chord_template = FIRST_CHORD_TEMPLATE
                 chords_on_prev_line = True
             # Matches a chord, a tail, a remainder and a line end. See expand_and_align_chords_in_line() for more info.
-            new_line = chord_template.format(chord=CHORD_LINE_MATCH.sub(render_chords_in_line, line))
+            new_line = chord_template.format(chord=chord_line_match.sub(render_chords_in_line, line))
             rendered_lines.append(new_line)
         else:
             chords_on_prev_line = False
@@ -499,40 +567,21 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
-            self.set_theme(theme_data)
-            self.theme_height = theme_data.font_main_height
+            self.set_theme(theme_data, is_sync=True)
             slides = self.format_slide(VERSE, None)
             verses = dict()
             verses['title'] = TITLE
             verses['text'] = render_tags(slides[0])
             verses['verse'] = 'V1'
             verses['footer'] = self.generate_footer()
-            self.load_verses([verses])
+            self.load_verses([verses], is_sync=True)
+            # Wait for a second
+            wait_for(lambda: False, timeout=1)
             self.force_page = False
             if generate_screenshot:
-                return self.save_screenshot()
+                return self.grab()
         self.force_page = False
         return None
-
-    def get_theme(self, item):
-        """
-        :param item: The :class:`~openlp.core.lib.serviceitem.ServiceItem` item object
-        :return string: The name of the theme to be used
-
-        """
-        # Just assume we use the global theme.
-        theme_name = Registry().get('theme_manager').global_theme
-        # The theme level is either set to Service or Item. Use the service theme if one is set. We also have to use the
-        # service theme, even when the theme level is set to Item, because the item does not necessarily have to have a
-        # theme.
-        if self.theme_level != ThemeLevel.Global:
-            # When the theme level is at Service and we actually have a service theme then use it.
-            if self.theme_level == ThemeLevel.Service:
-                theme_name = Registry().get('service_manager').service_theme
-        # If we have Item level and have an item theme then use it.
-        if self.theme_level == ThemeLevel.Song and item.theme:
-            theme_name = item.theme
-        return theme_name
 
     def format_slide(self, text, item):
         """
@@ -542,21 +591,17 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         :param item: The :class:`~openlp.core.lib.serviceitem.ServiceItem` item object.
 
         """
-        while not self._is_initialised:
-            QtWidgets.QApplication.instance().processEvents()
+        wait_for(lambda: self._is_initialised)
         self.log_debug('format slide')
         if item:
-            theme_name = self.get_theme(item)
-            theme_data = Registry().get('theme_manager').get_theme_data(theme_name)
-            self.theme_height = theme_data.font_main_height
             # Set theme for preview
-            self.set_theme(theme_data)
+            self.set_theme(item.get_theme_data(self.theme_level))
         # Add line endings after each line of text used for bibles.
         line_end = '<br>'
         if item and item.is_capable(ItemCapabilities.NoLineBreaks):
             line_end = ' '
         # Bibles
-        if item and item.is_capable(ItemCapabilities.CanWordSplit):
+        if item and item.name == 'bibles':
             pages = self._paginate_slide_words(text.split('\n'), line_end)
         # Songs and Custom
         elif item is None or (item and item.is_capable(ItemCapabilities.CanSoftBreak)):
@@ -572,9 +617,9 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
                     text = text.replace(' [---]', '[---]')
                 while '[---] ' in text:
                     text = text.replace('[---] ', '[---]')
-                count = 0
-                # only loop 5 times as there will never be more than 5 incorrect logical splits on a single slide.
-                while True and count < 5:
+                # Grab the number of occurrences of "[---]" in the text to use as a max number of loops
+                count = text.count('[---]')
+                for _ in range(count):
                     slides = text.split('\n[---]\n', 2)
                     # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
                     # for now).
@@ -766,8 +811,10 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         :param text:  The text to check. It may contain HTML tags.
         """
         self.clear_slides()
+        self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
         self.run_javascript('Display.addTextSlide("v1", "{text}", "Dummy Footer");'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
+        self.log_debug('_text_fits_on_slide: 2')
         does_text_fits = self.run_javascript('Display.doesContentFit();', is_sync=True)
         return does_text_fits
 
@@ -792,7 +839,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             return pixmap
 
 
-class Renderer(RegistryBase, RegistryProperties, ThemePreviewRenderer):
+class Renderer(RegistryBase, ThemePreviewRenderer):
     """
     A virtual display used for rendering thumbnails and other offscreen tasks
     """
@@ -810,7 +857,6 @@ class Renderer(RegistryBase, RegistryProperties, ThemePreviewRenderer):
         # If the display is not show'ed and hidden like this webegine will not render
         self.show()
         self.hide()
-        self.theme_height = 0
         self.theme_level = ThemeLevel.Global
 
     def set_theme_level(self, theme_level):

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -40,7 +39,6 @@ from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.edits import SearchEdit
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListWidgetWithDnD
-
 
 log = logging.getLogger(__name__)
 
@@ -416,7 +414,9 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         for index in range(self.list_view.count()):
             list_item = self.list_view.item(index)
             file_path = list_item.data(QtCore.Qt.UserRole)
-            file_paths.append(file_path)
+            # This is added as start of OpenLP each time
+            if file_path != UiStrings().LiveStream:
+                file_paths.append(file_path)
         return file_paths
 
     def load_list(self, load_list, target_group):
@@ -497,7 +497,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
                                               translate('OpenLP.MediaManagerItem',
                                                         'You must select one or more items to preview.'))
         else:
-            log.debug('%s Preview requested' % self.plugin.name)
+            log.debug('{plug} Preview requested'.format(plug=self.plugin.name))
             Registry().set_flag('has doubleclick added item to service', False)
             service_item = self.build_service_item()
             if service_item:
@@ -635,8 +635,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         service_item.add_icon()
         if self.generate_slide_data(service_item, item=item, remote=remote, context=context):
             return service_item
-        else:
-            return None
+        return None
 
     def service_load(self, item):
         """

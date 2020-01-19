@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -41,10 +40,11 @@ from openlp.core.common.settings import Settings
 from openlp.core.lib.db import delete_database
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.widgets.enums import PathEditType
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
 from openlp.plugins.bibles.lib.db import clean_filename
-from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
+from openlp.plugins.bibles.lib.importers.http import BGExtract, CWExtract, BSExtract
 from openlp.plugins.bibles.lib.manager import BibleFormat
 
 
@@ -58,9 +58,9 @@ class WebDownload(object):
     Unknown = -1
     Crosswalk = 0
     BibleGateway = 1
-    Bibleserver = 2
+    BibleServer = 2
 
-    Names = ['Crosswalk', 'BibleGateway', 'Bibleserver']
+    Names = ['Crosswalk', 'BibleGateway', 'BibleServer']
 
 
 class BibleImportForm(OpenLPWizard):
@@ -277,6 +277,7 @@ class BibleImportForm(OpenLPWizard):
         self.sword_folder_label.setObjectName('SwordFolderLabel')
         self.sword_folder_path_edit = PathEdit(
             self.sword_folder_tab,
+            path_type=PathEditType.Directories,
             default_path=Settings().value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.SWORD),
             show_revert=False,
@@ -401,7 +402,7 @@ class BibleImportForm(OpenLPWizard):
                                                                                'Crosswalk'))
         self.web_source_combo_box.setItemText(WebDownload.BibleGateway, translate('BiblesPlugin.ImportWizardForm',
                                                                                   'BibleGateway'))
-        self.web_source_combo_box.setItemText(WebDownload.Bibleserver, translate('BiblesPlugin.ImportWizardForm',
+        self.web_source_combo_box.setItemText(WebDownload.BibleServer, translate('BiblesPlugin.ImportWizardForm',
                                                                                  'Bibleserver'))
         self.web_translation_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bible:'))
         self.sword_bible_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Bibles:'))
@@ -503,6 +504,11 @@ class BibleImportForm(OpenLPWizard):
                         self.sword_folder_path_edit.setFocus()
                         return False
                     key = self.sword_bible_combo_box.itemData(self.sword_bible_combo_box.currentIndex())
+                    if not key:
+                        critical_error_message_box(UiStrings().NFSs,
+                                                   WizardStrings.YouSpecifyFolder % WizardStrings.SWORD)
+                        self.sword_folder_path_edit.setFocus()
+                        return False
                     if 'description' in self.pysword_folder_modules_json[key]:
                         self.version_name_edit.setText(self.pysword_folder_modules_json[key]['description'])
                     if 'distributionlicense' in self.pysword_folder_modules_json[key]:
@@ -579,9 +585,10 @@ class BibleImportForm(OpenLPWizard):
         self.web_progress_bar.setVisible(True)
         self.web_progress_bar.setValue(0)
         # TODO: Where does critical_error_message_box get %s string from?
+        # NOTE: BibleServer support has been disabled since we can't currently parse it. Re-add if/when fixed.
         for (download_type, extractor) in ((WebDownload.Crosswalk, CWExtract()),
                                            (WebDownload.BibleGateway, BGExtract()),
-                                           (WebDownload.Bibleserver, BSExtract())):
+                                           (WebDownload.BibleServer, BSExtract())):
             try:
                 bibles = extractor.get_bibles_from_http()
             except (urllib.error.URLError, ConnectionError):
@@ -767,4 +774,6 @@ class BibleImportForm(OpenLPWizard):
 
         self.progress_label.setText(translate('BiblesPlugin.ImportWizardForm', 'Your Bible import failed.'))
         del self.manager.db_cache[importer.name]
-        delete_database(self.plugin.settings_section, importer.file)
+        # Don't delete the db if it wasen't created
+        if hasattr(importer, 'file'):
+            delete_database(self.plugin.settings_section, importer.file)

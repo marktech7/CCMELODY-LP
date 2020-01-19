@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -76,6 +75,7 @@ class TestController(TestCase):
         self.mocked_renderer.format_slide = self.mocked_slide_formater
         Registry().register('live_controller', self.mocked_live_controller)
         Registry().register('renderer', self.mocked_renderer)
+        Registry().register('settings', MagicMock(**{'value.return_value': 'english'}))
 
     def test_controller_text_empty(self):
         """

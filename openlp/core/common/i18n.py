@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,7 +31,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common import Singleton, is_macosx, is_win
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.settings import Settings
-
 
 log = logging.getLogger(__name__)
 
@@ -385,6 +383,7 @@ class UiStrings(metaclass=Singleton):
         self.Import = translate('OpenLP.Ui', 'Import')
         self.LayoutStyle = translate('OpenLP.Ui', 'Layout style:')
         self.Live = translate('OpenLP.Ui', 'Live')
+        self.LiveStream = translate('OpenLP.Ui', 'Live Stream')
         self.LiveBGError = translate('OpenLP.Ui', 'Live Background Error')
         self.LiveToolbar = translate('OpenLP.Ui', 'Live Toolbar')
         self.Load = translate('OpenLP.Ui', 'Load')

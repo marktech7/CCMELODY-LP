@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -41,22 +40,12 @@ from openlp.plugins.images.lib.db import init_schema
 
 log = logging.getLogger(__name__)
 
-__default_settings__ = {
-    'images/db type': 'sqlite',
-    'images/db username': '',
-    'images/db password': '',
-    'images/db hostname': '',
-    'images/db database': '',
-    'images/background color': '#000000',
-    'images/last directory': None
-}
-
 
 class ImagePlugin(Plugin):
     log.info('Image Plugin loaded')
 
     def __init__(self):
-        super(ImagePlugin, self).__init__('images', __default_settings__, ImageMediaItem, ImageTab)
+        super(ImagePlugin, self).__init__('images', ImageMediaItem, ImageTab)
         self.manager = Manager('images', init_schema, upgrade_mod=upgrade)
         self.weight = -7
         self.icon_path = UiIcons().picture

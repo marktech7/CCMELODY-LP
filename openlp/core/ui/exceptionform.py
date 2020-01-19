@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -115,7 +114,7 @@ class ExceptionForm(QtWidgets.QDialog, Ui_ExceptionDialog, RegistryProperties):
                 log.exception('Failed to write crash report')
                 QtWidgets.QMessageBox.warning(
                     self, translate('OpenLP.ExceptionDialog', 'Failed to Save Report'),
-                    translate('OpenLP.ExceptionDialog', 'The following error occured when saving the report.\n\n'
+                    translate('OpenLP.ExceptionDialog', 'The following error occurred when saving the report.\n\n'
                                                         '{exception}').format(file_name=file_path, exception=e))
 
     def on_send_report_button_clicked(self):
@@ -140,7 +139,7 @@ class ExceptionForm(QtWidgets.QDialog, Ui_ExceptionDialog, RegistryProperties):
                                                                    libs=content['libs']))
         if self.file_attachment:
             mail_urlquery.addQueryItem('attach', self.file_attachment)
-        mail_to_url = QtCore.QUrl('mailto:bugs@openlp.org')
+        mail_to_url = QtCore.QUrl('mailto:bugs3@openlp.org')
         mail_to_url.setQuery(mail_urlquery)
         QtGui.QDesktopServices.openUrl(mail_to_url)
 

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +29,6 @@ from PyQt5 import QtCore, QtGui
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 
 
@@ -82,24 +80,24 @@ class AlertsManager(QtCore.QObject, RegistryBase, LogMixin, RegistryProperties):
         Format and request the Alert and start the timer.
         """
         if not self.alert_list or (len(ScreenList()) == 1 and
-                                   not Settings().value('core/display on monitor')):
+                                   not self.settings.value('core/display on monitor')):
             return
         text = self.alert_list.pop(0)
 
         # Get the rgb color format of the font & background hex colors from settings
-        rgb_font_color = self.hex_to_rgb(QtGui.QColor(Settings().value('alerts/font color')))
-        rgb_background_color = self.hex_to_rgb(QtGui.QColor(Settings().value('alerts/background color')))
+        rgb_font_color = self.hex_to_rgb(QtGui.QColor(self.settings.value('alerts/font color')))
+        rgb_background_color = self.hex_to_rgb(QtGui.QColor(self.settings.value('alerts/background color')))
 
         # Put alert settings together in dict that will be passed to Display in Javascript
         alert_settings = {
             'backgroundColor': rgb_background_color,
-            'location': Settings().value('alerts/location'),
-            'fontFace': Settings().value('alerts/font face'),
-            'fontSize': Settings().value('alerts/font size'),
+            'location': self.settings.value('alerts/location'),
+            'fontFace': self.settings.value('alerts/font face'),
+            'fontSize': self.settings.value('alerts/font size'),
             'fontColor': rgb_font_color,
-            'timeout': Settings().value('alerts/timeout'),
-            'repeat': Settings().value('alerts/repeat'),
-            'scroll': Settings().value('alerts/scroll')
+            'timeout': self.settings.value('alerts/timeout'),
+            'repeat': self.settings.value('alerts/repeat'),
+            'scroll': self.settings.value('alerts/scroll')
         }
         self.live_controller.displays[0].alert(text, json.dumps(alert_settings))
 

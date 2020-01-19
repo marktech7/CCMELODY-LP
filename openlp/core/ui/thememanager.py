@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,6 +37,7 @@ from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
+from openlp.core.common.utils import wait_for
 from openlp.core.lib import build_icon, check_item_selected, create_thumb, get_text_file_string, validate_thumb
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.theme import Theme
@@ -45,6 +45,7 @@ from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.ui.filerenameform import FileRenameForm
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.themeform import ThemeForm
+from openlp.core.ui.themeprogressform import ThemeProgressForm
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.toolbar import OpenLPToolbar
 
@@ -141,8 +142,22 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         super(ThemeManager, self).__init__(parent)
         self.settings_section = 'themes'
         # Variables
-        self.theme_list = []
+        self._theme_list = {}
         self.old_background_image_path = None
+
+    def get_global_theme(self):
+        return self.get_theme_data(self.global_theme)
+
+    def get_theme_data(self, theme_name):
+        """
+        Gets a theme given a name, returns the default theme if missing
+        """
+        theme = Theme()
+        if theme_name in self._theme_list:
+            theme = self._theme_list[theme_name]
+        else:
+            self.log_warning('Missing requested theme data for "{}", using default theme'.format(theme_name))
+        return theme
 
     def bootstrap_initialise(self):
         """
@@ -151,18 +166,23 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.setup_ui(self)
         self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.build_theme_path()
-        self.load_first_time_themes()
-        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
 
     def bootstrap_post_set_up(self):
         """
         process the bootstrap post setup request
         """
+        self.progress_form = ThemeProgressForm(self)
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
-        Registry().register_function('theme_update_global', self.change_global_from_tab)
+
+    def bootstrap_completion(self):
+        """
+        process the bootstrap completion request
+        """
+        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
+        Registry().register_function('theme_update_global', self.change_global_from_tab)
 
     def upgrade_themes(self):
         """
@@ -170,6 +190,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
 
         :rtype: None
         """
+        # Wait for 2 seconds to allow some other things to start processing first
+        wait_for(lambda: False, timeout=1)
         xml_file_paths = AppLocation.get_section_data_path('themes').glob('*/*.xml')
         for xml_file_path in xml_file_paths:
             theme_data = get_text_file_string(xml_file_path)
@@ -324,14 +346,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param str new_theme_name: The new theme name of the theme
         :rtype: None
         """
-        destination_path = None
-        source_path = None
+        old_background = None
         if theme_data.background_type == 'image' or theme_data.background_type == 'video':
-            destination_path = self.theme_path / new_theme_name / theme_data.background_filename.name
-            source_path = theme_data.background_filename
+            old_background = theme_data.background_filename
+            theme_data.background_filename = self.theme_path / new_theme_name / theme_data.background_filename.name
         theme_data.theme_name = new_theme_name
         theme_data.extend_image_filename(self.theme_path)
-        self.save_theme(theme_data, source_path, destination_path)
+        self.save_theme(theme_data, background_override=old_background)
         self.load_themes()
 
     def on_edit_theme(self, field=None):
@@ -365,7 +386,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             row = self.theme_list_widget.row(item)
             self.theme_list_widget.takeItem(row)
             self.delete_theme(theme)
-            self.renderer.set_theme(item.data(QtCore.Qt.UserRole))
+            # self.renderer.set_theme(self.get_theme_data(item.data(QtCore.Qt.UserRole)))
             # As we do not reload the themes, push out the change. Reload the
             # list as the internal lists and events need to be triggered.
             self._push_themes()
@@ -376,7 +397,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
 
         :param theme: The theme to delete.
         """
-        self.theme_list.remove(theme)
+        self._theme_list.pop(theme)
         thumb = '{name}.png'.format(name=theme)
         delete_file(self.theme_path / thumb)
         delete_file(self.thumb_path / thumb)
@@ -456,9 +477,11 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         if not file_paths:
             return
         self.application.set_busy_cursor()
+        new_themes = []
         for file_path in file_paths:
-            self.unzip_theme(file_path, self.theme_path)
+            new_themes.append(self.unzip_theme(file_path, self.theme_path))
         Settings().setValue(self.settings_section + '/last directory import', file_path.parent)
+        self.update_preview_images(new_themes)
         self.load_themes()
         self.application.set_normal_cursor()
 
@@ -468,17 +491,20 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         """
         self.application.set_busy_cursor()
         theme_paths = AppLocation.get_files(self.settings_section, '.otz')
+        new_themes = []
         for theme_path in theme_paths:
             theme_path = self.theme_path / theme_path
-            self.unzip_theme(theme_path, self.theme_path)
+            new_themes.append(self.unzip_theme(theme_path, self.theme_path))
             delete_file(theme_path)
-        theme_paths = AppLocation.get_files(self.settings_section, '.png')
         # No themes have been found so create one
         if not theme_paths:
             theme = Theme()
             theme.theme_name = UiStrings().Default
             self.save_theme(theme)
             Settings().setValue(self.settings_section + '/global theme', theme.theme_name)
+            new_themes = [theme.theme_name]
+        if new_themes:
+            self.update_preview_images(new_themes)
         self.application.set_normal_cursor()
 
     def load_themes(self):
@@ -487,9 +513,9 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         events for the plugins.
         The plugins will call back in to get the real list if they want it.
         """
-        self.theme_list = []
+        self._theme_list.clear()
         self.theme_list_widget.clear()
-        files = AppLocation.get_files(self.settings_section, '.png')
+        files = AppLocation.get_files(self.settings_section, '/*.json')
         # Sort the themes by its name considering language specific
         files.sort(key=lambda file_name: get_locale_key(str(file_name)))
         # now process the file list of png files
@@ -511,22 +537,22 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 item_name.setIcon(icon)
                 item_name.setData(QtCore.Qt.UserRole, text_name)
                 self.theme_list_widget.addItem(item_name)
-                self.theme_list.append(text_name)
+                self._theme_list[text_name] = self._get_theme_data(text_name)
         self._push_themes()
 
     def _push_themes(self):
         """
         Notify listeners that the theme list has been updated
         """
-        Registry().execute('theme_update_list', self.get_themes())
+        Registry().execute('theme_update_list', self.get_theme_names())
 
-    def get_themes(self):
+    def get_theme_names(self):
         """
         Return the list of loaded themes
         """
-        return self.theme_list
+        return [theme_name for theme_name in self._theme_list]
 
-    def get_theme_data(self, theme_name):
+    def _get_theme_data(self, theme_name):
         """
         Returns a theme object from a JSON file
 
@@ -620,10 +646,12 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 # As all files are closed, we can create the Theme.
                 if file_xml:
                     if json_theme:
-                        theme = self._create_theme_from_json(file_xml, self.theme_path)
+                        self._create_theme_from_json(file_xml, self.theme_path)
                     else:
-                        theme = self._create_theme_from_xml(file_xml, self.theme_path)
-                    self.generate_and_save_image(theme_name, theme)
+                        self._create_theme_from_xml(file_xml, self.theme_path)
+                return theme_name
+            else:
+                return None
 
     def check_if_theme_exists(self, theme_name):
         """
@@ -640,14 +668,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             return False
         return True
 
-    def save_theme(self, theme, image_source_path=None, image_destination_path=None, image=None):
+    def save_theme(self, theme, image=None, background_override=None):
         """
-        Writes the theme to the disk and handles the background image if necessary
+        Writes the theme to the disk and including the background image and thumbnail if necessary
 
         :param Theme theme: The theme data object.
-        :param Path image_source_path: Where the theme image is currently located.
-        :param Path image_destination_path: Where the Theme Image is to be saved to
-        :param image: The example image of the theme. Optionally.
+        :param image: The theme thumbnail. Optionally.
+        :param background_override: Background to use rather than background_source. Optionally.
         :rtype: None
         """
         name = theme.theme_name
@@ -659,12 +686,18 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme_path.write_text(theme_pretty)
         except OSError:
             self.log_exception('Saving theme to file failed')
-        if image_source_path and image_destination_path:
-            if self.old_background_image_path and image_destination_path != self.old_background_image_path:
+        if theme.background_source and theme.background_filename:
+            background_file = background_override
+            # Use theme source image if override doesn't exist
+            if not background_file or not background_file.exists():
+                background_file = theme.background_source
+            if self.old_background_image_path and theme.background_filename != self.old_background_image_path:
                 delete_file(self.old_background_image_path)
-            if image_source_path != image_destination_path:
+            if not background_file.exists():
+                self.log_warning('Background does not exist, retaining cached background')
+            elif background_file != theme.background_filename:
                 try:
-                    shutil.copyfile(image_source_path, image_destination_path)
+                    shutil.copyfile(background_file, theme.background_filename)
                 except OSError:
                     self.log_exception('Failed to save theme image')
         if image:
@@ -675,32 +708,33 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             thumb_path = self.thumb_path / '{name}.png'.format(name=name)
             create_thumb(sample_path_name, thumb_path, False)
         else:
-            self.generate_and_save_image(name, theme)
+            self.update_preview_images([name])
 
-    def generate_and_save_image(self, theme_name, theme):
+    def save_preview(self, theme_name, preview_pixmap):
         """
-        Generate and save a preview image
-
-        :param str theme_name: The name of the theme.
-        :param theme: The theme data object.
+        Save the preview QPixmap object to a file
         """
-        frame = self.generate_image(theme)
         sample_path_name = self.theme_path / '{file_name}.png'.format(file_name=theme_name)
         if sample_path_name.exists():
             sample_path_name.unlink()
-        frame.save(str(sample_path_name), 'png')
+        preview_pixmap.save(str(sample_path_name), 'png')
         thumb_path = self.thumb_path / '{name}.png'.format(name=theme_name)
         create_thumb(sample_path_name, thumb_path, False)
 
-    def update_preview_images(self):
+    def update_preview_images(self, theme_name_list=None):
         """
         Called to update the themes' preview images.
+
+        :param theme_name_list: A list of theme names in the theme data folder
         """
-        self.main_window.display_progress_bar(len(self.theme_list))
-        for theme in self.theme_list:
-            self.main_window.increment_progress_bar()
-            self.generate_and_save_image(theme, self.get_theme_data(theme))
-        self.main_window.finished_progress_bar()
+        theme_name_list = theme_name_list or self.get_theme_names()
+        self.progress_form.theme_list = theme_name_list
+        self.progress_form.show()
+        for theme_name in theme_name_list:
+            theme_data = self._get_theme_data(theme_name)
+            preview_pixmap = self.progress_form.get_preview(theme_name, theme_data)
+            self.save_preview(theme_name, preview_pixmap)
+        self.progress_form.close()
         self.load_themes()
 
     def generate_image(self, theme_data, force_page=False):

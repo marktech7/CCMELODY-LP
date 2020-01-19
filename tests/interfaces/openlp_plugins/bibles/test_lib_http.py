@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,8 +28,10 @@ from unittest.mock import MagicMock
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
+IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
 
-@skipIf(os.environ.get('JENKINS_URL'), 'Skip Bible HTTP tests to prevent Jenkins from being blacklisted')
+
+@skipIf(IS_CI, 'Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
 class TestBibleHTTP(TestCase):
 
     def setUp(self):
@@ -135,6 +136,21 @@ class TestBibleHTTP(TestCase):
         assert bibles is not None
         assert ('New Int. Readers Version', 'NIRV', 'en') in bibles
         assert ('Священное Писание, Восточный перевод', 'CARS', 'ru') in bibles
+
+    def test_bibleserver_get_verse_text(self):
+        """
+        Test verse text from bibleserver.com
+        """
+        # GIVEN: A new Crosswalk extraction class
+        handler = BSExtract()
+
+        # WHEN: downloading NIV Genesis from Crosswalk
+        niv_genesis_chapter_one = handler.get_bible_chapter('NIV', 'Genesis', 1)
+
+        # THEN: The verse list should contain the verses
+        assert niv_genesis_chapter_one.has_verse_list() is True
+        assert 'In the beginning God created the heavens and the earth.' == niv_genesis_chapter_one.verse_list[1], \
+            'The first chapter of genesis should have been fetched.'
 
     def test_biblegateway_get_bibles(self):
         """

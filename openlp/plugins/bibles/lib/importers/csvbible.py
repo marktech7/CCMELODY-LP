@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -50,6 +49,7 @@ There are two acceptable formats of the verses file.  They are:
 All CSV files are expected to use a comma (',') as the delimiter and double quotes ('"') as the quote symbol.
 """
 import csv
+import logging
 from collections import namedtuple
 
 from openlp.core.common import get_file_encoding
@@ -57,6 +57,7 @@ from openlp.core.common.i18n import translate
 from openlp.core.lib.exceptions import ValidationError
 from openlp.plugins.bibles.lib.bibleimport import BibleImport
 
+log = logging.getLogger(__name__)
 
 Book = namedtuple('Book', 'id, testament_id, name, abbreviation')
 Verse = namedtuple('Verse', 'book_id_name, chapter_number, number, text')
@@ -106,7 +107,8 @@ class CSVBible(BibleImport):
             with file_path.open('r', encoding=encoding, newline='') as csv_file:
                 csv_reader = csv.reader(csv_file, delimiter=',', quotechar='"')
                 return [results_tuple(*line) for line in csv_reader]
-        except (OSError, csv.Error):
+        except (OSError, csv.Error, TypeError, UnicodeDecodeError):
+            log.exception('Parsing {file} failed.'.format(file=file_path))
             raise ValidationError(msg='Parsing "{file}" failed'.format(file=file_path))
 
     def process_books(self, books):

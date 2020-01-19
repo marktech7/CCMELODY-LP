@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -158,6 +157,12 @@ class ItemCapabilities(object):
 
     ``HasMetaData``
             The item has Meta Data about item
+
+    ``CanStream``
+            The item requires to process a VLC Stream
+
+    ``HasBackgroundVideo``
+            That a video file is present with the text
     """
     CanPreview = 1
     CanEdit = 2
@@ -182,6 +187,7 @@ class ItemCapabilities(object):
     HasThumbnails = 21
     HasMetaData = 22
     CanStream = 23
+    HasBackgroundVideo = 24
 
 
 def get_text_file_string(text_file_path):

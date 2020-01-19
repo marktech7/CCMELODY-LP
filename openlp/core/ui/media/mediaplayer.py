@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -49,7 +48,7 @@ class MediaPlayer(RegistryProperties):
         """
         return False
 
-    def setup(self, display, live_display):
+    def setup(self, controller, display, live_display):
         """
         Create the related widgets for the current display
 
@@ -58,10 +57,10 @@ class MediaPlayer(RegistryProperties):
         """
         pass
 
-    def load(self, display, file):
+    def load(self, controller, display, file):
         """
         Load a new media file and check if it is valid
-
+        :param controller: Which Controller is running the show.
         :param display: The display to be updated.
         :param file: The file to be loaded
         """
@@ -71,7 +70,6 @@ class MediaPlayer(RegistryProperties):
         """
         If the main display size or position is changed, the media widgets
         should also resized
-
         :param display: The display to be updated.
         """
         pass
@@ -193,14 +191,14 @@ class MediaPlayer(RegistryProperties):
         """
         self.state[1] = state
 
-    def set_state(self, state, display):
+    def set_state(self, state, controller):
         """
-        Set the State based on the display being processed
+        Set the State based on the display being processed within the controller
         :param state: State to be set
-        :param display: Identify the Display type
+        :param controller: Identify the Display type
         :return: None
         """
-        if display.is_display:
+        if controller.is_live:
             self.set_live_state(state)
         else:
             self.set_preview_state(state)

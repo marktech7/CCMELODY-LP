@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +29,7 @@ from openlp.plugins.media.mediaplugin import MediaPlugin
 from tests.helpers.testmixin import TestMixin
 
 
-class MediaPluginTest(TestCase, TestMixin):
+class TestMediaPlugin(TestCase, TestMixin):
     """
     Test the media plugin
     """

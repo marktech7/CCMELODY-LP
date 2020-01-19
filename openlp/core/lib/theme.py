@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -128,6 +127,110 @@ class BackgroundGradientType(object):
             return BackgroundGradientType.LeftBottom
 
 
+class TransitionType(object):
+    """
+    Type enumeration for transition types.
+    """
+    Fade = 0
+    Slide = 1
+    Convex = 2
+    Concave = 3
+    Zoom = 4
+
+    @staticmethod
+    def to_string(transition_type):
+        """
+        Return a string representation of a transition type.
+        """
+        if transition_type == TransitionType.Fade:
+            return 'fade'
+        elif transition_type == TransitionType.Slide:
+            return 'slide'
+        elif transition_type == TransitionType.Convex:
+            return 'convex'
+        elif transition_type == TransitionType.Concave:
+            return 'concave'
+        elif transition_type == TransitionType.Zoom:
+            return 'zoom'
+
+    @staticmethod
+    def from_string(type_string):
+        """
+        Return a transition type for the given string.
+        """
+        if type_string == 'fade':
+            return TransitionType.Fade
+        elif type_string == 'slide':
+            return TransitionType.Slide
+        elif type_string == 'convex':
+            return TransitionType.Convex
+        elif type_string == 'concave':
+            return TransitionType.Concave
+        elif type_string == 'zoom':
+            return TransitionType.Zoom
+
+
+class TransitionSpeed(object):
+    """
+    Type enumeration for transition types.
+    """
+    Normal = 0
+    Fast = 1
+    Slow = 2
+
+    @staticmethod
+    def to_string(transition_speed):
+        """
+        Return a string representation of a transition type.
+        """
+        if transition_speed == TransitionSpeed.Normal:
+            return 'normal'
+        elif transition_speed == TransitionSpeed.Fast:
+            return 'fast'
+        elif transition_speed == TransitionSpeed.Slow:
+            return 'slow'
+
+    @staticmethod
+    def from_string(type_string):
+        """
+        Return a transition type for the given string.
+        """
+        if type_string == 'normal':
+            return TransitionSpeed.Normal
+        if type_string == 'fast':
+            return TransitionSpeed.Fast
+        elif type_string == 'slow':
+            return TransitionSpeed.Slow
+
+
+class TransitionDirection(object):
+    """
+    Type enumeration for transition types.
+    """
+    Horizontal = 0
+    Vertical = 1
+
+    @staticmethod
+    def to_string(transition_direction):
+        """
+        Return a string representation of a transition type.
+        """
+        if transition_direction == TransitionDirection.Horizontal:
+            return 'horizontal'
+        elif transition_direction == TransitionDirection.Vertical:
+            return 'vertical'
+
+    @staticmethod
+    def from_string(type_string):
+        """
+        Return a transition type for the given string.
+        """
+        if type_string == 'horizontal':
+            return TransitionDirection.Horizontal
+        if type_string == 'vertical':
+            return TransitionDirection.Vertical
+
+
 class HorizontalType(object):
     """
     Type enumeration for horizontal alignment.
@@ -138,6 +241,20 @@ class HorizontalType(object):
     Justify = 3
 
     Names = ['left', 'right', 'center', 'justify']
+
+    @staticmethod
+    def to_string(align):
+        """
+        Return a string representation of the alignment
+        """
+        return HorizontalType.Names[align]
+
+    @staticmethod
+    def from_string(align):
+        """
+        Return an alignment for a given string
+        """
+        return HorizontalType.Names.index(align)
 
 
 class VerticalType(object):
@@ -150,11 +267,26 @@ class VerticalType(object):
 
     Names = ['top', 'middle', 'bottom']
 
+    @staticmethod
+    def to_string(align):
+        """
+        Return a string representation of the alignment
+        """
+        return VerticalType.Names[align]
 
-BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition']
+    @staticmethod
+    def from_string(align):
+        """
+        Return an alignment for a given string
+        """
+        return VerticalType.Names.index(align)
+
+
+BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition', 'slide_transition_reverse']
 
 INTEGER_LIST = ['size', 'line_adjustment', 'x', 'height', 'y', 'width', 'shadow_size', 'outline_size',
-                'horizontal_align', 'vertical_align', 'wrap_style']
+                'horizontal_align', 'vertical_align', 'wrap_style', 'slide_transition_type', 'slide_transition_speed',
+                'slide_transition_direction']
 
 
 class Theme(object):
@@ -170,6 +302,7 @@ class Theme(object):
         jsn = get_text_file_string(json_path)
         self.load_theme(jsn)
         self.background_filename = None
+        self.background_source = None
         self.version = 2
 
     def expand_json(self, var, prev=None):
@@ -204,12 +337,21 @@ class Theme(object):
         Set the header and footer size into the current primary screen.
         10 px on each side is removed to allow for a border.
         """
+        self.set_default_header()
+        self.set_default_footer()
+
+    def set_default_header(self):
         current_screen_geometry = ScreenList().current.display_geometry
+        self.font_main_x = 10
         self.font_main_y = 0
         self.font_main_width = current_screen_geometry.width() - 20
         self.font_main_height = current_screen_geometry.height() * 9 / 10
-        self.font_footer_width = current_screen_geometry.width() - 20
+
+    def set_default_footer(self):
+        current_screen_geometry = ScreenList().current.display_geometry
+        self.font_footer_x = 10
         self.font_footer_y = current_screen_geometry.height() * 9 / 10
+        self.font_footer_width = current_screen_geometry.width() - 20
         self.font_footer_height = current_screen_geometry.height() / 10
 
     def load_theme(self, theme, theme_path=None):

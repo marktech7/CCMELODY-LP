@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,10 +22,12 @@ import logging
 import re
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from zipfile import ZipFile
+from zipfile import ZipFile, BadZipFile
 
 from bs4 import BeautifulSoup, NavigableString, Tag
 
+from openlp.core.common.i18n import translate
+from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib.bibleimport import BibleImport
 
 
@@ -51,18 +52,30 @@ class WordProjectBible(BibleImport):
         Unzip the file to a temporary directory
         """
         self.tmp = TemporaryDirectory()
-        with ZipFile(self.file_path) as zip_file:
-            zip_file.extractall(self.tmp.name)
+        try:
+            with ZipFile(self.file_path) as zip_file:
+                zip_file.extractall(self.tmp.name)
+        except BadZipFile:
+            self.log_exception('Extracting {file} failed.'.format(file=self.file_path))
+            critical_error_message_box(message=translate('BiblesPlugin.WordProjectBible',
+                                                         'Incorrect Bible file type, not a Zip file.'))
+            return False
         self.base_path = Path(self.tmp.name, self.file_path.stem)
+        return True
 
     def process_books(self):
         """
         Extract and create the bible books from the parsed html
 
         :param bible_data: parsed xml
-        :return: None
+        :return: True if books was parsed, otherwise False
         """
-        page = (self.base_path / 'index.htm').read_text(encoding='utf-8', errors='ignore')
+        idx_file = (self.base_path / 'index.htm')
+        if not idx_file.exists():
+            critical_error_message_box(message=translate('BiblesPlugin.WordProjectBible',
+                                                         'Incorrect Bible file type, files are missing.'))
+            return False
+        page = idx_file.read_text(encoding='utf-8', errors='ignore')
         soup = BeautifulSoup(page, 'lxml')
         bible_books = soup.find('div', 'textOptions').find_all('li')
         book_count = len(bible_books)
@@ -82,6 +95,7 @@ class WordProjectBible(BibleImport):
             db_book = self.find_and_create_book(book_name, book_count, self.language_id, book_id)
             self.process_chapters(db_book, book_id, book_link)
             self.session.commit()
+        return True
 
     def process_chapters(self, db_book, book_id, book_link):
         """
@@ -155,11 +169,11 @@ class WordProjectBible(BibleImport):
         Loads a Bible from file.
         """
         self.log_debug('Starting WordProject import from "{name}"'.format(name=self.file_path))
-        self._unzip_file()
+        if not self._unzip_file():
+            return False
         self.language_id = self.get_language_id(None, bible_name=str(self.file_path))
         result = False
         if self.language_id:
-            self.process_books()
-            result = True
+            result = self.process_books()
         self._cleanup()
         return result

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,6 +22,7 @@
 The :mod:`presentationmanager` module provides the functionality for importing
 Presentationmanager song files into the current database.
 """
+import logging
 import re
 
 from lxml import etree, objectify
@@ -31,6 +31,8 @@ from openlp.core.common import get_file_encoding
 from openlp.core.common.i18n import translate
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
+
+log = logging.getLogger(__name__)
 
 
 class PresentationManagerImport(SongImport):
@@ -55,12 +57,24 @@ class PresentationManagerImport(SongImport):
                 try:
                     tree = etree.fromstring(text, parser=etree.XMLParser(recover=True))
                 except ValueError:
+                    log.exception('XML syntax error in file {name}'.format(name=file_path))
                     self.log_error(file_path,
                                    translate('SongsPlugin.PresentationManagerImport',
                                              'File is not in XML-format, which is the only format supported.'))
                     continue
-            root = objectify.fromstring(etree.tostring(tree))
-            self.process_song(root, file_path)
+            file_str = etree.tostring(tree)
+            if not file_str:
+                log.exception('Could not find XML in file {name}'.format(name=file_path))
+                self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
+                                                    'File is not in XML-format, which is the only format supported.'))
+                continue
+            root = objectify.fromstring(file_str)
+            try:
+                self.process_song(root, file_path)
+            except AttributeError:
+                log.exception('XML syntax error in file {name}'.format(name=file_path))
+                self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
+                                                    'File is not a valid PresentationManager XMl file.'))
 
     def _get_attr(self, elem, name):
         """

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -41,18 +40,19 @@ class Screen(object):
     """
     A Python representation of a screen
     """
-    def __init__(self, number=None, geometry=None, is_primary=False, is_display=False):
+    def __init__(self, number=None, geometry=None, custom_geometry=None, is_primary=False, is_display=False):
         """
         Set up the screen object
 
         :param int number: The Qt number of this screen
         :param QRect geometry: The geometry of this screen as a QRect object
+        :param QRect custom_geometry: The custom geometry of this screen as a QRect object
         :param bool is_primary: Whether or not this screen is the primary screen
         :param bool is_display: Whether or not this screen should be used to display lyrics
         """
         self.number = int(number)
         self.geometry = geometry
-        self.custom_geometry = None
+        self.custom_geometry = custom_geometry
         self.is_primary = is_primary
         self.is_display = is_display
 
@@ -131,16 +131,17 @@ class Screen(object):
 
         :param dict screen_dict: The dictionary which we want to apply to the screen
         """
-        self.number = int(screen_dict['number'])
-        self.is_display = screen_dict['is_display']
-        self.is_primary = screen_dict['is_primary']
-        try:
-            self.geometry = QtCore.QRect(screen_dict['geometry']['x'], screen_dict['geometry']['y'],
-                                         screen_dict['geometry']['width'], screen_dict['geometry']['height'])
-        except KeyError:
-            # Preserve the current values as this has come from the settings update which does not have
-            # the geometry information
-            pass
+        self.number = int(screen_dict['number']) if 'number' in screen_dict else self.number
+        self.is_display = screen_dict.get('is_display', self.is_display)
+        self.is_primary = screen_dict.get('is_primary', self.is_primary)
+        if 'geometry' in screen_dict:
+            try:
+                self.geometry = QtCore.QRect(screen_dict['geometry']['x'], screen_dict['geometry']['y'],
+                                             screen_dict['geometry']['width'], screen_dict['geometry']['height'])
+            except KeyError:
+                # Preserve the current values as this has come from the settings update which does not have
+                # the geometry information
+                pass
         if 'custom_geometry' in screen_dict:
             self.custom_geometry = QtCore.QRect(screen_dict['custom_geometry']['x'],
                                                 screen_dict['custom_geometry']['y'],
@@ -228,13 +229,16 @@ class ScreenList(metaclass=Singleton):
         }
         Settings.extend_default_settings(screen_settings)
         screen_settings = Settings().value('core/screens')
-        for number, screen_dict in screen_settings.items():
-            # Sometimes this loads as a string instead of an int
-            number = int(number)
-            if self.has_screen(number):
-                self[number].update(screen_dict)
-            else:
-                self.screens.append(Screen.from_dict(screen_dict))
+        if screen_settings:
+            for number, screen_dict in screen_settings.items():
+                # Sometimes this loads as a string instead of an int
+                number = int(number)
+                if self.has_screen(number):
+                    self[number].update(screen_dict)
+                else:
+                    self.screens.append(Screen.from_dict(screen_dict))
+        else:
+            self[len(self) - 1].is_display = True
 
     def save_screen_settings(self):
         """
@@ -322,7 +326,7 @@ class ScreenList(metaclass=Singleton):
         os_screens.sort(key=cmp_to_key(_screen_compare))
         for number, screen in enumerate(os_screens):
             self.screens.append(
-                Screen(number, screen.geometry(), self.desktop.primaryScreen() == number))
+                Screen(number, screen.geometry(), is_primary=self.desktop.primaryScreen() == number))
 
     def on_screen_resolution_changed(self, number):
         """

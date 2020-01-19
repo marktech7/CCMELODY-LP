@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,6 +29,7 @@ import re
 from pathlib import Path
 
 from openlp.core.common import get_file_encoding, is_macosx, is_win
+from openlp.core.common.i18n import translate
 from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
@@ -131,7 +131,13 @@ class SongBeamerImport(SongImport):
                 if self.input_file_encoding and not self.input_file_encoding.lower().startswith('u'):
                     self.input_file_encoding = 'cp1252'
                 with file_path.open(encoding=self.input_file_encoding) as song_file:
-                    song_data = song_file.readlines()
+                    try:
+                        song_data = song_file.readlines()
+                    except UnicodeDecodeError:
+                        log.exception('Unreadable characters in {name}'.format(name=file_path))
+                        self.log_error(file_path, translate('SongsPlugin.SongBeamerImport',
+                                                            'File is not a valid SongBeamer file.'))
+                        continue
             else:
                 continue
             self.title = file_path.stem

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,8 +21,6 @@
 
 import logging
 
-from PyQt5 import QtGui
-
 from openlp.core.state import State
 from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
@@ -33,7 +30,6 @@ from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
 from openlp.core.lib.ui import create_action
-from openlp.core.ui import AlertLocation
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.alerts.endpoint import api_alerts_endpoint, alerts_endpoint
 from openlp.plugins.alerts.forms.alertform import AlertForm
@@ -115,22 +111,6 @@ HTML = """
     <div id="alert" style="visibility:hidden"></div>
 """
 
-__default_settings__ = {
-    'alerts/font face': QtGui.QFont().family(),
-    'alerts/font size': 40,
-    'alerts/db type': 'sqlite',
-    'alerts/db username': '',
-    'alerts/db password': '',
-    'alerts/db hostname': '',
-    'alerts/db database': '',
-    'alerts/location': AlertLocation.Bottom,
-    'alerts/background color': '#660000',
-    'alerts/font color': '#ffffff',
-    'alerts/timeout': 10,
-    'alerts/repeat': 1,
-    'alerts/scroll': True
-}
-
 
 class AlertsPlugin(Plugin):
     """
@@ -142,7 +122,7 @@ class AlertsPlugin(Plugin):
         """
         Class __init__ method
         """
-        super(AlertsPlugin, self).__init__('alerts', __default_settings__, settings_tab_class=AlertsTab)
+        super(AlertsPlugin, self).__init__('alerts', settings_tab_class=AlertsTab)
         self.weight = -3
         self.icon_path = UiIcons().alert
         self.icon = self.icon_path

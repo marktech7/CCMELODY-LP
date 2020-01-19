@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,13 +51,13 @@ def test_get_application_stylesheet_dark(mocked_qdarkstyle, MockSettings):
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', False)
 @patch('openlp.core.ui.style.is_win')
 @patch('openlp.core.ui.style.Settings')
-@patch('openlp.core.ui.style.Registry')
-def test_get_application_stylesheet_not_alternate_rows(MockRegistry, MockSettings, mocked_is_win):
+@patch('openlp.core.app.QtWidgets.QApplication.palette')
+def test_get_application_stylesheet_not_alternate_rows(mocked_palette, MockSettings, mocked_is_win):
     """Test that the alternate rows stylesheet is returned when enabled in settings"""
     # GIVEN: We're on Windows and no dark style is set
     mocked_is_win.return_value = False
     MockSettings.return_value.value.return_value = False
-    MockRegistry.return_value.get.return_value.palette.return_value.color.return_value.name.return_value = 'color'
+    mocked_palette.return_value.color.return_value.name.return_value = 'color'
 
     # WHEN: can_show_icon() is called
     result = get_application_stylesheet()

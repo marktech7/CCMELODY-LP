@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -145,7 +144,7 @@ class OpenOfficeImport(SongImport):
         """
         self.file_path = file_path
         url = file_path.as_uri()
-        properties = tuple(self.create_property('Hidden', True))
+        properties = (self.create_property('Hidden', True),)
         try:
             self.document = self.desktop.loadComponentFromURL(url, '_blank', 0, properties)
             if not self.document.supportsService("com.sun.star.presentation.PresentationDocument") and not \

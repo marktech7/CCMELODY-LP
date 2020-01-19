@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,11 +37,6 @@ log = logging.getLogger(__name__)
 
 
 # Some settings starting with "media" are in core, because they are needed for core functionality.
-__default_settings__ = {
-    'media/media files': [],
-    'media/last directory': None
-}
-
 
 class MediaPlugin(Plugin):
     """
@@ -51,7 +45,7 @@ class MediaPlugin(Plugin):
     log.info('{name} MediaPlugin loaded'.format(name=__name__))
 
     def __init__(self):
-        super(MediaPlugin, self).__init__('media', __default_settings__, MediaMediaItem)
+        super(MediaPlugin, self).__init__('media', MediaMediaItem)
         self.weight = -6
         self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)

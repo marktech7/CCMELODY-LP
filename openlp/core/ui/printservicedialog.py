@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -68,7 +67,7 @@ class Ui_PrintServiceDialog(object):
         self.toolbar.addWidget(self.options_button)
         self.toolbar.addSeparator()
         self.plain_copy = self.toolbar.addAction(UiIcons().clone,
-                                                 translate('OpenLP.PrintServiceForm', 'Copy'))
+                                                 translate('OpenLP.PrintServiceForm', 'Copy as Text'))
         self.html_copy = self.toolbar.addAction(UiIcons().clone,
                                                 translate('OpenLP.PrintServiceForm', 'Copy as HTML'))
         self.toolbar.addSeparator()
@@ -140,7 +139,7 @@ class Ui_PrintServiceDialog(object):
         self.zoom_in_button.setToolTip(translate('OpenLP.PrintServiceForm', 'Zoom In'))
         self.options_button.setText(translate('OpenLP.PrintServiceForm', 'Options'))
         self.title_label.setText(translate('OpenLP.PrintServiceForm', 'Title:'))
-        self.footer_label.setText(translate('OpenLP.PrintServiceForm', 'Custom Footer Text:'))
+        self.footer_label.setText(translate('OpenLP.PrintServiceForm', 'Service Note Text:'))
         self.options_group_box.setTitle(translate('OpenLP.PrintServiceForm', 'Other Options'))
         self.slide_text_check_box.setText(translate('OpenLP.PrintServiceForm', 'Include slide text if available'))
         self.page_break_after_text.setText(translate('OpenLP.PrintServiceForm', 'Add page break before each text item'))

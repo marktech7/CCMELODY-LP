@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -101,7 +100,7 @@ class Ui_ExceptionDialog(object):
                                      '<strong>Oops, OpenLP hit a problem and couldn\'t recover!<br><br>'
                                      'You can help </strong> the OpenLP developers to <strong>fix this</strong>'
                                      ' by<br> sending them a <strong>bug report to {email}</strong>{newlines}'
-                                     ).format(email='<a href = "mailto:bugs@openlp.org" > bugs@openlp.org</a>',
+                                     ).format(email='<a href = "mailto:bugs3@openlp.org" > bugs3@openlp.org</a>',
                                               newlines='<br><br>'))
         self.message_label.setText(
             translate('OpenLP.ExceptionDialog', '{first_part}'

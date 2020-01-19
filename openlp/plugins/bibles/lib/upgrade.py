@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -44,7 +43,7 @@ def upgrade_1(session, metadata):
 
     This upgrade renamed a number of keys to a single naming convention.
     """
-    log.info('No upgrades to perform')
+    log.info('No upgrades to perform')      # pragma: no cover
 
 
 def upgrade_2(session, metadata):

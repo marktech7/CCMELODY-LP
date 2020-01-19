@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,6 +31,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib import create_separated_list
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.common.i18n import get_natural_key
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.enums import PathEditType
 from openlp.core.widgets.wizard import OpenLPWizard, WizardStrings
@@ -219,8 +219,11 @@ class SongExportForm(OpenLPWizard):
             # No need to export temporary songs.
             if song.temporary:
                 continue
-            authors = create_separated_list([author.display_name for author in song.authors])
-            title = '{title} ({author})'.format(title=song.title, author=authors)
+
+            authors = [author.display_name for author in song.authors]
+            authors.sort(key=get_natural_key)
+            title = '{title} ({author})'.format(title=song.title,
+                                                author=create_separated_list(authors))
             item = QtWidgets.QListWidgetItem(title)
             item.setData(QtCore.Qt.UserRole, song)
             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)

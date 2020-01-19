@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,6 +25,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.settings import ProxyMode, Settings
+from openlp.core.lib.ui import critical_error_message_box
 
 
 SCREENS_LAYOUT_STYLE = """
@@ -164,6 +164,7 @@ class ProxyDialog(QtWidgets.QDialog):
         self.layout.addWidget(self.button_box)
         self.button_box.accepted.connect(self.accept)
         self.button_box.rejected.connect(self.reject)
+        self.retranslate_ui()
 
     def accept(self):
         """
@@ -281,6 +282,8 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.layout.addStretch()
 
         # Signals and slots
+        self.display_group_box.clicked.connect(self.on_display_clicked)
+        self.use_screen_check_box.clicked.connect(self.on_display_clicked)
         self.use_screen_check_box.toggled.connect(self.display_group_box.setChecked)
         self.custom_geometry_button.toggled.connect(self.height_spin_box.setEnabled)
         self.custom_geometry_button.toggled.connect(self.left_spin_box.setEnabled)
@@ -305,6 +308,20 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.top_label.setText(translate('OpenLP.ScreensTab', 'Top:'))
         self.height_label.setText(translate('OpenLP.ScreensTab', 'Height:'))
         self.identify_button.setText(translate('OpenLP.ScreensTab', 'Identify Screens'))
+
+    def on_display_clicked(self, is_checked):
+        if not is_checked:
+            critical_error_message_box(translate('OpenLP.ScreensTab', 'Select a Display'),
+                                       translate('OpenLP.ScreensTab', 'You need to select at least one screen to be '
+                                                 'used as a display. Select the screen you wish to use as a display, '
+                                                 'and check the checkbox for that screen.'),
+                                       parent=self, question=False)
+            self.use_screen_check_box.setChecked(True)
+            self.display_group_box.setChecked(True)
+        else:
+            for screen in self.screens:
+                screen.is_display = False
+            self.current_screen.is_display = True
 
     def _save_screen(self, screen):
         """
@@ -352,10 +369,10 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         for screen in self.screens:
             screen_button = ScreenButton(self.screen_frame, screen)
             screen_button.clicked.connect(self.on_screen_button_clicked)
-            if not self.current_screen or screen.is_display:
-                screen_button.click()
             self.screen_frame_layout.addWidget(screen_button)
             self.screen_button_group.addButton(screen_button)
+            if screen.number == 0:
+                screen_button.click()
         self.screen_frame_layout.addStretch()
 
     def save(self):
@@ -395,7 +412,7 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
             label = QtWidgets.QLabel(None)
             label.setAlignment(QtCore.Qt.AlignCenter)
             label.setText(str(screen))
-            label.setStyleSheet('font-size: 24pt; font-weight: bold;'
+            label.setStyleSheet('font-size: 24pt; font-weight: bold; '
                                 'background-color: #0C0; color: #000; border: 5px solid #000;')
             label.setGeometry(QtCore.QRect(screen.geometry.x(), screen.geometry.y(), screen.geometry.width(), 100))
             label.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint |

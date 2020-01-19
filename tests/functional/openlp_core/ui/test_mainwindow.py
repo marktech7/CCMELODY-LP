@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,7 +34,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui.mainwindow import MainWindow
 from tests.helpers.testmixin import TestMixin
-from tests.utils.constants import TEST_RESOURCES_PATH
+from tests.utils.constants import TEST_RESOURCES_PATH, RESOURCE_PATH
 
 
 class TestMainWindow(TestCase, TestMixin):
@@ -278,3 +277,38 @@ class TestMainWindow(TestCase, TestMixin):
 
         # THEN: The progress bar value should have been incremented by 10
         mocked_progress_bar.setValue.assert_called_once_with(10)
+
+    def test_eventFilter(self):
+        """
+        Test the reimplemented event method
+        """
+        # GIVEN: A file path and a QEvent.
+        file_path = str(RESOURCE_PATH / 'church.jpg')
+        mocked_file_method = MagicMock(return_value=file_path)
+        event = QtCore.QEvent(QtCore.QEvent.FileOpen)
+        event.file = mocked_file_method
+
+        # WHEN: Call the vent method.
+        result = self.main_window.eventFilter(MagicMock(), event)
+
+        # THEN: The path should be inserted.
+        assert result is True, "The method should have returned True."
+        mocked_file_method.assert_called_once_with()
+        assert self.app.args[0] == file_path, "The path should be in args."
+
+    @patch('openlp.core.ui.mainwindow.is_macosx')
+    def test_application_activate_event(self, mocked_is_macosx):
+        """
+        Test that clicking on the dock icon on Mac OS X restores the main window if it is minimized
+        """
+        # GIVEN: Mac OS X and an ApplicationActivate event
+        mocked_is_macosx.return_value = True
+        event = QtCore.QEvent(QtCore.QEvent.ApplicationActivate)
+        self.main_window.showMinimized()
+
+        # WHEN: The icon in the dock is clicked
+        result = self.main_window.eventFilter(MagicMock(), event)
+
+        # THEN:
+        assert result is True, "The method should have returned True."
+        assert self.main_window.isMinimized() is False

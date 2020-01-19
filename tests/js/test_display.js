@@ -88,8 +88,10 @@ describe("The Display object", function () {
       controls: false,
       progress: false,
       history: false,
+      keyboard: false,
       overview: false,
       center: false,
+      touch: false,
       help: false,
       transition: "none",
       backgroundTransition: "none",
@@ -113,20 +115,16 @@ describe("The Display object", function () {
     expect(Display.reinit).toBeDefined();
   });
 
-  it("should re-initialise Reveal when reinit is called", function () {
-    spyOn(Reveal, "reinitialize");
+  it("should sync Reveal and set to first slide when reinit is called", function () {
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
     Display.reinit();
-    expect(Reveal.reinitialize).toHaveBeenCalled();
+    expect(Reveal.sync).toHaveBeenCalled();
+    expect(Reveal.slide).toHaveBeenCalledWith(0);
   });
 
   it("should have a setTransition() method", function () {
     expect(Display.setTransition).toBeDefined();
-  });
-
-  it("should have a correctly functioning setTransition() method", function () {
-    spyOn(Reveal, "configure");
-    Display.setTransition("fade");
-    expect(Reveal.configure).toHaveBeenCalledWith({"transition": "fade"});
   });
 
   it("should have a correctly functioning clearSlides() method", function () {
@@ -147,11 +145,76 @@ describe("The Display object", function () {
     Display._slides["v1"] = 0;
 
     Display.goToSlide("v1");
-    expect(Reveal.slide).toHaveBeenCalledWith(0);
+    expect(Reveal.slide).toHaveBeenCalledWith(0, 0);
   });
 
   it("should have an alert() method", function () {
     expect(Display.alert).toBeDefined();
+  });
+
+});
+
+describe("Transitions", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    _createDiv({"class": "slides"});
+    _createDiv({"class": "footer"});
+    _createDiv({"id": "global-background"});
+    Display._slides = {};
+  });
+  afterEach(function() {
+    // Reset theme
+    Display._theme = null;
+  });
+
+  it("should have a correctly functioning setTransition() method", function () {
+    spyOn(Reveal, "configure");
+    Display.setTransition("fade", "slow");
+    expect(Reveal.configure).toHaveBeenCalledWith({"transition": "fade", "transitionSpeed": "slow"});
+  });
+
+  it("should have enabled transitions when _doTransitions is true and setTheme is run", function () {
+    spyOn(Display, "setTransition");
+    Display._doTransitions = true;
+    var theme = {
+      "display_slide_transition": true,
+      "display_slide_transition_type": TransitionType.Slide,
+      "display_slide_transition_speed": TransitionSpeed.Fast
+    }
+
+    Display.setTheme(theme);
+
+    expect(Display.setTransition).toHaveBeenCalledWith("slide-horizontal", "fast");
+  });
+
+  it("should have not enabled transitions when init() with no transitions and setTheme is run", function () {
+    spyOn(Display, "setTransition");
+    Display._doTransitions = false;
+    var theme = {
+      "display_slide_transition": true,
+      "display_slide_transition_type": TransitionType.Slide,
+      "display_slide_transition_speed": TransitionSpeed.Fast,
+    }
+
+    Display.setTheme(theme);
+
+    expect(Display.setTransition).toHaveBeenCalledWith("none", "default");
+  });
+
+  it("should have enabled transitions in the correct direction", function () {
+    spyOn(Display, "setTransition");
+    Display._doTransitions = true;
+    var theme = {
+      "display_slide_transition": true,
+      "display_slide_transition_type": TransitionType.Convex,
+      "display_slide_transition_speed": TransitionSpeed.Slow,
+      "display_slide_transition_direction": TransitionDirection.Vertical,
+      "display_slide_transition_reverse": true,
+    }
+
+    Display.setTheme(theme);
+
+    expect(Display.setTransition).toHaveBeenCalledWith("convex-vertical-reverse", "slow");
   });
 
 });
@@ -458,8 +521,8 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, text, footer);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
     expect(Display.reinit).toHaveBeenCalled();
   });
 
@@ -472,8 +535,8 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, text, footer, false);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
     expect(Display.reinit).not.toHaveBeenCalled();
   });
 
@@ -484,12 +547,12 @@ describe("Display.addTextSlide", function () {
     Display.addTextSlide(verse, "Amazing grace,\nhow sweet the sound", footer, false);
     spyOn(Display, "reinit");
 
-    Display.addTextSlide(verse, text, true);
+    Display.addTextSlide(verse, text, footer, true);
 
     expect(Display._slides[verse]).toEqual(0);
-    expect($(".slides > section").length).toEqual(1);
-    expect($(".slides > section")[0].innerHTML).toEqual(_prepareText(text));
-    expect(Display.reinit).toHaveBeenCalled();
+    expect($(".slides > section > section").length).toEqual(1);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect(Display.reinit).toHaveBeenCalledTimes(0);
   });
 });
 
@@ -519,19 +582,17 @@ describe("Display.setTextSlides", function () {
     ];
     spyOn(Display, "clearSlides");
     spyOn(Display, "reinit");
-    spyOn(Reveal, "slide");
 
     Display.setTextSlides(slides);
 
     expect(Display.clearSlides).toHaveBeenCalledTimes(1);
     expect(Display._slides["v1"]).toEqual(0);
     expect(Display._slides["v2"]).toEqual(1);
-    expect($(".slides > section").length).toEqual(2);
+    expect($(".slides > section > section").length).toEqual(2);
     expect(Display.reinit).toHaveBeenCalledTimes(1);
-    expect(Reveal.slide).toHaveBeenCalledWith(0);
   });
 
-  xit("should correctly set outline width (skipped for now)", function () {
+  it("should correctly set outline width", function () {
     const slides = [
       {
         "verse": "v1",
@@ -549,13 +610,117 @@ describe("Display.setTextSlides", function () {
     spyOn(Display, "reinit");
     spyOn(Reveal, "slide");
 
-    Display.setTextSlides(slides);
     Display.setTheme(theme);
+    Display.setTextSlides(slides);
 
-    const slidesDiv = $(".slides")[0];
+    const slidesDiv = $(".text-slides")[0];
     expect(slidesDiv.style['-webkit-text-stroke']).toEqual('42pt red');
-    expect(slidesDiv.style['padding-left']).toEqual('84pt');
     expect(slidesDiv.style['-webkit-text-fill-color']).toEqual('yellow');
+  })
+
+  it("should correctly set text alignment,\
+      (check the order of alignments in the emuns are the same in both js and python)", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'display_horizontal_align': 3,
+      'display_vertical_align': 1
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['text-align-last']).toEqual('justify');
+    expect(slidesDiv.style['justify-content']).toEqual('center');
+  })
+
+  it("should enable shadows", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_shadow': true,
+      'font_main_shadow_color': "#000",
+      'font_main_shadow_size': 5
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['text-shadow']).not.toEqual('');
+  })
+
+  it("should not enable shadows", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_shadow': false,
+      'font_main_shadow_color': "#000",
+      'font_main_shadow_size': 5
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['text-shadow']).toEqual('');
+  })
+
+  it("should correctly set slide size position to theme size when adding a text slide", function () {
+    const slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      }
+    ];
+    // 
+    const theme = {
+      'font_main_y': 789,
+      'font_main_x': 1000,
+      'font_main_width': 1230,
+      'font_main_height': 4560
+    };
+    spyOn(Display, "reinit");
+    spyOn(Reveal, "slide");
+
+    Display.setTheme(theme);
+    Display.setTextSlides(slides);
+
+    const slidesDiv = $(".text-slides")[0];
+    expect(slidesDiv.style['top']).toEqual('789px');
+    expect(slidesDiv.style['left']).toEqual('1000px');
+    expect(slidesDiv.style['width']).toEqual('1230px');
+    expect(slidesDiv.style['height']).toEqual('4560px');
   })
 });
 
@@ -578,12 +743,12 @@ describe("Display.setImageSlides", function () {
     expect(Display.clearSlides).toHaveBeenCalledTimes(1);
     expect(Display._slides["0"]).toEqual(0);
     expect(Display._slides["1"]).toEqual(1);
-    expect($(".slides > section").length).toEqual(2);
-    expect($(".slides > section > img").length).toEqual(2);
-    expect($(".slides > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
-    expect($(".slides > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
-    expect($(".slides > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
-    expect($(".slides > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section").length).toEqual(2);
+    expect($(".slides > section > section > img").length).toEqual(2);
+    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
+    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
+    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
     expect(Display.reinit).toHaveBeenCalledTimes(1);
   });
 });

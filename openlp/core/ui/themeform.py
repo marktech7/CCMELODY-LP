@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,13 +25,12 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import get_images_filter, is_not_image_file
+from openlp.core.common import is_not_image_file
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.lib.theme import BackgroundGradientType, BackgroundType
+from openlp.core.lib.theme import BackgroundType
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.ui.media import VIDEO_EXT
 from openlp.core.ui.themelayoutform import ThemeLayoutForm
 from openlp.core.ui.themewizard import Ui_ThemeWizard
 
@@ -61,44 +59,21 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Set up the class. This method is mocked out by the tests.
         """
         self.setup_ui(self)
-        self.registerFields()
-        self.update_theme_allowed = True
+        self.can_update_theme = True
         self.temp_background_filename = None
         self.theme_layout_form = ThemeLayoutForm(self)
-        self.background_combo_box.currentIndexChanged.connect(self.on_background_combo_box_current_index_changed)
-        self.gradient_combo_box.currentIndexChanged.connect(self.on_gradient_combo_box_current_index_changed)
-        self.color_button.colorChanged.connect(self.on_color_changed)
-        self.image_color_button.colorChanged.connect(self.on_image_color_changed)
-        self.video_color_button.colorChanged.connect(self.on_video_color_changed)
-        self.gradient_start_button.colorChanged.connect(self.on_gradient_start_color_changed)
-        self.gradient_end_button.colorChanged.connect(self.on_gradient_end_color_changed)
-        self.image_path_edit.filters = \
-            '{name};;{text} (*)'.format(name=get_images_filter(), text=UiStrings().AllFiles)
-        self.image_path_edit.pathChanged.connect(self.on_image_path_edit_path_changed)
-        visible_formats = '(*.{name})'.format(name='; *.'.join(VIDEO_EXT))
-        actual_formats = '(*.{name})'.format(name=' *.'.join(VIDEO_EXT))
-        video_filter = '{trans} {visible} {actual}'.format(trans=translate('OpenLP', 'Video Files'),
-                                                           visible=visible_formats, actual=actual_formats)
-        self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
-        self.video_path_edit.pathChanged.connect(self.on_video_path_edit_path_changed)
-        self.main_color_button.colorChanged.connect(self.on_main_color_changed)
-        self.outline_color_button.colorChanged.connect(self.on_outline_color_changed)
-        self.shadow_color_button.colorChanged.connect(self.on_shadow_color_changed)
-        self.outline_check_box.stateChanged.connect(self.on_outline_check_check_box_state_changed)
-        self.shadow_check_box.stateChanged.connect(self.on_shadow_check_check_box_state_changed)
-        self.footer_color_button.colorChanged.connect(self.on_footer_color_changed)
         self.customButtonClicked.connect(self.on_custom_1_button_clicked)
-        self.main_position_check_box.stateChanged.connect(self.on_main_position_check_box_state_changed)
-        self.footer_position_check_box.stateChanged.connect(self.on_footer_position_check_box_state_changed)
         self.currentIdChanged.connect(self.on_current_id_changed)
         Registry().register_function('theme_line_count', self.update_lines_text)
-        self.main_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.line_spacing_spin_box.valueChanged.connect(self.calculate_lines)
-        self.outline_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.shadow_size_spin_box.valueChanged.connect(self.calculate_lines)
-        self.main_font_combo_box.activated.connect(self.calculate_lines)
-        self.footer_font_combo_box.activated.connect(self.update_theme)
-        self.footer_size_spin_box.valueChanged.connect(self.update_theme)
+        self.main_area_page.font_name_changed.connect(self.calculate_lines)
+        self.main_area_page.font_size_changed.connect(self.calculate_lines)
+        self.main_area_page.line_spacing_changed.connect(self.calculate_lines)
+        self.main_area_page.is_outline_enabled_changed.connect(self.on_outline_toggled)
+        self.main_area_page.outline_size_changed.connect(self.calculate_lines)
+        self.main_area_page.is_shadow_enabled_changed.connect(self.on_shadow_toggled)
+        self.main_area_page.shadow_size_changed.connect(self.calculate_lines)
+        self.footer_area_page.font_name_changed.connect(self.update_theme)
+        self.footer_area_page.font_size_changed.connect(self.update_theme)
 
     def set_defaults(self):
         """
@@ -112,43 +87,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.set_position_page_values()
         self.set_preview_page_values()
 
-    def registerFields(self):
-        """
-        Map field names to screen names,
-        """
-        self.background_page.registerField('background_type', self.background_combo_box)
-        self.background_page.registerField('color', self.color_button)
-        self.background_page.registerField('gradient_start', self.gradient_start_button)
-        self.background_page.registerField('gradient_end', self.gradient_end_button)
-        self.background_page.registerField('background_image', self.image_path_edit,
-                                           'path', self.image_path_edit.pathChanged)
-        self.background_page.registerField('gradient', self.gradient_combo_box)
-        self.main_area_page.registerField('main_color_button', self.main_color_button)
-        self.main_area_page.registerField('main_size_spin_box', self.main_size_spin_box)
-        self.main_area_page.registerField('line_spacing_spin_box', self.line_spacing_spin_box)
-        self.main_area_page.registerField('outline_check_box', self.outline_check_box)
-        self.main_area_page.registerField('outline_color_button', self.outline_color_button)
-        self.main_area_page.registerField('outline_size_spin_box', self.outline_size_spin_box)
-        self.main_area_page.registerField('shadow_check_box', self.shadow_check_box)
-        self.main_area_page.registerField('main_bold_check_box', self.main_bold_check_box)
-        self.main_area_page.registerField('main_italics_check_box', self.main_italics_check_box)
-        self.main_area_page.registerField('shadow_color_button', self.shadow_color_button)
-        self.main_area_page.registerField('shadow_size_spin_box', self.shadow_size_spin_box)
-        self.main_area_page.registerField('footer_size_spin_box', self.footer_size_spin_box)
-        self.area_position_page.registerField('main_position_x', self.main_x_spin_box)
-        self.area_position_page.registerField('main_position_y', self.main_y_spin_box)
-        self.area_position_page.registerField('main_position_width', self.main_width_spin_box)
-        self.area_position_page.registerField('main_position_height', self.main_height_spin_box)
-        self.area_position_page.registerField('footer_position_x', self.footer_x_spin_box)
-        self.area_position_page.registerField('footer_position_y', self.footer_y_spin_box)
-        self.area_position_page.registerField('footer_position_width', self.footer_width_spin_box)
-        self.area_position_page.registerField('footer_position_height', self.footer_height_spin_box)
-        self.background_page.registerField('horizontal', self.horizontal_combo_box)
-        self.background_page.registerField('vertical', self.vertical_combo_box)
-        self.background_page.registerField('slide_transition', self.transitions_check_box)
-        self.background_page.registerField('name', self.theme_name_edit)
-
-    def calculate_lines(self):
+    def calculate_lines(self, *args):
         """
         Calculate the number of lines on a page by rendering text
         """
@@ -187,7 +126,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         background_image = BackgroundType.to_string(BackgroundType.Image)
         if self.page(self.currentId()) == self.background_page and \
-                self.theme.background_type == background_image and is_not_image_file(self.theme.background_filename):
+                self.background_page.background_type == background_image and \
+                is_not_image_file(self.background_page.image_path):
             QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
                                            translate('OpenLP.ThemeWizard', 'You have not selected a '
                                                      'background image. Please select one before continuing.'))
@@ -237,54 +177,31 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         paint.end()
         self.theme_layout_form.exec(pixmap)
 
-    def on_outline_check_check_box_state_changed(self, state):
+    def on_outline_toggled(self, is_enabled):
         """
         Change state as Outline check box changed
         """
-        if self.update_theme_allowed:
-            self.theme.font_main_outline = state == QtCore.Qt.Checked
-            self.outline_color_button.setEnabled(self.theme.font_main_outline)
-            self.outline_size_spin_box.setEnabled(self.theme.font_main_outline)
+        if self.can_update_theme:
+            self.theme.font_main_outline = is_enabled
             self.calculate_lines()
 
-    def on_shadow_check_check_box_state_changed(self, state):
+    def on_shadow_toggled(self, is_enabled):
         """
         Change state as Shadow check box changed
         """
-        if self.update_theme_allowed:
-            if state == QtCore.Qt.Checked:
-                self.theme.font_main_shadow = True
-            else:
-                self.theme.font_main_shadow = False
-            self.shadow_color_button.setEnabled(self.theme.font_main_shadow)
-            self.shadow_size_spin_box.setEnabled(self.theme.font_main_shadow)
+        if self.can_update_theme:
+            self.theme.font_main_shadow = is_enabled
             self.calculate_lines()
-
-    def on_main_position_check_box_state_changed(self, value):
-        """
-        Change state as Main Area _position check box changed
-        NOTE the font_main_override is the inverse of the check box value
-        """
-        if self.update_theme_allowed:
-            self.theme.font_main_override = (value != QtCore.Qt.Checked)
-
-    def on_footer_position_check_box_state_changed(self, value):
-        """
-        Change state as Footer Area _position check box changed
-        NOTE the font_footer_override is the inverse of the check box value
-        """
-        if self.update_theme_allowed:
-            self.theme.font_footer_override = (value != QtCore.Qt.Checked)
 
     def exec(self, edit=False):
         """
         Run the wizard.
         """
         log.debug('Editing theme {name}'.format(name=self.theme.theme_name))
-        self.temp_background_filename = None
-        self.update_theme_allowed = False
+        self.temp_background_filename = self.theme.background_source
+        self.can_update_theme = False
         self.set_defaults()
-        self.update_theme_allowed = True
+        self.can_update_theme = True
         self.theme_name_label.setVisible(not edit)
         self.theme_name_edit.setVisible(not edit)
         self.edit_mode = edit
@@ -317,233 +234,154 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         Handle the display and state of the Background page.
         """
+        self.background_page.background_type = self.theme.background_type
         if self.theme.background_type == BackgroundType.to_string(BackgroundType.Solid):
-            self.color_button.color = self.theme.background_color
-            self.setField('background_type', 0)
+            self.background_page.color = self.theme.background_color
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Gradient):
-            self.gradient_start_button.color = self.theme.background_start_color
-            self.gradient_end_button.color = self.theme.background_end_color
-            self.setField('background_type', 1)
+            self.background_page.gradient_start = self.theme.background_start_color
+            self.background_page.gradient_end = self.theme.background_end_color
+            self.background_page.gradient_type = self.theme.background_direction
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Image):
-            self.image_color_button.color = self.theme.background_border_color
-            self.image_path_edit.path = self.theme.background_filename
-            self.setField('background_type', 2)
+            self.background_page.image_color = self.theme.background_border_color
+            if self.theme.background_source and self.theme.background_source.exists():
+                self.background_page.image_path = self.theme.background_source
+            else:
+                self.background_page.image_path = self.theme.background_filename
         elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
-            self.video_color_button.color = self.theme.background_border_color
-            self.video_path_edit.path = self.theme.background_filename
-            self.setField('background_type', 4)
-        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
-            self.setField('background_type', 5)
-        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Transparent):
-            self.setField('background_type', 3)
-        if self.theme.background_direction == BackgroundGradientType.to_string(BackgroundGradientType.Horizontal):
-            self.setField('gradient', 0)
-        elif self.theme.background_direction == BackgroundGradientType.to_string(BackgroundGradientType.Vertical):
-            self.setField('gradient', 1)
-        elif self.theme.background_direction == BackgroundGradientType.to_string(BackgroundGradientType.Circular):
-            self.setField('gradient', 2)
-        elif self.theme.background_direction == BackgroundGradientType.to_string(BackgroundGradientType.LeftTop):
-            self.setField('gradient', 3)
-        else:
-            self.setField('gradient', 4)
+            self.background_page.video_color = self.theme.background_border_color
+            if self.theme.background_source and self.theme.background_source.exists():
+                self.background_page.video_path = self.theme.background_source
+            else:
+                self.background_page.video_path = self.theme.background_filename
 
     def set_main_area_page_values(self):
         """
         Handle the display and state of the Main Area page.
         """
-        self.main_font_combo_box.setCurrentFont(QtGui.QFont(self.theme.font_main_name))
-        self.main_color_button.color = self.theme.font_main_color
-        self.setField('main_size_spin_box', self.theme.font_main_size)
-        self.setField('line_spacing_spin_box', self.theme.font_main_line_adjustment)
-        self.setField('outline_check_box', self.theme.font_main_outline)
-        self.outline_color_button.color = self.theme.font_main_outline_color
-        self.setField('outline_size_spin_box', self.theme.font_main_outline_size)
-        self.setField('shadow_check_box', self.theme.font_main_shadow)
-        self.shadow_color_button.color = self.theme.font_main_shadow_color
-        self.setField('shadow_size_spin_box', self.theme.font_main_shadow_size)
-        self.setField('main_bold_check_box', self.theme.font_main_bold)
-        self.setField('main_italics_check_box', self.theme.font_main_italics)
+        self.main_area_page.font_name = self.theme.font_main_name
+        self.main_area_page.font_color = self.theme.font_main_color
+        self.main_area_page.font_size = self.theme.font_main_size
+        self.main_area_page.line_spacing = self.theme.font_main_line_adjustment
+        self.main_area_page.is_outline_enabled = self.theme.font_main_outline
+        self.main_area_page.outline_color = self.theme.font_main_outline_color
+        self.main_area_page.outline_size = self.theme.font_main_outline_size
+        self.main_area_page.is_shadow_enabled = self.theme.font_main_shadow
+        self.main_area_page.shadow_color = self.theme.font_main_shadow_color
+        self.main_area_page.shadow_size = self.theme.font_main_shadow_size
+        self.main_area_page.is_bold = self.theme.font_main_bold
+        self.main_area_page.is_italic = self.theme.font_main_italics
 
     def set_footer_area_page_values(self):
         """
         Handle the display and state of the Footer Area page.
         """
-        self.footer_font_combo_box.setCurrentFont(QtGui.QFont(self.theme.font_footer_name))
-        self.footer_color_button.color = self.theme.font_footer_color
-        self.setField('footer_size_spin_box', self.theme.font_footer_size)
+        self.footer_area_page.font_name = self.theme.font_footer_name
+        self.footer_area_page.font_color = self.theme.font_footer_color
 
     def set_position_page_values(self):
         """
         Handle the display and state of the _position page.
         """
         # Main Area
-        self.main_position_check_box.setChecked(not self.theme.font_main_override)
-        self.setField('main_position_x', self.theme.font_main_x)
-        self.setField('main_position_y', self.theme.font_main_y)
-        self.setField('main_position_height', self.theme.font_main_height)
-        self.setField('main_position_width', self.theme.font_main_width)
+        self.area_position_page.use_main_default_location = not self.theme.font_main_override
+        self.area_position_page.main_x = self.theme.font_main_x
+        self.area_position_page.main_y = self.theme.font_main_y
+        self.area_position_page.main_height = self.theme.font_main_height
+        self.area_position_page.main_width = self.theme.font_main_width
         # Footer
-        self.footer_position_check_box.setChecked(not self.theme.font_footer_override)
-        self.setField('footer_position_x', self.theme.font_footer_x)
-        self.setField('footer_position_y', self.theme.font_footer_y)
-        self.setField('footer_position_height', self.theme.font_footer_height)
-        self.setField('footer_position_width', self.theme.font_footer_width)
+        self.area_position_page.use_footer_default_location = not self.theme.font_footer_override
+        self.area_position_page.footer_x = self.theme.font_footer_x
+        self.area_position_page.footer_y = self.theme.font_footer_y
+        self.area_position_page.footer_height = self.theme.font_footer_height
+        self.area_position_page.footer_width = self.theme.font_footer_width
 
     def set_alignment_page_values(self):
         """
         Handle the display and state of the Alignments page.
         """
-        self.setField('horizontal', self.theme.display_horizontal_align)
-        self.setField('vertical', self.theme.display_vertical_align)
-        self.setField('slide_transition', self.theme.display_slide_transition)
+        self.alignment_page.horizontal_align = self.theme.display_horizontal_align
+        self.alignment_page.vertical_align = self.theme.display_vertical_align
+        self.alignment_page.is_transition_enabled = self.theme.display_slide_transition
+        self.alignment_page.transition_type = self.theme.display_slide_transition_type
+        self.alignment_page.transition_speed = self.theme.display_slide_transition_speed
+        self.alignment_page.transition_direction = self.theme.display_slide_transition_direction
+        self.alignment_page.is_transition_reverse_enabled = self.theme.display_slide_transition_reverse
 
     def set_preview_page_values(self):
         """
         Handle the display and state of the Preview page.
         """
-        self.setField('name', self.theme.theme_name)
+        self.theme_name_edit.setText(self.theme.theme_name)
         self.preview_box.set_theme(self.theme)
-
-    def on_background_combo_box_current_index_changed(self, index):
-        """
-        Background style Combo box has changed.
-        """
-        # do not allow updates when screen is building for the first time.
-        if self.update_theme_allowed:
-            self.theme.background_type = BackgroundType.to_string(index)
-            if self.theme.background_type != BackgroundType.to_string(BackgroundType.Image) and \
-                    self.theme.background_type != BackgroundType.to_string(BackgroundType.Video) and \
-                    self.temp_background_filename is None:
-                self.temp_background_filename = self.theme.background_filename
-                self.theme.background_filename = None
-            if (self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or
-                    self.theme.background_type != BackgroundType.to_string(BackgroundType.Video)) and \
-                    self.temp_background_filename is not None:
-                self.theme.background_filename = self.temp_background_filename
-                self.temp_background_filename = None
-            self.set_background_page_values()
-
-    def on_gradient_combo_box_current_index_changed(self, index):
-        """
-        Background gradient Combo box has changed.
-        """
-        if self.update_theme_allowed:
-            self.theme.background_direction = BackgroundGradientType.to_string(index)
-            self.set_background_page_values()
-
-    def on_color_changed(self, color):
-        """
-        Background / Gradient 1 _color button pushed.
-        """
-        self.theme.background_color = color
-
-    def on_image_color_changed(self, color):
-        """
-        Background / Gradient 1 _color button pushed.
-        """
-        self.theme.background_border_color = color
-
-    def on_video_color_changed(self, color):
-        """
-        Background / Gradient 1 _color button pushed.
-        """
-        self.theme.background_border_color = color
-
-    def on_gradient_start_color_changed(self, color):
-        """
-        Gradient 2 _color button pushed.
-        """
-        self.theme.background_start_color = color
-
-    def on_gradient_end_color_changed(self, color):
-        """
-        Gradient 2 _color button pushed.
-        """
-        self.theme.background_end_color = color
-
-    def on_image_path_edit_path_changed(self, new_path):
-        """
-        Handle the `pathEditChanged` signal from image_path_edit
-
-        :param pathlib.Path new_path: Path to the new image
-        :rtype: None
-        """
-        self.theme.background_filename = new_path
-        self.set_background_page_values()
-
-    def on_video_path_edit_path_changed(self, new_path):
-        """
-        Handle the `pathEditChanged` signal from video_path_edit
-
-        :param pathlib.Path new_path: Path to the new video
-        :rtype: None
-        """
-        self.theme.background_filename = new_path
-        self.set_background_page_values()
-
-    def on_main_color_changed(self, color):
-        """
-        Set the main colour value
-        """
-        self.theme.font_main_color = color
-
-    def on_outline_color_changed(self, color):
-        """
-        Set the outline colour value
-        """
-        self.theme.font_main_outline_color = color
-
-    def on_shadow_color_changed(self, color):
-        """
-        Set the shadow colour value
-        """
-        self.theme.font_main_shadow_color = color
-
-    def on_footer_color_changed(self, color):
-        """
-        Set the footer colour value
-        """
-        self.theme.font_footer_color = color
 
     def update_theme(self):
         """
         Update the theme object from the UI for fields not already updated
         when the are changed.
         """
-        if not self.update_theme_allowed:
+        if not self.can_update_theme:
             return
         log.debug('update_theme')
+        # background page
+        self.theme.background_type = self.background_page.background_type
+        if self.theme.background_type == BackgroundType.to_string(BackgroundType.Solid):
+            self.theme.background_color = self.background_page.color
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Gradient):
+            self.theme.background_direction = self.background_page.gradient_type
+            self.theme.background_start_color = self.background_page.gradient_start
+            self.theme.background_end_color = self.background_page.gradient_end
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Image):
+            self.theme.background_border_color = self.background_page.image_color
+            self.theme.background_source = self.background_page.image_path
+            self.theme.background_filename = self.background_page.image_path
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+            self.theme.background_border_color = self.background_page.video_color
+            self.theme.background_source = self.background_page.video_path
+            self.theme.background_filename = self.background_page.video_path
         # main page
-        self.theme.font_main_name = self.main_font_combo_box.currentFont().family()
-        self.theme.font_main_size = self.field('main_size_spin_box')
-        self.theme.font_main_line_adjustment = self.field('line_spacing_spin_box')
-        self.theme.font_main_outline_size = self.field('outline_size_spin_box')
-        self.theme.font_main_shadow_size = self.field('shadow_size_spin_box')
-        self.theme.font_main_bold = self.field('main_bold_check_box')
-        self.theme.font_main_italics = self.field('main_italics_check_box')
+        self.theme.font_main_name = self.main_area_page.font_name
+        self.theme.font_main_size = self.main_area_page.font_size
+        self.theme.font_main_line_adjustment = self.main_area_page.line_spacing
+        self.theme.font_main_outline_size = self.main_area_page.outline_size
+        self.theme.font_main_shadow_size = self.main_area_page.shadow_size
+        self.theme.font_main_bold = self.main_area_page.is_bold
+        self.theme.font_main_italics = self.main_area_page.is_italic
         # footer page
-        self.theme.font_footer_name = self.footer_font_combo_box.currentFont().family()
-        self.theme.font_footer_size = self.field('footer_size_spin_box')
-        # position page
-        self.theme.font_main_x = self.field('main_position_x')
-        self.theme.font_main_y = self.field('main_position_y')
-        self.theme.font_main_height = self.field('main_position_height')
-        self.theme.font_main_width = self.field('main_position_width')
-        self.theme.font_footer_x = self.field('footer_position_x')
-        self.theme.font_footer_y = self.field('footer_position_y')
-        self.theme.font_footer_height = self.field('footer_position_height')
-        self.theme.font_footer_width = self.field('footer_position_width')
-        # position page
-        self.theme.display_horizontal_align = self.horizontal_combo_box.currentIndex()
-        self.theme.display_vertical_align = self.vertical_combo_box.currentIndex()
-        self.theme.display_slide_transition = self.field('slide_transition')
+        self.theme.font_footer_name = self.footer_area_page.font_name
+        self.theme.font_footer_size = self.footer_area_page.font_size
+        # position page (main)
+        self.theme.font_main_override = not self.area_position_page.use_main_default_location
+        if self.theme.font_main_override:
+            self.theme.font_main_x = self.area_position_page.main_x
+            self.theme.font_main_y = self.area_position_page.main_y
+            self.theme.font_main_height = self.area_position_page.main_height
+            self.theme.font_main_width = self.area_position_page.main_width
+        else:
+            self.theme.set_default_header()
+        # position page (footer)
+        self.theme.font_footer_override = not self.area_position_page.use_footer_default_location
+        if self.theme.font_footer_override:
+            self.theme.font_footer_x = self.area_position_page.footer_x
+            self.theme.font_footer_y = self.area_position_page.footer_y
+            self.theme.font_footer_height = self.area_position_page.footer_height
+            self.theme.font_footer_width = self.area_position_page.footer_width
+        else:
+            self.theme.set_default_footer()
+        # alignment page
+        self.theme.display_horizontal_align = self.alignment_page.horizontal_align
+        self.theme.display_vertical_align = self.alignment_page.vertical_align
+        self.theme.display_slide_transition = self.alignment_page.is_transition_enabled
+        self.theme.display_slide_transition_type = self.alignment_page.transition_type
+        self.theme.display_slide_transition_speed = self.alignment_page.transition_speed
+        self.theme.display_slide_transition_direction = self.alignment_page.transition_direction
+        self.theme.display_slide_transition_reverse = self.alignment_page.is_transition_reverse_enabled
 
     def accept(self):
         """
         Lets save the theme as Finish has been triggered
         """
         # Save the theme name
-        self.theme.theme_name = self.field('name')
+        self.theme.theme_name = self.theme_name_edit.text()
         if not self.theme.theme_name:
             critical_error_message_box(
                 translate('OpenLP.ThemeWizard', 'Theme Name Missing'),
@@ -554,14 +392,14 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 translate('OpenLP.ThemeWizard', 'Theme Name Invalid'),
                 translate('OpenLP.ThemeWizard', 'Invalid theme name. Please enter one.'))
             return
-        source_path = None
         destination_path = None
         if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or \
-           self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+                self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
             file_name = self.theme.background_filename.name
             destination_path = self.path / self.theme.theme_name / file_name
-            source_path = self.theme.background_filename
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
-        self.theme_manager.save_theme(self.theme, source_path, destination_path, self.preview_box.save_screenshot())
+        # Set the theme background to the cache location
+        self.theme.background_filename = destination_path
+        self.theme_manager.save_theme(self.theme, self.preview_box.save_screenshot())
         return QtWidgets.QDialog.accept(self)

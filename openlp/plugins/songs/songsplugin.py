@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -49,32 +48,12 @@ from openlp.plugins.songs.lib import clean_song, upgrade
 from openlp.plugins.songs.lib.db import Song, init_schema
 from openlp.plugins.songs.lib.importer import SongFormat
 from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
-from openlp.plugins.songs.lib.mediaitem import SongMediaItem, SongSearch
+from openlp.plugins.songs.lib.mediaitem import SongMediaItem
 from openlp.plugins.songs.lib.songstab import SongsTab
 
 
 log = logging.getLogger(__name__)
-__default_settings__ = {
-    'songs/db type': 'sqlite',
-    'songs/db username': '',
-    'songs/db password': '',
-    'songs/db hostname': '',
-    'songs/db database': '',
-    'songs/last used search type': SongSearch.Entire,
-    'songs/last import type': SongFormat.OpenLyrics,
-    'songs/update service on edit': False,
-    'songs/add song from service': True,
-    'songs/add songbook slide': False,
-    'songs/display songbar': True,
-    'songs/last directory import': None,
-    'songs/last directory export': None,
-    'songs/songselect username': '',
-    'songs/songselect password': '',
-    'songs/songselect searches': '',
-    'songs/enable chords': True,
-    'songs/chord notation': 'english',  # Can be english, german or neo-latin
-    'songs/mainview chords': False,
-    'songs/disable chords import': False,
+song_footer = {
     'songs/footer template': """\
 ${title}<br/>
 
@@ -142,17 +121,20 @@ class SongsPlugin(Plugin):
         """
         Create and set up the Songs plugin.
         """
-        super(SongsPlugin, self).__init__('songs', __default_settings__, SongMediaItem, SongsTab)
+        super(SongsPlugin, self).__init__('songs', SongMediaItem, SongsTab)
         self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
         Registry().register('songs_manager', self.manager)
         self.weight = -10
         self.icon_path = UiIcons().music
         self.icon = build_icon(self.icon_path)
         self.songselect_form = None
+        self.settings.extend_default_settings(song_footer)
         register_endpoint(songs_endpoint)
         register_endpoint(api_songs_endpoint)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
+        if not self.settings.value('songs/last import type'):
+            self.settings.setValue('songs/last import type', SongFormat.OpenLyrics)
 
     def check_pre_conditions(self):
         """

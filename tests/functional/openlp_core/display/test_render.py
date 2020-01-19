@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,20 +21,10 @@
 """
 Test the :mod:`~openlp.core.display.render` package.
 """
-import sys
+from unittest.mock import patch
 
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
-
-from openlp.core.common import ThemeLevel
-from tests.helpers.testmixin import TestMixin
-
-from PyQt5 import QtWidgets
-sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
-
-from openlp.core.common.registry import Registry
 from openlp.core.display.render import compare_chord_lyric_width, find_formatting_tags, remove_tags, render_chords, \
-    render_chords_for_printing, render_tags, ThemePreviewRenderer
+    render_chords_for_printing, render_tags
 from openlp.core.lib.formattingtags import FormattingTags
 
 
@@ -63,11 +52,12 @@ def test_remove_tags(mocked_get_tags):
 
 
 @patch('openlp.core.display.render.FormattingTags.get_html_tags')
-def test_render_tags(mocked_get_tags):
+def test_render_tags(mocked_get_tags, settings):
     """
     Test the render_tags() method.
     """
     # GIVEN: Mocked get_html_tags() method.
+    settings.setValue('songs/chord notation', 'english')
     mocked_get_tags.return_value = [
         {
             'desc': 'Black',
@@ -102,12 +92,13 @@ def test_render_tags(mocked_get_tags):
     assert result_string == expected_string, 'The strings should be identical.'
 
 
-def test_render_chords():
+def test_render_chords(settings):
     """
     Test that the rendering of chords works as expected.
     """
     # GIVEN: A lyrics-line with chords
-    text_with_chords = 'H[C]alleluya.[F] [G]'
+    settings.setValue('songs/chord notation', 'english')
+    text_with_chords = 'H[C]alleluya.[F] [G/B]'
 
     # WHEN: Expanding the chords
     text_with_rendered_chords = render_chords(text_with_chords)
@@ -115,15 +106,16 @@ def test_render_chords():
     # THEN: We should get html that looks like below
     expected_html = '<span class="chordline firstchordline">H<span class="chord"><span><strong>C</strong></span>' \
                     '</span>alleluya.<span class="chord"><span><strong>F</strong></span></span><span class="ws">' \
-                    '&nbsp;&nbsp;</span> <span class="chord"><span><strong>G</strong></span></span></span>'
+                    '&nbsp;&nbsp;</span> <span class="chord"><span><strong>G/B</strong></span></span></span>'
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected'
 
 
-def test_render_chords_with_special_chars():
+def test_render_chords_with_special_chars(settings):
     """
     Test that the rendering of chords works as expected when special chars are involved.
     """
     # GIVEN: A lyrics-line with chords
+    settings.setValue('songs/chord notation', 'english')
     text_with_chords = "I[D]'M NOT MOVED BY WHAT I SEE HALLE[F]LUJA[C]H"
 
     # WHEN: Expanding the chords
@@ -166,11 +158,12 @@ def test_compare_chord_lyric_long_chord():
     assert ret == 4, 'The returned value should 4 because the chord is longer than the lyric'
 
 
-def test_render_chords_for_printing():
+def test_render_chords_for_printing(settings):
     """
     Test that the rendering of chords for printing works as expected.
     """
     # GIVEN: A lyrics-line with chords
+    settings.setValue('songs/chord notation', 'english')
     text_with_chords = '{st}[D]Amazing {r}gr[D7]ace{/r}  how [G]sweet the [D]sound  [F]{/st}'
     FormattingTags.load_tags()
 
@@ -218,101 +211,3 @@ def test_find_formatting_tags():
 
     # THEN: The list of active tags should contain only 'st'
     assert active_tags == ['st'], 'The list of active tags should contain only "st"'
-
-
-class TestThemePreviewRenderer(TestMixin, TestCase):
-
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        # Create the Registry
-        self.application = QtWidgets.QApplication.instance()
-        Registry.create()
-        self.application.setOrganizationName('OpenLP-tests')
-        self.application.setOrganizationDomain('openlp.org')
-
-    def test_get_theme_global(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        Registry().register('theme_manager', mocked_theme_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Global
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(MagicMock())
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_theme_manager.global_theme, 'The Theme returned is not that of the global theme'
-
-    def test_get_theme_service(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Service
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(MagicMock())
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_service_manager.service_theme, 'The Theme returned is not that of the Service theme'
-
-    def test_get_theme_item_level_none(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        mocked_item = MagicMock()
-        mocked_item.theme = None
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Song
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(mocked_item)
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_theme_manager.global_theme, 'The Theme returned is not that of the global theme'
-
-    def test_get_theme_item_level_set(self):
-        """
-        Test the return of the global theme if set to Global level
-        """
-        # GIVEN: A set up with a Global Theme and settings at Global
-        mocked_theme_manager = MagicMock()
-        mocked_theme_manager.global_theme = 'my_global_theme'
-        mocked_service_manager = MagicMock()
-        mocked_service_manager.service_theme = 'my_service_theme'
-        mocked_item = MagicMock()
-        mocked_item.theme = "my_item_theme"
-        Registry().register('theme_manager', mocked_theme_manager)
-        Registry().register('service_manager', mocked_service_manager)
-        with patch('openlp.core.display.webengine.WebEngineView'), \
-                patch('PyQt5.QtWidgets.QVBoxLayout'):
-            tpr = ThemePreviewRenderer()
-            tpr.theme_level = ThemeLevel.Song
-        # WHEN: I Request the theme to Use
-            theme = tpr.get_theme(mocked_item)
-
-        # THEN: The list of active tags should contain only 'st'
-            assert theme == mocked_item.theme, 'The Theme returned is not that of the item theme'

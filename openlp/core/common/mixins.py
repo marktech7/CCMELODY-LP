@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +29,7 @@ from openlp.core.common.registry import Registry
 
 
 DO_NOT_TRACE_EVENTS = ['timerEvent', 'paintEvent', 'drag_enter_event', 'drop_event', 'on_controller_size_changed',
-                       'preview_size_changed', 'resizeEvent']
+                       'preview_size_changed', 'resizeEvent', 'eventFilter']
 
 
 class LogMixin(object):
@@ -126,6 +125,7 @@ class RegistryProperties(object):
     _settings_form = None
     _alerts_manager = None
     _projector_manager = None
+    _settings = None
 
     @property
     def application(self):
@@ -247,3 +247,12 @@ class RegistryProperties(object):
         if not hasattr(self, '_projector_manager') or not self._projector_manager:
             self._projector_manager = Registry().get('projector_manager')
         return self._projector_manager
+
+    @property
+    def settings(self):
+        """
+        Adds the settings object to the class dynamically
+        """
+        if not hasattr(self, '_settings') or not self._settings:
+            self._settings = Registry().get('settings')
+        return self._settings

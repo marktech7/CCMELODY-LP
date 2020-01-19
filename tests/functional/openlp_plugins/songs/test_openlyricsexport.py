@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -76,3 +75,40 @@ class TestOpenLyricsExport(TestCase, TestMixin):
                 title=song.title, display_name=author.display_name)).exists() is True
             assert (self.temp_folder / '{title} ({display_name})-1.xml'.format(
                 title=song.title, display_name=author.display_name)).exists() is True
+
+        def test_export_sort_of_authers_filename(self):
+            """
+            Test that files is not overwritten if songs has same title and author
+            """
+            # GIVEN: A mocked song_to_xml, 1 mocked songs, a mocked application and an OpenLyricsExport instance
+            with patch('openlp.plugins.songs.lib.openlyricsexport.OpenLyrics.song_to_xml') as mocked_song_to_xml:
+                mocked_song_to_xml.return_value = '<?xml version="1.0" encoding="UTF-8"?>\n<empty/>'
+                authorA = MagicMock()
+                authorA.display_name = 'a Author'
+                authorB = MagicMock()
+                authorB.display_name = 'b Author'
+                songA = MagicMock()
+                songA.authors = [authorA, authorB]
+                songA.title = 'Test Title'
+                songB = MagicMock()
+                songB.authors = [authorB, authorA]
+                songB.title = 'Test Title'
+
+                parent = MagicMock()
+                parent.stop_export_flag = False
+                mocked_application_object = MagicMock()
+                Registry().register('application', mocked_application_object)
+                ol_export = OpenLyricsExport(parent, [songA, songB], self.temp_folder)
+
+                # WHEN: Doing the export
+                ol_export.do_export()
+
+                # THEN: The exporter orders authers
+                assert (self.temp_folder / '{title} ({display_name}).xml'.format(
+                    title=song.title,
+                    display_name=", ".join([authorA.display_name, authorB.display_name])
+                )).exists() is True
+                assert (self.temp_folder / '{title} ({display_name})-1.xml'.format(
+                    title=song.title,
+                    display_name=", ".join([authorA.display_name, authorB.display_name])
+                )).exists() is True

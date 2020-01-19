@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +23,7 @@ Provide the generic plugin functionality for OpenLP plugins.
 """
 import logging
 
+from openlp.core.common.enum import PluginStatus
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
@@ -32,15 +32,6 @@ from openlp.core.version import get_version
 
 
 log = logging.getLogger(__name__)
-
-
-class PluginStatus(object):
-    """
-    Defines the status of the plugin
-    """
-    Active = 1
-    Inactive = 0
-    Disabled = -1
 
 
 class StringContent(object):
@@ -114,7 +105,7 @@ class Plugin(RegistryBase, RegistryProperties):
     """
     log.info('loaded')
 
-    def __init__(self, name, default_settings, media_item_class=None, settings_tab_class=None, version=None):
+    def __init__(self, name, media_item_class=None, settings_tab_class=None, version=None):
         """
         This is the constructor for the plugin object. This provides an easy way for descendant plugins to populate
          common data. This method *must*
@@ -126,8 +117,6 @@ class Plugin(RegistryBase, RegistryProperties):
                     super(MyPlugin, self).__init__('MyPlugin', version='0.1')
 
         :param name: Defaults to *None*. The name of the plugin.
-        :param default_settings: A dict containing the plugin's settings. The value to each key is the default value
-        to be used.
         :param media_item_class: The class name of the plugin's media item.
         :param settings_tab_class: The class name of the plugin's settings tab.
         :param version: Defaults to *None*, which means that the same version number is used as OpenLP's version number.
@@ -146,15 +135,6 @@ class Plugin(RegistryBase, RegistryProperties):
         self.media_item = None
         self.weight = 0
         self.status = PluginStatus.Inactive
-        # Add the default status to the default settings.
-        default_settings[name + '/status'] = PluginStatus.Inactive
-        default_settings[name + '/last directory'] = None
-        # Append a setting for files in the mediamanager (note not all plugins
-        # which have a mediamanager need this).
-        if media_item_class is not None:
-            default_settings['{name}/{name} files'.format(name=name)] = []
-        # Add settings to the dict of all settings.
-        Settings.extend_default_settings(default_settings)
         Registry().register_function('{name}_add_service_item'.format(name=self.name), self.process_add_service_event)
         Registry().register_function('{name}_config_updated'.format(name=self.name), self.config_update)
         self._setup(version)

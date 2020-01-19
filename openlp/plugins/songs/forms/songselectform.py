@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -129,11 +128,11 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.username_edit.setFocus()
         return QtWidgets.QDialog.exec(self)
 
-    def done(self, r):
+    def done(self, result_code):
         """
         Log out of SongSelect.
 
-        :param r: The result of the dialog.
+        :param result_code: The result of the dialog.
         """
         log.debug('Closing SongSelectForm')
         if self.stacked_widget.currentIndex() > 0:
@@ -150,7 +149,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
             self.song_select_importer.logout()
             self.application.process_events()
             progress_dialog.setValue(2)
-        return QtWidgets.QDialog.done(self, r)
+        return QtWidgets.QDialog.done(self, result_code)
 
     def _update_login_progress(self):
         """

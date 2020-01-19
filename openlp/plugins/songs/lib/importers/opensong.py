@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,8 +21,7 @@
 import logging
 import re
 
-from lxml import objectify
-from lxml.etree import Error, LxmlError
+from lxml import objectify, etree
 
 from openlp.core.common import normalize_str
 from openlp.core.common.i18n import translate
@@ -131,7 +129,7 @@ class OpenSongImport(SongImport):
         self.set_defaults()
         try:
             tree = objectify.parse(file)
-        except (Error, LxmlError):
+        except (etree.Error, etree.LxmlError):
             self.log_error(file.name, SongStrings.XMLSyntaxError)
             log.exception('Error parsing XML')
             return

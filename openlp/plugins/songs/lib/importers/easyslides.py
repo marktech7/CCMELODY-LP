@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,9 +25,10 @@ import re
 from lxml import etree, objectify
 
 from openlp.core.common import normalize_str
+from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
-
+from openlp.plugins.songs.lib.ui import SongStrings
 
 log = logging.getLogger(__name__)
 
@@ -49,10 +49,32 @@ class EasySlidesImport(SongImport):
     def do_import(self):
         log.info('Importing EasySlides XML file {source}'.format(source=self.import_source))
         parser = etree.XMLParser(remove_blank_text=True, recover=True)
-        parsed_file = etree.parse(str(self.import_source), parser)
-        xml = etree.tostring(parsed_file).decode()
+        try:
+            with self.import_source.open('r') as xml_file:
+                parsed_file = etree.parse(str(self.import_source), parser)
+        except etree.XMLSyntaxError:
+            log.exception('XML syntax error in file {name}'.format(name=xml_file))
+            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            return
+        except UnicodeDecodeError:
+            log.exception('Unreadable characters in {name}'.format(name=xml_file))
+            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            return
+        file_str = etree.tostring(parsed_file)
+        if not file_str:
+            log.exception('Could not find XML in file {name}'.format(name=xml_file))
+            self.log_error(self.import_source, SongStrings.XMLSyntaxError)
+            return
+        xml = file_str.decode()
         song_xml = objectify.fromstring(xml)
-        self.import_wizard.progress_bar.setMaximum(len(song_xml.Item))
+        try:
+            item_count = len(song_xml.Item)
+        except AttributeError:
+            log.exception('No root attribute "Item"')
+            self.log_error(self.import_source, translate('SongsPlugin.EasySlidesImport',
+                                                         'Invalid EasySlides song file. Missing Item tag.'))
+            return
+        self.import_wizard.progress_bar.setMaximum(item_count)
         for song in song_xml.Item:
             if self.stop_import_flag:
                 return

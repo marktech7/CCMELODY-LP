@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -67,11 +66,16 @@ class CCLIFileImport(SongImport):
                     except UnicodeDecodeError:
                         details = chardet.detect(detect_content)
                 in_file = codecs.open(file_path, 'r', details['encoding'])
-                if not in_file.read(1) == '\ufeff':
-                    # not UTF or no BOM was found
-                    in_file.seek(0)
-                lines = in_file.readlines()
-                in_file.close()
+                try:
+                    if not in_file.read(1) == '\ufeff':
+                        # not UTF or no BOM was found
+                        in_file.seek(0)
+                    lines = in_file.readlines()
+                    in_file.close()
+                except UnicodeDecodeError:
+                    self.log_error(file_path, translate('SongsPlugin.CCLIFileImport',
+                                                        'The file contains unreadable characters.'))
+                    continue
                 ext = file_path.suffix.lower()
                 if ext == '.usr' or ext == '.bin':
                     log.info('SongSelect USR format file found: {name}'.format(name=file_path))

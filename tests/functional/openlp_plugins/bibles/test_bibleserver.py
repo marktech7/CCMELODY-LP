@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,7 +21,7 @@
 """
 This module contains tests for the http module of the Bibles plugin.
 """
-from unittest import TestCase
+from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
 from bs4 import BeautifulSoup
@@ -55,6 +54,7 @@ class TestBSExtract(TestCase):
         self.socket_patcher.stop()
         self.urllib_patcher.stop()
 
+    @skip('BSExtract does not currently use http for books')
     def test_get_books_from_http_no_soup(self):
         """
         Test the get_books_from_http method when get_soup_for_bible_ref returns a falsey value
@@ -78,6 +78,7 @@ class TestBSExtract(TestCase):
         assert result is None, \
             'BSExtract.get_books_from_http should return None when get_soup_for_bible_ref returns a false value'
 
+    @skip('BSExtract does not currently use http for books')
     def test_get_books_from_http_no_content(self):
         """
         Test the get_books_from_http method when the specified element cannot be found in the tag object returned from
@@ -108,6 +109,7 @@ class TestBSExtract(TestCase):
         assert result is None, \
             'BSExtract.get_books_from_http should return None when get_soup_for_bible_ref returns a false value'
 
+    @skip('BSExtract does not currently use http for books')
     def test_get_books_from_http_content(self):
         """
         Test the get_books_from_http method with sample HTML

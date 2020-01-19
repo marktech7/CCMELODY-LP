@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,18 +34,17 @@ from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ServiceItemAction, image_to_byte
 from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.ui.media import media_empty_song
 from openlp.core.lib.ui import create_action
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.layouts import AspectRatioLayout
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListPreviewWidget
-
 
 # Threshold which has to be trespassed to toggle.
 HIDE_MENU_THRESHOLD = 27
@@ -172,11 +170,18 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return
         if self.displays:
             # Delete any existing displays
-            del self.displays[:]
+            for display in self.displays:
+                display.deregister_display()
+                display.setParent(None)
+                del display
+            self.displays = []
         for screen in self.screens:
             if screen.is_display:
                 display = DisplayWindow(self, screen)
                 self.displays.append(display)
+                self._reset_blank(False)
+        if self.display:
+            self.__add_actions_to_widget(self.display)
 
     @property
     def display(self):
@@ -324,7 +329,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once = create_action(self, 'playSlidesOnce', text=UiStrings().PlaySlidesToEnd,
                                                   icon=UiIcons().clock, checked=False, can_shortcuts=True,
                                                   category=self.category, triggers=self.on_play_slides_once)
-            if Settings().value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
+            if self.settings.value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
                 self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             else:
                 self.play_slides_menu.setDefaultAction(self.play_slides_once)
@@ -402,8 +407,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.mediabar.add_toolbar_widget(self.volume_slider)
         self.controller_layout.addWidget(self.mediabar)
         self.mediabar.setVisible(False)
-        if not self.is_live:
-            self.volume_slider.setEnabled(False)
         # Signals
         self.seek_slider.valueChanged.connect(self.send_to_plugins)
         self.volume_slider.valueChanged.connect(self.send_to_plugins)
@@ -641,9 +644,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.is_live and self.displays:
             for display in self.displays:
                 display.resize(self.screens.current.display_geometry.size())
-        # if self.is_live:
-        #     self.__add_actions_to_widget(self.display)
-        # The SlidePreview's ratio.
 
     def __add_actions_to_widget(self, widget):
         """
@@ -702,13 +702,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Adjusts the value of the ``delay_spin_box`` to the given one.
         """
-        self.delay_spin_box.setValue(Settings().value('core/loop delay'))
+        self.delay_spin_box.setValue(self.settings.value('core/loop delay'))
 
     def update_slide_limits(self):
         """
         Updates the Slide Limits variable from the settings.
         """
-        self.slide_limits = Settings().value(self.main_window.advanced_settings_section + '/slide limits')
+        self.slide_limits = self.settings.value(self.main_window.advanced_settings_section + '/slide limits')
 
     def enable_tool_bar(self, item):
         """
@@ -742,7 +742,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.play_slides_loop.setIcon(UiIcons().clock)
         self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         if item.is_text():
-            if (Settings().value(self.main_window.songs_settings_section + '/display songbar') and
+            if (self.settings.value(self.main_window.songs_settings_section + '/display songbar') and
                     not self.song_menu.menu().isEmpty()):
                 self.toolbar.set_widget_visible('song_menu', True)
         if item.is_capable(ItemCapabilities.CanLoop) and len(item.slides) > 1:
@@ -843,6 +843,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.delay_spin_box.setValue(int(item.timed_slide_interval))
                 self.on_play_slides_once()
 
+    def _set_theme(self, service_item):
+        """
+        Set up the theme from the service item.
+
+        :param service_item: The current service item
+        """
+        # Get theme
+        theme_data = service_item.get_theme_data()
+        # Set theme for preview
+        self.preview_display.set_theme(theme_data, service_item_type=service_item.service_item_type)
+        # Set theme for displays
+        for display in self.displays:
+            display.set_theme(service_item.get_theme_data(), service_item_type=service_item.service_item_type)
+
     def _process_item(self, service_item, slide_no):
         """
         Loads a ServiceItem into the system from ServiceManager. Display the slide number passed.
@@ -862,31 +876,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 '{text}_start'.format(text=service_item.name.lower()),
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
-            # Get theme
-            theme_name = service_item.theme if service_item.theme else Registry().get('theme_manager').global_theme
-            theme_data = Registry().get('theme_manager').get_theme_data(theme_name)
-            # Set theme for preview
-            self.preview_display.set_theme(theme_data)
-            # Set theme for displays
-            for display in self.displays:
-                display.set_theme(theme_data)
-
+            self._set_theme(service_item)
         # Reset blanking if needed
         if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
                                           self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
             self._reset_blank(self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay))
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
-        if old_item and old_item.is_capable(ItemCapabilities.HasBackgroundAudio):
+        if old_item and old_item.requires_media():
             self.on_media_close()
-        if self.is_live:
-            self.song_menu.menu().clear()
-            if self.service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
-                self.on_media_start(service_item)
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
             self.preview_display.load_verses(service_item.rendered_slides)
+            self.preview_display.show()
             for display in self.displays:
                 display.load_verses(service_item.rendered_slides)
             for slide_index, slide in enumerate(self.service_item.display_slides):
@@ -911,18 +914,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             for slide_index, slide in enumerate(self.service_item.slides):
                 row += 1
                 self.slide_list[str(row)] = row - 1
-                # If current slide set background to image
-                # if not self.service_item.is_command() and slide_index == slide_no:
-                #     self.service_item.bg_image_bytes = \
-                #         self.image_manager.get_image_bytes(slide['filename'], ImageSource.ImagePlugin)
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
-        # Pass to display for viewing.
-        # Postpone image build, we need to do this later to avoid the theme
-        # flashing on the screen
-        # if not self.service_item.is_image():
-        #     self.display.build_html(self.service_item)
-        if self.service_item.is_media():
+        if self.service_item.is_media() or self.service_item.requires_media():
+            self._set_theme(service_item)
+            if self.service_item.is_command():
+                self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
         self.slide_selected(True)
         if self.service_item.from_service:
@@ -1027,9 +1024,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(False)
         self.desktop_screen.setChecked(False)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'blanked')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'blanked')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.blank_plugin()
         self.update_preview()
         self.on_toggle_loop()
@@ -1048,9 +1045,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(checked)
         self.desktop_screen.setChecked(False)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'themed')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'themed')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.blank_plugin()
         self.update_preview()
         self.on_toggle_loop()
@@ -1070,9 +1067,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.theme_screen.setChecked(False)
         self.desktop_screen.setChecked(checked)
         if checked:
-            Settings().setValue(self.main_window.general_settings_section + '/screen blank', 'hidden')
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'hidden')
         else:
-            Settings().remove(self.main_window.general_settings_section + '/screen blank')
+            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
         self.hide_plugin(checked)
         self.update_preview()
         self.on_toggle_loop()
@@ -1152,14 +1149,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # done by the thread holding the lock. If it is a "start" slide, we must wait for the lock, but only for 0.2
         # seconds, since we don't want to cause a deadlock
         timeout = 0.2 if start else -1
-        if not self.slide_selected_lock.acquire(start, timeout):  # pylint: disable=too-many-function-args
+        if not self.slide_selected_lock.acquire(start, timeout):
             if start:
                 self.log_debug('Could not get lock in slide_selected after waiting %f, skip to avoid deadlock.'
                                % timeout)
             return
         # If "click live slide to unblank" is enabled, unblank the display. And start = Item is sent to Live.
         # Note: If this if statement is placed at the bottom of this function instead of top slide transitions are lost.
-        if self.is_live and Settings().value('core/click live slide to unblank'):
+        if self.is_live and self.settings.value('core/click live slide to unblank'):
             if not start:
                 Registry().execute('slidecontroller_live_unblank')
         row = self.preview_widget.current_slide_number()
@@ -1367,7 +1364,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
             self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             self.play_slides_once.setChecked(False)
-            if Settings().value('core/click live slide to unblank'):
+            if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
             self.play_slides_loop.setIcon(UiIcons().clock)
@@ -1392,31 +1389,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
             self.play_slides_menu.setDefaultAction(self.play_slides_once)
             self.play_slides_loop.setChecked(False)
-            if Settings().value('core/click live slide to unblank'):
+            if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
             self.play_slides_once.setIcon(UiIcons().clock)
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
         self.on_toggle_loop()
-
-    # def set_audio_items_visibility(self, visible):
-    #    """
-    #    Set the visibility of the audio stuff
-    #    """
-    #    self.toolbar.set_widget_visible(AUDIO_LIST, visible)
-
-    # def set_audio_pause_clicked(self, checked):
-    #    """
-    #   Pause the audio player
-
-    #   :param checked: is the check box checked.
-    #   """
-    #   if not self.audio_pause_item.isVisible():
-    #       return
-    #   if checked:
-    #       self.display.audio_player.pause()
-    #   else:
-    #       self.display.audio_player.play()
 
     def timerEvent(self, event):
         """
@@ -1456,7 +1434,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Triggered when a preview slide item is double clicked
         """
         if self.service_item:
-            if Settings().value('advanced/double click live') and Settings().value('core/auto unblank'):
+            if self.settings.value('advanced/double click live') and self.settings.value('core/auto unblank'):
                 # Live and Preview have issues if we have video or presentations
                 # playing in both at the same time.
                 if self.service_item.is_command():
@@ -1513,12 +1491,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Respond to a request to close the Video
         """
         self.media_controller.media_reset(self)
-        self.preview_display.hide()
 
     def _reset_blank(self, no_theme):
         """
-        Used by command items which provide their own displays to reset the
-        screen hide attributes
+        Used by command items which provide their own displays to reset the screen hide attributes
 
         :param no_theme: Does the new item support theme-blanking.
         """
@@ -1550,30 +1526,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             return HideMode.Screen
         else:
             return None
-
-    # def on_next_track_clicked(self):
-    #     """
-    #     Go to the next track when next is clicked
-    #     """
-    #     self.display.audio_player.next()
-    #
-    # def on_audio_time_remaining(self, time):
-    #     """
-    #     Update how much time is remaining
-    #
-    #     :param time: the time remaining
-    #     """
-    #     seconds = (self.display.audio_player.player.duration() - self.display.audio_player.player.position()) // 1000
-    #     minutes = seconds // 60
-    #     seconds %= 60
-    #     self.audio_time_label.setText(' %02d:%02d ' % (minutes, seconds))
-    #
-    # def on_track_triggered(self, field=None):
-    #     """
-    #     Start playing a track
-    #     """
-    #     action = self.sender()
-    #     self.display.audio_player.go_to(action.data())
 
 
 class PreviewController(RegistryBase, SlideController):

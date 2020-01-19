@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -79,12 +78,17 @@ class EasyWorshipSongImport(SongImport):
         """
         self.import_source = Path(self.import_source)
         ext = self.import_source.suffix.lower()
-        if ext == '.ews':
-            self.import_ews()
-        elif ext == '.db':
-            self.import_db()
-        else:
-            self.import_sqlite_db()
+        try:
+            if ext == '.ews':
+                self.import_ews()
+            elif ext == '.db':
+                self.import_db()
+            else:
+                self.import_sqlite_db()
+        except Exception:
+            log.exception('Unexpected data in file {name}'.format(name=self.import_source))
+            self.log_error(self.import_source,
+                           '{name} contains unexpected data and can not be imported'.format(name=self.import_source))
 
     def import_ews(self):
         """

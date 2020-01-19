@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,7 +24,6 @@ import os
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.mixins import RegistryProperties
@@ -36,10 +34,10 @@ from openlp.core.lib import MediaType, ServiceItemContext, check_item_selected
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import parse_optical_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.media.vlcplayer import get_vlc
-
 
 if get_vlc() is not None:
     from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
@@ -128,36 +126,6 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                                                 tooltip=optical_button_tooltip,
                                                                 triggers=self.on_load_optical)
 
-    def add_end_header_bar(self):
-        """
-        Adds buttons to the end of the header bar.
-        """
-        # Replace backgrounds do not work at present so remove functionality.
-        # self.replace_action = self.toolbar.add_toolbar_action('replace_action', icon=UiIcons().theme,
-        #                                                       triggers=self.on_replace_click)
-        # if 'webkit' not in get_media_players()[0]:
-        #     self.replace_action.setDisabled(True)
-        #     if hasattr(self, 'replace_action_context'):
-        #         self.replace_action_context.setDisabled(True)
-        # self.reset_action = self.toolbar.add_toolbar_action('reset_action', icon=UiIcons().close,
-        #                                                    visible=False, triggers=self.on_reset_click)
-        # self.media_widget = QtWidgets.QWidget(self)
-        # self.media_widget.setObjectName('media_widget')
-        # self.display_layout = QtWidgets.QFormLayout(self.media_widget)
-        # self.display_layout.setContentsMargins(self.display_layout.spacing(), self.display_layout.spacing(),
-        #                                        self.display_layout.spacing(), self.display_layout.spacing())
-        # self.display_layout.setObjectName('display_layout')
-        # self.display_type_label = QtWidgets.QLabel(self.media_widget)
-        # self.display_type_label.setObjectName('display_type_label')
-        # self.display_type_combo_box = create_horizontal_adjusting_combo_box(
-        #     self.media_widget, 'display_type_combo_box')
-        # self.display_type_label.setBuddy(self.display_type_combo_box)
-        # self.display_layout.addRow(self.display_type_label, self.display_type_combo_box)
-        # Add the Media widget to the page layout.
-        # self.page_layout.addWidget(self.media_widget)
-        # self.display_type_combo_box.currentIndexChanged.connect(self.override_player_changed)
-        pass
-
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
         """
@@ -175,7 +143,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                 return False
         filename = str(item.data(QtCore.Qt.UserRole))
         # Special handling if the filename is a optical clip
-        if filename == 'live':
+        if filename == UiStrings().LiveStream:
             service_item.processor = 'vlc'
             service_item.title = filename
             service_item.add_capability(ItemCapabilities.CanStream)
@@ -260,19 +228,21 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :param media: The media
         :param target_group:
         """
-        # TODO needs to be fixed as no idea why this fails
-        # media.sort(key=lambda file_path: get_natural_key(file_path.name))
+        media.sort(key=lambda file_path: get_natural_key(os.path.split(str(file_path))[1]))
         file_name = translate('MediaPlugin.MediaItem', 'Live Stream')
         item_name = QtWidgets.QListWidgetItem(file_name)
         item_name.setIcon(UiIcons().video)
-        item_name.setData(QtCore.Qt.UserRole, 'live')
+        item_name.setData(QtCore.Qt.UserRole, UiStrings().LiveStream)
         item_name.setToolTip(translate('MediaPlugin.MediaItem', 'Show Live Stream'))
         self.list_view.addItem(item_name)
         for track in media:
             track_str = str(track)
             track_info = QtCore.QFileInfo(track_str)
             item_name = None
-            if track_str.startswith('optical:'):
+            # Dont add the live stream in when reloading the UI.
+            if track_str == UiStrings().LiveStream:
+                continue
+            elif track_str.startswith('optical:'):
                 # Handle optical based item
                 (file_name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(track_str)
                 item_name = QtWidgets.QListWidgetItem(clip_name)
@@ -310,13 +280,13 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :return: The media list
         """
         media_file_paths = Settings().value(self.settings_section + '/media files')
-        media_file_paths.sort(key=lambda file_path: get_natural_key(file_path.name))
+        media_file_paths.sort(key=lambda file_path: get_natural_key(os.path.split(str(file_path))[1]))
         if media_type == MediaType.Audio:
             extension = AUDIO_EXT
         else:
             extension = VIDEO_EXT
         extension = [x[1:] for x in extension]
-        media = [x for x in media_file_paths if x.suffix in extension]
+        media = [x for x in media_file_paths if os.path.splitext(x)[1] in extension]
         return media
 
     def search(self, string, show_error):

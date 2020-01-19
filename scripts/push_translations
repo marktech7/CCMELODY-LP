@@ -2,7 +2,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -37,7 +37,7 @@ echo
 echo Generation translation control file
 echo
 rm ../resources/i18n/*.ts
-python3 $pwd/translation_utils.py -p 
+python3 $pwd/translation_utils.py -p
 
 echo Creating base translation file
 cd ..

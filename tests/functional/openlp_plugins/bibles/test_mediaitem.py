@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -123,12 +122,9 @@ class TestMediaItem(TestCase, TestMixin):
 
         self.mocked_settings_instance = MagicMock()
         self.mocked_settings_instance.value.side_effect = lambda key: self.setting_values[key]
-        settings_patcher = patch(
-            'openlp.plugins.bibles.lib.mediaitem.Settings', return_value=self.mocked_settings_instance)
-        self.addCleanup(settings_patcher.stop)
-        self.mocked_settings = settings_patcher.start()
 
         Registry.create()
+        Registry().register('settings', self.mocked_settings_instance)
 
         # self.setup_application()
         self.mocked_application = MagicMock()
@@ -739,14 +735,14 @@ class TestMediaItem(TestCase, TestMixin):
         Test on_style_combo_box_index_changed
         """
         # GIVEN: An instance of :class:`MediaManagerItem` a mocked media_item.settings
-        self.media_item.settings = MagicMock()
+        self.media_item.settings_tab = MagicMock()
 
         # WHEN: Calling on_style_combo_box_index_changed
         self.media_item.on_style_combo_box_index_changed(2)
 
         # THEN: The layout_style setting should have been set
-        assert self.media_item.settings.layout_style == 2
-        self.media_item.settings.layout_style_combo_box.setCurrentIndex.assert_called_once_with(2)
+        assert self.media_item.settings_tab.layout_style == 2
+        self.media_item.settings_tab.layout_style_combo_box.setCurrentIndex.assert_called_once_with(2)
         self.mocked_settings_instance.setValue.assert_called_once_with('bibles/verse layout style', 2)
 
     def test_on_version_combo_box_index_changed_no_bible(self):

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,6 +51,7 @@ LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&retu
 LOGIN_URL = 'https://profile.ccli.com'
 LOGOUT_URL = BASE_URL + '/account/logout'
 SEARCH_URL = BASE_URL + '/search/results'
+SONG_PAGE = BASE_URL + '/Songs/'
 
 log = logging.getLogger(__name__)
 
@@ -123,9 +123,10 @@ class SongSelectImport(object):
         elif posted_page.find('div', id="select-organization") is not None:
             try:
                 home_page = BeautifulSoup(self.opener.open(BASE_URL).read(), 'lxml')
+                self.subscription_level = self.find_subscription_level(home_page)
             except (TypeError, URLError) as error:
                 log.exception('Could not reach SongSelect, {error}'.format(error=error))
-            self.subscription_level = self.find_subscription_level(home_page)
+                self.subscription_level = None
             return self.subscription_level
         else:
             log.debug(posted_page)
@@ -160,6 +161,7 @@ class SongSelectImport(object):
         :return: List of songs
         """
         self.run_search = True
+        search_text = search_text.strip()
         params = {
             'SongContent': '',
             'PrimaryLanguage': '',
@@ -179,8 +181,19 @@ class SongSelectImport(object):
                 search_results = results_page.find_all('div', 'song-result')
             except (TypeError, URLError) as error:
                 log.exception('Could not search SongSelect, {error}'.format(error=error))
+                results_page = None
                 search_results = None
             if not search_results:
+                if results_page and re.compile('^[0-9]+$').match(search_text):
+                    author_elements = results_page.find('ul', class_='authors').find_all('li')
+                    song = {
+                        'link': SONG_PAGE + search_text,
+                        'authors': [unescape(li.find('a').string).strip() for li in author_elements],
+                        'title': unescape(results_page.find('div', 'content-title').find('h1').string).strip()
+                    }
+                    if callback:
+                        callback(song)
+                    songs.append(song)
                 break
             for result in search_results:
                 song = {
@@ -212,10 +225,11 @@ class SongSelectImport(object):
         except (TypeError, URLError) as error:
             log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
+        lyrics_link = song_page.find('a', title='View song lyrics')['href']
         if callback:
             callback()
         try:
-            lyrics_page = BeautifulSoup(self.opener.open(song['link'] + '/viewlyrics').read(), 'lxml')
+            lyrics_page = BeautifulSoup(self.opener.open(BASE_URL + lyrics_link).read(), 'lxml')
         except (TypeError, URLError):
             log.exception('Could not get lyrics from SongSelect')
             return None

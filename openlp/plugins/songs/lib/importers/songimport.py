@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -320,9 +319,11 @@ class SongImport(QtCore.QObject):
         else:
             return True
 
-    def finish(self):
+    def finish(self, temporary_flag=False):
         """
         All fields have been set to this song. Write the song to disk.
+
+        :param temporary_flag: should this song be marked as temporary in the db (default=False)
         """
         if not self.check_complete():
             self.set_defaults()
@@ -380,6 +381,7 @@ class SongImport(QtCore.QObject):
             if topic is None:
                 topic = Topic.populate(name=topic_text)
             song.topics.append(topic)
+        song.temporary = temporary_flag
         # We need to save the song now, before adding the media files, so that
         # we know where to save the media files to.
         clean_song(self.manager, song)
@@ -394,7 +396,7 @@ class SongImport(QtCore.QObject):
                 song.media_files.append(MediaFile.populate(file_path=file_path, weight=weight))
         self.manager.save_object(song)
         self.set_defaults()
-        return True
+        return song.id
 
     def copy_media_file(self, song_id, file_path):
         """

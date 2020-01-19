@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,9 +25,9 @@ from enum import IntEnum, unique
 
 from PyQt5 import QtCore, QtWidgets
 
+from openlp.core.common.enum import BibleSearch, DisplayStyle, LayoutStyle
 from openlp.core.common.i18n import UiStrings, get_locale_key, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
@@ -38,8 +37,7 @@ from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.edits import SearchEdit
 from openlp.plugins.bibles.forms.bibleimportform import BibleImportForm
 from openlp.plugins.bibles.forms.editbibleform import EditBibleForm
-from openlp.plugins.bibles.lib import DisplayStyle, LayoutStyle, get_reference_match, \
-    get_reference_separator
+from openlp.plugins.bibles.lib import get_reference_match, get_reference_separator
 from openlp.plugins.bibles.lib.versereferencelist import VerseReferenceList
 
 log = logging.getLogger(__name__)
@@ -52,16 +50,6 @@ def get_reference_separators():
     return {'verse': get_reference_separator('sep_v_display'),
             'range': get_reference_separator('sep_r_display'),
             'list': get_reference_separator('sep_l_display')}
-
-
-@unique
-class BibleSearch(IntEnum):
-    """
-    Enumeration class for the different search types for the "Search" tab.
-    """
-    Reference = 1
-    Text = 2
-    Combined = 3
 
 
 @unique
@@ -132,7 +120,7 @@ class BibleMediaItem(MediaManagerItem):
         self.bibles_go_live.connect(self.go_live_remote)
         self.bibles_add_to_service.connect(self.add_to_service_remote)
         # Place to store the search results for both bibles.
-        self.settings = self.plugin.settings_tab
+        self.settings_tab = self.plugin.settings_tab
         self.quick_preview_allowed = True
         self.has_search = True
         self.search_results = []
@@ -304,7 +292,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         log.debug('config_update')
-        visible = Settings().value('{settings_section}/second bibles'.format(settings_section=self.settings_section))
+        visible = self.settings.value('{settings_section}/second bibles'.format(settings_section=self.settings_section))
         self.general_bible_layout.labelForField(self.second_combo_box).setVisible(visible)
         self.second_combo_box.setVisible(visible)
 
@@ -328,7 +316,7 @@ class BibleMediaItem(MediaManagerItem):
                 translate('BiblesPlugin.MediaItem', 'Text Search'),
                 translate('BiblesPlugin.MediaItem', 'Search Text...'))
         ])
-        if Settings().value(
+        if self.settings.value(
                 '{settings_section}/reset to combined quick search'.format(settings_section=self.settings_section)):
             self.search_edit.set_current_search_type(BibleSearch.Combined)
         self.config_update()
@@ -352,7 +340,7 @@ class BibleMediaItem(MediaManagerItem):
             self.version_combo_box.addItem(bible[0], bible[1])
             self.second_combo_box.addItem(bible[0], bible[1])
         # set the default value
-        bible = Settings().value('{settings_section}/primary bible'.format(settings_section=self.settings_section))
+        bible = self.settings.value('{settings_section}/primary bible'.format(settings_section=self.settings_section))
         find_and_set_in_combo_box(self.version_combo_box, bible)
 
     def reload_bibles(self):
@@ -558,9 +546,9 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         # TODO: Change layout_style to a property
-        self.settings.layout_style = index
-        self.settings.layout_style_combo_box.setCurrentIndex(index)
-        Settings().setValue('{section}/verse layout style'.format(section=self.settings_section), index)
+        self.settings_tab.layout_style = index
+        self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
+        self.settings.setValue('{section}/verse layout style'.format(section=self.settings_section), index)
 
     def on_version_combo_box_index_changed(self):
         """
@@ -570,7 +558,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         self.bible = self.version_combo_box.currentData()
         if self.bible is not None:
-            Settings().setValue('{section}/primary bible'.format(section=self.settings_section), self.bible.name)
+            self.settings.setValue('{section}/primary bible'.format(section=self.settings_section), self.bible.name)
         self.initialise_advanced_bible(self.select_book_combo_box.currentData())
 
     def on_second_combo_box_index_changed(self, selection):
@@ -816,7 +804,7 @@ class BibleMediaItem(MediaManagerItem):
 
         :return: None
         """
-        if not Settings().value('bibles/is search while typing enabled') or \
+        if not self.settings.value('bibles/is search while typing enabled') or \
                 not self.bible or self.bible.is_web_bible or \
                 (self.second_bible and self.bible.is_web_bible):
             return
@@ -946,12 +934,12 @@ class BibleMediaItem(MediaManagerItem):
                 raw_slides.append(bible_text.rstrip())
                 bible_text = ''
             # If we are 'Verse Per Slide' then create a new slide.
-            elif self.settings.layout_style == LayoutStyle.VersePerSlide:
+            elif self.settings_tab.layout_style == LayoutStyle.VersePerSlide:
                 bible_text = '{first_version}{data[text]}'.format(first_version=verse_text, data=data)
                 raw_slides.append(bible_text.rstrip())
                 bible_text = ''
             # If we are 'Verse Per Line' then force a new line.
-            elif self.settings.layout_style == LayoutStyle.VersePerLine:
+            elif self.settings_tab.layout_style == LayoutStyle.VersePerLine:
                 bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
             # We have to be 'Continuous'.
             else:
@@ -967,7 +955,7 @@ class BibleMediaItem(MediaManagerItem):
         if bible_text:
             raw_slides.append(bible_text.lstrip())
         # Service Item: Capabilities
-        if self.settings.layout_style == LayoutStyle.Continuous and not data['second_bible']:
+        if self.settings_tab.layout_style == LayoutStyle.Continuous and not data['second_bible']:
             # Split the line but do not replace line breaks in renderer.
             service_item.add_capability(ItemCapabilities.NoLineBreaks)
         service_item.add_capability(ItemCapabilities.CanPreview)
@@ -977,8 +965,8 @@ class BibleMediaItem(MediaManagerItem):
         # Service Item: Title
         service_item.title = '{verse} {version}'.format(verse=verses.format_verses(), version=verses.format_versions())
         # Service Item: Theme
-        if self.settings.bible_theme:
-            service_item.theme = self.settings.bible_theme
+        if self.settings_tab.bible_theme:
+            service_item.theme = self.settings_tab.bible_theme
         for slide in raw_slides:
             service_item.add_from_text(slide)
         return True
@@ -995,10 +983,10 @@ class BibleMediaItem(MediaManagerItem):
         :param verse: The verse number (int).
         :return: An empty or formatted string
         """
-        if not self.settings.is_verse_number_visible:
+        if not self.settings_tab.is_verse_number_visible:
             return ''
         verse_separator = get_reference_separators()['verse']
-        if not self.settings.show_new_chapters or old_chapter != chapter:
+        if not self.settings_tab.show_new_chapters or old_chapter != chapter:
             verse_text = '{chapter}{sep}{verse}'.format(chapter=chapter, sep=verse_separator, verse=verse)
         else:
             verse_text = verse
@@ -1007,7 +995,7 @@ class BibleMediaItem(MediaManagerItem):
             DisplayStyle.Round: ('(', ')'),
             DisplayStyle.Curly: ('{', '}'),
             DisplayStyle.Square: ('[', ']')
-        }[self.settings.display_style]
+        }[self.settings_tab.display_style]
         return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
 
     def search(self, string, show_error=True):

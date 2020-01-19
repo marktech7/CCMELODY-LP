@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,9 +24,9 @@ Functional tests to test the Bible Manager class and related methods.
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
-from openlp.plugins.bibles.lib import LanguageSelection
 from openlp.plugins.bibles.lib.manager import BibleManager
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import TEST_RESOURCES_PATH

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,26 +33,19 @@ from pathlib import Path
 from PyQt5 import QtGui
 
 from openlp.core.state import State
-from openlp.core.common import md5_hash
+from openlp.core.common import ThemeLevel, md5_hash
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import ItemCapabilities
+from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.icons import UiIcons
 
 
 log = logging.getLogger(__name__)
-
-
-class ServiceItemType(object):
-    """
-    Defines the type of service item
-    """
-    Text = 1
-    Image = 2
-    Command = 3
 
 
 class ServiceItem(RegistryProperties):
@@ -92,7 +84,6 @@ class ServiceItem(RegistryProperties):
         self.capabilities = []
         self.is_valid = True
         self.icon = None
-        self.theme_data = None
         self.main = None
         self.footer = None
         self.bg_image_bytes = None
@@ -116,6 +107,40 @@ class ServiceItem(RegistryProperties):
         self._new_item()
         self.metadata = []
 
+    def get_theme_data(self, theme_level=None):
+        """
+        Get the theme appropriate for this item
+
+        :param theme_level: The theme_level to use,
+                            the value in Settings is used when this value is missinig
+        """
+        if theme_level is None:
+            theme_level = self.settings.value('themes/theme level')
+        theme_manager = Registry().get('theme_manager')
+        # Just assume we use the global theme.
+        theme = theme_manager.global_theme
+        if theme_level != ThemeLevel.Global:
+            service_theme = self.settings.value('servicemanager/service theme')
+            # Service or Song level, so assume service theme (if it exists and item in service)
+            # but use song theme if level is song (and it exists)
+            if service_theme and self.from_service:
+                theme = service_theme
+            if theme_level == ThemeLevel.Song and self.theme:
+                theme = self.theme
+        theme = theme_manager.get_theme_data(theme)
+        # Clean up capabilities and reload from the theme.
+        if self.is_text():
+            if self.is_capable(ItemCapabilities.CanStream):
+                self.remove_capability(ItemCapabilities.CanStream)
+            if self.is_capable(ItemCapabilities.HasBackgroundVideo):
+                self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+                self.add_capability(ItemCapabilities.CanStream)
+            if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+                self.video_file_name = theme.background_filename
+                self.add_capability(ItemCapabilities.HasBackgroundVideo)
+        return theme
+
     def _new_item(self):
         """
         Method to set the internal id of the item. This is used to compare service items to see if they are the same.
@@ -130,6 +155,14 @@ class ServiceItem(RegistryProperties):
         :param capability: The capability to add
         """
         self.capabilities.append(capability)
+
+    def remove_capability(self, capability):
+        """
+        Remove an ItemCapability from a ServiceItem
+
+        :param capability: The capability to remove
+        """
+        self.capabilities.remove(capability)
 
     def is_capable(self, capability):
         """
@@ -215,7 +248,6 @@ class ServiceItem(RegistryProperties):
         """
         Render the frames for printing and return them
 
-        :param can_render_chords: bool Whether or not to render the chords
         """
         if not self._print_slides:
             self._print_slides = []
@@ -346,7 +378,11 @@ class ServiceItem(RegistryProperties):
                 service_data = [slide['title'] for slide in self.slides]
         elif self.service_item_type == ServiceItemType.Command:
             for slide in self.slides:
-                service_data.append({'title': slide['title'], 'image': slide['image'], 'path': slide['path'],
+                if isinstance(slide['image'], QtGui.QIcon):
+                    image = "clapperboard"
+                else:
+                    image = slide['image']
+                service_data.append({'title': slide['title'], 'image': image, 'path': slide['path'],
                                      'display_title': slide['display_title'], 'notes': slide['notes']})
         return {'header': service_header, 'data': service_data}
 
@@ -408,7 +444,7 @@ class ServiceItem(RegistryProperties):
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
             settings_section = service_item['serviceitem']['header']['name']
-            background = QtGui.QColor(Settings().value(settings_section + '/background color'))
+            background = QtGui.QColor(self.settings.value(settings_section + '/background color'))
             if path:
                 self.has_original_files = False
                 for text_image in service_item['serviceitem']['data']:
@@ -426,6 +462,8 @@ class ServiceItem(RegistryProperties):
                     self.add_from_command(text_image['path'], text_image['title'], text_image['image'])
                 elif path:
                     self.has_original_files = False
+                    if text_image['image'] == "clapperboard":
+                        text_image['image'] = UiIcons().clapperboard
                     self.add_from_command(path, text_image['title'], text_image['image'],
                                           text_image.get('display_title', ''), text_image.get('notes', ''))
                 else:
@@ -622,6 +660,11 @@ class ServiceItem(RegistryProperties):
                 if self.get_frame_path(frame=frame) in invalid_paths:
                     self.remove_frame(frame)
 
+    def requires_media(self):
+        return self.is_capable(ItemCapabilities.HasBackgroundAudio) or \
+            self.is_capable(ItemCapabilities.HasBackgroundVideo) or \
+            self.is_capable(ItemCapabilities.CanStream)
+
     def missing_frames(self):
         """
         Returns if there are any frames in the service item
@@ -632,7 +675,7 @@ class ServiceItem(RegistryProperties):
         """
         Validates a service item to make sure it is valid
 
-        :param set[str] suffixes: A set of vaild suffixes
+        :param set[str] suffixes: A set of valid suffixes
         """
         self.is_valid = True
         for slide in self.slides:
@@ -650,7 +693,7 @@ class ServiceItem(RegistryProperties):
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
-                        file_suffix = slide['title'].split('.')[-1]
+                        file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
                         if file_suffix.lower() not in suffixes:
                             self.is_valid = False
                             break

@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +28,9 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.settings import Settings
 from openlp.core.lib import build_icon
+from openlp.core.ui.style import HAS_DARK_STYLE
 
 
 log = logging.getLogger(__name__)
@@ -63,9 +64,11 @@ class UiIcons(metaclass=Singleton):
             'authentication': {'icon': 'fa.exclamation-triangle', 'attr': 'red'},
             'address': {'icon': 'fa.book'},
             'back': {'icon': 'fa.step-backward'},
+            'backspace': {'icon': 'mdi.backspace-outline'},
             'bible': {'icon': 'fa.book'},
             'blank': {'icon': 'fa.times-circle'},
             'blank_theme': {'icon': 'fa.file-image-o'},
+            'bold': {'icon': 'fa.bold'},
             'book': {'icon': 'fa.book'},
             'bottom': {'icon': 'fa.angle-double-down'},
             'box': {'icon': 'fa.briefcase'},
@@ -88,6 +91,7 @@ class UiIcons(metaclass=Singleton):
             'group': {'icon': 'fa.object-group'},
             'inactive': {'icon': 'fa.child', 'attr': 'lightGray'},
             'info': {'icon': 'fa.info'},
+            'italic': {'icon': 'fa.italic'},
             'light_bulb': {'icon': 'fa.lightbulb-o'},
             'live': {'icon': 'fa.eye'},
             'manual': {'icon': 'fa.graduation-cap'},
@@ -100,6 +104,7 @@ class UiIcons(metaclass=Singleton):
             'open': {'icon': 'fa.folder-open'},
             'optical': {'icon': 'fa.file-video-o'},
             'pause': {'icon': 'fa.pause'},
+            'planning_center': {'icon': 'fa.cloud-download'},
             'play': {'icon': 'fa.play'},
             'player': {'icon': 'fa.tablet'},
             'plugin_list': {'icon': 'fa.puzzle-piece'},
@@ -161,6 +166,7 @@ class UiIcons(metaclass=Singleton):
         """
         Load the list of icons to be processed
         """
+        is_dark = (HAS_DARK_STYLE and Settings().value('advanced/use_dark_style'))
         for key in icon_list:
             try:
                 icon = icon_list[key]['icon']
@@ -168,7 +174,10 @@ class UiIcons(metaclass=Singleton):
                     attr = icon_list[key]['attr']
                     setattr(self, key, qta.icon(icon, color=attr))
                 except KeyError:
-                    setattr(self, key, qta.icon(icon))
+                    if is_dark:
+                        setattr(self, key, qta.icon(icon, color='white'))
+                    else:
+                        setattr(self, key, qta.icon(icon))
                 except Exception:
                     import sys
                     log.error('Unexpected error: %s' % sys.exc_info())

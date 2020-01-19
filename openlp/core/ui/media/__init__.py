@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -71,7 +70,7 @@ class ItemMediaInfo(object):
     file_info = None
     volume = 100
     is_background = False
-    can_loop_playback = False
+    is_looping_playback = False
     length = 0
     start_time = 0
     end_time = 0
@@ -92,7 +91,7 @@ def parse_optical_path(input_string):
     """
     log.debug('parse_optical_path, about to parse: "{text}"'.format(text=input_string))
     clip_info = input_string.split(sep=':')
-    title = int(clip_info[1])
+    title = str(clip_info[1])
     audio_track = int(clip_info[2])
     subtitle_track = int(clip_info[3])
     start = float(clip_info[4])
@@ -109,7 +108,7 @@ def format_milliseconds(milliseconds):
     """
     Format milliseconds into a human readable time string.
     :param milliseconds: Milliseconds to format
-    :return: Time string in format: hh.mm.ss,ttt
+    :return: Time string in format: hh:mm:ss,ttt
     """
     milliseconds = int(milliseconds)
     seconds, millis = divmod(milliseconds, 1000)
@@ -119,3 +118,6 @@ def format_milliseconds(milliseconds):
                                                                          minutes=minutes,
                                                                          seconds=seconds,
                                                                          millis=millis)
+
+
+media_empty_song = [{"title": "", "text": "", "verse": 0, "footer": ""}]

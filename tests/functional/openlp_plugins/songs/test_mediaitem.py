@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,6 +21,7 @@
 """
 This module contains tests for the lib submodule of the Songs plugin.
 """
+import pytest
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -91,6 +91,29 @@ ${title}<br/>
 }
 
 
+@pytest.yield_fixture
+def mocked_media_item(mock_settings):
+    Registry().register('service_list', MagicMock())
+    Registry().register('main_window', MagicMock())
+    mocked_plugin = MagicMock()
+    with patch('openlp.core.lib.mediamanageritem.MediaManagerItem._setup'), \
+            patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__'):
+        media_item = SongMediaItem(None, mocked_plugin)
+        media_item.save_auto_select_id = MagicMock()
+        media_item.list_view = MagicMock()
+        media_item.list_view.save_auto_select_id = MagicMock()
+        media_item.list_view.clear = MagicMock()
+        media_item.list_view.addItem = MagicMock()
+        media_item.list_view.setCurrentItem = MagicMock()
+        media_item.auto_select_id = -1
+        media_item.display_songbook = False
+        media_item.display_copyright_symbol = False
+    settings = Registry().get('settings')
+    settings.extend_default_settings(__default_settings__)
+    QtCore.QLocale.setDefault(QtCore.QLocale('en_GB'))
+    yield media_item
+
+
 class TestMediaItem(TestCase, TestMixin):
     """
     Test the functions in the :mod:`lib` module.
@@ -118,6 +141,8 @@ class TestMediaItem(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Settings().extend_default_settings(__default_settings__)
+        self.settings = self.setting
+        Registry().register('settings', self.settings)
         QtCore.QLocale.setDefault(QtCore.QLocale('en_GB'))
 
     def tearDown(self):
@@ -349,51 +374,6 @@ class TestMediaItem(TestCase, TestMixin):
             mock_qlist_widget.setData.assert_called_once_with(MockedUserRole, mock_song.id)
             self.media_item.list_view.addItem.assert_called_once_with(mock_qlist_widget)
 
-    @patch(u'openlp.plugins.songs.lib.mediaitem.Settings')
-    def test_build_song_footer_one_author_show_written_by(self, MockedSettings):
-        """
-        Test build songs footer with basic song and one author
-        """
-        # GIVEN: A Song and a Service Item, mocked settings
-
-        mocked_settings = MagicMock()
-        mocked_settings.value.side_effect = [False, "", "0"]
-        MockedSettings.return_value = mocked_settings
-
-        with patch('mako.template.Template.render_unicode') as MockedRenderer:
-            mock_song = MagicMock()
-            mock_song.title = 'My Song'
-            mock_song.alternate_title = ''
-            mock_song.ccli_number = ''
-            mock_song.authors_songs = []
-            mock_author = MagicMock()
-            mock_author.display_name = 'my author'
-            mock_author_song = MagicMock()
-            mock_author_song.author = mock_author
-            mock_song.authors_songs.append(mock_author_song)
-            mock_song.copyright = 'My copyright'
-            mock_song.songbook_entries = []
-            service_item = ServiceItem(None)
-
-            # WHEN: I generate the Footer with default settings
-            author_list = self.media_item.generate_footer(service_item, mock_song)
-
-            # THEN: The mako function was called with the following arguments
-            args = {'authors_translation': [], 'authors_music_label': 'Music',
-                    'copyright': 'My copyright', 'songbook_entries': [],
-                    'alternate_title': '', 'topics': [], 'authors_music_all': [],
-                    'authors_words_label': 'Words', 'authors_music': [],
-                    'authors_words_music': [], 'ccli_number': '',
-                    'authors_none_label': 'Written by', 'title': 'My Song',
-                    'authors_words_music_label': 'Words and Music',
-                    'authors_none': ['my author'],
-                    'ccli_license_label': 'CCLI License', 'authors_words': [],
-                    'ccli_license': '0', 'authors_translation_label': 'Translation',
-                    'authors_words_all': []}
-            MockedRenderer.assert_called_once_with(**args)
-            self.assertEqual(author_list, ['my author'],
-                             'The author list should be returned correctly with one author')
-
     def test_build_song_footer_two_authors(self):
         """
         Test build songs footer with basic song and two authors
@@ -444,7 +424,7 @@ class TestMediaItem(TestCase, TestMixin):
         mock_song.copyright = 'My copyright'
         mock_song.songbook_entries = []
         service_item = ServiceItem(None)
-        Settings().setValue('core/ccli number', '1234')
+        self.settings.setValue('core/ccli number', '1234')
 
         # WHEN: I generate the Footer with default settings
         self.media_item.generate_footer(service_item, mock_song)
@@ -454,7 +434,7 @@ class TestMediaItem(TestCase, TestMixin):
             'The array should be returned correctly with a song, an author, copyright and ccli'
 
         # WHEN: I amend the CCLI value
-        Settings().setValue('core/ccli number', '4321')
+        self.settings.setValue('core/ccli number', '4321')
         self.media_item.generate_footer(service_item, mock_song)
 
         # THEN: I would get an amended footer string
@@ -623,3 +603,45 @@ class TestMediaItem(TestCase, TestMixin):
         self.mocked_plugin.manager.session.query.assert_called_once_with(MockedSong)
 
         assert self.mocked_plugin.manager.session.query.mock_calls[4][0] == '().join().join().filter().all'
+
+
+def test_build_song_footer_one_author_show_written_by(mocked_media_item):
+    """
+    Test build songs footer with basic song and one author
+    """
+    # GIVEN: A Song and a Service Item, mocked settings
+
+    mocked_media_item.settings.value.side_effect = [False, "", "0"]
+
+    with patch('mako.template.Template.render_unicode') as MockedRenderer:
+        mock_song = MagicMock()
+        mock_song.title = 'My Song'
+        mock_song.alternate_title = ''
+        mock_song.ccli_number = ''
+        mock_song.authors_songs = []
+        mock_author = MagicMock()
+        mock_author.display_name = 'my author'
+        mock_author_song = MagicMock()
+        mock_author_song.author = mock_author
+        mock_song.authors_songs.append(mock_author_song)
+        mock_song.copyright = 'My copyright'
+        mock_song.songbook_entries = []
+        service_item = ServiceItem(None)
+
+        # WHEN: I generate the Footer with default settings
+        author_list = mocked_media_item.generate_footer(service_item, mock_song)
+
+        # THEN: The mako function was called with the following arguments
+        args = {'authors_translation': [], 'authors_music_label': 'Music',
+                'copyright': 'My copyright', 'songbook_entries': [],
+                'alternate_title': '', 'topics': [], 'authors_music_all': [],
+                'authors_words_label': 'Words', 'authors_music': [],
+                'authors_words_music': [], 'ccli_number': '',
+                'authors_none_label': 'Written by', 'title': 'My Song',
+                'authors_words_music_label': 'Words and Music',
+                'authors_none': ['my author'],
+                'ccli_license_label': 'CCLI License', 'authors_words': [],
+                'ccli_license': '0', 'authors_translation_label': 'Translation',
+                'authors_words_all': []}
+        MockedRenderer.assert_called_once_with(**args)
+        assert author_list == ['my author'], 'The author list should be returned correctly with one author'

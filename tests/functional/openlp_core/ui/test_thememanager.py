@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,7 +26,7 @@ import shutil
 from pathlib import Path
 from tempfile import mkdtemp
 from unittest import TestCase
-from unittest.mock import ANY, MagicMock, patch
+from unittest.mock import ANY, Mock, MagicMock, patch, call
 
 from PyQt5 import QtWidgets
 
@@ -88,19 +87,22 @@ class TestThemeManager(TestCase):
         Test that we don't try to overwrite a theme background image with itself
         """
         # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
-        #        theme, create_paths and thememanager-attributes.
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.old_background_image_path = None
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
         mocked_theme.extract_formatted_xml = MagicMock()
         mocked_theme.extract_formatted_xml.return_value = 'fake_theme_xml'.encode()
-
-        # WHEN: Calling save_theme with path to the same image, but the path written slightly different
         file_path_1 = RESOURCE_PATH / 'church.jpg'
-        theme_manager.save_theme(mocked_theme, file_path_1, file_path_1)
+        mocked_theme.background_filename = file_path_1
+        mocked_theme.background_source = file_path_1
+
+        # WHEN: Calling save_theme with both background paths to the same image
+        theme_manager.save_theme(mocked_theme)
 
         # THEN: The mocked_copyfile should not have been called
         assert mocked_shutil.copyfile.called is False, 'copyfile should not be called'
@@ -112,22 +114,139 @@ class TestThemeManager(TestCase):
         Test that we do overwrite a theme background image when a new is submitted
         """
         # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
-        #        theme, create_paths and thememanager-attributes.
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.old_background_image_path = None
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = MagicMock()
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'themename'
-        mocked_theme.filename = "filename"
+        mocked_theme.background_filename = RESOURCE_PATH / 'church.jpg'
+        mocked_theme.background_source = RESOURCE_PATH / 'church2.jpg'
 
-        # WHEN: Calling save_theme with path to different images
-        file_path_1 = RESOURCE_PATH / 'church.jpg'
-        file_path_2 = RESOURCE_PATH / 'church2.jpg'
-        theme_manager.save_theme(mocked_theme, file_path_1, file_path_2)
+        # WHEN: Calling save_theme with both background paths to different images
+        theme_manager.save_theme(mocked_theme)
 
-        # THEN: The mocked_copyfile should not have been called
+        # THEN: The mocked_copyfile should have been called
         assert mocked_shutil.copyfile.called is True, 'copyfile should be called'
+
+    @patch('openlp.core.ui.thememanager.shutil')
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_delete_old_image(self, mocked_create_paths, mocked_delete_file, mocked_shutil):
+        """
+        Test that we do delete a old theme background image when a new is submitted
+        """
+        # GIVEN: A new theme manager instance, with mocked builtins.open,
+        #        theme, create_paths, thememanager-attributes and background
+        #       .filename path is the same as the source path.
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = RESOURCE_PATH / 'old_church.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = RESOURCE_PATH / 'church.jpg'
+        mocked_theme.background_source = RESOURCE_PATH / 'church2.jpg'
+
+        # WHEN: Calling save_theme with both background paths to different images
+        theme_manager.save_theme(mocked_theme)
+
+        # THEN: The mocked_delete_file should have been called to delete the old cached background
+        assert mocked_delete_file.called is True, 'delete_file should be called'
+
+    @patch.object(ThemeManager, 'log_exception')
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_missing_original(self, mocked_paths, mocked_delete, mocked_log_exception):
+        """
+        Test that we revert to the old theme background image if the source is missing
+        when changing the theme. (User doesn't change background but the original is
+        missing)
+        """
+        # GIVEN: A new theme manager instance, with invalid files. Setup as if the user
+        # has left the background the same, or reselected the same path.
+        # Not using resource dir because I could potentially copy a file
+        folder_path = Path(mkdtemp())
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = folder_path / 'old.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = folder_path / 'old.png'
+        mocked_theme.background_source = folder_path / 'non_existent_original.png'
+
+        # WHEN: Calling save_theme with a invalid background_filename
+        # Although all filenames are considered invalid in this test,
+        # it is important it reverts to the old background path as this in reality is always
+        # valid unless someone has messed with the cache.
+        theme_manager.save_theme(mocked_theme)
+
+        # THEN: The old background should not have bee deleted
+        #       AND the filename should have been replaced with the old cached background
+        #       AND there is no exception
+        assert mocked_delete.called is False, 'delete_file should not be called'
+        assert mocked_theme.background_filename == theme_manager.old_background_image_path, \
+            'Background path should be reverted'
+        assert mocked_log_exception.called is False, \
+            'Should not have been an exception as the file wasn\'t changed'
+
+    @patch.object(ThemeManager, 'log_warning')
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_missing_new(self, mocked_paths, mocked_delete, mocked_log_warning):
+        """
+        Test that we log a warning if the new background is missing
+        """
+        # GIVEN: A new theme manager instance, with invalid files. Setup as if the user
+        # has changed the background to a invalid path.
+        # Not using resource dir because I could potentially copy a file
+        folder_path = Path(mkdtemp())
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = folder_path / 'old.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = folder_path / 'new_cached.png'
+        mocked_theme.background_source = folder_path / 'new_original.png'
+
+        # WHEN: Calling save_theme with a invalid background_filename
+        theme_manager.save_theme(mocked_theme)
+
+        # THEN: A warning should have happened due to attempting to copy a missing file
+        mocked_log_warning.assert_called_once_with('Background does not exist, retaining cached background')
+
+    @patch('openlp.core.ui.thememanager.shutil')
+    @patch('openlp.core.ui.thememanager.delete_file')
+    @patch('openlp.core.ui.thememanager.create_paths')
+    def test_save_theme_background_override(self, mocked_paths, mocked_delete, mocked_shutil):
+        """
+        Test that we log a warning if the new background is missing
+        """
+        # GIVEN: A new theme manager instance, with invalid files. Setup as if the user
+        # has changed the background to a invalid path.
+        # Not using resource dir because I could potentially copy a file
+        folder_path = Path(mkdtemp())
+        theme_manager = ThemeManager(None)
+        theme_manager.old_background_image_path = folder_path / 'old.png'
+        theme_manager.update_preview_images = MagicMock()
+        theme_manager.theme_path = MagicMock()
+        mocked_theme = MagicMock()
+        mocked_theme.theme_name = 'themename'
+        mocked_theme.background_filename = folder_path / 'new_cached.png'
+        # mocked_theme.background_source.exists() will return True
+        mocked_theme.background_source = MagicMock()
+        # override_background.exists() will return True
+        override_background = MagicMock()
+
+        # WHEN: Calling save_theme with a background override
+        theme_manager.save_theme(mocked_theme, background_override=override_background)
+
+        # THEN: The override_background should have been copied rather than the background_source
+        mocked_shutil.copyfile.assert_called_once_with(override_background, mocked_theme.background_filename)
 
     def test_save_theme_special_char_name(self):
         """
@@ -135,8 +254,8 @@ class TestThemeManager(TestCase):
         """
         # GIVEN: A new theme manager instance, with mocked theme and thememanager-attributes.
         theme_manager = ThemeManager(None)
-        theme_manager.old_background_image = None
-        theme_manager.generate_and_save_image = MagicMock()
+        theme_manager.old_background_image_path = None
+        theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = Path(self.temp_folder)
         mocked_theme = MagicMock()
         mocked_theme.theme_name = 'theme 愛 name'
@@ -196,7 +315,7 @@ class TestThemeManager(TestCase):
                 as mocked_critical_error_message_box:
             theme_manager = ThemeManager(None)
             theme_manager._create_theme_from_xml = MagicMock()
-            theme_manager.generate_and_save_image = MagicMock()
+            theme_manager.update_preview_images = MagicMock()
             theme_manager.theme_path = None
             folder_path = Path(mkdtemp())
             theme_file_path = RESOURCE_PATH / 'themes' / 'Moss_on_tree.otz'
@@ -228,3 +347,29 @@ class TestThemeManager(TestCase):
 
             # THEN: The critical_error_message_box should have been called
             assert mocked_critical_error_message_box.call_count == 1, 'Should have been called once'
+
+    def test_update_preview_images(self):
+        """
+        Test that the update_preview_images() method works correctly
+        """
+        # GIVEN: A ThemeManager
+        def get_theme_data(value):
+            return '{}_theme_data'.format(value)
+        theme_manager = ThemeManager(None)
+        theme_manager.save_preview = MagicMock()
+        theme_manager._get_theme_data = Mock(side_effect=get_theme_data)
+        theme_manager.progress_form = MagicMock(**{'get_preview.return_value': 'preview'})
+        theme_manager.load_themes = MagicMock()
+        theme_list = {'Default': get_theme_data('Default'), 'Test': get_theme_data('Test')}
+
+        # WHEN: ThemeManager.update_preview_images() is called
+        theme_manager.update_preview_images(theme_list)
+
+        # THEN: Things should work right
+        assert theme_manager.progress_form.theme_list == theme_list
+        theme_manager.progress_form.show.assert_called_once_with()
+        assert theme_manager.progress_form.get_preview.call_args_list == [call('Default', get_theme_data('Default')),
+                                                                          call('Test', get_theme_data('Test'))]
+        assert theme_manager.save_preview.call_args_list == [call('Default', 'preview'), call('Test', 'preview')]
+        theme_manager.progress_form.close.assert_called_once_with()
+        theme_manager.load_themes.assert_called_once_with()

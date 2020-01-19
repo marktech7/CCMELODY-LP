@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -57,7 +56,7 @@ class TestEditVerseForm(TestCase, TestMixin):
         """
         self.destroy_settings()
 
-    def test_update_suggested_verse_number(self):
+    def test_update_suggested_verse_number_has_no_effect(self):
         """
         Test that update_suggested_verse_number() has no effect when editing a single verse
         """
@@ -72,6 +71,22 @@ class TestEditVerseForm(TestCase, TestMixin):
 
         # THEN the verse number must not be changed
         assert 3 == self.edit_verse_form.verse_number_box.value(), 'The verse number should be 3'
+
+    def test_update_suggested_verse_number_different_type(self):
+        """
+        Test that update_suggested_verse_number() returns 0 when editing a second verse of a different type
+        """
+        # GIVEN some input values
+        self.edit_verse_form.has_single_verse = False
+        self.edit_verse_form.verse_type_combo_box.currentIndex = MagicMock(return_value=2)
+        self.edit_verse_form.verse_text_edit.toPlainText = MagicMock(return_value='Text')
+        self.edit_verse_form.verse_number_box.setValue(3)
+
+        # WHEN the method is called
+        self.edit_verse_form.update_suggested_verse_number()
+
+        # THEN the verse number must be changed to 1
+        assert 1 == self.edit_verse_form.verse_number_box.value(), 'The verse number should be 1'
 
     def test_on_divide_split_button_clicked(self):
         """

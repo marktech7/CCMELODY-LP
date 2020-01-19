@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -44,24 +43,6 @@ class HideMode(object):
     Screen = 3
 
 
-class AlertLocation(object):
-    """
-    This is an enumeration class which controls where Alerts are placed on the screen.
-
-    ``Top``
-        Place the text at the top of the screen.
-
-    ``Middle``
-        Place the text in the middle of the screen.
-
-    ``Bottom``
-        Place the text at the bottom of the screen.
-    """
-    Top = 0
-    Middle = 1
-    Bottom = 2
-
-
 class DisplayControllerType(object):
     """
     This is an enumeration class which says where a display controller originated from.
@@ -93,4 +74,4 @@ class SingleColumnTableWidget(QtWidgets.QTableWidget):
             self.resizeRowsToContents()
 
 
-__all__ = ['AlertLocation', 'DisplayControllerType', 'HideMode', 'SingleColumnTableWidget']
+__all__ = ['DisplayControllerType', 'HideMode', 'SingleColumnTableWidget']

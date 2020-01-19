@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -65,7 +64,7 @@ class SearchEdit(QtWidgets.QLineEdit):
         self.settings_section = settings_section
         self._current_search_type = -1
         self.clear_button = QtWidgets.QToolButton(self)
-        self.clear_button.setIcon(UiIcons().shortcuts)
+        self.clear_button.setIcon(UiIcons().backspace)
         self.clear_button.setCursor(QtCore.Qt.ArrowCursor)
         self.clear_button.setStyleSheet('QToolButton { border: none; padding: 0px; }')
         self.clear_button.resize(18, 18)

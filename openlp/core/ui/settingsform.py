@@ -1,10 +1,9 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2019 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -65,7 +64,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         self.advanced_tab = None
         self.api_tab = None
 
-    def exec(self):
+    def exec(self, starting_tab_name=None):
         """
         Execute the form
         """
@@ -85,8 +84,14 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         for plugin in State().list_plugins():
             if plugin.settings_tab:
                 self.insert_tab(plugin.settings_tab, plugin.is_active())
-        self.setting_list_widget.setCurrentRow(0)
         self.setting_list_widget.blockSignals(False)
+        starting_tab_row = 0
+        for index in range(self.setting_list_widget.count()):
+            item = self.setting_list_widget.item(index)
+            if item.text() == starting_tab_name:
+                starting_tab_row = index
+                break
+        self.setting_list_widget.setCurrentRow(starting_tab_row)
         return QtWidgets.QDialog.exec(self)
 
     def insert_tab(self, tab_widget, is_visible=True):
