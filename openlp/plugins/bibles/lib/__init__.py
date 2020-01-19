@@ -27,7 +27,7 @@ import re
 
 from openlp.core.common import Singleton
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)
 
@@ -156,14 +156,12 @@ def update_reference_separators():
                                              'Genesis Chapter 1 Verses 1 To 2 And Verses 4 To 5')]),
         '|'.join([translate('BiblesPlugin', 'end', 'ending identifier e.g. Genesis 1 verse 1 - end = '
                                                    'Genesis Chapter 1 Verses 1 To The Last Verse')])]
-    settings = Settings()
-    settings.beginGroup('bibles')
+    settings = Registry().get('settings')
     custom_separators = [
         settings.value('verse separator'),
         settings.value('range separator'),
         settings.value('list separator'),
         settings.value('end separator')]
-    settings.endGroup()
     for index, role in enumerate(['v', 'r', 'l', 'e']):
         if custom_separators[index].strip('|') == '':
             source_string = default_separators[index].strip('|')
