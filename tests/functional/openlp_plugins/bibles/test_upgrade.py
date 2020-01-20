@@ -29,6 +29,7 @@ from unittest.mock import MagicMock, call, patch
 
 from sqlalchemy import create_engine
 
+from openlp.core.common.registry import Registry
 from openlp.core.common.settings import ProxyMode
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.bibles.lib import upgrade
@@ -51,11 +52,9 @@ class TestUpgrade(TestCase, TestMixin):
         shutil.copyfile(db_path, db_tmp_path)
         self.db_url = 'sqlite:///' + str(db_tmp_path)
 
-        patched_settings = patch('openlp.plugins.bibles.lib.upgrade.Settings')
-        self.mocked_settings = patched_settings.start()
-        self.addCleanup(patched_settings.stop)
-        self.mocked_settings_instance = MagicMock()
-        self.mocked_settings.return_value = self.mocked_settings_instance
+        self.build_settings()
+        Registry().create()
+        Registry().register('service_list', MagicMock())
 
         patched_message_box = patch('openlp.plugins.bibles.lib.upgrade.QtWidgets.QMessageBox')
         self.mocked_message_box = patched_message_box.start()
@@ -67,6 +66,7 @@ class TestUpgrade(TestCase, TestMixin):
         """
         # Ignore errors since windows can have problems with locked files
         shutil.rmtree(self.tmp_path, ignore_errors=True)
+        self.destroy_settings()
 
     def test_upgrade_2_none_selected(self):
         """
@@ -99,11 +99,14 @@ class TestProxyMetaUpgrade(TestCase, TestMixin):
         shutil.copyfile(db_path, db_tmp_path)
         self.db_url = 'sqlite:///' + str(db_tmp_path)
 
-        patched_settings = patch('openlp.plugins.bibles.lib.upgrade.Settings')
-        self.mocked_settings = patched_settings.start()
-        self.addCleanup(patched_settings.stop)
         self.mocked_settings_instance = MagicMock()
+        self.mocked_settings = MagicMock()
         self.mocked_settings.return_value = self.mocked_settings_instance
+
+        self.build_settings()
+        Registry().create()
+        Registry().register('service_list', MagicMock())
+        Registry().register('settings', self.mocked_settings)
 
         patched_message_box = patch('openlp.plugins.bibles.lib.upgrade.QtWidgets.QMessageBox')
         mocked_message_box = patched_message_box.start()
@@ -162,7 +165,7 @@ class TestProxyMetaUpgrade(TestCase, TestMixin):
         assert len(conn.execute('SELECT * FROM metadata WHERE key = "proxy_password"').fetchall()) == 0
         assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '2'
 
-        assert self.mocked_settings_instance.setValue.call_args_list == [
+        assert self.mocked_settings.setValue.call_args_list == [
             call('advanced/proxy http', 'proxy_server'), call('advanced/proxy username', 'proxy_username'),
             call('advanced/proxy password', 'proxy_password'), call('advanced/proxy mode', ProxyMode.MANUAL_PROXY)]
 
@@ -185,7 +188,7 @@ class TestProxyMetaUpgrade(TestCase, TestMixin):
         assert len(conn.execute('SELECT * FROM metadata WHERE key = "proxy_password"').fetchall()) == 0
         assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '2'
 
-        assert self.mocked_settings_instance.setValue.call_args_list == [
+        assert self.mocked_settings.setValue.call_args_list == [
             call('advanced/proxy https', 'proxy_server'), call('advanced/proxy username', 'proxy_username'),
             call('advanced/proxy password', 'proxy_password'), call('advanced/proxy mode', ProxyMode.MANUAL_PROXY)]
 
@@ -209,7 +212,7 @@ class TestProxyMetaUpgrade(TestCase, TestMixin):
         assert len(conn.execute('SELECT * FROM metadata WHERE key = "proxy_password"').fetchall()) == 0
         assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '2'
 
-        assert self.mocked_settings_instance.setValue.call_args_list == [
+        assert self.mocked_settings.setValue.call_args_list == [
             call('advanced/proxy http', 'proxy_server'), call('advanced/proxy https', 'proxy_server'),
             call('advanced/proxy username', 'proxy_username'), call('advanced/proxy password', 'proxy_password'),
             call('advanced/proxy mode', ProxyMode.MANUAL_PROXY)]

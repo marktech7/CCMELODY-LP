@@ -26,7 +26,7 @@ from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib import parse_reference
 from openlp.plugins.bibles.lib.db import BibleDB, BibleMeta
 
@@ -296,7 +296,7 @@ class BibleManager(LogMixin, RegistryProperties):
         if not language_selection or language_selection.value == "None" or language_selection.value == "-1":
             # If None is returned, it's not the singleton object but a
             # BibleMeta object with the value "None"
-            language_selection = Settings().value(self.settings_section + '/book name language')
+            language_selection = Registry().get('settings').value(self.settings_section + '/book name language')
         else:
             language_selection = language_selection.value
         try:
