@@ -40,9 +40,6 @@ class TestManager(TestCase):
         log_patcher = patch('openlp.plugins.bibles.lib.manager.log')
         self.addCleanup(log_patcher.stop)
         self.mocked_log = log_patcher.start()
-        settings_patcher = patch('openlp.plugins.bibles.lib.manager.Settings')
-        self.addCleanup(settings_patcher.stop)
-        settings_patcher.start()
 
     def test_delete_bible(self):
         """
