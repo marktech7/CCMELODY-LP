@@ -123,6 +123,12 @@ class CaptureModeWidget(QtWidgets.QWidget):
     def set_callback(self, callback):
         self.callback = callback
 
+    def has_support_for_mrl(self, mrl):
+        return False
+
+    def set_mrl(self, main, options):
+        pass
+
 
 class CaptureVideoWidget(CaptureModeWidget):
     """
@@ -208,6 +214,9 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
             options += ' :input-slave={adev}'.format(adev=adev)
         self.callback(main_file, options)
 
+    def has_support_for_mrl(self, mrl):
+        return mrl.startswith('v4l2://dev/video')
+
 
 class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
     """
@@ -246,6 +255,9 @@ class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
         if adev:
             options += ' :input-slave={adev}'.format(adev=adev)
         self.callback(main_file, options)
+
+    def has_support_for_mrl(self, mrl):
+        return mrl.startswith('v4l2://dev/video')
 
 
 class CaptureDigitalTVWidget(CaptureModeWidget):
@@ -392,6 +404,9 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.psk_label.setText(translate('MediaPlugin.StreamSelector', 'Modulation / Constellation'))
         self.dvbs_rate_label.setText(translate('MediaPlugin.StreamSelector', 'Transponder symbol rate'))
 
+    def has_support_for_mrl(self, mrl):
+        return '//frequency=' in mrl
+
 
 class JackAudioKitWidget(CaptureModeWidget):
     """
@@ -445,6 +460,9 @@ class JackAudioKitWidget(CaptureModeWidget):
             options += ' :jack-input-auto-connect'
         self.callback(main_file, options)
 
+    def has_support_for_mrl(self, mrl):
+        return mrl.startswith('jack')
+
 
 class CaptureVideoQtDetectWidget(CaptureVideoWidget):
     """
@@ -483,6 +501,9 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
         # options = 'input-slave=qtsound://{adev}'.format(adev=adev)
         self.callback(main_file, '')
 
+    def has_support_for_mrl(self, mrl):
+        return mrl.startswith('avcapture')
+
 
 class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
     """
@@ -512,10 +533,13 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         vsize = self.video_size_lineedit.text().strip()
         main_file = 'dshow://'
         options = ':dshow-vdev={vdev} '.format(vdev=self.colon_escape(vdev))
-        options += ':dshow-adev={adev} '.format(vdev=self.colon_escape(adev))
+        options += ':dshow-adev={adev} '.format(adev=self.colon_escape(adev))
         if vsize:
             options += ':dshow-size={vsize}'.format(vsize)
         self.callback(main_file, options)
+
+    def has_support_for_mrl(self, mrl):
+        return mrl.startswith('dshow')
 
 
 class Ui_StreamSelector(object):
@@ -576,7 +600,7 @@ class Ui_StreamSelector(object):
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
         # for macs
         if is_macosx():
-            self.mac_input_widget = CaptureDigitalTVWidget(stream_selector)
+            self.mac_input_widget = MacInputWidget(stream_selector)
             self.stacked_modes_layout.addWidget(self.mac_input_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))
         # Setup the stacked widgets
