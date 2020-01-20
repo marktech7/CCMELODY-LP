@@ -22,13 +22,11 @@
 This module contains tests for the lib submodule of the Bibles plugin.
 """
 import pytest
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles import lib
 from openlp.plugins.bibles.lib import SearchResults, get_reference_match
-from tests.helpers.testmixin import TestMixin
 
 
 @pytest.yield_fixture
