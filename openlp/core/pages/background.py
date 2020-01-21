@@ -212,6 +212,8 @@ class BackgroundPage(GridLayoutPage):
         """
         if get_vlc():
             stream_selector_form = StreamSelectorForm(self, self.set_stream, True)
+            if self.stream_lineedit.text():
+                stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
         else:

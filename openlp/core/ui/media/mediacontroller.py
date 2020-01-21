@@ -231,8 +231,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            if service_item.is_capable(ItemCapabilities.CanStream) and \
-                    service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            if service_item.is_capable(ItemCapabilities.HasBackgroundStream):
                 (name, mrl, options) = parse_devicestream_path(service_item.stream_mrl)
                 controller.media_info.file_info = (mrl, options)
                 controller.media_info.is_background = True
@@ -253,8 +252,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
-            elif service_item.is_capable(ItemCapabilities.CanStream) and \
-                    not service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            elif service_item.is_capable(ItemCapabilities.CanStream):
                 log.debug('video is stream and live')
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
@@ -274,8 +272,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
-            elif service_item.is_capable(ItemCapabilities.CanStream) and \
-                    not service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            elif service_item.is_capable(ItemCapabilities.CanStream):
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
                 (name, mrl, options) = parse_devicestream_path(path)

@@ -24,7 +24,6 @@ The :mod:`~openlp.core.ui.media.mediatab` module holds the configuration tab for
 import logging
 
 from PyQt5 import QtWidgets
-from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.settings import Settings
@@ -91,13 +90,6 @@ class MediaTab(SettingsTab):
         """
         self.auto_start_check_box.setChecked(Settings().value(self.settings_section + '/media auto start'))
         self.vlc_arguments_edit.setText(Settings().value(self.settings_section + '/vlc arguments'))
-        if Settings().value('advanced/experimental'):
-            # vlc.MediaPlayer().audio_output_device_enum()
-            for cam in QCameraInfo.availableCameras():
-                log.debug(cam.deviceName())
-                log.debug(cam.description())
-            for au in QAudioDeviceInfo.availableDevices(QAudio.AudioInput):
-                log.debug(au.deviceName())
 
     def save(self):
         """

@@ -234,7 +234,6 @@ class Settings(QtCore.QSettings):
         'core/click live slide to unblank': False,
         'core/blank warning': False,
         'core/ccli number': '',
-        'advanced/experimental': False,
         'core/has run wizard': False,
         'core/language': '[en]',
         'core/last version test': '',

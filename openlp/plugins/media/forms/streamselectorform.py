@@ -24,6 +24,7 @@ import logging
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.plugins.media.forms.streamselectordialog import Ui_StreamSelector
+from openlp.core.ui.media import parse_devicestream_path
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.common.i18n import translate
 
@@ -90,3 +91,18 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
     def on_capture_mode_combo_box(self):
         self.stacked_modes_layout.setCurrentIndex(self.capture_mode_combo_box.currentIndex())
         self.stacked_modes_layout.currentWidget().update_mrl()
+
+    def set_mrl(self, device_stream_str):
+        """
+        Setup the stream widgets based on the saved devicestream. This is best effort as the string is
+        editable for the user.
+        """
+        (name, mrl, options) = parse_devicestream_path(device_stream_str)
+        for i in range(self.stacked_modes_layout.count()):
+            if self.stacked_modes_layout.widget(i).has_support_for_mrl(mrl, options):
+                self.stacked_modes_layout.setCurrentIndex(i)
+                self.stacked_modes_layout.widget(i).set_mrl(mrl, options)
+                break
+
+        self.mrl_lineedit.setText(mrl)
+        self.vlc_options_lineedit.setText(options)

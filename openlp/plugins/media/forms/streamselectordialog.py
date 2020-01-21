@@ -88,8 +88,9 @@ class CaptureModeWidget(QtWidgets.QWidget):
     """
     Simple widget containing a groupbox to hold devices and a groupbox for options
     """
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, disable_audio=False):
         super().__init__(parent)
+        self.disable_audio = disable_audio
         self.setup_ui()
 
     def setup_ui(self):
@@ -123,7 +124,7 @@ class CaptureModeWidget(QtWidgets.QWidget):
     def set_callback(self, callback):
         self.callback = callback
 
-    def has_support_for_mrl(self, mrl):
+    def has_support_for_mrl(self, mrl, options):
         return False
 
     def set_mrl(self, main, options):
@@ -134,8 +135,8 @@ class CaptureVideoWidget(CaptureModeWidget):
     """
     Widget inherits groupboxes from CaptureModeWidget and inserts comboboxes for audio and video devices
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -156,6 +157,9 @@ class CaptureVideoWidget(CaptureModeWidget):
         self.audio_devices_combo_box.setObjectName('audio_devices_combo_box')
         if is_linux():
             self.audio_devices_combo_box.setEditable(True)
+        if self.disable_audio:
+            self.audio_devices_combo_box.hide()
+            self.audio_devices_label.hide()
         self.device_group_layout.addRow(self.audio_devices_label, self.audio_devices_combo_box)
         # connect
         self.video_devices_combo_box.currentIndexChanged.connect(self.update_mrl)
@@ -171,8 +175,8 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
     """
     Widget inherits groupboxes from CaptureVideoWidget and inserts widgets for linux
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -214,15 +218,36 @@ class CaptureVideoLinuxWidget(CaptureVideoWidget):
             options += ' :input-slave={adev}'.format(adev=adev)
         self.callback(main_file, options)
 
-    def has_support_for_mrl(self, mrl):
-        return mrl.startswith('v4l2://dev/video')
+    def has_support_for_mrl(self, mrl, options):
+        return mrl.startswith('v4l2://') and 'v4l2-tuner-frequency' not in options
+
+    def set_mrl(self, main, options):
+        # find video dev
+        vdev = re.search(r'v4l2://([\w/-]+)', main)
+        if vdev:
+            for i in range(self.video_devices_combo_box.count()):
+                if self.video_devices_combo_box.itemText(i) == vdev.group(1):
+                    self.video_devices_combo_box.setCurrentIndex(i)
+                    break
+        # find audio dev
+        adev = re.search(r'input-slave=([\w/-:]+)', options)
+        if adev:
+            for i in range(self.audio_devices_combo_box.count()):
+                if self.audio_devices_combo_box.itemText(i) == adev.group(1):
+                    self.audio_devices_combo_box.setCurrentIndex(i)
+                    break
+        # find video std
+        vstd = re.search(r'v4l2-standard=(\w+)', options)
+        if vstd and vstd.group(1) in VIDEO_STANDARDS_VLC:
+            idx = VIDEO_STANDARDS_VLC.index(vstd.group(1))
+            self.video_std_combobox.setCurrentIndex(idx)
 
 
 class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
     """
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -256,16 +281,24 @@ class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
             options += ' :input-slave={adev}'.format(adev=adev)
         self.callback(main_file, options)
 
-    def has_support_for_mrl(self, mrl):
-        return mrl.startswith('v4l2://dev/video')
+    def has_support_for_mrl(self, mrl, options):
+        return mrl.startswith('v4l2://') and 'v4l2-tuner-frequency' in options
+
+    def set_mrl(self, main, options):
+        # let super class handle most
+        super().set_mrl(main, options)
+        # find tuner freq
+        freq = re.search(r'v4l2-tuner-frequency=(\d+)', options)
+        if freq:
+            self.freq.setValue(int(freq.group(1)))
 
 
 class CaptureDigitalTVWidget(CaptureModeWidget):
     """
     Widget inherits groupboxes from CaptureModeWidget and inserts widgets for digital TV
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -308,16 +341,16 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.qam_label = QtWidgets.QLabel(self)
         self.qam_label.setObjectName('qam_label')
         self.qam_combo_box = QtWidgets.QComboBox(self)
-        for bandwidth in DIGITAL_TV_QAM:
-            self.qam_combo_box.addItem(*bandwidth)
+        for qam in DIGITAL_TV_QAM:
+            self.qam_combo_box.addItem(*qam)
         self.qam_combo_box.setObjectName('dvb_bandwidth_combo_box')
         self.options_group_layout.addRow(self.qam_label, self.qam_combo_box)
         # PSK
         self.psk_label = QtWidgets.QLabel(self)
         self.psk_label.setObjectName('psk_label')
         self.psk_combo_box = QtWidgets.QComboBox(self)
-        for bandwidth in DIGITAL_TV_PSK:
-            self.psk_combo_box.addItem(*bandwidth)
+        for psk in DIGITAL_TV_PSK:
+            self.psk_combo_box.addItem(*psk)
         self.psk_combo_box.setObjectName('dvb_bandwidth_combo_box')
         self.options_group_layout.addRow(self.psk_label, self.psk_combo_box)
         # DVB-S baud rate
@@ -339,6 +372,41 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.dvbs_rate.valueChanged.connect(self.update_mrl)
         # Arrange the widget
         self.update_dvb_widget()
+
+    def set_mrl(self, main, options):
+        card = re.search(r'dvb-adapter=(\d+)', options)
+        if card:
+            self.tuner_card.setValue(int(card.group(1)))
+        system = re.search(r'([\w-]+)://', main)
+        if system:
+            for i in range(len(DIGITAL_TV_STANDARDS)):
+                if DIGITAL_TV_STANDARDS[i][1] == system.group(1):
+                    self.delivery_system_combo_box.setCurrentIndex(i)
+                    break
+        freq = re.search(r'frequency=(\d+)000', main)
+        if freq:
+            self.freq.setValue(int(freq.group(1)))
+        modulation = re.search(r'modulation=([\w-]+)', main)
+        if modulation and system:
+            if system.group(1) in ['dvb-c', 'cqam']:
+                for i in range(len(DIGITAL_TV_QAM)):
+                    if DIGITAL_TV_QAM[i][1] == modulation.group(1):
+                        self.qam_combo_box.setCurrentIndex(i)
+                        break
+            if system.group(1) == 'dvb-s2':
+                for i in range(len(DIGITAL_TV_QAM)):
+                    if DIGITAL_TV_PSK[i][1] == modulation.group(1):
+                        self.psk_combo_box.setCurrentIndex(i)
+                        break
+        bandwidth = re.search(r'bandwidth=(\d+)', main)
+        if bandwidth:
+            for i in range(len(DIGITAL_TV_BANDWIDTH)):
+                if DIGITAL_TV_BANDWIDTH[i][1] == bandwidth.group(1):
+                    self.dvb_bandwidth_combo_box.setCurrentIndex(i)
+                    break
+        srate = re.search(r'srate=(\d+)', main)
+        if srate:
+            self.dvbs_rate.setValue(int(srate.group()))
 
     def update_mrl(self):
         card = self.tuner_card.value()
@@ -404,7 +472,7 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.psk_label.setText(translate('MediaPlugin.StreamSelector', 'Modulation / Constellation'))
         self.dvbs_rate_label.setText(translate('MediaPlugin.StreamSelector', 'Transponder symbol rate'))
 
-    def has_support_for_mrl(self, mrl):
+    def has_support_for_mrl(self, mrl, options):
         return '//frequency=' in mrl
 
 
@@ -412,8 +480,8 @@ class JackAudioKitWidget(CaptureModeWidget):
     """
     Widget for JACK Audio Connection Kit
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -463,13 +531,25 @@ class JackAudioKitWidget(CaptureModeWidget):
     def has_support_for_mrl(self, mrl):
         return mrl.startswith('jack')
 
+    def set_mrl(self, main, options):
+        channels = re.search(r'channels=(\d+)', main)
+        if channels:
+            self.channels.setValue(int(channels.group(1)))
+        ports = re.search(r'ports=([\w\.\*-]+)', main)
+        if ports:
+            self.ports.setText(ports.group(1))
+        if 'jack-input-use-vlc-pace' in options:
+            self.jack_pace.setChecked(True)
+        if 'jack-input-auto-connect' in options:
+            self.jack_connect.setChecked(True)
+
 
 class CaptureVideoQtDetectWidget(CaptureVideoWidget):
     """
     Widget inherits groupboxes from CaptureVideoWidget and detects device using Qt
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def find_devices(self):
         """
@@ -478,7 +558,7 @@ class CaptureVideoQtDetectWidget(CaptureVideoWidget):
         for cam in QCameraInfo.availableCameras():
             self.video_devices_combo_box.addItem(cam.description(), cam.deviceName())
         for au in QAudioDeviceInfo.availableDevices(QAudio.AudioInput):
-            self.video_devices_combo_box.addItem(au.deviceName())
+            self.audio_devices_combo_box.addItem(au.deviceName())
 
 
 class MacInputWidget(CaptureVideoQtDetectWidget):
@@ -486,8 +566,8 @@ class MacInputWidget(CaptureVideoQtDetectWidget):
     Widget for macOS
 https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/modules/gui/macosx/windows/VLCOpenWindowController.m#L472
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -496,6 +576,8 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
 
     def update_mrl(self):
         vdev = self.video_devices_combo_box.currentData().strip()
+        # Audio is not supported on Mac since we currently don't have a way to
+        # extract the needed HW ids.
         # adev = self.audio_devices_combo_box.currentText().strip()
         main_file = 'avcapture://{vdev}'.format(vdev=vdev)
         # options = 'input-slave=qtsound://{adev}'.format(adev=adev)
@@ -504,13 +586,21 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
     def has_support_for_mrl(self, mrl):
         return mrl.startswith('avcapture')
 
+    def set_mrl(self, main, options):
+        vdev = re.search(r'avcapture=(\w+)', main)
+        if vdev:
+            for i in range(self.video_devices_combo_box.count()):
+                if self.video_devices_combo_box.itemData(i) == vdev.group(1):
+                    self.video_devices_combo_box.setCurrentIndex(i)
+                    break
+
 
 class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
     """
     Widget for directshow input
     """
-    def __init__(self, parent=None):
-        super().__init__(parent)
+    def __init__(self, parent=None, disable_audio=False):
+        super().__init__(parent, disable_audio)
 
     def setup_ui(self):
         super().setup_ui()
@@ -532,14 +622,28 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         adev = self.audio_devices_combo_box.currentText().strip()
         vsize = self.video_size_lineedit.text().strip()
         main_file = 'dshow://'
-        options = ':dshow-vdev={vdev} '.format(vdev=self.colon_escape(vdev))
-        options += ':dshow-adev={adev} '.format(adev=self.colon_escape(adev))
+        options = ':dshow-vdev="{vdev}" '.format(vdev=self.colon_escape(vdev))
+        options += ':dshow-adev="{adev}" '.format(adev=self.colon_escape(adev))
         if vsize:
             options += ':dshow-size={vsize}'.format(vsize)
         self.callback(main_file, options)
 
     def has_support_for_mrl(self, mrl):
         return mrl.startswith('dshow')
+
+    def set_mrl(self, main, options):
+        vdev = re.search(r'dshow-vdev="(.+)"', main)
+        if vdev:
+            for i in range(self.video_devices_combo_box.count()):
+                if self.video_devices_combo_box.itemText(i) == vdev.group(1):
+                    self.video_devices_combo_box.setCurrentIndex(i)
+                    break
+        adev = re.search(r'dshow-adev="(.+)"', main)
+        if adev:
+            for i in range(self.audio_devices_combo_box.count()):
+                if self.audio_devices_combo_box.itemText(i) == adev.group(1):
+                    self.audio_devices_combo_box.setCurrentIndex(i)
+                    break
 
 
 class Ui_StreamSelector(object):
@@ -577,30 +681,33 @@ class Ui_StreamSelector(object):
         self.stacked_modes_layout.setObjectName('stacked_modes_layout')
         # Widget for DirectShow - Windows only
         if is_win():
-            self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector)
+            self.direct_show_widget = CaptureVideoDirectShowWidget(stream_selector, self.theme_stream)
             self.stacked_modes_layout.addWidget(self.direct_show_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'DirectShow'))
         elif is_linux():
             # Widget for V4L2 - Linux only
-            self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector)
+            self.v4l2_widget = CaptureVideoLinuxWidget(stream_selector, self.theme_stream)
             self.stacked_modes_layout.addWidget(self.v4l2_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Video Camera'))
             # Widget for analog TV - Linux only
-            self.analog_tv_widget = CaptureAnalogTVWidget(stream_selector)
+            self.analog_tv_widget = CaptureAnalogTVWidget(stream_selector, self.theme_stream)
             self.stacked_modes_layout.addWidget(self.analog_tv_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - analog'))
-            # Widget for JACK - Linux only
-            self.jack_widget = JackAudioKitWidget(stream_selector)
-            self.stacked_modes_layout.addWidget(self.jack_widget)
-            self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'JACK Audio Connection Kit'))
+            # Do not allow audio streams for themes
+            if not self.theme_stream:
+                # Widget for JACK - Linux only
+                self.jack_widget = JackAudioKitWidget(stream_selector, self.theme_stream)
+                self.stacked_modes_layout.addWidget(self.jack_widget)
+                self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector',
+                                                              'JACK Audio Connection Kit'))
         # Digital TV - both linux and windows
         if is_win() or is_linux():
-            self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector)
+            self.digital_tv_widget = CaptureDigitalTVWidget(stream_selector, self.theme_stream)
             self.stacked_modes_layout.addWidget(self.digital_tv_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'TV - digital'))
         # for macs
         if is_macosx():
-            self.mac_input_widget = MacInputWidget(stream_selector)
+            self.mac_input_widget = MacInputWidget(stream_selector, self.theme_stream)
             self.stacked_modes_layout.addWidget(self.mac_input_widget)
             self.capture_mode_combo_box.addItem(translate('MediaPlugin.StreamSelector', 'Input devices'))
         # Setup the stacked widgets
