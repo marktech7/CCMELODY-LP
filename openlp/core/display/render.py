@@ -32,6 +32,7 @@ import time
 from PyQt5 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
@@ -567,7 +568,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
-            self.set_theme(theme_data, is_sync=True)
+            self.set_theme(theme_data, is_sync=True, service_item_type=ServiceItemType.Text)
             slides = self.format_slide(VERSE, None)
             verses = dict()
             verses['title'] = TITLE
@@ -837,6 +838,13 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
             pixmap.save(fname, ext)
         else:
             return pixmap
+
+    def set_is_display(self, is_display):
+        """
+        Make it possible to fake that this is a real display to get the preview to show video and stream
+        """
+        print(self.is_display)
+        self.is_display = is_display
 
 
 class Renderer(RegistryBase, ThemePreviewRenderer):

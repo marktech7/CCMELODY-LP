@@ -622,8 +622,10 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         adev = self.audio_devices_combo_box.currentText().strip()
         vsize = self.video_size_lineedit.text().strip()
         main_file = 'dshow://'
-        options = ':dshow-vdev="{vdev}" '.format(vdev=self.colon_escape(vdev))
-        options += ':dshow-adev="{adev}" '.format(adev=self.colon_escape(adev))
+        if vdev:
+            options = ':dshow-vdev="{vdev}" '.format(vdev=self.colon_escape(vdev))
+        if adev:
+            options += ':dshow-adev="{adev}" '.format(adev=self.colon_escape(adev))
         if vsize:
             options += ':dshow-size={vsize}'.format(vsize)
         self.callback(main_file, options)

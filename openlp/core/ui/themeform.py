@@ -26,6 +26,7 @@ import logging
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_not_image_file
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
@@ -159,7 +160,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.setOption(QtWidgets.QWizard.HaveCustomButton1, enabled)
         if self.page(page_id) == self.preview_page:
             self.update_theme()
-            self.preview_box.set_theme(self.theme)
+            self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
             self.preview_box.clear_slides()
             self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
             try:
@@ -330,7 +331,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Handle the display and state of the Preview page.
         """
         self.theme_name_edit.setText(self.theme.theme_name)
-        self.preview_box.set_theme(self.theme)
+        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
 
     def update_theme(self):
         """
