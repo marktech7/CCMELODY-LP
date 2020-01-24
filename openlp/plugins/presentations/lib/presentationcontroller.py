@@ -28,7 +28,6 @@ from openlp.core.common import md5_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import create_thumb, validate_thumb
 
 
@@ -445,7 +444,7 @@ class PresentationController(object):
         """
         Return whether the controller is currently enabled
         """
-        if Settings().value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
+        if Registry().get('settings').value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
             return self.is_available()
         else:
             return False
