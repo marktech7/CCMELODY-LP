@@ -21,7 +21,6 @@
 """
 This module contains tests for the VideoPsalm song importer.
 """
-from unittest.mock import MagicMock, patch
 
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
