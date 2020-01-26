@@ -26,14 +26,9 @@ from unittest.mock import MagicMock
 
 from PyQt5 import QtCore
 
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
 from tests.helpers.testmixin import TestMixin
-
-
-__default_settings__ = {
-    'songs/enable chords': True,
-}
 
 
 class TestEditVerseForm(TestCase, TestMixin):
@@ -46,7 +41,9 @@ class TestEditVerseForm(TestCase, TestMixin):
         """
         self.setup_application()
         self.build_settings()
-        Settings().extend_default_settings(__default_settings__)
+        self.setting.setValue('songs/enable chords', True)
+        Registry.create()
+        Registry().register('settings', self.setting)
         self.edit_verse_form = EditVerseForm(None)
         QtCore.QLocale.setDefault(QtCore.QLocale('en_GB'))
 

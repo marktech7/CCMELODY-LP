@@ -25,7 +25,6 @@ the settings tab for the PlanningCenter plugin
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.plugins.planningcenter.lib.planningcenter_api import PlanningCenterAPI
 
@@ -105,11 +104,10 @@ below.  Personal Access Tokens are created by doing the following:
         """
         Load the settings into the UI.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.application_id = settings.value('application_id')
-        self.secret = settings.value('secret')
-        settings.endGroup()
+        self.settings.beginGroup(self.settings_section)
+        self.application_id = self.settings.value('application_id')
+        self.secret = self.settings.value('secret')
+        self.settings.endGroup()
         self.application_id_line_edit.setText(self.application_id)
         self.secret_line_edit.setText(self.secret)
 
@@ -117,11 +115,10 @@ below.  Personal Access Tokens are created by doing the following:
         """
         Save the changes on exit of the Settings dialog.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('application_id', self.application_id_line_edit.text())
-        settings.setValue('secret', self.secret_line_edit.text())
-        settings.endGroup()
+        self.settings.beginGroup(self.settings_section)
+        self.settings.setValue('application_id', self.application_id_line_edit.text())
+        self.settings.setValue('secret', self.secret_line_edit.text())
+        self.settings.endGroup()
 
     def on_test_credentials_button_clicked(self):
         """

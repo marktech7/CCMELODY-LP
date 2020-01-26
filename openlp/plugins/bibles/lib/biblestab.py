@@ -413,7 +413,7 @@ class BiblesTab(SettingsTab):
         self.settings.endGroup()
 
     def save(self):
-        self.self.settings.beginGroup(self.settings_section)
+        self.settings.beginGroup(self.settings_section)
         self.settings.setValue('is verse number visible', self.is_verse_number_visible)
         self.settings.setValue('display new chapter', self.show_new_chapters)
         self.settings.setValue('display brackets', self.display_style)

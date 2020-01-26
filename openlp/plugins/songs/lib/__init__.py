@@ -30,7 +30,7 @@ from PyQt5 import QtWidgets
 from openlp.core.common import CONTROL_CHARS
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags
 from openlp.plugins.songs.lib.db import Author, MediaFile, Song
 from openlp.plugins.songs.lib.ui import SongStrings
@@ -558,7 +558,7 @@ def transpose_lyrics(lyrics, transpose_value):
     # Split text by verse delimiter - both normal and optional
     verse_list = re.split(r'(---\[.+?:.+?\]---|\[---\])', lyrics)
     transposed_lyrics = ''
-    notation = Settings().value('songs/chord notation')
+    notation = Registry().get('settings').value('songs/chord notation')
     for verse in verse_list:
         if verse.startswith('---[') or verse == '[---]':
             transposed_lyrics += verse

@@ -43,9 +43,9 @@ class TestPlanningCenterTab(TestCase, TestMixin):
         Create the UI
         """
         self.setup_application()
-        self.registry = Registry()
         Registry.create()
         State().load_settings()
+        Registry().register('settings', Settings())
         self.plugin = PlanningCenterPlugin()
         Settings().setValue('planningcenter/application_id', 'abc')
         Settings().setValue('planningcenter/secret', '123')
@@ -62,7 +62,6 @@ class TestPlanningCenterTab(TestCase, TestMixin):
         """
         del self.tab
         del self.dialog
-        del self.registry
 
     def test_bad_authentication_credentials(self):
         """

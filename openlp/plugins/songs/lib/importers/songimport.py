@@ -78,6 +78,7 @@ class SongImport(QtCore.QObject):
         self.stop_import_flag = False
         self.set_defaults()
         Registry().register_function('openlp_stop_wizard', self.stop_import)
+        self.settings = Registry().get('settings')
 
     def set_defaults(self):
         """

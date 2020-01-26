@@ -54,6 +54,7 @@ class TestEditSongForm(TestCase, TestMixin):
         Registry().register('theme_manager', MagicMock())
         self.build_settings()
         Settings().extend_default_settings(__default_settings__)
+        Registry().register('settings', Settings())
         self.form = EditSongForm(MagicMock(), self.main_window, MagicMock())
 
     def tearDown(self):

@@ -21,8 +21,6 @@
 """
 This module contains tests for the OpenSong song importer.
 """
-from unittest.mock import MagicMock, patch
-
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -37,15 +35,12 @@ class TestChordProFileImport(SongImportTestHelper):
         self.importer_module_name = 'chordpro'
         super(TestChordProFileImport, self).__init__(*args, **kwargs)
 
-    @patch('openlp.plugins.songs.lib.importers.chordpro.Settings')
-    def test_song_import(self, mocked_settings):
+    def test_song_import(self):
         """
         Test that loading an ChordPro file works correctly on various files
         """
         # Mock out the settings - always return False
-        mocked_returned_settings = MagicMock()
-        mocked_returned_settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        mocked_settings.return_value = mocked_returned_settings
+        self.settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
         # Do the test import
         self.file_import([TEST_PATH / 'swing-low.chordpro'],
                          self.load_external_result_data(TEST_PATH / 'swing-low.json'))

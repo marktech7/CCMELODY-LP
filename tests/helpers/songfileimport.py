@@ -42,12 +42,14 @@ class SongImportTestHelper(TestCase):
         self.importer_module = __import__('openlp.plugins.songs.lib.importers.%s' %
                                           self.importer_module_name, fromlist=[self.importer_class_name])
         self.importer_class = getattr(self.importer_module, self.importer_class_name)
+        Registry.create()
+        Registry().register('settings', MagicMock())
+        self.settings = Registry().get('settings')
 
     def setUp(self):
         """
         Patch and set up the mocks required.
         """
-        Registry.create()
         self.add_copyright_patcher = patch('openlp.plugins.songs.lib.importers.%s.%s.add_copyright' %
                                            (self.importer_module_name, self.importer_class_name))
         self.add_verse_patcher = patch('openlp.plugins.songs.lib.importers.%s.%s.add_verse' %
