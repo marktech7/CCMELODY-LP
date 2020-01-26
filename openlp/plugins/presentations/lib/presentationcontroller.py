@@ -97,6 +97,7 @@ class PresentationDocument(object):
         """
         self.controller = controller
         self._setup(document_path)
+        self.settings = Registry().get('settings')
 
     def _setup(self, document_path):
         """
@@ -142,7 +143,7 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_temp_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
         else:
             folder = self.file_path.name
@@ -157,7 +158,7 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_thumbnail_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
         else:
             folder = self.file_path.name

@@ -51,6 +51,7 @@ class TestImageMediaItem(TestCase, TestMixin):
         Registry().register('settings_form', MagicMock())
         self.setup_application()
         self.build_settings()
+        Registry().register('settings', Settings())
         Settings().extend_default_settings(__default_settings__)
         self.parent = QtWidgets.QMainWindow()
         self.form = ImageTab(self.parent, 'Images', None, None)

@@ -47,6 +47,7 @@ class TestPlanningCenterPlugin(TestCase, TestMixin):
         self.registry = Registry()
         Registry.create()
         State().load_settings()
+        Registry().register('settings',Settings())
         self.plugin = PlanningCenterPlugin()
         self.settings_form = SettingsForm()
 

@@ -223,7 +223,7 @@ class SongBeamerImport(SongImport):
         :param linenumber: Number of the current line
         :param line: The line of lyrics to insert chords
         """
-        if self.chord_table and Settings().value('songs/enable chords') and not Settings().value(
+        if self.chord_table and self.settings.value('songs/enable chords') and not self.settings.value(
                 'songs/disable chords import') and line_number in self.chord_table:
             line_idx = sorted(self.chord_table[line_number].keys(), reverse=True)
             for idx in line_idx:

@@ -63,6 +63,7 @@ class TestSelectPlanForm(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         State().load_settings()
+        Registry().register('settings',Settings())
         Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
         self.application_id = 'abc'
         self.secret = '123'

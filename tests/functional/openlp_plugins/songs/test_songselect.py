@@ -553,6 +553,7 @@ class TestSongSelectForm(TestCase, TestMixin):
         self.app.process_events = lambda: None
         Registry.create()
         Registry().register('application', self.app)
+        Registry().register('settings', MagicMock())
 
     def test_create_form(self):
         """
@@ -802,10 +803,9 @@ class TestSongSelectForm(TestCase, TestMixin):
         assert ssform.search_button.isEnabled() is True
         assert ssform.search_combobox.isEnabled() is True
 
-    @patch('openlp.plugins.songs.forms.songselectform.Settings')
     @patch('openlp.plugins.songs.forms.songselectform.run_thread')
     @patch('openlp.plugins.songs.forms.songselectform.SearchWorker')
-    def test_on_search_button_clicked(self, MockedSearchWorker, mocked_run_thread, MockedSettings):
+    def test_on_search_button_clicked(self, MockedSearchWorker, mocked_run_thread):
         """
         Test that search fields are disabled when search button is clicked.
         """

@@ -198,7 +198,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
             return True
         elif self.currentPage() == self.source_page:
             this_format = self.current_format
-            Settings().setValue('songs/last import type', this_format)
+            self.settings.setValue('songs/last import type', this_format)
             select_mode, class_, error_msg = SongFormat.get(this_format, 'selectMode', 'class', 'invalidSourceMsg')
             if select_mode == SongFormatSelect.MultipleFiles:
                 import_source = self.get_list_of_paths(self.format_widgets[this_format]['file_list_widget'])
@@ -232,13 +232,13 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         filters += '{text} (*)'.format(text=UiStrings().AllFiles)
         file_paths, filter_used = FileDialog.getOpenFileNames(
             self, title,
-            Settings().value(self.plugin.settings_section + '/last directory import'), filters)
+            self.settings.value(self.plugin.settings_section + '/last directory import'), filters)
         for file_path in file_paths:
             list_item = QtWidgets.QListWidgetItem(str(file_path))
             list_item.setData(QtCore.Qt.UserRole, file_path)
             listbox.addItem(list_item)
         if file_paths:
-            Settings().setValue(self.plugin.settings_section + '/last directory import', file_paths[0].parent)
+            self.settings.setValue(self.plugin.settings_section + '/last directory import', file_paths[0].parent)
 
     def get_list_of_paths(self, list_box):
         """
@@ -290,7 +290,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         self.restart()
         self.finish_button.setVisible(False)
         self.cancel_button.setVisible(True)
-        last_import_type = Settings().value('songs/last import type')
+        last_import_type = self.settings.value('songs/last import type')
         if last_import_type < 0 or last_import_type >= self.format_combo_box.count():
             last_import_type = 0
         self.format_combo_box.setCurrentIndex(last_import_type)
@@ -349,7 +349,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         :rtype: None
         """
         file_path, filter_used = FileDialog.getSaveFileName(
-            self, Settings().value(self.plugin.settings_section + '/last directory import'))
+            self, self.settings.value(self.plugin.settings_section + '/last directory import'))
         if file_path is None:
             return
         file_path.write_text(self.error_report_text_edit.toPlainText(), encoding='utf-8')
@@ -400,7 +400,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
                 path_edit.filters = filters + ';;' + path_edit.filters
             else:
                 path_edit.filters = filters
-            path_edit.path = Settings().value(self.plugin.settings_section + '/last directory import')
+            path_edit.path = self.settings.value(self.plugin.settings_section + '/last directory import')
             file_path_layout.addWidget(path_edit)
             import_layout.addLayout(file_path_layout)
             import_layout.addSpacerItem(self.stack_spacer)

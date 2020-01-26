@@ -25,7 +25,7 @@ import re
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.forms.editversedialog import Ui_EditVerseDialog
 from openlp.plugins.songs.lib import VerseType, transpose_lyrics
@@ -53,7 +53,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
         self.verse_text_edit.cursorPositionChanged.connect(self.on_cursor_position_changed)
         self.verse_type_combo_box.currentIndexChanged.connect(self.on_verse_type_combo_box_changed)
         self.forced_split_button.clicked.connect(self.on_forced_split_button_clicked)
-        if Settings().value('songs/enable chords'):
+        if Registry().get('settings').value('songs/enable chords'):
             self.transpose_down_button.clicked.connect(self.on_transpose_down_button_clicked)
             self.transpose_up_button.clicked.connect(self.on_transpose_up_button_clicked)
 
@@ -231,7 +231,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
         """
         Test if any invalid chords has been entered before closing the verse editor
         """
-        if Settings().value('songs/enable chords'):
+        if Registry().get('settings').value('songs/enable chords'):
             try:
                 transpose_lyrics(self.verse_text_edit.toPlainText(), 1)
                 super(EditVerseForm, self).accept()
