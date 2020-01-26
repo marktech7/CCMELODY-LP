@@ -26,6 +26,8 @@ from tempfile import mkdtemp
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.impresscontroller import ImpressController, ImpressDocument, TextType
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import RESOURCE_PATH
@@ -167,6 +169,9 @@ class TestImpressDocument(TestCase):
         mocked_plugin = MagicMock()
         mocked_plugin.settings_section = 'presentations'
         self.file_name = RESOURCE_PATH / 'presentations' / 'test.pptx'
+        self.settings = Settings()
+        Registry.create()
+        Registry().register('settings', self.settings)
         self.ppc = ImpressController(mocked_plugin)
         self.doc = ImpressDocument(self.ppc, self.file_name)
 
