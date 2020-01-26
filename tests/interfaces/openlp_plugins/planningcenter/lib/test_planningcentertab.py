@@ -45,7 +45,7 @@ class TestPlanningCenterTab(TestCase, TestMixin):
         self.setup_application()
         Registry.create()
         State().load_settings()
-        Registry().register('settings',Settings())
+        Registry().register('settings', Settings())
         self.plugin = PlanningCenterPlugin()
         Settings().setValue('planningcenter/application_id', 'abc')
         Settings().setValue('planningcenter/secret', '123')

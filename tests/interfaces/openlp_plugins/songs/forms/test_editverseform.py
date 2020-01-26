@@ -50,6 +50,7 @@ class TestEditVerseForm(TestCase, TestMixin):
         self.main_window = QtWidgets.QMainWindow()
         Registry().register('main_window', self.main_window)
         self.build_settings()
+        Registry().register('settings', Settings())
         Settings().extend_default_settings(__default_settings__)
         self.form = EditVerseForm()
 

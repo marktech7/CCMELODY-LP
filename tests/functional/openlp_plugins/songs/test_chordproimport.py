@@ -21,9 +21,6 @@
 """
 This module contains tests for the OpenSong song importer.
 """
-from unittest.mock import MagicMock, patch
-
-from openlp.core.common.registry import Registry
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 

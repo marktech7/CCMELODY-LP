@@ -27,7 +27,6 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.core.widgets.edits import PathEdit

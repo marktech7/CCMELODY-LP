@@ -25,7 +25,6 @@ from lxml import objectify, etree
 
 from openlp.core.common import normalize_str
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.ui import SongStrings

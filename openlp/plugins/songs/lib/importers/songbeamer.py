@@ -30,7 +30,6 @@ from pathlib import Path
 
 from openlp.core.common import get_file_encoding, is_macosx, is_win
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
