@@ -40,8 +40,7 @@ class TestSongBeamerFileImport(SongImportTestHelper):
         self.importer_module_name = 'songbeamer'
         super(TestSongBeamerFileImport, self).__init__(*args, **kwargs)
 
-    @patch('openlp.plugins.songs.lib.importers.songbeamer.Settings')
-    def test_song_import(self, mocked_settings):
+    def test_song_import(self):
         """
         Test that loading an SongBeamer file works correctly on various files
         """

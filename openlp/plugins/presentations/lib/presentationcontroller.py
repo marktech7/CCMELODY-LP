@@ -96,8 +96,8 @@ class PresentationDocument(object):
         :rtype: None
         """
         self.controller = controller
-        self._setup(document_path)
         self.settings = Registry().get('settings')
+        self._setup(document_path)
 
     def _setup(self, document_path):
         """

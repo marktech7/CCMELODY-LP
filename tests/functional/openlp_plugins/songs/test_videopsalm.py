@@ -37,15 +37,12 @@ class TestVideoPsalmFileImport(SongImportTestHelper):
         self.importer_module_name = 'videopsalm'
         super(TestVideoPsalmFileImport, self).__init__(*args, **kwargs)
 
-    @patch('openlp.plugins.songs.lib.importers.videopsalm.Settings')
-    def test_song_import(self, mocked_settings):
+    def test_song_import(self):
         """
         Test that loading an VideoPsalm file works correctly on various files
         """
         # Mock out the settings - always return False
-        mocked_returned_settings = MagicMock()
-        mocked_returned_settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        mocked_settings.return_value = mocked_returned_settings
+        self.settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
         # Do the test import
         self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
                          self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))

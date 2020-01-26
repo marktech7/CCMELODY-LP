@@ -40,8 +40,7 @@ class TestOpenSongFileImport(SongImportTestHelper):
         self.importer_module_name = 'opensong'
         super(TestOpenSongFileImport, self).__init__(*args, **kwargs)
 
-    @patch('openlp.plugins.songs.lib.importers.opensong.Settings')
-    def test_song_import(self, mocked_settings):
+    def test_song_import(self):
         """
         Test that loading an OpenSong file works correctly on various files
         """
