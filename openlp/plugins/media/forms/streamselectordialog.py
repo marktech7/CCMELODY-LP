@@ -622,10 +622,11 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         adev = self.audio_devices_combo_box.currentText().strip()
         vsize = self.video_size_lineedit.text().strip()
         main_file = 'dshow://'
+        options = ''
         if vdev:
-            options = ':dshow-vdev="{vdev}" '.format(vdev=self.colon_escape(vdev))
+            options = ':"dshow-vdev={vdev}" '.format(vdev=self.colon_escape(vdev))
         if adev:
-            options += ':dshow-adev="{adev}" '.format(adev=self.colon_escape(adev))
+            options += ':"dshow-adev={adev}" '.format(adev=self.colon_escape(adev))
         if vsize:
             options += ':dshow-size={vsize}'.format(vsize)
         self.callback(main_file, options)
@@ -634,13 +635,13 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         return mrl.startswith('dshow')
 
     def set_mrl(self, main, options):
-        vdev = re.search(r'dshow-vdev="(.+)"', main)
+        vdev = re.search(r'"dshow-vdev=(.+)"', main)
         if vdev:
             for i in range(self.video_devices_combo_box.count()):
                 if self.video_devices_combo_box.itemText(i) == vdev.group(1):
                     self.video_devices_combo_box.setCurrentIndex(i)
                     break
-        adev = re.search(r'dshow-adev="(.+)"', main)
+        adev = re.search(r'"dshow-adev=(.+)"', main)
         if adev:
             for i in range(self.audio_devices_combo_box.count()):
                 if self.audio_devices_combo_box.itemText(i) == adev.group(1):
