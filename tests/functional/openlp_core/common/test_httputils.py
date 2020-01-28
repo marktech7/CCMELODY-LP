@@ -140,7 +140,7 @@ class TestHttpUtils(TestCase, TestMixin):
         mocked_requests.get.assert_called_once_with(fake_url, headers={'User-Agent': 'user_agent'},
                                                     proxies=None, timeout=30.0)
         mocked_get_user_agent.assert_called_once_with()
-        assert MockRegistry.call_count == 0, 'The Registry() object should have never been called'
+        assert MockRegistry.call_count == 1, 'The Registry() object should have been called once'
         assert returned_page == 'text', 'The returned page should be the mock object'
 
     @patch('openlp.core.common.httputils.requests')
