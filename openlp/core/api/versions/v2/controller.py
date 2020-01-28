@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import os
 import urllib.request
 from pathlib import Path
@@ -5,7 +25,6 @@ from pathlib import Path
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.settings import Settings
 from openlp.core.lib import create_thumb
 from openlp.core.lib.serviceitem import ItemCapabilities
 
@@ -31,7 +50,8 @@ def controller_text_api():
                 item['chords_text'] = str(frame.get('chords_text', ''))
                 item['text'] = frame['text']
                 item['html'] = current_item.get_rendered_frame(index)
-            elif current_item.is_image() and not frame.get('image', '') and Settings().value('api/thumbnails'):
+            elif current_item.is_image() and not frame.get('image', '') and \
+                    Registry().get('settings').value('api/thumbnails'):
                 thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
                 full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
                 if not full_thumbnail_path.exists():
@@ -46,7 +66,8 @@ def controller_text_api():
                     item['title'] = str(frame['display_title'])
                 if current_item.is_capable(ItemCapabilities.HasNotes):
                     item['slide_notes'] = str(frame['notes'])
-                if current_item.is_capable(ItemCapabilities.HasThumbnails) and Settings().value('api/thumbnails'):
+                if current_item.is_capable(ItemCapabilities.HasThumbnails) and \
+                        Registry().get('settings').value('api/thumbnails'):
                     # If the file is under our app directory tree send the portion after the match
                     data_path = str(AppLocation.get_data_path())
                     if frame['image'][0:len(data_path)] == data_path:

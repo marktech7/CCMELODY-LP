@@ -26,7 +26,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import get_network_interfaces
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.ui.icons import UiIcons
 
@@ -211,16 +210,16 @@ class ApiTab(SettingsTab):
         """
         Load the configuration and update the server configuration if necessary
         """
-        self.port_spin_box.setText(str(Settings().value(self.settings_section + '/port')))
-        self.address_edit.setText(Settings().value(self.settings_section + '/ip address'))
-        self.twelve_hour = Settings().value(self.settings_section + '/twelve hour')
+        self.port_spin_box.setText(str(self.settings.value(self.settings_section + '/port')))
+        self.address_edit.setText(self.settings.value(self.settings_section + '/ip address'))
+        self.twelve_hour = self.settings.value(self.settings_section + '/twelve hour')
         self.twelve_hour_check_box.setChecked(self.twelve_hour)
-        self.thumbnails = Settings().value(self.settings_section + '/thumbnails')
+        self.thumbnails = self.settings.value(self.settings_section + '/thumbnails')
         self.thumbnails_check_box.setChecked(self.thumbnails)
-        self.user_login_group_box.setChecked(Settings().value(self.settings_section + '/authentication enabled'))
-        self.user_id.setText(Settings().value(self.settings_section + '/user id'))
-        self.password.setText(Settings().value(self.settings_section + '/password'))
-        self.current_version_value.setText(Settings().value('remotes/download version'))
+        self.user_login_group_box.setChecked(self.settings.value(self.settings_section + '/authentication enabled'))
+        self.user_id.setText(self.settings.value(self.settings_section + '/user id'))
+        self.password.setText(self.settings.value(self.settings_section + '/password'))
+        self.current_version_value.setText(self.settings.value('remotes/download version'))
         self.master_version_value.setText(Registry().get_flag('website_version'))
         if self.master_version_value.text() == self.current_version_value.text():
             self.update_site_group_box.setEnabled(False)
@@ -230,14 +229,14 @@ class ApiTab(SettingsTab):
         """
         Save the configuration and update the server configuration if necessary
         """
-        if Settings().value(self.settings_section + '/ip address') != self.address_edit.text():
+        if self.settings.value(self.settings_section + '/ip address') != self.address_edit.text():
             self.settings_form.register_post_process('remotes_config_updated')
-        Settings().setValue(self.settings_section + '/ip address', self.address_edit.text())
-        Settings().setValue(self.settings_section + '/twelve hour', self.twelve_hour)
-        Settings().setValue(self.settings_section + '/thumbnails', self.thumbnails)
-        Settings().setValue(self.settings_section + '/authentication enabled', self.user_login_group_box.isChecked())
-        Settings().setValue(self.settings_section + '/user id', self.user_id.text())
-        Settings().setValue(self.settings_section + '/password', self.password.text())
+        self.settings.setValue(self.settings_section + '/ip address', self.address_edit.text())
+        self.settings.setValue(self.settings_section + '/twelve hour', self.twelve_hour)
+        self.settings.setValue(self.settings_section + '/thumbnails', self.thumbnails)
+        self.settings.setValue(self.settings_section + '/authentication enabled', self.user_login_group_box.isChecked())
+        self.settings.setValue(self.settings_section + '/user id', self.user_id.text())
+        self.settings.setValue(self.settings_section + '/password', self.password.text())
         if self.update_site_group_box.isChecked():
             self.settings_form.register_post_process('download_website')
 

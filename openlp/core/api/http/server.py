@@ -36,7 +36,6 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
 
 from openlp.core.api import app as application
@@ -52,8 +51,8 @@ class HttpWorker(ThreadWorker):
         """
         Run the thread.
         """
-        address = Settings().value('api/ip address')
-        port = Settings().value('api/port')
+        address = Registry().get('settings').value('api/ip address')
+        port = Registry().get('settings').value('api/port')
         Registry().execute('get_website_version')
         try:
             application.static_folder = str(AppLocation.get_section_data_path('remotes') / 'static')
@@ -113,7 +112,7 @@ class HttpServer(RegistryBase, RegistryProperties, LogMixin):
         time.sleep(1)
         progress.close()
         self.application.process_events()
-        Settings().setValue('remotes/download version', self.version)
+        self.settings.setValue('remotes/download version', self.version)
 
     def website_version(self):
         """

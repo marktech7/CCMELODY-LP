@@ -235,7 +235,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get'), \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish') \
                 as mock_song_import, \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide') as mock_custom_slide_import, \
@@ -262,7 +261,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get'), \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish') \
                 as mock_song_import, \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide') as mock_custom_slide_import, \
@@ -289,7 +287,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get') as mock_get, \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish'), \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide'), \
                 patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference') as mock_bible_import, \
@@ -299,8 +296,11 @@ class TestSelectPlanForm(TestCase, TestMixin):
             mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
             mock_bibles = {}
             mock_bibles['other_bible'] = MagicMock()
-            mock_get.return_value.plugin.manager.get_bibles.return_value = mock_bibles
-            mock_get.return_value.version_combo_box.currentText.return_value = ''
+            plugin_manager = MagicMock()
+            plugin_manager.get_bibles.return_value = mock_bibles
+            Registry().register('plugin_manager', plugin_manager)
+            Registry().register('service_manager', MagicMock())
+            #mock_get.return_value.version_combo_box.currentText.return_value = ''
             self.form.exec()
             # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
             # is set to index 1 and the "Import New" button is clicked
