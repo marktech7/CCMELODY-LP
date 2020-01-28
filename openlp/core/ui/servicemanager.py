@@ -303,6 +303,7 @@ class Ui_ServiceManager(object):
         Registry().register_function('theme_update_list', self.update_theme_list)
         Registry().register_function('config_screen_changed', self.regenerate_service_items)
         Registry().register_function('theme_update_global', self.theme_change)
+        Registry().register_function('theme_update_service', self.service_theme_change)
         Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
 
@@ -1283,6 +1284,14 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.toolbar.actions['theme_combo_box'].setVisible(visible)
         self.toolbar.actions['theme_label'].setVisible(visible)
         self.regenerate_service_items()
+
+    def service_theme_change(self):
+        """
+        Set the theme for the current service remotely
+        """
+        self.service_theme = Settings().value(self.main_window.service_manager_settings_section + '/service theme')
+        find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
+        self.regenerate_service_items(True)
 
     def regenerate_service_items(self, changed=False):
         """
