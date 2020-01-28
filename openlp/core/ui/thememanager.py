@@ -130,6 +130,8 @@ class Ui_ThemeManager(object):
         self.theme_list_widget.doubleClicked.connect(self.change_global_from_screen)
         self.theme_list_widget.currentItemChanged.connect(self.check_list_state)
 
+        Registry().register_function('get_theme_names', self.get_theme_names)
+
 
 class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, RegistryProperties):
     """
