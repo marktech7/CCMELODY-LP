@@ -1238,8 +1238,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
         # self.slide_preview.setPixmap(win_image)
         self.slide_image = win_image
-        base64_image = image_to_byte(win_image, True)
+        base64_image = image_to_byte(win_image)
         self.preview_display.set_single_image_data('#000', base64_image)
+        return self.slide_image
 
     def on_slide_selected_next_action(self, checked):
         """

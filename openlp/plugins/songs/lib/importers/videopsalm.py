@@ -27,7 +27,6 @@ import re
 from pathlib import Path
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.db import AuthorType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
@@ -125,7 +124,8 @@ class VideoPsalmImport(SongImport):
                         continue
                     verse_text = verse['Text']
                     # Strip out chords if set up to
-                    if not Settings().value('songs/enable chords') or Settings().value('songs/disable chords import'):
+                    if not self.settings.value('songs/enable chords') or \
+                            self.settings.value('songs/disable chords import'):
                         verse_text = re.sub(r'\[.*?\]', '', verse_text)
                     self.add_verse(verse_text, 'v')
                 if not self.finish():

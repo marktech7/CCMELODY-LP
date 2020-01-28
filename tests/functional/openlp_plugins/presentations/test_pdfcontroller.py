@@ -33,6 +33,7 @@ from PyQt5 import QtCore, QtGui
 
 from openlp.core.common import is_macosx, is_linux, is_win
 from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.pdfcontroller import PdfController, PdfDocument
 from tests.helpers.testmixin import TestMixin
@@ -89,6 +90,7 @@ class TestPdfController(TestCase, TestMixin):
         self.desktop.screenGeometry.return_value = SCREEN['size']
         self.screens = ScreenList.create(self.desktop)
         Settings().extend_default_settings(__default_settings__)
+        Registry().register('settings', Settings())
         self.temp_folder_path = Path(mkdtemp())
         self.thumbnail_folder_path = Path(mkdtemp())
         self.mock_plugin = MagicMock()
@@ -99,6 +101,7 @@ class TestPdfController(TestCase, TestMixin):
         Delete all the C++ objects at the end so that we don't have a segfault
         """
         del self.screens
+        Registry().remove('settings')
         self.destroy_settings()
         rmtree(self.thumbnail_folder_path)
         rmtree(self.temp_folder_path)

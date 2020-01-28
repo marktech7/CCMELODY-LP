@@ -28,6 +28,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common import is_win
+from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument, \
     _get_text_from_shapes
@@ -108,6 +109,8 @@ class TestPowerpointDocument(TestCase, TestMixin):
         self.file_name = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.pptx')
         self.real_controller = PowerpointController(self.mock_plugin)
         Settings().extend_default_settings(__default_settings__)
+        Registry.create()
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         """

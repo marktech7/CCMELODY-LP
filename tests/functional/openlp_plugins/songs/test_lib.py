@@ -24,6 +24,7 @@ This module contains tests for the lib submodule of the Songs plugin.
 from unittest import TestCase
 from unittest.mock import MagicMock, PropertyMock, patch
 
+from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib import VerseType, clean_string, clean_title, strip_rtf, transpose_chord, transpose_lyrics
 from openlp.plugins.songs.lib.songcompare import _op_length, _remove_typos, songs_probably_equal
 
@@ -50,6 +51,9 @@ class TestLib(TestCase):
             i love that old cross where the dearest and best for a world of lost sinners was slain  so ill cherish the
             old rugged cross till my trophies at last i lay down i will cling to the old rugged cross and exchange it
             some day for a crown'''
+        Registry.create()
+        Registry().register('settings', MagicMock())
+        self.settings = Registry().get('settings')
 
     def test_clean_string(self):
         """
@@ -317,8 +321,7 @@ class TestLib(TestCase):
             'ValueError exception should have been thrown for invalid chord'
 
     @patch('openlp.plugins.songs.lib.transpose_verse')
-    @patch('openlp.plugins.songs.lib.Settings')
-    def test_transpose_lyrics(self, mocked_settings, mocked_transpose_verse):
+    def test_transpose_lyrics(self, mocked_transpose_verse):
         """
         Test that the transpose_lyrics() splits verses correctly
         """
@@ -329,9 +332,7 @@ class TestLib(TestCase):
                  'That saved a wretch like me.\n'\
                  '---[Verse:2]---\n'\
                  'I once was lost but now I\'m found.'
-        mocked_returned_settings = MagicMock()
-        mocked_returned_settings.value.return_value = 'english'
-        mocked_settings.return_value = mocked_returned_settings
+        self.settings.value.return_value = 'english'
 
         # WHEN: Transposing the lyrics
         transpose_lyrics(lyrics, 1)

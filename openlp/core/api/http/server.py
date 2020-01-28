@@ -24,16 +24,12 @@ with OpenLP. It uses JSON to communicate with the remotes.
 """
 import logging
 import time
+from secrets import token_hex
 
 from PyQt5 import QtCore, QtWidgets
 from waitress.server import create_server
 
 from openlp.core.api.deploy import download_and_check, download_sha256
-from openlp.core.api.endpoint.controller import api_controller_endpoint, controller_endpoint
-from openlp.core.api.endpoint.core import blank_endpoint, chords_endpoint, main_endpoint, stage_endpoint
-from openlp.core.api.endpoint.remote import remote_endpoint
-from openlp.core.api.endpoint.service import api_service_endpoint, service_endpoint
-from openlp.core.api.http import application, register_endpoint
 from openlp.core.api.poll import Poller
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
@@ -43,6 +39,7 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
 
+from openlp.core.api import app as application
 
 log = logging.getLogger(__name__)
 
@@ -59,6 +56,7 @@ class HttpWorker(ThreadWorker):
         port = Settings().value('api/port')
         Registry().execute('get_website_version')
         try:
+            application.static_folder = str(AppLocation.get_section_data_path('remotes') / 'static')
             self.server = create_server(application, host=address, port=port)
             self.server.run()
         except OSError:
@@ -85,6 +83,7 @@ class HttpServer(RegistryBase, RegistryProperties, LogMixin):
         Initialise the http server, and start the http server
         """
         super(HttpServer, self).__init__(parent)
+        Registry().register('authentication_token', token_hex())
         if not Registry().get_flag('no_web_server'):
             worker = HttpWorker()
             run_thread(worker, 'http_server')
@@ -96,31 +95,9 @@ class HttpServer(RegistryBase, RegistryProperties, LogMixin):
         """
         Register the poll return service and start the servers.
         """
-        self.initialise()
+        create_paths(AppLocation.get_section_data_path('remotes'))
         self.poller = Poller()
         Registry().register('poller', self.poller)
-        application.initialise()
-        register_endpoint(controller_endpoint)
-        register_endpoint(api_controller_endpoint)
-        register_endpoint(chords_endpoint)
-        register_endpoint(stage_endpoint)
-        register_endpoint(blank_endpoint)
-        register_endpoint(main_endpoint)
-        register_endpoint(service_endpoint)
-        register_endpoint(api_service_endpoint)
-        register_endpoint(remote_endpoint)
-
-    @staticmethod
-    def initialise():
-        """
-        Create the internal file structure if it does not exist
-        :return:
-        """
-        create_paths(AppLocation.get_section_data_path('remotes') / 'assets',
-                     AppLocation.get_section_data_path('remotes') / 'images',
-                     AppLocation.get_section_data_path('remotes') / 'static',
-                     AppLocation.get_section_data_path('remotes') / 'static' / 'index',
-                     AppLocation.get_section_data_path('remotes') / 'templates')
 
     def first_time(self):
         """

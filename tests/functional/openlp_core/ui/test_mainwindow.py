@@ -161,8 +161,8 @@ class TestMainWindow(TestCase, TestMixin):
         # WHEN: you check the started functions
 
         # THEN: the following registry functions should have been registered
-        expected_service_list = ['application', 'main_window', 'http_server', 'settings_form', 'service_manager',
-                                 'theme_manager', 'projector_manager']
+        expected_service_list = ['application', 'main_window', 'http_server', 'authentication_token', 'settings_form',
+                                 'service_manager', 'theme_manager', 'projector_manager']
         expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
                                    'theme_update_global', 'config_screen_changed']
         assert list(self.registry.service_list.keys()) == expected_service_list, \

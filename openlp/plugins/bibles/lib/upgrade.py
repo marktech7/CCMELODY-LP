@@ -28,7 +28,8 @@ from sqlalchemy import Table
 from sqlalchemy.sql.expression import delete, select
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import ProxyMode, Settings
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import ProxyMode
 from openlp.core.lib.db import get_upgrade_op
 
 
@@ -51,7 +52,7 @@ def upgrade_2(session, metadata):
     Remove the individual proxy settings, after the implementation of central proxy settings.
     Added in 2.5 (3.0 development)
     """
-    settings = Settings()
+    settings = Registry().get('settings')
     op = get_upgrade_op(session)
     metadata_table = Table('metadata', metadata, autoload=True)
     proxy, = session.execute(select([metadata_table.c.value], metadata_table.c.key == 'proxy_server')).first() or ('', )

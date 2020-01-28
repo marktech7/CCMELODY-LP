@@ -18,3 +18,21 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+
+from flask import Flask
+from flask_cors import CORS
+
+from openlp.core.api.versions import v1
+from openlp.core.api.versions import v2
+from openlp.core.api.main import main_views
+
+app = Flask(__name__)
+CORS(app)
+
+app.register_blueprint(main_views)
+v1.register_blueprints(app)
+v2.register_blueprints(app)
+
+
+def register_blueprint(blueprint, url_prefix=None):
+    app.register_blueprint(blueprint, url_prefix)

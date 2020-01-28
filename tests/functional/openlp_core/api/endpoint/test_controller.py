@@ -24,11 +24,12 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
 
+from openlp.core.api import app as flask_app
 from openlp.core.state import State
+
 # Mock QtWebEngineWidgets
 # sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.api.endpoint.controller import controller_direction, controller_text
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.serviceitem import ServiceItem
@@ -75,6 +76,8 @@ class TestController(TestCase):
         self.mocked_renderer.format_slide = self.mocked_slide_formater
         Registry().register('live_controller', self.mocked_live_controller)
         Registry().register('renderer', self.mocked_renderer)
+        flask_app.config['TESTING'] = True
+        self.client = flask_app.test_client()
         Registry().register('settings', MagicMock(**{'value.return_value': 'english'}))
 
     def test_controller_text_empty(self):
@@ -88,7 +91,7 @@ class TestController(TestCase):
         self.mocked_live_controller.service_item = mocked_service_item
 
         # WHEN: I trigger the method
-        ret = controller_text(MagicMock())
+        ret = self.client.get('/api/controller/live/text').get_json()
 
         # THEN: I get a basic set of results
         assert ret['results']['item'] == 'mock-service-item'
@@ -108,7 +111,7 @@ class TestController(TestCase):
         self.mocked_live_controller.service_item.set_from_service(line)
         self.mocked_live_controller.service_item._create_slides()
         # WHEN: I trigger the method
-        ret = controller_text("SomeText")
+        ret = self.client.get('/api/controller/live/text').get_json()
 
         # THEN: I get a basic set of results
         results = ret['results']
@@ -125,8 +128,7 @@ class TestController(TestCase):
         self.mocked_live_controller.service_item = MagicMock()
 
         # WHEN: I trigger the method
-        controller_direction(None, 'live', 'next')
-
+        self.client.get('/api/controller/live/next')
         # THEN: The correct method is called
         mocked_emit.assert_called_once_with()
 
@@ -140,7 +142,6 @@ class TestController(TestCase):
         self.mocked_live_controller.service_item = MagicMock()
 
         # WHEN: I trigger the method
-        controller_direction(None, 'live', 'previous')
-
+        self.client.get('/api/controller/live/previous')
         # THEN: The correct method is called
         mocked_emit.assert_called_once_with()

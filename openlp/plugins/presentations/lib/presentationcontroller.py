@@ -28,7 +28,6 @@ from openlp.core.common import md5_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import create_thumb, validate_thumb
 
 
@@ -97,6 +96,7 @@ class PresentationDocument(object):
         :rtype: None
         """
         self.controller = controller
+        self.settings = Registry().get('settings')
         self._setup(document_path)
 
     def _setup(self, document_path):
@@ -143,7 +143,7 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_temp_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
         else:
             folder = self.file_path.name
@@ -158,7 +158,7 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_thumbnail_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
         else:
             folder = self.file_path.name
@@ -445,7 +445,7 @@ class PresentationController(object):
         """
         Return whether the controller is currently enabled
         """
-        if Settings().value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
+        if Registry().get('settings').value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
             return self.is_available()
         else:
             return False

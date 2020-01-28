@@ -83,6 +83,8 @@ MODULES = [
     'alembic',
     'lxml',
     'chardet',
+    'flask',
+    'flask_cors',
     'bs4',
     'mako',
     'websockets',

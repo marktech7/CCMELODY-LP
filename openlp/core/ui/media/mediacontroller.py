@@ -33,7 +33,6 @@ from subprocess import check_output
 from PyQt5 import QtCore
 
 from openlp.core.state import State
-from openlp.core.api.http import register_endpoint
 from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
@@ -44,7 +43,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType
 from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path, \
     VIDEO_EXT, AUDIO_EXT
-from openlp.core.ui.media.endpoint import media_endpoint
+from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 
 
@@ -82,7 +81,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         Registry().register_function('songs_hide', self.media_hide)
         Registry().register_function('songs_blank', self.media_blank)
         Registry().register_function('songs_unblank', self.media_unblank)
-        register_endpoint(media_endpoint)
+        register_views()
 
     def bootstrap_initialise(self):
         """

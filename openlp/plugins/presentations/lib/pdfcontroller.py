@@ -24,8 +24,8 @@ from shutil import which
 from subprocess import CalledProcessError, check_output
 
 from openlp.core.common import check_binary_exists, is_win
+from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
 
@@ -117,8 +117,8 @@ class PdfController(PresentationController):
         self.gsbin = None
         self.also_supports = []
         # Use the user defined program if given
-        if Settings().value('presentations/enable_pdf_program'):
-            program_path = Settings().value('presentations/pdf_program')
+        if Registry().get('settings').value('presentations/enable_pdf_program'):
+            program_path = Registry().get('settings').value('presentations/pdf_program')
             program_type = self.process_check_binary(program_path)
             if program_type == 'gs':
                 self.gsbin = program_path
