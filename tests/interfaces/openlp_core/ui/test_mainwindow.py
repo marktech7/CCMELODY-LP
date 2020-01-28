@@ -29,6 +29,7 @@ from PyQt5 import QtGui
 from openlp.core.state import State
 from openlp.core.common import is_macosx
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.ui.mainwindow import MainWindow
 from tests.helpers.testmixin import TestMixin
@@ -49,6 +50,7 @@ class TestMainWindow(TestCase, TestMixin):
         self.app.set_normal_cursor = MagicMock()
         self.app.args = []
         Registry().register('application', self.app)
+        Registry().register('settings', Settings())
         Registry().set_flag('no_web_server', True)
         mocked_plugin = MagicMock()
         mocked_plugin.status = PluginStatus.Active

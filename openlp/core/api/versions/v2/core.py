@@ -1,12 +1,30 @@
+# -*- coding: utf-8 -*-
+
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import image_to_byte
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
 
 from flask import jsonify, request, abort, Blueprint
-
 
 core = Blueprint('core', __name__)
 
@@ -43,8 +61,8 @@ def plugin_list():
 @core.route('/system')
 def system_information():
     data = {}
-    data['websocket_port'] = Settings().value('api/websocket port')
-    data['login_required'] = Settings().value('api/authentication enabled')
+    data['websocket_port'] = Registry().get('settings').value('api/websocket port')
+    data['login_required'] = Registry().get('settings').value('api/authentication enabled')
     return jsonify(data)
 
 
@@ -55,7 +73,8 @@ def login():
         abort(400)
     username = data.get('username', '')
     password = data.get('password', '')
-    if username == Settings().value('api/user id') and password == Settings().value('api/password'):
+    if username == Registry().get('settings').value('api/user id') and \
+            password == Registry().get('settings').value('api/password'):
         return jsonify({'token': Registry().get('authentication_token')})
     else:
         return '', 401

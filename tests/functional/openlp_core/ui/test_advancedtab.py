@@ -24,6 +24,7 @@ Package to test the openlp.core.ui.advancedtab package.
 from unittest import TestCase
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.advancedtab import AdvancedTab
 from openlp.core.ui.settingsform import SettingsForm
 from tests.helpers.testmixin import TestMixin
@@ -36,6 +37,7 @@ class TestAdvancedTab(TestCase, TestMixin):
         Set up a few things for the tests
         """
         Registry.create()
+        Registry().register('settings', Settings())
 
     def test_creation(self):
         """

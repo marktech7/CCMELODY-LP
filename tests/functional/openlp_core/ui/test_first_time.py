@@ -21,32 +21,26 @@
 """
 Package to test the openlp.core.utils.__init__ package.
 """
-from unittest import TestCase
 from unittest.mock import patch
 
 from openlp.core.common.httputils import CONNECTION_RETRIES, get_web_page
-from tests.helpers.testmixin import TestMixin
 
 
-class TestFirstTimeWizard(TestMixin, TestCase):
+@patch('openlp.core.common.httputils.requests')
+def test_webpage_connection_retry(mocked_requests, mock_settings):
     """
-    Test First Time Wizard import functions
+    Test get_web_page will attempt CONNECTION_RETRIES+1 connections - bug 1409031
     """
-    @patch('openlp.core.common.httputils.requests')
-    def test_webpage_connection_retry(self, mocked_requests):
-        """
-        Test get_web_page will attempt CONNECTION_RETRIES+1 connections - bug 1409031
-        """
-        # GIVEN: Initial settings and mocks
-        mocked_requests.get.side_effect = OSError('Unable to connect')
+    # GIVEN: Initial settings and mocks
+    mocked_requests.get.side_effect = OSError('Unable to connect')
 
-        # WHEN: A webpage is requested
-        try:
-            get_web_page('http://localhost')
-        except Exception as e:
-            assert isinstance(e, ConnectionError)
+    # WHEN: A webpage is requested
+    try:
+        get_web_page('http://localhost')
+    except Exception as e:
+        assert isinstance(e, ConnectionError)
 
-        # THEN: urlopen should have been called CONNECTION_RETRIES + 1 count
-        assert mocked_requests.get.call_count == CONNECTION_RETRIES, \
-            'get should have been called {} times, but was only called {} times'.format(
-                CONNECTION_RETRIES, mocked_requests.get.call_count)
+    # THEN: urlopen should have been called CONNECTION_RETRIES + 1 count
+    assert mocked_requests.get.call_count == CONNECTION_RETRIES, \
+        'get should have been called {} times, but was only called {} times'.format(
+            CONNECTION_RETRIES, mocked_requests.get.call_count)

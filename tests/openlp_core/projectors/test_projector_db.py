@@ -31,6 +31,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.db import upgrade_db
 from openlp.core.projectors import upgrade
 from openlp.core.projectors.constants import PJLINK_PORT
@@ -143,6 +144,7 @@ class TestProjectorDB(TestCase, TestMixin):
         self.app.set_normal_cursor = MagicMock()
         self.app.args = []
         Registry().register('application', self.app)
+        Registry().register('settings', Settings())
         Registry().set_flag('no_web_server', True)
         # Mock classes and methods used by mainwindow.
         with patch('openlp.core.ui.mainwindow.SettingsForm'), \

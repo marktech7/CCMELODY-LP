@@ -34,7 +34,7 @@ from PyQt5 import QtCore
 
 from openlp.core.common import trace_error_handler
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import ProxyMode, Settings
+from openlp.core.common.settings import ProxyMode
 from openlp.core.threading import ThreadWorker
 
 
@@ -77,7 +77,7 @@ def get_proxy_settings(mode=None):
     :return: A dict using the format expected by the requests library.
     :rtype: dict | None
     """
-    settings = Settings()
+    settings = Registry().get('settings')
     if mode is None:
         mode = settings.value('advanced/proxy mode')
     if mode == ProxyMode.NO_PROXY:

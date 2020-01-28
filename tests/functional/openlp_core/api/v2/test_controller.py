@@ -24,15 +24,15 @@ def test_controller_set_does_not_accept_get(flask_client):
     assert res.status_code == 405
 
 
-def test_controller_set_calls_live_controller(flask_client):
+def test_controller_set_calls_live_controller(flask_client, settings):
     fake_live_controller = MagicMock()
-    Registry.create().register('live_controller', fake_live_controller)
+    Registry().register('live_controller', fake_live_controller)
     res = flask_client.post('/api/v2/controller/show', json=dict(id=400))
     assert res.status_code == 204
     fake_live_controller.slidecontroller_live_set.emit.assert_called_once_with([400])
 
 
-def test_controller_direction_requires_login(flask_client):
+def test_controller_direction_requires_login(flask_client, settings):
     Settings().setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/controller/progress', json=dict())
     Settings().setValue('api/authentication enabled', False)
@@ -44,14 +44,14 @@ def test_controller_direction_does_not_accept_get(flask_client):
     assert res.status_code == 405
 
 
-def test_controller_direction_does_fails_on_wrong_data(flask_client):
+def test_controller_direction_does_fails_on_wrong_data(flask_client, settings):
     res = flask_client.post('/api/v2/controller/progress', json=dict(action='foo'))
     assert res.status_code == 400
 
 
-def test_controller_direction_calls_service_manager(flask_client):
+def test_controller_direction_calls_service_manager(flask_client, settings):
     fake_live_controller = MagicMock()
-    Registry.create().register('live_controller', fake_live_controller)
+    Registry().register('live_controller', fake_live_controller)
     res = flask_client.post('/api/v2/controller/progress', json=dict(action='next'))
     assert res.status_code == 204
     fake_live_controller.slidecontroller_live_next.emit.assert_called_once()

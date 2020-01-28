@@ -26,6 +26,7 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.ui.servicemanager import ServiceManager
@@ -56,6 +57,7 @@ class TestServiceManager(TestCase, TestMixin):
         self.setup_application()
         Registry().register('application', MagicMock())
         Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
+        Registry().register('settings', Settings())
         self.service_manager = ServiceManager()
         self.add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
         self.mocked_add_toolbar_action = self.add_toolbar_action_patcher.start()

@@ -31,7 +31,6 @@ from websockets import serve
 
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
 
 
@@ -76,8 +75,8 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Run the worker.
         """
-        address = Settings().value('api/ip address')
-        port = Settings().value('api/websocket port')
+        address = Registry().get('settings').value('api/ip address')
+        port = Registry().get('settings').value('api/websocket port')
         # Start the event loop
         self.event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.event_loop)

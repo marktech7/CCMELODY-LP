@@ -31,6 +31,7 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.state import State
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui.mainwindow import MainWindow
 from tests.helpers.testmixin import TestMixin
@@ -64,6 +65,7 @@ class TestMainWindow(TestCase, TestMixin):
         self.app.process_events = MagicMock()
         self.app.args = []
         Registry().register('application', self.app)
+        Registry().register('settings', Settings())
         Registry().set_flag('no_web_server', True)
         self.add_toolbar_action_patcher = patch('openlp.core.ui.mainwindow.create_action')
         self.mocked_add_toolbar_action = self.add_toolbar_action_patcher.start()
@@ -161,8 +163,8 @@ class TestMainWindow(TestCase, TestMixin):
         # WHEN: you check the started functions
 
         # THEN: the following registry functions should have been registered
-        expected_service_list = ['application', 'main_window', 'http_server', 'authentication_token', 'settings_form',
-                                 'service_manager', 'theme_manager', 'projector_manager']
+        expected_service_list = ['application', 'settings', 'main_window', 'http_server', 'authentication_token',
+                                 'settings_form', 'service_manager', 'theme_manager', 'projector_manager']
         expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
                                    'theme_update_global', 'config_screen_changed']
         assert list(self.registry.service_list.keys()) == expected_service_list, \

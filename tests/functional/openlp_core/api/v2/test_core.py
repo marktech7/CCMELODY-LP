@@ -27,7 +27,7 @@ def test_plugins_returns_list(flask_client):
     assert res[0]['name'] == plugin.text_strings[StringContent.Name]['plural']
 
 
-def test_system_information(flask_client):
+def test_system_information(flask_client, settings):
     Settings().setValue('api/authentication enabled', False)
     res = flask_client.get('/api/v2/core/system').get_json()
     assert res['websocket_port'] > 0
@@ -53,12 +53,12 @@ def test_login_without_data_returns_400(flask_client):
     assert res.status_code == 400
 
 
-def test_login_with_invalid_credetials_returns_401(flask_client):
+def test_login_with_invalid_credetials_returns_401(flask_client, settings):
     res = flask_client.post('/api/v2/core/login', json=dict(username='openlp', password='invalid'))
     assert res.status_code == 401
 
 
-def test_login_with_valid_credetials_returns_token(flask_client):
+def test_login_with_valid_credetials_returns_token(flask_client, settings):
     Registry().register('authentication_token', 'foobar')
     res = flask_client.post('/api/v2/core/login', json=dict(username='openlp', password='password'))
     assert res.status_code == 200
@@ -77,7 +77,7 @@ def test_retrieving_image(flask_client):
     assert res['binary_image'] != ''
 
 
-def test_toggle_display_requires_login(flask_client):
+def test_toggle_display_requires_login(flask_client, settings):
     Settings().setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/core/display')
     Settings().setValue('api/authentication enabled', False)
@@ -89,19 +89,19 @@ def test_toggle_display_does_not_allow_get(flask_client):
     assert res.status_code == 405
 
 
-def test_toggle_display_invalid_action(flask_client):
+def test_toggle_display_invalid_action(flask_client, settings):
     res = flask_client.post('/api/v2/core/display', json={'display': 'foo'})
     assert res.status_code == 400
 
 
-def test_toggle_display_valid_action_updates_controller(flask_client):
+def test_toggle_display_valid_action_updates_controller(flask_client, settings):
     class FakeController:
         class Emitter:
             def emit(self, value):
                 self.set = value
         slidecontroller_toggle_display = Emitter()
     controller = FakeController()
-    Registry.create().register('live_controller', controller)
+    Registry().register('live_controller', controller)
     res = flask_client.post('/api/v2/core/display', json={'display': 'show'})
     assert res.status_code == 204
     assert controller.slidecontroller_toggle_display.set == 'show'

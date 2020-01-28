@@ -23,7 +23,6 @@ import json
 
 from openlp.core.common.httputils import get_web_page
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
 
 
 class Poller(RegistryProperties):
@@ -44,14 +43,14 @@ class Poller(RegistryProperties):
             'service': self.service_manager.service_id,
             'slide': self.live_controller.selected_row or 0,
             'item': self.live_controller.service_item.unique_identifier if self.live_controller.service_item else '',
-            'twelve': Settings().value('api/twelve hour'),
+            'twelve': self.settings.value('api/twelve hour'),
             'blank': self.live_controller.blank_screen.isChecked(),
             'theme': self.live_controller.theme_screen.isChecked(),
             'display': self.live_controller.desktop_screen.isChecked(),
             'version': 3,
-            'isSecure': Settings().value('api/authentication enabled'),
+            'isSecure': self.settings.value('api/authentication enabled'),
             'isAuthorised': False,
-            'chordNotation': Settings().value('songs/chord notation'),
+            'chordNotation': self.settings.value('songs/chord notation'),
             'isStageActive': self.is_stage_active(),
             'isLiveActive': self.is_live_active(),
             'isChordsActive': self.is_chords_active()

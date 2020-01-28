@@ -31,6 +31,7 @@ from unittest.mock import patch
 from PyQt5.QtWidgets import QDialog
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES, PJLINK_DEFAULT_SOURCES
 from openlp.core.projectors.db import Projector, ProjectorDB
 from openlp.core.projectors.sourceselectform import SourceSelectSingle, source_group
@@ -65,6 +66,8 @@ class ProjectorSourceFormTest(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Registry.create()
+        Registry().register('settings', Settings())
+
         # Do not try to recreate if we've already been created from a previous test
         if not hasattr(self, 'projectordb'):
             self.projectordb = ProjectorDB()

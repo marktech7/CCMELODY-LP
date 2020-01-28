@@ -26,6 +26,8 @@ import shutil
 from tempfile import mkdtemp
 from unittest import TestCase
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.songs.lib import upgrade
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song
@@ -42,6 +44,8 @@ class TestDB(TestCase):
         Setup for tests
         """
         self.tmp_folder = mkdtemp()
+        Registry.create()
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         """

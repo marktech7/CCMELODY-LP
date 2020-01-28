@@ -53,10 +53,11 @@ class TestBibleManager(TestCase, TestMixin):
             'bibles/end separator': '',
         }
         Settings().extend_default_settings(bible_settings)
-        with patch('openlp.core.common.applocation.Settings') as mocked_class, \
-                patch('openlp.core.common.applocation.AppLocation.get_section_data_path') as mocked_get_data_path, \
+        with patch('openlp.core.common.applocation.AppLocation.get_section_data_path') as mocked_get_data_path, \
                 patch('openlp.core.common.applocation.AppLocation.get_files') as mocked_get_files:
             # GIVEN: A mocked out Settings class and a mocked out AppLocation.get_files()
+            mocked_class = MagicMock()
+            Registry().register('settings', mocked_class.return_value)
             mocked_settings = mocked_class.return_value
             mocked_settings.contains.return_value = False
             mocked_get_files.return_value = ["tests.sqlite"]

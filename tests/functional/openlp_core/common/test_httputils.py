@@ -29,6 +29,7 @@ from unittest.mock import MagicMock, patch
 
 from openlp.core.common.httputils import ProxyMode, download_file, get_proxy_settings, get_url_file_size, \
     get_user_agent, get_web_page
+from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from tests.helpers.testmixin import TestMixin
 
@@ -39,6 +40,8 @@ class TestHttpUtils(TestCase, TestMixin):
     """
     def setUp(self):
         self.tempfile = os.path.join(tempfile.gettempdir(), 'testfile')
+        Registry.create()
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         if os.path.isfile(self.tempfile):
@@ -137,7 +140,7 @@ class TestHttpUtils(TestCase, TestMixin):
         mocked_requests.get.assert_called_once_with(fake_url, headers={'User-Agent': 'user_agent'},
                                                     proxies=None, timeout=30.0)
         mocked_get_user_agent.assert_called_once_with()
-        assert MockRegistry.call_count == 0, 'The Registry() object should have never been called'
+        assert MockRegistry.call_count == 1, 'The Registry() object should have been called once'
         assert returned_page == 'text', 'The returned page should be the mock object'
 
     @patch('openlp.core.common.httputils.requests')
@@ -245,34 +248,9 @@ class TestHttpUtils(TestCase, TestMixin):
 class TestGetProxySettings(TestCase, TestMixin):
     def setUp(self):
         self.build_settings()
+        Registry.create()
+        Registry().register('settings', Settings())
         self.addCleanup(self.destroy_settings)
-
-    @patch('openlp.core.common.httputils.Settings')
-    def test_mode_arg_specified(self, mocked_settings):
-        """
-        Test that the argument is used rather than reading the 'advanced/proxy mode' setting
-        """
-        # GIVEN: Mocked settings
-
-        # WHEN: Calling `get_proxy_settings` with the mode arg specified
-        get_proxy_settings(mode=ProxyMode.NO_PROXY)
-
-        # THEN: The mode arg should have been used rather than looking it up in the settings
-        mocked_settings().value.assert_not_called()
-
-    @patch('openlp.core.common.httputils.Settings')
-    def test_mode_incorrect_arg_specified(self, mocked_settings):
-        """
-        Test that the system settings are used when the mode arg specieied is invalid
-        """
-        # GIVEN: Mocked settings
-
-        # WHEN: Calling `get_proxy_settings` with an invalid mode arg specified
-        result = get_proxy_settings(mode='qwerty')
-
-        # THEN: An None should be returned
-        mocked_settings().value.assert_not_called()
-        assert result is None
 
     def test_no_proxy_mode(self):
         """
@@ -352,3 +330,30 @@ class TestGetProxySettings(TestCase, TestMixin):
 
         # THEN: The returned value should be the proxy servers set to None
         assert result == {'http': None, 'https': None}
+
+
+def test_mode_arg_specified(mock_settings):
+    """
+    Test that the argument is used rather than reading the 'advanced/proxy mode' setting
+    """
+    # GIVEN: Mocked settings
+
+    # WHEN: Calling `get_proxy_settings` with the mode arg specified
+    get_proxy_settings(mode=ProxyMode.NO_PROXY)
+
+    # THEN: The mode arg should have been used rather than looking it up in the settings
+    mock_settings.value.assert_not_called()
+
+
+def test_mode_incorrect_arg_specified(mock_settings):
+    """
+    Test that the system settings are used when the mode arg specieied is invalid
+    """
+    # GIVEN: Mocked settings
+
+    # WHEN: Calling `get_proxy_settings` with an invalid mode arg specified
+    result = get_proxy_settings(mode='qwerty')
+
+    # THEN: An None should be returned
+    mock_settings.value.assert_not_called()
+    assert result is None

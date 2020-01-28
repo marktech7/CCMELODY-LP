@@ -30,7 +30,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import Singleton, is_macosx, is_win
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)
 
@@ -265,7 +265,7 @@ class LanguageManager(object):
         """
         Retrieve a saved language to use from settings
         """
-        language = Settings().value('core/language')
+        language = Registry().get('settings').value('core/language')
         language = str(language)
         log.info("Language file: '{language}' Loaded from conf file".format(language=language))
         m = re.match(r'\[(.*)\]', language)
@@ -293,7 +293,7 @@ class LanguageManager(object):
                 language = str(qm_list[action_name])
         if LanguageManager.auto_language:
             language = '[{language}]'.format(language=language)
-        Settings().setValue('core/language', language)
+        Registry().get('settings').setValue('core/language', language)
         log.info("Language file: '{language}' written to conf file".format(language=language))
         if message:
             QtWidgets.QMessageBox.information(None,

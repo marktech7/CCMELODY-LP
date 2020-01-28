@@ -31,7 +31,7 @@ import appdirs
 import openlp
 from openlp.core.common import get_frozen_path, is_macosx, is_win
 from openlp.core.common.path import create_paths
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 log = logging.getLogger(__name__)
@@ -79,8 +79,8 @@ class AppLocation(object):
         :rtype: Path
         """
         # Check if we have a different data location.
-        if Settings().contains('advanced/data path'):
-            path = Path(Settings().value('advanced/data path'))
+        if Registry().get('settings').contains('advanced/data path'):
+            path = Path(Registry().get('settings').value('advanced/data path'))
         else:
             path = AppLocation.get_directory(AppLocation.DataDir)
             create_paths(path)
