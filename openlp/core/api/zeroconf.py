@@ -29,7 +29,6 @@ from zeroconf import ServiceInfo, Zeroconf
 
 from openlp.core.common import get_network_interfaces
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
 
 
