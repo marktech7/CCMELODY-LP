@@ -843,7 +843,6 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         """
         Make it possible to fake that this is a real display to get the preview to show video and stream
         """
-        print(self.is_display)
         self.is_display = is_display
 
 

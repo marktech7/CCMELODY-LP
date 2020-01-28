@@ -384,7 +384,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                 if theme.background_type == 'video' or theme.background_type == 'stream':
                     theme_copy.background_type = 'transparent'
         else:
-            print('PREVIEW!!')
             # If review Display for media so we need to display black box.
             if theme.background_type == 'stream':
                 theme_copy.background_type = 'solid'
