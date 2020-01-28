@@ -21,17 +21,10 @@
 """
 Package to test the openlp.core.utils.__init__ package.
 """
-from unittest import TestCase
 from unittest.mock import patch
 
 from openlp.core.common.httputils import CONNECTION_RETRIES, get_web_page
-from tests.helpers.testmixin import TestMixin
 
-
-class TestFirstTimeWizard(TestMixin, TestCase):
-    """
-    Test First Time Wizard import functions
-    """
 
 @patch('openlp.core.common.httputils.requests')
 def test_webpage_connection_retry(mocked_requests, mock_settings):
