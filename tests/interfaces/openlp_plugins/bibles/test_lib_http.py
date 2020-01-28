@@ -26,6 +26,7 @@ from unittest import TestCase, skipIf
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
 IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
@@ -42,6 +43,7 @@ class TestBibleHTTP(TestCase):
         Registry().register('service_list', MagicMock())
         Registry().register('application', MagicMock())
         Registry().register('main_window', MagicMock())
+        Registry().register('settings', Settings())
 
     def test_bible_gateway_extract_books(self):
         """

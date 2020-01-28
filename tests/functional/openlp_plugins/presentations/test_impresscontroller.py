@@ -47,6 +47,8 @@ class TestImpressController(TestCase, TestMixin):
         self.mock_plugin = MagicMock()
         self.temp_folder = mkdtemp()
         self.mock_plugin.settings_section = self.temp_folder
+        Registry.create()
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         """

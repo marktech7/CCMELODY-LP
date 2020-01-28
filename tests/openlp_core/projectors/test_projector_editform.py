@@ -27,6 +27,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.projectors.db import Projector, ProjectorDB
 from openlp.core.projectors.editform import ProjectorEditForm
 from tests.helpers.testmixin import TestMixin
@@ -46,6 +47,7 @@ class TestProjectorEditForm(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Registry.create()
+        Registry().register('settings', Settings())
         with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
             if os.path.exists(TEST_DB):
                 os.unlink(TEST_DB)
