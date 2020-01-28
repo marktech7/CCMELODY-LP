@@ -54,6 +54,7 @@ class TestWSServer(TestCase, TestMixin):
         self.build_settings()
         Settings().extend_default_settings(__default_settings__)
         Registry().create()
+        Registry().register('settings', Settings())
         self.poll = Poller()
 
     def tearDown(self):

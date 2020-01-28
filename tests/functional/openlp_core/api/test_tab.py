@@ -60,6 +60,7 @@ class TestApiTab(TestCase, TestMixin):
         self.parent = QtWidgets.QMainWindow()
         Registry().create()
         Registry().set_flag('website_version', '00-00-0000')
+        Registry().register('settings', Settings())
         self.form = ApiTab(self.parent)
         self.interfaces = get_network_interfaces()
 

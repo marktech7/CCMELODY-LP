@@ -43,6 +43,7 @@ class TestInit(TestCase, TestMixin):
         Registry().register('service_list', MagicMock())
         self.build_settings()
         self.password = 'c3VwZXJmbHk6bGFtYXM='
+        Registry().register('settings', Settings())
 
     def tearDown(self):
         self.destroy_settings()
