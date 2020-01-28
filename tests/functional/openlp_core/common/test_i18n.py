@@ -155,7 +155,7 @@ def test_check_same_instance():
     assert first_instance is second_instance, 'Two UiStrings objects should be the same instance'
 
 
-def test_get_language_from_settings():
+def test_get_language_from_settings(settings):
     assert LanguageManager.get_language() == 'en'
 
 
