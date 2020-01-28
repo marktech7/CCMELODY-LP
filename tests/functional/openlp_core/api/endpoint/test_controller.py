@@ -30,6 +30,7 @@ from openlp.core.state import State
 # Mock QtWebEngineWidgets
 # sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
+from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.serviceitem import ServiceItem
@@ -78,7 +79,7 @@ class TestController(TestCase):
         Registry().register('renderer', self.mocked_renderer)
         flask_app.config['TESTING'] = True
         self.client = flask_app.test_client()
-        Registry().register('settings', MagicMock(**{'value.return_value': 'english'}))
+        Registry().register('settings', Settings())
 
     def test_controller_text_empty(self):
         """
