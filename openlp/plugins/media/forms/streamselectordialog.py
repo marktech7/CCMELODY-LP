@@ -575,10 +575,10 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
         self.options_group.hide()
 
     def update_mrl(self):
-        vdev = self.video_devices_combo_box.currentData().strip()
+        vdev = self.video_devices_combo_box.currentData()
         # Audio is not supported on Mac since we currently don't have a way to
         # extract the needed HW ids.
-        # adev = self.audio_devices_combo_box.currentText().strip()
+        # adev = self.audio_devices_combo_box.currentText()
         main_file = 'avcapture://{vdev}'.format(vdev=vdev)
         # options = 'input-slave=qtsound://{adev}'.format(adev=adev)
         self.callback(main_file, '')

@@ -125,15 +125,17 @@ class BackgroundPage(GridLayoutPage):
         self.stream_label = FormLabel(self)
         self.stream_label.setObjectName('stream_label')
         self.layout.addWidget(self.stream_label, 6, 0)
+        self.stream_layout = QtWidgets.QHBoxLayout()
         self.stream_lineedit = QtWidgets.QLineEdit(self)
         self.stream_lineedit.setObjectName('stream_lineedit')
         self.stream_lineedit.setReadOnly(True)
-        self.layout.addWidget(self.stream_lineedit, 6, 1, 1, 3)
+        self.stream_layout.addWidget(self.stream_lineedit)
         # button to open select stream forms
         self.stream_select_button = QtWidgets.QToolButton(self)
         self.stream_select_button.setObjectName('stream_select_button')
         self.stream_select_button.setIcon(UiIcons().device_stream)
-        self.layout.addWidget(self.stream_select_button, 6, 4)
+        self.stream_layout.addWidget(self.stream_select_button)
+        self.layout.addLayout(self.stream_layout, 6, 1, 1, 3)
         self.stream_color_label = FormLabel(self)
         self.stream_color_label.setObjectName('stream_color_label')
         self.layout.addWidget(self.stream_color_label, 7, 0)
@@ -164,7 +166,7 @@ class BackgroundPage(GridLayoutPage):
         self.background_combo_box.setItemText(BackgroundType.Transparent,
                                               translate('OpenLP.ThemeWizard', 'Transparent'))
         self.background_combo_box.setItemText(BackgroundType.Stream,
-                                              translate('OpenLP.ThemeWizard', 'Live Stream'))
+                                              translate('OpenLP.ThemeWizard', 'Live stream'))
         self.color_label.setText(translate('OpenLP.ThemeWizard', 'Color:'))
         self.gradient_start_label.setText(translate('OpenLP.ThemeWizard', 'Starting color:'))
         self.gradient_end_label.setText(translate('OpenLP.ThemeWizard', 'Ending color:'))
