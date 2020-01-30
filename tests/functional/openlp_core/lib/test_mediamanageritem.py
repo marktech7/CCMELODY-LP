@@ -24,6 +24,7 @@ Package to test the openlp.core.lib.mediamanageritem package.
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from openlp.core.common.registry import Registry
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from tests.helpers.testmixin import TestMixin
 
@@ -36,20 +37,20 @@ class TestMediaManagerItem(TestCase, TestMixin):
         """
         Mock out stuff for all the tests
         """
+        Registry.create()
         self.setup_patcher = patch('openlp.core.lib.mediamanageritem.MediaManagerItem._setup')
         self.mocked_setup = self.setup_patcher.start()
         self.addCleanup(self.setup_patcher.stop)
 
-    @patch('openlp.core.lib.mediamanageritem.Settings')
     @patch('openlp.core.lib.mediamanageritem.MediaManagerItem.on_preview_click')
-    def test_on_double_clicked(self, mocked_on_preview_click, MockedSettings):
+    def test_on_double_clicked(self, mocked_on_preview_click):
         """
         Test that when an item is double-clicked then the item is previewed
         """
         # GIVEN: A setting to enable "Double-click to go live" and a media manager item
         mocked_settings = MagicMock()
         mocked_settings.value.return_value = False
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         mmi = MediaManagerItem(None)
         mmi.can_preview = True
         mmi.can_make_live = True
@@ -79,16 +80,15 @@ class TestMediaManagerItem(TestCase, TestMixin):
         assert mmi.can_make_live is True, 'There should be a make live by default'
         assert mmi.can_add_to_service is True, 'There should be a add to service icon by default'
 
-    @patch('openlp.core.lib.mediamanageritem.Settings')
     @patch('openlp.core.lib.mediamanageritem.MediaManagerItem.on_live_click')
-    def test_on_double_clicked_go_live(self, mocked_on_live_click, MockedSettings):
+    def test_on_double_clicked_go_live(self, mocked_on_live_click):
         """
         Test that when "Double-click to go live" is enabled that the item goes live
         """
         # GIVEN: A setting to enable "Double-click to go live" and a media manager item
         mocked_settings = MagicMock()
         mocked_settings.value.side_effect = lambda x: x == 'advanced/double click live'
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         mmi = MediaManagerItem(None)
         mmi.can_preview = True
         mmi.can_make_live = True
@@ -100,18 +100,16 @@ class TestMediaManagerItem(TestCase, TestMixin):
         # THEN: on_live_click() should have been called
         mocked_on_live_click.assert_called_with()
 
-    @patch('openlp.core.lib.mediamanageritem.Settings')
     @patch('openlp.core.lib.mediamanageritem.MediaManagerItem.on_live_click')
     @patch('openlp.core.lib.mediamanageritem.MediaManagerItem.on_preview_click')
-    def test_on_double_clicked_single_click_preview(self, mocked_on_preview_click, mocked_on_live_click,
-                                                    MockedSettings):
+    def test_on_double_clicked_single_click_preview(self, mocked_on_preview_click, mocked_on_live_click):
         """
         Test that when "Single-click preview" is enabled then nothing happens on double-click
         """
         # GIVEN: A setting to enable "Double-click to go live" and a media manager item
         mocked_settings = MagicMock()
         mocked_settings.value.side_effect = lambda x: x == 'advanced/single click preview'
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         mmi = MediaManagerItem(None)
         mmi.can_preview = True
         mmi.can_make_live = True
