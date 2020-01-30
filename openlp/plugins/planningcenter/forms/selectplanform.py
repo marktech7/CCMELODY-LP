@@ -90,7 +90,7 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         """
         Close dialog.
 
-        :param r: The result of the dialog.
+        :param result_code: The result of the dialog.
         """
         log.debug('Closing PlanningCenterForm')
         return QtWidgets.QDialog.done(self, result_code)
