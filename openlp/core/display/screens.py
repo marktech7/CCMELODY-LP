@@ -30,7 +30,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common import Singleton
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 
 
 log = logging.getLogger(__name__)
@@ -215,6 +214,7 @@ class ScreenList(metaclass=Singleton):
         screen_list.desktop.screenCountChanged.connect(screen_list.on_screen_count_changed)
         screen_list.desktop.primaryScreenChanged.connect(screen_list.on_primary_screen_changed)
         screen_list.update_screens()
+        cls.settings = Registry().get('settings')
         screen_list.load_screen_settings()
         return screen_list
 
@@ -222,13 +222,7 @@ class ScreenList(metaclass=Singleton):
         """
         Loads the screen size and the screen number from the settings.
         """
-        # Add the screen settings to the settings dict. This has to be done here due to cyclic dependency.
-        # Do not do this anywhere else.
-        screen_settings = {
-            'core/screens': '{}'
-        }
-        Settings.extend_default_settings(screen_settings)
-        screen_settings = Settings().value('core/screens')
+        screen_settings = self.settings.value('core/screens')
         if screen_settings:
             for number, screen_dict in screen_settings.items():
                 # Sometimes this loads as a string instead of an int
@@ -244,7 +238,7 @@ class ScreenList(metaclass=Singleton):
         """
         Saves the screen size and screen settings
         """
-        Settings().setValue('core/screens', {screen.number: screen.to_dict() for screen in self.screens})
+        self.settings.setValue('core/screens', {screen.number: screen.to_dict() for screen in self.screens})
 
     def get_display_screen_list(self):
         """

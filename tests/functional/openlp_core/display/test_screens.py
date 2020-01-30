@@ -51,6 +51,7 @@ class TestScreenList(TestCase):
 
         self.application = QtWidgets.QApplication.instance()
         Registry.create()
+        Registry().register('settings', MagicMock())
         self.application.setOrganizationName('OpenLP-tests')
         self.application.setOrganizationDomain('openlp.org')
         self.screens = ScreenList.create(self.desktop)
