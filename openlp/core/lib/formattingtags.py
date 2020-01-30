@@ -24,7 +24,7 @@ Provide HTML Tag management and Formatting Tag access class
 import json
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 class FormattingTags(object):
@@ -49,7 +49,7 @@ class FormattingTags(object):
             The tags to be saved..
         """
         # Formatting Tags were also known as display tags.
-        Settings().setValue('formattingTags/html_tags', json.dumps(new_tags) if new_tags else '')
+        Registry().get('settings').setValue('formattingTags/html_tags', json.dumps(new_tags) if new_tags else '')
 
     @staticmethod
     def load_tags():
@@ -152,7 +152,7 @@ class FormattingTags(object):
         # Append the base tags.
         FormattingTags.add_html_tags(base_tags)
         FormattingTags.add_html_tags(temporary_tags)
-        user_expands_string = str(Settings().value('formattingTags/html_tags'))
+        user_expands_string = str(Registry().get('settings').value('formattingTags/html_tags'))
         # If we have some user ones added them as well
         if user_expands_string:
             user_tags = json.loads(user_expands_string)
