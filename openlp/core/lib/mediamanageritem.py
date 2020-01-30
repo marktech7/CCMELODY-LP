@@ -29,7 +29,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.plugin import StringContent
 from openlp.core.lib.serviceitem import ServiceItem
@@ -322,7 +321,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         file_paths, selected_filter = FileDialog.getOpenFileNames(
             self, self.on_new_prompt,
-            Settings().value(self.settings_section + '/last directory'),
+            self.settings.value(self.settings_section + '/last directory'),
             self.on_new_file_masks)
         log.info('New file(s) {file_paths}'.format(file_paths=file_paths))
         if file_paths:
@@ -385,8 +384,9 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             if target_group is None:
                 self.list_view.clear()
             self.load_list(full_list, target_group)
-            Settings().setValue(self.settings_section + '/last directory', file_paths[0].parent)
-            Settings().setValue('{section}/{section} files'.format(section=self.settings_section), self.get_file_list())
+            self.settings.setValue(self.settings_section + '/last directory', file_paths[0].parent)
+            self.settings.setValue('{section}/{section} files'.
+                                   format(section=self.settings_section), self.get_file_list())
         if duplicates_found:
             critical_error_message_box(UiStrings().Duplicate,
                                        translate('OpenLP.MediaManagerItem',
@@ -470,10 +470,10 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         Allows the list click action to be determined dynamically
         """
-        if Settings().value('advanced/double click live'):
+        if self.settings.value('advanced/double click live'):
             if self.can_make_live:
                 self.on_live_click()
-        elif not Settings().value('advanced/single click preview'):
+        elif not self.settings.value('advanced/single click preview'):
             # NOTE: The above check is necessary to prevent bug #1419300
             if self.can_preview:
                 self.on_preview_click()
@@ -482,7 +482,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         Allows the change of current item in the list to be actioned
         """
-        if Settings().value('advanced/single click preview') and self.quick_preview_allowed \
+        if self.settings.value('advanced/single click preview') and self.quick_preview_allowed \
                 and self.list_view.selectedIndexes() and self.auto_select_id == -1:
             self.on_preview_click(True)
 

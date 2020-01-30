@@ -31,7 +31,6 @@ import time
 from PyQt5 import QtCore
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib import image_to_byte, resize_image
 from openlp.core.threading import ThreadWorker, run_thread
@@ -339,7 +338,7 @@ class ImageManager(QtCore.QObject):
             width = self.width if image.width == -1 else image.width
             height = self.height if image.height == -1 else image.height
             image.image = resize_image(image.path, width, height, image.background,
-                                       Settings().value('advanced/ignore aspect ratio'))
+                                       Registry().get('settings').value('advanced/ignore aspect ratio'))
             # Set the priority to Lowest and stop here as we need to process more important images first.
             if image.priority == Priority.Normal:
                 self._conversion_queue.modify_priority(image, Priority.Lowest)

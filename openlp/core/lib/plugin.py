@@ -27,7 +27,6 @@ from openlp.core.common.enum import PluginStatus
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.version import get_version
 
 
@@ -164,14 +163,14 @@ class Plugin(RegistryBase, RegistryProperties):
         """
         Sets the status of the plugin
         """
-        self.status = Settings().value(self.settings_section + '/status')
+        self.status = self.settings.value(self.settings_section + '/status')
 
     def toggle_status(self, new_status):
         """
         Changes the status of the plugin and remembers it
         """
         self.status = new_status
-        Settings().setValue(self.settings_section + '/status', self.status)
+        self.settings.setValue(self.settings_section + '/status', self.status)
         if new_status == PluginStatus.Active:
             self.initialise()
         elif new_status == PluginStatus.Inactive:
