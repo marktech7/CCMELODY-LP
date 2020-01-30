@@ -88,9 +88,9 @@ class TestPdfController(TestCase, TestMixin):
         self.desktop.primaryScreen.return_value = SCREEN['primary']
         self.desktop.screenCount.return_value = SCREEN['number']
         self.desktop.screenGeometry.return_value = SCREEN['size']
-        self.screens = ScreenList.create(self.desktop)
         Settings().extend_default_settings(__default_settings__)
         Registry().register('settings', Settings())
+        self.screens = ScreenList.create(self.desktop)
         self.temp_folder_path = Path(mkdtemp())
         self.thumbnail_folder_path = Path(mkdtemp())
         self.mock_plugin = MagicMock()

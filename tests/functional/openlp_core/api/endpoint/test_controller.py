@@ -58,6 +58,7 @@ class TestController(TestCase):
         """
         Registry.create()
         self.registry = Registry()
+        Registry().register('settings', Settings())
         self.mocked_live_controller = MagicMock()
         self.desktop = MagicMock()
         self.desktop.primaryScreen.return_value = SCREEN['primary']
@@ -79,7 +80,6 @@ class TestController(TestCase):
         Registry().register('renderer', self.mocked_renderer)
         flask_app.config['TESTING'] = True
         self.client = flask_app.test_client()
-        Registry().register('settings', Settings())
 
     def test_controller_text_empty(self):
         """
