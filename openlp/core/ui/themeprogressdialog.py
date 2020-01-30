@@ -49,7 +49,6 @@ class UiThemeProgressDialog(object):
         self.theme_preview_layout.setSpacing(0)
         self.theme_preview_layout.setObjectName('preview_web_layout')
         self.theme_display = ThemePreviewRenderer(theme_progress_dialog, can_show_startup_screen=False)
-        self.theme_display.set_is_display(True)
         self.theme_display.setObjectName('theme_display')
         self.theme_preview_layout.addWidget(self.theme_display)
         self.theme_progress_layout.addWidget(self.preview_area)

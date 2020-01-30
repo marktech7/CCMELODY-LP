@@ -839,12 +839,6 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         else:
             return pixmap
 
-    def set_is_display(self, is_display):
-        """
-        Make it possible to fake that this is a real display to get the preview to show video and stream
-        """
-        self.is_display = is_display
-
 
 class Renderer(RegistryBase, ThemePreviewRenderer):
     """
