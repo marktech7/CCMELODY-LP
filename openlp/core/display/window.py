@@ -385,7 +385,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                     theme_copy.background_type = 'transparent'
         else:
             # If preview Display with media background we just show the background color, no media
-            if theme.background_type == 'stream' or theme.background_type == 'video' :
+            if theme.background_type == 'stream' or theme.background_type == 'video':
                 theme_copy.background_type = 'solid'
                 theme_copy.background_start_color = theme.background_border_color
                 theme_copy.background_end_color = theme.background_border_color
