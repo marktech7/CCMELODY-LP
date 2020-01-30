@@ -56,8 +56,9 @@ class TestSettingsForm(TestCase, TestMixin):
         self.desktop.primaryScreen.return_value = SCREEN['primary']
         self.desktop.screenCount.return_value = SCREEN['number']
         self.desktop.screenGeometry.return_value = SCREEN['size']
-        self.screens = ScreenList.create(self.desktop)
         Registry.create()
+        Registry().register('settings', MagicMock())
+        self.screens = ScreenList.create(self.desktop)
         self.form = settingsform.SettingsForm()
 
     def tearDown(self):

@@ -241,6 +241,7 @@ class Settings(QtCore.QSettings):
         'core/loop delay': 5,
         'core/recent files': [],
         'core/save prompt': False,
+        'core/screens': '{}',
         'core/screen blank': False,
         'core/show splash': True,
         'core/logo background color': '#ffffff',

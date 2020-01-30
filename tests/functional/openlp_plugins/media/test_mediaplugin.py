@@ -25,6 +25,7 @@ from unittest import TestCase
 from unittest.mock import patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.media.mediaplugin import MediaPlugin
 from tests.helpers.testmixin import TestMixin
 
@@ -35,6 +36,7 @@ class TestMediaPlugin(TestCase, TestMixin):
     """
     def setUp(self):
         Registry.create()
+        Registry().register('settings', Settings())
 
     @patch('openlp.plugins.media.mediaplugin.Plugin.initialise')
     def test_initialise(self, mocked_initialise):

@@ -35,7 +35,6 @@ from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
@@ -535,7 +534,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
     def generate_footer(self):
         """
         """
-        footer_template = Settings().value('songs/footer template')
+        footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
             'title': TITLE,
@@ -544,7 +543,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
                                              'Author who wrote the lyrics of a song'),
             'authors_words': [AUTHOR],
             'copyright': FOOTER_COPYRIGHT,
-            'ccli_license': Settings().value('core/ccli number'),
+            'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': CCLI_NO,
         }
