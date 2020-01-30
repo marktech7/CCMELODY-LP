@@ -28,6 +28,7 @@ from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.openlyricsexport import OpenLyricsExport
 from tests.helpers.testmixin import TestMixin
 
@@ -41,6 +42,7 @@ class TestOpenLyricsExport(TestCase, TestMixin):
         Create the registry
         """
         Registry.create()
+        Registry().register('settings', Settings())
         self.temp_folder = Path(mkdtemp())
 
     def tearDown(self):
