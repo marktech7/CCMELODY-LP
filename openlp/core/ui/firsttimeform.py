@@ -308,6 +308,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.screen_selection_widget.save()
         if self.theme_combo_box.currentIndex() != -1:
             Settings().setValue('themes/global theme', self.theme_combo_box.currentText())
+        Registry().remove_function('config_screen_changed', self.screen_selection_widget.load)
         super().accept()
 
     def reject(self):
@@ -326,6 +327,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             while any([not is_thread_finished(thread_name) for thread_name in self.thumbnail_download_threads]):
                 time.sleep(0.1)
         self.application.set_normal_cursor()
+        Registry().remove_function('config_screen_changed', self.screen_selection_widget.load)
         super().reject()
 
     def _on_custom_button_clicked(self, which):
