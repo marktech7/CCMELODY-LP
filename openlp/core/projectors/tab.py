@@ -132,23 +132,23 @@ class ProjectorTab(SettingsTab):
         """
         Load the projector settings on startup
         """
-        self.connect_on_startup.setChecked(Settings().value('projector/connect on start'))
-        self.socket_timeout_spin_box.setValue(Settings().value('projector/socket timeout'))
-        self.socket_poll_spin_box.setValue(Settings().value('projector/poll time'))
-        self.dialog_type_combo_box.setCurrentIndex(Settings().value('projector/source dialog type'))
-        self.udp_broadcast_listen.setChecked(Settings().value('projector/udp broadcast listen'))
-        self.connect_on_linkup.setChecked(Settings().value('projector/connect when LKUP received'))
+        self.connect_on_startup.setChecked(self.settings.value('projector/connect on start'))
+        self.socket_timeout_spin_box.setValue(self.settings.value('projector/socket timeout'))
+        self.socket_poll_spin_box.setValue(self.settings.value('projector/poll time'))
+        self.dialog_type_combo_box.setCurrentIndex(self.settings.value('projector/source dialog type'))
+        self.udp_broadcast_listen.setChecked(self.settings.value('projector/udp broadcast listen'))
+        self.connect_on_linkup.setChecked(self.settings.value('projector/connect when LKUP received'))
 
     def save(self):
         """
         Save the projector settings
         """
-        Settings().setValue('projector/connect on start', self.connect_on_startup.isChecked())
-        Settings().setValue('projector/socket timeout', self.socket_timeout_spin_box.value())
-        Settings().setValue('projector/poll time', self.socket_poll_spin_box.value())
-        Settings().setValue('projector/source dialog type', self.dialog_type_combo_box.currentIndex())
-        Settings().setValue('projector/connect when LKUP received', self.connect_on_linkup.isChecked())
-        Settings().setValue('projector/udp broadcast listen', self.udp_broadcast_listen.isChecked())
+        self.settings.setValue('projector/connect on start', self.connect_on_startup.isChecked())
+        self.settings.setValue('projector/socket timeout', self.socket_timeout_spin_box.value())
+        self.settings.setValue('projector/poll time', self.socket_poll_spin_box.value())
+        self.settings.setValue('projector/source dialog type', self.dialog_type_combo_box.currentIndex())
+        self.settings.setValue('projector/connect when LKUP received', self.connect_on_linkup.isChecked())
+        self.settings.setValue('projector/udp broadcast listen', self.udp_broadcast_listen.isChecked())
         self.call_udp_listener()
 
     def on_dialog_type_combo_box_changed(self):
