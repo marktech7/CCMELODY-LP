@@ -27,7 +27,6 @@ from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.projectors import DialogSourceStyle
 from openlp.core.ui.icons import UiIcons

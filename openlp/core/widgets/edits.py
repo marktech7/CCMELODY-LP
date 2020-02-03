@@ -30,6 +30,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import CONTROL_CHARS
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.path import path_to_str, str_to_path
+from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.ui import create_action, create_widget_action
@@ -72,6 +73,7 @@ class SearchEdit(QtWidgets.QLineEdit):
         self.clear_button.clicked.connect(self._on_clear_button_clicked)
         self.textChanged.connect(self._on_search_edit_text_changed)
         self._update_style_sheet()
+        self.settings = Registry().get('settings')
         self.setAcceptDrops(False)
 
     def _update_style_sheet(self):
@@ -123,7 +125,7 @@ class SearchEdit(QtWidgets.QLineEdit):
                 self.setPlaceholderText(action.placeholder_text)
                 self.menu_button.setDefaultAction(action)
                 self._current_search_type = identifier
-                Settings().setValue('{section}/last used search type'.format(section=self.settings_section), identifier)
+                self.settings.setValue('{section}/last used search type'.format(section=self.settings_section), identifier)
                 self.searchTypeChanged.emit(identifier)
                 return True
 
@@ -159,7 +161,7 @@ class SearchEdit(QtWidgets.QLineEdit):
             self.menu_button.resize(QtCore.QSize(28, 18))
         self.menu_button.setMenu(menu)
         self.set_current_search_type(
-            Settings().value('{section}/last used search type'.format(section=self.settings_section)))
+            self.settings.value('{section}/last used search type'.format(section=self.settings_section)))
         self.menu_button.show()
         self._update_style_sheet()
 
