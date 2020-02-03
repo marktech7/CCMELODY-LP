@@ -116,9 +116,6 @@ class AdvancedTab(SettingsTab):
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
-        self.experimental_check_box = QtWidgets.QCheckBox(self.ui_group_box)
-        self.experimental_check_box.setObjectName('experimental_check_box')
-        self.ui_layout.addRow(self.experimental_check_box)
         self.left_layout.addWidget(self.ui_group_box)
         if HAS_DARK_STYLE:
             self.use_dark_style_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
@@ -293,8 +290,6 @@ class AdvancedTab(SettingsTab):
                                                             'Auto-scroll the next slide to bottom'))
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
-        self.experimental_check_box.setText(translate('OpenLP.GeneralTab',
-                                                      'Experimental features (use at your own risk)'))
         if HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setText(translate('OpenLP.AdvancedTab', 'Use dark style (needs restart)'))
         self.service_name_group_box.setTitle(translate('OpenLP.AdvancedTab', 'Default Service Name'))
@@ -364,7 +359,6 @@ class AdvancedTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(settings.value('enable exit confirmation'))
-        self.experimental_check_box.setChecked(settings.value('experimental'))
         if HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setChecked(settings.value('use_dark_style'))
         self.hide_mouse_check_box.setChecked(settings.value('hide mouse'))
@@ -428,7 +422,6 @@ class AdvancedTab(SettingsTab):
         slide_max_height_value = self.slide_max_height_combo_box.itemData(slide_max_height_index)
         settings.setValue('slide max height', slide_max_height_value)
         settings.setValue('autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
-        settings.setValue('experimental', self.experimental_check_box.isChecked())
         settings.setValue('enable exit confirmation', self.enable_auto_close_check_box.isChecked())
         settings.setValue('hide mouse', self.hide_mouse_check_box.isChecked())
         settings.setValue('alternate rows', self.alternate_rows_check_box.isChecked())

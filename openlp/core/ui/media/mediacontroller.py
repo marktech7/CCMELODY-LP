@@ -41,7 +41,8 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, VIDEO_EXT, AUDIO_EXT
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path, \
+    VIDEO_EXT, AUDIO_EXT
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 
@@ -229,46 +230,55 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            if service_item.is_capable(ItemCapabilities.HasBackgroundStream):
+                (name, mrl, options) = parse_devicestream_path(service_item.stream_mrl)
+                controller.media_info.file_info = (mrl, options)
+                controller.media_info.is_background = True
+                controller.media_info.media_type = MediaType.Stream
+            elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
                 service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
                 controller.media_info.is_looping_playback = True
-                controller.media_info.is_background = True
-            elif service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.file_info = []
                 controller.media_info.is_background = True
             else:
                 controller.media_info.file_info = [service_item.get_frame_path()]
         display = self._define_display(controller)
         if controller.is_live:
             # if this is an optical device use special handling
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                is_valid = self._check_file_type(controller, display, True)
-                controller.media_info.media_type = MediaType.Stream
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and live')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                log.debug('video is stream and live')
+                path = service_item.get_frames()[0]['path']
+                controller.media_info.media_type = MediaType.Stream
+                (name, mrl, options) = parse_devicestream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
-                log.debug('video is not optical and live')
+                log.debug('video is not optical or stream, but live')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
             controller.media_info.start_time = service_item.start_time
             controller.media_info.end_time = service_item.end_time
         elif controller.preview_display:
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.media_type = MediaType.Stream
-                is_valid = self._check_file_type(controller, display, True)
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and preview')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                path = service_item.get_frames()[0]['path']
+                controller.media_info.media_type = MediaType.Stream
+                (name, mrl, options) = parse_devicestream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
-                log.debug('video is not optical and preview')
+                log.debug('video is not optical or stream, but preview')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
         if not is_valid:
@@ -356,21 +366,19 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.media_type = MediaType.DVD
         return True
 
-    def _check_file_type(self, controller, display, stream=False):
+    def _check_file_type(self, controller, display):
         """
         Select the correct media Player type from the prioritized Player list
 
         :param controller: First element is the controller which should be used
         :param display: Which display to use
-        :param stream: Are we streaming or not
         """
-        if stream:
+        if controller.media_info.media_type == MediaType.Stream:
             self.resize(controller, self.vlc_player)
-            controller.media_info.media_type = MediaType.Stream
-            if self.vlc_player.load(controller, display, None):
+            if self.vlc_player.load(controller, display, controller.media_info.file_info):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True
-            return True
+            return False
         for file in controller.media_info.file_info:
             if file.is_file:
                 suffix = '*%s' % file.suffix.lower()

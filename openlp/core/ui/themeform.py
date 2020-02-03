@@ -26,6 +26,7 @@ import logging
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_not_image_file
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
@@ -124,16 +125,31 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         Validate the current page
         """
-        background_image = BackgroundType.to_string(BackgroundType.Image)
-        if self.page(self.currentId()) == self.background_page and \
-                self.background_page.background_type == background_image and \
-                is_not_image_file(self.background_page.image_path):
-            QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
-                                           translate('OpenLP.ThemeWizard', 'You have not selected a '
-                                                     'background image. Please select one before continuing.'))
-            return False
-        else:
-            return True
+        if self.page(self.currentId()) == self.background_page:
+            background_image = BackgroundType.to_string(BackgroundType.Image)
+            background_video = BackgroundType.to_string(BackgroundType.Video)
+            background_stream = BackgroundType.to_string(BackgroundType.Stream)
+            if self.background_page.background_type == background_image and \
+                    is_not_image_file(self.background_page.image_path):
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background image. Please select one before continuing.'))
+                return False
+            elif self.background_page.background_type == background_video and \
+                    not self.background_page.video_path:
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Video Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background video. Please select one before continuing.'))
+                return False
+            elif self.background_page.background_type == background_stream and \
+                    not self.background_page.stream_mrl.strip():
+                QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Stream Empty'),
+                                               translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                         'background stream. Please select one before continuing.'))
+                return False
+            else:
+                return True
+        return True
 
     def on_current_id_changed(self, page_id):
         """
@@ -144,7 +160,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.setOption(QtWidgets.QWizard.HaveCustomButton1, enabled)
         if self.page(page_id) == self.preview_page:
             self.update_theme()
-            self.preview_box.set_theme(self.theme)
+            self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
             self.preview_box.clear_slides()
             self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
             try:
@@ -253,6 +269,9 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 self.background_page.video_path = self.theme.background_source
             else:
                 self.background_page.video_path = self.theme.background_filename
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            self.background_page.stream_color = self.theme.background_border_color
+            self.background_page.stream_mrl = self.theme.background_source
 
     def set_main_area_page_values(self):
         """
@@ -312,7 +331,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         Handle the display and state of the Preview page.
         """
         self.theme_name_edit.setText(self.theme.theme_name)
-        self.preview_box.set_theme(self.theme)
+        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
 
     def update_theme(self):
         """
@@ -338,6 +357,10 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             self.theme.background_border_color = self.background_page.video_color
             self.theme.background_source = self.background_page.video_path
             self.theme.background_filename = self.background_page.video_path
+        elif self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            self.theme.background_border_color = self.background_page.stream_color
+            self.theme.background_source = self.background_page.stream_mrl
+            self.theme.background_filename = self.background_page.stream_mrl
         # main page
         self.theme.font_main_name = self.main_area_page.font_name
         self.theme.font_main_size = self.main_area_page.font_size
@@ -397,6 +420,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
                 self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
             file_name = self.theme.background_filename.name
             destination_path = self.path / self.theme.theme_name / file_name
+        if self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            destination_path = self.theme.background_source
         if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
             return
         # Set the theme background to the cache location

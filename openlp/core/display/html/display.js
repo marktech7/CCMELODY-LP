@@ -1001,6 +1001,7 @@ var Display = {
         console.warn(backgroundStyle["background-image"]);
         break;
       case BackgroundType.Video:
+        // never actually used since background type is overridden from video to transparent in window.py
         backgroundStyle["background-color"] = theme.background_border_color;
         backgroundHtml = "<video loop autoplay muted><source src='" + theme.background_filename + "'></video>";
         console.warn(backgroundHtml);

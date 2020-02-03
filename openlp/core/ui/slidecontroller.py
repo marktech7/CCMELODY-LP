@@ -1482,7 +1482,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.is_live and self.hide_mode() == HideMode.Theme:
             self.media_controller.load_video(self.controller_type, item, HideMode.Blank)
             self.on_blank_display(True)
-        else:
+        elif self.is_live or item.is_media():
+            # avoid loading the video if this is preview and the media is background
             self.media_controller.load_video(self.controller_type, item, self.hide_mode())
         if not self.is_live:
             self.preview_display.show()

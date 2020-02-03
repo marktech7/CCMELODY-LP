@@ -210,7 +210,7 @@ class SongsTab(SettingsTab):
         self.chord_notation = 'neo-latin'
 
     def on_footer_reset_button_clicked(self):
-        self.footer_edit_box.setPlainText(self.settings.get_default_value('songs/footer template'))
+        self.footer_edit_box.setPlainText(self.settings.get_default_value('footer template'))
 
     def load(self):
         self.settings.beginGroup(self.settings_section)
@@ -247,7 +247,7 @@ class SongsTab(SettingsTab):
         self.settings.setValue('disable chords import', self.disable_chords_import)
         self.settings.setValue('chord notation', self.chord_notation)
         # Only save footer template if it has been changed. This allows future updates
-        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('songs/footer template'):
+        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('footer template'):
             self.settings.setValue('footer template', self.footer_edit_box.toPlainText())
         self.settings.setValue('add songbook slide', self.songbook_slide)
         self.settings.endGroup()

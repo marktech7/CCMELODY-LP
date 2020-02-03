@@ -384,11 +384,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                 if theme.background_type == 'video' or theme.background_type == 'stream':
                     theme_copy.background_type = 'transparent'
         else:
-            # If review Display for media so we need to display black box.
-            if theme.background_type == 'stream':
-                theme_copy.background_type = 'transparent'
-            elif service_item_type == ServiceItemType.Command or theme.background_type == 'video' or \
-                    theme.background_type == 'live':
+            # If preview Display with media background we just show the background color, no media
+            if theme.background_type == 'stream' or theme.background_type == 'video':
+                theme_copy.background_type = 'solid'
+                theme_copy.background_start_color = theme.background_border_color
+                theme_copy.background_end_color = theme.background_border_color
+                theme_copy.background_main_color = theme.background_border_color
+                theme_copy.background_footer_color = theme.background_border_color
+                theme_copy.background_color = theme.background_border_color
+            # If preview Display for media so we need to display black box.
+            elif service_item_type == ServiceItemType.Command or theme.background_type == 'live':
                 theme_copy.background_type = 'solid'
                 theme_copy.background_start_color = '#590909'
                 theme_copy.background_end_color = '#590909'

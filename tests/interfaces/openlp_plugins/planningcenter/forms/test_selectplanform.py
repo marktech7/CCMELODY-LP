@@ -109,9 +109,10 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # The first service type is selected
         self.assertEqual(self.form.service_type_combo_box.currentText(), 'gbf',
                          'The service_type_combo_box defaults to "gbf"')
-        # the selected plan is today (the mocked date is a Sunday)
-        self.assertEqual(self.form.plan_selection_combo_box.currentText(),
-                         date.strftime(mock_date.today.return_value, '%B %d, %Y'),
+        # the selected plan is today (the mocked date is a Sunday). Set to lowercase beacuse in some locales
+        # months is not capitalized.
+        self.assertEqual(self.form.plan_selection_combo_box.currentText().lower(),
+                         date.strftime(mock_date.today.return_value, '%B %d, %Y').lower(),
                          'Incorrect default date selected for Plan Date')
         # count the number of themes listed and make sure it matches expected value
         self.assertEqual(self.form.song_theme_selection_combo_box.count(),

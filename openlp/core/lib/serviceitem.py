@@ -130,12 +130,17 @@ class ServiceItem(RegistryProperties):
         theme = theme_manager.get_theme_data(theme)
         # Clean up capabilities and reload from the theme.
         if self.is_text():
+            # Cleanup capabilities
             if self.is_capable(ItemCapabilities.CanStream):
                 self.remove_capability(ItemCapabilities.CanStream)
             if self.is_capable(ItemCapabilities.HasBackgroundVideo):
                 self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if self.is_capable(ItemCapabilities.HasBackgroundStream):
+                self.remove_capability(ItemCapabilities.HasBackgroundStream)
+            # Reload capabilities
             if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
-                self.add_capability(ItemCapabilities.CanStream)
+                self.add_capability(ItemCapabilities.HasBackgroundStream)
+                self.stream_mrl = theme.background_filename
             if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
                 self.video_file_name = theme.background_filename
                 self.add_capability(ItemCapabilities.HasBackgroundVideo)
@@ -663,7 +668,7 @@ class ServiceItem(RegistryProperties):
     def requires_media(self):
         return self.is_capable(ItemCapabilities.HasBackgroundAudio) or \
             self.is_capable(ItemCapabilities.HasBackgroundVideo) or \
-            self.is_capable(ItemCapabilities.CanStream)
+            self.is_capable(ItemCapabilities.HasBackgroundStream)
 
     def missing_frames(self):
         """
