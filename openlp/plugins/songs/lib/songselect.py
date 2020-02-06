@@ -196,9 +196,14 @@ class SongSelectImport(object):
                     songs.append(song)
                 break
             for result in search_results:
+                authors = result.find('p', 'song-result-subtitle').string
+                if authors:
+                    authors = unescape(authors).strip().split(', ')
+                else:
+                    authors = ""
                 song = {
                     'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
-                    'authors': unescape(result.find('p', 'song-result-subtitle').string).strip().split(', '),
+                    'authors': authors,
                     'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
                 }
                 if callback:
