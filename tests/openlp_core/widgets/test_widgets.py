@@ -382,7 +382,6 @@ class TestScreenSelectionWidget(TestCase, TestMixin):
         mocked_widget.deleteLater.assert_called_once()
         mocked_screen_button_group.removeButton.assert_called_once_with(mocked_widget)
 
-
     def test_on_identify_timer_shot(self):
         """
         Test that the _on_identify_timer_shot() method removes the labels from the screens

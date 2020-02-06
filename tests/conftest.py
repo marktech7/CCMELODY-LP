@@ -41,7 +41,7 @@ from openlp.core.common.settings import Settings
 @pytest.yield_fixture
 def qapp(qtbot):
     """An instance of QApplication"""
-    appl = qt_api.QApplication.instance()
+    qt_api.QApplication.instance()
     app = OpenLP()
     yield app
     del app
