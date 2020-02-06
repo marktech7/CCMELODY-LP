@@ -175,7 +175,7 @@ class SongSelectImport(object):
         songs = []
         while self.run_search:
             if current_page > 1:
-                params['page'] = current_page
+                params['CurrentPage'] = current_page
             try:
                 results_page = BeautifulSoup(self.opener.open(SEARCH_URL + '?' + urlencode(params)).read(), 'lxml')
                 search_results = results_page.find_all('div', 'song-result')
