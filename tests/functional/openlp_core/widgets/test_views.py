@@ -35,6 +35,7 @@ from openlp.core.ui.icons import UiIcons
 
 CLAPPERBOARD = UiIcons().clapperboard
 
+
 @pytest.yield_fixture
 def preview_widget_env():
     """Local test setup"""
@@ -122,7 +123,7 @@ def test_new_list_preview_widget(preview_widget_env, mock_settings):
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.image_manager')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
-def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToContents,mocked_image_manager,
+def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToContents, mocked_image_manager,
                                      preview_widget_env, mock_settings):
     """
     Test that thubmails for different slides are loaded properly in replace_service_item.

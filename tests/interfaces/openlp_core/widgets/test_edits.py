@@ -22,7 +22,7 @@
 Module to test the EditCustomForm.
 """
 from unittest import TestCase
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, call
 
 from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
 

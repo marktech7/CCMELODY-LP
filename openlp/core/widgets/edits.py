@@ -31,7 +31,6 @@ from openlp.core.common import CONTROL_CHARS
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.path import path_to_str, str_to_path
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.ui import create_action, create_widget_action
 from openlp.core.ui.icons import UiIcons
