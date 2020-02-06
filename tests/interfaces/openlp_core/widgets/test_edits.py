@@ -22,7 +22,7 @@
 Module to test the EditCustomForm.
 """
 from unittest import TestCase
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, call
 
 from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
 
@@ -56,11 +56,7 @@ class TestSearchEdit(TestCase, TestMixin):
         self.setup_application()
         self.main_window = QtWidgets.QMainWindow()
         Registry().register('main_window', self.main_window)
-
-        settings_patcher = patch(
-            'openlp.core.widgets.edits.Settings', return_value=MagicMock(**{'value.return_value': SearchTypes.First}))
-        self.addCleanup(settings_patcher.stop)
-        self.mocked_settings = settings_patcher.start()
+        Registry().register('settings', MagicMock(**{'value.return_value': SearchTypes.First}))
 
         self.search_edit = SearchEdit(self.main_window, 'settings_section')
         # To complete set up we have to set the search types.
@@ -86,7 +82,7 @@ class TestSearchEdit(TestCase, TestMixin):
         #       settings
         assert self.search_edit.current_search_type() == SearchTypes.First, \
             "The first search type should be selected."
-        self.mocked_settings().setValue.assert_called_once_with('settings_section/last used search type', 0)
+        Registry().get('settings').setValue.assert_called_once_with('settings_section/last used search type', 0)
 
     def test_set_current_search_type(self):
         """
@@ -102,7 +98,7 @@ class TestSearchEdit(TestCase, TestMixin):
             "The search type should be SearchTypes.Second"
         assert self.search_edit.placeholderText() == SECOND_PLACEHOLDER_TEXT, \
             "The correct placeholder text should be 'Second Placeholder Text'."
-        self.mocked_settings().setValue.assert_has_calls(
+        Registry().get('settings').setValue.assert_has_calls(
             [call('settings_section/last used search type', 0), call('settings_section/last used search type', 1)])
 
     def test_clear_button_visibility(self):

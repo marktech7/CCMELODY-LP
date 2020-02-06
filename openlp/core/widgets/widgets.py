@@ -24,7 +24,8 @@ The :mod:`~openlp.core.widgets.widgets` module contains custom widgets used in O
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import ProxyMode, Settings
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import ProxyMode
 from openlp.core.lib.ui import critical_error_message_box
 
 
@@ -57,6 +58,7 @@ class ProxyWidget(QtWidgets.QGroupBox):
         :param QtWidgets.QWidget | None parent: The widgets parent
         """
         super().__init__(parent)
+        self.settings = Registry().get('settings')
         self._setup()
 
     def _setup(self):
@@ -130,24 +132,22 @@ class ProxyWidget(QtWidgets.QGroupBox):
         """
         Load the data from the settings to the widget.
         """
-        settings = Settings()
-        checked_radio = self.radio_group.button(settings.value('advanced/proxy mode'))
+        checked_radio = self.radio_group.button(self.settings.value('advanced/proxy mode'))
         checked_radio.setChecked(True)
-        self.http_edit.setText(settings.value('advanced/proxy http'))
-        self.https_edit.setText(settings.value('advanced/proxy https'))
-        self.username_edit.setText(settings.value('advanced/proxy username'))
-        self.password_edit.setText(settings.value('advanced/proxy password'))
+        self.http_edit.setText(self.settings.value('advanced/proxy http'))
+        self.https_edit.setText(self.settings.value('advanced/proxy https'))
+        self.username_edit.setText(self.settings.value('advanced/proxy username'))
+        self.password_edit.setText(self.settings.value('advanced/proxy password'))
 
     def save(self):
         """
         Save the widget data to the settings
         """
-        settings = Settings()  # TODO: Migrate from old system
-        settings.setValue('advanced/proxy mode', self.radio_group.checkedId())
-        settings.setValue('advanced/proxy http', self.http_edit.text())
-        settings.setValue('advanced/proxy https', self.https_edit.text())
-        settings.setValue('advanced/proxy username', self.username_edit.text())
-        settings.setValue('advanced/proxy password', self.password_edit.text())
+        self.settings.setValue('advanced/proxy mode', self.radio_group.checkedId())
+        self.settings.setValue('advanced/proxy http', self.http_edit.text())
+        self.settings.setValue('advanced/proxy https', self.https_edit.text())
+        self.settings.setValue('advanced/proxy username', self.username_edit.text())
+        self.settings.setValue('advanced/proxy password', self.password_edit.text())
 
 
 class ProxyDialog(QtWidgets.QDialog):
@@ -380,11 +380,10 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         Save the screen settings
         """
         self._save_screen(self.current_screen)
-        settings = Settings()
         screen_settings = {}
         for screen in self.screens:
             screen_settings[screen.number] = screen.to_dict()
-        settings.setValue('core/screens', screen_settings)
+        Registry().get('settings').setValue('core/screens', screen_settings)
         # On save update the screens as well
 
     def use_simple_view(self):

@@ -30,7 +30,6 @@ from openlp.core.common import is_win
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.widgets.layouts import AspectRatioLayout
 
@@ -120,7 +119,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
             # Sort out image heights.
             else:
                 height = self.viewport().width() // self.screen_ratio
-                max_img_row_height = Settings().value('advanced/slide max height')
+                max_img_row_height = self.settings.value('advanced/slide max height')
                 # Adjust for row height cap if in use.
                 if isinstance(max_img_row_height, int):
                     if 0 < max_img_row_height < height:
@@ -139,7 +138,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         Will scale non-image slides.
         """
         # Only for non-text slides when row height cap in use
-        max_img_row_height = Settings().value('advanced/slide max height')
+        max_img_row_height = self.settings.value('advanced/slide max height')
         if self.service_item.is_text() or not isinstance(max_img_row_height, int) or max_img_row_height == 0:
             return
         # Get and validate label widget containing slide & adjust max width
@@ -220,7 +219,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
                 layout.addWidget(label)
                 container.setLayout(layout)
                 slide_height = width // self.screen_ratio
-                max_img_row_height = Settings().value('advanced/slide max height')
+                max_img_row_height = self.settings.value('advanced/slide max height')
                 if isinstance(max_img_row_height, int):
                     if 0 < max_img_row_height < slide_height:
                         slide_height = max_img_row_height
@@ -249,7 +248,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         Switches to the given row.
         """
         # Retrieve setting
-        auto_scrolling = Settings().value('advanced/autoscrolling')
+        auto_scrolling = self.settings.value('advanced/autoscrolling')
         # Check if auto-scroll disabled (None) and validate value as dict containing 'dist' and 'pos'
         # 'dist' represents the slide to scroll to relative to the new slide (-1 = previous, 0 = current, 1 = next)
         # 'pos' represents the vert position of of the slide (0 = in view, 1 = top, 2 = middle, 3 = bottom)

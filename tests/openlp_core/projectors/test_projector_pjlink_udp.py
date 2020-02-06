@@ -26,6 +26,7 @@ from unittest import TestCase
 from unittest.mock import call, patch
 
 import openlp.core.projectors.pjlink
+from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.projectors.constants import PJLINK_PORT
 from openlp.core.projectors.pjlink import PJLinkUDP
@@ -46,6 +47,7 @@ class TestPJLinkBase(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Registry.create()
+        Registry().register('settings', Settings())
         """
         with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
             if os.path.exists(TEST_DB):

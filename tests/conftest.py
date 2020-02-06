@@ -27,6 +27,8 @@ from tempfile import mkstemp
 from unittest.mock import MagicMock
 
 import pytest
+from pytestqt.qt_compat import qt_api
+
 from PyQt5 import QtCore, QtWidgets  # noqa
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
@@ -37,8 +39,9 @@ from openlp.core.common.settings import Settings
 
 
 @pytest.yield_fixture
-def qapp():
+def qapp(qtbot):
     """An instance of QApplication"""
+    qt_api.QApplication.instance()
     app = OpenLP()
     yield app
     del app

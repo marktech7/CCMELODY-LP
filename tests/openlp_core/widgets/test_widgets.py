@@ -32,198 +32,175 @@ from openlp.core.widgets.widgets import ProxyWidget, ProxyDialog, ScreenButton, 
 from tests.helpers.testmixin import TestMixin
 
 
-class TestProxyWidget(TestCase, TestMixin):
+def test_radio_button_exclusivity_no_proxy(settings):
     """
-    Test the EditCustomForm.
+    Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
+    `manual_proxy_radio` is checked
     """
-    def setUp(self):
-        """
-        Create the UI
-        """
-        self.setup_application()
+    # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
+    proxy_widget = ProxyWidget()
+    proxy_widget.manual_proxy_radio.setChecked(True)
 
-    def test_radio_button_exclusivity_no_proxy(self):
-        """
-        Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
-        `manual_proxy_radio` is checked
-        """
-        # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
-        proxy_widget = ProxyWidget()
-        proxy_widget.manual_proxy_radio.setChecked(True)
+    # WHEN: 'Checking' the `no_proxy_radio` button
+    proxy_widget.no_proxy_radio.setChecked(True)
 
-        # WHEN: 'Checking' the `no_proxy_radio` button
-        proxy_widget.no_proxy_radio.setChecked(True)
-
-        # THEN: The other radio buttons should not be checked and the line edits should not be enabled
-        assert proxy_widget.use_sysem_proxy_radio.isChecked() is False
-        assert proxy_widget.manual_proxy_radio.isChecked() is False
-        assert proxy_widget.http_edit.isEnabled() is False
-        assert proxy_widget.https_edit.isEnabled() is False
-        assert proxy_widget.username_edit.isEnabled() is False
-        assert proxy_widget.password_edit.isEnabled() is False
-
-    def test_radio_button_exclusivity_system_proxy(self):
-        """
-        Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
-        `manual_proxy_radio` is checked
-        """
-        # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
-        proxy_widget = ProxyWidget()
-        proxy_widget.manual_proxy_radio.setChecked(True)
-
-        # WHEN: 'Checking' the `use_sysem_proxy_radio` button
-        proxy_widget.use_sysem_proxy_radio.setChecked(True)
-
-        # THEN: The other radio buttons should not be checked and the line edits should not be enabled
-        assert proxy_widget.no_proxy_radio.isChecked() is False
-        assert proxy_widget.manual_proxy_radio.isChecked() is False
-        assert proxy_widget.http_edit.isEnabled() is False
-        assert proxy_widget.https_edit.isEnabled() is False
-        assert proxy_widget.username_edit.isEnabled() is False
-        assert proxy_widget.password_edit.isEnabled() is False
-
-    def test_radio_button_exclusivity_manual_proxy(self):
-        """
-        Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
-        `manual_proxy_radio` is checked
-        """
-        # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
-        proxy_widget = ProxyWidget()
-        proxy_widget.no_proxy_radio.setChecked(True)
-
-        # WHEN: 'Checking' the `manual_proxy_radio` button
-        proxy_widget.manual_proxy_radio.setChecked(True)
-
-        # THEN: The other radio buttons should not be checked and the line edits should be enabled
-        assert proxy_widget.no_proxy_radio.isChecked() is False
-        assert proxy_widget.use_sysem_proxy_radio.isChecked() is False
-        assert proxy_widget.http_edit.isEnabled() is True
-        assert proxy_widget.https_edit.isEnabled() is True
-        assert proxy_widget.username_edit.isEnabled() is True
-        assert proxy_widget.password_edit.isEnabled() is True
-
-    def test_proxy_widget_load_default_settings(self):
-        """
-        Test that the default settings are loaded from the config correctly
-        """
-        # GIVEN: And instance of the widget with default settings
-        proxy_widget = ProxyWidget()
-
-        # WHEN: Calling the `load` method
-        proxy_widget.load()
-
-        # THEN: The widget should be in its default state
-        assert proxy_widget.use_sysem_proxy_radio.isChecked() is True
-        assert proxy_widget.http_edit.text() == ''
-        assert proxy_widget.https_edit.text() == ''
-        assert proxy_widget.username_edit.text() == ''
-        assert proxy_widget.password_edit.text() == ''
-
-    @patch.object(ProxyWidget, 'load')
-    @patch('openlp.core.widgets.widgets.Settings')
-    def test_proxy_widget_save_no_proxy_settings(self, settings_patcher, proxy_widget_load_patcher):
-        """
-        Test that the settings are saved correctly
-        """
-        # GIVEN: A Mocked settings instance of the proxy widget with some known values set
-        settings_instance = MagicMock()
-        settings_patcher.return_value = settings_instance
-        proxy_widget = ProxyWidget()
-        proxy_widget.no_proxy_radio.setChecked(True)
-        proxy_widget.http_edit.setText('')
-        proxy_widget.https_edit.setText('')
-        proxy_widget.username_edit.setText('')
-        proxy_widget.password_edit.setText('')
-
-        # WHEN: Calling save
-        proxy_widget.save()
-
-        # THEN: The settings should be set as expected
-        settings_instance.setValue.assert_has_calls(
-            [call('advanced/proxy mode', ProxyMode.NO_PROXY),
-             call('advanced/proxy http', ''),
-             call('advanced/proxy https', ''),
-             call('advanced/proxy username', ''),
-             call('advanced/proxy password', '')])
-
-    @patch.object(ProxyWidget, 'load')
-    @patch('openlp.core.widgets.widgets.Settings')
-    def test_proxy_widget_save_manual_settings(self, settings_patcher, proxy_widget_load_patcher):
-        """
-        Test that the settings are saved correctly
-        """
-        # GIVEN: A Mocked and instance of the proxy widget with some known values set
-        settings_instance = MagicMock()
-        settings_patcher.return_value = settings_instance
-        proxy_widget = ProxyWidget()
-        proxy_widget.manual_proxy_radio.setChecked(True)
-        proxy_widget.http_edit.setText('http_proxy_server:port')
-        proxy_widget.https_edit.setText('https_proxy_server:port')
-        proxy_widget.username_edit.setText('username')
-        proxy_widget.password_edit.setText('password')
-
-        # WHEN: Calling save
-        proxy_widget.save()
-
-        # THEN: The settings should be set as expected
-        settings_instance.setValue.assert_has_calls(
-            [call('advanced/proxy mode', ProxyMode.MANUAL_PROXY),
-             call('advanced/proxy http', 'http_proxy_server:port'),
-             call('advanced/proxy https', 'https_proxy_server:port'),
-             call('advanced/proxy username', 'username'),
-             call('advanced/proxy password', 'password')])
+    # THEN: The other radio buttons should not be checked and the line edits should not be enabled
+    assert proxy_widget.use_sysem_proxy_radio.isChecked() is False
+    assert proxy_widget.manual_proxy_radio.isChecked() is False
+    assert proxy_widget.http_edit.isEnabled() is False
+    assert proxy_widget.https_edit.isEnabled() is False
+    assert proxy_widget.username_edit.isEnabled() is False
+    assert proxy_widget.password_edit.isEnabled() is False
 
 
-class TestProxyDialog(TestCase, TestMixin):
-    """Test the ProxyDialog"""
+def test_radio_button_exclusivity_system_proxy(settings):
+    """
+    Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
+    `manual_proxy_radio` is checked
+    """
+    # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
+    proxy_widget = ProxyWidget()
+    proxy_widget.manual_proxy_radio.setChecked(True)
 
-    def setUp(self):
-        """Test setup"""
-        self.setup_application()
-        self.build_settings()
+    # WHEN: 'Checking' the `use_sysem_proxy_radio` button
+    proxy_widget.use_sysem_proxy_radio.setChecked(True)
 
-    def tearDown(self):
-        """Teardown tests"""
-        del self.app
-
-    def test_init(self):
-        """Test that the ProxyDialog is created successfully"""
-        # GIVEN: ProxyDialog class
-        # WHEN: It is instantiated
-        # THEN: There should be no problems
-        ProxyDialog()
-
-    def test_accept(self):
-        """Test that the accept() method of the ProxyDialog works correctly"""
-        # GIVEN: An instance of a ProxyDialog with a mocked out widget
-        dlg = ProxyDialog()
-        dlg.proxy_widget = MagicMock()
-
-        # WHEN: accept() is called
-        dlg.accept()
-
-        # THEN: The save() method on the widget should have been called
-        dlg.proxy_widget.save.assert_called_once()
+    # THEN: The other radio buttons should not be checked and the line edits should not be enabled
+    assert proxy_widget.no_proxy_radio.isChecked() is False
+    assert proxy_widget.manual_proxy_radio.isChecked() is False
+    assert proxy_widget.http_edit.isEnabled() is False
+    assert proxy_widget.https_edit.isEnabled() is False
+    assert proxy_widget.username_edit.isEnabled() is False
+    assert proxy_widget.password_edit.isEnabled() is False
 
 
-class TestSceenButton(TestCase):
-    def test_screen_button_initialisation(self):
-        """
-        Test the initialisation of the ScreenButton object
-        """
-        # GIVEN: A mocked screen object
-        screen_mock = MagicMock(spec=Screen)
-        screen_mock.number = 0
-        screen_mock.__str__.return_value = 'Mocked Screen Object'
+def test_radio_button_exclusivity_manual_proxy(settings):
+    """
+    Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
+    `manual_proxy_radio` is checked
+    """
+    # GIVEN: An instance of the `openlp.core.common.widgets.widgets.ProxyWidget` with a radio already checked
+    proxy_widget = ProxyWidget()
+    proxy_widget.no_proxy_radio.setChecked(True)
 
-        # WHEN: initialising the ScreenButton object
-        instance = ScreenButton(None, screen_mock)
+    # WHEN: 'Checking' the `manual_proxy_radio` button
+    proxy_widget.manual_proxy_radio.setChecked(True)
 
-        # THEN: The ScreenButton should have been initalised correctly with the data from the mocked screen object
-        assert isinstance(instance, QtWidgets.QPushButton)
-        assert instance.objectName() == 'screen_0_button'
-        assert instance.isCheckable() is True
-        assert instance.text() == 'Mocked Screen Object'
+    # THEN: The other radio buttons should not be checked and the line edits should be enabled
+    assert proxy_widget.no_proxy_radio.isChecked() is False
+    assert proxy_widget.use_sysem_proxy_radio.isChecked() is False
+    assert proxy_widget.http_edit.isEnabled() is True
+    assert proxy_widget.https_edit.isEnabled() is True
+    assert proxy_widget.username_edit.isEnabled() is True
+    assert proxy_widget.password_edit.isEnabled() is True
+
+
+def test_proxy_widget_load_default_settings(settings):
+    """
+    Test that the default settings are loaded from the config correctly
+    """
+    # GIVEN: And instance of the widget with default settings
+    proxy_widget = ProxyWidget()
+
+    # WHEN: Calling the `load` method
+    proxy_widget.load()
+
+    # THEN: The widget should be in its default state
+    assert proxy_widget.use_sysem_proxy_radio.isChecked() is True
+    assert proxy_widget.http_edit.text() == ''
+    assert proxy_widget.https_edit.text() == ''
+    assert proxy_widget.username_edit.text() == ''
+    assert proxy_widget.password_edit.text() == ''
+
+
+@patch.object(ProxyWidget, 'load')
+def test_proxy_widget_save_no_proxy_settings(proxy_widget_load_patcher, qapp, mock_settings):
+    """
+    Test that the settings are saved correctly
+    """
+    # GIVEN: A Mocked settings instance of the proxy widget with some known values set
+    proxy_widget = ProxyWidget()
+    proxy_widget.no_proxy_radio.setChecked(True)
+    proxy_widget.http_edit.setText('')
+    proxy_widget.https_edit.setText('')
+    proxy_widget.username_edit.setText('')
+    proxy_widget.password_edit.setText('')
+
+    # WHEN: Calling save
+    proxy_widget.save()
+
+    # THEN: The settings should be set as expected
+    mock_settings.setValue.assert_has_calls(
+        [call('advanced/proxy mode', ProxyMode.NO_PROXY),
+         call('advanced/proxy http', ''),
+         call('advanced/proxy https', ''),
+         call('advanced/proxy username', ''),
+         call('advanced/proxy password', '')])
+
+
+@patch.object(ProxyWidget, 'load')
+def test_proxy_widget_save_manual_settings(proxy_widget_load_patcher, qapp, mock_settings):
+    """
+    Test that the settings are saved correctly
+    """
+    # GIVEN: A Mocked and instance of the proxy widget with some known values set
+    proxy_widget = ProxyWidget()
+    proxy_widget.manual_proxy_radio.setChecked(True)
+    proxy_widget.http_edit.setText('http_proxy_server:port')
+    proxy_widget.https_edit.setText('https_proxy_server:port')
+    proxy_widget.username_edit.setText('username')
+    proxy_widget.password_edit.setText('password')
+
+    # WHEN: Calling save
+    proxy_widget.save()
+
+    # THEN: The settings should be set as expected
+    mock_settings.setValue.assert_has_calls(
+        [call('advanced/proxy mode', ProxyMode.MANUAL_PROXY),
+         call('advanced/proxy http', 'http_proxy_server:port'),
+         call('advanced/proxy https', 'https_proxy_server:port'),
+         call('advanced/proxy username', 'username'),
+         call('advanced/proxy password', 'password')])
+
+
+def test_proxy_dialog_init(settings):
+    """Test that the ProxyDialog is created successfully"""
+    # GIVEN: ProxyDialog class
+    # WHEN: It is instantiated
+    # THEN: There should be no problems
+    ProxyDialog()
+
+
+def test_proxy_dialog_accept(settings):
+    """Test that the accept() method of the ProxyDialog works correctly"""
+    # GIVEN: An instance of a ProxyDialog with a mocked out widget
+    dlg = ProxyDialog()
+    dlg.proxy_widget = MagicMock()
+
+    # WHEN: accept() is called
+    dlg.accept()
+
+    # THEN: The save() method on the widget should have been called
+    dlg.proxy_widget.save.assert_called_once()
+
+
+def test_screen_button_initialisation():
+    """
+    Test the initialisation of the ScreenButton object
+    """
+    # GIVEN: A mocked screen object
+    screen_mock = MagicMock(spec=Screen)
+    screen_mock.number = 0
+    screen_mock.__str__.return_value = 'Mocked Screen Object'
+
+    # WHEN: initialising the ScreenButton object
+    instance = ScreenButton(None, screen_mock)
+
+    # THEN: The ScreenButton should have been initalised correctly with the data from the mocked screen object
+    assert isinstance(instance, QtWidgets.QPushButton)
+    assert instance.objectName() == 'screen_0_button'
+    assert instance.isCheckable() is True
+    assert instance.text() == 'Mocked Screen Object'
 
 
 class TestScreenSelectionWidget(TestCase, TestMixin):
@@ -405,29 +382,6 @@ class TestScreenSelectionWidget(TestCase, TestMixin):
         mocked_widget.deleteLater.assert_called_once()
         mocked_screen_button_group.removeButton.assert_called_once_with(mocked_widget)
 
-    def test_save(self):
-        """
-        Test that the save() method saves the screens
-        """
-        # GIVEN: A ScreenSelectionWidget and a bunch o' mocks
-        mocked_screen = MagicMock(**{'number': 0, 'to_dict.return_value': {'number': 0}})
-        instance = ScreenSelectionWidget()
-        instance._save_screen = MagicMock()
-        instance.screens = [mocked_screen]
-        instance.current_screen = mocked_screen
-
-        # WHEN: Save is called
-        with patch('openlp.core.widgets.widgets.Settings') as MockSettings:
-            mocked_settings = MagicMock()
-            MockSettings.return_value = mocked_settings
-            instance.save()
-
-        # THEN: The right things should happen
-        instance._save_screen.assert_called_once_with(mocked_screen)
-        MockSettings.assert_called_once()
-        mocked_screen.to_dict.assert_called_once()
-        mocked_settings.setValue.assert_called_once_with('core/screens', {0: {'number': 0}})
-
     def test_on_identify_timer_shot(self):
         """
         Test that the _on_identify_timer_shot() method removes the labels from the screens
@@ -525,3 +479,22 @@ class TestScreenSelectionWidget(TestCase, TestMixin):
                                              'checkbox for that screen.', parent=instance, question=False)
         assert instance.use_screen_check_box.isChecked() is True
         assert instance.display_group_box.isChecked() is True
+
+
+def test_screen_selection_save(mock_settings):
+    """
+    Test that the save() method saves the screens
+    """
+    # GIVEN: A ScreenSelectionWidget and a bunch o' mocks
+    mocked_screen = MagicMock(**{'number': 0, 'to_dict.return_value': {'number': 0}})
+    instance = ScreenSelectionWidget()
+    instance._save_screen = MagicMock()
+    instance.screens = [mocked_screen]
+    instance.current_screen = mocked_screen
+
+    instance.save()
+
+    # THEN: The right things should happen
+    instance._save_screen.assert_called_once_with(mocked_screen)
+    mocked_screen.to_dict.assert_called_once()
+    mock_settings.setValue.assert_called_once_with('core/screens', {0: {'number': 0}})

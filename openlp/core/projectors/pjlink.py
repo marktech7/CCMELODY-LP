@@ -53,7 +53,7 @@ from PyQt5 import QtCore, QtNetwork
 
 from openlp.core.common import qmd5_hash
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.projectors.pjlinkcommands import process_command
 from openlp.core.projectors.constants import CONNECTION_ERRORS, E_AUTHENTICATION, E_CONNECTION_REFUSED, E_GENERAL, \
     E_NETWORK, E_NOT_CONNECTED, E_SOCKET_TIMEOUT, PJLINK_CLASS, \
@@ -100,8 +100,9 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
         self.search_time = 30000  # 30 seconds for allowed time
         self.search_timer = QtCore.QTimer()
         self.udp_broadcast_listen_setting = False
+        self.settings = Registry().get('settings')
         log.debug('(UDP:{port}) PJLinkUDP() Initialized'.format(port=self.port))
-        if Settings().value('projector/udp broadcast listen'):
+        if self.settings.value('projector/udp broadcast listen'):
             self.udp_start()
 
     def udp_start(self):
@@ -110,7 +111,7 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
         """
         log.debug('(UDP:{port}) Start called'.format(port=self.port))
         self.readyRead.connect(self.get_datagram)
-        self.check_settings(checked=Settings().value('projector/udp broadcast listen'))
+        self.check_settings(checked=self.settings.value('projector/udp broadcast listen'))
 
     def udp_stop(self):
         """
