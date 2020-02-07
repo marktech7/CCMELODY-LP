@@ -42,6 +42,7 @@ class TestThemeManager(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         Registry.create()
+        Registry().register('settings', Settings())
         self.theme_manager = ThemeManager()
 
     def tearDown(self):

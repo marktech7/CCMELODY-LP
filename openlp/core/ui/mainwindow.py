@@ -1225,10 +1225,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Remove obsolete entries.
         self.settings.remove('custom slide')
         self.settings.remove('service')
-        self.settings.beginGroup(self.general_section)
+        self.settings.beginGroup(self.general_settings_section)
         self.recent_files = self.settings.value('recent files')
         self.settings.endGroup()
-        self.settings.beginGroup(self.ui_self.settings_section)
+        self.settings.beginGroup(self.ui_settings_section)
         self.move(self.settings.value('main window position'))
         self.restoreGeometry(self.settings.value('main window geometry'))
         self.restoreState(self.settings.value('main window state'))

@@ -21,62 +21,54 @@
 """
 Package to test the openlp.core.ui.ThemeTab package.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui.settingsform import SettingsForm
 from openlp.core.ui.themestab import ThemesTab
-from tests.helpers.testmixin import TestMixin
 
 
-class TestThemeTab(TestCase, TestMixin):
+def test_creation(mock_settings):
+    """
+    Test that  Themes Tab is created.
+    """
+    # GIVEN: A new Advanced Tab
+    settings_form = SettingsForm(None)
 
-    def setUp(self):
-        """
-        Set up a few things for the tests
-        """
-        Registry.create()
+    # WHEN: I create an advanced tab
+    themes_tab = ThemesTab(settings_form)
 
-    def test_creation(self):
-        """
-        Test that  Themes Tab is created.
-        """
-        # GIVEN: A new Advanced Tab
-        settings_form = SettingsForm(None)
+    # THEN:
+    assert "Themes" == themes_tab.tab_title, 'The tab title should be Theme'
 
-        # WHEN: I create an advanced tab
-        themes_tab = ThemesTab(settings_form)
 
-        # THEN:
-        assert "Themes" == themes_tab.tab_title, 'The tab title should be Theme'
+def test_save_triggers_processes_true(mock_settings):
+    """
+    Test that the global theme event is triggered when the tab is visited.
+    """
+    # GIVEN: A new Advanced Tab
+    settings_form = SettingsForm(None)
+    themes_tab = ThemesTab(settings_form)
+    Registry().register('renderer', MagicMock())
+    themes_tab.tab_visited = True
+    # WHEN: I change search as type check box
+    themes_tab.save()
 
-    def test_save_triggers_processes_true(self):
-        """
-        Test that the global theme event is triggered when the tab is visited.
-        """
-        # GIVEN: A new Advanced Tab
-        settings_form = SettingsForm(None)
-        themes_tab = ThemesTab(settings_form)
-        Registry().register('renderer', MagicMock())
-        themes_tab.tab_visited = True
-        # WHEN: I change search as type check box
-        themes_tab.save()
+    # THEN: we should have two post save processed to run
+    assert 1 == len(settings_form.processes), 'One post save processes should be created'
 
-        # THEN: we should have two post save processed to run
-        assert 1 == len(settings_form.processes), 'One post save processes should be created'
 
-    def test_save_triggers_processes_false(self):
-        """
-        Test that the global theme event is not triggered when the tab is not visited.
-        """
-        # GIVEN: A new Advanced Tab
-        settings_form = SettingsForm(None)
-        themes_tab = ThemesTab(settings_form)
-        Registry().register('renderer', MagicMock())
-        themes_tab.tab_visited = False
-        # WHEN: I change search as type check box
-        themes_tab.save()
+def test_save_triggers_processes_false(mock_settings):
+    """
+    Test that the global theme event is not triggered when the tab is not visited.
+    """
+    # GIVEN: A new Advanced Tab
+    settings_form = SettingsForm(None)
+    themes_tab = ThemesTab(settings_form)
+    Registry().register('renderer', MagicMock())
+    themes_tab.tab_visited = False
+    # WHEN: I change search as type check box
+    themes_tab.save()
 
-        # THEN: we should have two post save processed to run
-        assert 0 == len(settings_form.processes), 'No post save processes should be created'
+    # THEN: we should have two post save processed to run
+    assert 0 == len(settings_form.processes), 'No post save processes should be created'
