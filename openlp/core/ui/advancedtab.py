@@ -29,7 +29,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import SlideLimits
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, format_time, translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.style import HAS_DARK_STYLE
@@ -336,48 +335,47 @@ class AdvancedTab(SettingsTab):
 
     def load(self):
         """
-        Load settings from disk.
+        Load self.settings from disk.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
+        self.settings.beginGroup(self.settings_section)
         # The max recent files value does not have an interface and so never
         # gets actually stored in the settings therefore the default value of
         # 20 will always be used.
-        self.recent_spin_box.setMaximum(settings.value('max recent files'))
-        self.recent_spin_box.setValue(settings.value('recent file count'))
-        self.media_plugin_check_box.setChecked(settings.value('save current plugin'))
-        self.double_click_live_check_box.setChecked(settings.value('double click live'))
-        self.single_click_preview_check_box.setChecked(settings.value('single click preview'))
-        self.single_click_service_preview_check_box.setChecked(settings.value('single click service preview'))
-        self.expand_service_item_check_box.setChecked(settings.value('expand service item'))
-        slide_max_height_value = settings.value('slide max height')
+        self.recent_spin_box.setMaximum(self.settings.value('max recent files'))
+        self.recent_spin_box.setValue(self.settings.value('recent file count'))
+        self.media_plugin_check_box.setChecked(self.settings.value('save current plugin'))
+        self.double_click_live_check_box.setChecked(self.settings.value('double click live'))
+        self.single_click_preview_check_box.setChecked(self.settings.value('single click preview'))
+        self.single_click_service_preview_check_box.setChecked(self.settings.value('single click service preview'))
+        self.expand_service_item_check_box.setChecked(self.settings.value('expand service item'))
+        slide_max_height_value = self.settings.value('slide max height')
         for i in range(0, self.slide_max_height_combo_box.count()):
             if self.slide_max_height_combo_box.itemData(i) == slide_max_height_value:
                 self.slide_max_height_combo_box.setCurrentIndex(i)
-        autoscroll_value = settings.value('autoscrolling')
+        autoscroll_value = self.settings.value('autoscrolling')
         for i in range(0, len(self.autoscroll_map)):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
-        self.enable_auto_close_check_box.setChecked(settings.value('enable exit confirmation'))
+        self.enable_auto_close_check_box.setChecked(self.settings.value('enable exit confirmation'))
         if HAS_DARK_STYLE:
-            self.use_dark_style_checkbox.setChecked(settings.value('use_dark_style'))
-        self.hide_mouse_check_box.setChecked(settings.value('hide mouse'))
-        self.service_name_day.setCurrentIndex(settings.value('default service day'))
-        self.service_name_time.setTime(QtCore.QTime(settings.value('default service hour'),
-                                                    settings.value('default service minute')))
+            self.use_dark_style_checkbox.setChecked(self.settings.value('use_dark_style'))
+        self.hide_mouse_check_box.setChecked(self.settings.value('hide mouse'))
+        self.service_name_day.setCurrentIndex(self.settings.value('default service day'))
+        self.service_name_time.setTime(QtCore.QTime(self.settings.value('default service hour'),
+                                                    self.settings.value('default service minute')))
         self.should_update_service_name_example = True
-        self.service_name_edit.setText(settings.value('default service name'))
-        default_service_enabled = settings.value('default service enabled')
+        self.service_name_edit.setText(self.settings.value('default service name'))
+        default_service_enabled = self.settings.value('default service enabled')
         self.service_name_check_box.setChecked(default_service_enabled)
         self.service_name_check_box_toggled(default_service_enabled)
-        self.ignore_aspect_ratio_check_box.setChecked(settings.value('ignore aspect ratio'))
-        self.x11_bypass_check_box.setChecked(settings.value('x11 bypass wm'))
-        self.slide_limits = settings.value('slide limits')
-        self.is_search_as_you_type_enabled = settings.value('search as type')
+        self.ignore_aspect_ratio_check_box.setChecked(self.settings.value('ignore aspect ratio'))
+        self.x11_bypass_check_box.setChecked(self.settings.value('x11 bypass wm'))
+        self.slide_limits = self.settings.value('slide limits')
+        self.is_search_as_you_type_enabled = self.settings.value('search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
         # Prevent the dialog displayed by the alternate_rows_check_box to display.
         self.alternate_rows_check_box.blockSignals(True)
-        self.alternate_rows_check_box.setChecked(settings.value('alternate rows'))
+        self.alternate_rows_check_box.setChecked(self.settings.value('alternate rows'))
         self.alternate_rows_check_box.blockSignals(False)
         if self.slide_limits == SlideLimits.End:
             self.end_slide_radio_button.setChecked(True)
@@ -385,56 +383,55 @@ class AdvancedTab(SettingsTab):
             self.wrap_slide_radio_button.setChecked(True)
         else:
             self.next_item_radio_button.setChecked(True)
-        settings.endGroup()
+        self.settings.endGroup()
         self.data_directory_copy_check_box.hide()
         self.new_data_directory_has_files_label.hide()
         self.data_directory_cancel_button.hide()
         # Since data location can be changed, make sure the path is present.
         self.data_directory_path_edit.path = AppLocation.get_data_path()
         # Don't allow data directory move if running portable.
-        if settings.value('advanced/is portable'):
+        if self.settings.value('advanced/is portable'):
             self.data_directory_group_box.hide()
 
     def save(self):
         """
-        Save settings to disk.
+        Save self.settings to disk.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('default service enabled', self.service_name_check_box.isChecked())
+        self.settings.beginGroup(self.settings_section)
+        self.settings.setValue('default service enabled', self.service_name_check_box.isChecked())
         service_name = self.service_name_edit.text()
         preset_is_valid = self.generate_service_name_example()[0]
         if service_name == UiStrings().DefaultServiceName or not preset_is_valid:
-            settings.remove('default service name')
+            self.settings.remove('default service name')
             self.service_name_edit.setText(service_name)
         else:
-            settings.setValue('default service name', service_name)
-        settings.setValue('default service day', self.service_name_day.currentIndex())
-        settings.setValue('default service hour', self.service_name_time.time().hour())
-        settings.setValue('default service minute', self.service_name_time.time().minute())
-        settings.setValue('recent file count', self.recent_spin_box.value())
-        settings.setValue('save current plugin', self.media_plugin_check_box.isChecked())
-        settings.setValue('double click live', self.double_click_live_check_box.isChecked())
-        settings.setValue('single click preview', self.single_click_preview_check_box.isChecked())
-        settings.setValue('single click service preview', self.single_click_service_preview_check_box.isChecked())
-        settings.setValue('expand service item', self.expand_service_item_check_box.isChecked())
+            self.settings.setValue('default service name', service_name)
+        self.settings.setValue('default service day', self.service_name_day.currentIndex())
+        self.settings.setValue('default service hour', self.service_name_time.time().hour())
+        self.settings.setValue('default service minute', self.service_name_time.time().minute())
+        self.settings.setValue('recent file count', self.recent_spin_box.value())
+        self.settings.setValue('save current plugin', self.media_plugin_check_box.isChecked())
+        self.settings.setValue('double click live', self.double_click_live_check_box.isChecked())
+        self.settings.setValue('single click preview', self.single_click_preview_check_box.isChecked())
+        self.settings.setValue('single click service preview', self.single_click_service_preview_check_box.isChecked())
+        self.settings.setValue('expand service item', self.expand_service_item_check_box.isChecked())
         slide_max_height_index = self.slide_max_height_combo_box.currentIndex()
         slide_max_height_value = self.slide_max_height_combo_box.itemData(slide_max_height_index)
-        settings.setValue('slide max height', slide_max_height_value)
-        settings.setValue('autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
-        settings.setValue('enable exit confirmation', self.enable_auto_close_check_box.isChecked())
-        settings.setValue('hide mouse', self.hide_mouse_check_box.isChecked())
-        settings.setValue('alternate rows', self.alternate_rows_check_box.isChecked())
-        settings.setValue('slide limits', self.slide_limits)
-        settings.setValue('ignore aspect ratio', self.ignore_aspect_ratio_check_box.isChecked())
-        if self.x11_bypass_check_box.isChecked() != settings.value('x11 bypass wm'):
-            settings.setValue('x11 bypass wm', self.x11_bypass_check_box.isChecked())
+        self.settings.setValue('slide max height', slide_max_height_value)
+        self.settings.setValue('autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
+        self.settings.setValue('enable exit confirmation', self.enable_auto_close_check_box.isChecked())
+        self.settings.setValue('hide mouse', self.hide_mouse_check_box.isChecked())
+        self.settings.setValue('alternate rows', self.alternate_rows_check_box.isChecked())
+        self.settings.setValue('slide limits', self.slide_limits)
+        self.settings.setValue('ignore aspect ratio', self.ignore_aspect_ratio_check_box.isChecked())
+        if self.x11_bypass_check_box.isChecked() != self.settings.value('x11 bypass wm'):
+            self.settings.setValue('x11 bypass wm', self.x11_bypass_check_box.isChecked())
             self.settings_form.register_post_process('config_screen_changed')
         self.settings_form.register_post_process('slidecontroller_update_slide_limits')
-        settings.setValue('search as type', self.is_search_as_you_type_enabled)
+        self.settings.setValue('search as type', self.is_search_as_you_type_enabled)
         if HAS_DARK_STYLE:
-            settings.setValue('use_dark_style', self.use_dark_style_checkbox.isChecked())
-        settings.endGroup()
+            self.settings.setValue('use_dark_style', self.use_dark_style_checkbox.isChecked())
+        self.settings.endGroup()
         self.proxy_widget.save()
 
     def on_search_as_type_check_box_changed(self, check_state):
