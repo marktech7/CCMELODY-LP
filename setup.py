@@ -137,6 +137,7 @@ using a computer and a data projector.""",
             'pyodbc',
             'pysword',
             'pytest',
+            'pytest-qt',
             'python-xlib; platform_system=="Linux"',
             'flake8',
         ]
