@@ -252,5 +252,5 @@ class SongsTab(SettingsTab):
         self.settings.setValue('add songbook slide', self.songbook_slide)
         self.settings.endGroup()
         if self.tab_visited:
-            self.self.settings_form.register_post_process('songs_config_updated')
+            self.settings_form.register_post_process('songs_config_updated')
         self.tab_visited = False
