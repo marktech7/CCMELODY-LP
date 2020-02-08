@@ -207,7 +207,7 @@ class GeneralTab(SettingsTab):
         self.check_for_updates_check_box.setChecked(self.settings.value('update check'))
         self.auto_preview_check_box.setChecked(self.settings.value('auto preview'))
         self.timeout_spin_box.setValue(self.settings.value('loop delay'))
-        settings.endGroup()
+        self.settings.endGroup()
 
     def save(self):
         """
