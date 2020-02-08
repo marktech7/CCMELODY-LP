@@ -210,7 +210,7 @@ class SongsTab(SettingsTab):
         self.chord_notation = 'neo-latin'
 
     def on_footer_reset_button_clicked(self):
-        self.footer_edit_box.setPlainText(self.settings.get_default_value('footer template'))
+        self.footer_edit_box.setPlainText(self.settings.get_default_value(self.settings_section + '/footer template'))
 
     def load(self):
         self.settings.beginGroup(self.settings_section)
