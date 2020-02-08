@@ -27,7 +27,6 @@ from unittest.mock import MagicMock, patch
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.songstab import SongsTab
 from tests.helpers.testmixin import TestMixin
 
@@ -73,7 +72,7 @@ class TestSongTab(TestCase, TestMixin):
         # WHEN: Load is invoked
         self.form.load()
         # THEN: The german radio button should be checked
-        assert self.form.german_notation_radio_button.isChecked() == True
+        assert self.form.german_notation_radio_button.isChecked() is True
 
     def test_neolatin_notation_on_load(self):
         """
@@ -84,7 +83,7 @@ class TestSongTab(TestCase, TestMixin):
         # WHEN: Load is invoked
         self.form.load()
         # THEN: The neo-latin radio button should be checked
-        assert self.form.neolatin_notation_radio_button.isChecked() == True
+        assert self.form.neolatin_notation_radio_button.isChecked() is True
 
     def test_invalid_notation_on_load(self):
         """
@@ -95,7 +94,7 @@ class TestSongTab(TestCase, TestMixin):
         # WHEN: Load is invoked
         self.form.load()
         # THEN: The english radio button should be checked
-        assert self.form.english_notation_radio_button.isChecked() == True
+        assert self.form.english_notation_radio_button.isChecked() is True
 
     def test_save_check_box_settings(self):
         """
@@ -113,12 +112,12 @@ class TestSongTab(TestCase, TestMixin):
         self.form.save()
         # THEN: The correct values should be stored in the settings
         # song_search is currently unused
-        assert self.setting.value('songs/display songbar') == True
-        assert self.setting.value('songs/update service on edit') == False
-        assert self.setting.value('songs/add song from service') == True
-        assert self.setting.value('songs/add songbook slide') == False
-        assert self.setting.value('songs/mainview chords') == True
-        assert self.setting.value('songs/disable chords import') == False
+        assert self.setting.value('songs/display songbar') is True
+        assert self.setting.value('songs/update service on edit') is False
+        assert self.setting.value('songs/add song from service') is True
+        assert self.setting.value('songs/add songbook slide') is False
+        assert self.setting.value('songs/mainview chords') is True
+        assert self.setting.value('songs/disable chords import') is False
 
     def test_english_notation_button(self):
         """
