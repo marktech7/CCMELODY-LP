@@ -235,7 +235,7 @@ class Ui_ServiceManager(object):
         self.service_manager_list.itemCollapsed.connect(self.collapsed)
         self.service_manager_list.itemExpanded.connect(self.expanded)
         # Last little bits of setting up
-        self.service_theme = Settings().value(self.main_window.service_manager_settings_section + '/service theme')
+        self.service_theme = self.settings.value(self.main_window.service_manager_settings_section + '/service theme')
         self.service_path = AppLocation.get_section_data_path('servicemanager')
         # build the drag and drop context menu
         self.dnd_menu = QtWidgets.QMenu()
@@ -387,7 +387,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         self._service_path = file_path
         self.set_modified(self.is_modified())
-        Settings().setValue('servicemanager/last file', file_path)
+        self.settings.setValue('servicemanager/last file', file_path)
         if file_path and file_path.suffix == '.oszl':
             self._save_lite = True
         else:
@@ -463,11 +463,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             file_path, filter_used = FileDialog.getOpenFileName(
                 self.main_window,
                 translate('OpenLP.ServiceManager', 'Open File'),
-                Settings().value(self.main_window.service_manager_settings_section + '/last directory'),
+                self.settings.value(self.main_window.service_manager_settings_section + '/last directory'),
                 translate('OpenLP.ServiceManager', 'OpenLP Service Files (*.osz *.oszl)'))
             if not file_path:
                 return False
-        Settings().setValue(self.main_window.service_manager_settings_section + '/last directory', file_path.parent)
+        self.settings.setValue(self.main_window.service_manager_settings_section + '/last directory', file_path.parent)
         self.load_file(file_path)
 
     def save_modified_service(self):
@@ -506,7 +506,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.set_file_name(None)
         self.service_id += 1
         self.set_modified(False)
-        Settings().setValue('servicemanager/last file', None)
+        self.settings.setValue('servicemanager/last file', None)
         self.plugin_manager.new_service_created()
 
     def create_basic_service(self):
@@ -611,7 +611,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 with suppress(FileNotFoundError):
                     file_path.unlink()
                 os.link(temp_file.name, file_path)
-            Settings().setValue(self.main_window.service_manager_settings_section + '/last directory', file_path.parent)
+            self.settings.setValue(self.main_window.service_manager_settings_section + '/last directory', file_path.parent)
         except (PermissionError, OSError) as error:
             self.log_exception('Failed to save service to disk: {name}'.format(name=file_path))
             self.main_window.error_message(
@@ -629,26 +629,26 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Get a file name and then call :func:`ServiceManager.save_file` to save the file.
         """
-        default_service_enabled = Settings().value('advanced/default service enabled')
+        default_service_enabled = self.settings.value('advanced/default service enabled')
         if default_service_enabled:
-            service_day = Settings().value('advanced/default service day')
+            service_day = self.settings.value('advanced/default service day')
             if service_day == 7:
                 local_time = datetime.now()
             else:
-                service_hour = Settings().value('advanced/default service hour')
-                service_minute = Settings().value('advanced/default service minute')
+                service_hour = self.settings.value('advanced/default service hour')
+                service_minute = self.settings.value('advanced/default service minute')
                 now = datetime.now()
                 day_delta = service_day - now.weekday()
                 if day_delta < 0:
                     day_delta += 7
                 time = now + timedelta(days=day_delta)
                 local_time = time.replace(hour=service_hour, minute=service_minute)
-            default_pattern = Settings().value('advanced/default service name')
+            default_pattern = self.settings.value('advanced/default service name')
             default_file_name = format_time(default_pattern, local_time)
         else:
             default_file_name = ''
         default_file_path = Path(default_file_name)
-        directory_path = Settings().value(self.main_window.service_manager_settings_section + '/last directory')
+        directory_path = self.settings.value(self.main_window.service_manager_settings_section + '/last directory')
         if directory_path:
             default_file_path = directory_path / default_file_path
         lite_filter = translate('OpenLP.ServiceManager', 'OpenLP Service Files - lite (*.oszl)')
@@ -718,7 +718,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.set_file_name(file_path)
                 self.main_window.add_recent_file(file_path)
                 self.set_modified(False)
-                Settings().setValue('servicemanager/last file', file_path)
+                self.settings.setValue('servicemanager/last file', file_path)
             else:
                 raise ValidationError(msg='No service data found')
         except (NameError, OSError, ValidationError, zipfile.BadZipFile):
@@ -767,7 +767,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Load the last service item from the service manager when the service was last closed. Can be blank if there was
         no service present.
         """
-        file_path = Settings().value('servicemanager/last file')
+        file_path = self.settings.value('servicemanager/last file')
         if file_path:
             self.load_file(file_path)
 
@@ -875,7 +875,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             service_item.auto_play_slides_loop = False
             self.auto_play_slides_loop.setChecked(False)
         if service_item.auto_play_slides_once and service_item.timed_slide_interval == 0:
-            service_item.timed_slide_interval = Settings().value(
+            service_item.timed_slide_interval = self.settings.value(
                 self.main_window.general_settings_section + '/loop delay')
         self.set_modified()
 
@@ -890,7 +890,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             service_item.auto_play_slides_once = False
             self.auto_play_slides_once.setChecked(False)
         if service_item.auto_play_slides_loop and service_item.timed_slide_interval == 0:
-            service_item.timed_slide_interval = Settings().value(
+            service_item.timed_slide_interval = self.settings.value(
                 self.main_window.general_settings_section + '/loop delay')
         self.set_modified()
 
@@ -901,7 +901,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         item = self.find_service_item()[0]
         service_item = self.service_items[item]['service_item']
         if service_item.timed_slide_interval == 0:
-            timed_slide_interval = Settings().value(self.main_window.general_settings_section + '/loop delay')
+            timed_slide_interval = self.settings.value(self.main_window.general_settings_section + '/loop delay')
         else:
             timed_slide_interval = service_item.timed_slide_interval
         timed_slide_interval, ok = QtWidgets.QInputDialog.getInt(self, translate('OpenLP.ServiceManager',
@@ -1272,7 +1272,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param current_index: The combo box index for the selected item
         """
         self.service_theme = self.theme_combo_box.currentText()
-        Settings().setValue(self.main_window.service_manager_settings_section + '/service theme', self.service_theme)
+        self.settings.setValue(self.main_window.service_manager_settings_section + '/service theme', self.service_theme)
         self.regenerate_service_items(True)
 
     def theme_change(self):
@@ -1352,7 +1352,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         # if not passed set to config value
         if expand is None:
-            expand = Settings().value('advanced/expand service item')
+            expand = self.settings.value('advanced/expand service item')
         item.from_service = True
         if position != -1:
             self.drop_position = position
@@ -1424,7 +1424,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         If single click previewing is enabled, and triggered by a tablewidget click event,
         start a timeout to verify a double-click hasn't triggered.
         """
-        if Settings().value('advanced/single click service preview'):
+        if self.settings.value('advanced/single click service preview'):
             if not self.list_double_clicked:
                 # If a double click has not registered start a timer, otherwise wait for the existing timer to finish.
                 QtCore.QTimer.singleShot(QtWidgets.QApplication.instance().doubleClickInterval(),
@@ -1456,7 +1456,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.application.set_busy_cursor()
         if self.service_items[item]['service_item'].is_valid:
             self.live_controller.add_service_manager_item(self.service_items[item]['service_item'], child)
-            if Settings().value(self.main_window.general_settings_section + '/auto preview'):
+            if self.settings.value(self.main_window.general_settings_section + '/auto preview'):
                 item += 1
                 if self.service_items and item < len(self.service_items) and \
                         self.service_items[item]['service_item'].is_capable(ItemCapabilities.CanPreview):
