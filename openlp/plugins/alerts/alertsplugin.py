@@ -24,7 +24,6 @@ import logging
 from openlp.core.state import State
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
