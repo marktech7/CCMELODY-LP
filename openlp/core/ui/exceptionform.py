@@ -31,7 +31,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import is_linux
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.settings import Settings
 from openlp.core.ui.exceptiondialog import Ui_ExceptionDialog
 from openlp.core.version import get_library_versions, get_version
 from openlp.core.widgets.dialogs import FileDialog
@@ -98,11 +97,11 @@ class ExceptionForm(QtWidgets.QDialog, Ui_ExceptionDialog, RegistryProperties):
             file_path, filter_used = FileDialog.getSaveFileName(
                 self,
                 translate('OpenLP.ExceptionForm', 'Save Crash Report'),
-                Settings().value(self.settings_section + '/last directory'),
+                self.settings.value(self.settings_section + '/last directory'),
                 translate('OpenLP.ExceptionForm', 'Text files (*.txt *.log *.text)'))
             if file_path is None:
                 break
-            Settings().setValue(self.settings_section + '/last directory', file_path.parent)
+            self.settings.setValue(self.settings_section + '/last directory', file_path.parent)
             opts = self._create_report()
             report_text = self.report_text.format(version=opts['version'], description=opts['description'],
                                                   traceback=opts['traceback'], libs=opts['libs'], system=opts['system'])
@@ -169,7 +168,7 @@ class ExceptionForm(QtWidgets.QDialog, Ui_ExceptionDialog, RegistryProperties):
         file_path, filter_used = \
             FileDialog.getOpenFileName(self,
                                        translate('ImagePlugin.ExceptionDialog', 'Select Attachment'),
-                                       Settings().value(self.settings_section + '/last directory'),
+                                       self.settings.value(self.settings_section + '/last directory'),
                                        '{text} (*)'.format(text=UiStrings().AllFiles))
         log.info('New files {file_path}'.format(file_path=file_path))
         if file_path:

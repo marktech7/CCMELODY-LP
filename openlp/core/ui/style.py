@@ -24,7 +24,7 @@ The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import is_win
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 try:
@@ -83,10 +83,10 @@ def get_application_stylesheet():
     :return str: The correct stylesheet as a string
     """
     stylesheet = ''
-    if HAS_DARK_STYLE and Settings().value('advanced/use_dark_style'):
+    if HAS_DARK_STYLE and Registry().get('settings').value('advanced/use_dark_style'):
         stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     else:
-        if not Settings().value('advanced/alternate rows'):
+        if not Registry().get('settings').value('advanced/alternate rows'):
             base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.Active, QtGui.QPalette.Base)
             alternate_rows_repair_stylesheet = \
                 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: ' + base_color.name() + ';}\n'
@@ -102,7 +102,7 @@ def get_library_stylesheet():
 
     :return str: The correct stylesheet as a string
     """
-    if not HAS_DARK_STYLE or not Settings().value('advanced/use_dark_style'):
+    if not HAS_DARK_STYLE or not Registry().get('settings').value('advanced/use_dark_style'):
         return MEDIA_MANAGER_STYLE
     else:
         return ''

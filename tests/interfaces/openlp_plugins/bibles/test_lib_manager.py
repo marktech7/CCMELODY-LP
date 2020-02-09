@@ -24,7 +24,6 @@ Functional tests to test the Bible Manager class and related methods.
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.plugins.bibles.lib.manager import BibleManager
@@ -43,23 +42,10 @@ class TestBibleManager(TestCase, TestMixin):
         Registry.create()
         Registry().register('service_list', MagicMock())
         Registry().register('application', MagicMock())
-        bible_settings = {
-            'bibles/proxy name': '',
-            'bibles/db type': 'sqlite',
-            'bibles/book name language': LanguageSelection.Bible,
-            'bibles/verse separator': '',
-            'bibles/range separator': '',
-            'bibles/list separator': '',
-            'bibles/end separator': '',
-        }
-        Settings().extend_default_settings(bible_settings)
         with patch('openlp.core.common.applocation.AppLocation.get_section_data_path') as mocked_get_data_path, \
                 patch('openlp.core.common.applocation.AppLocation.get_files') as mocked_get_files:
             # GIVEN: A mocked out Settings class and a mocked out AppLocation.get_files()
-            mocked_class = MagicMock()
-            Registry().register('settings', mocked_class.return_value)
-            mocked_settings = mocked_class.return_value
-            mocked_settings.contains.return_value = False
+            Registry().register('settings', Settings())
             mocked_get_files.return_value = ["tests.sqlite"]
             mocked_get_data_path.return_value = TEST_RESOURCES_PATH + "/bibles"
             self.manager = BibleManager(MagicMock())
