@@ -39,7 +39,6 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import critical_error_message_box
