@@ -88,17 +88,17 @@ class MediaTab(SettingsTab):
         """
         Load the settings
         """
-        self.auto_start_check_box.setChecked(Settings().value(self.settings_section + '/media auto start'))
-        self.vlc_arguments_edit.setText(Settings().value(self.settings_section + '/vlc arguments'))
+        self.auto_start_check_box.setChecked(self.settings.value(self.settings_section + '/media auto start'))
+        self.vlc_arguments_edit.setText(self.settings.value(self.settings_section + '/vlc arguments'))
 
     def save(self):
         """
         Save the settings
         """
         setting_key = self.settings_section + '/media auto start'
-        if Settings().value(setting_key) != self.auto_start_check_box.checkState():
-            Settings().setValue(setting_key, self.auto_start_check_box.checkState())
-        Settings().setValue(self.settings_section + '/vlc arguments', self.vlc_arguments_edit.text())
+        if self.settings.value(setting_key) != self.auto_start_check_box.checkState():
+            self.settings.setValue(setting_key, self.auto_start_check_box.checkState())
+        self.settings.setValue(self.settings_section + '/vlc arguments', self.vlc_arguments_edit.text())
 
     def post_set_up(self, post_update=False):
         """

@@ -333,7 +333,6 @@ def main():
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
-    settings = Settings()
     if args.portable:
         application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
@@ -353,7 +352,7 @@ def main():
         # Make this our settings file
         log.info('INI file: {name}'.format(name=portable_settings_path))
         Settings.set_filename(portable_settings_path)
-        portable_settings = settings
+        portable_settings = Settings()
         # Set our data path
         log.info('Data path: {name}'.format(name=data_path))
         # Point to our data path
@@ -373,6 +372,7 @@ def main():
     app = OpenLP()
     # Initialise the Registry
     Registry.create()
+    settings = Settings()
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)

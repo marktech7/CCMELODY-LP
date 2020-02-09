@@ -235,7 +235,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.currentIdChanged.connect(self.on_current_id_changed)
         Registry().register_function('config_screen_changed', self.screen_selection_widget.load)
         # Check if this is a re-run of the wizard.
-        self.has_run_wizard = Settings().value('core/has run wizard')
+        self.has_run_wizard = self.settings.value('core/has run wizard')
         create_paths(Path(gettempdir(), 'openlp'))
         self.theme_combo_box.clear()
         self.button(QtWidgets.QWizard.CustomButton1).setVisible(False)
@@ -252,7 +252,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             # Add any existing themes to list.
             self.theme_combo_box.insertSeparator(0)
             self.theme_combo_box.addItems(sorted(self.theme_manager.get_theme_names()))
-            default_theme = Settings().value('themes/global theme')
+            default_theme = self.settings.value('themes/global theme')
             # Pre-select the current default theme.
             index = self.theme_combo_box.findText(default_theme)
             self.theme_combo_box.setCurrentIndex(index)
@@ -307,7 +307,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self._set_plugin_status(self.alert_check_box, 'alerts/status')
         self.screen_selection_widget.save()
         if self.theme_combo_box.currentIndex() != -1:
-            Settings().setValue('themes/global theme', self.theme_combo_box.currentText())
+            self.settings.setValue('themes/global theme', self.theme_combo_box.currentText())
         Registry().remove_function('config_screen_changed', self.screen_selection_widget.load)
         super().accept()
 
@@ -345,10 +345,10 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
 
     def on_projectors_check_box_clicked(self):
         # When clicking projectors_check box, change the visibility setting for Projectors panel.
-        if Settings().value('projector/show after wizard'):
-            Settings().setValue('projector/show after wizard', False)
+        if self.settings.value('projector/show after wizard'):
+            self.settings.setValue('projector/show after wizard', False)
         else:
-            Settings().setValue('projector/show after wizard', True)
+            self.settings.setValue('projector/show after wizard', True)
 
     def on_themes_list_widget_selection_changed(self):
         """
@@ -538,4 +538,4 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         Set the status of a plugin.
         """
         status = PluginStatus.Active if field.checkState() == QtCore.Qt.Checked else PluginStatus.Inactive
-        Settings().setValue(tag, status)
+        self.settings.setValue(tag, status)
