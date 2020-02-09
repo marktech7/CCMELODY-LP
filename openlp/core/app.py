@@ -97,16 +97,16 @@ class OpenLP(QtCore.QObject, LogMixin):
         # Decide how many screens we have and their size
         screens = ScreenList.create(QtWidgets.QApplication.desktop())
         # First time checks in settings
-        has_run_wizard = Settings().value('core/has run wizard')
+        has_run_wizard = self.settings.value('core/has run wizard')
         if not has_run_wizard:
             ftw = FirstTimeForm()
             ftw.initialize(screens)
             if ftw.exec() == QtWidgets.QDialog.Accepted:
-                Settings().setValue('core/has run wizard', True)
+                self.settings.setValue('core/has run wizard', True)
             else:
                 QtCore.QCoreApplication.exit()
                 sys.exit()
-        can_show_splash = Settings().value('core/show splash')
+        can_show_splash = self.settings.value('core/show splash')
         if can_show_splash:
             self.splash = SplashScreen()
             self.splash.show()
@@ -138,7 +138,7 @@ class OpenLP(QtCore.QObject, LogMixin):
         QtWidgets.QApplication.processEvents()
         if not has_run_wizard:
             self.main_window.first_time()
-        if Settings().value('core/update check'):
+        if self.settings.value('core/update check'):
             check_for_update(self.main_window)
         self.main_window.is_display_blank()
         Registry().execute('bootstrap_completion')
@@ -176,7 +176,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                 log.info('User requested termination')
                 return True
             # If answer was "Yes", remove the custom data path thus resetting the default location.
-            Settings().remove('advanced/data path')
+            self.settings.remove('advanced/data path')
             log.info('Database location has been reset to the default settings.')
             return False
 
@@ -210,11 +210,11 @@ class OpenLP(QtCore.QObject, LogMixin):
         :param has_run_wizard: OpenLP has been run before
         :param can_show_splash: Should OpenLP show the splash screen
         """
-        data_version = Settings().value('core/application version')
+        data_version = self.settings.value('core/application version')
         openlp_version = get_version()['version']
         # New installation, no need to create backup
         if not has_run_wizard:
-            Settings().setValue('core/application version', openlp_version)
+            self.settings.setValue('core/application version', openlp_version)
         # If data_version is different from the current version ask if we should backup the data folder
         elif data_version != openlp_version:
             if can_show_splash and self.splash.isVisible():
@@ -239,7 +239,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                 QtWidgets.QMessageBox.information(None, translate('OpenLP', 'Backup'), message)
 
             # Update the version in the settings
-            Settings().setValue('core/application version', openlp_version)
+            self.settings.setValue('core/application version', openlp_version)
             if can_show_splash:
                 self.splash.show()
 
@@ -353,7 +353,7 @@ def main():
         # Make this our settings file
         log.info('INI file: {name}'.format(name=portable_settings_path))
         Settings.set_filename(portable_settings_path)
-        portable_settings = Settings()
+        portable_settings = self.settings
         # Set our data path
         log.info('Data path: {name}'.format(name=data_path))
         # Point to our data path
@@ -376,8 +376,9 @@ def main():
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
-    # Upgrade settings.
+    # Create and install settings.
     settings = Settings()
+    app.settings = settings
     Registry().register('settings', settings)
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one

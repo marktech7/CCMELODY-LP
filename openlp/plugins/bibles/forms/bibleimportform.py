@@ -159,7 +159,7 @@ class BibleImportForm(OpenLPWizard):
         self.osis_file_label.setObjectName('OsisFileLabel')
         self.osis_path_edit = PathEdit(
             self.osis_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.OSIS),
             show_revert=False)
         self.osis_layout.addRow(self.osis_file_label, self.osis_path_edit)
@@ -174,7 +174,7 @@ class BibleImportForm(OpenLPWizard):
         self.csv_books_label.setObjectName('CsvBooksLabel')
         self.csv_books_path_edit = PathEdit(
             self.csv_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.CSV),
             show_revert=False,
         )
@@ -185,7 +185,7 @@ class BibleImportForm(OpenLPWizard):
         self.csv_verses_label.setObjectName('CsvVersesLabel')
         self.csv_verses_path_edit = PathEdit(
             self.csv_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.CSV),
             show_revert=False,
         )
@@ -204,7 +204,7 @@ class BibleImportForm(OpenLPWizard):
         self.open_song_file_label.setObjectName('OpenSongFileLabel')
         self.open_song_path_edit = PathEdit(
             self.open_song_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.OS),
             show_revert=False,
         )
@@ -254,7 +254,7 @@ class BibleImportForm(OpenLPWizard):
         self.zefania_file_label.setObjectName('ZefaniaFileLabel')
         self.zefania_path_edit = PathEdit(
             self.zefania_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.ZEF),
             show_revert=False,
         )
@@ -278,7 +278,7 @@ class BibleImportForm(OpenLPWizard):
         self.sword_folder_path_edit = PathEdit(
             self.sword_folder_tab,
             path_type=PathEditType.Directories,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.SWORD),
             show_revert=False,
         )
@@ -299,7 +299,7 @@ class BibleImportForm(OpenLPWizard):
         self.sword_zipfile_label.setObjectName('SwordZipFileLabel')
         self.sword_zipfile_path_edit = PathEdit(
             self.sword_zip_tab,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.SWORD),
             show_revert=False,
         )
@@ -327,7 +327,7 @@ class BibleImportForm(OpenLPWizard):
         self.wordproject_file_label.setObjectName('WordProjectFileLabel')
         self.wordproject_path_edit = PathEdit(
             self.wordproject_widget,
-            default_path=Settings().value('bibles/last directory import'),
+            default_path=self.settings.value('bibles/last directory import'),
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.WordProject),
             show_revert=False)
         self.wordproject_layout.addRow(self.wordproject_file_label, self.wordproject_path_edit)

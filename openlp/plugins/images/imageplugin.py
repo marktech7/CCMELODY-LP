@@ -98,5 +98,5 @@ class ImagePlugin(Plugin):
         update is triggered by the last part of saving the config.
         """
         log.info('Images config_update')
-        background = QtGui.QColor(Settings().value(self.settings_section + '/background color'))
+        background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
         self.image_manager.update_images_border(ImageSource.ImagePlugin, background)
