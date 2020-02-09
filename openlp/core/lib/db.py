@@ -40,7 +40,7 @@ from openlp.core.common import delete_file
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
-from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.ui import critical_error_message_box
 
 
@@ -169,7 +169,7 @@ def init_url(plugin_name, db_file_name=None):
     :return: The database URL
     :rtype: str
     """
-    settings = Registry().get('settings')
+    settings = Settings()
     settings.beginGroup(plugin_name)
     db_type = settings.value('db type')
     if db_type == 'sqlite':

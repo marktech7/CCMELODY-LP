@@ -27,7 +27,6 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
 
-from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 from tests.helpers.testmixin import TestMixin
@@ -54,9 +53,7 @@ class MediaItemTest(TestCase, TestMixin):
             self.media_item.settings_section = 'media'
         self.setup_application()
         self.build_settings()
-        Registry.create()
-        self.settings = Settings()
-        Registry().register('settings', self.settings)
+        Settings().extend_default_settings(__default_settings__)
 
     def tearDown(self):
         """
@@ -69,7 +66,7 @@ class MediaItemTest(TestCase, TestMixin):
         Media Remote Search Successful find
         """
         # GIVEN: The Mediaitem set up a list of media
-        self.settings.setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+        Settings().setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
         # WHEN: Retrieving the test file
         result = self.media_item.search('test.mp4', False)
         # THEN: a file should be found
@@ -80,7 +77,7 @@ class MediaItemTest(TestCase, TestMixin):
         Media Remote Search not find
         """
         # GIVEN: The Mediaitem set up a list of media
-        self.settings.setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+        Settings().setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
         # WHEN: Retrieving the test file
         result = self.media_item.search('test.mpx', False)
         # THEN: a file should be found

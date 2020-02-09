@@ -36,6 +36,7 @@ from openlp.core.common.i18n import UiStrings, get_locale_key, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry, RegistryBase
+from openlp.core.common.settings import Settings
 from openlp.core.common.utils import wait_for
 from openlp.core.lib import build_icon, check_item_selected, create_thumb, get_text_file_string, validate_thumb
 from openlp.core.lib.exceptions import ValidationError
@@ -163,7 +164,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         process the bootstrap initialise setup request
         """
         self.setup_ui(self)
-        self.global_theme = self.settings.value(self.settings_section + '/global theme')
+        self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.build_theme_path()
 
     def bootstrap_post_set_up(self):
@@ -247,7 +248,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         """
         Change the global theme when it is changed through the Themes settings tab
         """
-        self.global_theme = self.settings.value(self.settings_section + '/global theme')
+        self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.log_debug('change_global_from_tab {text}'.format(text=self.global_theme))
         for count in range(0, self.theme_list_widget.count()):
             # reset the old name
@@ -280,7 +281,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 self.global_theme = self.theme_list_widget.item(count).text()
                 name = translate('OpenLP.ThemeManager', '{text} (default)').format(text=self.global_theme)
                 self.theme_list_widget.item(count).setText(name)
-                self.settings.setValue(self.settings_section + '/global theme', self.global_theme)
+                Settings().setValue(self.settings_section + '/global theme', self.global_theme)
                 Registry().execute('theme_update_global')
                 self._push_themes()
 
@@ -421,12 +422,12 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             FileDialog.getSaveFileName(self.main_window,
                                        translate('OpenLP.ThemeManager',
                                                  'Save Theme - ({name})').format(name=theme_name),
-                                       self.settings.value(self.settings_section + '/last directory export'),
+                                       Settings().value(self.settings_section + '/last directory export'),
                                        translate('OpenLP.ThemeManager', 'OpenLP Themes (*.otz)'),
                                        translate('OpenLP.ThemeManager', 'OpenLP Themes (*.otz)'))
         self.application.set_busy_cursor()
         if export_path:
-            self.settings.setValue(self.settings_section + '/last directory export', export_path.parent)
+            Settings().setValue(self.settings_section + '/last directory export', export_path.parent)
             if self._export_theme(export_path.with_suffix('.otz'), theme_name):
                 QtWidgets.QMessageBox.information(self,
                                                   translate('OpenLP.ThemeManager', 'Theme Exported'),
@@ -470,7 +471,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         file_paths, filter_used = FileDialog.getOpenFileNames(
             self,
             translate('OpenLP.ThemeManager', 'Select Theme Import File'),
-            self.settings.value(self.settings_section + '/last directory import'),
+            Settings().value(self.settings_section + '/last directory import'),
             translate('OpenLP.ThemeManager', 'OpenLP Themes (*.otz)'))
         self.log_info('New Themes {file_paths}'.format(file_paths=file_paths))
         if not file_paths:
@@ -479,7 +480,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         new_themes = []
         for file_path in file_paths:
             new_themes.append(self.unzip_theme(file_path, self.theme_path))
-        self.settings.setValue(self.settings_section + '/last directory import', file_path.parent)
+        Settings().setValue(self.settings_section + '/last directory import', file_path.parent)
         self.update_preview_images(new_themes)
         self.load_themes()
         self.application.set_normal_cursor()
@@ -500,7 +501,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme = Theme()
             theme.theme_name = UiStrings().Default
             self.save_theme(theme)
-            self.settings.setValue(self.settings_section + '/global theme', theme.theme_name)
+            Settings().setValue(self.settings_section + '/global theme', theme.theme_name)
             new_themes = [theme.theme_name]
         if new_themes:
             self.update_preview_images(new_themes)
@@ -786,7 +787,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param confirm: Do we display a confirm box before run checks.
         :return: True or False depending on the validity.
         """
-        self.global_theme = self.settings.value(self.settings_section + '/global theme')
+        self.global_theme = Settings().value(self.settings_section + '/global theme')
         if check_item_selected(self.theme_list_widget, select_text):
             item = self.theme_list_widget.currentItem()
             theme = item.text()

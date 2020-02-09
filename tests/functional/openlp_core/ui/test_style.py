@@ -50,43 +50,46 @@ def test_get_application_stylesheet_dark(mocked_qdarkstyle, MockSettings):
 
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', False)
 @patch('openlp.core.ui.style.is_win')
+@patch('openlp.core.ui.style.Settings')
 @patch('openlp.core.app.QtWidgets.QApplication.palette')
-def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is_win, mock_settings):
+def test_get_application_stylesheet_not_alternate_rows(mocked_palette, MockSettings, mocked_is_win):
     """Test that the alternate rows stylesheet is returned when enabled in settings"""
     # GIVEN: We're on Windows and no dark style is set
     mocked_is_win.return_value = False
-    mock_settings.value.return_value = False
+    MockSettings.return_value.value.return_value = False
     mocked_palette.return_value.color.return_value.name.return_value = 'color'
 
     # WHEN: can_show_icon() is called
     result = get_application_stylesheet()
 
     # THEN: the result should be false
-    mock_settings.value.assert_called_once_with('advanced/alternate rows')
+    MockSettings.return_value.value.assert_called_once_with('advanced/alternate rows')
     assert result == 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: color;}\n', result
 
 
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', False)
 @patch('openlp.core.ui.style.is_win')
-def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
+@patch('openlp.core.ui.style.Settings')
+def test_get_application_stylesheet_win_repair(MockSettings, mocked_is_win):
     """Test that the Windows repair stylesheet is returned when on Windows"""
     # GIVEN: We're on Windows and no dark style is set
     mocked_is_win.return_value = True
-    mock_settings.value.return_value = True
+    MockSettings.return_value.value.return_value = True
 
     # WHEN: can_show_icon() is called
     result = get_application_stylesheet()
 
     # THEN: the result should be false
-    mock_settings.value.assert_called_once_with('advanced/alternate rows')
+    MockSettings.return_value.value.assert_called_once_with('advanced/alternate rows')
     assert result == WIN_REPAIR_STYLESHEET
 
 
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', False)
-def test_get_library_stylesheet_no_dark_style(mock_settings):
+@patch('openlp.core.ui.style.Settings')
+def test_get_library_stylesheet_no_dark_style(MockSettings):
     """Test that the media manager stylesheet is returned when there's no dark theme available"""
     # GIVEN: No dark style
-    mock_settings.value.return_value = False
+    MockSettings.return_value.value.return_value = False
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()
@@ -96,10 +99,11 @@ def test_get_library_stylesheet_no_dark_style(mock_settings):
 
 
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', True)
-def test_get_library_stylesheet_dark_style(mock_settings):
+@patch('openlp.core.ui.style.Settings')
+def test_get_library_stylesheet_dark_style(MockSettings):
     """Test that no stylesheet is returned when the dark theme is enabled"""
     # GIVEN: No dark style
-    mock_settings.value.return_value = True
+    MockSettings.return_value.value.return_value = True
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()

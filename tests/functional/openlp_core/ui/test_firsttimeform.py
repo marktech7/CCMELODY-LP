@@ -24,7 +24,7 @@ Package to test the openlp.core.ui.firsttimeform package.
 import os
 import tempfile
 from pathlib import Path
-from unittest import TestCase, SkipTest
+from unittest import TestCase
 from unittest.mock import MagicMock, call, patch, DEFAULT
 
 from PyQt5 import QtWidgets
@@ -102,7 +102,6 @@ class TestFirstTimeForm(TestCase, TestMixin):
         self.app.process_events = lambda: None
         Registry.create()
         Registry().register('application', self.app)
-        Registry().register('settings', MagicMock)
         self.tempfile = os.path.join(tempfile.gettempdir(), 'testfile')
 
     def tearDown(self):
@@ -140,7 +139,6 @@ class TestFirstTimeForm(TestCase, TestMixin):
             mocked_set_defaults.assert_called_once()
             mocked_qwizard_exec.assert_called_once()
 
-    @SkipTest
     def test_set_defaults(self):
         """
         Test that the default values are set when set_defaults() is run
@@ -177,6 +175,54 @@ class TestFirstTimeForm(TestCase, TestMixin):
             mocked_theme_manager.assert_not_called()
             mocked_songs_check_box.assert_not_called()
 
+    def test_set_defaults_rerun(self):
+        """
+        Test that the default values are set when set_defaults() is run
+        """
+        # GIVEN: An initialised FRW and a whole lot of stuff mocked out
+        frw = FirstTimeForm(None)
+        frw.initialize(MagicMock())
+        mocked_settings = MagicMock()
+        mocked_settings.value.side_effect = \
+            lambda key: {'core/has run wizard': True, 'themes/global theme': 'Default Theme'}[key]
+        with patch.object(frw, 'restart') as mocked_restart, \
+                patch.object(frw, 'currentIdChanged') as mocked_currentIdChanged, \
+                patch.object(frw, 'theme_combo_box', **{'findText.return_value': 3}) as mocked_theme_combo_box, \
+                patch.multiple(frw, songs_check_box=DEFAULT, bible_check_box=DEFAULT, presentation_check_box=DEFAULT,
+                               image_check_box=DEFAULT, media_check_box=DEFAULT, custom_check_box=DEFAULT,
+                               song_usage_check_box=DEFAULT, alert_check_box=DEFAULT), \
+                patch.object(Registry, 'register_function') as mocked_register_function, \
+                patch('openlp.core.ui.firsttimeform.Settings', return_value=mocked_settings), \
+                patch('openlp.core.ui.firsttimeform.gettempdir', return_value='temp') as mocked_gettempdir, \
+                patch('openlp.core.ui.firsttimeform.create_paths') as mocked_create_paths, \
+                patch.object(frw.application, 'set_normal_cursor'):
+            mocked_plugin_manager = MagicMock()
+            mocked_theme_manager = MagicMock(**{'get_theme_names.return_value': ['b', 'a', 'c']})
+            Registry().register('plugin_manager', mocked_plugin_manager)
+            Registry().register('theme_manager', mocked_theme_manager)
+
+            # WHEN: The set_defaults() method is run
+            frw.set_defaults()
+
+            # THEN: The default values should have been set
+            mocked_restart.assert_called_once()
+            assert 'https://get.openlp.org/ftw/' == frw.web, 'The default URL should be set'
+            mocked_currentIdChanged.connect.assert_called_once_with(frw.on_current_id_changed)
+            mocked_register_function.assert_called_once_with('config_screen_changed', frw.screen_selection_widget.load)
+            mocked_settings.value.assert_has_calls([call('core/has run wizard'), call('themes/global theme')])
+            mocked_gettempdir.assert_called_once()
+            mocked_create_paths.assert_called_once_with(Path('temp', 'openlp'))
+            mocked_theme_manager.get_theme_names.assert_called_once()
+            mocked_theme_combo_box.clear.assert_called_once()
+            mocked_plugin_manager.get_plugin_by_name.assert_has_calls(
+                [call('songs'), call('bibles'), call('presentations'), call('images'), call('media'), call('custom'),
+                 call('songusage'), call('alerts')], any_order=True)
+            mocked_plugin_manager.get_plugin_by_name.assert_has_calls([call().is_active()] * 8, any_order=True)
+            mocked_theme_combo_box.addItems.assert_called_once_with(['a', 'b', 'c'])
+            mocked_theme_combo_box.findText.assert_called_once_with('Default Theme')
+            mocked_theme_combo_box.setCurrentIndex(3)
+
+    @patch('openlp.core.ui.firsttimeform.Settings')
     @patch('openlp.core.ui.firsttimeform.QtWidgets.QWizard.accept')
     def test_accept_method(self, mocked_qwizard_accept, *args):
         """
@@ -206,12 +252,12 @@ class TestFirstTimeForm(TestCase, TestMixin):
             mocked_screen_selection_widget.save.assert_called_once()
             mocked_qwizard_accept.assert_called_once()
 
-    def test_accept_method_theme_not_selected(self):
+    @patch('openlp.core.ui.firsttimeform.Settings')
+    def test_accept_method_theme_not_selected(self, mocked_settings):
         """
         Test the FirstTimeForm.accept method when there is no default theme selected
         """
         # GIVEN: An instance of FirstTimeForm
-        mocked_settings = Registry().get('settings')
         frw = FirstTimeForm(None)
         with patch.object(frw, '_set_plugin_status'), patch.object(frw, 'screen_selection_widget'), \
                 patch.object(frw, 'theme_combo_box', **{'currentIndex.return_value': -1}):
@@ -221,6 +267,24 @@ class TestFirstTimeForm(TestCase, TestMixin):
 
             # THEN: OpenLP should not try to save a theme name
             mocked_settings().setValue.assert_not_called()
+
+    @patch('openlp.core.ui.firsttimeform.Settings')
+    def test_accept_method_theme_selected(self, mocked_settings):
+        """
+        Test the FirstTimeForm.accept method when a default theme is selected
+        """
+        # GIVEN: An instance of FirstTimeForm
+        frw = FirstTimeForm(None)
+        with patch.object(frw, '_set_plugin_status'), \
+                patch.object(frw, 'screen_selection_widget'), \
+                patch.object(
+                frw, 'theme_combo_box', **{'currentIndex.return_value': 0, 'currentText.return_value': 'Test Item'}):
+
+            # WHEN: Calling accept and the currentIndex method of the theme_combo_box returns 0
+            frw.accept()
+
+            # THEN: The 'currentItem' in the combobox should have been set as the default theme.
+            mocked_settings().setValue.assert_called_once_with('themes/global theme', 'Test Item')
 
     @patch('openlp.core.ui.firsttimeform.QtWidgets.QWizard.reject')
     @patch('openlp.core.ui.firsttimeform.time')
@@ -317,54 +381,38 @@ class TestFirstTimeForm(TestCase, TestMixin):
             first_time_form, 'Network Error',
             'There was a network error attempting to connect to retrieve initial configuration information', 'OK')
 
+    @patch('openlp.core.ui.firsttimeform.Settings')
+    def test_on_projectors_check_box_checked(self, MockSettings):
+        """
+        Test that the projector panel is shown when the checkbox in the first time wizard is checked
+        """
+        # GIVEN: A First Time Wizard and a mocked settings object
+        frw = FirstTimeForm(None)
+        mocked_settings = MagicMock()
+        mocked_settings.value.return_value = True
+        MockSettings.return_value = mocked_settings
 
-def test_accept_method_theme_selected(mock_settings):
-    """
-    Test the FirstTimeForm.accept method when a default theme is selected
-    """
-    # GIVEN: An instance of FirstTimeForm
-    frw = FirstTimeForm(None)
-    mock_settings.value.return_value = True
+        # WHEN: on_projectors_check_box_clicked() is called
+        frw.on_projectors_check_box_clicked()
 
-    with patch.object(frw, '_set_plugin_status'), \
-            patch.object(frw, 'screen_selection_widget'), \
-            patch.object(
-            frw, 'theme_combo_box', **{'currentIndex.return_value': 0, 'currentText.return_value': 'Test Item'}):
+        # THEN: The visibility of the projects panel should have been set
+        mocked_settings.value.assert_called_once_with('projector/show after wizard')
+        mocked_settings.setValue.assert_called_once_with('projector/show after wizard', False)
 
-        # WHEN: Calling accept and the currentIndex method of the theme_combo_box returns 0
-        frw.accept()
+    @patch('openlp.core.ui.firsttimeform.Settings')
+    def test_on_projectors_check_box_unchecked(self, MockSettings):
+        """
+        Test that the projector panel is shown when the checkbox in the first time wizard is checked
+        """
+        # GIVEN: A First Time Wizard and a mocked settings object
+        frw = FirstTimeForm(None)
+        mocked_settings = MagicMock()
+        mocked_settings.value.return_value = False
+        MockSettings.return_value = mocked_settings
 
-        # THEN: The 'currentItem' in the combobox should have been set as the default theme.
-        mock_settings.setValue.assert_called_once_with('themes/global theme', 'Test Item')
+        # WHEN: on_projectors_check_box_clicked() is called
+        frw.on_projectors_check_box_clicked()
 
-
-def test_on_projectors_check_box_checked(mock_settings):
-    """
-    Test that the projector panel is shown when the checkbox in the first time wizard is checked
-    """
-    # GIVEN: A First Time Wizard and a mocked settings object
-    frw = FirstTimeForm(None)
-    mock_settings.value.return_value = True
-
-    # WHEN: on_projectors_check_box_clicked() is called
-    frw.on_projectors_check_box_clicked()
-
-    # THEN: The visibility of the projects panel should have been set
-    mock_settings.value.assert_called_once_with('projector/show after wizard')
-    mock_settings.setValue.assert_called_once_with('projector/show after wizard', False)
-
-
-def test_on_projectors_check_box_unchecked(mock_settings):
-    """
-    Test that the projector panel is shown when the checkbox in the first time wizard is checked
-    """
-    # GIVEN: A First Time Wizard and a mocked settings object
-    frw = FirstTimeForm(None)
-    mock_settings.value.return_value = False
-
-    # WHEN: on_projectors_check_box_clicked() is called
-    frw.on_projectors_check_box_clicked()
-
-    # THEN: The visibility of the projects panel should have been set
-    mock_settings.value.assert_called_once_with('projector/show after wizard')
-    mock_settings.setValue.assert_called_once_with('projector/show after wizard', True)
+        # THEN: The visibility of the projects panel should have been set
+        mocked_settings.value.assert_called_once_with('projector/show after wizard')
+        mocked_settings.setValue.assert_called_once_with('projector/show after wizard', True)

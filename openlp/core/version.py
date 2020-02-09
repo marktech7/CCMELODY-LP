@@ -32,7 +32,7 @@ import requests
 from PyQt5 import QtCore
 
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
 
 
@@ -118,7 +118,7 @@ def update_check_date():
     """
     Save when we last checked for an update
     """
-    Registry().get('settings').setValue('core/last version test', date.today().strftime('%Y-%m-%d'))
+    Settings().setValue('core/last version test', date.today().strftime('%Y-%m-%d'))
 
 
 def check_for_update(main_window):
@@ -127,7 +127,7 @@ def check_for_update(main_window):
 
     :param MainWindow main_window: The OpenLP main window.
     """
-    last_check_date = Registry().get('settings').value('core/last version test')
+    last_check_date = Settings().value('core/last version test')
     if date.today().strftime('%Y-%m-%d') <= last_check_date:
         log.debug('Version check skipped, last checked today')
         return

@@ -28,6 +28,7 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.widgets.buttons import ColorButton
@@ -190,46 +191,48 @@ class GeneralTab(SettingsTab):
         """
         Load the settings to populate the form
         """
-        self.settings.beginGroup(self.settings_section)
-        self.number_edit.setText(self.settings.value('ccli number'))
-        self.username_edit.setText(self.settings.value('songselect username'))
-        self.password_edit.setText(self.settings.value('songselect password'))
-        self.save_check_service_check_box.setChecked(self.settings.value('save prompt'))
-        self.auto_unblank_check_box.setChecked(self.settings.value('auto unblank'))
-        self.click_live_slide_to_unblank_check_box.setChecked(self.settings.value('click live slide to unblank'))
-        self.warning_check_box.setChecked(self.settings.value('blank warning'))
-        self.auto_open_check_box.setChecked(self.settings.value('auto open'))
-        self.show_splash_check_box.setChecked(self.settings.value('show splash'))
-        self.logo_background_color = self.settings.value('logo background color')
-        self.logo_file_path_edit.path = self.settings.value('logo file')
-        self.logo_hide_on_startup_check_box.setChecked(self.settings.value('logo hide on startup'))
+        settings = Settings()
+        settings.beginGroup(self.settings_section)
+        self.number_edit.setText(settings.value('ccli number'))
+        self.username_edit.setText(settings.value('songselect username'))
+        self.password_edit.setText(settings.value('songselect password'))
+        self.save_check_service_check_box.setChecked(settings.value('save prompt'))
+        self.auto_unblank_check_box.setChecked(settings.value('auto unblank'))
+        self.click_live_slide_to_unblank_check_box.setChecked(settings.value('click live slide to unblank'))
+        self.warning_check_box.setChecked(settings.value('blank warning'))
+        self.auto_open_check_box.setChecked(settings.value('auto open'))
+        self.show_splash_check_box.setChecked(settings.value('show splash'))
+        self.logo_background_color = settings.value('logo background color')
+        self.logo_file_path_edit.path = settings.value('logo file')
+        self.logo_hide_on_startup_check_box.setChecked(settings.value('logo hide on startup'))
         self.logo_color_button.color = self.logo_background_color
-        self.check_for_updates_check_box.setChecked(self.settings.value('update check'))
-        self.auto_preview_check_box.setChecked(self.settings.value('auto preview'))
-        self.timeout_spin_box.setValue(self.settings.value('loop delay'))
-        self.settings.endGroup()
+        self.check_for_updates_check_box.setChecked(settings.value('update check'))
+        self.auto_preview_check_box.setChecked(settings.value('auto preview'))
+        self.timeout_spin_box.setValue(settings.value('loop delay'))
+        settings.endGroup()
 
     def save(self):
         """
         Save the settings from the form
         """
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('blank warning', self.warning_check_box.isChecked())
-        self.settings.setValue('auto open', self.auto_open_check_box.isChecked())
-        self.settings.setValue('show splash', self.show_splash_check_box.isChecked())
-        self.settings.setValue('logo background color', self.logo_background_color)
-        self.settings.setValue('logo file', self.logo_file_path_edit.path)
-        self.settings.setValue('logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
-        self.settings.setValue('update check', self.check_for_updates_check_box.isChecked())
-        self.settings.setValue('save prompt', self.save_check_service_check_box.isChecked())
-        self.settings.setValue('auto unblank', self.auto_unblank_check_box.isChecked())
-        self.settings.setValue('click live slide to unblank', self.click_live_slide_to_unblank_check_box.isChecked())
-        self.settings.setValue('auto preview', self.auto_preview_check_box.isChecked())
-        self.settings.setValue('loop delay', self.timeout_spin_box.value())
-        self.settings.setValue('ccli number', self.number_edit.displayText())
-        self.settings.setValue('songselect username', self.username_edit.displayText())
-        self.settings.setValue('songselect password', self.password_edit.displayText())
-        self.settings.endGroup()
+        settings = Settings()
+        settings.beginGroup(self.settings_section)
+        settings.setValue('blank warning', self.warning_check_box.isChecked())
+        settings.setValue('auto open', self.auto_open_check_box.isChecked())
+        settings.setValue('show splash', self.show_splash_check_box.isChecked())
+        settings.setValue('logo background color', self.logo_background_color)
+        settings.setValue('logo file', self.logo_file_path_edit.path)
+        settings.setValue('logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
+        settings.setValue('update check', self.check_for_updates_check_box.isChecked())
+        settings.setValue('save prompt', self.save_check_service_check_box.isChecked())
+        settings.setValue('auto unblank', self.auto_unblank_check_box.isChecked())
+        settings.setValue('click live slide to unblank', self.click_live_slide_to_unblank_check_box.isChecked())
+        settings.setValue('auto preview', self.auto_preview_check_box.isChecked())
+        settings.setValue('loop delay', self.timeout_spin_box.value())
+        settings.setValue('ccli number', self.number_edit.displayText())
+        settings.setValue('songselect username', self.username_edit.displayText())
+        settings.setValue('songselect password', self.password_edit.displayText())
+        settings.endGroup()
         self.post_set_up()
 
     def post_set_up(self):
