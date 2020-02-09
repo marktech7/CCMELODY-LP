@@ -25,7 +25,6 @@ from PyQt5 import QtGui
 
 from openlp.core.state import State
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ImageSource, build_icon
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent

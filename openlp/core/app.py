@@ -152,8 +152,7 @@ class OpenLP(QtCore.QObject, LogMixin):
         QtWidgets.QMessageBox.critical(None, UiStrings().Error, UiStrings().OpenLPStart,
                                        QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
 
-    @staticmethod
-    def is_data_path_missing():
+    def is_data_path_missing(self):
         """
         Check if the data folder path exists.
         """
@@ -334,6 +333,7 @@ def main():
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
+    settings = Settings()
     if args.portable:
         application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
@@ -353,7 +353,7 @@ def main():
         # Make this our settings file
         log.info('INI file: {name}'.format(name=portable_settings_path))
         Settings.set_filename(portable_settings_path)
-        portable_settings = self.settings
+        portable_settings = settings
         # Set our data path
         log.info('Data path: {name}'.format(name=data_path))
         # Point to our data path
@@ -377,7 +377,6 @@ def main():
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Create and install settings.
-    settings = Settings()
     app.settings = settings
     Registry().register('settings', settings)
     application.setApplicationVersion(get_version()['version'])
