@@ -53,7 +53,7 @@ def test_serverstart(mocked_run_thread, MockWebSocketWorker, registry):
 
 @patch('openlp.core.api.websockets.WebSocketWorker')
 @patch('openlp.core.api.websockets.run_thread')
-def test_serverstart_not_required( mocked_run_thread, MockWebSocketWorker, registry):
+def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, registry):
     """
     Test the starting of the WebSockets Server with the disabled flag set off
     """
