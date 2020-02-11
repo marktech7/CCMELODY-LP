@@ -372,11 +372,11 @@ def main():
     app = OpenLP()
     # Initialise the Registry
     Registry.create()
+    settings = Settings()
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
-    settings = Settings()
     app.settings = settings
     Registry().register('settings', settings)
     application.setApplicationVersion(get_version()['version'])

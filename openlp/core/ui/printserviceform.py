@@ -31,7 +31,6 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import get_text_file_string, image_to_byte
 from openlp.core.ui.printservicedialog import Ui_PrintServiceDialog, ZoomSize
 
@@ -135,7 +134,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         self.zoom = 0
         self.setup_ui(self)
         # Load the settings for the dialog.
-        settings = Settings()
+        settings = self.settings
         settings.beginGroup('advanced')
         self.slide_text_check_box.setChecked(settings.value('print slide text'))
         self.page_break_after_text.setChecked(settings.value('add page break'))
@@ -307,7 +306,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         elif display == ZoomSize.TwentyFive:
             self.preview_widget.fitToWidth()
             self.preview_widget.zoomIn(0.25)
-        settings = Settings()
+        settings = self.settings
         settings.beginGroup('advanced')
         settings.setValue('display size', display)
         settings.endGroup()
@@ -395,7 +394,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         Save the settings and close the dialog.
         """
         # Save the settings for this dialog.
-        settings = Settings()
+        settings = self.settings
         settings.beginGroup('advanced')
         settings.setValue('print slide text', self.slide_text_check_box.isChecked())
         settings.setValue('add page break', self.page_break_after_text.isChecked())
