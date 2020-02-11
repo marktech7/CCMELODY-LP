@@ -219,13 +219,12 @@ class TestMainWindow(TestCase, TestMixin):
 
     @patch('openlp.core.ui.mainwindow.FirstTimeForm')
     @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.warning')
-    @patch('openlp.core.ui.mainwindow.Settings')
-    def test_on_first_time_wizard_clicked_show_projectors_after(self, MockSettings, mocked_warning, MockWizard):
+    def test_on_first_time_wizard_clicked_show_projectors_after(self, mocked_warning, MockWizard):
         """Test that the projector manager is shown after the FTW is run"""
         # GIVEN: Main_window, patched things, patched "Yes" as confirmation to re-run wizard, settings to True.
-        MockSettings.return_value.value.return_value = True
         mocked_warning.return_value = QtWidgets.QMessageBox.Yes
         MockWizard.return_value.was_cancelled = False
+        self.main_window.settings.setValue('projector/show after wizard', True)
 
         with patch.object(self.main_window, 'projector_manager_dock') as mocked_dock, \
                 patch.object(self.registry, 'execute'), patch.object(self.main_window, 'theme_manager_contents'):
@@ -237,13 +236,12 @@ class TestMainWindow(TestCase, TestMixin):
 
     @patch('openlp.core.ui.mainwindow.FirstTimeForm')
     @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.warning')
-    @patch('openlp.core.ui.mainwindow.Settings')
-    def test_on_first_time_wizard_clicked_hide_projectors_after(self, MockSettings, mocked_warning, MockWizard):
+    def test_on_first_time_wizard_clicked_hide_projectors_after(self, mocked_warning, MockWizard):
         """Test that the projector manager is hidden after the FTW is run"""
         # GIVEN: Main_window, patched things, patched "Yes" as confirmation to re-run wizard, settings to False.
-        MockSettings.return_value.value.return_value = False
         mocked_warning.return_value = QtWidgets.QMessageBox.Yes
         MockWizard.return_value.was_cancelled = False
+        self.main_window.settings.setValue('projector/show after wizard', False)
 
         # WHEN: on_first_time_wizard_clicked is called
         with patch.object(self.main_window, 'projector_manager_dock') as mocked_dock, \

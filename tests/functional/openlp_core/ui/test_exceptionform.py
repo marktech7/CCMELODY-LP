@@ -28,8 +28,8 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import call, patch
 
-from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.ui import exceptionform
 from tests.helpers.testmixin import TestMixin
 

@@ -547,16 +547,15 @@ class TestServiceManager(TestCase):
         assert service_manager.theme_menu.menuAction().setVisible.call_count == 1, \
             'Should have be called once'
 
-    @patch('openlp.core.ui.servicemanager.Settings')
     @patch('PyQt5.QtCore.QTimer.singleShot')
-    def test_single_click_preview_true(self, mocked_singleShot, MockedSettings):
+    def test_single_click_preview_true(self, mocked_singleShot):
         """
         Test that when "Preview items when clicked in Service Manager" enabled the preview timer starts
         """
         # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
         mocked_settings = MagicMock()
         mocked_settings.value.return_value = True
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         service_manager = ServiceManager(None)
         # WHEN: on_single_click_preview() is called
         service_manager.on_single_click_preview()
@@ -564,33 +563,31 @@ class TestServiceManager(TestCase):
         mocked_singleShot.assert_called_with(PyQt5.QtWidgets.QApplication.instance().doubleClickInterval(),
                                              service_manager.on_single_click_preview_timeout)
 
-    @patch('openlp.core.ui.servicemanager.Settings')
     @patch('PyQt5.QtCore.QTimer.singleShot')
-    def test_single_click_preview_false(self, mocked_singleShot, MockedSettings):
+    def test_single_click_preview_false(self, mocked_singleShot):
         """
         Test that when "Preview items when clicked in Service Manager" disabled the preview timer doesn't start
         """
         # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
         mocked_settings = MagicMock()
         mocked_settings.value.return_value = False
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         service_manager = ServiceManager(None)
         # WHEN: on_single_click_preview() is called
         service_manager.on_single_click_preview()
         # THEN: timer should not be started
         assert mocked_singleShot.call_count == 0, 'Should not be called'
 
-    @patch('openlp.core.ui.servicemanager.Settings')
     @patch('PyQt5.QtCore.QTimer.singleShot')
     @patch('openlp.core.ui.servicemanager.ServiceManager.make_live')
-    def test_single_click_preview_double(self, mocked_make_live, mocked_singleShot, MockedSettings):
+    def test_single_click_preview_double(self, mocked_make_live, mocked_singleShot):
         """
         Test that when a double click has registered the preview timer doesn't start
         """
         # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
         mocked_settings = MagicMock()
         mocked_settings.value.return_value = True
-        MockedSettings.return_value = mocked_settings
+        Registry().register('settings', mocked_settings)
         service_manager = ServiceManager(None)
         # WHEN: on_single_click_preview() is called following a double click
         service_manager.on_double_click_live()
