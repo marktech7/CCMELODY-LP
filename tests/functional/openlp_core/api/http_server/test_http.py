@@ -19,42 +19,41 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.ui.ThemeTab package.
+Functional tests to test the Http Server Class.
 """
-from unittest.mock import MagicMock
+from unittest.mock import patch
 
+from openlp.core.api.http.server import HttpServer
 from openlp.core.common.registry import Registry
-from openlp.core.ui.settingsform import SettingsForm
-from openlp.core.ui.themestab import ThemesTab
 
 
-def test_save_triggers_processes_true(mock_settings):
+@patch('openlp.core.api.http.server.HttpWorker')
+@patch('openlp.core.api.http.server.run_thread')
+def test_server_start(mocked_run_thread, MockHttpWorker, registry):
     """
-    Test that the global theme event is triggered when the tab is visited.
+    Test the starting of the Waitress Server with the disable flag set off
     """
-    # GIVEN: A new Advanced Tab
-    settings_form = SettingsForm(None)
-    themes_tab = ThemesTab(settings_form)
-    Registry().register('renderer', MagicMock())
-    themes_tab.tab_visited = True
-    # WHEN: I change search as type check box
-    themes_tab.save()
+    # GIVEN: A new httpserver
+    # WHEN: I start the server
+    Registry().set_flag('no_web_server', False)
+    HttpServer()
 
-    # THEN: we should have two post save processed to run
-    assert 1 == len(settings_form.processes), 'One post save processes should be created'
+    # THEN: the api environment should have been created
+    assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
+    assert MockHttpWorker.call_count == 1, 'The http thread should have been called once'
 
 
-def test_save_triggers_processes_false(mock_settings):
+@patch('openlp.core.api.http.server.HttpWorker')
+@patch('openlp.core.api.http.server.run_thread')
+def test_server_start_not_required(mocked_run_thread, MockHttpWorker, registry):
     """
-    Test that the global theme event is not triggered when the tab is not visited.
+    Test the starting of the Waitress Server with the disable flag set off
     """
-    # GIVEN: A new Advanced Tab
-    settings_form = SettingsForm(None)
-    themes_tab = ThemesTab(settings_form)
-    Registry().register('renderer', MagicMock())
-    themes_tab.tab_visited = False
-    # WHEN: I change search as type check box
-    themes_tab.save()
+    # GIVEN: A new httpserver
+    # WHEN: I start the server
+    Registry().set_flag('no_web_server', True)
+    HttpServer()
 
-    # THEN: we should have two post save processed to run
-    assert 0 == len(settings_form.processes), 'No post save processes should be created'
+    # THEN: the api environment should have been created
+    assert mocked_run_thread.call_count == 0, 'The qthread should not have have been called'
+    assert MockHttpWorker.call_count == 0, 'The http thread should not have been called'

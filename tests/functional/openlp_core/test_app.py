@@ -29,7 +29,6 @@ sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.app import parse_options
 from openlp.core.common import is_win
-from openlp.core.common.settings import Settings
 
 
 def test_parse_options_basic():
@@ -239,7 +238,7 @@ def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qa
     qapp.backup_on_upgrade(old_install, False)
 
     # THEN: It should not ask if we want to create a backup
-    assert Settings().value('core/application version') == '2.4.0', 'Version should be the same!'
+    assert settings.value('core/application version') == '2.4.0', 'Version should be the same!'
     assert mocked_question.call_count == 0, 'No question should have been asked!'
 
 
@@ -266,7 +265,7 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
     qapp.backup_on_upgrade(old_install, True)
 
     # THEN: It should ask if we want to create a backup
-    assert Settings().value('core/application version') == '2.9.0', 'Version should be upgraded!'
+    assert settings.value('core/application version') == '2.9.0', 'Version should be upgraded!'
     assert mocked_question.call_count == 1, 'A question should have been asked!'
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()

@@ -376,7 +376,7 @@ def main():
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
-    # Create and install settings.
+    # Upgrade settings.
     app.settings = settings
     Registry().register('settings', settings)
     application.setApplicationVersion(get_version()['version'])

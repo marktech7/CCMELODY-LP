@@ -46,6 +46,7 @@ class TestBibleManager(TestCase, TestMixin):
         with patch('openlp.core.common.applocation.AppLocation.get_section_data_path') as mocked_get_data_path, \
                 patch('openlp.core.common.applocation.AppLocation.get_files') as mocked_get_files:
             Registry().register('settings', Settings())
+            # GIVEN: A mocked out Settings class and a mocked out AppLocation.get_files()
             mocked_get_files.return_value = ["tests.sqlite"]
             mocked_get_data_path.return_value = TEST_RESOURCES_PATH + "/bibles"
             self.manager = BibleManager(MagicMock())

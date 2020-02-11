@@ -42,7 +42,6 @@ from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import create_action
@@ -874,7 +873,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         create_paths(temp_dir_path)
         temp_config_path = temp_dir_path / import_file_path.name
         shutil.copyfile(import_file_path, temp_config_path)
-        import_settings = Settings(str(temp_config_path), Settings.IniFormat)
+        import_settings = QtCore.QSettings(str(temp_config_path), QtCore.QSettings.IniFormat)
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
@@ -1376,11 +1375,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         else:
             self.log_info('No data copy requested')
         # Change the location of data directory in config file.
-        settings = QtCore.QSettings()
-        settings.setValue('advanced/data path', self.new_data_path)
+        self.settings.setValue('advanced/data path', self.new_data_path)
         # Check if the new data path is our default.
         if self.new_data_path == AppLocation.get_directory(AppLocation.DataDir):
-            settings.remove('advanced/data path')
+            self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
     def open_cmd_line_files(self, args):

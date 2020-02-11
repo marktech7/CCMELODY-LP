@@ -749,7 +749,7 @@ class Settings(QtCore.QSettings):
         self.remove('SettingsImport')
         # Get the settings.
         keys = self.allKeys()
-        export_settings = QtCore.QSettings(str(temp_path), Settings.IniFormat)
+        export_settings = QtCore.QSettings(str(temp_path), QtCore.QSettings.IniFormat)
         # Add a header section.
         # This is to insure it's our conf file for import.
         now = datetime.datetime.now()

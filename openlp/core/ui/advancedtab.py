@@ -335,7 +335,7 @@ class AdvancedTab(SettingsTab):
 
     def load(self):
         """
-        Load self.settings from disk.
+        Load settings from disk.
         """
         self.settings.beginGroup(self.settings_section)
         # The max recent files value does not have an interface and so never
@@ -395,7 +395,7 @@ class AdvancedTab(SettingsTab):
 
     def save(self):
         """
-        Save self.settings to disk.
+        Save settings to disk.
         """
         self.settings.beginGroup(self.settings_section)
         self.settings.setValue('default service enabled', self.service_name_check_box.isChecked())

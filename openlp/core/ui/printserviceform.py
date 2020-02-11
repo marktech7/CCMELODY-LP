@@ -389,9 +389,9 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
 
     def save_options(self):
         """
-        Save the self.settings and close the dialog.
+        Save the settings and close the dialog.
         """
-        # Save the self.settings for this dialog.
+        # Save the settings for this dialog.
         self.settings.beginGroup('advanced')
         self.settings.setValue('print slide text', self.slide_text_check_box.isChecked())
         self.settings.setValue('add page break', self.page_break_after_text.isChecked())

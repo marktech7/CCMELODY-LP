@@ -338,7 +338,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         # Append the optical string to the media list
         file_paths.append(optical)
         self.load_list([str(optical)])
-        self.settigns.setValue(self.settings_section + '/media files', file_paths)
+        self.settings.setValue(self.settings_section + '/media files', file_paths)
 
     def on_open_device_stream(self):
         """
