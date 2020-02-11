@@ -378,6 +378,7 @@ def main():
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
     settings = Settings()
+    app.settings = settings
     Registry().register('settings', settings)
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
