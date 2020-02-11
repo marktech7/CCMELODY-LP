@@ -29,6 +29,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.settings import Settings
 from openlp.core.ui.shortcutlistdialog import Ui_ShortcutListDialog
 
 
@@ -345,7 +346,8 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         Save the shortcuts. **Note**, that we do not have to load the shortcuts, as they are loaded in
         :class:`~openlp.core.utils.ActionList`.
         """
-        self.settings.beginGroup('shortcuts')
+        settings = Settings()
+        settings.beginGroup('shortcuts')
         for category in self.action_list.categories:
             # Check if the category is for internal use only.
             if category.name is None:
@@ -355,8 +357,8 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
                     old_shortcuts = list(map(self.get_shortcut_string, action.shortcuts()))
                     action.setShortcuts(self.changed_actions[action])
                     self.action_list.update_shortcut_map(action, old_shortcuts)
-                self.settings.setValue(action.objectName(), action.shortcuts())
-        self.settings.endGroup()
+                settings.setValue(action.objectName(), action.shortcuts())
+        settings.endGroup()
 
     def on_clear_primary_button_clicked(self, toggled):
         """

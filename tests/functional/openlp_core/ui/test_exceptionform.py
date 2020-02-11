@@ -28,7 +28,6 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import call, patch
 
-from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.ui import exceptionform
 from tests.helpers.testmixin import TestMixin
@@ -90,7 +89,6 @@ class TestExceptionForm(TestMixin, TestCase):
         self.app.process_events = lambda: None
         Registry.create()
         Registry().register('application', self.app)
-        Registry().register('settings', Settings())
         self.tempfile = os.path.join(tempfile.gettempdir(), 'testfile')
 
     def tearDown(self):

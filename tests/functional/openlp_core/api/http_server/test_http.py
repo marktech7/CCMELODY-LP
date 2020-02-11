@@ -19,43 +19,41 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Test the media plugin
+Functional tests to test the Http Server Class.
 """
-from unittest import TestCase
 from unittest.mock import patch
 
+from openlp.core.api.http.server import HttpServer
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
-from openlp.plugins.media.mediaplugin import MediaPlugin
-from tests.helpers.testmixin import TestMixin
 
 
-class TestMediaPlugin(TestCase, TestMixin):
+@patch('openlp.core.api.http.server.HttpWorker')
+@patch('openlp.core.api.http.server.run_thread')
+def test_server_start(mocked_run_thread, MockHttpWorker, registry):
     """
-    Test the media plugin
+    Test the starting of the Waitress Server with the disable flag set off
     """
-    def setUp(self):
-        Registry.create()
-        Registry().register('settings', Settings())
+    # GIVEN: A new httpserver
+    # WHEN: I start the server
+    Registry().set_flag('no_web_server', False)
+    HttpServer()
 
-    @patch('openlp.plugins.media.mediaplugin.Plugin.initialise')
-    def test_initialise(self, mocked_initialise):
-        """
-        Test that the initialise() method overwrites the built-in one, but still calls it
-        """
-        # GIVEN: A media plugin instance
-        media_plugin = MediaPlugin()
+    # THEN: the api environment should have been created
+    assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
+    assert MockHttpWorker.call_count == 1, 'The http thread should have been called once'
 
-        # WHEN: initialise() is called
-        media_plugin.initialise()
 
-        # THEN: The the base initialise() method should be called
-        mocked_initialise.assert_called_with()
+@patch('openlp.core.api.http.server.HttpWorker')
+@patch('openlp.core.api.http.server.run_thread')
+def test_server_start_not_required(mocked_run_thread, MockHttpWorker, registry):
+    """
+    Test the starting of the Waitress Server with the disable flag set off
+    """
+    # GIVEN: A new httpserver
+    # WHEN: I start the server
+    Registry().set_flag('no_web_server', True)
+    HttpServer()
 
-    def test_about_text(self):
-        # GIVEN: The MediaPlugin
-        # WHEN: Retrieving the about text
-        # THEN: about() should return a string object
-        assert isinstance(MediaPlugin.about(), str)
-        # THEN: about() should return a non-empty string
-        assert len(MediaPlugin.about()) != 0
+    # THEN: the api environment should have been created
+    assert mocked_run_thread.call_count == 0, 'The qthread should not have have been called'
+    assert MockHttpWorker.call_count == 0, 'The http thread should not have been called'

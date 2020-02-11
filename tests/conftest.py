@@ -71,7 +71,6 @@ def settings(qapp, registry):
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
     Registry().register('settings', sets)
-    qapp.settings = sets
     yield sets
     del sets
     os.close(fd)

@@ -26,6 +26,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
 from openlp.core.ui.icons import UiIcons
@@ -135,11 +136,12 @@ class ThemesTab(SettingsTab):
         """
         Load the theme settings into the tab
         """
-        self.settings.beginGroup(self.settings_section)
-        self.theme_level = self.settings.value('theme level')
-        self.global_theme = self.settings.value('global theme')
-        self.wrap_footer_check_box.setChecked(self.settings.value('wrap footer'))
-        self.settings.endGroup()
+        settings = Settings()
+        settings.beginGroup(self.settings_section)
+        self.theme_level = settings.value('theme level')
+        self.global_theme = settings.value('global theme')
+        self.wrap_footer_check_box.setChecked(settings.value('wrap footer'))
+        settings.endGroup()
         if self.theme_level == ThemeLevel.Global:
             self.global_level_radio_button.setChecked(True)
         elif self.theme_level == ThemeLevel.Service:
@@ -151,11 +153,12 @@ class ThemesTab(SettingsTab):
         """
         Save the settings
         """
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('theme level', self.theme_level)
-        self.settings.setValue('global theme', self.global_theme)
-        self.settings.setValue('wrap footer', self.wrap_footer_check_box.isChecked())
-        self.settings.endGroup()
+        settings = Settings()
+        settings.beginGroup(self.settings_section)
+        settings.setValue('theme level', self.theme_level)
+        settings.setValue('global theme', self.global_theme)
+        settings.setValue('wrap footer', self.wrap_footer_check_box.isChecked())
+        settings.endGroup()
         self.renderer.set_theme_level(self.theme_level)
         if self.tab_visited:
             self.settings_form.register_post_process('theme_update_global')
@@ -196,7 +199,7 @@ class ThemesTab(SettingsTab):
                 ['Bible Theme', 'Song Theme']
         """
         # Reload as may have been triggered by the ThemeManager.
-        self.global_theme = self.settings.value(self.settings_section + '/global theme')
+        self.global_theme = Settings().value(self.settings_section + '/global theme')
         self.default_combo_box.clear()
         self.default_combo_box.addItems(theme_list)
         find_and_set_in_combo_box(self.default_combo_box, self.global_theme)

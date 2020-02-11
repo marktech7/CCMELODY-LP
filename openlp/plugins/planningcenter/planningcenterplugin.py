@@ -26,6 +26,7 @@ import logging
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.state import State
@@ -84,8 +85,8 @@ class PlanningCenterPlugin(Plugin):
         Run the PlanningCenter importer.
         """
         # Determine which dialog to show based on whether the auth values are set yet
-        self.application_id = self.settings.value("planningcenter/application_id")
-        self.secret = self.settings.value("planningcenter/secret")
+        self.application_id = Settings().value("planningcenter/application_id")
+        self.secret = Settings().value("planningcenter/secret")
         if len(self.application_id) == 0 or len(self.secret) == 0:
             self.planningcenter_form = Registry().get('settings_form')
             self.planningcenter_form.exec(translate('PlanningCenterPlugin', 'PlanningCenter'))
