@@ -80,7 +80,6 @@ class ScreensTab(SettingsTab):
         """
         Load the settings to populate the tab
         """
-        self.settings.beginGroup(self.settings_section)
         self.screen_selection_widget.load()
         # Load generic settings
         self.display_on_monitor_check.setChecked(self.settings.value('core/display on monitor'))

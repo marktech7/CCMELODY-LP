@@ -134,16 +134,15 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         self.zoom = 0
         self.setup_ui(self)
         # Load the settings for the dialog.
-        settings = self.settings
-        settings.beginGroup('advanced')
-        self.slide_text_check_box.setChecked(settings.value('print slide text'))
-        self.page_break_after_text.setChecked(settings.value('add page break'))
+        self.settings.beginGroup('advanced')
+        self.slide_text_check_box.setChecked(self.settings.value('print slide text'))
+        self.page_break_after_text.setChecked(self.settings.value('add page break'))
         if not self.slide_text_check_box.isChecked():
             self.page_break_after_text.setDisabled(True)
-        self.meta_data_check_box.setChecked(settings.value('print file meta data'))
-        self.notes_check_box.setChecked(settings.value('print notes'))
-        self.zoom_combo_box.setCurrentIndex(settings.value('display size'))
-        settings.endGroup()
+        self.meta_data_check_box.setChecked(self.settings.value('print file meta data'))
+        self.notes_check_box.setChecked(self.settings.value('print notes'))
+        self.zoom_combo_box.setCurrentIndex(self.settings.value('display size'))
+        self.settings.endGroup()
         # Signals
         self.print_button.triggered.connect(self.print_service_order)
         self.zoom_out_button.clicked.connect(self.zoom_out)
@@ -306,10 +305,9 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         elif display == ZoomSize.TwentyFive:
             self.preview_widget.fitToWidth()
             self.preview_widget.zoomIn(0.25)
-        settings = self.settings
-        settings.beginGroup('advanced')
-        settings.setValue('display size', display)
-        settings.endGroup()
+        self.settings.beginGroup('advanced')
+        self.settings.setValue('display size', display)
+        self.settings.endGroup()
 
     def copy_text(self):
         """
@@ -394,13 +392,12 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         Save the settings and close the dialog.
         """
         # Save the settings for this dialog.
-        settings = self.settings
-        settings.beginGroup('advanced')
-        settings.setValue('print slide text', self.slide_text_check_box.isChecked())
-        settings.setValue('add page break', self.page_break_after_text.isChecked())
-        settings.setValue('print file meta data', self.meta_data_check_box.isChecked())
-        settings.setValue('print notes', self.notes_check_box.isChecked())
-        settings.endGroup()
+        self.settings.beginGroup('advanced')
+        self.settings.setValue('print slide text', self.slide_text_check_box.isChecked())
+        self.settings.setValue('add page break', self.page_break_after_text.isChecked())
+        self.settings.setValue('print file meta data', self.meta_data_check_box.isChecked())
+        self.settings.setValue('print notes', self.notes_check_box.isChecked())
+        self.settings.endGroup()
 
     def update_song_usage(self):
         """

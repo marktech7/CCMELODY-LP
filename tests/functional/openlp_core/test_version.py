@@ -209,32 +209,26 @@ def test_worker_start_connection_error(mock_requests, mock_platform):
     mocked_quit.emit.assert_called_once_with()
 
 
-@patch('openlp.core.version.Settings')
-def test_update_check_date(MockSettings):
+def test_update_check_date(mock_settings):
     """
     Test that the update_check_date() function writes the correct date
     """
     # GIVEN: A mocked Settings object
-    mocked_settings = MagicMock()
-    MockSettings.return_value = mocked_settings
 
     # WHEN: update_check_date() is called
     update_check_date()
 
     # THEN: The correct date should have been saved
-    mocked_settings.setValue.assert_called_once_with('core/last version test', date.today().strftime('%Y-%m-%d'))
+    mock_settings.setValue.assert_called_once_with('core/last version test', date.today().strftime('%Y-%m-%d'))
 
 
-@patch('openlp.core.version.Settings')
 @patch('openlp.core.version.run_thread')
-def test_check_for_update(mocked_run_thread, MockSettings):
+def test_check_for_update(mocked_run_thread, mock_settings):
     """
     Test the check_for_update() function
     """
     # GIVEN: A mocked settings object
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = '1970-01-01'
-    MockSettings.return_value = mocked_settings
+    mock_settings.value.return_value = '1970-01-01'
 
     # WHEN: check_for_update() is called
     check_for_update(MagicMock())
@@ -243,16 +237,13 @@ def test_check_for_update(mocked_run_thread, MockSettings):
     assert mocked_run_thread.call_count == 1
 
 
-@patch('openlp.core.version.Settings')
 @patch('openlp.core.version.run_thread')
-def test_check_for_update_skipped(mocked_run_thread, MockSettings):
+def test_check_for_update_skipped(mocked_run_thread, mock_settings):
     """
     Test that the check_for_update() function skips running if it already ran today
     """
     # GIVEN: A mocked settings object
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = date.today().strftime('%Y-%m-%d')
-    MockSettings.return_value = mocked_settings
+    mock_settings.value.return_value = date.today().strftime('%Y-%m-%d')
 
     # WHEN: check_for_update() is called
     check_for_update(MagicMock())
