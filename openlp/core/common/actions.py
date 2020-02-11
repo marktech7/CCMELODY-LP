@@ -26,7 +26,7 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 log = logging.getLogger(__name__)
@@ -243,7 +243,7 @@ class ActionList(object):
         """
         if category not in self.categories:
             self.categories.append(category)
-        settings = Settings()
+        settings = Registry().get('settings')
         settings.beginGroup('shortcuts')
         # Get the default shortcut from the config.
         action.default_shortcuts = settings.get_default_value(action.objectName())

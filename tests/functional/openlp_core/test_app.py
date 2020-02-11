@@ -230,7 +230,6 @@ def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qa
         'version': '2.4.0',
         'build': None
     }
-    qapp.settings = settings
     settings.setValue('core/application version', '2.4.0')
     mocked_get_version.return_value = MOCKED_VERSION
     mocked_question.return_value = QtWidgets.QMessageBox.No
@@ -256,7 +255,6 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
         'version': '2.9.0',
         'build': '97ba02d1f'
     }
-    qapp.settings = settings
     settings.setValue('core/application version', '2.4.6')
     qapp.splash = MagicMock()
     qapp.splash.isVisible.return_value = True
