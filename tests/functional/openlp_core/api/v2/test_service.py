@@ -1,20 +1,42 @@
-import pytest
+# -*- coding: utf-8 -*-
+
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 
 
 def test_retrieve_service_items(flask_client, settings):
-    pytest.skip()
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.service_item = MagicMock()
+    fake_service_manager = MagicMock()
+    Registry().register('service_manager', fake_service_manager)
+    Registry().register('live_controller', mocked_live_controller)
     res = flask_client.get('/api/v2/service/items').get_json()
     assert len(res) == 0
 
 
 def test_service_set_requires_login(flask_client, settings):
-    Settings().setValue('api/authentication enabled', True)
+    settings.setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/service/show', json=dict())
-    Settings().setValue('api/authentication enabled', False)
+    settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401
 
 
@@ -32,9 +54,9 @@ def test_service_set_calls_service_manager(flask_client, settings):
 
 
 def test_service_direction_requires_login(flask_client, settings):
-    Settings().setValue('api/authentication enabled', True)
+    settings.setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/service/progress', json=dict())
-    Settings().setValue('api/authentication enabled', False)
+    settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401
 
 
