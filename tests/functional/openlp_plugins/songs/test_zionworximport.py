@@ -21,7 +21,8 @@
 """
 This module contains tests for the ZionWorx song importer.
 """
-from unittest.mock import patch
+from unittest import TestCase
+from unittest.mock import patch, MagicMock
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.importers.songimport import SongImport
@@ -30,7 +31,6 @@ from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
 
-<<<<<<< HEAD:tests/functional/openlp_plugins/songs/test_zionworximport.py
 TEST_PATH = RESOURCE_PATH / 'songs' / 'zionworx'
 
 
@@ -71,35 +71,3 @@ class TestZionWorxFileImport(SongImportTestHelper):
         Test that loading an ZionWorx file works correctly on various files
         """
         self.file_import(TEST_PATH / 'zionworx.csv', self.load_external_result_data(TEST_PATH / 'zionworx.json'))
-=======
-@patch('openlp.core.api.http.server.HttpWorker')
-@patch('openlp.core.api.http.server.run_thread')
-def test_server_start(mocked_run_thread, MockHttpWorker, registry ):
-    """
-    Test the starting of the Waitress Server with the disable flag set off
-    """
-    # GIVEN: A new httpserver
-    # WHEN: I start the server
-    Registry().set_flag('no_web_server', False)
-    HttpServer()
-
-    # THEN: the api environment should have been created
-    assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
-    assert MockHttpWorker.call_count == 1, 'The http thread should have been called once'
-
-
-@patch('openlp.core.api.http.server.HttpWorker')
-@patch('openlp.core.api.http.server.run_thread')
-def test_server_start_not_required(mocked_run_thread, MockHttpWorker, registry):
-    """
-    Test the starting of the Waitress Server with the disable flag set off
-    """
-    # GIVEN: A new httpserver
-    # WHEN: I start the server
-    Registry().set_flag('no_web_server', True)
-    HttpServer()
-
-    # THEN: the api environment should have been created
-    assert mocked_run_thread.call_count == 0, 'The qthread should not have have been called'
-    assert MockHttpWorker.call_count == 0, 'The http thread should not have been called'
->>>>>>> API Test Cleanup:tests/functional/openlp_core/api/http/test_http.py
