@@ -587,7 +587,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         # self.preview_controller.panel.setVisible(self.settings.value('user interface/preview panel'))
         # self.live_controller.panel.setVisible(self.settings.value('user interface/live panel'))
-        self.load_sself.settings
+        self.load_settings()
         self.restore_current_media_manager_item()
         Registry().execute('theme_update_global')
 
@@ -725,10 +725,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Check and display message if screen blank on setup.
         """
-        settings = self.settings
         self.live_controller.main_display_set_background()
-        if settings.value('{section}/screen blank'.format(section=self.general_settings_section)):
-            if settings.value('{section}/blank warning'.format(section=self.general_settings_section)):
+        if self.settings.value('{section}/screen blank'.format(section=self.general_settings_section)):
+            if self.settings.value('{section}/blank warning'.format(section=self.general_settings_section)):
                 QtWidgets.QMessageBox.question(self, translate('OpenLP.MainWindow', 'OpenLP Main Display Blanked'),
                                                translate('OpenLP.MainWindow', 'The Main Display has been blanked out'))
 
@@ -874,14 +873,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         create_paths(temp_dir_path)
         temp_config_path = temp_dir_path / import_file_path.name
         shutil.copyfile(import_file_path, temp_config_path)
-        settings = self.settings
-        import_settings = Settings(str(temp_config_path), Settings.IniFormat)
+        import_settings = QtCore.QSettings(str(temp_config_path), QtCore.QSettings.IniFormat)
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
         # Upgrade settings to prepare the import.
         if import_settings.can_upgrade():
-            import_settings.upgrade_sself.settings
+            import_settings.upgrade_settings()
         # Lets do a basic sanity check. If it contains this string we can assume it was created by OpenLP and so we'll
         # load what we can from it, and just silently ignore anything we don't recognise.
         if import_settings.value('SettingsImport/type') != 'OpenLP_settings_export':
@@ -918,13 +916,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.log_warning('The key "{key}" does not exist (anymore), so it will be skipped.'.
                                  format(key=section_key))
             if value is not None:
-                settings.setValue('{key}'.format(key=section_key), value)
+                self.settings.setValue('{key}'.format(key=section_key), value)
         now = datetime.now()
-        settings.beginGroup(self.header_section)
-        settings.setValue('file_imported', import_file_path)
-        settings.setValue('file_date_imported', now.strftime("%Y-%m-%d %H:%M"))
-        settings.endGroup()
-        settings.sync()
+        self.settings.beginGroup(self.header_section)
+        self.settings.setValue('file_imported', import_file_path)
+        self.settings.setValue('file_date_imported', now.strftime("%Y-%m-%d %H:%M"))
+        self.settings.endGroup()
+        self.settings.sync()
         # We must do an immediate restart or current configuration will overwrite what was just imported when
         # application terminates normally.   We need to exit without saving configuration.
         QtWidgets.QMessageBox.information(self, translate('OpenLP.MainWindow', 'Import settings'),
@@ -948,7 +946,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             return
         # Make sure it's a .conf file.
         export_file_path = export_file_path.with_suffix('.conf')
-        self.save_sself.settings
+        self.save_settings()
         try:
             self.settings.export(export_file_path)
         except OSError as ose:
@@ -987,8 +985,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         Set OpenLP to a different view mode.
         """
         if mode:
-            settings = self.settings
-            settings.setValue('{section}/view mode'.format(section=self.general_settings_section), mode)
+            self.settings.setValue('{section}/view mode'.format(section=self.general_settings_section), mode)
         self.media_manager_dock.setVisible(media)
         self.service_manager_dock.setVisible(service)
         self.theme_manager_dock.setVisible(theme)
@@ -1088,7 +1085,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.plugin_manager.finalise_plugins()
         if save_settings:
             # Save settings
-            self.save_sself.settings
+            self.save_settings()
         # Check if we need to change the data directory
         if self.new_data_path:
             self.change_data_directory()
@@ -1224,24 +1221,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Load the main window settings.
         """
-        settings = self.settings
         # Remove obsolete entries.
-        settings.remove('custom slide')
-        settings.remove('service')
-        settings.beginGroup(self.general_settings_section)
-        self.recent_files = settings.value('recent files')
-        settings.endGroup()
-        settings.beginGroup(self.ui_settings_section)
-        self.move(settings.value('main window position'))
-        self.restoreGeometry(settings.value('main window geometry'))
-        self.restoreState(settings.value('main window state'))
-        self.live_controller.splitter.restoreState(settings.value('live splitter geometry'))
-        self.preview_controller.splitter.restoreState(settings.value('preview splitter geometry'))
-        self.control_splitter.restoreState(settings.value('main window splitter geometry'))
+        self.settings.remove('custom slide')
+        self.settings.remove('service')
+        self.settings.beginGroup(self.general_settings_section)
+        self.recent_files = self.settings.value('recent files')
+        self.settings.endGroup()
+        self.settings.beginGroup(self.ui_settings_section)
+        self.move(self.settings.value('main window position'))
+        self.restoreGeometry(self.settings.value('main window geometry'))
+        self.restoreState(self.settings.value('main window state'))
+        self.live_controller.splitter.restoreState(self.settings.value('live splitter geometry'))
+        self.preview_controller.splitter.restoreState(self.settings.value('preview splitter geometry'))
+        self.control_splitter.restoreState(self.settings.value('main window splitter geometry'))
         # This needs to be called after restoreState(), because saveState() also saves the "Collapsible" property
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
-        settings.endGroup()
+        self.settings.endGroup()
 
     def save_settings(self):
         """
@@ -1250,18 +1246,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Exit if we just did a settings import.
         if self.settings_imported:
             return
-        settings = self.settings
-        settings.beginGroup(self.general_settings_section)
-        settings.setValue('recent files', self.recent_files)
-        settings.endGroup()
-        settings.beginGroup(self.ui_settings_section)
-        settings.setValue('main window position', self.pos())
-        settings.setValue('main window state', self.saveState())
-        settings.setValue('main window geometry', self.saveGeometry())
-        settings.setValue('live splitter geometry', self.live_controller.splitter.saveState())
-        settings.setValue('preview splitter geometry', self.preview_controller.splitter.saveState())
-        settings.setValue('main window splitter geometry', self.control_splitter.saveState())
-        settings.endGroup()
+        self.settings.beginGroup(self.general_settings_section)
+        self.settings.setValue('recent files', self.recent_files)
+        self.settings.endGroup()
+        self.settings.beginGroup(self.ui_settings_section)
+        self.settings.setValue('main window position', self.pos())
+        self.settings.setValue('main window state', self.saveState())
+        self.settings.setValue('main window geometry', self.saveGeometry())
+        self.settings.setValue('live splitter geometry', self.live_controller.splitter.saveState())
+        self.settings.setValue('preview splitter geometry', self.preview_controller.splitter.saveState())
+        self.settings.setValue('main window splitter geometry', self.control_splitter.saveState())
+        self.settings.endGroup()
 
     def update_recent_files_menu(self):
         """
@@ -1380,11 +1375,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         else:
             self.log_info('No data copy requested')
         # Change the location of data directory in config file.
-        settings = QtCore.Qself.settings
-        settings.setValue('advanced/data path', self.new_data_path)
+        self.settings.setValue('advanced/data path', self.new_data_path)
         # Check if the new data path is our default.
         if self.new_data_path == AppLocation.get_directory(AppLocation.DataDir):
-            settings.remove('advanced/data path')
+            self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
     def open_cmd_line_files(self, args):
