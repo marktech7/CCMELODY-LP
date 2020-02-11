@@ -29,7 +29,7 @@ from openlp.core.common.registry import Registry
 
 @patch('openlp.core.api.http.server.HttpWorker')
 @patch('openlp.core.api.http.server.run_thread')
-def test_server_start(mocked_run_thread, MockHttpWorker, registry ):
+def test_server_start(mocked_run_thread, MockHttpWorker, registry):
     """
     Test the starting of the Waitress Server with the disable flag set off
     """

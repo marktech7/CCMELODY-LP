@@ -30,7 +30,6 @@ from openlp.core.state import State
 # sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.common.registry import Registry
-from openlp.core.display.screens import ScreenList
 from openlp.core.lib.serviceitem import ServiceItem
 from tests.utils import convert_file_service_item
 from tests.utils.constants import RESOURCE_PATH
@@ -45,7 +44,7 @@ SCREEN = {
 }
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def test_controller_env(settings):
     mocked_live_controller = MagicMock()
     desktop = MagicMock()
@@ -56,7 +55,6 @@ def test_controller_env(settings):
         mocked_screens.return_value = [
             MagicMock(**{'geometry.return_value': SCREEN['size']})
         ]
-        screens = ScreenList.create(desktop)
     # Mock the renderer and its format_slide method
     mocked_renderer = MagicMock()
 
@@ -69,7 +67,7 @@ def test_controller_env(settings):
     Registry().register('renderer', mocked_renderer)
     flask_app.config['TESTING'] = True
     client = flask_app.test_client()
-    yield mocked_live_controller, client
+    return mocked_live_controller, client
 
 
 def test_controller_text_empty(test_controller_env):
