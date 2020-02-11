@@ -214,7 +214,6 @@ def test_update_check_date(mock_settings):
     Test that the update_check_date() function writes the correct date
     """
     # GIVEN: A mocked Settings object
-
     # WHEN: update_check_date() is called
     update_check_date()
 

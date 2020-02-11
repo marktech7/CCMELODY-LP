@@ -27,7 +27,7 @@ from unittest.mock import MagicMock
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.actions import ActionList, CategoryActionList
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 MOCK_ACTION1 = MagicMock(**{'text.return_value': 'first'})
@@ -36,10 +36,8 @@ MOCK_ACTION2 = MagicMock(**{'text.return_value': 'second'})
 
 @pytest.yield_fixture
 def action_list(settings):
-    settings.beginGroup('shortcuts')
     act_list = ActionList.get_instance()
     yield act_list
-    settings.endGroup()
 
 
 def test_action_list_contains():
@@ -175,7 +173,7 @@ def test_add_action_same_parent(action_list):
         'shortcuts/action_with_same_shortcuts1': [QtGui.QKeySequence(QtCore.Qt.Key_B),
                                                   QtGui.QKeySequence(QtCore.Qt.Key_A)]
     }
-    Settings.extend_default_settings(default_shortcuts)
+    Registry().get('settings').extend_default_settings(default_shortcuts)
 
     # WHEN: Add the two actions to the action list.
     action_list.add_action(action1, 'example_category')
@@ -207,7 +205,7 @@ def test_add_action_different_parent(action_list):
         'shortcuts/action_with_same_shortcuts2': [QtGui.QKeySequence(QtCore.Qt.Key_D),
                                                   QtGui.QKeySequence(QtCore.Qt.Key_C)]
     }
-    Settings.extend_default_settings(default_shortcuts)
+    Registry().get('settings').extend_default_settings(default_shortcuts)
 
     # WHEN: Add the two actions to the action list.
     action_list.add_action(action2, 'example_category')
@@ -241,7 +239,7 @@ def test_add_action_different_context(action_list):
         'shortcuts/action_with_same_shortcuts3': [QtGui.QKeySequence(QtCore.Qt.Key_E),
                                                   QtGui.QKeySequence(QtCore.Qt.Key_F)]
     }
-    Settings.extend_default_settings(default_shortcuts)
+    Registry().get('settings').extend_default_settings(default_shortcuts)
 
     # WHEN: Add the two actions to the action list.
     action_list.add_action(action3, 'example_category2')
