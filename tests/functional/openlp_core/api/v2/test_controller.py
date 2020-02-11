@@ -1,8 +1,27 @@
+# -*- coding: utf-8 -*-
+
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import pytest
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 
 
 def test_retrieve_live_item(flask_client):
@@ -11,11 +30,10 @@ def test_retrieve_live_item(flask_client):
     assert len(res) == 0
 
 
-def test_controller_set_requires_login(flask_client):
-    pytest.skip('Need to figure out how to patch settings for one test only')
-    # Settings().setValue('api/authentication enabled', True)
+def test_controller_set_requires_login(settings, flask_client):
+    settings.setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/controller/show', json=dict())
-    Settings().setValue('api/authentication enabled', False)
+    settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401
 
 
@@ -33,9 +51,9 @@ def test_controller_set_calls_live_controller(flask_client, settings):
 
 
 def test_controller_direction_requires_login(flask_client, settings):
-    Settings().setValue('api/authentication enabled', True)
+    settings.setValue('api/authentication enabled', True)
     res = flask_client.post('/api/v2/controller/progress', json=dict())
-    Settings().setValue('api/authentication enabled', False)
+    settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401
 
 

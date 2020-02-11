@@ -102,20 +102,21 @@ class TestApiTab(TestCase, TestMixin):
         # THEN: the default ip address will be returned
         assert ip_address == given_ip, 'The return value should be %s' % given_ip
 
-    def test_set_urls(self):
-        """
-        Test the set_url function to generate correct url links
-        """
-        # GIVEN: An ip address
-        self.form.address_edit.setText('192.168.1.1')
-        # WHEN: the urls are generated
-        self.form.set_urls()
-        # THEN: the following links are returned
-        assert self.form.remote_url.text() == "<a href=\"http://192.168.1.1:4316/\">http://192.168.1.1:4316/</a>", \
-            'The return value should be a fully formed link'
-        assert self.form.stage_url.text() == \
-            "<a href=\"http://192.168.1.1:4316/stage\">http://192.168.1.1:4316/stage</a>", \
-            'The return value should be a fully formed stage link'
-        assert self.form.live_url.text() == \
-            "<a href=\"http://192.168.1.1:4316/main\">http://192.168.1.1:4316/main</a>", \
-            'The return value should be a fully formed main link'
+
+def test_set_urls(api):
+    """
+    Test the set_url function to generate correct url links
+    """
+    # GIVEN: An ip address
+    self.form.address_edit.setText('192.168.1.1')
+    # WHEN: the urls are generated
+    self.form.set_urls()
+    # THEN: the following links are returned
+    assert self.form.remote_url.text() == "<a href=\"http://192.168.1.1:4316/\">http://192.168.1.1:4316/</a>", \
+        'The return value should be a fully formed link'
+    assert self.form.stage_url.text() == \
+        "<a href=\"http://192.168.1.1:4316/stage\">http://192.168.1.1:4316/stage</a>", \
+        'The return value should be a fully formed stage link'
+    assert self.form.live_url.text() == \
+        "<a href=\"http://192.168.1.1:4316/main\">http://192.168.1.1:4316/main</a>", \
+        'The return value should be a fully formed main link'
