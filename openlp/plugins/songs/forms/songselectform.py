@@ -344,7 +344,9 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.song_count += 1
         self.result_count_label.setText(translate('SongsPlugin.SongSelectForm',
                                                   'Found {count:d} song(s)').format(count=self.song_count))
-        item_title = song['title'] + ' (' + ', '.join(song['authors']) + ')'
+        item_title = song['title']
+        if song['authors']:
+            item_title += ' (' + ', '.join(song['authors']) + ')'
         song_item = QtWidgets.QListWidgetItem(item_title, self.search_results_widget)
         song_item.setData(QtCore.Qt.UserRole, song)
 

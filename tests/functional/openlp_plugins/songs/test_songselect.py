@@ -246,15 +246,15 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(string='James, John'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(string='Philip'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # rest of the stuff
@@ -291,22 +291,22 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(string='James, John'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(string='Philip'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # third search result
         mocked_result3 = MagicMock()
         mocked_result3.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 3'))),
             MagicMock(string='Luke, Matthew'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 3'))),
             MagicMock(find=MagicMock(return_value={'href': '/url3'}))
         ]
         # rest of the stuff
