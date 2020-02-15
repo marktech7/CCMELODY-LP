@@ -48,6 +48,7 @@ def test_str_to_bool_with_bool_true():
     assert isinstance(true_result, bool), 'The result should be a boolean'
     assert true_result is True, 'The result should be True'
 
+
 def test_str_to_bool_with_bool_false():
     """
     Test the str_to_bool function with boolean input of False
