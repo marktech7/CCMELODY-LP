@@ -82,11 +82,11 @@ def settings(qapp, registry):
 def mock_settings(registry):
     """A Mock Settings() instance"""
     # Create and register a mock settings object to work with
-    mock_settings = MagicMock()
-    Registry().register('settings', mock_settings)
-    yield mock_settings
+    mk_settings = MagicMock()
+    Registry().register('settings', mk_settings)
+    yield mk_settings
     Registry().remove('settings')
-    del mock_settings
+    del mk_settings
 
 
 @pytest.fixture(scope='function')
