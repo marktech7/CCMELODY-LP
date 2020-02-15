@@ -24,7 +24,6 @@ Package to test the openlp.core.widgets.views package.
 import os
 import pytest
 from types import GeneratorType
-from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 from PyQt5 import QtGui
@@ -54,56 +53,53 @@ def preview_widget_env():
     viewport_patcher.stop()
 
 
-class TestHandleMimeDataUrls(TestCase):
+def test_files():
     """
-    Test the :func:`openlp.core.widgets.views.handle_mime_data_urls` function.
+    Test handle_mime_data_urls when the data points to some files.
     """
-    def test_files(self):
-        """
-        Test handle_mime_data_urls when the data points to some files.
-        """
-        # GIVEN: Some mocked objects that return True when is_file is called, and some mocked mime data
-        mocked_path_instance_1 = MagicMock(**{'is_file.return_value': True})
-        mocked_path_instance_2 = MagicMock(**{'is_file.return_value': True})
-        with patch('openlp.core.widgets.views.Path',
-                   side_effect=[mocked_path_instance_1, mocked_path_instance_2]) as mocked_path:
-            mocked_q_url_1 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path', '1.ext')})
-            mocked_q_url_2 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path', '2.ext')})
-            mocked_q_mime_data = MagicMock(**{'urls.return_value': [mocked_q_url_1, mocked_q_url_2]})
+    # GIVEN: Some mocked objects that return True when is_file is called, and some mocked mime data
+    mocked_path_instance_1 = MagicMock(**{'is_file.return_value': True})
+    mocked_path_instance_2 = MagicMock(**{'is_file.return_value': True})
+    with patch('openlp.core.widgets.views.Path',
+               side_effect=[mocked_path_instance_1, mocked_path_instance_2]) as mocked_path:
+        mocked_q_url_1 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path', '1.ext')})
+        mocked_q_url_2 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path', '2.ext')})
+        mocked_q_mime_data = MagicMock(**{'urls.return_value': [mocked_q_url_1, mocked_q_url_2]})
 
-            # WHEN: Calling handle_mime_data_urls with the mocked mime data
-            result = handle_mime_data_urls(mocked_q_mime_data)
+        # WHEN: Calling handle_mime_data_urls with the mocked mime data
+        result = handle_mime_data_urls(mocked_q_mime_data)
 
-            # THEN: Both mocked Path objects should be returned in the list
-            mocked_path.assert_has_calls([call(os.path.join('file', 'test', 'path', '1.ext')),
-                                          call(os.path.join('file', 'test', 'path', '2.ext'))])
-            assert result == [mocked_path_instance_1, mocked_path_instance_2]
+        # THEN: Both mocked Path objects should be returned in the list
+        mocked_path.assert_has_calls([call(os.path.join('file', 'test', 'path', '1.ext')),
+                                      call(os.path.join('file', 'test', 'path', '2.ext'))])
+        assert result == [mocked_path_instance_1, mocked_path_instance_2]
 
-    def test_directory(self):
-        """
-        Test handle_mime_data_urls when the data points to some directories.
-        """
-        # GIVEN: Some mocked objects that return True when is_dir is called, and some mocked mime data
-        mocked_path_instance_1 = MagicMock()
-        mocked_path_instance_2 = MagicMock()
-        mocked_path_instance_3 = MagicMock()
-        mocked_path_instance_4 = MagicMock(**{'is_file.return_value': False, 'is_directory.return_value': True,
-                                              'iterdir.return_value': [mocked_path_instance_1, mocked_path_instance_2]})
-        mocked_path_instance_5 = MagicMock(**{'is_file.return_value': False, 'is_directory.return_value': True,
-                                              'iterdir.return_value': [mocked_path_instance_3]})
-        with patch('openlp.core.widgets.views.Path',
-                   side_effect=[mocked_path_instance_4, mocked_path_instance_5]) as mocked_path:
-            mocked_q_url_1 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path')})
-            mocked_q_url_2 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path')})
-            mocked_q_mime_data = MagicMock(**{'urls.return_value': [mocked_q_url_1, mocked_q_url_2]})
 
-            # WHEN: Calling handle_mime_data_urls with the mocked mime data
-            result = handle_mime_data_urls(mocked_q_mime_data)
+def test_directory():
+    """
+    Test handle_mime_data_urls when the data points to some directories.
+    """
+    # GIVEN: Some mocked objects that return True when is_dir is called, and some mocked mime data
+    mocked_path_instance_1 = MagicMock()
+    mocked_path_instance_2 = MagicMock()
+    mocked_path_instance_3 = MagicMock()
+    mocked_path_instance_4 = MagicMock(**{'is_file.return_value': False, 'is_directory.return_value': True,
+                                          'iterdir.return_value': [mocked_path_instance_1, mocked_path_instance_2]})
+    mocked_path_instance_5 = MagicMock(**{'is_file.return_value': False, 'is_directory.return_value': True,
+                                          'iterdir.return_value': [mocked_path_instance_3]})
+    with patch('openlp.core.widgets.views.Path',
+               side_effect=[mocked_path_instance_4, mocked_path_instance_5]) as mocked_path:
+        mocked_q_url_1 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path')})
+        mocked_q_url_2 = MagicMock(**{'toLocalFile.return_value': os.path.join('file', 'test', 'path')})
+        mocked_q_mime_data = MagicMock(**{'urls.return_value': [mocked_q_url_1, mocked_q_url_2]})
 
-            # THEN: The three mocked Path file objects should be returned in the list
-            mocked_path.assert_has_calls([call(os.path.join('file', 'test', 'path')),
-                                          call(os.path.join('file', 'test', 'path'))])
-            assert result == [mocked_path_instance_1, mocked_path_instance_2, mocked_path_instance_3]
+        # WHEN: Calling handle_mime_data_urls with the mocked mime data
+        result = handle_mime_data_urls(mocked_q_mime_data)
+
+        # THEN: The three mocked Path file objects should be returned in the list
+        mocked_path.assert_has_calls([call(os.path.join('file', 'test', 'path')),
+                                      call(os.path.join('file', 'test', 'path'))])
+        assert result == [mocked_path_instance_1, mocked_path_instance_2, mocked_path_instance_3]
 
 
 def test_new_list_preview_widget(preview_widget_env, mock_settings):
@@ -578,127 +574,124 @@ def test_autoscroll_normal(mocked_slide_count, mocked_item, mocked_scrollToItem,
     mocked_item.assert_has_calls(calls)
 
 
-class TestListWidgetWithDnD(TestCase):
+def test_treewidgetwithdnd_clear():
     """
-    Test the :class:`~openlp.core.widgets.views.ListWidgetWithDnD` class
+    Test the clear method when called without any arguments.
     """
-    def test_clear(self):
-        """
-        Test the clear method when called without any arguments.
-        """
-        # GIVEN: An instance of ListWidgetWithDnD
-        widget = ListWidgetWithDnD()
+    # GIVEN: An instance of ListWidgetWithDnD
+    widget = ListWidgetWithDnD()
 
-        # WHEN: Calling clear with out any arguments
-        widget.clear()
+    # WHEN: Calling clear with out any arguments
+    widget.clear()
 
-        # THEN: The results text should be the standard 'no results' text.
-        assert widget.no_results_text == UiStrings().NoResults
-
-    def test_clear_search_while_typing(self):
-        """
-        Test the clear method when called with the search_while_typing argument set to True
-        """
-        # GIVEN: An instance of ListWidgetWithDnD
-        widget = ListWidgetWithDnD()
-
-        # WHEN: Calling clear with search_while_typing set to True
-        widget.clear(search_while_typing=True)
-
-        # THEN: The results text should be the 'short results' text.
-        assert widget.no_results_text == UiStrings().ShortResults
-
-    def test_all_items_no_list_items(self):
-        """
-        Test allItems when there are no items in the list widget
-        """
-        # GIVEN: An instance of ListWidgetWithDnD
-        widget = ListWidgetWithDnD()
-        with patch.object(widget, 'count', return_value=0), \
-                patch.object(widget, 'item', side_effect=lambda x: [][x]):
-
-            # WHEN: Calling allItems
-            result = widget.allItems()
-
-            # THEN: An instance of a Generator object should be returned. The generator should not yeild any results
-            assert isinstance(result, GeneratorType)
-            assert list(result) == []
-
-    def test_all_items_list_items(self):
-        """
-        Test allItems when the list widget contains some items.
-        """
-        # GIVEN: An instance of ListWidgetWithDnD
-        widget = ListWidgetWithDnD()
-        with patch.object(widget, 'count', return_value=2), \
-                patch.object(widget, 'item', side_effect=lambda x: [5, 3][x]):
-
-            # WHEN: Calling allItems
-            result = widget.allItems()
-
-            # THEN: An instance of a Generator object should be returned. The generator should not yeild any results
-            assert isinstance(result, GeneratorType)
-            assert list(result) == [5, 3]
-
-    def test_paint_event(self):
-        """
-        Test the paintEvent method when the list is not empty
-        """
-        # GIVEN: An instance of ListWidgetWithDnD with a mocked out count methode which returns 1
-        #       (i.e the list has an item)
-        widget = ListWidgetWithDnD()
-        with patch('openlp.core.widgets.views.QtWidgets.QListWidget.paintEvent') as mocked_paint_event, \
-                patch.object(widget, 'count', return_value=1), \
-                patch.object(widget, 'viewport') as mocked_viewport:
-            mocked_event = MagicMock()
-
-            # WHEN: Calling paintEvent
-            widget.paintEvent(mocked_event)
-
-            # THEN: The overridden paintEvnet should have been called
-            mocked_paint_event.assert_called_once_with(mocked_event)
-            assert mocked_viewport.called is False
-
-    def test_paint_event_no_items(self):
-        """
-        Test the paintEvent method when the list is empty
-        """
-        # GIVEN: An instance of ListWidgetWithDnD with a mocked out count methode which returns 0
-        #       (i.e the list is empty)
-        widget = ListWidgetWithDnD()
-        mocked_painter_instance = MagicMock()
-        mocked_qrect = MagicMock()
-        with patch('openlp.core.widgets.views.QtWidgets.QListWidget.paintEvent') as mocked_paint_event, \
-                patch.object(widget, 'count', return_value=0), \
-                patch.object(widget, 'viewport'), \
-                patch('openlp.core.widgets.views.QtGui.QPainter',
-                      return_value=mocked_painter_instance) as mocked_qpainter, \
-                patch('openlp.core.widgets.views.QtCore.QRect', return_value=mocked_qrect):
-            mocked_event = MagicMock()
-
-            # WHEN: Calling paintEvent
-            widget.paintEvent(mocked_event)
-
-            # THEN: The overridden paintEvnet should have been called, and some text should be drawn.
-            mocked_paint_event.assert_called_once_with(mocked_event)
-            mocked_qpainter.assert_called_once_with(widget.viewport())
-            mocked_painter_instance.drawText.assert_called_once_with(mocked_qrect, 4100, 'No Search Results')
+    # THEN: The results text should be the standard 'no results' text.
+    assert widget.no_results_text == UiStrings().NoResults
 
 
-class TestTreeWidgetWithDnD(TestCase):
+def test_clear_search_while_typing():
     """
-    Test the :class:`~openlp.core.widgets.views.TreeWidgetWithDnD` class
+    Test the clear method when called with the search_while_typing argument set to True
     """
-    def test_constructor(self):
-        """
-        Test the constructor
-        """
-        # GIVEN: A TreeWidgetWithDnD
-        # WHEN: An instance is created
-        widget = TreeWidgetWithDnD(name='Test')
+    # GIVEN: An instance of ListWidgetWithDnD
+    widget = ListWidgetWithDnD()
 
-        # THEN: It should be initialised correctly
-        assert widget.mime_data_text == 'Test'
-        assert widget.allow_internal_dnd is False
-        assert widget.indentation() == 0
-        assert widget.isAnimated() is True
+    # WHEN: Calling clear with search_while_typing set to True
+    widget.clear(search_while_typing=True)
+
+    # THEN: The results text should be the 'short results' text.
+    assert widget.no_results_text == UiStrings().ShortResults
+
+
+def test_all_items_no_list_items():
+    """
+    Test allItems when there are no items in the list widget
+    """
+    # GIVEN: An instance of ListWidgetWithDnD
+    widget = ListWidgetWithDnD()
+    with patch.object(widget, 'count', return_value=0), \
+            patch.object(widget, 'item', side_effect=lambda x: [][x]):
+
+        # WHEN: Calling allItems
+        result = widget.allItems()
+
+        # THEN: An instance of a Generator object should be returned. The generator should not yeild any results
+        assert isinstance(result, GeneratorType)
+        assert list(result) == []
+
+
+def test_all_items_list_items():
+    """
+    Test allItems when the list widget contains some items.
+    """
+    # GIVEN: An instance of ListWidgetWithDnD
+    widget = ListWidgetWithDnD()
+    with patch.object(widget, 'count', return_value=2), \
+            patch.object(widget, 'item', side_effect=lambda x: [5, 3][x]):
+
+        # WHEN: Calling allItems
+        result = widget.allItems()
+
+        # THEN: An instance of a Generator object should be returned. The generator should not yeild any results
+        assert isinstance(result, GeneratorType)
+        assert list(result) == [5, 3]
+
+
+def test_paint_event():
+    """
+    Test the paintEvent method when the list is not empty
+    """
+    # GIVEN: An instance of ListWidgetWithDnD with a mocked out count methode which returns 1
+    #       (i.e the list has an item)
+    widget = ListWidgetWithDnD()
+    with patch('openlp.core.widgets.views.QtWidgets.QListWidget.paintEvent') as mocked_paint_event, \
+            patch.object(widget, 'count', return_value=1), \
+            patch.object(widget, 'viewport') as mocked_viewport:
+        mocked_event = MagicMock()
+
+        # WHEN: Calling paintEvent
+        widget.paintEvent(mocked_event)
+
+        # THEN: The overridden paintEvnet should have been called
+        mocked_paint_event.assert_called_once_with(mocked_event)
+        assert mocked_viewport.called is False
+
+
+def test_paint_event_no_items():
+    """
+    Test the paintEvent method when the list is empty
+    """
+    # GIVEN: An instance of ListWidgetWithDnD with a mocked out count methode which returns 0
+    #       (i.e the list is empty)
+    widget = ListWidgetWithDnD()
+    mocked_painter_instance = MagicMock()
+    mocked_qrect = MagicMock()
+    with patch('openlp.core.widgets.views.QtWidgets.QListWidget.paintEvent') as mocked_paint_event, \
+            patch.object(widget, 'count', return_value=0), \
+            patch.object(widget, 'viewport'), \
+            patch('openlp.core.widgets.views.QtGui.QPainter',
+                  return_value=mocked_painter_instance) as mocked_qpainter, \
+            patch('openlp.core.widgets.views.QtCore.QRect', return_value=mocked_qrect):
+        mocked_event = MagicMock()
+
+        # WHEN: Calling paintEvent
+        widget.paintEvent(mocked_event)
+
+        # THEN: The overridden paintEvnet should have been called, and some text should be drawn.
+        mocked_paint_event.assert_called_once_with(mocked_event)
+        mocked_qpainter.assert_called_once_with(widget.viewport())
+        mocked_painter_instance.drawText.assert_called_once_with(mocked_qrect, 4100, 'No Search Results')
+
+
+def test_treewidgetwithdnd_constructor():
+    """
+    Test the constructor
+    """
+    # GIVEN: A TreeWidgetWithDnD
+    # WHEN: An instance is created
+    widget = TreeWidgetWithDnD(name='Test')
+
+    # THEN: It should be initialised correctly
+    assert widget.mime_data_text == 'Test'
+    assert widget.allow_internal_dnd is False
+    assert widget.indentation() == 0
+    assert widget.isAnimated() is True
