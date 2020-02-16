@@ -32,7 +32,10 @@ from openlp.core.common.i18n import UiStrings
 from openlp.core.widgets.views import ListPreviewWidget, ListWidgetWithDnD, TreeWidgetWithDnD, handle_mime_data_urls
 from openlp.core.ui.icons import UiIcons
 
-CLAPPERBOARD = UiIcons().clapperboard
+
+@pytest.fixture
+def clapperboard(mock_settings):
+    return UiIcons().clapperboard
 
 
 @pytest.yield_fixture
@@ -202,7 +205,7 @@ def test_replace_recalculate_layout_text(mocked_setRowHeight, mocked_resizeRowsT
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 def test_replace_recalculate_layout_img(mocked_setRowHeight, mocked_resizeRowsToContents,
-                                        preview_widget_env, mock_settings):
+                                        preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." disabled, img slides unchanged in replace_service_item & __recalc...
     """
@@ -218,8 +221,8 @@ def test_replace_recalculate_layout_img(mocked_setRowHeight, mocked_resizeRowsTo
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # init ListPreviewWidget and load service item
     list_preview_widget = ListPreviewWidget(None, 1)
     list_preview_widget.replace_service_item(service_item, 200, 0)
@@ -242,7 +245,7 @@ def test_replace_recalculate_layout_img(mocked_setRowHeight, mocked_resizeRowsTo
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 def test_replace_recalculate_layout_img_max(mocked_setRowHeight, mocked_resizeRowsToContents,
-                                            preview_widget_env, mock_settings):
+                                            preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." enabled, img slides resized in replace_service_item & __recalc...
     """
@@ -258,8 +261,8 @@ def test_replace_recalculate_layout_img_max(mocked_setRowHeight, mocked_resizeRo
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # init ListPreviewWidget and load service item
     list_preview_widget = ListPreviewWidget(None, 1)
     list_preview_widget.replace_service_item(service_item, 200, 0)
@@ -280,7 +283,7 @@ def test_replace_recalculate_layout_img_max(mocked_setRowHeight, mocked_resizeRo
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 def test_replace_recalculate_layout_img_auto(mocked_setRowHeight, mocked_resizeRowsToContents,
-                                             preview_widget_env, mock_settings):
+                                             preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." auto, img slides resized in replace_service_item & __recalc...
     """
@@ -297,8 +300,8 @@ def test_replace_recalculate_layout_img_auto(mocked_setRowHeight, mocked_resizeR
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # init ListPreviewWidget and load service item
     list_preview_widget = ListPreviewWidget(None, 1)
     list_preview_widget.replace_service_item(service_item, 200, 0)
@@ -359,7 +362,7 @@ def test_row_resized_text(mocked_cellWidget, mocked_setRowHeight, mocked_resizeR
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.cellWidget')
 def test_row_resized_img(mocked_cellWidget, mocked_setRowHeight, mocked_resizeRowsToContents,
-                         preview_widget_env, mock_settings):
+                         preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." disabled, image-based slides not affected in row_resized.
     """
@@ -375,8 +378,8 @@ def test_row_resized_img(mocked_cellWidget, mocked_setRowHeight, mocked_resizeRo
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # Mock self.cellWidget().children().setMaximumWidth()
     mocked_cellWidget_child = MagicMock()
     mocked_cellWidget_obj = MagicMock()
@@ -399,7 +402,7 @@ def test_row_resized_img(mocked_cellWidget, mocked_setRowHeight, mocked_resizeRo
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.cellWidget')
 def test_row_resized_img_max(mocked_cellWidget, mocked_setRowHeight, mocked_resizeRowsToContents,
-                             preview_widget_env, mock_settings):
+                             preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." enabled, image-based slides are scaled in row_resized.
     """
@@ -414,8 +417,8 @@ def test_row_resized_img_max(mocked_cellWidget, mocked_setRowHeight, mocked_resi
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # Mock self.cellWidget().children().setMaximumWidth()
     mocked_cellWidget_child = MagicMock()
     mocked_cellWidget_obj = MagicMock()
@@ -436,7 +439,7 @@ def test_row_resized_img_max(mocked_cellWidget, mocked_setRowHeight, mocked_resi
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.cellWidget')
 def test_row_resized_setting_changed(mocked_cellWidget, mocked_setRowHeight, mocked_resizeRowsToContents,
-                                     preview_widget_env, mock_settings):
+                                     preview_widget_env, mock_settings, clapperboard):
     """
     Test if "Max height for non-text slides..." enabled while item live, program doesn't crash on row_resized.
     """
@@ -452,8 +455,8 @@ def test_row_resized_setting_changed(mocked_cellWidget, mocked_setRowHeight, moc
     service_item = MagicMock()
     service_item.is_text.return_value = False
     service_item.is_capable.return_value = False
-    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': CLAPPERBOARD},
-                                            {'title': None, 'path': None, 'image': CLAPPERBOARD}]
+    service_item.get_frames.return_value = [{'title': None, 'path': None, 'image': clapperboard},
+                                            {'title': None, 'path': None, 'image': clapperboard}]
     # Mock self.cellWidget().children()
     mocked_cellWidget_obj = MagicMock()
     mocked_cellWidget_obj.children.return_value = None

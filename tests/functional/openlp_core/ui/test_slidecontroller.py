@@ -212,7 +212,7 @@ def test_toggle_display_show():
     mocked_on_hide_display.assert_called_once_with(False)
 
 
-def test_on_go_live_preview_controller():
+def test_on_go_live_preview_controller(registry):
     """
     Test that when the on_go_preview() method is called the message is sent to the preview controller and focus is
     set correctly.
@@ -226,7 +226,6 @@ def test_on_go_live_preview_controller():
     mocked_preview_widget.current_slide_number.return_value = 1
     mocked_preview_widget.slide_count = MagicMock(return_value=2)
     mocked_preview_controller.preview_widget = MagicMock()
-    Registry.create()
     Registry().register('preview_controller', mocked_preview_controller)
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_service_item
@@ -240,7 +239,7 @@ def test_on_go_live_preview_controller():
     mocked_preview_controller.preview_widget.setFocus.assert_called_once_with()
 
 
-def test_on_go_live_live_controller():
+def test_on_go_live_live_controller(registry):
     """
     Test that when the on_go_live() method is called the message is sent to the live controller and focus is
     set correctly.
@@ -254,7 +253,6 @@ def test_on_go_live_live_controller():
     mocked_preview_widget.current_slide_number.return_value = 1
     mocked_preview_widget.slide_count = MagicMock(return_value=2)
     mocked_live_controller.preview_widget = MagicMock()
-    Registry.create()
     Registry().register('live_controller', mocked_live_controller)
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_service_item
@@ -269,7 +267,7 @@ def test_on_go_live_live_controller():
     mocked_live_controller.preview_widget.setFocus.assert_called_once_with()
 
 
-def test_on_go_live_service_manager():
+def test_on_go_live_service_manager(registry):
     """
     Test that when the on_go_live() method is called the message is sent to the live controller and focus is
     set correctly.
@@ -285,7 +283,6 @@ def test_on_go_live_service_manager():
     mocked_preview_widget.current_slide_number.return_value = 1
     mocked_preview_widget.slide_count = MagicMock(return_value=2)
     mocked_live_controller.preview_widget = MagicMock()
-    Registry.create()
     Registry().register('live_controller', mocked_live_controller)
     Registry().register('service_manager', mocked_service_manager)
     slide_controller = SlideController(None)
@@ -603,7 +600,7 @@ def test_on_slide_selected_index_no_service_item():
 
 
 @patch.object(Registry, 'execute')
-def test_on_slide_selected_index_service_item_command(mocked_execute):
+def test_on_slide_selected_index_service_item_command(mocked_execute, registry):
     """
     Test that when there is a command service item, the command is executed
     """
@@ -614,7 +611,6 @@ def test_on_slide_selected_index_service_item_command(mocked_execute):
     mocked_update_preview = MagicMock()
     mocked_preview_widget = MagicMock()
     mocked_slide_selected = MagicMock()
-    Registry.create()
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_item
     slide_controller.update_preview = mocked_update_preview
@@ -634,7 +630,7 @@ def test_on_slide_selected_index_service_item_command(mocked_execute):
 
 
 @patch.object(Registry, 'execute')
-def test_on_slide_selected_index_service_item_not_command(mocked_execute):
+def test_on_slide_selected_index_service_item_not_command(mocked_execute, registry):
     """
     Test that when there is a service item but it's not a command, the preview widget is updated
     """
@@ -645,7 +641,6 @@ def test_on_slide_selected_index_service_item_not_command(mocked_execute):
     mocked_update_preview = MagicMock()
     mocked_preview_widget = MagicMock()
     mocked_slide_selected = MagicMock()
-    Registry.create()
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_item
     slide_controller.update_preview = mocked_update_preview
@@ -664,7 +659,7 @@ def test_on_slide_selected_index_service_item_not_command(mocked_execute):
 
 
 @patch.object(Registry, 'execute')
-def test_process_item(mocked_execute):
+def test_process_item(mocked_execute, registry):
     """
     Test that presentation service-items is closed when followed by a media service-item
     """
@@ -685,7 +680,6 @@ def test_process_item(mocked_execute):
     mocked_media_item.from_service = False
     mocked_media_item.get_frames.return_value = []
     mocked_main_window = MagicMock()
-    Registry.create()
     Registry().register('main_window', mocked_main_window)
     Registry().register('media_controller', MagicMock())
     slide_controller = SlideController(None)
@@ -784,7 +778,7 @@ def test_on_preview_double_click_add_to_service(mock_settings):
 
 @patch(u'openlp.core.ui.slidecontroller.SlideController.image_manager')
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_live(mocked_singleShot, mocked_image_manager):
+def test_update_preview_live(mocked_singleShot, mocked_image_manager, registry):
     """
     Test that the preview screen is updated with a screen grab for live service items
     """
@@ -797,8 +791,6 @@ def test_update_preview_live(mocked_singleShot, mocked_image_manager):
     mocked_live_item.is_capable.side_effect = [True, True]
     # Mock image_manager
     mocked_image_manager.get_image.return_value = QtGui.QImage()
-    # Mock Registry
-    Registry.create()
     mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
     # Mock SlideController
@@ -827,7 +819,7 @@ def test_update_preview_live(mocked_singleShot, mocked_image_manager):
 
 @patch(u'openlp.core.ui.slidecontroller.SlideController.image_manager')
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_pres(mocked_singleShot, mocked_image_manager):
+def test_update_preview_pres(mocked_singleShot, mocked_image_manager, registry):
     """
     Test that the preview screen is updated with the correct preview for presentation service items
     """
@@ -840,8 +832,6 @@ def test_update_preview_pres(mocked_singleShot, mocked_image_manager):
     mocked_pres_item.is_capable.side_effect = [True, True]
     # Mock image_manager
     mocked_image_manager.get_image.return_value = QtGui.QImage()
-    # Mock Registry
-    Registry.create()
     mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
     # Mock SlideController
@@ -869,7 +859,7 @@ def test_update_preview_pres(mocked_singleShot, mocked_image_manager):
 
 @patch(u'openlp.core.ui.slidecontroller.SlideController.image_manager')
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_media(mocked_singleShot, mocked_image_manager):
+def test_update_preview_media(mocked_singleShot, mocked_image_manager, registry):
     """
     Test that the preview screen is updated with the correct preview for media service items
     """
@@ -883,7 +873,6 @@ def test_update_preview_media(mocked_singleShot, mocked_image_manager):
     # Mock image_manager
     mocked_image_manager.get_image.return_value = QtGui.QImage()
     # Mock Registry
-    Registry.create()
     mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
     # Mock SlideController
@@ -912,7 +901,7 @@ def test_update_preview_media(mocked_singleShot, mocked_image_manager):
 
 @patch(u'openlp.core.ui.slidecontroller.SlideController.image_manager')
 @patch(u'PyQt5.QtCore.QTimer.singleShot')
-def test_update_preview_image(mocked_singleShot, mocked_image_manager):
+def test_update_preview_image(mocked_singleShot, mocked_image_manager, registry):
     """
     Test that the preview screen is updated with the correct preview for image service items
     """
@@ -926,7 +915,6 @@ def test_update_preview_image(mocked_singleShot, mocked_image_manager):
     # Mock image_manager
     mocked_image_manager.get_image.return_value = QtGui.QImage()
     # Mock Registry
-    Registry.create()
     mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
     # Mock SlideController
@@ -1030,12 +1018,11 @@ def test_set_text(mocked_super):
     mocked_super().setText.assert_called_once_with('Label Text')
 
 
-def test_initial_live_controller():
+def test_initial_live_controller(registry):
     """
     Test the initial live slide controller state .
     """
     # GIVEN: A new SlideController instance.
-    Registry.create()
     live_controller = LiveController(None)
 
     # WHEN: the default controller is built.
@@ -1043,12 +1030,11 @@ def test_initial_live_controller():
     assert live_controller.is_live is True, 'The slide controller should be a live controller'
 
 
-def test_initial_preview_controller():
+def test_initial_preview_controller(registry):
     """
     Test the initial preview slide controller state.
     """
     # GIVEN: A new SlideController instance.
-    Registry.create()
     preview_controller = PreviewController(None)
 
     # WHEN: the default controller is built.

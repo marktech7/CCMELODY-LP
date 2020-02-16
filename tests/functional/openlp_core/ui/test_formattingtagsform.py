@@ -21,69 +21,63 @@
 """
 Package to test the openlp.core.ui.formattingtagsform package.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, call, patch
 
 from openlp.core.ui.formattingtagform import FormattingTagForm
 
 
-class TestFormattingTagForm(TestCase):
+@pytest.yield_fixture()
+def tagform_env(registry):
+    setup_patcher = patch('openlp.core.ui.formattingtagform.FormattingTagForm._setup')
+    mocked_setup_patcher = setup_patcher.start()
+    yield mocked_setup_patcher
+    setup_patcher.stop()
 
-    def setUp(self):
-        """
-        Mock out stuff for all the tests
-        """
-        self.setup_patcher = patch('openlp.core.ui.formattingtagform.FormattingTagForm._setup')
-        self.setup_patcher.start()
 
-    def tearDown(self):
-        """
-        Remove the mocks
-        """
-        self.setup_patcher.stop()
+def test_on_row_selected(tagform_env):
+    """
+    Test that the appropriate actions are preformed when on_row_selected is called
+    """
+    # GIVEN: An instance of the Formatting Tag Form and a mocked delete_button
+    form = FormattingTagForm(None)
+    form.delete_button = MagicMock()
 
-    def test_on_row_selected(self):
-        """
-        Test that the appropriate actions are preformed when on_row_selected is called
-        """
-        # GIVEN: An instance of the Formatting Tag Form and a mocked delete_button
-        form = FormattingTagForm(None)
-        form.delete_button = MagicMock()
+    # WHEN: on_row_selected is called
+    form.on_row_selected()
 
-        # WHEN: on_row_selected is called
-        form.on_row_selected()
+    # THEN: setEnabled and should have been called on delete_button
+    form.delete_button.setEnabled.assert_called_with(True)
 
-        # THEN: setEnabled and should have been called on delete_button
-        form.delete_button.setEnabled.assert_called_with(True)
 
-    def test_on_new_clicked(self):
-        """
-        Test that clicking the Add a new tag button does the right thing
-        """
+def test_on_new_clicked(tagform_env):
+    """
+    Test that clicking the Add a new tag button does the right thing
+    """
 
-        # GIVEN: A formatting tag form and a mocked out tag table widget
-        form = FormattingTagForm(None)
-        form.tag_table_widget = MagicMock()
-        row_count = 5
-        form.tag_table_widget.rowCount.return_value = row_count
+    # GIVEN: A formatting tag form and a mocked out tag table widget
+    form = FormattingTagForm(None)
+    form.tag_table_widget = MagicMock()
+    row_count = 5
+    form.tag_table_widget.rowCount.return_value = row_count
 
-        # WHEN: on_new_clicked is run (i.e. the Add new button was clicked)
-        with patch('openlp.core.ui.formattingtagform.QtWidgets.QTableWidgetItem') as MockedQTableWidgetItem:
-            mocked_table_widget = MagicMock()
-            MockedQTableWidgetItem.return_value = mocked_table_widget
-            form.on_new_clicked()
+    # WHEN: on_new_clicked is run (i.e. the Add new button was clicked)
+    with patch('openlp.core.ui.formattingtagform.QtWidgets.QTableWidgetItem') as MockedQTableWidgetItem:
+        mocked_table_widget = MagicMock()
+        MockedQTableWidgetItem.return_value = mocked_table_widget
+        form.on_new_clicked()
 
-            # THEN: A new row should be added to the table
-            form.tag_table_widget.rowCount.assert_called_with()
-            form.tag_table_widget.insertRow.assert_called_with(row_count)
-            expected_set_item_calls = [
-                call(row_count, 0, mocked_table_widget),
-                call(row_count, 1, mocked_table_widget),
-                call(row_count, 2, mocked_table_widget),
-                call(row_count, 3, mocked_table_widget)
-            ]
-            assert expected_set_item_calls == form.tag_table_widget.setItem.call_args_list, \
-                'setItem should have been called correctly'
-            form.tag_table_widget.resizeRowsToContents.assert_called_with()
-            form.tag_table_widget.scrollToBottom.assert_called_with()
-            form.tag_table_widget.selectRow.assert_called_with(row_count)
+        # THEN: A new row should be added to the table
+        form.tag_table_widget.rowCount.assert_called_with()
+        form.tag_table_widget.insertRow.assert_called_with(row_count)
+        expected_set_item_calls = [
+            call(row_count, 0, mocked_table_widget),
+            call(row_count, 1, mocked_table_widget),
+            call(row_count, 2, mocked_table_widget),
+            call(row_count, 3, mocked_table_widget)
+        ]
+        assert expected_set_item_calls == form.tag_table_widget.setItem.call_args_list, \
+            'setItem should have been called correctly'
+        form.tag_table_widget.resizeRowsToContents.assert_called_with()
+        form.tag_table_widget.scrollToBottom.assert_called_with()
+        form.tag_table_widget.selectRow.assert_called_with(row_count)

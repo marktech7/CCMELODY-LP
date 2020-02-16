@@ -31,14 +31,13 @@ from openlp.core.ui.style import MEDIA_MANAGER_STYLE, WIN_REPAIR_STYLESHEET, get
 
 @skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
 @patch('openlp.core.ui.style.HAS_DARK_STYLE', True)
-@patch('openlp.core.ui.style.Settings')
 @patch('openlp.core.ui.style.qdarkstyle')
-def test_get_application_stylesheet_dark(mocked_qdarkstyle, MockSettings):
+def test_get_application_stylesheet_dark(mocked_qdarkstyle, mock_settings):
     """Test that the dark stylesheet is returned when available and enabled"""
     # GIVEN: We're on Windows and no dark style is set
     mocked_settings = MagicMock()
     mocked_settings.value.return_value = True
-    MockSettings.return_value = mocked_settings
+    mock_settings.return_value = mocked_settings
     mocked_qdarkstyle.load_stylesheet_pyqt5.return_value = 'dark_style'
 
     # WHEN: can_show_icon() is called
