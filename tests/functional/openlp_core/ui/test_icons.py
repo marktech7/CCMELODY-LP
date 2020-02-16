@@ -28,7 +28,7 @@ from openlp.core.ui.icons import UiIcons
 
 
 @patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None)
-def test_simple_icon( _):
+def test_simple_icon(_):
     # GIVEN: an basic set of icons
     icons = UiIcons()
     icon_list = {

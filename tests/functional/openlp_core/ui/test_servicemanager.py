@@ -677,6 +677,7 @@ def test_theme_change_global(mocked_regenerate_service_items, registry):
     assert service_manager.toolbar.actions['theme_combo_box'].isVisible() is False, \
         'The visibility should be False'
 
+
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
 def test_theme_change_service(mocked_regenerate_service_items, registry):
     """

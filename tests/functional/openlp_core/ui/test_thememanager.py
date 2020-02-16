@@ -37,7 +37,7 @@ from tests.utils.constants import RESOURCE_PATH
 
 @pytest.yield_fixture()
 def temp_folder():
-    tmp_folder =  mkdtemp()
+    tmp_folder = mkdtemp()
     yield tmp_folder
     shutil.rmtree(tmp_folder)
 
@@ -216,6 +216,7 @@ def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning,
 
     # THEN: A warning should have happened due to attempting to copy a missing file
     mocked_log_warning.assert_called_once_with('Background does not exist, retaining cached background')
+
 
 @patch('openlp.core.ui.thememanager.shutil')
 @patch('openlp.core.ui.thememanager.delete_file')
