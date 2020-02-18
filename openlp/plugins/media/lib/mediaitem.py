@@ -46,9 +46,6 @@ if get_vlc() is not None:
 log = logging.getLogger(__name__)
 
 
-CLAPPERBOARD = UiIcons().clapperboard
-
-
 class MediaMediaItem(MediaManagerItem, RegistryProperties):
     """
     This is the custom media manager item for Media Slides.
@@ -69,6 +66,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         self.background = False
         self.automatic = ''
         self.error_icon = UiIcons().delete
+        self.clapperboard = UiIcons().clapperboard
 
     def setup_item(self):
         """
@@ -160,7 +158,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                   'The optical disc {name} is no longer available.').format(name=name))
                 return False
             service_item.processor = 'vlc'
-            service_item.add_from_command(filename, name, CLAPPERBOARD)
+            service_item.add_from_command(filename, name, self.clapperboard)
             service_item.title = clip_name
             # Set the length
             service_item.set_media_length(end - start)
@@ -171,7 +169,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             # Special handling if the filename is a devicestream
             (name, mrl, options) = parse_devicestream_path(filename)
             service_item.processor = 'vlc'
-            service_item.add_from_command(filename, name, CLAPPERBOARD)
+            service_item.add_from_command(filename, name, self.clapperboard)
             service_item.title = name
             service_item.add_capability(ItemCapabilities.CanStream)
         else:
@@ -185,7 +183,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             (path, name) = os.path.split(filename)
             service_item.title = name
             service_item.processor = 'vlc'
-            service_item.add_from_command(path, name, CLAPPERBOARD)
+            service_item.add_from_command(path, name, self.clapperboard)
             # Only get start and end times if going to a service
             service_item.set_media_length(self.media_controller.media_length(filename))
         service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
