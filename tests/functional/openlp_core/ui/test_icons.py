@@ -21,23 +21,21 @@
 Package to test the openlp.core.ui.icons package.
 """
 from unittest.mock import patch
-
 from PyQt5 import QtGui
 
 from openlp.core.ui.icons import UiIcons
 
 
-@patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None)
 def test_simple_icon(settings):
     # GIVEN: an basic set of icons
-    icons = UiIcons()
-    icon_list = {
-        'active': {'icon': 'fa.child'}
+    with patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None):
+        icons = UiIcons()
+        icon_list = {
+            'active': {'icon': 'fa.child'}
+        }
 
-    }
-
-    icons.load_icons(icon_list)
-    # WHEN: I use the icons
-    icon_active = UiIcons().active
-    # THEN: I should have an icon
-    assert isinstance(icon_active, QtGui.QIcon)
+        icons.load_icons(icon_list)
+        # WHEN: I use the icons
+        icon_active = UiIcons().active
+        # THEN: I should have an icon
+        assert isinstance(icon_active, QtGui.QIcon)
