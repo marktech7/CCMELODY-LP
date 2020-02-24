@@ -25,8 +25,10 @@ import os
 import sys
 import pytest
 from datetime import timedelta
+from unittest import skipIf
 from unittest.mock import MagicMock, call, patch
 
+from openlp.core.common import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
@@ -44,6 +46,7 @@ def vlc_env():
     MockDateTime.revert()
 
 
+@skipIf(is_macosx(), 'Test doesn\'t apply to macOS')
 @patch.dict(os.environ)
 @patch('openlp.core.ui.media.vlcplayer.is_macosx')
 def test_not_osx_fix_vlc_22_plugin_path(mocked_is_macosx):
