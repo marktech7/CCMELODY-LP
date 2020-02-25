@@ -22,7 +22,6 @@
 This module contains tests for the lib submodule of the Presentations plugin.
 """
 import pytest
-from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 from PyQt5 import QtCore, QtWidgets
@@ -31,7 +30,43 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.plugins.bibles.lib.mediaitem import VALID_TEXT_SEARCH, BibleMediaItem, BibleSearch, ResultsTab, \
     SearchStatus, SearchTabs, get_reference_separators
-from tests.helpers.testmixin import TestMixin
+
+
+@pytest.fixture()
+def media_item(mock_settings):
+    Registry().register('main_window', MagicMock())
+
+    with patch('openlp.plugins.bibles.lib.mediaitem.MediaManagerItem._setup'), \
+            patch('openlp.plugins.bibles.lib.mediaitem.BibleMediaItem.setup_item'):
+        m_item = BibleMediaItem(None, MagicMock())
+    mocked_plugin = MagicMock()
+    media_item.plugin = MagicMock()
+    m_item.settings_section = 'bibles'
+    m_item.results_view_tab = MagicMock()
+    return m_item
+
+
+mocked_book_1 = MagicMock(**{'get_name.return_value': 'Book 1', 'book_reference_id': 1})
+mocked_book_2 = MagicMock(**{'get_name.return_value': 'Book 2', 'book_reference_id': 2})
+mocked_book_3 = MagicMock(**{'get_name.return_value': 'Book 3', 'book_reference_id': 3})
+mocked_book_4 = MagicMock(**{'get_name.return_value': 'Book 4', 'book_reference_id': 4})
+
+book_list_1 = [mocked_book_1, mocked_book_2, mocked_book_3]
+book_list_2 = [mocked_book_2, mocked_book_3, mocked_book_4]
+mocked_bible_1 = MagicMock(**{'get_books.return_value': book_list_1})
+mocked_bible_1.name = 'Bible 1'
+mocked_bible_2 = MagicMock(**{'get_books.return_value': book_list_2})
+mocked_bible_2.name = 'Bible 2'
+
+
+@pytest.fixture()
+def mocked_timer():
+    return patch('openlp.plugins.bibles.lib.mediaitem.QtCore.QTimer').start()
+
+
+@pytest.yield_fixture()
+def mocked_log():
+    return patch('openlp.plugins.bibles.lib.mediaitem.log').start()
 
 
 def test_valid_text_search():
@@ -101,81 +136,6 @@ def test_bible_media_item_signals():
     assert hasattr(BibleMediaItem, 'bibles_add_to_service')
     assert isinstance(BibleMediaItem.bibles_go_live, QtCore.pyqtSignal)
     assert isinstance(BibleMediaItem.bibles_add_to_service, QtCore.pyqtSignal)
-
-
-@pytest.fixture()
-def media_item(mock_settings):
-    Registry().register('main_window', MagicMock())
-
-    with patch('openlp.plugins.bibles.lib.mediaitem.MediaManagerItem._setup'), \
-         patch('openlp.plugins.bibles.lib.mediaitem.BibleMediaItem.setup_item'):
-        m_item = BibleMediaItem(None, MagicMock())
-    mocked_plugin = MagicMock()
-    media_item.plugin = MagicMock()
-    m_item.settings_section = 'bibles'
-    m_item.results_view_tab = MagicMock()
-    return m_item
-
-
-mocked_book_1 = MagicMock(**{'get_name.return_value': 'Book 1', 'book_reference_id': 1})
-mocked_book_2 = MagicMock(**{'get_name.return_value': 'Book 2', 'book_reference_id': 2})
-mocked_book_3 = MagicMock(**{'get_name.return_value': 'Book 3', 'book_reference_id': 3})
-mocked_book_4 = MagicMock(**{'get_name.return_value': 'Book 4', 'book_reference_id': 4})
-
-book_list_1 = [mocked_book_1, mocked_book_2, mocked_book_3]
-book_list_2 = [mocked_book_2, mocked_book_3, mocked_book_4]
-mocked_bible_1 = MagicMock(**{'get_books.return_value': book_list_1})
-mocked_bible_1.name = 'Bible 1'
-mocked_bible_2 = MagicMock(**{'get_books.return_value': book_list_2})
-mocked_bible_2.name = 'Bible 2'
-
-
-@pytest.fixture()
-def mocked_timer():
-    return patch('openlp.plugins.bibles.lib.mediaitem.QtCore.QTimer').start()
-
-
-@pytest.yield_fixture()
-def mocked_log():
-    return patch('openlp.plugins.bibles.lib.mediaitem.log').start()
-
-
-class TestMediaItem(TestCase, TestMixin):
-    """
-    Test the bible mediaitem methods.
-    """
-
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        log_patcher = patch('openlp.plugins.bibles.lib.mediaitem.log')
-        self.addCleanup(log_patcher.stop)
-        self.mocked_log = log_patcher.start()
-
-        qtimer_patcher = patch('openlp.plugins.bibles.lib.mediaitem.QtCore.QTimer')
-        self.addCleanup(qtimer_patcher.stop)
-        self.mocked_qtimer = qtimer_patcher.start()
-
-        self.mocked_settings_instance = MagicMock()
-        self.mocked_settings_instance.value.side_effect = lambda key: self.setting_values[key]
-
-        Registry.create()
-        Registry().register('settings', self.mocked_settings_instance)
-
-        # self.setup_application()
-        self.mocked_application = MagicMock()
-        Registry().register('application', self.mocked_application)
-        self.mocked_main_window = MagicMock()
-        Registry().register('main_window', self.mocked_main_window)
-
-        self.mocked_plugin = MagicMock()
-        with patch('openlp.plugins.bibles.lib.mediaitem.MediaManagerItem._setup'), \
-                patch('openlp.plugins.bibles.lib.mediaitem.BibleMediaItem.setup_item'):
-            self.media_item = BibleMediaItem(None, self.mocked_plugin)
-
-        self.media_item.settings_section = 'bibles'
-        self.media_item.results_view_tab = MagicMock()
 
 
 def test_media_item_instance(media_item):

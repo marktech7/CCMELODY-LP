@@ -50,17 +50,23 @@ def test_file():
 @pytest.fixture()
 def error_message_box(settings):
     Registry().register('main_window', MagicMock())
-    return patch('openlp.plugins.bibles.lib.bibleimport.critical_error_message_box').start()
+    m_box = patch('openlp.plugins.bibles.lib.bibleimport.critical_error_message_box')
+    yield m_box.start()
+    m_box.stop()
 
 
-@pytest.fixture()
+@pytest.yield_fixture()
 def mocked_open():
-    return patch.object(Path, 'open').start()
+    m_open = patch.object(Path, 'open')
+    yield m_open.start()
+    m_open.stop()
 
 
-@pytest.fixture()
+@pytest.yield_fixture()
 def mocked_setup():
-    return patch('openlp.plugins.bibles.lib.db.BibleDB._setup').start()
+    s_up = patch('openlp.plugins.bibles.lib.db.BibleDB._setup')
+    yield s_up.start()
+    s_up.stop()
 
 
 def test_init_kwargs_none(mocked_setup, registry):
@@ -457,7 +463,7 @@ def test_parse_xml_elements_tags(registry, mocked_open, mocked_setup, test_file)
 
 
 @patch.object(BibleImport, 'log_exception')
-def test_parse_xml_file_file_not_found_exception(mocked_log_exception,  mocked_open, error_message_box):
+def test_parse_xml_file_file_not_found_exception(mocked_log_exception, mocked_open, error_message_box):
     """
     Test that parse_xml handles a FileNotFoundError exception correctly
     """
