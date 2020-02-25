@@ -43,7 +43,7 @@ def test_initial_slide_controller(registry):
     assert slide_controller.is_live is False, 'The base slide controller should not be a live controller'
 
 
-def test_text_service_item_blank():
+def test_text_service_item_blank(settings):
     """
     Test that loading a text-based service item into the slide controller sets the correct blank menu
     """
@@ -63,7 +63,7 @@ def test_text_service_item_blank():
     toolbar.set_widget_visible.assert_called_with(WIDE_MENU, True)
 
 
-def test_non_text_service_item_blank():
+def test_non_text_service_item_blank(settings):
     """
     Test that loading a non-text service item into the slide controller sets the correct blank menu
     """
@@ -102,7 +102,7 @@ def test_receive_spin_delay(mock_settings):
     mocked_delay_spin_box.setValue.assert_called_with(1)
 
 
-def test_toggle_display_blank():
+def test_toggle_display_blank(settings):
     """
     Check that the toggle_display('blank') method calls the on_blank_display() method
     """
@@ -124,7 +124,7 @@ def test_toggle_display_blank():
     assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
 
 
-def test_toggle_display_hide():
+def test_toggle_display_hide(settings):
     """
     Check that the toggle_display('hide') method calls the on_blank_display() method
     """
@@ -146,7 +146,7 @@ def test_toggle_display_hide():
     assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
 
 
-def test_toggle_display_theme():
+def test_toggle_display_theme(settings):
     """
     Check that the toggle_display('theme') method calls the on_theme_display() method
     """
@@ -168,7 +168,7 @@ def test_toggle_display_theme():
     assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
 
 
-def test_toggle_display_desktop():
+def test_toggle_display_desktop(settings):
     """
     Check that the toggle_display('desktop') method calls the on_hide_display() method
     """
@@ -190,7 +190,7 @@ def test_toggle_display_desktop():
     assert 0 == mocked_on_theme_display.call_count, 'on_theme_display should not have been called'
 
 
-def test_toggle_display_show():
+def test_toggle_display_show(settings):
     """
     Check that the toggle_display('show') method calls all the on_X_display() methods
     """
@@ -298,7 +298,7 @@ def test_on_go_live_service_manager(registry):
     mocked_live_controller.preview_widget.setFocus.assert_called_once_with()
 
 
-def test_service_previous():
+def test_service_previous(settings):
     """
     Check that calling the service_previous() method adds the previous key to the queue and processes the queue
     """
@@ -317,7 +317,7 @@ def test_service_previous():
     mocked_process_queue.assert_called_once_with()
 
 
-def test_service_next():
+def test_service_next(settings):
     """
     Check that calling the service_next() method adds the next key to the queue and processes the queue
     """
@@ -355,7 +355,7 @@ def test_update_slide_limits(mock_settings):
     assert 10 == slide_controller.slide_limits, 'Slide limits should have been updated to 10'
 
 
-def test_enable_tool_bar_live():
+def test_enable_tool_bar_live(settings):
     """
     Check that when enable_tool_bar on a live slide controller is called, enable_live_tool_bar is called
     """
@@ -376,7 +376,7 @@ def test_enable_tool_bar_live():
     assert 0 == mocked_enable_preview_tool_bar.call_count, 'The preview method should not have been called'
 
 
-def test_enable_tool_bar_preview():
+def test_enable_tool_bar_preview(settings):
     """
     Check that when enable_tool_bar on a preview slide controller is called, enable_preview_tool_bar is called
     """
@@ -397,7 +397,7 @@ def test_enable_tool_bar_preview():
     assert 0 == mocked_enable_live_tool_bar.call_count, 'The live method should not have been called'
 
 
-def test_refresh_service_item_text():
+def test_refresh_service_item_text(settings):
     """
     Test that the refresh_service_item() method refreshes a text service item
     """
@@ -421,7 +421,7 @@ def test_refresh_service_item_text():
     mocked_process_item.assert_called_once_with(mocked_service_item, 5)
 
 
-def test_refresh_service_item_image():
+def test_refresh_service_item_image(settings):
     """
     Test that the refresh_service_item() method refreshes a image service item
     """
@@ -445,7 +445,7 @@ def test_refresh_service_item_image():
     mocked_process_item.assert_called_once_with(mocked_service_item, 5)
 
 
-def test_refresh_service_item_not_image_or_text():
+def test_refresh_service_item_not_image_or_text(settings):
     """
     Test that the refresh_service_item() method does not refresh a service item if it's neither text or an image
     """
@@ -469,7 +469,7 @@ def test_refresh_service_item_not_image_or_text():
     assert 0 == mocked_process_item.call_count, 'The mocked_process_item() method should not have been called'
 
 
-def test_add_service_item_with_song_edit():
+def test_add_service_item_with_song_edit(settings):
     """
     Test the add_service_item() method when song_edit is True
     """
@@ -489,7 +489,7 @@ def test_add_service_item_with_song_edit():
     mocked_process_item.assert_called_once_with(mocked_item, 2)
 
 
-def test_add_service_item_without_song_edit():
+def test_add_service_item_without_song_edit(settings):
     """
     Test the add_service_item() method when song_edit is False
     """
@@ -509,7 +509,7 @@ def test_add_service_item_without_song_edit():
     mocked_process_item.assert_called_once_with(mocked_item, 0)
 
 
-def test_replace_service_manager_item_different_items():
+def test_replace_service_manager_item_different_items(settings):
     """
     Test that when the service items are not the same, nothing happens
     """
@@ -531,7 +531,7 @@ def test_replace_service_manager_item_different_items():
         'The preview_widget current_slide_number.() method should not have been called'
 
 
-def test_replace_service_manager_item_same_item():
+def test_replace_service_manager_item_same_item(settings):
     """
     Test that when the service item is the same, the service item is reprocessed
     """
@@ -553,7 +553,7 @@ def test_replace_service_manager_item_same_item():
     mocked_process_item.assert_called_once_with(mocked_item, 7)
 
 
-def test_on_slide_blank():
+def test_on_slide_blank(settings):
     """
     Test on_slide_blank
     """
@@ -568,7 +568,7 @@ def test_on_slide_blank():
     slide_controller.on_blank_display.assert_called_once_with(True)
 
 
-def test_on_slide_unblank():
+def test_on_slide_unblank(settings):
     """
     Test on_slide_unblank
     """
@@ -583,7 +583,7 @@ def test_on_slide_unblank():
     slide_controller.on_blank_display.assert_called_once_with(False)
 
 
-def test_on_slide_selected_index_no_service_item():
+def test_on_slide_selected_index_no_service_item(settings):
     """
     Test that when there is no service item, the on_slide_selected_index() method returns immediately
     """
@@ -705,7 +705,7 @@ def test_process_item(mocked_execute, registry):
         'The presentation should have been stopped.'
 
 
-def test_live_stolen_focus_shortcuts():
+def test_live_stolen_focus_shortcuts(settings):
     """
     Test that all the needed shortcuts are available in scenarios where Live has stolen focus.
     These are found under def __add_actions_to_widget(self, widget): in slidecontroller.py

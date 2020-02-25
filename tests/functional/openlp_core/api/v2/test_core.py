@@ -126,7 +126,7 @@ def test_toggle_display_valid_action_updates_controller(flask_client, settings):
     assert controller.slidecontroller_toggle_display.set == 'show'
 
 
-def test_cors_headers_are_present(flask_client):
+def test_cors_headers_are_present(flask_client, settings):
     res = flask_client.get('/api/v2/core/system')
     assert 'Access-Control-Allow-Origin' in res.headers
     assert res.headers['Access-Control-Allow-Origin'] == '*'

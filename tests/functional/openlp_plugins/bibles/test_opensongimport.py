@@ -293,6 +293,7 @@ def test_process_chapters_completes(mocked_parse_chapter_number, manager, mock_s
     assert importer.wizard.increment_progress_bar.call_args_list == [call('Importing Book 1...'),
                                                                      call('Importing Book 2...')]
 
+
 def test_process_verses_stop_import(manager, mock_settings):
     """
     Test process_verses when stop_import is set to True

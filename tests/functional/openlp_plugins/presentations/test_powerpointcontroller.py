@@ -91,6 +91,8 @@ class TestPowerpointDocument(TestCase, TestMixin):
         """
         Set up the patches and mocks need for all tests.
         """
+        Registry.create()
+        Registry().register('settings', Settings())
         self.setup_application()
         self.build_settings()
         self.mock_plugin = MagicMock()
@@ -111,8 +113,6 @@ class TestPowerpointDocument(TestCase, TestMixin):
         self.file_name = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.pptx')
         self.real_controller = PowerpointController(self.mock_plugin)
         Settings().extend_default_settings(__default_settings__)
-        Registry.create()
-        Registry().register('settings', Settings())
 
     def tearDown(self):
         """

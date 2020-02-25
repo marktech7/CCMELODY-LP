@@ -37,7 +37,6 @@ from openlp.plugins.images.lib.mediaitem import ImageMediaItem
 def mocked_media_item(mock_settings):
     """Local test setup"""
     mocked_main_window = MagicMock()
-    Registry().register('application', MagicMock())
     Registry().register('service_list', MagicMock())
     Registry().register('main_window', mocked_main_window)
     Registry().register('live_controller', MagicMock())
