@@ -38,6 +38,12 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
 
+@pytest.fixture(autouse=True)
+def reset_singletons():
+    Registry._instances = {}
+    State._instances = {}
+
+
 @pytest.yield_fixture
 def qapp(qtbot):
     """An instance of QApplication"""
