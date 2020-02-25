@@ -21,12 +21,3 @@
 """
 This module contains tests for the db submodule of the Bibles plugin.
 """
-
-from unittest import TestCase
-
-
-class TestBibleDB(TestCase):
-    """
-    Test the functions in the BibleDB class.
-    """
-    pass
