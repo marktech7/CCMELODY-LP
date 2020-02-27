@@ -679,7 +679,11 @@ class Settings(QtCore.QSettings):
             default_value = Settings.__default_settings__[self.group() + '/' + key]
         else:
             default_value = Settings.__default_settings__[key]
-        setting = super(Settings, self).value(key, default_value)
+        try:
+            setting = super(Settings, self).value(key, default_value)
+        except TypeError:
+            log.error(f'Setting {key} is invalid , default {default_value} used as replacement')
+            setting = default_value
         return self._convert_value(setting, default_value)
 
     def setValue(self, key, value):
