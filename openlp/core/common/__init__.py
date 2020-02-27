@@ -57,7 +57,7 @@ REPLACMENT_CHARS_MAP = str.maketrans({'\u2018': '\'', '\u2019': '\'', '\u201c': 
                                       '\u2013': '-', '\u2014': '-', '\v': '\n\n', '\f': '\n\n'})
 NEW_LINE_REGEX = re.compile(r' ?(\r\n?|\n) ?')
 WHITESPACE_REGEX = re.compile(r'[ \t]+')
-INTERFACE_FILTER = re.compile('lo|loopback|docker|tun', re.IGNORECASE)
+INTERFACE_FILTER = re.compile('^lo|loopback|docker|tun', re.IGNORECASE)
 
 
 def get_network_interfaces():
