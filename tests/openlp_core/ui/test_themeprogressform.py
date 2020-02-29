@@ -21,10 +21,10 @@
 """
 Package to test the openlp.core.ui.themeform package.
 """
-# from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+from openlp.core.common.registry import Registry
 from openlp.core.ui.themeprogressform import ThemeProgressForm
 from tests.helpers.testmixin import TestMixin
 
@@ -102,6 +102,9 @@ class TestThemeProgressForm(TestCase, TestMixin):
     def test_get_preview(self):
         """Test that the get_preview() method returns a preview image"""
         # GIVEN: ThemeProgressForm object
+        Registry.create()
+        mocked_renderer = MagicMock()
+        Registry().register('renderer', mocked_renderer)
         test_theme_name = 'Test Theme'
         test_theme_data = {'name': test_theme_name}
         form = self._get_theme_progress_form()
