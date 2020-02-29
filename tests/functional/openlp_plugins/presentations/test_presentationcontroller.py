@@ -26,6 +26,8 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
 
 
@@ -37,6 +39,8 @@ class TestPresentationController(TestCase):
     Test the PresentationController.
     """
     def setUp(self):
+        Registry().create()
+        Registry().register('settings', Settings())
         self.get_thumbnail_folder_patcher = \
             patch('openlp.plugins.presentations.lib.presentationcontroller.PresentationDocument.get_thumbnail_folder',
                   return_value=Path())
@@ -162,6 +166,7 @@ class TestPresentationDocument(TestCase):
         """
         Set up the patches and mocks need for all tests.
         """
+        Registry().create()
         self.create_paths_patcher = \
             patch('openlp.plugins.presentations.lib.presentationcontroller.create_paths')
         self.get_thumbnail_folder_patcher = \
