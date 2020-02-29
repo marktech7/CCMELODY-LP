@@ -22,15 +22,12 @@
 This module contains tests for the OpenSong Bible importer.
 """
 import pytest
-from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 from lxml import objectify
 
-from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib.bibleimport import BibleImport
 from openlp.plugins.bibles.lib.importers.opensong import OpenSongBible, get_text, parse_chapter_number
-from tests.helpers.testmixin import TestMixin
 from tests.utils import load_external_result_data
 from tests.utils.constants import RESOURCE_PATH
 
@@ -52,168 +49,161 @@ def mocked_find_and_create_book():
     facb.stop()
 
 
-class TestOpenSongImport(TestCase, TestMixin):
+def test_create_importer(manager, mock_settings):
     """
-    Test the functions in the :mod:`opensongimport` module.
+    Test creating an instance of the OpenSong file importer
     """
+    # GIVEN: A mocked out "manager"
+    mocked_manager = MagicMock()
 
-    def setUp(self):
-        self.find_and_create_book_patch = patch.object(BibleImport, 'find_and_create_book')
-        self.addCleanup(self.find_and_create_book_patch.stop)
-        self.mocked_find_and_create_book = self.find_and_create_book_patch.start()
-        self.manager_patcher = patch('openlp.plugins.bibles.lib.db.Manager')
-        self.addCleanup(self.manager_patcher.stop)
-        self.manager_patcher.start()
-        self.setup_application()
-        self.app.process_events = MagicMock()
-        Registry.create()
-        Registry().register('application', self.app)
+    # WHEN: An importer object is created
+    importer = OpenSongBible(mocked_manager, path='.', name='.', file_path=None)
 
-    def test_create_importer(self):
-        """
-        Test creating an instance of the OpenSong file importer
-        """
-        # GIVEN: A mocked out "manager"
-        mocked_manager = MagicMock()
+    # THEN: The importer should be an instance of BibleDB
+    assert isinstance(importer, BibleImport)
 
-        # WHEN: An importer object is created
-        importer = OpenSongBible(mocked_manager, path='.', name='.', file_path=None)
 
-        # THEN: The importer should be an instance of BibleDB
-        assert isinstance(importer, BibleImport)
+def test_get_text_no_text(manager, mock_settings):
+    """
+    Test that get_text handles elements containing text in a combination of text and tail attributes
+    """
+    # GIVEN: Some test data which contains an empty element and an instance of OpenSongBible
+    test_data = objectify.fromstring('<element></element>')
 
-    def test_get_text_no_text(self):
-        """
-        Test that get_text handles elements containing text in a combination of text and tail attributes
-        """
-        # GIVEN: Some test data which contains an empty element and an instance of OpenSongBible
-        test_data = objectify.fromstring('<element></element>')
+    # WHEN: Calling get_text
+    result = get_text(test_data)
 
-        # WHEN: Calling get_text
-        result = get_text(test_data)
+    # THEN: A blank string should be returned
+    assert result == ''
 
-        # THEN: A blank string should be returned
-        assert result == ''
 
-    def test_get_text_text(self):
-        """
-        Test that get_text handles elements containing text in a combination of text and tail attributes
-        """
-        # GIVEN: Some test data which contains all possible permutation of text and tail text possible and an instance
-        #        of OpenSongBible
-        test_data = objectify.fromstring('<element>Element text '
-                                         '<sub_text_tail>sub_text_tail text </sub_text_tail>sub_text_tail tail '
-                                         '<sub_text>sub_text text </sub_text>'
-                                         '<sub_tail></sub_tail>sub_tail tail</element>')
+def test_get_text_text(manager, mock_settings):
+    """
+    Test that get_text handles elements containing text in a combination of text and tail attributes
+    """
+    # GIVEN: Some test data which contains all possible permutation of text and tail text possible and an instance
+    #        of OpenSongBible
+    test_data = objectify.fromstring('<element>Element text '
+                                     '<sub_text_tail>sub_text_tail text </sub_text_tail>sub_text_tail tail '
+                                     '<sub_text>sub_text text </sub_text>'
+                                     '<sub_tail></sub_tail>sub_tail tail</element>')
 
-        # WHEN: Calling get_text
-        result = get_text(test_data)
+    # WHEN: Calling get_text
+    result = get_text(test_data)
 
-        # THEN: The text returned should be as expected
-        assert result == 'Element text sub_text_tail text sub_text_tail tail sub_text text sub_tail tail'
+    # THEN: The text returned should be as expected
+    assert result == 'Element text sub_text_tail text sub_text_tail tail sub_text text sub_tail tail'
 
-    def test_parse_chapter_number(self):
-        """
-        Test parse_chapter_number when supplied with chapter number and an instance of OpenSongBible
-        """
-        # GIVEN: The number 10 represented as a string
-        # WHEN: Calling parse_chapter_nnumber
-        result = parse_chapter_number('10', 0)
 
-        # THEN: The 10 should be returned as an Int
-        assert result == 10
+def test_parse_chapter_number(manager, mock_settings):
+    """
+    Test parse_chapter_number when supplied with chapter number and an instance of OpenSongBible
+    """
+    # GIVEN: The number 10 represented as a string
+    # WHEN: Calling parse_chapter_nnumber
+    result = parse_chapter_number('10', 0)
 
-    def test_parse_chapter_number_empty_attribute(self):
-        """
-        Testparse_chapter_number when the chapter number is an empty string. (Bug #1074727)
-        """
-        # GIVEN: An empty string, and the previous chapter number set as 12  and an instance of OpenSongBible
-        # WHEN: Calling parse_chapter_number
-        result = parse_chapter_number('', 12)
+    # THEN: The 10 should be returned as an Int
+    assert result == 10
 
-        # THEN: parse_chapter_number should increment the previous verse number
+
+def test_parse_chapter_number_empty_attribute(manager, mock_settings):
+    """
+    Testparse_chapter_number when the chapter number is an empty string. (Bug #1074727)
+    """
+    # GIVEN: An empty string, and the previous chapter number set as 12  and an instance of OpenSongBible
+    # WHEN: Calling parse_chapter_number
+    result = parse_chapter_number('', 12)
+
+    # THEN: parse_chapter_number should increment the previous verse number
+    assert result == 13
+
+
+def test_parse_verse_number_valid_verse_no(manager, mock_settings):
+    """
+    Test parse_verse_number when supplied with a valid verse number
+    """
+    # GIVEN: An instance of OpenSongBible, the number 15 represented as a string and an instance of OpenSongBible
+    importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
+
+    # WHEN: Calling parse_verse_number
+    result = importer.parse_verse_number('15', 0)
+
+    # THEN: parse_verse_number should return the verse number
+    assert result == 15
+
+
+def test_parse_verse_number_verse_range(manager, mock_settings):
+    """
+    Test parse_verse_number when supplied with a verse range
+    """
+    # GIVEN: An instance of OpenSongBible, and the range 24-26 represented as a string
+    importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
+
+    # WHEN: Calling parse_verse_number
+    result = importer.parse_verse_number('24-26', 0)
+
+    # THEN: parse_verse_number should return the first verse number in the range
+    assert result == 24
+
+
+def test_parse_verse_number_invalid_verse_no(manager, mock_settings):
+    """
+    Test parse_verse_number when supplied with a invalid verse number
+    """
+    # GIVEN: An instance of OpenSongBible, a non numeric string represented as a string
+    importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
+
+    # WHEN: Calling parse_verse_number
+    result = importer.parse_verse_number('invalid', 41)
+
+    # THEN: parse_verse_number should increment the previous verse number
+    assert result == 42
+
+
+def test_parse_verse_number_empty_attribute(manager, mock_settings):
+    """
+    Test parse_verse_number when the verse number is an empty string. (Bug #1074727)
+    """
+    # GIVEN: An instance of OpenSongBible, an empty string, and the previous verse number set as 14
+    importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
+    # WHEN: Calling parse_verse_number
+    result = importer.parse_verse_number('', 14)
+
+    # THEN: parse_verse_number should increment the previous verse number
+    assert result == 15
+
+
+def test_parse_verse_number_invalid_type(manager, mock_settings):
+    """
+    Test parse_verse_number when the verse number is an invalid type)
+    """
+    with patch.object(OpenSongBible, 'log_warning')as mocked_log_warning:
+        # GIVEN: An instance of OpenSongBible, a Tuple, and the previous verse number set as 12
+        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
+
+        # WHEN: Calling parse_verse_number
+        result = importer.parse_verse_number((1, 2, 3), 12)
+
+        # THEN: parse_verse_number should log the verse number it was called with increment the previous verse
+        #       number
+        mocked_log_warning.assert_called_once_with('Illegal verse number: (1, 2, 3)')
         assert result == 13
 
-    def test_parse_verse_number_valid_verse_no(self):
-        """
-        Test parse_verse_number when supplied with a valid verse number
-        """
-        # GIVEN: An instance of OpenSongBible, the number 15 represented as a string and an instance of OpenSongBible
-        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
 
-        # WHEN: Calling parse_verse_number
-        result = importer.parse_verse_number('15', 0)
+def test_process_books_stop_import(manager, mocked_find_and_create_book, mock_settings):
+    """
+    Test process_books when stop_import is set to True
+    """
+    # GIVEN: An instance of OpenSongBible
+    importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
 
-        # THEN: parse_verse_number should return the verse number
-        assert result == 15
+    # WHEN: stop_import_flag is set to True
+    importer.stop_import_flag = True
+    importer.process_books(['Book'])
 
-    def test_parse_verse_number_verse_range(self):
-        """
-        Test parse_verse_number when supplied with a verse range
-        """
-        # GIVEN: An instance of OpenSongBible, and the range 24-26 represented as a string
-        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
-
-        # WHEN: Calling parse_verse_number
-        result = importer.parse_verse_number('24-26', 0)
-
-        # THEN: parse_verse_number should return the first verse number in the range
-        assert result == 24
-
-    def test_parse_verse_number_invalid_verse_no(self):
-        """
-        Test parse_verse_number when supplied with a invalid verse number
-        """
-        # GIVEN: An instance of OpenSongBible, a non numeric string represented as a string
-        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
-
-        # WHEN: Calling parse_verse_number
-        result = importer.parse_verse_number('invalid', 41)
-
-        # THEN: parse_verse_number should increment the previous verse number
-        assert result == 42
-
-    def test_parse_verse_number_empty_attribute(self):
-        """
-        Test parse_verse_number when the verse number is an empty string. (Bug #1074727)
-        """
-        # GIVEN: An instance of OpenSongBible, an empty string, and the previous verse number set as 14
-        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
-        # WHEN: Calling parse_verse_number
-        result = importer.parse_verse_number('', 14)
-
-        # THEN: parse_verse_number should increment the previous verse number
-        assert result == 15
-
-    def test_parse_verse_number_invalid_type(self):
-        """
-        Test parse_verse_number when the verse number is an invalid type)
-        """
-        with patch.object(OpenSongBible, 'log_warning')as mocked_log_warning:
-            # GIVEN: An instanceofOpenSongBible, a Tuple, and the previous verse number set as 12
-            importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
-
-            # WHEN: Calling parse_verse_number
-            result = importer.parse_verse_number((1, 2, 3), 12)
-
-            # THEN: parse_verse_number should log the verse number it was called with increment the previous verse
-            #       number
-            mocked_log_warning.assert_called_once_with('Illegal verse number: (1, 2, 3)')
-            assert result == 13
-
-    def test_process_books_stop_import(self):
-        """
-        Test process_books when stop_import is set to True
-        """
-        # GIVEN: An instance of OpenSongBible
-        importer = OpenSongBible(MagicMock(), path='.', name='.', file_path=None)
-
-        # WHEN: stop_import_flag is set to True
-        importer.stop_import_flag = True
-        importer.process_books(['Book'])
-
-        # THEN: find_and_create_book should not have been called
-        assert self.mocked_find_and_create_book.called is False
+    # THEN: find_and_create_book should not have been called
+    assert mocked_find_and_create_book.called is False
 
 
 def test_process_books_completes(manager, mocked_find_and_create_book, mock_settings):
