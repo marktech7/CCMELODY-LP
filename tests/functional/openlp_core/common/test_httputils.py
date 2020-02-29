@@ -29,7 +29,6 @@ from unittest.mock import MagicMock, patch
 
 from openlp.core.common.httputils import ProxyMode, download_file, get_proxy_settings, get_url_file_size, \
     get_user_agent, get_web_page
-from openlp.core.common.settings import Settings
 
 
 @pytest.yield_fixture
