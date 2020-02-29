@@ -179,7 +179,7 @@ def test_parse_csv_file_csverror():
         assert context.value != ValidationError('Parsing "file.csv" failed')
 
 
-def test_process_books_stopped_import():
+def test_process_books_stopped_import(registry):
     """
     Test process books when the import is stopped
     """
