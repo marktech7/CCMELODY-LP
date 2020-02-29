@@ -23,7 +23,6 @@ This module contains tests for the lib submodule of the Images plugin.
 """
 import pytest
 from pathlib import Path
-from unittest import TestCase
 from unittest.mock import ANY, MagicMock, patch
 
 from PyQt5 import QtCore, QtWidgets

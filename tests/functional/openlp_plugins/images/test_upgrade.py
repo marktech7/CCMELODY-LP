@@ -21,66 +21,46 @@
 """
 This module contains tests for the lib submodule of the Images plugin.
 """
+import pytest
 import os
 import shutil
 from pathlib import Path
 from tempfile import mkdtemp
-from unittest import TestCase, skip
 from unittest.mock import patch
 
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
 from openlp.plugins.images.lib import upgrade
 from openlp.plugins.images.lib.db import ImageFilenames, init_schema
-from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import TEST_RESOURCES_PATH
 
 
-__default_settings__ = {
-    'images/db type': 'sqlite',
-    'images/background color': '#000000',
-}
+@pytest.yield_fixture()
+def temp_path():
+    tmp_path = Path(mkdtemp())
+    yield tmp_path
+    shutil.rmtree(tmp_path, ignore_errors=True)
 
 
-class TestImageDBUpgrade(TestCase, TestMixin):
+def test_image_filenames_table(temp_path, settings):
     """
-    Test that the image database is upgraded correctly
+    Test that the ImageFilenames table is correctly upgraded to the latest version
     """
-    def setUp(self):
-        self.build_settings()
-        Settings().extend_default_settings(__default_settings__)
-        self.tmp_folder = mkdtemp()
+    # GIVEN: An unversioned image database
+    temp_db_name = os.path.join(temp_path, 'image-v0.sqlite')
+    shutil.copyfile(os.path.join(TEST_RESOURCES_PATH, 'images', 'image-v0.sqlite'), temp_db_name)
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        self.destroy_settings()
-        # Ignore errors since windows can have problems with locked files
-        shutil.rmtree(self.tmp_folder, ignore_errors=True)
+    with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')):
+        # WHEN: Initalising the database manager
+        manager = Manager('images', init_schema, db_file_path=Path(temp_db_name), upgrade_mod=upgrade)
 
-    @skip
-    # Broken due to Path issues.
-    def test_image_filenames_table(self):
-        """
-        Test that the ImageFilenames table is correctly upgraded to the latest version
-        """
-        # GIVEN: An unversioned image database
-        temp_db_name = os.path.join(self.tmp_folder, 'image-v0.sqlite')
-        shutil.copyfile(os.path.join(TEST_RESOURCES_PATH, 'images', 'image-v0.sqlite'), temp_db_name)
+        # THEN: The database should have been upgraded and image_filenames.file_path should return Path objects
+        upgraded_results = manager.get_all_objects(ImageFilenames)
 
-        with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')):
-            # WHEN: Initalising the database manager
-            manager = Manager('images', init_schema, db_file_path=Path(temp_db_name), upgrade_mod=upgrade)
+        expected_result_data = {1: Path('/', 'test', 'image1.jpg'),
+                                2: Path('/', 'test', 'dir', 'image2.jpg'),
+                                3: Path('/', 'test', 'dir', 'subdir', 'image3.jpg')}
 
-            # THEN: The database should have been upgraded and image_filenames.file_path should return Path objects
-            upgraded_results = manager.get_all_objects(ImageFilenames)
-
-            expected_result_data = {1: Path('/', 'test', 'image1.jpg'),
-                                    2: Path('/', 'test', 'dir', 'image2.jpg'),
-                                    3: Path('/', 'test', 'dir', 'subdir', 'image3.jpg')}
-
-            assert len(upgraded_results) == 3
-            for result in upgraded_results:
-                assert expected_result_data[result.id] == result.file_path
+        assert len(upgraded_results) == 3
+        for result in upgraded_results:
+            assert expected_result_data[result.id] == result.file_path
