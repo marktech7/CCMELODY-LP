@@ -51,7 +51,7 @@ def _recursively_delete_group_side_effect(*args, **kwargs):
     """
     Side effect method that creates custom return values for the recursively_delete_group method
     """
-    if args[1] == ImageFilenames and args[2]:
+    if args[0] == ImageFilenames and args[1]:
         # Create some fake objects that should be removed
         returned_object1 = ImageFilenames()
         returned_object1.id = 1
@@ -63,7 +63,7 @@ def _recursively_delete_group_side_effect(*args, **kwargs):
         returned_object3.id = 3
         returned_object3.file_path = Path('/', 'tmp', 'test_file_3.jpg')
         return [returned_object1, returned_object2, returned_object3]
-    if args[1] == ImageGroups and args[2]:
+    if args[0] == ImageGroups and args[1]:
         # Change the parent_id that is matched so we don't get into an endless loop
         ImageGroups.parent_id = 0
         # Create a fake group that will be used in the next run
