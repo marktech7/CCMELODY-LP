@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-This module contains tests for the lib submodule of the Songs plugin.
+This module contains tests for the lib submodule of the Custom plugin.
 """
 import pytest
 from unittest.mock import MagicMock, patch
@@ -38,9 +38,9 @@ def media_item(mock_settings):
     Registry().register('main_window', MagicMock())
 
     with patch('openlp.core.lib.mediamanageritem.MediaManagerItem._setup'), \
-         patch('openlp.core.lib.mediamanageritem.MediaManagerItem.setup_item'), \
-         patch('openlp.plugins.custom.forms.editcustomform.EditCustomForm.__init__'), \
-         patch('openlp.plugins.custom.lib.mediaitem.CustomMediaItem.setup_item'):
+            patch('openlp.core.lib.mediamanageritem.MediaManagerItem.setup_item'), \
+            patch('openlp.plugins.custom.forms.editcustomform.EditCustomForm.__init__'), \
+            patch('openlp.plugins.custom.lib.mediaitem.CustomMediaItem.setup_item'):
         m_item = CustomMediaItem(None, MagicMock())
     media_item.plugin = MagicMock()
     m_item.settings_section = 'bibles'
