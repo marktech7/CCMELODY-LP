@@ -21,43 +21,30 @@
 """
 Test the media plugin
 """
-from unittest import TestCase
 from unittest.mock import patch
 
-from openlp.core.state import State
-from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.media.mediaplugin import MediaPlugin
-from tests.helpers.testmixin import TestMixin
 
 
-class TestMediaPlugin(TestCase, TestMixin):
+@patch('openlp.plugins.media.mediaplugin.Plugin.initialise')
+def test_initialise(mock_initialise, state, settings):
     """
-    Test the media plugin
+    Test that the initialise() method overwrites the built-in one, but still calls it
     """
-    def setUp(self):
-        Registry.create()
-        Registry().register('settings', Settings())
-        State().load_settings()
+    # GIVEN: A media plugin instance
+    media_plugin = MediaPlugin()
 
-    @patch('openlp.plugins.media.mediaplugin.Plugin.initialise')
-    def test_initialise(self, mocked_initialise):
-        """
-        Test that the initialise() method overwrites the built-in one, but still calls it
-        """
-        # GIVEN: A media plugin instance
-        media_plugin = MediaPlugin()
+    # WHEN: initialise() is called
+    media_plugin.initialise()
 
-        # WHEN: initialise() is called
-        media_plugin.initialise()
+    # THEN: The the base initialise() method should be called
+    mock_initialise.assert_called_with()
 
-        # THEN: The the base initialise() method should be called
-        mocked_initialise.assert_called_with()
 
-    def test_about_text(self):
-        # GIVEN: The MediaPlugin
-        # WHEN: Retrieving the about text
-        # THEN: about() should return a string object
-        assert isinstance(MediaPlugin.about(), str)
-        # THEN: about() should return a non-empty string
-        assert len(MediaPlugin.about()) != 0
+def test_about_text():
+    # GIVEN: The MediaPlugin
+    # WHEN: Retrieving the about text
+    # THEN: about() should return a string object
+    assert isinstance(MediaPlugin.about(), str)
+    # THEN: about() should return a non-empty string
+    assert len(MediaPlugin.about()) != 0
