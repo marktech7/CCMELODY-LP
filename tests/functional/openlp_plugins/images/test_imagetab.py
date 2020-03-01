@@ -41,7 +41,6 @@ def test_save_tab_nochange(form):
     Test no changes does not trigger post processing
     """
     # GIVEN: No changes on the form.
-    initial_color = '#999999'
     # WHEN: the save is invoked
     form.save()
     # THEN: the post process should not be requested

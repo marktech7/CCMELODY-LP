@@ -25,8 +25,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore
-
 from openlp.core.common.registry import Registry
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 
