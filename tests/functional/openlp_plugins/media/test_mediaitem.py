@@ -21,67 +21,50 @@
 """
 Test the media plugin
 """
+import pytest
 from pathlib import Path
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
-from tests.helpers.testmixin import TestMixin
 
 
-__default_settings__ = {
-    'media/media auto start': QtCore.Qt.Unchecked,
-    'media/media files': []
-}
+@pytest.fixture
+def media_item(settings):
+    """Local test setup"""
+    mocked_main_window = MagicMock()
+    Registry().register('service_list', MagicMock())
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('live_controller', MagicMock())
+    mocked_plugin = MagicMock()
+    with patch('openlp.plugins.media.lib.mediaitem.MediaManagerItem._setup'), \
+            patch('openlp.plugins.media.lib.mediaitem.MediaMediaItem.setup_item'):
+        m_item = MediaMediaItem(None, mocked_plugin)
+        m_item.settings_section = 'media'
+    return m_item
 
 
-class MediaItemTest(TestCase, TestMixin):
+def test_search_found(media_item):
     """
-    Test the media item for Media
+    Media Remote Search Successful find
     """
+    # GIVEN: The Mediaitem set up a list of media
+    media_item.settings.setValue(media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+    # WHEN: Retrieving the test file
+    result = media_item.search('test.mp4', False)
+    # THEN: a file should be found
+    assert result == [['test.mp4', 'test.mp4']], 'The result file contain the file name'
 
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        with patch('openlp.plugins.media.lib.mediaitem.MediaManagerItem.__init__'),\
-                patch('openlp.plugins.media.lib.mediaitem.MediaMediaItem.setup'):
-            self.media_item = MediaMediaItem(None, MagicMock())
-            self.media_item.settings_section = 'media'
-        self.setup_application()
-        self.build_settings()
-        Registry.create()
-        self.settings = Settings()
-        Registry().register('settings', self.settings)
 
-    def tearDown(self):
-        """
-        Clean up after the tests
-        """
-        self.destroy_settings()
-
-    def test_search_found(self):
-        """
-        Media Remote Search Successful find
-        """
-        # GIVEN: The Mediaitem set up a list of media
-        self.settings.setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
-        # WHEN: Retrieving the test file
-        result = self.media_item.search('test.mp4', False)
-        # THEN: a file should be found
-        assert result == [['test.mp4', 'test.mp4']], 'The result file contain the file name'
-
-    def test_search_not_found(self):
-        """
-        Media Remote Search not find
-        """
-        # GIVEN: The Mediaitem set up a list of media
-        self.settings.setValue(self.media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
-        # WHEN: Retrieving the test file
-        result = self.media_item.search('test.mpx', False)
-        # THEN: a file should be found
-        assert result == [], 'The result file should be empty'
+def test_search_not_found(media_item):
+    """
+    Media Remote Search not find
+    """
+    # GIVEN: The Mediaitem set up a list of media
+    media_item.settings.setValue(media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+    # WHEN: Retrieving the test file
+    result = media_item.search('test.mpx', False)
+    # THEN: a file should be found
+    assert result == [], 'The result file should be empty'
