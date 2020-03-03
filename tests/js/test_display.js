@@ -717,7 +717,7 @@ describe("Display.setTextSlides", function () {
     Display.setTextSlides(slides);
 
     const slidesDiv = $(".text-slides")[0];
-    expect(slidesDiv.style['top']).toEqual('789px');
+    expect(slidesDiv.style['margin-top']).toEqual('789px');
     expect(slidesDiv.style['left']).toEqual('1000px');
     expect(slidesDiv.style['width']).toEqual('1230px');
     expect(slidesDiv.style['height']).toEqual('4560px');

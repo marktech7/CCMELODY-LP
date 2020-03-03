@@ -1028,7 +1028,7 @@ var Display = {
     // These need to be fixed, in the Python they use a width passed in as a parameter
     mainStyle.width = theme.font_main_width + "px";
     mainStyle.height = theme.font_main_height + "px";
-    mainStyle.top = "" + theme.font_main_y + "px";
+    mainStyle["margin-top"] = "" + theme.font_main_y + "px";
     mainStyle.left = "" + theme.font_main_x + "px";
     mainStyle.color = theme.font_main_color;
     mainStyle["font-family"] = theme.font_main_name;
