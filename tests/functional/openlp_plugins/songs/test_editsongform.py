@@ -42,10 +42,11 @@ class TestEditSongForm(TestCase, TestMixin):
         Registry.create()
         Registry().register('service_list', MagicMock())
         Registry().register('main_window', MagicMock())
-        with patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__', return_value=None):
-            self.edit_song_form = EditSongForm(None, MagicMock(), MagicMock())
         self.setup_application()
         self.build_settings()
+        Registry().register('settings', self.setting)
+        with patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__', return_value=None):
+            self.edit_song_form = EditSongForm(None, MagicMock(), MagicMock())
         QtCore.QLocale.setDefault(QtCore.QLocale('en_GB'))
 
     def tearDown(self):

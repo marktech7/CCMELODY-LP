@@ -129,7 +129,7 @@ def test_firsttimeform_exec(mocked_qwizard_exec):
         mocked_qwizard_exec.assert_called_once()
 
 
-def test_set_defaults(mock_settings, ftf_app):
+def test_set_defaults(mock_settings):
     """
     Test that the default values are set when set_defaults() is run
     """

@@ -81,6 +81,7 @@ class TestPdfController(TestCase, TestMixin):
         """
         Set up the components need for all tests.
         """
+        Registry().create()
         self.setup_application()
         self.build_settings()
         # Mocked out desktop object

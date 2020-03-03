@@ -22,45 +22,31 @@
 This module contains tests for the manager submodule of the Bibles plugin.
 """
 from pathlib import Path
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from openlp.plugins.bibles.lib.manager import BibleManager
 
 
-class TestManager(TestCase):
+def test_delete_bible(settings):
     """
-    Test the functions in the :mod:`manager` module.
+    Test the BibleManager delete_bible method
     """
+    # GIVEN: An instance of BibleManager and a mocked bible
+    with patch.object(BibleManager, 'reload_bibles'), \
+            patch('openlp.plugins.bibles.lib.manager.delete_file', return_value=True) as mocked_delete_file:
+        instance = BibleManager(MagicMock())
+        # We need to keep a reference to the mock for close_all as it gets set to None later on!
+        mocked_close_all = MagicMock()
+        mocked_bible = MagicMock(file_path='KJV.sqlite', path=Path('bibles'),
+                                 **{'session.close_all': mocked_close_all})
+        instance.db_cache = {'KJV': mocked_bible}
 
-    def setUp(self):
-        app_location_patcher = patch('openlp.plugins.bibles.lib.manager.AppLocation')
-        self.addCleanup(app_location_patcher.stop)
-        app_location_patcher.start()
-        log_patcher = patch('openlp.plugins.bibles.lib.manager.log')
-        self.addCleanup(log_patcher.stop)
-        self.mocked_log = log_patcher.start()
+        # WHEN: Calling delete_bible with 'KJV'
+        result = instance.delete_bible('KJV')
 
-    def test_delete_bible(self):
-        """
-        Test the BibleManager delete_bible method
-        """
-        # GIVEN: An instance of BibleManager and a mocked bible
-        with patch.object(BibleManager, 'reload_bibles'), \
-                patch('openlp.plugins.bibles.lib.manager.delete_file', return_value=True) as mocked_delete_file:
-            instance = BibleManager(MagicMock())
-            # We need to keep a reference to the mock for close_all as it gets set to None later on!
-            mocked_close_all = MagicMock()
-            mocked_bible = MagicMock(file_path='KJV.sqlite', path=Path('bibles'),
-                                     **{'session.close_all': mocked_close_all})
-            instance.db_cache = {'KJV': mocked_bible}
-
-            # WHEN: Calling delete_bible with 'KJV'
-            result = instance.delete_bible('KJV')
-
-            # THEN: The session should have been closed and set to None, the bible should be deleted, and the result of
-            #       the deletion returned.
-            assert result is True
-            mocked_close_all.assert_called_once_with()
-            assert mocked_bible.session is None
-            mocked_delete_file.assert_called_once_with(Path('bibles') / 'KJV.sqlite')
+        # THEN: The session should have been closed and set to None, the bible should be deleted, and the result of
+        #       the deletion returned.
+        assert result is True
+        mocked_close_all.assert_called_once_with()
+        assert mocked_bible.session is None
+        mocked_delete_file.assert_called_once_with(Path('bibles') / 'KJV.sqlite')

@@ -680,9 +680,8 @@ class Settings(QtCore.QSettings):
         else:
             default_value = Settings.__default_settings__[key]
         try:
-            setting = super(Settings, self).value(key, default_value)
+            setting = super().value(key, default_value)
         except TypeError:
-            log.error(f'Setting {key} is invalid , default {default_value} used as replacement')
             setting = default_value
         return self._convert_value(setting, default_value)
 
