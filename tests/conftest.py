@@ -38,13 +38,6 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
 
-# Remove the Singletons between tests to stop any data leakage.
-@pytest.fixture(autouse=True)
-def reset_singletons():
-    Registry._instances = {}
-    State._instances = {}
-
-
 @pytest.yield_fixture
 def qapp(qtbot):
     """An instance of QApplication"""
@@ -62,10 +55,11 @@ def mocked_qapp():
     del app
 
 
-@pytest.fixture
+@pytest.yield_fixture
 def registry():
     """An instance of the Registry"""
-    Registry.create()
+    yield Registry.create()
+    Registry._instances = {}
 
 
 @pytest.yield_fixture
@@ -98,6 +92,7 @@ def mock_settings(qapp, registry):
     del mk_settings
 
 
-@pytest.fixture(scope='function')
+@pytest.yield_fixture
 def state():
-    State().load_settings()
+    yield State().load_settings()
+    State._instances = {}
