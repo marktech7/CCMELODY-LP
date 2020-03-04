@@ -21,7 +21,6 @@
 """
 Functional tests to test the Mac LibreOffice class and related methods.
 """
-import pytest
 import shutil
 from tempfile import mkdtemp
 from unittest import TestCase, SkipTest

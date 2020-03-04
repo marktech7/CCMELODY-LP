@@ -56,6 +56,7 @@ SCREEN = {
     'number': 1,
     'size': QtCore.QRect(0, 0, 1024, 768)
 }
+IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
 
 
 def get_screen_resolution():
@@ -70,9 +71,12 @@ def get_screen_resolution():
         from win32api import GetSystemMetrics
         return GetSystemMetrics(0), GetSystemMetrics(1)
     elif is_linux():
-        from Xlib.display import Display
-        resolution = Display().screen().root.get_geometry()
-        return resolution.width, resolution.height
+        if IS_CI:
+            return 1024, 768
+        else:
+            from Xlib.display import Display
+            resolution = Display().screen().root.get_geometry()
+            return resolution.width, resolution.height
     else:
         return 1024, 768
 

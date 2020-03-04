@@ -23,7 +23,7 @@ This module contains tests for the lib submodule of the Presentations plugin.
 """
 from unittest.mock import MagicMock, patch
 
-from openlp.plugins.presentations.lib.mediaitem import MessageListener, PresentationMediaItem
+from openlp.plugins.presentations.lib.mediaitem import MessageListener
 from openlp.plugins.presentations.lib.messagelistener import Controller
 
 
