@@ -44,42 +44,18 @@ __default_settings__ = {
 }
 
 
-class TestPowerpointController(TestCase, TestMixin):
+def test_constructor(settings, mock_plugin):
     """
-    Test the PowerpointController Class
+    Test the Constructor from the PowerpointController
     """
+    # GIVEN: No presentation controller
+    controller = None
 
-    def setUp(self):
-        """
-        Set up the patches and mocks need for all tests.
-        """
-        self.setup_application()
-        self.build_settings()
-        self.mock_plugin = MagicMock()
-        self.temp_folder = mkdtemp()
-        self.mock_plugin.settings_section = self.temp_folder
-        Registry.create()
-        Registry().register('settings', Settings())
+    # WHEN: The presentation controller object is created
+    controller = PowerpointController(plugin=mock_plugin)
 
-    def tearDown(self):
-        """
-        Stop the patches
-        """
-        self.destroy_settings()
-        shutil.rmtree(self.temp_folder)
-
-    def test_constructor(self):
-        """
-        Test the Constructor from the PowerpointController
-        """
-        # GIVEN: No presentation controller
-        controller = None
-
-        # WHEN: The presentation controller object is created
-        controller = PowerpointController(plugin=self.mock_plugin)
-
-        # THEN: The name of the presentation controller should be correct
-        assert 'Powerpoint' == controller.name, 'The name of the presentation controller should be correct'
+    # THEN: The name of the presentation controller should be correct
+    assert 'Powerpoint' == controller.name, 'The name of the presentation controller should be correct'
 
 
 class TestPowerpointDocument(TestCase, TestMixin):
@@ -275,33 +251,34 @@ class TestPowerpointDocument(TestCase, TestMixin):
         assert doc.blank_slide == 2, 'doc.blank_slide should be 2 because of the PowerPoint version'
         assert doc.blank_click == 3, 'doc.blank_click should be 3 because of the PowerPoint version'
 
-    def test_unblank_screen(self):
-        """
-        Test that unblank_screen works as expected
-        """
-        # GIVEN: A Document with mocked controller, presentation, ScreenList, and mocked function get_slide_number
-        with patch('openlp.plugins.presentations.lib.powerpointcontroller.ScreenList') as mocked_screen_list:
-            mocked_screen_list_ret = MagicMock()
-            mocked_screen_list_ret.screen_list = [1]
-            mocked_screen_list.return_value = mocked_screen_list_ret
-            doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
-            doc.presentation = MagicMock()
-            doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
-            doc.presentation.Application.Version = 14.0
-            doc.get_slide_number = MagicMock()
-            doc.get_slide_number.return_value = 2
-            doc.index_map[1] = 1
-            doc.blank_slide = 1
-            doc.blank_click = 1
 
-            # WHEN: Calling goto_slide
-            doc.unblank_screen()
+def test_unblank_screen():
+    """
+    Test that unblank_screen works as expected
+    """
+    # GIVEN: A Document with mocked controller, presentation, ScreenList, and mocked function get_slide_number
+    with patch('openlp.plugins.presentations.lib.powerpointcontroller.ScreenList') as mocked_screen_list:
+        mocked_screen_list_ret = MagicMock()
+        mocked_screen_list_ret.screen_list = [1]
+        mocked_screen_list.return_value = mocked_screen_list_ret
+        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
+        doc.presentation = MagicMock()
+        doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
+        doc.presentation.Application.Version = 14.0
+        doc.get_slide_number = MagicMock()
+        doc.get_slide_number.return_value = 2
+        doc.index_map[1] = 1
+        doc.blank_slide = 1
+        doc.blank_click = 1
 
-            # THEN: The view state have new value, and several function should have been called
-            assert doc.presentation.SlideShowWindow.View.State == 1, 'The View State should be 1'
-            assert doc.presentation.SlideShowWindow.Activate.called is True, \
-                'SlideShowWindow.Activate should have been called'
-            assert doc.presentation.SlideShowWindow.View.GotoSlide.called is True, \
-                'View.GotoSlide should have been called because of the PowerPoint version'
-            assert doc.presentation.SlideShowWindow.View.GotoClick.called is True, \
-                'View.GotoClick should have been called because of the PowerPoint version'
+        # WHEN: Calling goto_slide
+        doc.unblank_screen()
+
+        # THEN: The view state have new value, and several function should have been called
+        assert doc.presentation.SlideShowWindow.View.State == 1, 'The View State should be 1'
+        assert doc.presentation.SlideShowWindow.Activate.called is True, \
+            'SlideShowWindow.Activate should have been called'
+        assert doc.presentation.SlideShowWindow.View.GotoSlide.called is True, \
+            'View.GotoSlide should have been called because of the PowerPoint version'
+        assert doc.presentation.SlideShowWindow.View.GotoClick.called is True, \
+            'View.GotoClick should have been called because of the PowerPoint version'

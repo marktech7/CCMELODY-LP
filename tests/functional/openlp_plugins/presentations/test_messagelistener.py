@@ -21,129 +21,108 @@
 """
 This module contains tests for the lib submodule of the Presentations plugin.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.mediaitem import MessageListener, PresentationMediaItem
 from openlp.plugins.presentations.lib.messagelistener import Controller
-from tests.helpers.testmixin import TestMixin
 
 
-class TestMessageListener(TestCase, TestMixin):
+@patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
+def test_start_presentation(media_mock, media_item):
     """
-    Test the Presentation Message Listener.
+    Find and chose a controller to play a presentations.
     """
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        Registry.create()
-        Registry().register('service_manager', MagicMock())
-        Registry().register('main_window', MagicMock())
-        with patch('openlp.plugins.presentations.lib.mediaitem.MediaManagerItem._setup'), \
-                patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item'):
-            self.media_item = PresentationMediaItem(None, MagicMock, MagicMock())
+    # GIVEN: A single controller and service item wanting to use the controller
+    mock_item = MagicMock()
+    mock_item.processor = 'Powerpoint'
+    mock_item.get_frame_path.return_value = "test.ppt"
+    media_item.automatic = False
+    mocked_controller = MagicMock()
+    mocked_controller.available = True
+    mocked_controller.supports = ['ppt']
+    controllers = {
+        'Powerpoint': mocked_controller
+    }
+    ml = MessageListener(media_item)
+    ml.media_item = media_item
+    ml.controllers = controllers
+    ml.preview_handler = MagicMock()
+    ml.timer = MagicMock()
 
-    @patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
-    def test_start_presentation(self, media_mock):
-        """
-        Find and chose a controller to play a presentations.
-        """
-        # GIVEN: A single controller and service item wanting to use the controller
-        mock_item = MagicMock()
-        mock_item.processor = 'Powerpoint'
-        mock_item.get_frame_path.return_value = "test.ppt"
-        self.media_item.automatic = False
-        mocked_controller = MagicMock()
-        mocked_controller.available = True
-        mocked_controller.supports = ['ppt']
-        controllers = {
-            'Powerpoint': mocked_controller
-        }
-        ml = MessageListener(self.media_item)
-        ml.media_item = self.media_item
-        ml.controllers = controllers
-        ml.preview_handler = MagicMock()
-        ml.timer = MagicMock()
+    # WHEN: request the presentation to start
+    ml.startup([mock_item, False, False, False])
 
-        # WHEN: request the presentation to start
-        ml.startup([mock_item, False, False, False])
-
-        # THEN: The controllers will be setup.
-        assert len(controllers) > 0, 'We have loaded a controller'
-
-    @patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
-    def test_start_presentation_with_no_player(self, media_mock):
-        """
-        Find and chose a controller to play a presentations when the player is not available.
-        """
-        # GIVEN: A single controller and service item wanting to use the controller
-        mock_item = MagicMock()
-        mock_item.processor = 'Powerpoint'
-        mock_item.get_frame_path.return_value = "test.ppt"
-        self.media_item.automatic = False
-        mocked_controller = MagicMock()
-        mocked_controller.available = True
-        mocked_controller.supports = ['ppt']
-        mocked_controller1 = MagicMock()
-        mocked_controller1.available = False
-        mocked_controller1.supports = ['ppt']
-        controllers = {
-            'Impress': mocked_controller,
-            'Powerpoint': mocked_controller1
-        }
-        ml = MessageListener(self.media_item)
-        ml.media_item = self.media_item
-        ml.controllers = controllers
-        ml.preview_handler = MagicMock()
-        ml.timer = MagicMock()
-
-        # WHEN: request the presentation to start
-        ml.startup([mock_item, False, False, False])
-
-        # THEN: The controllers will be setup.
-        assert len(controllers) > 0, 'We have loaded a controller'
-
-    @patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
-    def test_start_pdf_presentation(self, media_mock):
-        """
-        Test the startup of pdf presentation succeed.
-        """
-        # GIVEN: A sservice item with a pdf
-        mock_item = MagicMock()
-        mock_item.processor = 'Pdf'
-        mock_item.get_frame_path.return_value = "test.pdf"
-        self.media_item.generate_slide_data = MagicMock()
-        ml = MessageListener(self.media_item)
-        ml.media_item = self.media_item
-        ml.preview_handler = MagicMock()
-
-        # WHEN: request the presentation to start
-        ml.startup([mock_item, False, False, False])
-
-        # THEN: The handler should be set to None
-        assert ml.handler is None, 'The handler should be None'
+    # THEN: The controllers will be setup.
+    assert len(controllers) > 0, 'We have loaded a controller'
 
 
-class TestController(TestCase, TestMixin):
+@patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
+def test_start_presentation_with_no_player(media_mock, media_item):
     """
-    Test the Presentation Controller.
+    Find and chose a controller to play a presentations when the player is not available.
     """
+    # GIVEN: A single controller and service item wanting to use the controller
+    mock_item = MagicMock()
+    mock_item.processor = 'Powerpoint'
+    mock_item.get_frame_path.return_value = "test.ppt"
+    media_item.automatic = False
+    mocked_controller = MagicMock()
+    mocked_controller.available = True
+    mocked_controller.supports = ['ppt']
+    mocked_controller1 = MagicMock()
+    mocked_controller1.available = False
+    mocked_controller1.supports = ['ppt']
+    controllers = {
+        'Impress': mocked_controller,
+        'Powerpoint': mocked_controller1
+    }
+    ml = MessageListener(media_item)
+    ml.media_item = media_item
+    ml.controllers = controllers
+    ml.preview_handler = MagicMock()
+    ml.timer = MagicMock()
 
-    def test_add_handler_failure(self):
-        """
-        Test that add_handler does set doc.slidenumber to 0 in case filed loading
-        """
-        # GIVEN: A Controller, a mocked doc-controller
-        controller = Controller(True)
-        mocked_doc_controller = MagicMock()
-        mocked_doc = MagicMock()
-        mocked_doc.load_presentation.return_value = False
-        mocked_doc_controller.add_document.return_value = mocked_doc
+    # WHEN: request the presentation to start
+    ml.startup([mock_item, False, False, False])
 
-        # WHEN: calling add_handler that fails
-        controller.add_handler(mocked_doc_controller, MagicMock(), True, 0)
+    # THEN: The controllers will be setup.
+    assert len(controllers) > 0, 'We have loaded a controller'
 
-        # THEN: slidenumber should be 0
-        assert controller.doc.slidenumber == 0, 'doc.slidenumber should be 0'
+
+@patch('openlp.plugins.presentations.lib.mediaitem.MessageListener._setup')
+def test_start_pdf_presentation(media_mock, media_item):
+    """
+    Test the startup of pdf presentation succeed.
+    """
+    # GIVEN: A sservice item with a pdf
+    mock_item = MagicMock()
+    mock_item.processor = 'Pdf'
+    mock_item.get_frame_path.return_value = "test.pdf"
+    media_item.generate_slide_data = MagicMock()
+    ml = MessageListener(media_item)
+    ml.media_item = media_item
+    ml.preview_handler = MagicMock()
+
+    # WHEN: request the presentation to start
+    ml.startup([mock_item, False, False, False])
+
+    # THEN: The handler should be set to None
+    assert ml.handler is None, 'The handler should be None'
+
+
+def test_add_handler_failure():
+    """
+    Test that add_handler does set doc.slidenumber to 0 in case filed loading
+    """
+    # GIVEN: A Controller, a mocked doc-controller
+    controller = Controller(True)
+    mocked_doc_controller = MagicMock()
+    mocked_doc = MagicMock()
+    mocked_doc.load_presentation.return_value = False
+    mocked_doc_controller.add_document.return_value = mocked_doc
+
+    # WHEN: calling add_handler that fails
+    controller.add_handler(mocked_doc_controller, MagicMock(), True, 0)
+
+    # THEN: slidenumber should be 0
+    assert controller.doc.slidenumber == 0, 'doc.slidenumber should be 0'
