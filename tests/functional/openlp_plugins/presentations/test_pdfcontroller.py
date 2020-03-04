@@ -45,7 +45,7 @@ def pdf_env(settings, mock_plugin):
     desktop.primaryScreen.return_value = SCREEN['primary']
     desktop.screenCount.return_value = SCREEN['number']
     desktop.screenGeometry.return_value = SCREEN['size']
-    screens = ScreenList.create(desktop)
+    ScreenList.create(desktop)
     yield settings, mock_plugin, temp_folder_path, thumbnail_folder_path
     rmtree(thumbnail_folder_path)
     rmtree(temp_folder_path)

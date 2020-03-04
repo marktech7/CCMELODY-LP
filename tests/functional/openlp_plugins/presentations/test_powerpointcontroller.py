@@ -21,27 +21,24 @@
 """
 Functional tests to test the PowerPointController class and related methods.
 """
-import os
-import shutil
-from tempfile import mkdtemp
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common import is_win
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument, \
     _get_text_from_shapes
-from tests.helpers.testmixin import TestMixin
-from tests.utils.constants import TEST_RESOURCES_PATH
 
 
 if is_win():
     import pywintypes
 
-__default_settings__ = {
-    'presentations/powerpoint slide click advance': True
-}
+
+@pytest.fixture()
+def get_thumbnail_folder(settings):
+    gtf = patch('openlp.plugins.presentations.lib.powerpointcontroller.PresentationDocument._setup')
+    yield gtf.start()
+    gtf.stop()
 
 
 def test_constructor(settings, mock_plugin):
@@ -58,201 +55,148 @@ def test_constructor(settings, mock_plugin):
     assert 'Powerpoint' == controller.name, 'The name of the presentation controller should be correct'
 
 
-class TestPowerpointDocument(TestCase, TestMixin):
+def test_show_error_msg():
     """
-    Test the PowerpointDocument Class
+    Test the PowerpointDocument.show_error_msg() method gets called on com exception
     """
+    if is_win():
+        # GIVEN: A PowerpointDocument with mocked controller and presentation
+        with patch('openlp.plugins.presentations.lib.powerpointcontroller.critical_error_message_box') as \
+                mocked_critical_error_message_box:
+            instance = PowerpointDocument(MagicMock(), MagicMock())
+            instance.presentation = MagicMock()
+            instance.presentation.SlideShowWindow.View.GotoSlide = MagicMock(side_effect=pywintypes.com_error('1'))
+            instance.index_map[42] = 42
 
-    def setUp(self):
-        """
-        Set up the patches and mocks need for all tests.
-        """
-        Registry.create()
-        Registry().register('settings', Settings())
-        self.setup_application()
-        self.build_settings()
-        self.mock_plugin = MagicMock()
-        self.temp_folder = mkdtemp()
-        self.mock_plugin.settings_section = self.temp_folder
-        self.powerpoint_document_stop_presentation_patcher = patch(
-            'openlp.plugins.presentations.lib.powerpointcontroller.PowerpointDocument.stop_presentation')
-        self.presentation_document_get_temp_folder_patcher = patch(
-            'openlp.plugins.presentations.lib.powerpointcontroller.PresentationDocument.get_temp_folder')
-        self.presentation_document_setup_patcher = patch(
-            'openlp.plugins.presentations.lib.powerpointcontroller.PresentationDocument._setup')
-        self.mock_powerpoint_document_stop_presentation = self.powerpoint_document_stop_presentation_patcher.start()
-        self.mock_presentation_document_get_temp_folder = self.presentation_document_get_temp_folder_patcher.start()
-        self.mock_presentation_document_setup = self.presentation_document_setup_patcher.start()
-        self.mock_controller = MagicMock()
-        self.mock_presentation = MagicMock()
-        self.mock_presentation_document_get_temp_folder.return_value = 'temp folder'
-        self.file_name = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.pptx')
-        self.real_controller = PowerpointController(self.mock_plugin)
-        Settings().extend_default_settings(__default_settings__)
+            # WHEN: Calling goto_slide which will throw an exception
+            instance.goto_slide(42)
 
-    def tearDown(self):
-        """
-        Stop the patches
-        """
-        self.powerpoint_document_stop_presentation_patcher.stop()
-        self.presentation_document_get_temp_folder_patcher.stop()
-        self.presentation_document_setup_patcher.stop()
-        self.destroy_settings()
-        shutil.rmtree(self.temp_folder)
-
-    def test_show_error_msg(self):
-        """
-        Test the PowerpointDocument.show_error_msg() method gets called on com exception
-        """
-        if is_win():
-            # GIVEN: A PowerpointDocument with mocked controller and presentation
-            with patch('openlp.plugins.presentations.lib.powerpointcontroller.critical_error_message_box') as \
-                    mocked_critical_error_message_box:
-                instance = PowerpointDocument(self.mock_controller, self.mock_presentation)
-                instance.presentation = MagicMock()
-                instance.presentation.SlideShowWindow.View.GotoSlide = MagicMock(side_effect=pywintypes.com_error('1'))
-                instance.index_map[42] = 42
-
-                # WHEN: Calling goto_slide which will throw an exception
-                instance.goto_slide(42)
-
-                # THEN: mocked_critical_error_message_box should have been called
-                mocked_critical_error_message_box.assert_called_with('Error', 'An error occurred in the PowerPoint '
-                                                                     'integration and the presentation will be stopped.'
-                                                                     ' Restart the presentation if you wish to '
-                                                                     'present it.')
-
-    # add _test to the following if necessary
-    def verify_loading_document(self):
-        """
-        Test loading a document in PowerPoint
-        """
-        if is_win() and self.real_controller.check_available():
-            # GIVEN: A PowerpointDocument and a presentation
-            doc = PowerpointDocument(self.real_controller, self.file_name)
-
-            # WHEN: loading the filename
-            doc.load_presentation()
-            result = doc.is_loaded()
-
-            # THEN: result should be true
-            assert result is True, 'The result should be True'
-        else:
-            self.skipTest('Powerpoint not available, skipping test.')
-
-    def test_create_titles_and_notes(self):
-        """
-        Test creating the titles from PowerPoint
-        """
-        # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
-        self.doc = PowerpointDocument(self.mock_controller, self.file_name)
-        self.doc.get_slide_count = MagicMock()
-        self.doc.get_slide_count.return_value = 2
-        self.doc.index_map = {1: 1, 2: 2}
-        self.doc.save_titles_and_notes = MagicMock()
-        self.doc._PowerpointDocument__get_text_from_shapes = MagicMock()
-        slide = MagicMock()
-        slide.Shapes.Title.TextFrame.TextRange.Text = 'SlideText'
-        pres = MagicMock()
-        pres.Slides = MagicMock(side_effect=[slide, slide])
-        self.doc.presentation = pres
-
-        # WHEN reading the titles and notes
-        self.doc.create_titles_and_notes()
-
-        # THEN the save should have been called exactly once with 2 titles and 2 notes
-        self.doc.save_titles_and_notes.assert_called_once_with(['SlideText', 'SlideText'], [' ', ' '])
-
-    def test_create_titles_and_notes_with_no_slides(self):
-        """
-        Test creating the titles from PowerPoint when it returns no slides
-        """
-        # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
-        doc = PowerpointDocument(self.mock_controller, self.file_name)
-        doc.save_titles_and_notes = MagicMock()
-        doc._PowerpointDocument__get_text_from_shapes = MagicMock()
-        pres = MagicMock()
-        pres.Slides = []
-        doc.presentation = pres
-
-        # WHEN reading the titles and notes
-        doc.create_titles_and_notes()
-
-        # THEN the save should have been called exactly once with empty titles and notes
-        doc.save_titles_and_notes.assert_called_once_with([], [])
-
-    def test_get_text_from_shapes(self):
-        """
-        Test getting text from powerpoint shapes
-        """
-        # GIVEN: mocked shapes
-        shape = MagicMock()
-        shape.PlaceholderFormat.Type = 2
-        shape.HasTextFrame = shape.TextFrame.HasText = True
-        shape.TextFrame.TextRange.Text = 'slideText'
-        shapes = [shape, shape]
-
-        # WHEN: getting the text
-        result = _get_text_from_shapes(shapes)
-
-        # THEN: it should return the text
-        assert result == 'slideText\nslideText\n', 'result should match \'slideText\nslideText\n\''
-
-    def test_get_text_from_shapes_with_no_shapes(self):
-        """
-        Test getting text from powerpoint shapes with no shapes
-        """
-        # GIVEN: empty shapes array
-        shapes = []
-
-        # WHEN: getting the text
-        result = _get_text_from_shapes(shapes)
-
-        # THEN: it should not fail but return empty string
-        assert result == '', 'result should be empty'
-
-    def test_goto_slide(self):
-        """
-        Test that goto_slide goes to next effect if the slide is already displayed
-        """
-        # GIVEN: A Document with mocked controller, presentation, and mocked functions get_slide_number and next_step
-        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
-        doc.presentation = MagicMock()
-        doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 1
-        doc.presentation.SlideShowWindow.View.GetClickCount.return_value = 2
-        doc.get_slide_number = MagicMock()
-        doc.get_slide_number.return_value = 1
-        doc.next_step = MagicMock()
-        doc.index_map[1] = 1
-
-        # WHEN: Calling goto_slide
-        doc.goto_slide(1)
-
-        # THEN: next_step() should be call to try to advance to the next effect.
-        assert doc.next_step.called is True, 'next_step() should have been called!'
-
-    def test_blank_screen(self):
-        """
-        Test that blank_screen works as expected
-        """
-        # GIVEN: A Document with mocked controller, presentation, and mocked function get_slide_number
-        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
-        doc.presentation = MagicMock()
-        doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
-        doc.presentation.Application.Version = 14.0
-        doc.get_slide_number = MagicMock()
-        doc.get_slide_number.return_value = 2
-
-        # WHEN: Calling goto_slide
-        doc.blank_screen()
-
-        # THEN: The view state, doc.blank_slide and doc.blank_click should have new values
-        assert doc.presentation.SlideShowWindow.View.State == 3, 'The View State should be 3'
-        assert doc.blank_slide == 2, 'doc.blank_slide should be 2 because of the PowerPoint version'
-        assert doc.blank_click == 3, 'doc.blank_click should be 3 because of the PowerPoint version'
+            # THEN: mocked_critical_error_message_box should have been called
+            mocked_critical_error_message_box.assert_called_with('Error', 'An error occurred in the PowerPoint '
+                                                                 'integration and the presentation will be stopped.'
+                                                                 ' Restart the presentation if you wish to '
+                                                                 'present it.')
 
 
-def test_unblank_screen():
+def test_create_titles_and_notes(get_thumbnail_folder):
+    """
+    Test creating the titles from PowerPoint
+    """
+    # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
+    doc = PowerpointDocument(MagicMock(), MagicMock())
+    doc.get_slide_count = MagicMock()
+    doc.get_slide_count.return_value = 2
+    doc.index_map = {1: 1, 2: 2}
+    doc.save_titles_and_notes = MagicMock()
+    doc._PowerpointDocument__get_text_from_shapes = MagicMock()
+    slide = MagicMock()
+    slide.Shapes.Title.TextFrame.TextRange.Text = 'SlideText'
+    pres = MagicMock()
+    pres.Slides = MagicMock(side_effect=[slide, slide])
+    doc.presentation = pres
+
+    # WHEN reading the titles and notes
+    doc.create_titles_and_notes()
+
+    # THEN the save should have been called exactly once with 2 titles and 2 notes
+    doc.save_titles_and_notes.assert_called_once_with(['SlideText', 'SlideText'], [' ', ' '])
+
+
+def test_create_titles_and_notes_with_no_slides(get_thumbnail_folder):
+    """
+    Test creating the titles from PowerPoint when it returns no slides
+    """
+    # GIVEN: mocked save_titles_and_notes, _get_text_from_shapes and two mocked slides
+    doc = PowerpointDocument(MagicMock(), MagicMock())
+    doc.save_titles_and_notes = MagicMock()
+    doc._PowerpointDocument__get_text_from_shapes = MagicMock()
+    pres = MagicMock()
+    pres.Slides = []
+    doc.presentation = pres
+
+    # WHEN reading the titles and notes
+    doc.create_titles_and_notes()
+
+    # THEN the save should have been called exactly once with empty titles and notes
+    doc.save_titles_and_notes.assert_called_once_with([], [])
+
+
+def test_get_text_from_shapes():
+    """
+    Test getting text from powerpoint shapes
+    """
+    # GIVEN: mocked shapes
+    shape = MagicMock()
+    shape.PlaceholderFormat.Type = 2
+    shape.HasTextFrame = shape.TextFrame.HasText = True
+    shape.TextFrame.TextRange.Text = 'slideText'
+    shapes = [shape, shape]
+
+    # WHEN: getting the text
+    result = _get_text_from_shapes(shapes)
+
+    # THEN: it should return the text
+    assert result == 'slideText\nslideText\n', 'result should match \'slideText\nslideText\n\''
+
+
+def test_get_text_from_shapes_with_no_shapes():
+    """
+    Test getting text from powerpoint shapes with no shapes
+    """
+    # GIVEN: empty shapes array
+    shapes = []
+
+    # WHEN: getting the text
+    result = _get_text_from_shapes(shapes)
+
+    # THEN: it should not fail but return empty string
+    assert result == '', 'result should be empty'
+
+
+def test_goto_slide(get_thumbnail_folder):
+    """
+    Test that goto_slide goes to next effect if the slide is already displayed
+    """
+    # GIVEN: A Document with mocked controller, presentation, and mocked functions get_slide_number and next_step
+    Registry().get('settings').setValue('presentations/powerpoint slide click advance', True)
+    doc = PowerpointDocument(MagicMock(), MagicMock())
+    doc.presentation = MagicMock()
+    doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 1
+    doc.presentation.SlideShowWindow.View.GetClickCount.return_value = 2
+    doc.get_slide_number = MagicMock()
+    doc.get_slide_number.return_value = 1
+    doc.next_step = MagicMock()
+    doc.index_map[1] = 1
+
+    # WHEN: Calling goto_slide
+    doc.goto_slide(1)
+
+    # THEN: next_step() should be call to try to advance to the next effect.
+    assert doc.next_step.called is True, 'next_step() should have been called!'
+
+
+def test_blank_screen(get_thumbnail_folder):
+    """
+    Test that blank_screen works as expected
+    """
+    # GIVEN: A Document with mocked controller, presentation, and mocked function get_slide_number
+    doc = PowerpointDocument(MagicMock(), MagicMock())
+    doc.presentation = MagicMock()
+    doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
+    doc.presentation.Application.Version = 14.0
+    doc.get_slide_number = MagicMock()
+    doc.get_slide_number.return_value = 2
+
+    # WHEN: Calling goto_slide
+    doc.blank_screen()
+
+    # THEN: The view state, doc.blank_slide and doc.blank_click should have new values
+    assert doc.presentation.SlideShowWindow.View.State == 3, 'The View State should be 3'
+    assert doc.blank_slide == 2, 'doc.blank_slide should be 2 because of the PowerPoint version'
+    assert doc.blank_click == 3, 'doc.blank_click should be 3 because of the PowerPoint version'
+
+
+def test_unblank_screen(get_thumbnail_folder):
     """
     Test that unblank_screen works as expected
     """
@@ -261,7 +205,7 @@ def test_unblank_screen():
         mocked_screen_list_ret = MagicMock()
         mocked_screen_list_ret.screen_list = [1]
         mocked_screen_list.return_value = mocked_screen_list_ret
-        doc = PowerpointDocument(self.mock_controller, self.mock_presentation)
+        doc = PowerpointDocument(MagicMock(), MagicMock())
         doc.presentation = MagicMock()
         doc.presentation.SlideShowWindow.View.GetClickIndex.return_value = 3
         doc.presentation.Application.Version = 14.0
