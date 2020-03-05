@@ -1330,7 +1330,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         for item_count, item in enumerate(self.service_items):
             if item['service_item'].edit_id == new_item.edit_id and item['service_item'].name == new_item.name:
-                new_item.create_slides()
                 new_item.merge(item['service_item'])
                 item['service_item'] = new_item
                 self.repaint_service_list(item_count + 1, 0)
