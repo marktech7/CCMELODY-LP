@@ -20,18 +20,18 @@
 ##########################################################################
 
 import logging
+import re
 
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.plugins.media.forms.streamselectordialog import Ui_StreamSelector
-from openlp.core.ui.media import parse_devicestream_path
-from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.common.i18n import translate
+from openlp.core.ui.media import parse_stream_path
+from openlp.plugins.media.forms import StreamSelectorFormBase
 
 log = logging.getLogger(__name__)
 
 
-class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
+class StreamSelectorForm(StreamSelectorFormBase, Ui_StreamSelector):
     """
     Class to manage the clip selection
     """
@@ -41,52 +41,13 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         """
         Constructor
         """
-        super(StreamSelectorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
-                                                 QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
-        self.callback = callback
-        self.theme_stream = theme_stream
+        super(StreamSelectorForm, self).__init__(parent, callback, theme_stream)
+        self.type = 'devicestream'
         self.setup_ui(self)
         # setup callbacks
         for i in range(self.stacked_modes_layout.count()):
             self.stacked_modes_layout.widget(i).set_callback(self.update_mrl_options)
         self.stacked_modes_layout.currentWidget().update_mrl()
-
-    def exec(self):
-        """
-        Start dialog
-        """
-        return QtWidgets.QDialog.exec(self)
-
-    def accept(self):
-        """
-        Saves the current stream as a clip to the mediamanager
-        """
-        log.debug('in StreamSelectorForm.accept')
-        if not self.theme_stream:
-            # Verify that a stream name exists
-            if not self.stream_name_edit.text().strip():
-                critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A Stream name is needed.'))
-                return
-            stream_name = self.stream_name_edit.text().strip()
-        else:
-            stream_name = ' '
-        # Verify that a MRL exists
-        if not self.mrl_lineedit.text().strip():
-            critical_error_message_box(message=translate('MediaPlugin.StreamSelector', 'A MRL is needed.'), parent=self)
-            return
-        stream_string = 'devicestream:{name}&&{mrl}&&{options}'.format(name=stream_name,
-                                                                       mrl=self.mrl_lineedit.text().strip(),
-                                                                       options=self.vlc_options_lineedit.text().strip())
-        self.callback(stream_string)
-        return QtWidgets.QDialog.accept(self)
-
-    def update_mrl_options(self, mrl, options):
-        """
-        Callback method used to fill the MRL and Options text fields
-        """
-        options += ' :live-caching={cache}'.format(cache=self.caching.value())
-        self.mrl_lineedit.setText(mrl)
-        self.vlc_options_lineedit.setText(options)
 
     def on_capture_mode_combo_box(self):
         self.stacked_modes_layout.setCurrentIndex(self.capture_mode_combo_box.currentIndex())
@@ -97,12 +58,14 @@ class StreamSelectorForm(QtWidgets.QDialog, Ui_StreamSelector):
         Setup the stream widgets based on the saved devicestream. This is best effort as the string is
         editable for the user.
         """
-        (name, mrl, options) = parse_devicestream_path(device_stream_str)
+        (name, mrl, options) = parse_stream_path(device_stream_str)
         for i in range(self.stacked_modes_layout.count()):
             if self.stacked_modes_layout.widget(i).has_support_for_mrl(mrl, options):
                 self.stacked_modes_layout.setCurrentIndex(i)
                 self.stacked_modes_layout.widget(i).set_mrl(mrl, options)
                 break
-
-        self.mrl_lineedit.setText(mrl)
-        self.vlc_options_lineedit.setText(options)
+        cache = re.search(r'live-caching=(\d+)', options)
+        if cache:
+            self.more_options_group.caching.setValue(int(cache.group(1)))
+        self.more_options_group.mrl_lineedit.setText(mrl)
+        self.more_options_group.vlc_options_lineedit.setText(options)

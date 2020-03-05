@@ -37,6 +37,7 @@ from openlp.core.ui.media.vlcplayer import get_vlc
 
 if get_vlc() is not None:
     from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
+    from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
 
 
 class BackgroundPage(GridLayoutPage):
@@ -130,11 +131,16 @@ class BackgroundPage(GridLayoutPage):
         self.stream_lineedit.setObjectName('stream_lineedit')
         self.stream_lineedit.setReadOnly(True)
         self.stream_layout.addWidget(self.stream_lineedit)
-        # button to open select stream forms
-        self.stream_select_button = QtWidgets.QToolButton(self)
-        self.stream_select_button.setObjectName('stream_select_button')
-        self.stream_select_button.setIcon(UiIcons().device_stream)
-        self.stream_layout.addWidget(self.stream_select_button)
+        # button to open select device stream form
+        self.device_stream_select_button = QtWidgets.QToolButton(self)
+        self.device_stream_select_button.setObjectName('device_stream_select_button')
+        self.device_stream_select_button.setIcon(UiIcons().device_stream)
+        self.stream_layout.addWidget(self.device_stream_select_button)
+        # button to open select network stream form
+        self.network_stream_select_button = QtWidgets.QToolButton(self)
+        self.network_stream_select_button.setObjectName('network_stream_select_button')
+        self.network_stream_select_button.setIcon(UiIcons().network_stream)
+        self.stream_layout.addWidget(self.network_stream_select_button)
         self.layout.addLayout(self.stream_layout, 6, 1, 1, 3)
         self.stream_color_label = FormLabel(self)
         self.stream_color_label.setObjectName('stream_color_label')
@@ -143,14 +149,15 @@ class BackgroundPage(GridLayoutPage):
         self.stream_color_button.color = '#000000'
         self.stream_color_button.setObjectName('stream_color_button')
         self.layout.addWidget(self.stream_color_button, 7, 1)
-        self.stream_widgets = [self.stream_label, self.stream_lineedit, self.stream_select_button,
+        self.stream_widgets = [self.stream_label, self.stream_lineedit, self.device_stream_select_button,
                                self.stream_color_label, self.stream_color_button]
         # Force everything up
         self.layout_spacer = QtWidgets.QSpacerItem(1, 1)
         self.layout.addItem(self.layout_spacer, 8, 0, 1, 4)
         # Connect slots
         self.background_combo_box.currentIndexChanged.connect(self._on_background_type_index_changed)
-        self.stream_select_button.clicked.connect(self._on_stream_select_button_triggered)
+        self.device_stream_select_button.clicked.connect(self._on_device_stream_select_button_triggered)
+        self.network_stream_select_button.clicked.connect(self._on_network_stream_select_button_triggered)
         # Force the first set of widgets to show
         self._on_background_type_index_changed(0)
 
@@ -208,7 +215,7 @@ class BackgroundPage(GridLayoutPage):
             for widget in widget_sets[index]:
                 widget.show()
 
-    def _on_stream_select_button_triggered(self):
+    def _on_device_stream_select_button_triggered(self):
         """
         Open the Stream selection form.
         """
@@ -221,6 +228,20 @@ class BackgroundPage(GridLayoutPage):
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
                                        translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
+
+    def _on_network_stream_select_button_triggered(self):
+        """
+        Open the Stream selection form.
+        """
+        if get_vlc():
+            stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
+            if self.stream_lineedit.text():
+                stream_selector_form.set_mrl(self.stream_lineedit.text())
+            stream_selector_form.exec()
+            del stream_selector_form
+        else:
+            critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
+                                       translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
 
     def set_stream(self, stream_str):
         """

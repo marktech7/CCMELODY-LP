@@ -99,6 +99,7 @@ class UiIcons(metaclass=Singleton):
             'media': {'icon': 'fa.fax'},
             'minus': {'icon': 'fa.minus'},
             'music': {'icon': 'fa.music'},
+            'network_stream': {'icon': 'fa.link'},
             'new': {'icon': 'fa.file'},
             'new_group': {'icon': 'fa.folder'},
             'notes': {'icon': 'fa.sticky-note'},
