@@ -21,14 +21,13 @@
 """
 This module contains tests for the lib submodule of the Images plugin.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.songstab import SongsTab
-from tests.helpers.testmixin import TestMixin
 
 __default_settings__ = {
     'songs/footer template': """${title}""",
@@ -36,175 +35,167 @@ __default_settings__ = {
 }
 
 
-class TestSongTab(TestCase, TestMixin):
+@pytest.fixture()
+def form(settings):
+    Registry().register('settings_form', MagicMock())
+    Registry().get('settings').extend_default_settings(__default_settings__)
+    frm = SongsTab(None, 'Songs', None, None)
+    frm.settings_form.register_post_process = MagicMock()
+    return frm
+
+
+def test_german_notation_on_load(form):
     """
-    This is a test case to test various methods in the ImageTab.
+    Test the corrent notation is selected on load
     """
+    # GIVEN: German notation in the settings
+    form.settings.setValue('songs/chord notation', 'german')
+    # WHEN: Load is invoked
+    form.load()
+    # THEN: The german radio button should be checked
+    assert form.german_notation_radio_button.isChecked() is True
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        Registry().register('settings_form', MagicMock())
-        self.setup_application()
-        self.build_settings()
-        Registry().register('settings', self.setting)
-        self.setting.extend_default_settings(__default_settings__)
-        self.parent = QtWidgets.QMainWindow()
-        self.form = SongsTab(self.parent, 'Songs', None, None)
-        self.form.settings_form.register_post_process = MagicMock()
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.parent
-        del self.form
-        self.destroy_settings()
+def test_neolatin_notation_on_load(form):
+    """
+    Test the corrent notation is selected on load
+    """
+    # GIVEN: neo-latin notation in the settings
+    form.settings.setValue('songs/chord notation', 'neo-latin')
+    # WHEN: Load is invoked
+    form.load()
+    # THEN: The neo-latin radio button should be checked
+    assert form.neolatin_notation_radio_button.isChecked() is True
 
-    def test_german_notation_on_load(self):
-        """
-        Test the corrent notation is selected on load
-        """
-        # GIVEN: German notation in the settings
-        self.setting.setValue('songs/chord notation', 'german')
-        # WHEN: Load is invoked
-        self.form.load()
-        # THEN: The german radio button should be checked
-        assert self.form.german_notation_radio_button.isChecked() is True
 
-    def test_neolatin_notation_on_load(self):
-        """
-        Test the corrent notation is selected on load
-        """
-        # GIVEN: neo-latin notation in the settings
-        self.setting.setValue('songs/chord notation', 'neo-latin')
-        # WHEN: Load is invoked
-        self.form.load()
-        # THEN: The neo-latin radio button should be checked
-        assert self.form.neolatin_notation_radio_button.isChecked() is True
+def test_invalid_notation_on_load(form):
+    """
+    Test the invalid notation in settings reverts to english
+    """
+    # GIVEN: gibberish notation in the settings
+    form.settings.setValue('songs/chord notation', 'gibberish')
+    # WHEN: Load is invoked
+    form.load()
+    # THEN: The english radio button should be checked
+    assert form.english_notation_radio_button.isChecked() is True
 
-    def test_invalid_notation_on_load(self):
-        """
-        Test the invalid notation in settings reverts to english
-        """
-        # GIVEN: gibberish notation in the settings
-        self.setting.setValue('songs/chord notation', 'gibberish')
-        # WHEN: Load is invoked
-        self.form.load()
-        # THEN: The english radio button should be checked
-        assert self.form.english_notation_radio_button.isChecked() is True
 
-    def test_save_check_box_settings(self):
-        """
-        Test check box options are correctly saved
-        """
-        # GIVEN: A arrangement of enabled/disabled check boxes
-        self.form.on_search_as_type_check_box_changed(QtCore.Qt.Unchecked)
-        self.form.on_tool_bar_active_check_box_changed(QtCore.Qt.Checked)
-        self.form.on_update_on_edit_check_box_changed(QtCore.Qt.Unchecked)
-        self.form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
-        self.form.on_songbook_slide_check_box_changed(QtCore.Qt.Unchecked)
-        self.form.on_mainview_chords_check_box_changed(QtCore.Qt.Checked)
-        self.form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
-        # WHEN: Save is invoked
-        self.form.save()
-        # THEN: The correct values should be stored in the settings
-        # song_search is currently unused
-        assert self.setting.value('songs/display songbar') is True
-        assert self.setting.value('songs/update service on edit') is False
-        assert self.setting.value('songs/add song from service') is True
-        assert self.setting.value('songs/add songbook slide') is False
-        assert self.setting.value('songs/mainview chords') is True
-        assert self.setting.value('songs/disable chords import') is False
+def test_save_check_box_settings(form):
+    """
+    Test check box options are correctly saved
+    """
+    # GIVEN: A arrangement of enabled/disabled check boxes
+    form.on_search_as_type_check_box_changed(QtCore.Qt.Unchecked)
+    form.on_tool_bar_active_check_box_changed(QtCore.Qt.Checked)
+    form.on_update_on_edit_check_box_changed(QtCore.Qt.Unchecked)
+    form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
+    form.on_songbook_slide_check_box_changed(QtCore.Qt.Unchecked)
+    form.on_mainview_chords_check_box_changed(QtCore.Qt.Checked)
+    form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
+    # WHEN: Save is invoked
+    form.save()
+    # THEN: The correct values should be stored in the settings
+    # song_search is currently unused
+    assert form.settings.value('songs/display songbar') is True
+    assert form.settings.value('songs/update service on edit') is False
+    assert form.settings.value('songs/add song from service') is True
+    assert form.settings.value('songs/add songbook slide') is False
+    assert form.settings.value('songs/mainview chords') is True
+    assert form.settings.value('songs/disable chords import') is False
 
-    def test_english_notation_button(self):
-        """
-        Test notation button clicked handler
-        """
-        # GIVEN: A normal song form
-        # WHEN: english notation clicked
-        self.form.on_english_notation_button_clicked()
-        # THEN: Chord notation should be correct
-        assert self.form.chord_notation == 'english'
 
-    def test_german_notation_button(self):
-        """
-        Test notation button clicked handler
-        """
-        # GIVEN: A normal song form
-        # WHEN: german notation clicked
-        self.form.on_german_notation_button_clicked()
-        # THEN: Chord notation should be correct
-        assert self.form.chord_notation == 'german'
+def test_english_notation_button(form):
+    """
+    Test notation button clicked handler
+    """
+    # GIVEN: A normal song form
+    # WHEN: english notation clicked
+    form.on_english_notation_button_clicked()
+    # THEN: Chord notation should be correct
+    assert form.chord_notation == 'english'
 
-    def test_neolatin_notation_button(self):
-        """
-        Test notation button clicked handler
-        """
-        # GIVEN: A normal song form
-        # WHEN: neolatin notation clicked
-        self.form.on_neolatin_notation_button_clicked()
-        # THEN: Chord notation should be correct
-        assert self.form.chord_notation == 'neo-latin'
 
-    @patch('openlp.core.common.settings.Settings.setValue')
-    def test_footer_nochange(self, mocked_settings_set_val):
-        """
-        Test the footer is not saved when not changed
-        """
-        # GIVEN: A normal song form
-        # WHEN: save is invoked
-        self.form.save()
-        # THEN: footer should not have been saved (one less call than the change test below)
-        assert mocked_settings_set_val.call_count == 8
+def test_german_notation_button(form):
+    """
+    Test notation button clicked handler
+    """
+    # GIVEN: A normal song form
+    # WHEN: german notation clicked
+    form.on_german_notation_button_clicked()
+    # THEN: Chord notation should be correct
+    assert form.chord_notation == 'german'
 
-    @patch('openlp.core.common.settings.Settings.setValue')
-    def test_footer_change(self, mocked_settings_set_val):
-        """
-        Test the footer is saved when changed
-        """
-        # GIVEN: Footer has changed
-        self.form.footer_edit_box.setPlainText('A new footer')
-        # WHEN: save is invoked
-        self.form.save()
-        # THEN: footer should have been saved (one more call to setValue than the nochange test)
-        assert mocked_settings_set_val.call_count == 9
-        assert self.form.footer_edit_box.toPlainText() == 'A new footer'
 
-    def test_footer_reset(self):
-        """
-        Test the footer is reset when reset clicked
-        """
-        # GIVEN: A default footer and different content in the edit box
-        self.setting.setValue('songs/footer template', 'hello')
-        self.form.footer_edit_box.setPlainText('A different footer')
-        # WHEN: reset is invoked
-        self.form.on_footer_reset_button_clicked()
-        # THEN: footer edit box should have been reset to the settings value
-        assert self.form.footer_edit_box.toPlainText() == self.setting.get_default_value('songs/footer template')
+def test_neolatin_notation_button(form):
+    """
+    Test notation button clicked handler
+    """
+    # GIVEN: A normal song form
+    # WHEN: neolatin notation clicked
+    form.on_neolatin_notation_button_clicked()
+    # THEN: Chord notation should be correct
+    assert form.chord_notation == 'neo-latin'
 
-    def test_save_tab_nochange(self):
-        """
-        Test no changes does not trigger post processing
-        """
-        # GIVEN: No changes on the form.
-        self.initial_color = '#999999'
-        # WHEN: the save is invoked
-        self.form.save()
-        # THEN: the post process should not be requested
-        assert 0 == self.form.settings_form.register_post_process.call_count, \
-            'Songs Post processing should not have been requested'
 
-    def test_save_tab_change(self):
-        """
-        Test save after visiting the page triggers post processing.
-        """
-        # GIVEN: Form has been visited.
-        self.form.tab_visited = True
-        # WHEN: the save is invoked
-        self.form.save()
-        # THEN: the post process should be requested
-        assert 1 == self.form.settings_form.register_post_process.call_count, \
-            'Songs Post processing should have been requested'
+@patch('openlp.core.common.settings.Settings.setValue')
+def test_footer_nochange(mocked_settings_set_val, form):
+    """
+    Test the footer is not saved when not changed
+    """
+    # GIVEN: A normal song form
+    # WHEN: save is invoked
+    form.save()
+    # THEN: footer should not have been saved (one less call than the change test below)
+    assert mocked_settings_set_val.call_count == 8
+
+
+@patch('openlp.core.common.settings.Settings.setValue')
+def test_footer_change(mocked_settings_set_val, form):
+    """
+    Test the footer is saved when changed
+    """
+    # GIVEN: Footer has changed
+    form.footer_edit_box.setPlainText('A new footer')
+    # WHEN: save is invoked
+    form.save()
+    # THEN: footer should have been saved (one more call to setValue than the nochange test)
+    assert mocked_settings_set_val.call_count == 9
+    assert form.footer_edit_box.toPlainText() == 'A new footer'
+
+
+def test_footer_reset(form):
+    """
+    Test the footer is reset when reset clicked
+    """
+    # GIVEN: A default footer and different content in the edit box
+    form.settings.setValue('songs/footer template', 'hello')
+    form.footer_edit_box.setPlainText('A different footer')
+    # WHEN: reset is invoked
+    form.on_footer_reset_button_clicked()
+    # THEN: footer edit box should have been reset to the settings value
+    assert form.footer_edit_box.toPlainText() == form.settings.get_default_value('songs/footer template')
+
+
+def test_save_tab_nochange(form):
+    """
+    Test no changes does not trigger post processing
+    """
+    # GIVEN: No changes on the form.
+    # WHEN: the save is invoked
+    form.save()
+    # THEN: the post process should not be requested
+    assert 0 == form.settings_form.register_post_process.call_count, \
+        'Songs Post processing should not have been requested'
+
+
+def test_save_tab_change(form):
+    """
+    Test save after visiting the page triggers post processing.
+    """
+    # GIVEN: Form has been visited.
+    form.tab_visited = True
+    # WHEN: the save is invoked
+    form.save()
+    # THEN: the post process should be requested
+    assert 1 == form.settings_form.register_post_process.call_count, \
+        'Songs Post processing should have been requested'
