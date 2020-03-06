@@ -189,8 +189,8 @@ class BackgroundPage(GridLayoutPage):
         self.stream_label.setText('{text}:'.format(text=UiStrings().LiveStream))
         self.image_path_edit.filters = \
             '{name};;{text} (*)'.format(name=get_images_filter(), text=UiStrings().AllFiles)
-        visible_formats = '(*.{name})'.format(name='; *.'.join(VIDEO_EXT))
-        actual_formats = '(*.{name})'.format(name=' *.'.join(VIDEO_EXT))
+        visible_formats = '({name})'.format(name='; '.join(VIDEO_EXT))
+        actual_formats = '({name})'.format(name=' '.join(VIDEO_EXT))
         video_filter = '{trans} {visible} {actual}'.format(trans=translate('OpenLP', 'Video Files'),
                                                            visible=visible_formats, actual=actual_formats)
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
