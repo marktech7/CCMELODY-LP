@@ -30,7 +30,7 @@ from openlp.core.ui.firsttimeform import ThemeListWidgetItem
 from openlp.core.ui.icons import UiIcons
 
 sample_theme_data = {'file_name': 'BlueBurst.otz', 'sha256': 'sha_256_hash',
-                          'thumbnail': 'BlueBurst.png', 'title': 'Blue Burst'}
+                     'thumbnail': 'BlueBurst.png', 'title': 'Blue Burst'}
 
 
 @pytest.yield_fixture()
