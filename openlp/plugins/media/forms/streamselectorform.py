@@ -22,8 +22,6 @@
 import logging
 import re
 
-from PyQt5 import QtCore, QtWidgets
-
 from openlp.plugins.media.forms.streamselectordialog import Ui_StreamSelector
 from openlp.core.ui.media import parse_stream_path
 from openlp.plugins.media.forms import StreamSelectorFormBase

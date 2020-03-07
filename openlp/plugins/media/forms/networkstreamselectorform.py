@@ -21,9 +21,8 @@
 
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtWidgets
 
-from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.common.i18n import translate
 from openlp.plugins.media.forms import StreamSelectorFormBase, VLCOptionsWidget
 
@@ -80,4 +79,3 @@ class NetworkStreamSelectorForm(StreamSelectorFormBase):
 
     def on_updates(self):
         self.update_mrl_options(self.net_mrl_lineedit.text(), '')
-
