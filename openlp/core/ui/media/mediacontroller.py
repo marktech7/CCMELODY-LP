@@ -41,7 +41,7 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType, HideMode
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_devicestream_path, \
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path, \
     VIDEO_EXT, AUDIO_EXT
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
@@ -231,7 +231,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.file_info = service_item.background_audio
         else:
             if service_item.is_capable(ItemCapabilities.HasBackgroundStream):
-                (name, mrl, options) = parse_devicestream_path(service_item.stream_mrl)
+                (name, mrl, options) = parse_stream_path(service_item.stream_mrl)
                 controller.media_info.file_info = (mrl, options)
                 controller.media_info.is_background = True
                 controller.media_info.media_type = MediaType.Stream
@@ -255,7 +255,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 log.debug('video is stream and live')
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
-                (name, mrl, options) = parse_devicestream_path(path)
+                (name, mrl, options) = parse_stream_path(path)
                 controller.media_info.file_info = (mrl, options)
                 is_valid = self._check_file_type(controller, display)
             else:
@@ -274,7 +274,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             elif service_item.is_capable(ItemCapabilities.CanStream):
                 path = service_item.get_frames()[0]['path']
                 controller.media_info.media_type = MediaType.Stream
-                (name, mrl, options) = parse_devicestream_path(path)
+                (name, mrl, options) = parse_stream_path(path)
                 controller.media_info.file_info = (mrl, options)
                 is_valid = self._check_file_type(controller, display)
             else:

@@ -34,6 +34,7 @@ from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
 from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
+from openlp.plugins.media.forms import VLCOptionsWidget
 
 # Copied from VLC source code: modules/access/v4l2/v4l2.c
 VIDEO_STANDARDS_VLC = [
@@ -651,25 +652,6 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
 
 class Ui_StreamSelector(object):
     def setup_ui(self, stream_selector):
-        stream_selector.setObjectName('stream_selector')
-        self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                                          QtWidgets.QSizePolicy.Fixed)
-        stream_selector.setSizePolicy(
-            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding))
-        self.main_layout = QtWidgets.QVBoxLayout(stream_selector)
-        self.main_layout.setObjectName('main_layout')
-
-        self.top_widget = QtWidgets.QWidget(stream_selector)
-        self.top_widget.setObjectName('top_widget')
-        self.top_layout = QtWidgets.QFormLayout(self.top_widget)
-        self.top_layout.setObjectName('top_layout')
-        # Stream name
-        if not self.theme_stream:
-            self.stream_name_label = QtWidgets.QLabel(self.top_widget)
-            self.stream_name_label.setObjectName('stream_name_label')
-            self.stream_name_edit = QtWidgets.QLineEdit(self.top_widget)
-            self.stream_name_edit.setObjectName('stream_name_edit')
-            self.top_layout.addRow(self.stream_name_label, self.stream_name_edit)
         # Mode combobox
         self.capture_mode_label = QtWidgets.QLabel(self.top_widget)
         self.capture_mode_label.setObjectName('capture_mode_label')
@@ -719,33 +701,8 @@ class Ui_StreamSelector(object):
         for i in range(self.stacked_modes_layout.count()):
             self.stacked_modes_layout.widget(i).find_devices()
             self.stacked_modes_layout.widget(i).retranslate_ui()
-        # Groupbox for more options
-        self.more_options_group = QtWidgets.QGroupBox(self)
-        self.more_options_group.setObjectName('more_options_group')
-        self.more_options_group_layout = QtWidgets.QFormLayout(self.more_options_group)
-        self.more_options_group_layout.setObjectName('more_options_group_layout')
-        # Caching spinbox
-        self.caching_label = QtWidgets.QLabel(self)
-        self.caching_label.setObjectName('caching_label')
-        self.caching = QtWidgets.QSpinBox(self)
-        self.caching.setAlignment(QtCore.Qt.AlignRight)
-        self.caching.setSuffix(' ms')
-        self.caching.setSingleStep(100)
-        self.caching.setMaximum(65535)
-        self.caching.setValue(300)
-        self.more_options_group_layout.addRow(self.caching_label, self.caching)
-        # MRL
-        self.mrl_label = QtWidgets.QLabel(self)
-        self.mrl_label.setObjectName('mrl_label')
-        self.mrl_lineedit = QtWidgets.QLineEdit(self)
-        self.mrl_lineedit.setObjectName('mrl_lineedit')
-        self.more_options_group_layout.addRow(self.mrl_label, self.mrl_lineedit)
-        # VLC options
-        self.vlc_options_label = QtWidgets.QLabel(self)
-        self.vlc_options_label.setObjectName('vlc_options_label')
-        self.vlc_options_lineedit = QtWidgets.QLineEdit(self)
-        self.vlc_options_lineedit.setObjectName('vlc_options_lineedit')
-        self.more_options_group_layout.addRow(self.vlc_options_label, self.vlc_options_lineedit)
+        # Add groupbox for VLC options
+        self.more_options_group = VLCOptionsWidget(self)
         # Add groupbox for more options to main layout
         self.main_layout.addWidget(self.more_options_group)
         # Save and close buttons
@@ -760,7 +717,7 @@ class Ui_StreamSelector(object):
         self.retranslate_ui(stream_selector)
         # connect
         self.capture_mode_combo_box.currentIndexChanged.connect(stream_selector.on_capture_mode_combo_box)
-        self.caching.valueChanged.connect(stream_selector.on_capture_mode_combo_box)
+        self.more_options_group.caching.valueChanged.connect(stream_selector.on_capture_mode_combo_box)
         self.button_box.accepted.connect(stream_selector.accept)
         self.button_box.rejected.connect(stream_selector.reject)
 
@@ -769,7 +726,3 @@ class Ui_StreamSelector(object):
         if not self.theme_stream:
             self.stream_name_label.setText(translate('MediaPlugin.StreamSelector', 'Stream name'))
         self.capture_mode_label.setText(translate('MediaPlugin.StreamSelector', 'Capture Mode'))
-        self.more_options_group.setTitle(translate('MediaPlugin.StreamSelector', 'More options'))
-        self.caching_label.setText(translate('MediaPlugin.StreamSelector', 'Caching'))
-        self.mrl_label.setText(translate('MediaPlugin.StreamSelector', 'MRL'))
-        self.vlc_options_label.setText(translate('MediaPlugin.StreamSelector', 'VLC options'))

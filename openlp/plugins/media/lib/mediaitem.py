@@ -35,12 +35,13 @@ from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.media import parse_optical_path, parse_devicestream_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
+from openlp.core.ui.media import parse_optical_path, parse_stream_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.media.vlcplayer import get_vlc
 
 if get_vlc() is not None:
     from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
     from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
+    from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
 
 
 log = logging.getLogger(__name__)
@@ -129,6 +130,13 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                                                text=device_stream_button_text,
                                                                tooltip=device_stream_button_tooltip,
                                                                triggers=self.on_open_device_stream)
+            network_stream_button_text = translate('MediaPlugin.MediaItem', 'Open network stream')
+            network_stream_button_tooltip = translate('MediaPlugin.MediaItem', 'Open network stream')
+            self.open_network_stream = self.toolbar.add_toolbar_action('open_network_stream',
+                                                                       icon=UiIcons().network_stream,
+                                                                       text=network_stream_button_text,
+                                                                       tooltip=network_stream_button_tooltip,
+                                                                       triggers=self.on_open_network_stream)
 
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
@@ -165,9 +173,9 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             service_item.start_time = start
             service_item.end_time = end
             service_item.add_capability(ItemCapabilities.IsOptical)
-        elif filename.startswith('devicestream:'):
+        elif filename.startswith('devicestream:') or filename.startswith('networkstream:'):
             # Special handling if the filename is a devicestream
-            (name, mrl, options) = parse_devicestream_path(filename)
+            (name, mrl, options) = parse_stream_path(filename)
             service_item.processor = 'vlc'
             service_item.add_from_command(filename, name, self.clapperboard)
             service_item.title = name
@@ -249,10 +257,13 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                 item_name.setToolTip('{name}@{start}-{end}'.format(name=file_name,
                                                                    start=format_milliseconds(start),
                                                                    end=format_milliseconds(end)))
-            elif track_str.startswith('devicestream:'):
-                (name, mrl, options) = parse_devicestream_path(track_str)
+            elif track_str.startswith('devicestream:') or track_str.startswith('networkstream:'):
+                (name, mrl, options) = parse_stream_path(track_str)
                 item_name = QtWidgets.QListWidgetItem(name)
-                item_name.setIcon(UiIcons().device_stream)
+                if track_str.startswith('devicestream:'):
+                    item_name.setIcon(UiIcons().device_stream)
+                else:
+                    item_name.setIcon(UiIcons().network_stream)
                 item_name.setData(QtCore.Qt.UserRole, track)
                 item_name.setToolTip(mrl)
             elif not os.path.exists(track):
@@ -353,6 +364,35 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
     def add_device_stream(self, stream):
         """
         Add a device stream based clip to the mediamanager, called from stream_selector_form.
+
+        :param stream: The clip to add.
+        """
+        file_paths = self.get_file_list()
+        # If the clip already is in the media list it isn't added and an error message is displayed.
+        if stream in file_paths:
+            critical_error_message_box(translate('MediaPlugin.MediaItem', 'Stream already saved'),
+                                       translate('MediaPlugin.MediaItem', 'This stream has already been saved'))
+            return
+        # Append the device stream string to the media list
+        file_paths.append(stream)
+        self.load_list([str(stream)])
+        self.settings.setValue(self.settings_section + '/media files', file_paths)
+
+    def on_open_network_stream(self):
+        """
+        When the open network stream button is clicked, open the stream selector window.
+        """
+        if get_vlc():
+            stream_selector_form = NetworkStreamSelectorForm(self.main_window, self.add_network_stream)
+            stream_selector_form.exec()
+            del stream_selector_form
+        else:
+            critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
+                                       translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
+
+    def add_network_stream(self, stream):
+        """
+        Add a network stream based clip to the mediamanager, called from stream_selector_form.
 
         :param stream: The clip to add.
         """
