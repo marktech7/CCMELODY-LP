@@ -163,14 +163,14 @@ def test_load_pdf(pdf_env):
             load_pdf_pictures(exe_path, pdf_env)
 
 
-def test_loading_pdf_using_pymupdf():
+def test_loading_pdf_using_pymupdf(pdf_env):
     try:
         import fitz  # noqa: F401
     except ImportError:
         pytest.skip('PyMuPDF is not installed')
 
-    load_pdf(None)
-    load_pdf_pictures(None)
+    load_pdf(None, pdf_env)
+    load_pdf_pictures(None, pdf_env)
 
 
 @patch('openlp.plugins.presentations.lib.pdfcontroller.check_binary_exists')
