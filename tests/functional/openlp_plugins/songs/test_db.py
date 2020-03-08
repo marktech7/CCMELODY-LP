@@ -21,213 +21,208 @@
 """
 This module contains tests for the db submodule of the Songs plugin.
 """
+import pytest
 import os
 import shutil
 from tempfile import mkdtemp
-from unittest import TestCase
 
-from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.songs.lib import upgrade
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song
 from tests.utils.constants import TEST_RESOURCES_PATH
 
 
-class TestDB(TestCase):
+@pytest.yield_fixture()
+def tmp_folder():
+    t_folder = mkdtemp()
+    yield t_folder
+    shutil.rmtree(t_folder, ignore_errors=True)
+
+
+def test_add_author():
     """
-    Test the functions in the :mod:`db` module.
+    Test adding an author to a song
     """
+    # GIVEN: A song and an author
+    song = Song()
+    song.authors_songs = []
+    author = Author()
+    author.first_name = "Max"
+    author.last_name = "Mustermann"
 
-    def setUp(self):
-        """
-        Setup for tests
-        """
-        self.tmp_folder = mkdtemp()
-        Registry.create()
-        Registry().register('settings', Settings())
+    # WHEN: We add an author to the song
+    song.add_author(author)
 
-    def tearDown(self):
-        """
-        Clean up after tests
-        """
-        # Ignore errors since windows can have problems with locked files
-        shutil.rmtree(self.tmp_folder, ignore_errors=True)
+    # THEN: The author should have been added with author_type=None
+    assert 1 == len(song.authors_songs)
+    assert "Max" == song.authors_songs[0].author.first_name
+    assert "Mustermann" == song.authors_songs[0].author.last_name
+    assert song.authors_songs[0].author_type is None
 
-    def test_add_author(self):
-        """
-        Test adding an author to a song
-        """
-        # GIVEN: A song and an author
-        song = Song()
-        song.authors_songs = []
-        author = Author()
-        author.first_name = "Max"
-        author.last_name = "Mustermann"
 
-        # WHEN: We add an author to the song
-        song.add_author(author)
+def test_add_author_with_type():
+    """
+    Test adding an author with a type specified to a song
+    """
+    # GIVEN: A song and an author
+    song = Song()
+    song.authors_songs = []
+    author = Author()
+    author.first_name = "Max"
+    author.last_name = "Mustermann"
 
-        # THEN: The author should have been added with author_type=None
-        assert 1 == len(song.authors_songs)
-        assert "Max" == song.authors_songs[0].author.first_name
-        assert "Mustermann" == song.authors_songs[0].author.last_name
-        assert song.authors_songs[0].author_type is None
+    # WHEN: We add an author to the song
+    song.add_author(author, AuthorType.Words)
 
-    def test_add_author_with_type(self):
-        """
-        Test adding an author with a type specified to a song
-        """
-        # GIVEN: A song and an author
-        song = Song()
-        song.authors_songs = []
-        author = Author()
-        author.first_name = "Max"
-        author.last_name = "Mustermann"
+    # THEN: The author should have been added with author_type=None
+    assert 1 == len(song.authors_songs)
+    assert "Max" == song.authors_songs[0].author.first_name
+    assert "Mustermann" == song.authors_songs[0].author.last_name
+    assert AuthorType.Words == song.authors_songs[0].author_type
 
-        # WHEN: We add an author to the song
-        song.add_author(author, AuthorType.Words)
 
-        # THEN: The author should have been added with author_type=None
-        assert 1 == len(song.authors_songs)
-        assert "Max" == song.authors_songs[0].author.first_name
-        assert "Mustermann" == song.authors_songs[0].author.last_name
-        assert AuthorType.Words == song.authors_songs[0].author_type
+def test_remove_author():
+    """
+    Test removing an author from a song
+    """
+    # GIVEN: A song with an author
+    song = Song()
+    song.authors_songs = []
+    author = Author()
+    song.add_author(author)
 
-    def test_remove_author(self):
-        """
-        Test removing an author from a song
-        """
-        # GIVEN: A song with an author
-        song = Song()
-        song.authors_songs = []
-        author = Author()
-        song.add_author(author)
+    # WHEN: We remove the author
+    song.remove_author(author)
 
-        # WHEN: We remove the author
-        song.remove_author(author)
+    # THEN: It should have been removed
+    assert 0 == len(song.authors_songs)
 
-        # THEN: It should have been removed
-        assert 0 == len(song.authors_songs)
 
-    def test_remove_author_with_type(self):
-        """
-        Test removing an author with a type specified from a song
-        """
-        # GIVEN: A song with two authors
-        song = Song()
-        song.authors_songs = []
-        author = Author()
-        song.add_author(author)
-        song.add_author(author, AuthorType.Translation)
+def test_remove_author_with_type():
+    """
+    Test removing an author with a type specified from a song
+    """
+    # GIVEN: A song with two authors
+    song = Song()
+    song.authors_songs = []
+    author = Author()
+    song.add_author(author)
+    song.add_author(author, AuthorType.Translation)
 
-        # WHEN: We remove the author with a certain type
-        song.remove_author(author, AuthorType.Translation)
+    # WHEN: We remove the author with a certain type
+    song.remove_author(author, AuthorType.Translation)
 
-        # THEN: It should have been removed and the other author should still be there
-        assert 1 == len(song.authors_songs)
-        assert song.authors_songs[0].author_type is None
+    # THEN: It should have been removed and the other author should still be there
+    assert 1 == len(song.authors_songs)
+    assert song.authors_songs[0].author_type is None
 
-    def test_get_author_type_from_translated_text(self):
-        """
-        Test getting an author type from translated text
-        """
-        # GIVEN: A string with an author type
-        author_type_name = AuthorType.Types[AuthorType.Words]
 
-        # WHEN: We call the method
-        author_type = AuthorType.from_translated_text(author_type_name)
+def test_get_author_type_from_translated_text():
+    """
+    Test getting an author type from translated text
+    """
+    # GIVEN: A string with an author type
+    author_type_name = AuthorType.Types[AuthorType.Words]
 
-        # THEN: The type should be correct
-        assert author_type == AuthorType.Words
+    # WHEN: We call the method
+    author_type = AuthorType.from_translated_text(author_type_name)
 
-    def test_author_get_display_name(self):
-        """
-        Test that the display name of an author is correct
-        """
-        # GIVEN: An author
-        author = Author()
-        author.display_name = "John Doe"
+    # THEN: The type should be correct
+    assert author_type == AuthorType.Words
 
-        # WHEN: We call the get_display_name() function
-        display_name = author.get_display_name()
 
-        # THEN: It should return only the name
-        assert "John Doe" == display_name
+def test_author_get_display_name():
+    """
+    Test that the display name of an author is correct
+    """
+    # GIVEN: An author
+    author = Author()
+    author.display_name = "John Doe"
 
-    def test_author_get_display_name_with_type_words(self):
-        """
-        Test that the display name of an author with a type is correct (Words)
-        """
-        # GIVEN: An author
-        author = Author()
-        author.display_name = "John Doe"
+    # WHEN: We call the get_display_name() function
+    display_name = author.get_display_name()
 
-        # WHEN: We call the get_display_name() function
-        display_name = author.get_display_name(AuthorType.Words)
+    # THEN: It should return only the name
+    assert "John Doe" == display_name
 
-        # THEN: It should return the name with the type in brackets
-        assert "John Doe (Words)" == display_name
 
-    def test_author_get_display_name_with_type_translation(self):
-        """
-        Test that the display name of an author with a type is correct (Translation)
-        """
-        # GIVEN: An author
-        author = Author()
-        author.display_name = "John Doe"
+def test_author_get_display_name_with_type_words():
+    """
+    Test that the display name of an author with a type is correct (Words)
+    """
+    # GIVEN: An author
+    author = Author()
+    author.display_name = "John Doe"
 
-        # WHEN: We call the get_display_name() function
-        display_name = author.get_display_name(AuthorType.Translation)
+    # WHEN: We call the get_display_name() function
+    display_name = author.get_display_name(AuthorType.Words)
 
-        # THEN: It should return the name with the type in brackets
-        assert "John Doe (Translation)" == display_name
+    # THEN: It should return the name with the type in brackets
+    assert "John Doe (Words)" == display_name
 
-    def test_add_songbooks(self):
-        """
-        Test that adding songbooks to a song works correctly
-        """
-        # GIVEN: A mocked song and songbook
-        song = Song()
-        song.songbook_entries = []
-        songbook = Book()
-        songbook.name = "Thy Word"
 
-        # WHEN: We add two songbooks to a Song
-        song.add_songbook_entry(songbook, "120")
-        song.add_songbook_entry(songbook, "550A")
+def test_author_get_display_name_with_type_translation():
+    """
+    Test that the display name of an author with a type is correct (Translation)
+    """
+    # GIVEN: An author
+    author = Author()
+    author.display_name = "John Doe"
 
-        # THEN: The song should have two songbook entries
-        assert len(song.songbook_entries) == 2, 'There should be two Songbook entries.'
+    # WHEN: We call the get_display_name() function
+    display_name = author.get_display_name(AuthorType.Translation)
 
-    def test_upgrade_old_song_db(self):
-        """
-        Test that we can upgrade an old song db to the current schema
-        """
-        # GIVEN: An old song db
-        old_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-1.9.7.sqlite')
-        old_db_tmp_path = os.path.join(self.tmp_folder, 'songs-1.9.7.sqlite')
-        shutil.copyfile(old_db_path, old_db_tmp_path)
-        db_url = 'sqlite:///' + old_db_tmp_path
+    # THEN: It should return the name with the type in brackets
+    assert "John Doe (Translation)" == display_name
 
-        # WHEN: upgrading the db
-        updated_to_version, latest_version = upgrade_db(db_url, upgrade)
 
-        # THEN: the song db should have been upgraded to the latest version
-        assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
+def test_add_songbooks():
+    """
+    Test that adding songbooks to a song works correctly
+    """
+    # GIVEN: A mocked song and songbook
+    song = Song()
+    song.songbook_entries = []
+    songbook = Book()
+    songbook.name = "Thy Word"
 
-    def test_upgrade_invalid_song_db(self):
-        """
-        Test that we can upgrade an invalid song db to the current schema
-        """
-        # GIVEN: A song db with invalid version
-        invalid_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-2.2-invalid.sqlite')
-        invalid_db_tmp_path = os.path.join(self.tmp_folder, 'songs-2.2-invalid.sqlite')
-        shutil.copyfile(invalid_db_path, invalid_db_tmp_path)
-        db_url = 'sqlite:///' + invalid_db_tmp_path
+    # WHEN: We add two songbooks to a Song
+    song.add_songbook_entry(songbook, "120")
+    song.add_songbook_entry(songbook, "550A")
 
-        # WHEN: upgrading the db
-        updated_to_version, latest_version = upgrade_db(db_url, upgrade)
+    # THEN: The song should have two songbook entries
+    assert len(song.songbook_entries) == 2, 'There should be two Songbook entries.'
 
-        # THEN: the song db should have been upgraded to the latest version without errors
-        assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
+
+def test_upgrade_old_song_db(settings, tmp_folder):
+    """
+    Test that we can upgrade an old song db to the current schema
+    """
+    # GIVEN: An old song db
+    old_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-1.9.7.sqlite')
+    old_db_tmp_path = os.path.join(tmp_folder, 'songs-1.9.7.sqlite')
+    shutil.copyfile(old_db_path, old_db_tmp_path)
+    db_url = 'sqlite:///' + old_db_tmp_path
+
+    # WHEN: upgrading the db
+    updated_to_version, latest_version = upgrade_db(db_url, upgrade)
+
+    # THEN: the song db should have been upgraded to the latest version
+    assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
+
+
+def test_upgrade_invalid_song_db(settings, tmp_folder):
+    """
+    Test that we can upgrade an invalid song db to the current schema
+    """
+    # GIVEN: A song db with invalid version
+    invalid_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-2.2-invalid.sqlite')
+    invalid_db_tmp_path = os.path.join(tmp_folder, 'songs-2.2-invalid.sqlite')
+    shutil.copyfile(invalid_db_path, invalid_db_tmp_path)
+    db_url = 'sqlite:///' + invalid_db_tmp_path
+
+    # WHEN: upgrading the db
+    updated_to_version, latest_version = upgrade_db(db_url, upgrade)
+
+    # THEN: the song db should have been upgraded to the latest version without errors
+    assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
