@@ -43,7 +43,8 @@ def test_video_psalms(mock_settings):
             Test that loading an VideoPsalm file works correctly on various files
             """
             # Mock out the settings - always return False
-            Registry().get('settings').value.side_effect = lambda value: True if value == 'songs/enable chords' else False
+            Registry().get('settings').value.side_effect = lambda value: True \
+                if value == 'songs/enable chords' else False
             # Do the test import
             self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
                              self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))
