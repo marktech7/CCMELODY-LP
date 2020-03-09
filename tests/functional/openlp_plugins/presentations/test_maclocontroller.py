@@ -28,6 +28,8 @@ from unittest.mock import MagicMock, patch, call
 
 from openlp.core.common import is_macosx
 from openlp.core.common.path import Path
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.presentations.lib.maclocontroller import MacLOController, MacLODocument
 
 from tests.helpers.testmixin import TestMixin
@@ -52,6 +54,8 @@ class TestMacLOController(TestCase, TestMixin):
         """
         self.setup_application()
         self.build_settings()
+        Registry().create()
+        Registry().register('settings', Settings())
         self.mock_plugin = MagicMock()
         self.temp_folder = mkdtemp()
         self.mock_plugin.settings_section = self.temp_folder
@@ -155,6 +159,8 @@ class TestMacLODocument(TestCase):
     Test the MacLODocument Class
     """
     def setUp(self):
+        Registry().create()
+        Registry().register('settings', Settings())
         mocked_plugin = MagicMock()
         mocked_plugin.settings_section = 'presentations'
         self.file_name = Path(TEST_RESOURCES_PATH) / 'presentations' / 'test.odp'
