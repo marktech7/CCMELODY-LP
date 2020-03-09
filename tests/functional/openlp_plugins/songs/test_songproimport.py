@@ -29,16 +29,23 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'songpro'
 
 
-class TestSongProFileImport(SongImportTestHelper):
+def test_song_pro(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'SongProImport'
-        self.importer_module_name = 'songpro'
-        super(TestSongProFileImport, self).__init__(*args, **kwargs)
+    class TestSongProFileImport(SongImportTestHelper):
 
-    def test_song_import(self):
-        """
-        Test that loading an SongPro file works correctly
-        """
-        self.file_import(TEST_PATH / 'amazing-grace.txt',
-                         self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+        def __init__(self, *args, **kwargs):
+            self.importer_class_name = 'SongProImport'
+            self.importer_module_name = 'songpro'
+            super(TestSongProFileImport, self).__init__(*args, **kwargs)
+
+        def test_song_import(self):
+            """
+            Test that loading an SongPro file works correctly
+            """
+            self.file_import(TEST_PATH / 'amazing-grace.txt',
+                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+
+    test_file_import = TestSongProFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()

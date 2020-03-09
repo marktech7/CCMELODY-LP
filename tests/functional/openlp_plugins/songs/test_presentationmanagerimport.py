@@ -31,19 +31,26 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'presentationmanager'
 
 
-class TestPresentationManagerFileImport(SongImportTestHelper):
+def test_presenter_manager(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'PresentationManagerImport'
-        self.importer_module_name = 'presentationmanager'
-        super(TestPresentationManagerFileImport, self).__init__(*args, **kwargs)
+    class TestPresentationManagerFileImport(SongImportTestHelper):
 
-    @skipIf(is_macosx(), 'This test fails for an undetermined reason on macOS')
-    def test_song_import(self):
-        """
-        Test that loading a PresentationManager file works correctly
-        """
-        self.file_import([TEST_PATH / 'Great Is Thy Faithfulness.sng'],
-                         self.load_external_result_data(TEST_PATH / 'Great Is Thy Faithfulness.json'))
-        self.file_import([TEST_PATH / 'Amazing Grace.sng'],
-                         self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+        def __init__(self, *args, **kwargs):
+            self.importer_class_name = 'PresentationManagerImport'
+            self.importer_module_name = 'presentationmanager'
+            super(TestPresentationManagerFileImport, self).__init__(*args, **kwargs)
+
+        @skipIf(is_macosx(), 'This test fails for an undetermined reason on macOS')
+        def test_song_import(self):
+            """
+            Test that loading a PresentationManager file works correctly
+            """
+            self.file_import([TEST_PATH / 'Great Is Thy Faithfulness.sng'],
+                             self.load_external_result_data(TEST_PATH / 'Great Is Thy Faithfulness.json'))
+            self.file_import([TEST_PATH / 'Amazing Grace.sng'],
+                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+
+    test_file_import = TestPresentationManagerFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()

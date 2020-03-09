@@ -21,6 +21,7 @@
 """
 This module contains tests for the OpenSong song importer.
 """
+from openlp.core.common.registry import Registry
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -28,19 +29,27 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'chordpro'
 
 
-class TestChordProFileImport(SongImportTestHelper):
+def test_chordpro(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'ChordProImport'
-        self.importer_module_name = 'chordpro'
-        super(TestChordProFileImport, self).__init__(*args, **kwargs)
+    class TestChordProFileImport(SongImportTestHelper):
 
-    def test_song_import(self):
-        """
-        Test that loading an ChordPro file works correctly on various files
-        """
-        # Mock out the settings - always return False
-        self.settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        # Do the test import
-        self.file_import([TEST_PATH / 'swing-low.chordpro'],
-                         self.load_external_result_data(TEST_PATH / 'swing-low.json'))
+        def __init__(self, *args, **kwargs):
+            self.importer_class_name = 'ChordProImport'
+            self.importer_module_name = 'chordpro'
+            super().__init__(*args, **kwargs)
+
+        def test_song_import(self):
+            """
+            Test that loading an ChordPro file works correctly on various files
+            """
+            # Mock out the settings - always return False
+            Registry().get('settings').value.side_effect = lambda value: True \
+                if value == 'songs/enable chords' else False
+            # Do the test import
+            self.file_import([TEST_PATH / 'swing-low.chordpro'],
+                             self.load_external_result_data(TEST_PATH / 'swing-low.json'))
+
+    test_file_import = TestChordProFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()
