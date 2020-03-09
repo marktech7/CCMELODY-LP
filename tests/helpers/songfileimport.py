@@ -24,16 +24,12 @@ song files from third party applications.
 """
 import json
 import logging
-from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
-
-from openlp.core.common.registry import Registry
-
 
 log = logging.getLogger(__name__)
 
 
-class SongImportTestHelper(TestCase):
+class SongImportTestHelper(object):
     """
     This class is designed to be a helper class to reduce repetition when testing the import of song files.
     """
@@ -47,9 +43,6 @@ class SongImportTestHelper(TestCase):
         """
         Patch and set up the mocks required.
         """
-        Registry.create()
-        Registry().register('settings', MagicMock())
-        self.settings = Registry().get('settings')
         self.add_copyright_patcher = patch('openlp.plugins.songs.lib.importers.%s.%s.add_copyright' %
                                            (self.importer_module_name, self.importer_class_name))
         self.add_verse_patcher = patch('openlp.plugins.songs.lib.importers.%s.%s.add_verse' %
