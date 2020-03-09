@@ -745,6 +745,7 @@ class SongMediaItem(MediaManagerItem):
             if item.background_audio:
                 self._update_background_audio(song, item)
             edit_id = song.id
+            song.init_on_load()
             self.on_search_text_button_clicked()
         elif add_song and not self.add_song_from_service:
             # Make sure we temporary import formatting tags.
