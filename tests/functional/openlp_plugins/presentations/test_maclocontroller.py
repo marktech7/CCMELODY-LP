@@ -26,7 +26,6 @@ from tempfile import mkdtemp
 from unittest import TestCase, skipIf, SkipTest
 from unittest.mock import MagicMock, patch, call
 
-from openlp.core.common.registry import Registry
 from openlp.core.common import is_macosx
 from openlp.core.common.path import Path
 from openlp.core.common.registry import Registry
