@@ -21,7 +21,7 @@
 """
 This module contains tests for the VideoPsalm song importer.
 """
-
+from openlp.core.common.registry import Registry
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -29,21 +29,28 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'videopsalm'
 
 
-class TestVideoPsalmFileImport(SongImportTestHelper):
+def test_video_psalms(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'VideoPsalmImport'
-        self.importer_module_name = 'videopsalm'
-        super(TestVideoPsalmFileImport, self).__init__(*args, **kwargs)
+    class TestVideoPsalmFileImport(SongImportTestHelper):
 
-    def test_song_import(self):
-        """
-        Test that loading an VideoPsalm file works correctly on various files
-        """
-        # Mock out the settings - always return False
-        self.settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        # Do the test import
-        self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
-                         self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))
-        self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold2.json',
-                         self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold2.json'))
+        def __init__(self, *args, **kwargs):
+            self.importer_class_name = 'VideoPsalmImport'
+            self.importer_module_name = 'videopsalm'
+            super(TestVideoPsalmFileImport, self).__init__(*args, **kwargs)
+
+        def test_song_import(self):
+            """
+            Test that loading an VideoPsalm file works correctly on various files
+            """
+            # Mock out the settings - always return False
+            Registry().get('settings').value.side_effect = lambda value: True if value == 'songs/enable chords' else False
+            # Do the test import
+            self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
+                             self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))
+            self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold2.json',
+                             self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold2.json'))
+
+    test_file_import = TestVideoPsalmFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()

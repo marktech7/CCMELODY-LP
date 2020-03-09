@@ -49,7 +49,7 @@ def test_chordpro(mock_settings):
             self.file_import([TEST_PATH / 'swing-low.chordpro'],
                              self.load_external_result_data(TEST_PATH / 'swing-low.json'))
 
-    tfi = TestChordProFileImport()
-    tfi.setUp()
-    tfi.test_song_import()
-    tfi.tearDown()
+    test_file_import = TestChordProFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()

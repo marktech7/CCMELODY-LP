@@ -21,10 +21,8 @@
 """
 This module contains tests for the ZionWorx song importer.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.importers.zionworx import ZionWorxImport
 from tests.helpers.songfileimport import SongImportTestHelper
@@ -34,40 +32,37 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'zionworx'
 
 
-class TestZionWorxImport(TestCase):
+def test_create_importer(registry):
     """
-    Test the functions in the :mod:`zionworximport` module.
+    Test creating an instance of the ZionWorx file importer
     """
-    def setUp(self):
-        """
-        Create the registry
-        """
-        Registry.create()
+    # GIVEN: A mocked out SongImport class, and a mocked out "manager"
+    with patch('openlp.plugins.songs.lib.importers.zionworx.SongImport'):
+        mocked_manager = MagicMock()
 
-    def test_create_importer(self):
-        """
-        Test creating an instance of the ZionWorx file importer
-        """
-        # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-        with patch('openlp.plugins.songs.lib.importers.zionworx.SongImport'):
-            mocked_manager = MagicMock()
+        # WHEN: An importer object is created
+        importer = ZionWorxImport(mocked_manager, file_paths=[])
 
-            # WHEN: An importer object is created
-            importer = ZionWorxImport(mocked_manager, file_paths=[])
-
-            # THEN: The importer should be an instance of SongImport
-            assert isinstance(importer, SongImport)
+        # THEN: The importer should be an instance of SongImport
+        assert isinstance(importer, SongImport)
 
 
-class TestZionWorxFileImport(SongImportTestHelper):
+def test_zion_wrox(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'ZionWorxImport'
-        self.importer_module_name = 'zionworx'
-        super(TestZionWorxFileImport, self).__init__(*args, **kwargs)
+    class TestZionWorxFileImport(SongImportTestHelper):
 
-    def test_song_import(self):
-        """
-        Test that loading an ZionWorx file works correctly on various files
-        """
-        self.file_import(TEST_PATH / 'zionworx.csv', self.load_external_result_data(TEST_PATH / 'zionworx.json'))
+        def __init__(self, *args, **kwargs):
+            self.importer_class_name = 'ZionWorxImport'
+            self.importer_module_name = 'zionworx'
+            super(TestZionWorxFileImport, self).__init__(*args, **kwargs)
+
+        def test_song_import(self):
+            """
+            Test that loading an ZionWorx file works correctly on various files
+            """
+            self.file_import(TEST_PATH / 'zionworx.csv', self.load_external_result_data(TEST_PATH / 'zionworx.json'))
+
+    test_file_import = TestZionWorxFileImport()
+    test_file_import.setUp()
+    test_file_import.test_song_import()
+    test_file_import.tearDown()

@@ -55,7 +55,7 @@ def test_constructor(settings, mock_plugin):
     assert 'Powerpoint' == controller.name, 'The name of the presentation controller should be correct'
 
 
-def test_show_error_msg(settings):
+def test_show_error_msg(get_thumbnail_folder):
     """
     Test the PowerpointDocument.show_error_msg() method gets called on com exception
     """
