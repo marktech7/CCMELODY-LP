@@ -31,7 +31,7 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'powerpraise'
 
 def test_power_praise(mock_settings):
 
-    test_file_import = SongImportTestHelper('PowerPraiseImport', 'powerpraise' )
+    test_file_import = SongImportTestHelper('PowerPraiseImport', 'powerpraise')
     test_file_import.setUp()
     test_file_import.file_import([TEST_PATH / 'Naher, mein Gott zu Dir.ppl'],
                                  test_file_import.load_external_result_data(TEST_PATH / 'Naher, mein Gott zu Dir.json'))

@@ -56,7 +56,7 @@ def test_validate_nonmatching_tags(edit_song_form):
 
 
 @patch('openlp.plugins.songs.forms.editsongform.set_case_insensitive_completer')
-def test_load_objects(mocked_set_case_insensitive_completer,edit_song_form, settings):
+def test_load_objects(mocked_set_case_insensitive_completer, edit_song_form, settings):
     """
     Test the _load_objects() method
     """

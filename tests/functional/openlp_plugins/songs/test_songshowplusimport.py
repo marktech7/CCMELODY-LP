@@ -40,9 +40,11 @@ def test_song_show_plus(mock_settings):
     test_file_import.file_import([TEST_PATH / 'Amazing Grace.sbsong'],
                                  test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
     test_file_import.file_import([TEST_PATH / 'Beautiful Garden Of Prayer.sbsong'],
-                                 test_file_import.load_external_result_data(TEST_PATH / 'Beautiful Garden Of Prayer.json'))
+                                 test_file_import.load_external_result_data(TEST_PATH /
+                                                                            'Beautiful Garden Of Prayer.json'))
     test_file_import.file_import([TEST_PATH / 'a mighty fortress is our god.sbsong'],
-                                 test_file_import.load_external_result_data(TEST_PATH / 'a mighty fortress is our god.json'))
+                                 test_file_import.load_external_result_data(TEST_PATH /
+                                                                            'a mighty fortress is our god.json'))
     test_file_import.file_import([TEST_PATH / 'cleanse-me.sbsong'],
                                  test_file_import.load_external_result_data(TEST_PATH / 'cleanse-me.json'))
     test_file_import.tearDown()
