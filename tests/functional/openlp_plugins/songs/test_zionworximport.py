@@ -49,20 +49,8 @@ def test_create_importer(registry):
 
 def test_zion_wrox(mock_settings):
 
-    class TestZionWorxFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'ZionWorxImport'
-            self.importer_module_name = 'zionworx'
-            super(TestZionWorxFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an ZionWorx file works correctly on various files
-            """
-            self.file_import(TEST_PATH / 'zionworx.csv', self.load_external_result_data(TEST_PATH / 'zionworx.json'))
-
-    test_file_import = TestZionWorxFileImport()
+    test_file_import = SongImportTestHelper('ZionWorxImport', 'zionworx')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import(TEST_PATH / 'zionworx.csv',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'zionworx.json'))
     test_file_import.tearDown()

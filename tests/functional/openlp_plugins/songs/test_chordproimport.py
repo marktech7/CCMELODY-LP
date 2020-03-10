@@ -31,25 +31,10 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'chordpro'
 
 def test_chordpro(mock_settings):
 
-    class TestChordProFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'ChordProImport'
-            self.importer_module_name = 'chordpro'
-            super().__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an ChordPro file works correctly on various files
-            """
-            # Mock out the settings - always return False
-            Registry().get('settings').value.side_effect = lambda value: True \
-                if value == 'songs/enable chords' else False
-            # Do the test import
-            self.file_import([TEST_PATH / 'swing-low.chordpro'],
-                             self.load_external_result_data(TEST_PATH / 'swing-low.json'))
-
-    test_file_import = TestChordProFileImport()
+    test_file_import = SongImportTestHelper('ChordProImport', 'chordpro')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    Registry().get('settings').value.side_effect = lambda value: True if value == 'songs/enable chords' else False
+    # Do the test import
+    test_file_import.file_import([TEST_PATH / 'swing-low.chordpro'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'swing-low.json'))
     test_file_import.tearDown()

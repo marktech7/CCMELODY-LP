@@ -34,7 +34,8 @@ class SongImportTestHelper(object):
     This class is designed to be a helper class to reduce repetition when testing the import of song files.
     """
     def __init__(self, *args, **kwargs):
-        super(SongImportTestHelper, self).__init__(*args, **kwargs)
+        self.importer_class_name = args[0]
+        self.importer_module_name = args[1]
         self.importer_module = __import__('openlp.plugins.songs.lib.importers.%s' %
                                           self.importer_module_name, fromlist=[self.importer_class_name])
         self.importer_class = getattr(self.importer_module, self.importer_class_name)

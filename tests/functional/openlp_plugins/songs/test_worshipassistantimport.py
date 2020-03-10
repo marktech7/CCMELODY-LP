@@ -29,26 +29,14 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'worshipassistant'
 
 
-def test_chordpro(mock_settings):
+def test_worshipassistant(mock_settings):
 
-    class TestWorshipAssistantFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'WorshipAssistantImport'
-            self.importer_module_name = 'worshipassistant'
-            super(TestWorshipAssistantFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an Worship Assistant file works correctly
-            """
-            self.file_import(TEST_PATH / 'du_herr.csv', self.load_external_result_data(TEST_PATH / 'du_herr.json'))
-            self.file_import(TEST_PATH / 'would_you_be_free.csv',
-                             self.load_external_result_data(TEST_PATH / 'would_you_be_free.json'))
-            self.file_import(TEST_PATH / 'would_you_be_free2.csv',
-                             self.load_external_result_data(TEST_PATH / 'would_you_be_free.json'))
-
-    test_file_import = TestWorshipAssistantFileImport()
+    test_file_import = SongImportTestHelper('WorshipAssistantImport', 'worshipassistant')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import(TEST_PATH / 'du_herr.csv',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'du_herr.json'))
+    test_file_import.file_import(TEST_PATH / 'would_you_be_free.csv',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'would_you_be_free.json'))
+    test_file_import.file_import(TEST_PATH / 'would_you_be_free2.csv',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'would_you_be_free.json'))
     test_file_import.tearDown()
