@@ -30,23 +30,10 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'easyslides'
 
 def test_easyslides(mock_settings):
 
-    class TestEasySlidesFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'EasySlidesImport'
-            self.importer_module_name = 'easyslides'
-            super().__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an EasySlides file works correctly on various files
-            """
-            self.file_import(TEST_PATH / 'amazing-grace.xml',
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-            self.file_import(TEST_PATH / 'Export_2017-01-12_BB.xml',
-                             self.load_external_result_data(TEST_PATH / 'Export_2017-01-12_BB.json'))
-
-    test_file_import = TestEasySlidesFileImport()
+    test_file_import = SongImportTestHelper('EasySlidesImport', 'easyslides')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import(TEST_PATH / 'amazing-grace.xml',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+    test_file_import.file_import(TEST_PATH / 'Export_2017-01-12_BB.xml',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Export_2017-01-12_BB.json'))
     test_file_import.tearDown()

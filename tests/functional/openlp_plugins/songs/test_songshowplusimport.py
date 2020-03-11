@@ -35,29 +35,18 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'songshowplus'
 
 def test_song_show_plus(mock_settings):
 
-    class TestSongShowPlusFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'SongShowPlusImport'
-            self.importer_module_name = 'songshowplus'
-            super(TestSongShowPlusFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading a SongShow Plus file works correctly on various files
-            """
-            self.file_import([TEST_PATH / 'Amazing Grace.sbsong'],
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-            self.file_import([TEST_PATH / 'Beautiful Garden Of Prayer.sbsong'],
-                             self.load_external_result_data(TEST_PATH / 'Beautiful Garden Of Prayer.json'))
-            self.file_import([TEST_PATH / 'a mighty fortress is our god.sbsong'],
-                             self.load_external_result_data(TEST_PATH / 'a mighty fortress is our god.json'))
-            self.file_import([TEST_PATH / 'cleanse-me.sbsong'],
-                             self.load_external_result_data(TEST_PATH / 'cleanse-me.json'))
-
-    test_file_import = TestSongShowPlusFileImport()
+    test_file_import = SongImportTestHelper('SongShowPlusImport', 'songshowplus')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import([TEST_PATH / 'Amazing Grace.sbsong'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+    test_file_import.file_import([TEST_PATH / 'Beautiful Garden Of Prayer.sbsong'],
+                                 test_file_import.load_external_result_data(TEST_PATH /
+                                                                            'Beautiful Garden Of Prayer.json'))
+    test_file_import.file_import([TEST_PATH / 'a mighty fortress is our god.sbsong'],
+                                 test_file_import.load_external_result_data(TEST_PATH /
+                                                                            'a mighty fortress is our god.json'))
+    test_file_import.file_import([TEST_PATH / 'cleanse-me.sbsong'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'cleanse-me.json'))
     test_file_import.tearDown()
 
 

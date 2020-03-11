@@ -31,21 +31,8 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'songpro'
 
 def test_song_pro(mock_settings):
 
-    class TestSongProFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'SongProImport'
-            self.importer_module_name = 'songpro'
-            super(TestSongProFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an SongPro file works correctly
-            """
-            self.file_import(TEST_PATH / 'amazing-grace.txt',
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-
-    test_file_import = TestSongProFileImport()
+    test_file_import = SongImportTestHelper('SongProImport', 'songpro')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import(TEST_PATH / 'amazing-grace.txt',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
     test_file_import.tearDown()

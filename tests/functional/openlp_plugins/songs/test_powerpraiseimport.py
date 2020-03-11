@@ -31,23 +31,10 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'powerpraise'
 
 def test_power_praise(mock_settings):
 
-    class TestPowerPraiseFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'PowerPraiseImport'
-            self.importer_module_name = 'powerpraise'
-            super(TestPowerPraiseFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading a PowerPraise file works correctly
-            """
-            self.file_import([TEST_PATH / 'Naher, mein Gott zu Dir.ppl'],
-                             self.load_external_result_data(TEST_PATH / 'Naher, mein Gott zu Dir.json'))
-            self.file_import([TEST_PATH / 'You are so faithful.ppl'],
-                             self.load_external_result_data(TEST_PATH / 'You are so faithful.json'))
-
-    test_file_import = TestPowerPraiseFileImport()
+    test_file_import = SongImportTestHelper('PowerPraiseImport', 'powerpraise')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import([TEST_PATH / 'Naher, mein Gott zu Dir.ppl'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Naher, mein Gott zu Dir.json'))
+    test_file_import.file_import([TEST_PATH / 'You are so faithful.ppl'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'You are so faithful.json'))
     test_file_import.tearDown()

@@ -30,25 +30,12 @@ TEST_PATH = RESOURCE_PATH / 'songs' / 'lyrix'
 
 def test_Lyrix(mock_settings):
 
-    class TestLyrixFileImport(SongImportTestHelper):
-
-        def __init__(self, *args, **kwargs):
-            self.importer_class_name = 'LyrixImport'
-            self.importer_module_name = 'lyrix'
-            super(TestLyrixFileImport, self).__init__(*args, **kwargs)
-
-        def test_song_import(self):
-            """
-            Test that loading an LyriX file works correctly on various files
-            """
-            self.file_import([TEST_PATH / 'A06.TXT'],
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-            self.file_import([TEST_PATH / 'A002.TXT'],
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace2.json'))
-            self.file_import([TEST_PATH / 'AO05.TXT'],
-                             self.load_external_result_data(TEST_PATH / 'in die regterhand.json'))
-
-    test_file_import = TestLyrixFileImport()
+    test_file_import = SongImportTestHelper('LyrixImport', 'lyrix')
     test_file_import.setUp()
-    test_file_import.test_song_import()
+    test_file_import.file_import([TEST_PATH / 'A06.TXT'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+    test_file_import.file_import([TEST_PATH / 'A002.TXT'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace2.json'))
+    test_file_import.file_import([TEST_PATH / 'AO05.TXT'],
+                                 test_file_import.load_external_result_data(TEST_PATH / 'in die regterhand.json'))
     test_file_import.tearDown()
