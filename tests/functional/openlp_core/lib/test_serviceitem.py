@@ -26,7 +26,6 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
-from openlp.core.state import State
 from openlp.core.common import ThemeLevel, md5_hash
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.registry import Registry
@@ -63,13 +62,6 @@ TEST_PATH = RESOURCE_PATH / 'service'
 
 
 @pytest.fixture()
-def state_env(state):
-    State().add_service("media", 0)
-    State().update_pre_conditions("media", True)
-    State().flush_preconditions()
-
-
-@pytest.fixture()
 def service_item_env(state):
     # Mock the renderer and its format_slide method
     mocked_renderer = MagicMock()
@@ -97,7 +89,7 @@ def test_service_item_basic():
     assert service_item.missing_frames() is True, 'There should not be any frames in the service item'
 
 
-def test_service_item_load_custom_from_service(state_env, settings, service_item_env):
+def test_service_item_load_custom_from_service(state_media, settings, service_item_env):
     """
     Test the Service Item - adding a custom slide from a saved service
     """
@@ -108,9 +100,6 @@ def test_service_item_load_custom_from_service(state_env, settings, service_item
 
     # WHEN: We add a custom from a saved serviceand set the media state
     line = convert_file_service_item(TEST_PATH, 'serviceitem_custom_1.osj')
-    State().add_service("media", 0)
-    State().update_pre_conditions("media", True)
-    State().flush_preconditions()
     service_item.set_from_service(line)
 
     # THEN: We should get back a valid service item
@@ -127,7 +116,7 @@ def test_service_item_load_custom_from_service(state_env, settings, service_item
     assert '' == service_item.get_frame_title(2), 'Blank has been returned as the title of slide 3'
 
 
-def test_service_item_load_image_from_service(state_env, settings):
+def test_service_item_load_image_from_service(state_media, settings):
     """
     Test the Service Item - adding an image from a saved service
     """
@@ -169,7 +158,7 @@ def test_service_item_load_image_from_service(state_env, settings):
 
 @patch('openlp.core.lib.serviceitem.os.path.exists')
 @patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path')
-def test_service_item_load_image_from_local_service(mocked_get_section_data_path, mocked_exists, settings, state_env):
+def test_service_item_load_image_from_local_service(mocked_get_section_data_path, mocked_exists, settings, state_media):
     """
     Test the Service Item - adding an image from a saved local service
     """
@@ -293,7 +282,7 @@ def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path,
     # assert 1 == mocked_image_manager.add_image.call_count, 'image_manager should be used'
 
 
-def test_service_item_load_optical_media_from_service(state_env):
+def test_service_item_load_optical_media_from_service(state_media):
     """
     Test the Service Item - load an optical media item
     """
@@ -315,7 +304,7 @@ def test_service_item_load_optical_media_from_service(state_env):
     assert service_item.media_length == 17.694, 'Media length should be 17.694'
 
 
-def test_service_item_load_song_and_audio_from_service(state_env, settings, service_item_env):
+def test_service_item_load_song_and_audio_from_service(state_media, settings, service_item_env):
     """
     Test the Service Item - adding a song slide from a saved service
     """
