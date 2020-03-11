@@ -61,9 +61,7 @@ def add(id):
 def search_bible():
     text = request.args.get('text', '')
     result = search(text)
-    if result:
-        return jsonify(result)
-    return '', 400
+    return jsonify(result)
 
 
 @v2_views.route('/live', methods=['POST'])
