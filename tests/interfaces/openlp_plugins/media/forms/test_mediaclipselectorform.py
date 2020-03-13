@@ -23,7 +23,7 @@ Module to test the MediaClipSelectorForm.
 """
 import pytest
 import os
-from unittest import SkipTest, TestCase
+from unittest import SkipTest
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtTest, QtWidgets
