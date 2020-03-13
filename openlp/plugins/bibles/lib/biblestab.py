@@ -353,20 +353,19 @@ class BiblesTab(SettingsTab):
         self.bible_search_while_typing = (check_state == QtCore.Qt.Checked)
 
     def load(self):
-        self.settings.beginGroup(self.settings_section)
-        self.is_verse_number_visible = self.settings.value('is verse number visible')
-        self.show_new_chapters = self.settings.value('display new chapter')
-        self.display_style = self.settings.value('display brackets')
-        self.layout_style = self.settings.value('verse layout style')
-        self.bible_theme = self.settings.value('bible theme')
-        self.second_bibles = self.settings.value('second bibles')
+        self.is_verse_number_visible = self.settings.value('bibles/is verse number visible')
+        self.show_new_chapters = self.settings.value('bibles/display new chapter')
+        self.display_style = self.settings.value('bibles/display brackets')
+        self.layout_style = self.settings.value('bibles/verse layout style')
+        self.bible_theme = self.settings.value('bibles/bible theme')
+        self.second_bibles = self.settings.value('bibles/second bibles')
         self.is_verse_number_visible_check_box.setChecked(self.is_verse_number_visible)
         self.check_is_verse_number_visible()
         self.new_chapters_check_box.setChecked(self.show_new_chapters)
         self.display_style_combo_box.setCurrentIndex(self.display_style)
         self.layout_style_combo_box.setCurrentIndex(self.layout_style)
         self.bible_second_check_box.setChecked(self.second_bibles)
-        verse_separator = self.settings.value('verse separator')
+        verse_separator = self.settings.value('bibles/verse separator')
         if (verse_separator.strip('|') == '') or (verse_separator == get_reference_separator('sep_v_default')):
             self.verse_separator_line_edit.setText(get_reference_separator('sep_v_default'))
             self.verse_separator_line_edit.setPalette(self.get_grey_text_palette(True))
@@ -375,7 +374,7 @@ class BiblesTab(SettingsTab):
             self.verse_separator_line_edit.setText(verse_separator)
             self.verse_separator_line_edit.setPalette(self.get_grey_text_palette(False))
             self.verse_separator_check_box.setChecked(True)
-        range_separator = self.settings.value('range separator')
+        range_separator = self.settings.value('bibles/range separator')
         if (range_separator.strip('|') == '') or (range_separator == get_reference_separator('sep_r_default')):
             self.range_separator_line_edit.setText(get_reference_separator('sep_r_default'))
             self.range_separator_line_edit.setPalette(self.get_grey_text_palette(True))
@@ -384,7 +383,7 @@ class BiblesTab(SettingsTab):
             self.range_separator_line_edit.setText(range_separator)
             self.range_separator_line_edit.setPalette(self.get_grey_text_palette(False))
             self.range_separator_check_box.setChecked(True)
-        list_separator = self.settings.value('list separator')
+        list_separator = self.settings.value('bibles/list separator')
         if (list_separator.strip('|') == '') or (list_separator == get_reference_separator('sep_l_default')):
             self.list_separator_line_edit.setText(get_reference_separator('sep_l_default'))
             self.list_separator_line_edit.setPalette(self.get_grey_text_palette(True))
@@ -393,7 +392,7 @@ class BiblesTab(SettingsTab):
             self.list_separator_line_edit.setText(list_separator)
             self.list_separator_line_edit.setPalette(self.get_grey_text_palette(False))
             self.list_separator_check_box.setChecked(True)
-        end_separator = self.settings.value('end separator')
+        end_separator = self.settings.value('bibles/end separator')
         if (end_separator.strip('|') == '') or (end_separator == get_reference_separator('sep_e_default')):
             self.end_separator_line_edit.setText(get_reference_separator('sep_e_default'))
             self.end_separator_line_edit.setPalette(self.get_grey_text_palette(True))
@@ -402,48 +401,45 @@ class BiblesTab(SettingsTab):
             self.end_separator_line_edit.setText(end_separator)
             self.end_separator_line_edit.setPalette(self.get_grey_text_palette(False))
             self.end_separator_check_box.setChecked(True)
-        self.language_selection = self.settings.value('book name language')
+        self.language_selection = self.settings.value('bibles/book name language')
         self.language_selection_combo_box.setCurrentIndex(self.language_selection)
-        self.reset_to_combined_quick_search = self.settings.value('reset to combined quick search')
+        self.reset_to_combined_quick_search = self.settings.value('bibles/reset to combined quick search')
         self.reset_to_combined_quick_search_check_box.setChecked(self.reset_to_combined_quick_search)
-        self.hide_combined_quick_error = self.settings.value('hide combined quick error')
+        self.hide_combined_quick_error = self.settings.value('bibles/hide combined quick error')
         self.hide_combined_quick_error_check_box.setChecked(self.hide_combined_quick_error)
-        self.bible_search_while_typing = self.settings.value('is search while typing enabled')
+        self.bible_search_while_typing = self.settings.value('bibles/is search while typing enabled')
         self.bible_search_while_typing_check_box.setChecked(self.bible_search_while_typing)
-        self.settings.endGroup()
 
     def save(self):
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('is verse number visible', self.is_verse_number_visible)
-        self.settings.setValue('display new chapter', self.show_new_chapters)
-        self.settings.setValue('display brackets', self.display_style)
-        self.settings.setValue('verse layout style', self.layout_style)
-        self.settings.setValue('second bibles', self.second_bibles)
-        self.settings.setValue('bible theme', self.bible_theme)
+        self.settings.setValue('bibles/is verse number visible', self.is_verse_number_visible)
+        self.settings.setValue('bibles/display new chapter', self.show_new_chapters)
+        self.settings.setValue('bibles/display brackets', self.display_style)
+        self.settings.setValue('bibles/verse layout style', self.layout_style)
+        self.settings.setValue('bibles/second bibles', self.second_bibles)
+        self.settings.setValue('bibles/bible theme', self.bible_theme)
         if self.verse_separator_check_box.isChecked():
-            self.settings.setValue('verse separator', self.verse_separator_line_edit.text())
+            self.settings.setValue('bibles/verse separator', self.verse_separator_line_edit.text())
         else:
-            self.settings.remove('verse separator')
+            self.settings.remove('bibles/verse separator')
         if self.range_separator_check_box.isChecked():
-            self.settings.setValue('range separator', self.range_separator_line_edit.text())
+            self.settings.setValue('bibles/range separator', self.range_separator_line_edit.text())
         else:
-            self.settings.remove('range separator')
+            self.settings.remove('bibles/range separator')
         if self.list_separator_check_box.isChecked():
-            self.settings.setValue('list separator', self.list_separator_line_edit.text())
+            self.settings.setValue('bibles/list separator', self.list_separator_line_edit.text())
         else:
-            self.settings.remove('list separator')
+            self.settings.remove('bibles/list separator')
         if self.end_separator_check_box.isChecked():
-            self.settings.setValue('end separator', self.end_separator_line_edit.text())
+            self.settings.setValue('bibles/end separator', self.end_separator_line_edit.text())
         else:
-            self.settings.remove('end separator')
+            self.settings.remove('bibles/end separator')
         update_reference_separators()
-        if self.language_selection != self.settings.value('book name language'):
-            self.settings.setValue('book name language', self.language_selection)
-            self.settings_form.register_post_process('bibles_load_list')
-        self.settings.setValue('reset to combined quick search', self.reset_to_combined_quick_search)
-        self.settings.setValue('hide combined quick error', self.hide_combined_quick_error)
-        self.settings.setValue('is search while typing enabled', self.bible_search_while_typing)
-        self.settings.endGroup()
+        if self.language_selection != self.settings.value('bibles/book name language'):
+            self.settings.setValue('bibles/book name language', self.language_selection)
+            self.settings_form.register_post_process('bibles/bibles_load_list')
+        self.settings.setValue('bibles/reset to combined quick search', self.reset_to_combined_quick_search)
+        self.settings.setValue('bibles/hide combined quick error', self.hide_combined_quick_error)
+        self.settings.setValue('bibles/is search while typing enabled', self.bible_search_while_typing)
         if self.tab_visited:
             self.settings_form.register_post_process('bibles_config_updated')
         self.tab_visited = False

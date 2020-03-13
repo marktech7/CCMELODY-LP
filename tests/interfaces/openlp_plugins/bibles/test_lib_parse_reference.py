@@ -34,7 +34,7 @@ from tests.utils.constants import TEST_RESOURCES_PATH
 def manager(settings):
     Registry().register('service_list', MagicMock())
     with patch('openlp.core.common.applocation.AppLocation.get_section_data_path') as mocked_get_data_path, \
-        patch('openlp.core.common.applocation.AppLocation.get_files') as mocked_get_files:
+            patch('openlp.core.common.applocation.AppLocation.get_files') as mocked_get_files:
         # GIVEN: A mocked out AppLocation.get_files()
         mocked_get_files.return_value = ["tests.sqlite"]
         mocked_get_data_path.return_value = TEST_RESOURCES_PATH + "/bibles"
