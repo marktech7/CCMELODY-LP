@@ -21,82 +21,72 @@
 """
 Tests for choosegroupform from the openlp.plugins.images.forms package.
 """
-
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock
 
 from PyQt5 import QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.images.forms.choosegroupform import ChooseGroupForm
-from tests.helpers.testmixin import TestMixin
 
 
-class TestImageChooseGroupForm(TestCase, TestMixin):
+@pytest.yield_fixture()
+def form(settings):
+    main_window = QtWidgets.QMainWindow()
+    Registry().register('main_window', main_window)
+    frm = ChooseGroupForm(main_window)
+    yield frm
+    del frm
+    del main_window
+
+
+def test_no_group_selected_by_default(form):
     """
-    Test the ChooseGroupForm class
+    Tests that the No Group option is the default selection
     """
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-        self.form = ChooseGroupForm(self.main_window)
+    assert form.nogroup_radio_button.isChecked()
 
-    def tearDown(self):
-        """
-        Cleanup
-        """
-        del self.form
-        del self.main_window
 
-    def test_no_group_selected_by_default(self):
-        """
-        Tests that the No Group option is the default selection
-        """
-        assert self.form.nogroup_radio_button.isChecked()
+def test_provided_group_is_selected(form):
+    """
+    Tests preselected group initialization
+    """
+    # GIVEN: There are some existing groups
+    QtWidgets.QDialog.exec = MagicMock(return_value=QtWidgets.QDialog.Accepted)
+    form.group_combobox.addItem('Group 1', 0)
+    form.group_combobox.addItem('Group 2', 1)
 
-    def test_provided_group_is_selected(self):
-        """
-        Tests preselected group initialization
-        """
-        # GIVEN: There are some existing groups
-        QtWidgets.QDialog.exec = MagicMock(return_value=QtWidgets.QDialog.Accepted)
-        self.form.group_combobox.addItem('Group 1', 0)
-        self.form.group_combobox.addItem('Group 2', 1)
+    # WHEN: The form is displayed with preselected group index 1
+    form.exec(1)
 
-        # WHEN: The form is displayed with preselected group index 1
-        self.form.exec(1)
+    # THEN: The Existing Group should be selected along with the radio button
+    assert form.group_combobox.currentIndex() == 1
+    assert form.existing_radio_button.isChecked()
 
-        # THEN: The Existing Group should be selected along with the radio button
-        assert self.form.group_combobox.currentIndex() == 1
-        assert self.form.existing_radio_button.isChecked()
 
-    def test_auto_select_existing_group_on_combo_selection(self):
-        """
-        Tests that the Existing Group option becomes selected when changing the combobox
-        """
-        # GIVEN: No preselected group was provided during initialization
-        assert not self.form.existing_radio_button.isChecked()
+def test_auto_select_existing_group_on_combo_selection(form):
+    """
+    Tests that the Existing Group option becomes selected when changing the combobox
+    """
+    # GIVEN: No preselected group was provided during initialization
+    assert not form.existing_radio_button.isChecked()
 
-        # WHEN: An existing group is selected from the combo box
-        self.form.on_group_combobox_selected(0)
+    # WHEN: An existing group is selected from the combo box
+    form.on_group_combobox_selected(0)
 
-        # THEN: The Existing Group radio button should also be selected
-        assert self.form.existing_radio_button.isChecked()
+    # THEN: The Existing Group radio button should also be selected
+    assert form.existing_radio_button.isChecked()
 
-    def test_auto_select_new_group_on_edit(self):
-        """
-        Tests that the New Group option becomes selected when changing the text field
-        """
-        # GIVEN: The New Group option has not already been selected
-        assert not self.form.new_radio_button.isChecked()
 
-        # WHEN: The user enters text into the new group name text field
-        self.form.on_new_group_edit_changed('Test Group')
+def test_auto_select_new_group_on_edit(form):
+    """
+    Tests that the New Group option becomes selected when changing the text field
+    """
+    # GIVEN: The New Group option has not already been selected
+    assert not form.new_radio_button.isChecked()
 
-        # THEN: The New Group radio button should also be selected
-        assert self.form.new_radio_button.isChecked()
+    # WHEN: The user enters text into the new group name text field
+    form.on_new_group_edit_changed('Test Group')
+
+    # THEN: The New Group radio button should also be selected
+    assert form.new_radio_button.isChecked()
