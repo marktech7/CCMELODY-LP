@@ -30,7 +30,7 @@ from openlp.core.ui.themeprogressform import ThemeProgressForm
 def _get_theme_progress_form():
     """Common code used to create the ThemeProgressForm object"""
     with patch('openlp.core.ui.themeprogressdialog.ThemePreviewRenderer'), \
-         patch('openlp.core.ui.themeprogressdialog.UiThemeProgressDialog.setup_ui'):
+            patch('openlp.core.ui.themeprogressdialog.UiThemeProgressDialog.setup_ui'):
         form = ThemeProgressForm()
     return form
 

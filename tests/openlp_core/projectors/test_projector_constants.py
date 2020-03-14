@@ -21,63 +21,59 @@
 """
 Package to test the openlp.core.projectors.constants module.
 """
-from unittest import TestCase
-
 from openlp.core.projectors import constants
 from openlp.core.projectors.constants import STATUS_CODE, STATUS_MSG
 
 
-class TestProjectorConstants(TestCase):
+def test_defined_codes_in_status_code():
     """
-    Test specific functions in the projector constants module.
+    Test defined status/error codes have equivalent strings
     """
-    def test_defined_codes_in_status_code(self):
-        """
-        Test defined status/error codes have equivalent strings
-        """
-        check = []
-        missing_str = []
+    check = []
+    missing_str = []
 
-        # GIVEN: List of defined E_* and S_* items defined in constants
+    # GIVEN: List of defined E_* and S_* items defined in constants
 
-        for item in constants.__dict__:
-            if item.startswith('E_') or item.startswith('S_'):
-                check.append(item)
+    for item in constants.__dict__:
+        if item.startswith('E_') or item.startswith('S_'):
+            check.append(item)
 
-        # WHEN: Verify items were addeded to check
-        for item in check:
-            if constants.__dict__[item] not in STATUS_CODE:
-                missing_str.append(item)
+    # WHEN: Verify items were addeded to check
+    for item in check:
+        if constants.__dict__[item] not in STATUS_CODE:
+            missing_str.append(item)
 
-        # THEN: There should be no missing items
-        assert 0 == len(missing_str), 'Status string missing: {msg}'.format(msg=missing_str)
+    # THEN: There should be no missing items
+    assert 0 == len(missing_str), 'Status string missing: {msg}'.format(msg=missing_str)
 
-    def test_status_code_in_status_message(self):
-        """
-        Test if entries in STATUS_CODE have equivalent descriptions in STATUS_MSG
-        """
-        missing_msg = []
 
-        # GIVEN: Test items
-        check = STATUS_CODE
+def test_status_code_in_status_message():
+    """
+    Test if entries in STATUS_CODE have equivalent descriptions in STATUS_MSG
+    """
+    missing_msg = []
 
-        # WHEN: Verify each entry in STATUS_MSG against STATUS_CODE
-        for item in check:
-            if item not in STATUS_MSG:
-                missing_msg.append(item)
+    # GIVEN: Test items
+    check = STATUS_CODE
 
-        # THEN: There should be no missing items
-        assert 0 == len(missing_msg), 'Status message missing: {msg}'.format(msg=missing_msg)
+    # WHEN: Verify each entry in STATUS_MSG against STATUS_CODE
+    for item in check:
+        if item not in STATUS_MSG:
+            missing_msg.append(item)
 
-    def test_build_pjlink_video_label(self):
-        """
-        Test building PJLINK_DEFAULT_CODES dictionary
-        """
-        # GIVEN: Test data
-        from tests.resources.projector.data import TEST_VIDEO_CODES
+    # THEN: There should be no missing items
+    assert 0 == len(missing_msg), 'Status message missing: {msg}'.format(msg=missing_msg)
 
-        # WHEN: Import projector PJLINK_DEFAULT_CODES
-        from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES
 
-        # THEN: Verify dictionary was build correctly
-        self.assertEqual(PJLINK_DEFAULT_CODES, TEST_VIDEO_CODES, 'PJLink video strings should match')
+def test_build_pjlink_video_label():
+    """
+    Test building PJLINK_DEFAULT_CODES dictionary
+    """
+    # GIVEN: Test data
+    from tests.resources.projector.data import TEST_VIDEO_CODES
+
+    # WHEN: Import projector PJLINK_DEFAULT_CODES
+    from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES
+
+    # THEN: Verify dictionary was build correctly
+    assert PJLINK_DEFAULT_CODES == TEST_VIDEO_CODES , 'PJLink video strings should match'
