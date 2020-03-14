@@ -129,7 +129,7 @@ def test_projector_lamp_invalid_missing_data(mock_log, pjlink):
     Test process lamp with 1 lamp reply hours only and no on/off status
     """
     # GIVEN: Test object
-    log_warning_calls = [call('({ip}) process_lamp(, pjlink): Invalid data "45" - '
+    log_warning_calls = [call('({ip}) process_lamp(): Invalid data "45" - '
                               'Missing data'.format(ip=pjlink.name))]
     log_debug_calls = [call('({ip}) Processing command "LAMP" with data "45"'.format(ip=pjlink.name)),
                        call('({ip}) Calling function for LAMP'.format(ip=pjlink.name))]
@@ -152,7 +152,7 @@ def test_projector_lamp_invalid_nan(mock_log, pjlink):
     # GIVEN: Test object
     pjlink.lamp = [{'Hours': 00000, 'On': True},
                    {'Hours': 11111, 'On': False}]
-    log_warning_calls = [call('({ip}) process_lamp(, pjlink): Invalid data "11111 1 22222 0 '
+    log_warning_calls = [call('({ip}) process_lamp(): Invalid data "11111 1 22222 0 '
                               '333A3 1"'.format(ip=pjlink.name))]
     log_debug_calls = [call('({ip}) Processing command "LAMP" with data "11111 1 22222 0 '
                             '333A3 1"'.format(ip=pjlink.name)),
