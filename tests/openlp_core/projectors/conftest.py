@@ -32,4 +32,3 @@ def pjlink():
     pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
     yield pj_link
     del pj_link
-

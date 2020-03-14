@@ -152,6 +152,7 @@ def test_projector_change_status_unknown_socket_error(mock_log, mock_changeStatu
     mock_changeStatus.emit.assert_called_once_with(pjlink.ip, E_UNKNOWN_SOCKET_ERROR,
                                                    STATUS_MSG[E_UNKNOWN_SOCKET_ERROR])
 
+
 @patch.object(openlp.core.projectors.pjlink.PJLink, 'projectorUpdateIcons')
 @patch.object(openlp.core.projectors.pjlink.PJLink, 'changeStatus')
 @patch.object(openlp.core.projectors.pjlink, 'log')

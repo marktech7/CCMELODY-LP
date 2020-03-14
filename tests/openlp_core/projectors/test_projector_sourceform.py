@@ -103,6 +103,7 @@ def test_source_select_edit_button(mocked_qdialog, projector_env):
     assert len(select_form.button_box.buttons()) == 4, \
         'SourceSelect dialog box should have "OK", "Cancel", "Rest", and "Revert" buttons available'
 
+
 @patch.object(QDialog, 'exec')
 def test_source_select_noedit_button(mocked_qdialog, projector_env):
     """

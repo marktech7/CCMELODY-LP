@@ -76,4 +76,4 @@ def test_build_pjlink_video_label():
     from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES
 
     # THEN: Verify dictionary was build correctly
-    assert PJLINK_DEFAULT_CODES == TEST_VIDEO_CODES , 'PJLink video strings should match'
+    assert PJLINK_DEFAULT_CODES == TEST_VIDEO_CODES, 'PJLink video strings should match'

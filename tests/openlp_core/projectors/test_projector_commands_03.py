@@ -55,6 +55,7 @@ def test_process_pjlink_authenticate(mock_log, pjlink):
     mock_log.debug.assert_has_calls(log_debug_calls)
     assert chk == S_AUTHENTICATE, 'Should have returned {data}'.format(data=STATUS_CODE[S_AUTHENTICATE])
 
+
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_authenticate_pin_not_set_error(mock_log, pjlink):
     """
@@ -79,6 +80,7 @@ def test_process_pjlink_authenticate_pin_not_set_error(mock_log, pjlink):
     mock_log.debug.assert_has_calls(log_debug_calls)
     assert chk == E_NO_AUTHENTICATION, \
         'Should have returned {data}'.format(data=STATUS_CODE[E_NO_AUTHENTICATION])
+
 
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_authenticate_token_invalid(mock_log, pjlink):
@@ -106,6 +108,7 @@ def test_process_pjlink_authenticate_token_invalid(mock_log, pjlink):
     assert chk == E_NO_AUTHENTICATION, \
         'Should have returned {data}'.format(data=STATUS_CODE[E_NO_AUTHENTICATION])
 
+
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_authenticate_token_length(mock_log, pjlink):
     """
@@ -132,6 +135,7 @@ def test_process_pjlink_authenticate_token_length(mock_log, pjlink):
     assert chk == E_NO_AUTHENTICATION, \
         'Should have returned {data}'.format(data=STATUS_CODE[E_NO_AUTHENTICATION])
 
+
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_authenticate_token_missing(mock_log, pjlink):
     """
@@ -156,6 +160,7 @@ def test_process_pjlink_authenticate_token_missing(mock_log, pjlink):
     mock_log.debug.assert_has_calls(log_debug_calls)
     assert chk == E_NO_AUTHENTICATION, \
         'Should have returned {data}'.format(data=STATUS_CODE[E_NO_AUTHENTICATION])
+
 
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_normal(mock_log, pjlink):
@@ -182,6 +187,7 @@ def test_process_pjlink_normal(mock_log, pjlink):
     mock_log.debug.assert_has_calls(log_debug_calls)
     assert chk == S_CONNECT, 'Should have returned {data}'.format(data=STATUS_CODE[S_CONNECT])
 
+
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_normal_pin_set_error(mock_log, pjlink):
     """
@@ -205,6 +211,7 @@ def test_process_pjlink_normal_pin_set_error(mock_log, pjlink):
     mock_log.debug.assert_has_calls(log_debug_calls)
     assert chk == E_NO_AUTHENTICATION, \
         'Should have returned {data}'.format(data=STATUS_CODE[E_NO_AUTHENTICATION])
+
 
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_process_pjlink_normal_with_token(mock_log, pjlink):

@@ -112,4 +112,3 @@ def tmp_folder():
     t_folder = mkdtemp(prefix='openlp_')
     yield t_folder
     shutil.rmtree(t_folder, ignore_errors=True)
-

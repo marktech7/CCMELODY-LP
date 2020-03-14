@@ -151,7 +151,7 @@ def test_projector_lamp_invalid_nan(mock_log, pjlink):
     """
     # GIVEN: Test object
     pjlink.lamp = [{'Hours': 00000, 'On': True},
-                        {'Hours': 11111, 'On': False}]
+                   {'Hours': 11111, 'On': False}]
     log_warning_calls = [call('({ip}) process_lamp(, pjlink): Invalid data "11111 1 22222 0 '
                               '333A3 1"'.format(ip=pjlink.name))]
     log_debug_calls = [call('({ip}) Processing command "LAMP" with data "11111 1 22222 0 '
