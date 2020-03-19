@@ -21,54 +21,48 @@
 """
 Package to test the openlp.core.projectors.pjlink base package.
 """
-from unittest import TestCase
 
 
-# from openlp.core.projectors.db import Projector
-# from openlp.core.projectors.pjlink import PJLink
-# from tests.resources.projector.data import TEST1_DATA
-
-
-class TestPJLinkBugs(TestCase):
+def test_bug_1550891_process_clss_nonstandard_reply_1():
     """
-    Tests for the PJLink module bugfixes
+    Bugfix 1550891: CLSS request returns non-standard reply with Optoma/Viewsonic projector
     """
-    def test_bug_1550891_process_clss_nonstandard_reply_1(self):
-        """
-        Bugfix 1550891: CLSS request returns non-standard reply with Optoma/Viewsonic projector
-        """
-        # Test now part of test_projector_pjlink_commands_01
-        # Keeping here for bug reference
-        pass
+    # Test now part of test_projector_pjlink_commands_01
+    # Keeping here for bug reference
+    pass
 
-    def test_bug_1550891_process_clss_nonstandard_reply_2(self):
-        """
-        Bugfix 1550891: CLSS request returns non-standard reply with BenQ projector
-        """
-        # Test now part of test_projector_pjlink_commands_01
-        # Keeping here for bug reference
-        pass
 
-    def test_bug_1593882_no_pin_authenticated_connection(self):
-        """
-        Test bug 1593882 no pin and authenticated request exception
-        """
-        # Test now part of test_projector_pjlink_commands_02
-        # Keeping here for bug reference
-        pass
+def test_bug_1550891_process_clss_nonstandard_reply_2():
+    """
+    Bugfix 1550891: CLSS request returns non-standard reply with BenQ projector
+    """
+    # Test now part of test_projector_pjlink_commands_01
+    # Keeping here for bug reference
+    pass
 
-    def test_bug_1593883_pjlink_authentication(self):
-        """
-        Test bugfix 1593883 pjlink authentication and ticket 92187
-        """
-        # Test now part of test_projector_pjlink_commands_02
-        # Keeping here for bug reference
-        pass
 
-    def test_bug_1734275_process_lamp_nonstandard_reply(self):
-        """
-        Test bugfix 17342785 non-standard LAMP response with one lamp hours only
-        """
-        # Test now part of test_projector_pjlink_commands_01
-        # Keeping here for bug reference
-        pass
+def test_bug_1593882_no_pin_authenticated_connection():
+    """
+    Test bug 1593882 no pin and authenticated request exception
+    """
+    # Test now part of test_projector_pjlink_commands_02
+    # Keeping here for bug reference
+    pass
+
+
+def test_bug_1593883_pjlink_authentication():
+    """
+    Test bugfix 1593883 pjlink authentication and ticket 92187
+    """
+    # Test now part of test_projector_pjlink_commands_02
+    # Keeping here for bug reference
+    pass
+
+
+def test_bug_1734275_process_lamp_nonstandard_reply():
+    """
+    Test bugfix 17342785 non-standard LAMP response with one lamp hours only
+    """
+    # Test now part of test_projector_pjlink_commands_01
+    # Keeping here for bug reference
+    pass

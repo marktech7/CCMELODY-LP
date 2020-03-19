@@ -18,27 +18,3 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-"""
-This module contains tests for the PresentationManager song importer.
-"""
-from unittest import skipIf
-
-from openlp.core.common import is_macosx
-from tests.helpers.songfileimport import SongImportTestHelper
-from tests.utils.constants import RESOURCE_PATH
-
-
-TEST_PATH = RESOURCE_PATH / 'songs' / 'presentationmanager'
-
-
-@skipIf(is_macosx(), 'This test fails for an undetermined reason on macOS')
-def test_presenter_manager(mock_settings):
-
-    test_file_import = SongImportTestHelper('PresentationManagerImport', 'presentationmanager')
-    test_file_import.setUp()
-    test_file_import.file_import([TEST_PATH / 'Great Is Thy Faithfulness.sng'],
-                                 test_file_import.load_external_result_data(TEST_PATH /
-                                                                            'Great Is Thy Faithfulness.json'))
-    test_file_import.file_import([TEST_PATH / 'Amazing Grace.sng'],
-                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-    test_file_import.tearDown()

@@ -23,6 +23,8 @@ All the tests
 """
 import os
 import sys
+import shutil
+from tempfile import mkdtemp
 from tempfile import mkstemp
 from unittest.mock import MagicMock
 
@@ -103,3 +105,10 @@ def state_media(state):
     State().add_service("media", 0)
     State().update_pre_conditions("media", True)
     State().flush_preconditions()
+
+
+@pytest.yield_fixture()
+def tmp_folder():
+    t_folder = mkdtemp(prefix='openlp_')
+    yield t_folder
+    shutil.rmtree(t_folder, ignore_errors=True)

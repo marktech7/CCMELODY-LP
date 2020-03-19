@@ -158,10 +158,10 @@ def update_reference_separators():
                                                    'Genesis Chapter 1 Verses 1 To The Last Verse')])]
     settings = Registry().get('settings')
     custom_separators = [
-        settings.value('verse separator'),
-        settings.value('range separator'),
-        settings.value('list separator'),
-        settings.value('end separator')]
+        settings.value('bibles/verse separator'),
+        settings.value('bibles/range separator'),
+        settings.value('bibles/list separator'),
+        settings.value('bibles/end separator')]
     for index, role in enumerate(['v', 'r', 'l', 'e']):
         if custom_separators[index].strip('|') == '':
             source_string = default_separators[index].strip('|')

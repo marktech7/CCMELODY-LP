@@ -21,9 +21,8 @@
 """
 Package to test the openlp.core.lib package.
 """
-import pytest
 from pathlib import Path
-from tempfile import mkdtemp
+
 from unittest.mock import MagicMock, patch
 
 from sqlalchemy import MetaData
@@ -31,12 +30,6 @@ from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.pool import NullPool
 
 from openlp.core.lib.db import delete_database, get_upgrade_op, init_db, upgrade_db
-
-
-@pytest.fixture(scope='module')
-def tmp_folder():
-    tmp_folder = mkdtemp(prefix='openlp_')
-    return tmp_folder
 
 
 def test_init_db_calls_correct_functions():

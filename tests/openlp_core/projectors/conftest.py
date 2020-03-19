@@ -19,26 +19,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-This module contains tests for the PresentationManager song importer.
+Package to test the openlp.core.projectors.pjlink command routing.
 """
-from unittest import skipIf
-
-from openlp.core.common import is_macosx
-from tests.helpers.songfileimport import SongImportTestHelper
-from tests.utils.constants import RESOURCE_PATH
-
-
-TEST_PATH = RESOURCE_PATH / 'songs' / 'presentationmanager'
+import pytest
+from openlp.core.projectors.db import Projector
+from openlp.core.projectors.pjlink import PJLink
+from tests.resources.projector.data import TEST1_DATA
 
 
-@skipIf(is_macosx(), 'This test fails for an undetermined reason on macOS')
-def test_presenter_manager(mock_settings):
-
-    test_file_import = SongImportTestHelper('PresentationManagerImport', 'presentationmanager')
-    test_file_import.setUp()
-    test_file_import.file_import([TEST_PATH / 'Great Is Thy Faithfulness.sng'],
-                                 test_file_import.load_external_result_data(TEST_PATH /
-                                                                            'Great Is Thy Faithfulness.json'))
-    test_file_import.file_import([TEST_PATH / 'Amazing Grace.sng'],
-                                 test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
-    test_file_import.tearDown()
+@pytest.yield_fixture()
+def pjlink():
+    pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
+    yield pj_link
+    del pj_link

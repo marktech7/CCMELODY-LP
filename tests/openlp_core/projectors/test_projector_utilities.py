@@ -22,8 +22,6 @@
 Package to test the openlp.core.ui.projector.networkutils package.
 """
 
-from unittest import TestCase
-
 from openlp.core.common import md5_hash, qmd5_hash, verify_ip_address
 from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
 
@@ -44,136 +42,144 @@ ip6_link_local = 'fe80::223:14ff:fe99:d315'
 ip6_bad = 'ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff'
 
 
-class TestProjectorUtilities(TestCase):
+def test_ip4_loopback_valid():
     """
-    Validate functions in the projector utilities module
+    Test IPv4 loopbackvalid
     """
-    def test_ip4_loopback_valid(self):
-        """
-        Test IPv4 loopbackvalid
-        """
-        # WHEN: Test with a local loopback test
-        valid = verify_ip_address(addr=ip4_loopback)
+    # WHEN: Test with a local loopback test
+    valid = verify_ip_address(addr=ip4_loopback)
 
-        # THEN: Verify we received True
-        assert valid, 'IPv4 loopback address should have been valid'
+    # THEN: Verify we received True
+    assert valid, 'IPv4 loopback address should have been valid'
 
-    def test_ip4_local_valid(self):
-        """
-        Test IPv4 local valid
-        """
-        # WHEN: Test with a local loopback test
-        valid = verify_ip_address(addr=ip4_local)
 
-        # THEN: Verify we received True
-        assert valid is True, 'IPv4 local address should have been valid'
+def test_ip4_local_valid():
+    """
+    Test IPv4 local valid
+    """
+    # WHEN: Test with a local loopback test
+    valid = verify_ip_address(addr=ip4_local)
 
-    def test_ip4_broadcast_valid(self):
-        """
-        Test IPv4 broadcast valid
-        """
-        # WHEN: Test with a local loopback test
-        valid = verify_ip_address(addr=ip4_broadcast)
+    # THEN: Verify we received True
+    assert valid is True, 'IPv4 local address should have been valid'
 
-        # THEN: Verify we received True
-        assert valid is True, 'IPv4 broadcast address should have been valid'
 
-    def test_ip4_address_invalid(self):
-        """
-        Test IPv4 address invalid
-        """
-        # WHEN: Test with a local loopback test
-        valid = verify_ip_address(addr=ip4_bad)
+def test_ip4_broadcast_valid():
+    """
+    Test IPv4 broadcast valid
+    """
+    # WHEN: Test with a local loopback test
+    valid = verify_ip_address(addr=ip4_broadcast)
 
-        # THEN: Verify we received True
-        assert valid is False, 'Bad IPv4 address should not have been valid'
+    # THEN: Verify we received True
+    assert valid is True, 'IPv4 broadcast address should have been valid'
 
-    def test_ip6_loopback_valid(self):
-        """
-        Test IPv6 loopback valid
-        """
-        # WHEN: Test IPv6 loopback address
-        valid = verify_ip_address(addr=ip6_loopback)
 
-        # THEN: Validate return
-        assert valid is True, 'IPv6 loopback address should have been valid'
+def test_ip4_address_invalid():
+    """
+    Test IPv4 address invalid
+    """
+    # WHEN: Test with a local loopback test
+    valid = verify_ip_address(addr=ip4_bad)
 
-    def test_ip6_local_valid(self):
-        """
-        Test IPv6 link-local valid
-        """
-        # WHEN: Test IPv6 link-local address
-        valid = verify_ip_address(addr=ip6_link_local)
+    # THEN: Verify we received True
+    assert valid is False, 'Bad IPv4 address should not have been valid'
 
-        # THEN: Validate return
-        assert valid is True, 'IPv6 link-local address should have been valid'
 
-    def test_ip6_address_invalid(self):
-        """
-        Test NetworkUtils IPv6 address invalid
-        """
-        # WHEN: Given an invalid IPv6 address
-        valid = verify_ip_address(addr=ip6_bad)
+def test_ip6_loopback_valid():
+    """
+    Test IPv6 loopback valid
+    """
+    # WHEN: Test IPv6 loopback address
+    valid = verify_ip_address(addr=ip6_loopback)
 
-        # THEN: Validate bad return
-        assert valid is False, 'IPv6 bad address should have been invalid'
+    # THEN: Validate return
+    assert valid is True, 'IPv6 loopback address should have been valid'
 
-    def test_md5_hash(self):
-        """
-        Test MD5 hash from salt+data pass (python)
-        """
-        # WHEN: Given a known salt+data
-        hash_ = md5_hash(salt=salt.encode('utf-8'), data=pin.encode('utf-8'))
 
-        # THEN: Validate return has is same
-        assert hash_ == test_hash, 'MD5 should have returned a good hash'
+def test_ip6_local_valid():
+    """
+    Test IPv6 link-local valid
+    """
+    # WHEN: Test IPv6 link-local address
+    valid = verify_ip_address(addr=ip6_link_local)
 
-    def test_md5_hash_bad(self):
-        """
-        Test MD5 hash from salt+data fail (python)
-        """
-        # WHEN: Given a different salt+hash
-        hash_ = md5_hash(salt=pin.encode('utf-8'), data=salt.encode('utf-8'))
+    # THEN: Validate return
+    assert valid is True, 'IPv6 link-local address should have been valid'
 
-        # THEN: return data is different
-        assert hash_ is not test_hash, 'MD5 should have returned a bad hash'
 
-    def test_qmd5_hash(self):
-        """
-        Test MD5 hash from salt+data pass (Qt)
-        """
-        # WHEN: Given a known salt+data
-        hash_ = qmd5_hash(salt=salt.encode('utf-8'), data=pin.encode('utf-8'))
+def test_ip6_address_invalid():
+    """
+    Test NetworkUtils IPv6 address invalid
+    """
+    # WHEN: Given an invalid IPv6 address
+    valid = verify_ip_address(addr=ip6_bad)
 
-        # THEN: Validate return has is same
-        assert hash_ == test_hash, 'Qt-MD5 should have returned a good hash'
+    # THEN: Validate bad return
+    assert valid is False, 'IPv6 bad address should have been invalid'
 
-    def test_qmd5_hash_bad(self):
-        """
-        Test MD5 hash from salt+hash fail (Qt)
-        """
-        # WHEN: Given a different salt+hash
-        hash_ = qmd5_hash(salt=pin.encode('utf-8'), data=salt.encode('utf-8'))
 
-        # THEN: return data is different
-        assert hash_ is not test_hash, 'Qt-MD5 should have returned a bad hash'
+def test_md5_hash():
+    """
+    Test MD5 hash from salt+data pass (python)
+    """
+    # WHEN: Given a known salt+data
+    hash_ = md5_hash(salt=salt.encode('utf-8'), data=pin.encode('utf-8'))
 
-    def test_md5_non_ascii_string(self):
-        """
-        Test MD5 hash with non-ascii string - bug 1417809
-        """
-        # WHEN: Non-ascii string is hashed
-        hash_ = md5_hash(salt=test_non_ascii_string.encode('utf-8'), data=None)
+    # THEN: Validate return has is same
+    assert hash_ == test_hash, 'MD5 should have returned a good hash'
 
-        # THEN: Valid MD5 hash should be returned
-        assert hash_ == test_non_ascii_hash, 'MD5 should have returned a valid hash'
 
-    def test_qmd5_non_ascii_string(self):
-        """
-        Test MD5 hash with non-ascii string - bug 1417809
-        """
-        # WHEN: Non-ascii string is hashed
-        hash_ = md5_hash(data=test_non_ascii_string.encode('utf-8'))
+def test_md5_hash_bad():
+    """
+    Test MD5 hash from salt+data fail (python)
+    """
+    # WHEN: Given a different salt+hash
+    hash_ = md5_hash(salt=pin.encode('utf-8'), data=salt.encode('utf-8'))
 
-        # THEN: Valid MD5 hash should be returned
-        assert hash_ == test_non_ascii_hash, 'Qt-MD5 should have returned a valid hash'
+    # THEN: return data is different
+    assert hash_ is not test_hash, 'MD5 should have returned a bad hash'
+
+
+def test_qmd5_hash():
+    """
+    Test MD5 hash from salt+data pass (Qt)
+    """
+    # WHEN: Given a known salt+data
+    hash_ = qmd5_hash(salt=salt.encode('utf-8'), data=pin.encode('utf-8'))
+
+    # THEN: Validate return has is same
+    assert hash_ == test_hash, 'Qt-MD5 should have returned a good hash'
+
+
+def test_qmd5_hash_bad():
+    """
+    Test MD5 hash from salt+hash fail (Qt)
+    """
+    # WHEN: Given a different salt+hash
+    hash_ = qmd5_hash(salt=pin.encode('utf-8'), data=salt.encode('utf-8'))
+
+    # THEN: return data is different
+    assert hash_ is not test_hash, 'Qt-MD5 should have returned a bad hash'
+
+
+def test_md5_non_ascii_string():
+    """
+    Test MD5 hash with non-ascii string - bug 1417809
+    """
+    # WHEN: Non-ascii string is hashed
+    hash_ = md5_hash(salt=test_non_ascii_string.encode('utf-8'), data=None)
+
+    # THEN: Valid MD5 hash should be returned
+    assert hash_ == test_non_ascii_hash, 'MD5 should have returned a valid hash'
+
+
+def test_qmd5_non_ascii_string():
+    """
+    Test MD5 hash with non-ascii string - bug 1417809
+    """
+    # WHEN: Non-ascii string is hashed
+    hash_ = md5_hash(data=test_non_ascii_string.encode('utf-8'))
+
+    # THEN: Valid MD5 hash should be returned
+    assert hash_ == test_non_ascii_hash, 'Qt-MD5 should have returned a valid hash'
