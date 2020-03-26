@@ -70,6 +70,7 @@ class Registry(metaclass=Singleton):
         :param key: The service to be created this is usually a major class like "renderer" or "main_window" .
         :param reference: The service address to be saved.
         """
+        log.debug(f'Registering object {key}')
         if key in self.service_list:
             trace_error_handler(log)
             log.error('Duplicate service exception {key}'.format(key=key))
@@ -95,6 +96,7 @@ class Registry(metaclass=Singleton):
             recipients.
         :param function: The function to be called when the event happens.
         """
+        log.debug(f'Registering event {event}')
         if event in self.functions_list:
             self.functions_list[event].append(function)
         else:

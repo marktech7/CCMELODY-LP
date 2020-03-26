@@ -41,7 +41,7 @@ class Poller(RegistryProperties):
         settings = Registry().get('settings_thread')
         self.address = settings.value('api/ip address')
         self.ws_port = settings.value('api/websocket port')
-        self.http_port = settings.value('api/http port')
+        self.http_port = settings.value('api/port')
 
     def raw_poll(self):
         return {
