@@ -373,12 +373,15 @@ def main():
     # Initialise the Registry
     Registry.create()
     settings = Settings()
+    Registry().register('settings', settings)
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
     app.settings = settings
-    Registry().register('settings', settings)
+    # Need settings object for the threads.
+    settings_thread = Settings()
+    Registry().register('settings_thread', settings_thread)
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     server = Server()

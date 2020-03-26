@@ -27,7 +27,7 @@ from openlp.core.common.registry import Registry
 def login_required(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not Registry().get('settings').value('api/authentication enabled'):
+        if not Registry().get('settings_thread').value('api/authentication enabled'):
             return f(*args, **kwargs)
         token = request.headers.get('Authorization', '')
         if token == Registry().get('authentication_token'):
@@ -38,7 +38,7 @@ def login_required(f):
 
 
 def old_success_response():
-    return jsonify({'results': {'sucess': True}})
+    return jsonify({'results': {'success': True}})
 
 
 def extract_request(json_string, name):
@@ -52,14 +52,14 @@ def extract_request(json_string, name):
 
 # ----------------------- OLD AUTH SECTION ---------------------
 def check_auth(username, password):
-    return Registry().get('settings').value('api/user id') == username and \
-        Registry().get('settings').value('api/password') == password
+    return Registry().get('settings_thread').value('api/user id') == username and \
+        Registry().get('settings_thread').value('api/password') == password
 
 
 def old_auth(f):
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not Registry().get('settings').value('api/authentication enabled'):
+        if not Registry().get('settings_thread').value('api/authentication enabled'):
             return f(*args, **kwargs)
         auth = request.authorization
         if not auth or not check_auth(auth.username, auth.password):
