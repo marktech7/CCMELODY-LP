@@ -71,7 +71,7 @@ def controller_text_api():
                 if current_item.is_capable(ItemCapabilities.HasNotes):
                     item['slide_notes'] = str(frame['notes'])
                 if current_item.is_capable(ItemCapabilities.HasThumbnails) and \
-                        Registry().get('settings').value('api/thumbnails'):
+                        Registry().get('settings_threads').value('api/thumbnails'):
                     # If the file is under our app directory tree send the portion after the match
                     data_path = str(AppLocation.get_data_path())
                     if frame['image'][0:len(data_path)] == data_path:

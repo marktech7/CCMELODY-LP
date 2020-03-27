@@ -151,7 +151,7 @@ def test_mainwindow_configuration(main_window):
     # WHEN: you check the started functions
 
     # THEN: the following registry functions should have been registered
-    expected_service_list = ['settings', 'application', 'main_window', 'http_server', 'authentication_token',
+    expected_service_list = ['settings', 'settings_thread', 'application', 'main_window', 'http_server', 'authentication_token',
                              'settings_form', 'service_manager', 'theme_manager', 'projector_manager']
     expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
                                'theme_update_global', 'config_screen_changed']

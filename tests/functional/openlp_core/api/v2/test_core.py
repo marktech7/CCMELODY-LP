@@ -47,7 +47,7 @@ def test_plugins_returns_list(flask_client):
 
 
 def test_system_information(flask_client, settings):
-    settings.setValue('api/authentication enabled', False)
+    Registry().get('settings_thread').setValue('api/authentication enabled', False)
     res = flask_client.get('/api/v2/core/system').get_json()
     assert res['websocket_port'] > 0
     assert not res['login_required']
