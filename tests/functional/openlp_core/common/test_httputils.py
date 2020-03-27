@@ -168,7 +168,7 @@ def test_get_web_page_with_header(mocked_get_user_agent, mocked_requests, settin
 
 @patch('openlp.core.common.httputils.requests')
 @patch('openlp.core.common.httputils.get_user_agent')
-def test_get_web_page_with_user_agent_in_headers(mocked_get_user_agent, mocked_requests):
+def test_get_web_page_with_user_agent_in_headers(mocked_get_user_agent, mocked_requests, settings):
     """
     Test that adding a user agent in the header when calling get_web_page() adds that user agent to the request
     """
@@ -216,7 +216,7 @@ def test_get_web_page_update_openlp(MockRegistry, mocked_get_user_agent, mocked_
 
 
 @patch('openlp.core.common.httputils.requests')
-def test_get_url_file_size(mocked_requests):
+def test_get_url_file_size(mocked_requests, settings):
     """
     Test that calling "get_url_file_size" works correctly
     """
@@ -276,7 +276,7 @@ def test_system_proxy_mode(settings):
     assert result is None
 
 
-def test_manual_proxy_mode_no_auth():
+def test_manual_proxy_mode_no_auth(settings):
     """
     Test that the correct proxy addresses are returned when basic authentication is not used
     """
@@ -294,7 +294,7 @@ def test_manual_proxy_mode_no_auth():
     assert result == {'http': 'http://testhttp.server:port', 'https': 'https://testhttps.server:port'}
 
 
-def test_manual_proxy_mode_auth():
+def test_manual_proxy_mode_auth(settings):
     """
     Test that the correct proxy addresses are returned when basic authentication is used
     """
@@ -313,7 +313,7 @@ def test_manual_proxy_mode_auth():
                       'https': 'https://user:pass@testhttps.server:port'}
 
 
-def test_manual_proxy_mode_no_servers():
+def test_manual_proxy_mode_no_servers(settings):
     """
     Test that the system proxies are overidden when the MANUAL_PROXY mode is specified, but no server addresses are
     supplied

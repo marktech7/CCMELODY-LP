@@ -159,8 +159,8 @@ def test_get_language_from_settings(settings):
     assert LanguageManager.get_language() == 'en'
 
 
-def test_get_language_from_settings_returns_unchanged_if_unknown_format():
-    Settings().setValue('core/language', '(foobar)')
+def test_get_language_from_settings_returns_unchanged_if_unknown_format(settings):
+    settings.setValue('core/language', '(foobar)')
     assert LanguageManager.get_language() == '(foobar)'
 
 
