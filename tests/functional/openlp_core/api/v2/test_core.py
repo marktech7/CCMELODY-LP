@@ -47,7 +47,7 @@ def test_plugins_returns_list(flask_client):
 
 
 def test_system_information(flask_client, settings):
-    settings.setValue('api/authentication enabled', False)
+    Registry().get('settings_thread').setValue('api/authentication enabled', False)
     res = flask_client.get('/api/v2/core/system').get_json()
     assert res['websocket_port'] > 0
     assert not res['login_required']
@@ -126,7 +126,7 @@ def test_toggle_display_valid_action_updates_controller(flask_client, settings):
     assert controller.slidecontroller_toggle_display.set == 'show'
 
 
-def test_cors_headers_are_present(flask_client):
+def test_cors_headers_are_present(flask_client, settings):
     res = flask_client.get('/api/v2/core/system')
     assert 'Access-Control-Allow-Origin' in res.headers
     assert res.headers['Access-Control-Allow-Origin'] == '*'

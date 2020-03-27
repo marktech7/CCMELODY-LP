@@ -61,8 +61,8 @@ def plugin_list():
 @core.route('/system')
 def system_information():
     data = {}
-    data['websocket_port'] = Registry().get('settings').value('api/websocket port')
-    data['login_required'] = Registry().get('settings').value('api/authentication enabled')
+    data['websocket_port'] = Registry().get('settings_thread').value('api/websocket port')
+    data['login_required'] = Registry().get('settings_thread').value('api/authentication enabled')
     return jsonify(data)
 
 
@@ -73,8 +73,8 @@ def login():
         abort(400)
     username = data.get('username', '')
     password = data.get('password', '')
-    if username == Registry().get('settings').value('api/user id') and \
-            password == Registry().get('settings').value('api/password'):
+    if username == Registry().get('settings_thread').value('api/user id') and \
+            password == Registry().get('settings_thread').value('api/password'):
         return jsonify({'token': Registry().get('authentication_token')})
     else:
         return '', 401
