@@ -62,9 +62,6 @@ class SongsTab(SettingsTab):
         self.chords_info_label = QtWidgets.QLabel(self.chords_group_box)
         self.chords_info_label.setWordWrap(True)
         self.chords_layout.addWidget(self.chords_info_label)
-        self.mainview_chords_check_box = QtWidgets.QCheckBox(self.mode_group_box)
-        self.mainview_chords_check_box.setObjectName('mainview_chords_check_box')
-        self.chords_layout.addWidget(self.mainview_chords_check_box)
         self.disable_chords_import_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.disable_chords_import_check_box.setObjectName('disable_chords_import_check_box')
         self.chords_layout.addWidget(self.disable_chords_import_check_box)
@@ -104,7 +101,6 @@ class SongsTab(SettingsTab):
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
         self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
-        self.mainview_chords_check_box.stateChanged.connect(self.on_mainview_chords_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
         self.english_notation_radio_button.clicked.connect(self.on_english_notation_button_clicked)
         self.german_notation_radio_button.clicked.connect(self.on_german_notation_button_clicked)
@@ -123,7 +119,6 @@ class SongsTab(SettingsTab):
         self.chords_info_label.setText(translate('SongsPlugin.SongsTab', 'If enabled all text between "[" and "]" will '
                                                                          'be regarded as chords.'))
         self.chords_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Chords'))
-        self.mainview_chords_check_box.setText(translate('SongsPlugin.SongsTab', 'Display chords in the main view'))
         self.disable_chords_import_check_box.setText(translate('SongsPlugin.SongsTab',
                                                                'Ignore chords when importing songs'))
         self.chord_notation_label.setText(translate('SongsPlugin.SongsTab', 'Chord notation to use:'))
@@ -194,9 +189,6 @@ class SongsTab(SettingsTab):
     def on_songbook_slide_check_box_changed(self, check_state):
         self.songbook_slide = (check_state == QtCore.Qt.Checked)
 
-    def on_mainview_chords_check_box_changed(self, check_state):
-        self.mainview_chords = (check_state == QtCore.Qt.Checked)
-
     def on_disable_chords_import_check_box_changed(self, check_state):
         self.disable_chords_import = (check_state == QtCore.Qt.Checked)
 
@@ -220,13 +212,11 @@ class SongsTab(SettingsTab):
         self.songbook_slide = self.settings.value('add songbook slide')
         self.enable_chords = self.settings.value('enable chords')
         self.chord_notation = self.settings.value('chord notation')
-        self.mainview_chords = self.settings.value('mainview chords')
         self.disable_chords_import = self.settings.value('disable chords import')
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
         self.chords_group_box.setChecked(self.enable_chords)
-        self.mainview_chords_check_box.setChecked(self.mainview_chords)
         self.disable_chords_import_check_box.setChecked(self.disable_chords_import)
         if self.chord_notation == 'german':
             self.german_notation_radio_button.setChecked(True)
@@ -243,7 +233,6 @@ class SongsTab(SettingsTab):
         self.settings.setValue('update service on edit', self.update_edit)
         self.settings.setValue('add song from service', self.update_load)
         self.settings.setValue('enable chords', self.chords_group_box.isChecked())
-        self.settings.setValue('mainview chords', self.mainview_chords)
         self.settings.setValue('disable chords import', self.disable_chords_import)
         self.settings.setValue('chord notation', self.chord_notation)
         # Only save footer template if it has been changed. This allows future updates
