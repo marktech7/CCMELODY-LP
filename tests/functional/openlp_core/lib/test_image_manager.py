@@ -38,6 +38,7 @@ from tests.utils.constants import RESOURCE_PATH
 
 TEST_PATH = str(RESOURCE_PATH)
 
+
 @skip('Probably not going to use ImageManager')
 class TestImageWorker(TestCase, TestMixin):
     """
@@ -86,6 +87,7 @@ class TestImageWorker(TestCase, TestMixin):
 
         # THEN: The stop_manager attrivute should have been set to True
         assert mocked_image_manager.stop_manager is True, 'mocked_image_manager.stop_manager should have been True'
+
 
 @skip('Probably not going to use ImageManager')
 class TestPriorityQueue(TestCase, TestMixin):
