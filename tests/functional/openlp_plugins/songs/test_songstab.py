@@ -144,7 +144,7 @@ def test_footer_nochange(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
-    assert mocked_settings_set_val.call_count == 8
+    assert mocked_settings_set_val.call_count == 7
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -157,7 +157,7 @@ def test_footer_change(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should have been saved (one more call to setValue than the nochange test)
-    assert mocked_settings_set_val.call_count == 9
+    assert mocked_settings_set_val.call_count == 8
     assert form.footer_edit_box.toPlainText() == 'A new footer'
 
 
