@@ -15,14 +15,14 @@ environment:
 
 install:
   # Install dependencies from pypi
-  - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pypiwin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF==1.16.7 QDarkStyle python-vlc Pyro4 zeroconf flask-cors pytest-qt"
+  - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pypiwin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF==1.16.7 QDarkStyle python-vlc Pyro4 zeroconf flask-cors pytest-qt pyenchant"
 
 build: off
 
 test_script:
   - cd %APPVEYOR_BUILD_FOLDER%
   # Run the tests
-  - "%PYTHON%\\python.exe -m pytest -v tests"
+  - "%PYTHON%\\python.exe -m pytest tests"
   # Go back to the user root folder
   - cd..
 

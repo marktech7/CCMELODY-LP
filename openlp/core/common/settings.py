@@ -315,7 +315,6 @@ class Settings(QtCore.QSettings):
         'songs/songselect searches': '',
         'songs/enable chords': True,
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
-        'songs/mainview chords': False,
         'songs/disable chords import': False,
         'songusage/status': PluginStatus.Inactive,
         'songusage/db type': 'sqlite',

@@ -87,7 +87,8 @@ class PresentationMediaItem(MediaManagerItem):
                 for file_type in file_types:
                     if file_type not in file_type_string:
                         file_type_string += '*.{text} '.format(text=file_type)
-                        self.service_manager.supported_suffixes(file_type)
+                file_type_string = file_type_string.strip()
+                self.service_manager.supported_suffixes(file_type_string.split(' '))
         self.on_new_file_masks = translate('PresentationPlugin.MediaItem',
                                            'Presentations ({text})').format(text=file_type_string)
 

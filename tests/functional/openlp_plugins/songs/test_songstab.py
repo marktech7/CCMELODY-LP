@@ -90,7 +90,6 @@ def test_save_check_box_settings(form):
     form.on_update_on_edit_check_box_changed(QtCore.Qt.Unchecked)
     form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
     form.on_songbook_slide_check_box_changed(QtCore.Qt.Unchecked)
-    form.on_mainview_chords_check_box_changed(QtCore.Qt.Checked)
     form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
     # WHEN: Save is invoked
     form.save()
@@ -100,7 +99,6 @@ def test_save_check_box_settings(form):
     assert form.settings.value('songs/update service on edit') is False
     assert form.settings.value('songs/add song from service') is True
     assert form.settings.value('songs/add songbook slide') is False
-    assert form.settings.value('songs/mainview chords') is True
     assert form.settings.value('songs/disable chords import') is False
 
 
@@ -146,7 +144,7 @@ def test_footer_nochange(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
-    assert mocked_settings_set_val.call_count == 8
+    assert mocked_settings_set_val.call_count == 7
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -159,7 +157,7 @@ def test_footer_change(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should have been saved (one more call to setValue than the nochange test)
-    assert mocked_settings_set_val.call_count == 9
+    assert mocked_settings_set_val.call_count == 8
     assert form.footer_edit_box.toPlainText() == 'A new footer'
 
 
