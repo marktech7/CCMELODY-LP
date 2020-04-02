@@ -30,7 +30,7 @@ from openlp.core.common.registry import Registry
 
 
 @pytest.yield_fixture
-def poller(registry):
+def poller(settings):
     poll = Poller()
     yield poll
 

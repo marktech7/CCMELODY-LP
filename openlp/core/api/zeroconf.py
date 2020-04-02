@@ -107,7 +107,7 @@ def start_zeroconf():
     # When we're running tests, just skip this set up if this flag is set
     if Registry().get_flag('no_web_server'):
         return
-    http_port = Registry().get('settings').value('api/port')
-    ws_port = Registry().get('settings').value('api/websocket port')
+    http_port = Registry().get('settings_thread').value('api/port')
+    ws_port = Registry().get('settings_thread').value('api/websocket port')
     worker = ZeroconfWorker([iface['ip'] for iface in get_network_interfaces().values()], http_port, ws_port)
     run_thread(worker, 'api_zeroconf')

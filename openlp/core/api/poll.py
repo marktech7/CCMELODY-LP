@@ -21,6 +21,7 @@
 
 import json
 
+from openlp.core.common.registry import Registry
 from openlp.core.common.httputils import get_web_page
 from openlp.core.common.mixins import RegistryProperties
 
@@ -37,6 +38,10 @@ class Poller(RegistryProperties):
         self.live_cache = None
         self.stage_cache = None
         self.chords_cache = None
+        settings = Registry().get('settings_thread')
+        self.address = settings.value('api/ip address')
+        self.ws_port = settings.value('api/websocket port')
+        self.http_port = settings.value('api/port')
 
     def raw_poll(self):
         return {
@@ -87,7 +92,7 @@ class Poller(RegistryProperties):
         """
         if self.stage_cache is None:
             try:
-                page = get_web_page("http://localhost:4316/stage")
+                page = get_web_page(f'http://{self.address}:{self.http_port}/stage')
             except Exception:
                 page = None
             if page:
@@ -103,7 +108,7 @@ class Poller(RegistryProperties):
         """
         if self.live_cache is None:
             try:
-                page = get_web_page("http://localhost:4316/main")
+                page = get_web_page(f'http://{self.address}:{self.http_port}/main')
             except Exception:
                 page = None
             if page:
@@ -119,7 +124,7 @@ class Poller(RegistryProperties):
         """
         if self.chords_cache is None:
             try:
-                page = get_web_page("http://localhost:4316/chords")
+                page = get_web_page(f'http://{self.address}:{self.http_port}/chords')
             except Exception:
                 page = None
             if page:

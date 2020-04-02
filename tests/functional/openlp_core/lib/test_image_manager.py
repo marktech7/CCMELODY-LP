@@ -39,6 +39,7 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = str(RESOURCE_PATH)
 
 
+@skip('Probably not going to use ImageManager')
 class TestImageWorker(TestCase, TestMixin):
     """
     Test all the methods in the ImageWorker class
@@ -88,6 +89,7 @@ class TestImageWorker(TestCase, TestMixin):
         assert mocked_image_manager.stop_manager is True, 'mocked_image_manager.stop_manager should have been True'
 
 
+@skip('Probably not going to use ImageManager')
 class TestPriorityQueue(TestCase, TestMixin):
     """
     Test the PriorityQueue class
@@ -131,7 +133,7 @@ class TestPriorityQueue(TestCase, TestMixin):
         mocked_queue.remove.assert_called_once_with((Priority.High, Priority.Normal, mocked_image))
 
 
-@skip('Probably not going to use ImageManager in WebEngine/Reveal.js')
+@skip('Probably not going to use ImageManager')
 class TestImageManager(TestCase, TestMixin):
 
     def setUp(self):

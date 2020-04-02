@@ -74,10 +74,13 @@ def settings(qapp, registry):
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
     Registry().register('settings', sets)
+    Registry().register('settings_thread', sets)
     Registry().register('application', qapp)
     qapp.settings = sets
     yield sets
     del sets
+    Registry().remove('settings')
+    Registry().remove('settings_thread')
     os.close(fd)
     os.unlink(Settings().fileName())
 
@@ -89,8 +92,10 @@ def mock_settings(qapp, registry):
     mk_settings = MagicMock()
     Registry().register('settings', mk_settings)
     Registry().register('application', qapp)
+    Registry().register('settings_thread', mk_settings)
     yield mk_settings
     Registry().remove('settings')
+    Registry().remove('settings_thread')
     del mk_settings
 
 

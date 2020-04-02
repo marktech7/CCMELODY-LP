@@ -75,8 +75,9 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Run the worker.
         """
-        address = Registry().get('settings').value('api/ip address')
-        port = Registry().get('settings').value('api/websocket port')
+        settings = Registry().get('settings_thread')
+        address = settings.value('api/ip address')
+        port = settings.value('api/websocket port')
         # Start the event loop
         self.event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.event_loop)
