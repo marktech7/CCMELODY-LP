@@ -47,8 +47,8 @@ class HttpWorker(ThreadWorker):
         """
         Run the thread.
         """
-        address = Registry().get('settings').value('api/ip address')
-        port = Registry().get('settings').value('api/port')
+        address = Registry().get('settings_thread').value('api/ip address')
+        port = Registry().get('settings_thread').value('api/port')
         Registry().execute('get_website_version')
         try:
             application.static_folder = str(AppLocation.get_section_data_path('remotes') / 'static')
