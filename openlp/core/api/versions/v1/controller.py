@@ -60,7 +60,7 @@ def controller_text_api():
                 full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
                 if not full_thumbnail_path.exists():
                     create_thumb(Path(current_item.get_frame_path(index)), full_thumbnail_path, False)
-                Registry().get('image_manager').add_image(str(full_thumbnail_path), frame['title'], None, 88, 88)
+                # Registry().get('image_manager').add_image(str(full_thumbnail_path), frame['title'], None, 88, 88)
                 item['img'] = urllib.request.pathname2url(os.path.sep + str(thumbnail_path))
                 item['text'] = str(frame['title'])
                 item['html'] = str(frame['title'])
@@ -76,7 +76,7 @@ def controller_text_api():
                     data_path = str(AppLocation.get_data_path())
                     if frame['image'][0:len(data_path)] == data_path:
                         item['img'] = urllib.request.pathname2url(frame['image'][len(data_path):])
-                    Registry().get('image_manager').add_image(frame['image'], frame['title'], None, 88, 88)
+                    # Registry().get('image_manager').add_image(frame['image'], frame['title'], None, 88, 88)
                 item['text'] = str(frame['title'])
                 item['html'] = str(frame['title'])
             data.append(item)

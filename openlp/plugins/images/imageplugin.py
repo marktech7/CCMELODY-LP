@@ -98,4 +98,4 @@ class ImagePlugin(Plugin):
         """
         log.info('Images config_update')
         background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
-        self.image_manager.update_images_border(ImageSource.ImagePlugin, background)
+        # self.image_manager.update_images_border(ImageSource.ImagePlugin, background)
