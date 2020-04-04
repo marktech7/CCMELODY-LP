@@ -220,29 +220,30 @@ def test_build_icon_with_resource():
         # best we can do is to assert that we get back a MagicMock object.
         assert isinstance(result, MagicMock), 'The result should be a MagicMock, because we mocked it out'
 
-    def test_image_to_byte(self):
-        """
-        Test the image_to_byte() function
-        """
-        with patch('openlp.core.lib.QtCore') as MockedQtCore:
-            # GIVEN: A set of mocked-out Qt classes
-            mocked_byte_array = MagicMock()
-            MockedQtCore.QByteArray.return_value = mocked_byte_array
-            mocked_buffer = MagicMock()
-            MockedQtCore.QBuffer.return_value = mocked_buffer
-            MockedQtCore.QIODevice.WriteOnly = 'writeonly'
-            mocked_image = MagicMock()
 
-            # WHEN: We convert an image to a byte array
-            result = image_to_byte(mocked_image, base_64=False)
+def test_image_to_byte():
+    """
+    Test the image_to_byte() function
+    """
+    with patch('openlp.core.lib.QtCore') as MockedQtCore:
+        # GIVEN: A set of mocked-out Qt classes
+        mocked_byte_array = MagicMock()
+        MockedQtCore.QByteArray.return_value = mocked_byte_array
+        mocked_buffer = MagicMock()
+        MockedQtCore.QBuffer.return_value = mocked_buffer
+        MockedQtCore.QIODevice.WriteOnly = 'writeonly'
+        mocked_image = MagicMock()
 
-            # THEN: We should receive the mocked_buffer
-            MockedQtCore.QByteArray.assert_called_with()
-            MockedQtCore.QBuffer.assert_called_with(mocked_byte_array)
-            mocked_buffer.open.assert_called_with('writeonly')
-            mocked_image.save.assert_called_with(mocked_buffer, "PNG")
-            assert mocked_byte_array.toBase64.called is False
-            assert mocked_byte_array == result, 'The mocked out byte array should be returned'
+        # WHEN: We convert an image to a byte array
+        result = image_to_byte(mocked_image, base_64=False)
+
+        # THEN: We should receive the mocked_buffer
+        MockedQtCore.QByteArray.assert_called_with()
+        MockedQtCore.QBuffer.assert_called_with(mocked_byte_array)
+        mocked_buffer.open.assert_called_with('writeonly')
+        mocked_image.save.assert_called_with(mocked_buffer, "PNG")
+        assert mocked_byte_array.toBase64.called is False
+        assert mocked_byte_array == result, 'The mocked out byte array should be returned'
 
 
 def test_image_to_byte_base_64():
@@ -498,6 +499,25 @@ def test_create_thumb_empty_img():
         pass
 
 
+@patch('openlp.core.lib.QtGui.QImageReader')
+@patch('openlp.core.lib.build_icon')
+def test_create_thumb_path_fails(mocked_build_icon, MockQImageReader):
+    """
+    Test that build_icon() is run against the image_path when the thumbnail fails to be created
+    """
+    # GIVEN: A bunch of mocks
+    image_path = RESOURCE_PATH / 'church.jpg'
+    thumb_path = Path('doesnotexist')
+    mocked_image_reader = MagicMock()
+    mocked_image_reader.size.return_value.isEmpty.return_value = True
+
+    # WHEN: Create the thumb
+    create_thumb(image_path, thumb_path)
+
+    # THEN: The image path should have been used
+    mocked_build_icon.assert_called_once_with(image_path)
+
+
 @patch('openlp.core.lib.QtWidgets', MagicMock())
 def test_check_item_selected_true():
     """
@@ -629,6 +649,42 @@ def test_resize_thumb_ignoring_aspect_ratio():
     assert wanted_height == result_size.height(), 'The image should have the requested height.'
     assert wanted_width == result_size.width(), 'The image should have the requested width.'
     assert image.pixel(0, 0) == wanted_background_rgb, 'The background should be white.'
+
+
+def test_resize_thumb_width_aspect_ratio():
+    """
+    Test the resize_thumb() function using the image's width as the reference
+    """
+    # GIVEN: A path to an image.
+    image_path = str(RESOURCE_PATH / 'church.jpg')
+    wanted_width = 10
+    wanted_height = 1000
+
+    # WHEN: Resize the image and add a background.
+    image = resize_image(image_path, wanted_width, wanted_height)
+
+    # THEN: Check if the size is correct and the background was set.
+    result_size = image.size()
+    assert wanted_height == result_size.height(), 'The image should have the requested height.'
+    assert wanted_width == result_size.width(), 'The image should have the requested width.'
+
+
+def test_resize_thumb_same_aspect_ratio():
+    """
+    Test the resize_thumb() function when the image and the wanted aspect ratio are the same
+    """
+    # GIVEN: A path to an image.
+    image_path = str(RESOURCE_PATH / 'church.jpg')
+    wanted_width = 1122
+    wanted_height = 1544
+
+    # WHEN: Resize the image and add a background.
+    image = resize_image(image_path, wanted_width, wanted_height)
+
+    # THEN: Check if the size is correct and the background was set.
+    result_size = image.size()
+    assert wanted_height == result_size.height(), 'The image should have the requested height.'
+    assert wanted_width == result_size.width(), 'The image should have the requested width.'
 
 
 @patch('openlp.core.lib.QtCore.QLocale.createSeparatedList')

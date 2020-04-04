@@ -113,6 +113,11 @@ def test_toggle_display_invalid_action(flask_client, settings):
     assert res.status_code == 400
 
 
+def test_toggle_display_no_data(flask_client, settings):
+    res = flask_client.post('/api/v2/core/display', json={})
+    assert res.status_code == 400
+
+
 def test_toggle_display_valid_action_updates_controller(flask_client, settings):
     class FakeController:
         class Emitter:

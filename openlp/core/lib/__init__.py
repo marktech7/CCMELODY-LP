@@ -250,7 +250,7 @@ def build_icon(icon):
         pix_map = QtGui.QPixmap(icon)
     elif isinstance(icon, Path):
         pix_map = QtGui.QPixmap(str(icon))
-    elif isinstance(icon, QtGui.QImage):
+    elif isinstance(icon, QtGui.QImage):            # pragma: no cover
         pix_map = QtGui.QPixmap.fromImage(icon)
     if pix_map:
         button_icon.addPixmap(pix_map, QtGui.QIcon.Normal, QtGui.QIcon.Off)

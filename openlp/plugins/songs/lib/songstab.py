@@ -154,17 +154,16 @@ class SongsTab(SettingsTab):
             ['ccli_number', translate('SongsPlugin.SongsTab', 'Song CCLI Number'), True, False],
             ['topics', translate('SongsPlugin.SongsTab', 'Topics'), False, True],
         ]
-        placeholder_info = '<table style="background: #eee">\n<tr><th><b>{ph}</b></th><th><b>{desc}</b></th></tr>\n'\
-            .format(ph=translate('SongsPlugin.SongsTab', 'Placeholder'),
-                    desc=translate('SongsPlugin.SongsTab', 'Description'))
+        placeholder_info = '<table><tr><th><b>{ph}</b></th><th><b>{desc}</b></th></tr>'.format(
+            ph=translate('SongsPlugin.SongsTab', 'Placeholder'), desc=translate('SongsPlugin.SongsTab', 'Description'))
         for placeholder in placeholders:
-            placeholder_info += '<tr><td>${{{pl}}}</td><td>{des}{opt}</td></tr>\n'\
-                                .format(pl=placeholder[0], des=placeholder[1],
-                                        opt=('&nbsp;¹' if placeholder[2] else '') +
-                                            ('&nbsp;²' if placeholder[3] else ''))
+            placeholder_info += '<tr><td>${{{pl}}}</td><td>{des}{opt}</td></tr>'.format(
+                pl=placeholder[0], des=placeholder[1], opt=('&nbsp;<sup>1</sup>' if placeholder[2] else '') +
+                ('&nbsp;<sup>2</sup>' if placeholder[3] else ''))
         placeholder_info += '</table>'
-        placeholder_info += '\n<br/>¹ {}'.format(translate('SongsPlugin.SongsTab', 'can be empty'))
-        placeholder_info += '\n<br/>² {}'.format(translate('SongsPlugin.SongsTab', 'list of entries, can be empty'))
+        placeholder_info += '<p><sup>1</sup> {}<br/>'.format(translate('SongsPlugin.SongsTab', 'can be empty'))
+        placeholder_info += '<sup>2</sup> {}</p>'.format(
+            translate('SongsPlugin.SongsTab', 'list of entries, can be empty'))
         self.footer_placeholder_info.setHtml(placeholder_info)
         self.footer_placeholder_info.setReadOnly(True)
 

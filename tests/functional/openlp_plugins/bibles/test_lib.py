@@ -26,7 +26,7 @@ from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles import lib
-from openlp.plugins.bibles.lib import SearchResults, get_reference_match
+from openlp.plugins.bibles.lib import SearchResults, get_reference_match, update_reference_separators
 
 
 @pytest.yield_fixture
@@ -252,3 +252,44 @@ def test_reference_matched_range_separator(mocked_bible_test):
 
                         # THEN: The list of references should be as the expected results
                         assert references == ranges
+
+
+def test_update_reference_separators_custom_seps(request, settings):
+    """
+    Test the update_reference_separators() function with custom separators
+    """
+    # Clean up after the test
+    def cleanup_references():
+        lib.REFERENCE_SEPARATORS = {}
+        settings.remove('bibles/verse separator')
+        settings.remove('bibles/range separator')
+        settings.remove('bibles/list separator')
+        settings.remove('bibles/end separator')
+        update_reference_separators()
+
+    request.addfinalizer(cleanup_references)
+
+    # GIVEN: A custom set of separators
+    settings.setValue('bibles/verse separator', ':||v')
+    settings.setValue('bibles/range separator', '-')
+    settings.setValue('bibles/list separator', ',')
+    settings.setValue('bibles/end separator', '.')
+
+    # WHEN: update_reference_separators() is called
+    update_reference_separators()
+
+    # THEN: The reference separators should be updated and correct
+    expected_separators = {
+        'sep_e': '\\s*(?:\\.)\\s*',
+        'sep_e_default': 'end',
+        'sep_l': '\\s*(?:(?:[,‚]))\\s*',
+        'sep_l_default': ',|and',
+        'sep_l_display': ',',
+        'sep_r': '\\s*(?:(?:[-\xad‐‑‒——−﹣－]))\\s*',
+        'sep_r_default': '-|to',
+        'sep_r_display': '-',
+        'sep_v': '\\s*(?::|v)\\s*',
+        'sep_v_default': ':|v|V|verse|verses',
+        'sep_v_display': ':'
+    }
+    assert lib.REFERENCE_SEPARATORS == expected_separators

@@ -25,10 +25,11 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch, DEFAULT
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui.firsttimeform import FirstTimeForm, ThemeListWidgetItem
+from openlp.core.ui.firsttimewizard import ThemeListWidget
 
 
 INVALID_CONFIG = """
@@ -364,3 +365,22 @@ def test_on_projectors_check_box_unchecked(mock_settings):
     # THEN: The visibility of the projects panel should have been set
     mock_settings.value.assert_called_once_with('projector/show after wizard')
     mock_settings.setValue.assert_called_once_with('projector/show after wizard', True)
+
+
+def test_theme_list_widget_resize(ftf_app):
+    """
+    Test that the resizeEvent() method in the ThemeListWidget works correctly
+    """
+    # GIVEN: An instance of the ThemeListWidget
+    widget = ThemeListWidget(None)
+
+    # WHEN: resizeEvent() is called
+    with patch.object(widget, 'viewport') as mocked_viewport, \
+            patch.object(widget, 'setGridSize') as mocked_setGridSize:
+        mocked_viewport.return_value.width.return_value = 600
+        widget.resizeEvent(None)
+
+    # THEN: Check that the correct calculations were done
+    mocked_setGridSize.assert_called_once_with(QtCore.QSize(149, 140))
+
+    # THEN: everything resizes correctly
