@@ -509,7 +509,7 @@ def get_start_tags(raw_text):
     return raw_text + ''.join(end_tags), ''.join(start_tags), ''.join(html_tags)
 
 
-class ThemePreviewRenderer(LogMixin, DisplayWindow):
+class ThemePreviewRenderer(DisplayWindow, LogMixin):
     """
     A virtual display used for rendering thumbnails and other offscreen tasks
     """
