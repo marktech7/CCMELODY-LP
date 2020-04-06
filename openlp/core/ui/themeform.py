@@ -296,6 +296,9 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         self.footer_area_page.font_name = self.theme.font_footer_name
         self.footer_area_page.font_color = self.theme.font_footer_color
+        self.footer_area_page.is_bold = self.theme.font_footer_bold
+        self.footer_area_page.is_italic = self.theme.font_footer_italics
+        self.footer_area_page.font_size = self.theme.font_footer_size
 
     def set_position_page_values(self):
         """
@@ -363,6 +366,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             self.theme.background_filename = self.background_page.stream_mrl
         # main page
         self.theme.font_main_name = self.main_area_page.font_name
+        self.theme.font_main_color = self.main_area_page.font_color
         self.theme.font_main_size = self.main_area_page.font_size
         self.theme.font_main_line_adjustment = self.main_area_page.line_spacing
         self.theme.font_main_outline_size = self.main_area_page.outline_size
@@ -371,7 +375,10 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_main_italics = self.main_area_page.is_italic
         # footer page
         self.theme.font_footer_name = self.footer_area_page.font_name
+        self.theme.font_footer_color = self.footer_area_page.font_color
         self.theme.font_footer_size = self.footer_area_page.font_size
+        self.theme.font_footer_bold = self.footer_area_page.is_bold
+        self.theme.font_footer_italics = self.footer_area_page.is_italic
         # position page (main)
         self.theme.font_main_override = not self.area_position_page.use_main_default_location
         if self.theme.font_main_override:
