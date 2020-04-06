@@ -18,8 +18,9 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-
 import json
+
+from time import sleep
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.httputils import get_web_page
@@ -74,6 +75,11 @@ class Poller(RegistryProperties):
         result = {
             'slide_count': self.live_controller.slide_count
         }
+        theme = self.live_controller.service_item.get_theme_data()
+        # Add delay to all for transitions if we have slow ones running at 800ms.
+        # We only delay 200ms between checks normally.
+        if theme.display_slide_transition_speed == 2:
+            sleep(0.600)
         return json.dumps({'results': result}).encode()
 
     def reset_cache(self):
