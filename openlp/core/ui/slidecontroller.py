@@ -206,7 +206,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.panel = QtWidgets.QWidget(self.main_window.control_splitter)
         self.slide_list = {}
         self.slide_count = 0
-        self.slide_image = None
         self.controller_width = -1
         # Layout for holding panel
         self.panel_layout = QtWidgets.QVBoxLayout(self.panel)
@@ -1204,13 +1203,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             else:
                 # If not live, use the slide's thumbnail/icon instead
                 image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
-                # if self.service_item.is_capable(ItemCapabilities.HasThumbnails):
-                #     image = self.image_manager.get_image(image_path, ImageSource.CommandPlugins)
-                #     self.slide_image = QtGui.QPixmap.fromImage(image)
-                # else:
-                # self.slide_image = QtGui.QPixmap(image_path)
-                # self.slide_image.setDevicePixelRatio(self.main_window.devicePixelRatio())
-                # self.slide_preview.setPixmap(self.slide_image)
                 self.preview_display.set_single_image('#000', image_path)
         else:
             self.preview_display.go_to_slide(self.selected_row)
@@ -1225,11 +1217,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         rect = ScreenList().current.display_geometry
         win_image = screen.grabWindow(win_id, rect.x(), rect.y(), rect.width(), rect.height())
         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
-        # self.slide_preview.setPixmap(win_image)
-        self.slide_image = win_image
         base64_image = image_to_byte(win_image)
         self.preview_display.set_single_image_data('#000', base64_image)
-        return self.slide_image
+        return win_image
 
     def on_slide_selected_next_action(self, checked):
         """
