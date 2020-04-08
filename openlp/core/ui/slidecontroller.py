@@ -1197,9 +1197,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.service_item and self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
             if self.is_live:
                 # If live, grab screen-cap of main display now
-                QtCore.QTimer.singleShot(500, self.grab_maindisplay)
+                QtCore.QTimer.singleShot(500, self.display_maindisplay)
                 # but take another in a couple of seconds in case slide change is slow
-                QtCore.QTimer.singleShot(2500, self.grab_maindisplay)
+                QtCore.QTimer.singleShot(2500, self.display_maindisplay)
             else:
                 # If not live, use the slide's thumbnail/icon instead
                 image_path = Path(self.service_item.get_rendered_frame(self.selected_row))
@@ -1208,17 +1208,23 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.preview_display.go_to_slide(self.selected_row)
         self.slide_count += 1
 
+    def display_maindisplay(self):
+        """
+        Gets an image of the display screen and updates the preview frame.
+        """
+        display_image = self.grab_maindisplay()
+        base64_image = image_to_byte(display_image)
+        self.preview_display.set_single_image_data('#000', base64_image)
+
     def grab_maindisplay(self):
         """
-        Creates an image of the current screen and updates the preview frame.
+        Creates an image of the current screen.
         """
         win_id = QtWidgets.QApplication.desktop().winId()
         screen = QtWidgets.QApplication.primaryScreen()
         rect = ScreenList().current.display_geometry
         win_image = screen.grabWindow(win_id, rect.x(), rect.y(), rect.width(), rect.height())
         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
-        base64_image = image_to_byte(win_image)
-        self.preview_display.set_single_image_data('#000', base64_image)
         return win_image
 
     def on_slide_selected_next_action(self, checked):
