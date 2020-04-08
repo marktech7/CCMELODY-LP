@@ -146,12 +146,12 @@ def test_delete_database_with_db_file_name():
         assert result is False, 'The result of delete_file should be False (was rigged that way)'
 
 
-def test_skip_db_upgrade_with_no_database(tmp_folder):
+def test_skip_db_upgrade_with_no_database(temp_folder):
     """
     Test the upgrade_db function does not try to update a missing database
     """
     # GIVEN: Database URL that does not (yet) exist
-    url = 'sqlite:///{tmp}/test_db.sqlite'.format(tmp=tmp_folder)
+    url = 'sqlite:///{tmp}/test_db.sqlite'.format(tmp=temp_folder)
     mocked_upgrade = MagicMock()
 
     # WHEN: We attempt to upgrade a non-existent database
