@@ -75,11 +75,6 @@ class Poller(RegistryProperties):
         result = {
             'slide_count': self.live_controller.slide_count
         }
-        theme = self.live_controller.service_item.get_theme_data()
-        # Add delay to all for transitions if we have slow ones running at 800ms.
-        # We only delay 200ms between checks normally.
-        if theme.display_slide_transition_speed == 2:
-            sleep(0.600)
         return json.dumps({'results': result}).encode()
 
     def reset_cache(self):
