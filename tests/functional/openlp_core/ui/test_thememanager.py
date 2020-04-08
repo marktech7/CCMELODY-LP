@@ -23,7 +23,6 @@ Package to test the openlp.core.ui.thememanager package.
 """
 import os
 import shutil
-import pytest
 from pathlib import Path
 from tempfile import mkdtemp
 from unittest.mock import ANY, Mock, MagicMock, patch, call
@@ -33,13 +32,6 @@ from PyQt5 import QtWidgets
 from openlp.core.common.registry import Registry
 from openlp.core.ui.thememanager import ThemeManager
 from tests.utils.constants import RESOURCE_PATH
-
-
-@pytest.yield_fixture()
-def temp_folder():
-    tmp_folder = mkdtemp()
-    yield tmp_folder
-    shutil.rmtree(tmp_folder)
 
 
 @patch('openlp.core.ui.thememanager.zipfile.ZipFile.__init__')

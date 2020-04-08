@@ -43,9 +43,7 @@ def media_item(settings):
 
 
 @pytest.yield_fixture()
-def mock_plugin():
+def mock_plugin(temp_folder):
     m_plugin = MagicMock()
-    temp_folder = mkdtemp()
     m_plugin.settings_section = temp_folder
     yield m_plugin
-    shutil.rmtree(temp_folder)
