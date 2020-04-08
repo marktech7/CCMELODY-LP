@@ -20,8 +20,6 @@
 ##########################################################################
 import json
 
-from time import sleep
-
 from openlp.core.common.registry import Registry
 from openlp.core.common.httputils import get_web_page
 from openlp.core.common.mixins import RegistryProperties
