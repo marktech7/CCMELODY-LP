@@ -21,10 +21,8 @@
 """
 This module contains tests for the db submodule of the Songs plugin.
 """
-import pytest
 import os
 import shutil
-from tempfile import mkdtemp
 
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.songs.lib import upgrade

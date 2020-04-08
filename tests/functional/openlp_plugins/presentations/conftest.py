@@ -22,9 +22,7 @@
 For the Presentation tests
 """
 import pytest
-import shutil
 from unittest.mock import MagicMock, patch
-from tempfile import mkdtemp
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
