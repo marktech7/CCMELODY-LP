@@ -98,7 +98,7 @@ class Poller(RegistryProperties):
         """
         if self.stage_cache is None:
             try:
-                page = get_web_page(f'http://{self.address}:{self.http_port}/#/stage')
+                page = get_web_page(f'http://{self.address}:{self.http_port}/stage')
             except Exception:
                 page = None
             if page:
@@ -114,7 +114,7 @@ class Poller(RegistryProperties):
         """
         if self.live_cache is None:
             try:
-                page = get_web_page(f'http://{self.address}:{self.http_port}/#/main')
+                page = get_web_page(f'http://{self.address}:{self.http_port}/main')
             except Exception:
                 page = None
             if page:
@@ -130,7 +130,7 @@ class Poller(RegistryProperties):
         """
         if self.chords_cache is None:
             try:
-                page = get_web_page(f'http://{self.address}:{self.http_port}/#/chords')
+                page = get_web_page(f'http://{self.address}:{self.http_port}/chords')
             except Exception:
                 page = None
             if page:
