@@ -1273,7 +1273,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param current_index: The combo box index for the selected item
         """
         self.service_theme = self.theme_combo_box.currentText()
-        self.settings.setValue(self.main_window.service_manager_settings_section + '/service theme', self.service_theme)
+        self.settings.setValue('servicemanager/service theme', self.service_theme)
         self.regenerate_service_items(True)
 
     def theme_change(self):
@@ -1289,7 +1289,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Set the theme for the current service remotely
         """
-        self.service_theme = self.settings.value(self.main_window.service_manager_settings_section + '/service theme')
+        self.service_theme = self.settings.value('servicemanager/service theme')
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
         self.regenerate_service_items(True)
 
@@ -1622,7 +1622,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
         self.regenerate_service_items()
 
-    def on_theme_change_action(self):
+    def on_theme_change_action(self, field=None):
         """
         Handles theme change events
         """

@@ -85,13 +85,13 @@ def add_records(projector_db, test):
     return added
 
 
-def test_upgrade_old_projector_db(tmp_folder):
+def test_upgrade_old_projector_db(temp_folder):
     """
     Test that we can upgrade a version 1 db to the current schema
     """
     # GIVEN: An old prjector db
     old_db = os.path.join(TEST_RESOURCES_PATH, "projector", TEST_DB_PJLINK1)
-    tmp_db = os.path.join(tmp_folder, TEST_DB)
+    tmp_db = os.path.join(temp_folder, TEST_DB)
     shutil.copyfile(old_db, tmp_db)
     db_url = 'sqlite:///{db}'.format(db=tmp_db)
 
@@ -103,11 +103,11 @@ def test_upgrade_old_projector_db(tmp_folder):
 
 
 @pytest.yield_fixture()
-def projector(tmp_folder, settings):
+def projector(temp_folder, settings):
     """
     Set up anything necessary for all tests
     """
-    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(tmp_folder, TEST_DB))
+    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
     with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
         mocked_init_url.return_value = tmpdb_url
         proj = ProjectorDB()

@@ -202,7 +202,7 @@ class ThemesTab(SettingsTab):
                 ['Bible Theme', 'Song Theme']
         """
         # Reload as may have been triggered by the ThemeManager.
-        self.global_theme = self.settings.value(self.settings_section + '/global theme')
+        self.global_theme = self.settings.value('themes/global theme')
         self.default_combo_box.clear()
         self.default_combo_box.addItems(theme_list)
         find_and_set_in_combo_box(self.default_combo_box, self.global_theme)

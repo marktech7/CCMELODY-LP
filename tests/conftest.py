@@ -113,7 +113,7 @@ def state_media(state):
 
 
 @pytest.yield_fixture()
-def tmp_folder():
+def temp_folder():
     t_folder = mkdtemp(prefix='openlp_')
     yield t_folder
     shutil.rmtree(t_folder, ignore_errors=True)

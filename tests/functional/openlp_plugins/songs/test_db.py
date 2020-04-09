@@ -21,22 +21,13 @@
 """
 This module contains tests for the db submodule of the Songs plugin.
 """
-import pytest
 import os
 import shutil
-from tempfile import mkdtemp
 
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.songs.lib import upgrade
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song
 from tests.utils.constants import TEST_RESOURCES_PATH
-
-
-@pytest.yield_fixture()
-def tmp_folder():
-    t_folder = mkdtemp()
-    yield t_folder
-    shutil.rmtree(t_folder, ignore_errors=True)
 
 
 def test_add_author():
@@ -194,13 +185,13 @@ def test_add_songbooks():
     assert len(song.songbook_entries) == 2, 'There should be two Songbook entries.'
 
 
-def test_upgrade_old_song_db(settings, tmp_folder):
+def test_upgrade_old_song_db(settings, temp_folder):
     """
     Test that we can upgrade an old song db to the current schema
     """
     # GIVEN: An old song db
     old_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-1.9.7.sqlite')
-    old_db_tmp_path = os.path.join(tmp_folder, 'songs-1.9.7.sqlite')
+    old_db_tmp_path = os.path.join(temp_folder, 'songs-1.9.7.sqlite')
     shutil.copyfile(old_db_path, old_db_tmp_path)
     db_url = 'sqlite:///' + old_db_tmp_path
 
@@ -211,13 +202,13 @@ def test_upgrade_old_song_db(settings, tmp_folder):
     assert updated_to_version == latest_version, 'The song DB should have been upgrade to the latest version'
 
 
-def test_upgrade_invalid_song_db(settings, tmp_folder):
+def test_upgrade_invalid_song_db(settings, temp_folder):
     """
     Test that we can upgrade an invalid song db to the current schema
     """
     # GIVEN: A song db with invalid version
     invalid_db_path = os.path.join(TEST_RESOURCES_PATH, "songs", 'songs-2.2-invalid.sqlite')
-    invalid_db_tmp_path = os.path.join(tmp_folder, 'songs-2.2-invalid.sqlite')
+    invalid_db_tmp_path = os.path.join(temp_folder, 'songs-2.2-invalid.sqlite')
     shutil.copyfile(invalid_db_path, invalid_db_tmp_path)
     db_url = 'sqlite:///' + invalid_db_tmp_path
 
