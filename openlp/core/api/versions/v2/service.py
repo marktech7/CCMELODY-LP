@@ -64,7 +64,7 @@ def service_set():
         id = int(data.get('id', -1))
     except ValueError:
         abort(400)
-    Registry().get('service_manager').set_item(id)
+    Registry().get('service_manager').servicemanager_set_item.emit(id)
     return '', 204
 
 
