@@ -826,7 +826,7 @@ def test_update_preview_live(mocked_singleShot, mocked_image_manager, registry):
     slide_controller.screens.current = {'primary': ''}
     slide_controller.displays = [MagicMock()]
     slide_controller.display.preview.return_value = QtGui.QImage()
-    slide_controller.grab_maindisplay = MagicMock()
+    slide_controller.display_maindisplay = MagicMock()
     slide_controller.slide_preview = MagicMock()
     slide_controller.slide_count = 0
 
@@ -836,7 +836,7 @@ def test_update_preview_live(mocked_singleShot, mocked_image_manager, registry):
     # THEN: A screen_grab should have been called
     assert 0 == slide_controller.slide_preview.setPixmap.call_count, 'setPixmap should not be called'
     assert 0 == slide_controller.display.preview.call_count, 'display.preview() should not be called'
-    assert 2 == mocked_singleShot.call_count, 'Timer to grab_maindisplay should have been called 2 times'
+    assert 2 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 2 times'
     assert 0 == mocked_image_manager.get_image.call_count, 'image_manager not be called'
 
 
@@ -867,7 +867,7 @@ def test_update_preview_pres(mocked_singleShot, mocked_image_manager, registry):
     slide_controller.screens.current = {'primary': ''}
     slide_controller.displays = [MagicMock()]
     slide_controller.display.preview.return_value = QtGui.QImage()
-    slide_controller.grab_maindisplay = MagicMock()
+    slide_controller.display_maindisplay = MagicMock()
     slide_controller.slide_preview = MagicMock()
     slide_controller.slide_count = 0
     slide_controller.preview_display = MagicMock()
@@ -877,7 +877,7 @@ def test_update_preview_pres(mocked_singleShot, mocked_image_manager, registry):
 
     # THEN: setPixmap and the image_manager should have been called
     assert 1 == slide_controller.preview_display.set_single_image.call_count, 'set_single_image should be called'
-    assert 0 == mocked_singleShot.call_count, 'Timer to grab_maindisplay should not be called'
+    assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
 @patch(u'openlp.core.ui.slidecontroller.SlideController.image_manager')
@@ -908,7 +908,7 @@ def test_update_preview_media(mocked_singleShot, mocked_image_manager, registry)
     slide_controller.screens.current = {'primary': ''}
     slide_controller.displays = [MagicMock()]
     slide_controller.display.preview.return_value = QtGui.QImage()
-    slide_controller.grab_maindisplay = MagicMock()
+    slide_controller.display_maindisplay = MagicMock()
     slide_controller.slide_preview = MagicMock()
     slide_controller.slide_count = 0
     slide_controller.preview_display = MagicMock()
@@ -918,7 +918,7 @@ def test_update_preview_media(mocked_singleShot, mocked_image_manager, registry)
 
     # THEN: setPixmap should have been called
     assert 1 == slide_controller.preview_display.set_single_image.call_count, 'set_single_image should be called'
-    assert 0 == mocked_singleShot.call_count, 'Timer to grab_maindisplay should not be called'
+    assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
     assert 0 == mocked_image_manager.get_image.call_count, 'image_manager should not be called'
 
 
@@ -949,7 +949,7 @@ def test_update_preview_image(mocked_singleShot, mocked_image_manager, registry)
     slide_controller.screens = MagicMock()
     slide_controller.screens.current = {'primary': ''}
     slide_controller.displays = [MagicMock()]
-    slide_controller.grab_maindisplay = MagicMock()
+    slide_controller.display_maindisplay = MagicMock()
     slide_controller.slide_preview = MagicMock()
     slide_controller.slide_count = 0
     slide_controller.preview_display = MagicMock()
@@ -959,8 +959,29 @@ def test_update_preview_image(mocked_singleShot, mocked_image_manager, registry)
 
     # THEN: setPixmap and display.preview should have been called
     assert 1 == slide_controller.preview_display.go_to_slide.call_count, 'go_to_slide should be called'
-    assert 0 == mocked_singleShot.call_count, 'Timer to grab_maindisplay should not be called'
+    assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
     assert 0 == mocked_image_manager.get_image.call_count, 'image_manager should not be called'
+
+
+@patch(u'openlp.core.ui.slidecontroller.image_to_byte')
+def test_display_maindisplay(mocked_image_to_byte, registry):
+    """
+    Test the display_maindisplay method
+    Here a string is substituted for what would be a screen capture of the display
+    The `image_to_byte` mocked funtion just adds " bytified" to the string
+    """
+    # GIVEN: A mocked slide controller, with mocked functions
+    slide_controller = SlideController(None)
+    slide_controller.grab_maindisplay = MagicMock(return_value='placeholder')
+    slide_controller.preview_display = MagicMock()
+    mocked_image_to_byte.side_effect = lambda x: '{} bytified'.format(x)
+
+    # WHEN: display_maindisplay is called
+    slide_controller.display_maindisplay()
+
+    # THEN: Should have grabbed the maindisplay and set to placeholder with a black background
+    slide_controller.grab_maindisplay.assert_called_once()
+    slide_controller.preview_display.set_single_image_data.assert_called_once_with('#000', 'placeholder bytified')
 
 
 def test_paint_event_text_fits():
