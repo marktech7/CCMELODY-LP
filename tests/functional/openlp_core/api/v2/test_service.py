@@ -50,7 +50,7 @@ def test_service_set_calls_service_manager(flask_client, settings):
     Registry().register('service_manager', fake_service_manager)
     res = flask_client.post('/api/v2/service/show', json=dict(id=400))
     assert res.status_code == 204
-    fake_service_manager.set_item.assert_called_once_with(400)
+    fake_service_manager.servicemanager_set_item.emit.assert_called_once_with(400)
 
 
 def test_service_direction_requires_login(flask_client, settings):
