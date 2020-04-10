@@ -306,7 +306,7 @@ class TestPathSerializer(TestCase):
         """
         # GIVEN: A Path object from openlp.core.common.path
         if is_win():
-            path = Path('c:', 'base', 'path', 'to', 'fi.le')
+            path = Path('c:\\', 'base', 'path', 'to', 'fi.le')
         else:
             path = Path('/base', 'path', 'to', 'fi.le')
 
