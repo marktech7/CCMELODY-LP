@@ -27,6 +27,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
+from openlp.core.common import is_win
 from openlp.core.common.json import JSONMixin, OpenLPJSONDecoder, OpenLPJSONEncoder, PathSerializer, _registered_classes
 
 
@@ -304,13 +305,19 @@ class TestPathSerializer(TestCase):
         Test that `Path.json_object` creates a JSON decode-able object from a Path object
         """
         # GIVEN: A Path object from openlp.core.common.path
-        path = Path('/base', 'path', 'to', 'fi.le')
+        if is_win():
+            path = Path('c:\\', 'base', 'path', 'to', 'fi.le')
+        else:
+            path = Path('/base', 'path', 'to', 'fi.le')
 
         # WHEN: Calling json_object
         obj = PathSerializer().json_object(path, is_js=True, extra=1, args=2)
 
         # THEN: A URI should be returned
-        assert obj == 'file:///base/path/to/fi.le'
+        if is_win():
+            assert obj == 'file:///c:/base/path/to/fi.le'
+        else:
+            assert obj == 'file:///base/path/to/fi.le'
 
     def test_path_json_object_base_path(self):
         """
