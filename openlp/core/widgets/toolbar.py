@@ -96,6 +96,11 @@ class OpenLPToolbar(QtWidgets.QToolBar):
                 log.warning('No handle "%s" in actions list.', str(handle))
 
     def remove_widget(self, name):
+        """
+        Find and remove an action from the toolbar
+        :param name: The name of the action to me removed
+        :return:
+        """
         try:
             act = self.actions[name]
             self.removeAction(act)
