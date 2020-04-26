@@ -872,7 +872,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.service_item = copy.copy(service_item)
         if self.service_item.is_command():
             Registry().execute(
-                '{text}_start'.format(text=service_item.name.lower()),
+                '{text}_start'.format(text=self.service_item.name.lower()),
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
             self._set_theme(service_item)
@@ -890,7 +890,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.preview_display.load_verses(service_item.rendered_slides)
             self.preview_display.show()
             for display in self.displays:
-                display.load_verses(service_item.rendered_slides)
+                display.load_verses(self.service_item.rendered_slides)
             for slide_index, slide in enumerate(self.service_item.display_slides):
                 if not slide['verse'].isdigit():
                     # These tags are already translated.
@@ -906,10 +906,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                     row += 1
                     self.slide_list[str(row)] = row - 1
         else:
-            if service_item.is_image():
-                self.preview_display.load_images(service_item.slides)
+            if self.service_item.is_image():
+                self.preview_display.load_images(self.service_item.slides)
                 for display in self.displays:
-                    display.load_images(service_item.slides)
+                    display.load_images(self.service_item.slides)
             for slide_index, slide in enumerate(self.service_item.slides):
                 row += 1
                 self.slide_list[str(row)] = row - 1
