@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-
+import logging
 from openlp.core.api.lib import login_required
 
 from flask import jsonify, request, abort, Blueprint
@@ -27,6 +27,7 @@ from openlp.core.common.registry import Registry
 
 
 service_views = Blueprint('service', __name__)
+log = logging.getLogger(__name__)
 
 
 @service_views.route('/items')
@@ -59,12 +60,30 @@ def service_items():
 def service_set():
     data = request.json
     if not data:
+        log.error('Missing request data')
         abort(400)
     try:
         id = int(data.get('id', -1))
     except ValueError:
+        log.error('Invalid data passed ' + data)
         abort(400)
     Registry().get('service_manager').servicemanager_set_item.emit(id)
+    return '', 204
+
+
+@service_views.route('/show_id', methods=['POST'])
+@login_required
+def service_set_by_uid():
+    data = request.json
+    if not data:
+        log.error('Missing request data')
+        abort(400)
+    try:
+        id = str(data.get('uid', ''))
+    except ValueError:
+        log.error('Invalid data passed ' + data)
+        abort(400)
+    Registry().get('service_manager').servicemanager_set_item_by_uuid.emit(id)
     return '', 204
 
 
@@ -74,9 +93,11 @@ def service_direction():
     ALLOWED_ACTIONS = ['next', 'previous']
     data = request.json
     if not data:
+        log.error('Missing request data')
         abort(400)
     action = data.get('action', '').lower()
     if action not in ALLOWED_ACTIONS:
+        log.error('Invalid data passed ' + data)
         abort(400)
     getattr(Registry().get('service_manager'), 'servicemanager_{action}_item'.format(action=action)).emit()
     return '', 204
