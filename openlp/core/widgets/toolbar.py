@@ -94,3 +94,10 @@ class OpenLPToolbar(QtWidgets.QToolBar):
                 self.actions[handle].setEnabled(enabled)
             else:
                 log.warning('No handle "%s" in actions list.', str(handle))
+
+    def remove_widget(self, name):
+        try:
+            act = self.actions[name]
+            self.removeAction(act)
+        except KeyError:
+            log.warning(f'No handle {name} in actions list.')

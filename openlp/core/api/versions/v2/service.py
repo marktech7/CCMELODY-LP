@@ -97,7 +97,7 @@ def service_direction():
         abort(400)
     action = data.get('action', '').lower()
     if action not in ALLOWED_ACTIONS:
-        log.error('Invalid data passed ' + data)
+        log.error('Invalid data passed ' + str(data))
         abort(400)
     getattr(Registry().get('service_manager'), 'servicemanager_{action}_item'.format(action=action)).emit()
     return '', 204

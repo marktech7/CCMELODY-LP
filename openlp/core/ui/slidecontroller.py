@@ -410,12 +410,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.seek_slider.valueChanged.connect(self.send_to_plugins)
         self.volume_slider.valueChanged.connect(self.send_to_plugins)
         if self.is_live:
-            # Build the Song Toolbar
-            self.song_menu = QtWidgets.QToolButton(self.toolbar)
-            self.song_menu.setObjectName('song_menu')
-            self.song_menu.setText(translate('OpenLP.SlideController', 'Go To'))
-            self.song_menu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
-            self.song_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Go To'), self.toolbar))
+            self.new_song_menu()
             self.toolbar.add_toolbar_widget(self.song_menu)
             self.toolbar.set_widget_visible('song_menu', False)
         # Screen preview area
@@ -494,6 +489,17 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.mediacontroller_live_play.connect(self.media_controller.on_media_play)
             self.mediacontroller_live_pause.connect(self.media_controller.on_media_pause)
             self.mediacontroller_live_stop.connect(self.media_controller.on_media_stop)
+
+    def new_song_menu(self):
+        """
+        Rebuild the song menu object from scratch.
+        """
+        # Build the Song Toolbar
+        self.song_menu = QtWidgets.QToolButton(self.toolbar)
+        self.song_menu.setObjectName('song_menu')
+        self.song_menu.setText(translate('OpenLP.SlideController', 'Go To'))
+        self.song_menu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        self.song_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Go To'), self.toolbar))
 
     def _slide_shortcut_activated(self):
         """
@@ -891,6 +897,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.preview_display.show()
             for display in self.displays:
                 display.load_verses(service_item.rendered_slides)
+            # Replace the song menu so the verses match the song and are not cumulative
+            if self.is_live:
+                self.toolbar.remove_widget('song_menu')
+                self.new_song_menu()
+                self.toolbar.add_toolbar_widget(self.song_menu)
             for slide_index, slide in enumerate(self.service_item.display_slides):
                 if not slide['verse'].isdigit():
                     # These tags are already translated.

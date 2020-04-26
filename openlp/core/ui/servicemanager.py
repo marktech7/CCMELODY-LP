@@ -313,6 +313,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     Also handles the UI tasks of moving things up and down etc.
     """
     servicemanager_set_item = QtCore.pyqtSignal(int)
+    servicemanager_set_item_by_uuid = QtCore.pyqtSignal(str)
     servicemanager_next_item = QtCore.pyqtSignal()
     servicemanager_previous_item = QtCore.pyqtSignal()
 

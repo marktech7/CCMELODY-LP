@@ -155,7 +155,6 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
         Loop through all the plugins and give them an opportunity to initialise themselves.
         """
         uninitialised_plugins = []
-
         for plugin in State().list_plugins():
             if plugin:
                 self.log_info('initialising plugins {plugin} in a {state} state'.format(plugin=plugin.name,
@@ -168,7 +167,6 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
                         uninitialised_plugins.append(plugin.name.title())
                         self.log_exception('Unable to initialise plugin {plugin}'.format(plugin=plugin.name))
         display_text = ''
-
         if uninitialised_plugins:
             display_text = translate('OpenLP.PluginManager', 'Unable to initialise the following plugins:') + \
                 '\n\n'.join(uninitialised_plugins) + '\n\n'
