@@ -313,6 +313,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     Also handles the UI tasks of moving things up and down etc.
     """
     servicemanager_set_item = QtCore.pyqtSignal(int)
+    servicemanager_set_item_by_uuid = QtCore.pyqtSignal(str)
     servicemanager_next_item = QtCore.pyqtSignal()
     servicemanager_previous_item = QtCore.pyqtSignal()
 
@@ -339,6 +340,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.setup_ui(self)
         # Need to use event as called across threads and UI is updated
         self.servicemanager_set_item.connect(self.on_set_item)
+        self.servicemanager_set_item_by_uuid.connect(self.set_item_by_uuid)
         self.servicemanager_next_item.connect(self.next_item)
         self.servicemanager_previous_item.connect(self.previous_item)
 
@@ -1027,6 +1029,21 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             item = self.service_manager_list.topLevelItem(index)
             self.service_manager_list.setCurrentItem(item)
             self.make_live()
+
+    def set_item_by_uuid(self, unique_identifier):
+        """
+        Makes a specific item in the service live.  Called directly by the API layer
+
+        :param unique_identifier: Unique Identifier for the item.
+        """
+        row = 0
+        for sitem in self.service_items:
+            if sitem['service_item'].unique_identifier == unique_identifier:
+                item = self.service_manager_list.topLevelItem(sitem['order'] - 1)
+                self.service_manager_list.setCurrentItem(item)
+                self.make_live(row)
+                return
+            row += 1
 
     def on_move_selection_up(self):
         """
