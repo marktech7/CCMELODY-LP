@@ -342,7 +342,7 @@ class MessageListener(object):
             item.iconic_representation = item_cpy.icon
             item.image_border = item_cpy.image_border
             item.main = item_cpy.main
-            item.theme_data = item_cpy.theme_data
+            item.theme = item_cpy.theme
             # When presenting PDF/XPS/OXPS, we are using the image presentation code,
             # so handler & processor is set to None, and we skip adding the handler.
             self.handler = None
