@@ -881,7 +881,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 '{text}_start'.format(text=self.service_item.name.lower()),
                 [self.service_item, self.is_live, self.hide_mode(), slide_no])
         else:
-            self._set_theme(service_item)
+            self._set_theme(self.service_item)
         # Reset blanking if needed
         if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
                                           self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
@@ -893,7 +893,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
-            self.preview_display.load_verses(service_item.rendered_slides)
+            self.preview_display.load_verses(self.service_item.rendered_slides)
             self.preview_display.show()
             for display in self.displays:
                 display.load_verses(self.service_item.rendered_slides)
@@ -927,7 +927,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         self.enable_tool_bar(self.service_item)
         if self.service_item.is_media() or self.service_item.requires_media():
-            self._set_theme(service_item)
+            self._set_theme(self.service_item)
             if self.service_item.is_command():
                 self.preview_display.load_verses(media_empty_song, True)
             self.on_media_start(self.service_item)
