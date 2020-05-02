@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
@@ -43,6 +42,7 @@ from openlp.core.display.render import remove_tags, render_tags, render_chords_f
 from openlp.core.lib import ItemCapabilities
 from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.media import parse_stream_path
 
 
 log = logging.getLogger(__name__)
@@ -690,6 +690,11 @@ class ServiceItem(RegistryProperties):
             elif self.is_command():
                 if self.is_capable(ItemCapabilities.IsOptical) and State().check_preconditions('media'):
                     if not os.path.exists(slide['title']):
+                        self.is_valid = False
+                        break
+                elif self.is_capable(ItemCapabilities.CanStream):
+                    (name, mrl, options) = parse_stream_path(slide['path'])
+                    if not name or not mrl or not options:
                         self.is_valid = False
                         break
                 else:

@@ -201,6 +201,8 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             service_item.will_auto_start = True
         # force a non-existent theme
         service_item.theme = -1
+        # validate the item after all capabilities has been added
+        service_item.validate_item()
         return True
 
     def initialise(self):
