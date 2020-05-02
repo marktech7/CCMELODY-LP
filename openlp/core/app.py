@@ -31,6 +31,7 @@ import os
 import sys
 import time
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from shutil import copytree
 from traceback import format_exception
@@ -303,7 +304,7 @@ def set_up_logging(log_path):
     """
     create_paths(log_path, do_not_log=True)
     file_path = log_path / 'openlp.log'
-    logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
+    logfile = RotatingFileHandler(str(file_path), 'w', encoding='UTF-8', backupCount=2)
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
     if log.isEnabledFor(logging.DEBUG):

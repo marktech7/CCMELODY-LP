@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+import logging
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
 from openlp.core.lib import image_to_byte
@@ -27,6 +28,7 @@ from openlp.core.state import State
 from flask import jsonify, request, abort, Blueprint
 
 core = Blueprint('core', __name__)
+log = logging.getLogger(__name__)
 
 
 @core.route('/poll')
@@ -40,11 +42,11 @@ def toggle_display():
     ALLOWED_ACTIONS = ['hide', 'show', 'blank', 'theme', 'desktop']
     data = request.json
     if not data:
+        log.error('Missing request data')
         abort(400)
     display = data.get('display', '').lower()
     if display not in ALLOWED_ACTIONS:
         abort(400)
-
     Registry().get('live_controller').slidecontroller_toggle_display.emit(display)
     return '', 204
 
@@ -70,6 +72,7 @@ def system_information():
 def login():
     data = request.json
     if not data:
+        log.error('Missing request data')
         abort(400)
     username = data.get('username', '')
     password = data.get('password', '')
@@ -77,6 +80,7 @@ def login():
             password == Registry().get('settings_thread').value('api/password'):
         return jsonify({'token': Registry().get('authentication_token')})
     else:
+        log.error('Unauthorised Request for ' + username)
         return '', 401
 
 

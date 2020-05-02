@@ -60,15 +60,15 @@ def test_build_file_mask_string(media_item):
         mocked_translate.side_effect = lambda module, string_to_translate: string_to_translate
         media_item.build_file_mask_string()
 
-    # THEN: The file mask should be generated correctly
+    # THEN: The file mask should be generated correctly with a space before all bar the first.
     assert '*.odp' in media_item.on_new_file_masks, 'The file mask should contain the odp extension'
-    assert '*.ppt' in media_item.on_new_file_masks, 'The file mask should contain the ppt extension'
-    assert '*.pdf' in media_item.on_new_file_masks, 'The file mask should contain the pdf extension'
-    assert '*.xps' in media_item.on_new_file_masks, 'The file mask should contain the xps extension'
-    assert '*.oxps' in media_item.on_new_file_masks, 'The file mask should contain the oxps extension'
-    assert '*.epub' in media_item.on_new_file_masks, 'The file mask should contain the epub extension'
-    assert '*.cbz' in media_item.on_new_file_masks, 'The file mask should contain the cbz extension'
-    assert '*.fb2' in media_item.on_new_file_masks, 'The file mask should contain the fb2 extension'
+    assert ' *.ppt' in media_item.on_new_file_masks, 'The file mask should contain the ppt extension'
+    assert ' *.pdf' in media_item.on_new_file_masks, 'The file mask should contain the pdf extension'
+    assert ' *.xps' in media_item.on_new_file_masks, 'The file mask should contain the xps extension'
+    assert ' *.oxps' in media_item.on_new_file_masks, 'The file mask should contain the oxps extension'
+    assert ' *.epub' in media_item.on_new_file_masks, 'The file mask should contain the epub extension'
+    assert ' *.cbz' in media_item.on_new_file_masks, 'The file mask should contain the cbz extension'
+    assert ' *.fb2' in media_item.on_new_file_masks, 'The file mask should contain the fb2 extension'
 
 
 def test_clean_up_thumbnails(media_item):
