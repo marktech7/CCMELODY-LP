@@ -1056,6 +1056,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                     event.ignore()
             else:
                 event.accept()
+        # Included here as it is only needed to help force the logging rollover not for general logging use.
+        # Rollover require as when WebSocket exits having been used it will destroy the application log on exit.
+        import logging
+        log_man = logging.getLogger()
+        log_man.handlers[0].doRollover()
         if event.isAccepted():
             # Wait for all the threads to complete
             self._wait_for_threads()
