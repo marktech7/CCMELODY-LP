@@ -103,7 +103,7 @@ class PlanningCenterPlugin(Plugin):
         """
         return translate('PlanningCenterPlugin', '<strong>PlanningCenter Plugin</strong>'
                          '<br />The planningcenter plugin provides an interface to import '
-                        'service plans from the Planning Center Online v2 API.')
+                         'service plans from the Planning Center Online v2 API.')
 
     def set_plugin_text_strings(self):
         """
@@ -125,7 +125,7 @@ class PlanningCenterPlugin(Plugin):
         tooltips = {
             'load': '',
             'import': translate('PlanningCenterPlugin', 'Import All Plan Items '
-            'into Current Service'),
+                                'into Current Service'),
             'new': '',
             'edit': '',
             'delete': '',

@@ -81,6 +81,6 @@ class Ui_SelectPlanDialog(object):
                                                          'have changed'))
         self.edit_auth_button.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Edit Authentication'))
         self.edit_auth_button.setToolTip(translate('PlanningCenterPlugin.PlanningCenterForm', 'Edit the Application '
-                                                    'ID and Secret Code to login to Planning Center Online'))
+                                                   'ID and Secret Code to login to Planning Center Online'))
         self.song_theme_selection_label.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Song Theme'))
         self.slide_theme_selection_label.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Slide Theme'))

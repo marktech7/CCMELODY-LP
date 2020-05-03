@@ -68,8 +68,10 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         # check our credentials and connection to the PlanningCenter server
         organization = self.planning_center_api.check_credentials()
         if len(organization) == 0:
-            QtWidgets.QMessageBox.warning(self.parent(), "Authentication Failed", "Authentiation Failed.  "
-                "Check your credentials in OpenLP Settings.", QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.warning(self.parent(), "Authentication Failed",
+                                          "Authentiation Failed.  "
+                                          "Check your credentials in OpenLP Settings.",
+                                          QtWidgets.QMessageBox.Ok)
             return
         # set the Service Type Dropdown Box from PCO
         service_types_list = self.planning_center_api.get_service_type_list()
