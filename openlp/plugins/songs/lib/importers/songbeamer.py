@@ -431,5 +431,5 @@ class SongBeamerImport(SongImport):
         if audio_file_path.is_file():
             self.add_media_file(audio_file_path)
         else:
-            log.debug('Could not import mediafile "{audio_file_path}" since it does not exists!'
+            log.debug('Could not import mediafile "{audio_file_path}" since it does not exist!'
                       .format(audio_file_path=audio_file_path))

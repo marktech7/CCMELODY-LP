@@ -56,7 +56,7 @@ class Ui_ThemeManager(object):
     def setup_ui(self, widget):
         """
         Define the UI
-        :param widget: The screen object the the dialog is to be attached to.
+        :param widget: The screen object the dialog is to be attached to.
         """
         # start with the layout
         self.layout = QtWidgets.QVBoxLayout(widget)

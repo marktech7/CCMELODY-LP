@@ -99,7 +99,7 @@ def test_click_load_button(form):
         # THEN: we should get an error
         assert form.media_path_combobox.currentText() == '/non-existing/test-path.test',\
             'The media path should be the given one.'
-        mocked_critical_error_message_box.assert_called_with(message='Given path does not exists')
+        mocked_critical_error_message_box.assert_called_with(message='Given path does not exist')
 
         # WHEN: The load button is clicked with a mocked existing path
         mocked_os_path_exists.return_value = True

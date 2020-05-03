@@ -58,7 +58,7 @@ from openlp.core.widgets.toolbar import OpenLPToolbar
 
 class ServiceManagerList(QtWidgets.QTreeWidget):
     """
-    Set up key bindings and mouse behaviour for the service list
+    Set up key bindings and mouse behavior for the service list
     """
     def __init__(self, service_manager, parent=None):
         """

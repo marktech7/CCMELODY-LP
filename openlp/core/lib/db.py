@@ -112,8 +112,8 @@ def init_db(url, auto_flush=True, auto_commit=False, base=None):
     Initialise and return the session and metadata for a database
 
     :param url: The database to initialise connection with
-    :param auto_flush: Sets the flushing behaviour of the session
-    :param auto_commit: Sets the commit behaviour of the session
+    :param auto_flush: Sets the flushing behavior of the session
+    :param auto_commit: Sets the commit behavior of the session
     :param base: If using declarative, the base class to bind with
     """
     engine = create_engine(url, poolclass=NullPool)
@@ -219,7 +219,7 @@ class PathType(types.TypeDecorator):
 
     def coerce_compared_value(self, op, value):
         """
-        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the the
+        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the
         PathType to a UnicodeText type.
 
         :param op: The operation being carried out. Not used, as we only care about the type that is being used with the

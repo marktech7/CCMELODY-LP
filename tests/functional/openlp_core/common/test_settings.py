@@ -139,7 +139,7 @@ def test_settings_nonexisting():
     """Test the Settings on query for non-existing value"""
     # GIVEN: A new Settings setup
     with pytest.raises(KeyError) as cm:
-        # WHEN reading a setting that doesn't exists
+        # WHEN reading a setting that doesn't exist
         Settings().value('core/does not exists')
 
     # THEN: An exception with the non-existing key should be thrown

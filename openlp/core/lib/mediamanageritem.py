@@ -428,13 +428,13 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
 
     def on_new_click(self):
         """
-        Hook for plugins to define behaviour for adding new items.
+        Hook for plugins to define behavior for adding new items.
         """
         pass
 
     def on_edit_click(self):
         """
-        Hook for plugins to define behaviour for editing items.
+        Hook for plugins to define behavior for editing items.
         """
         pass
 
