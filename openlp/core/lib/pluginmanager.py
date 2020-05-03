@@ -48,7 +48,7 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
         self.log_info('Plugin manager Initialising')
         self.log_debug('Base path {path}'.format(path=AppLocation.get_directory(AppLocation.PluginsDir)))
         self.plugins = []
-        self.log_info('Plugin manager Initialized')
+        self.log_info('Plugin manager Initialised')
 
     def bootstrap_initialise(self):
         """
@@ -157,7 +157,7 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
         uninitialised_plugins = []
         for plugin in State().list_plugins():
             if plugin:
-                self.log_info('initializing plugins {plugin} in a {state} state'.format(plugin=plugin.name,
+                self.log_info('initialising plugins {plugin} in a {state} state'.format(plugin=plugin.name,
                                                                                         state=plugin.is_active()))
                 if plugin.is_active():
                     try:
@@ -165,10 +165,10 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
                         self.log_info('Initialisation Complete for {plugin}'.format(plugin=plugin.name))
                     except Exception:
                         uninitialised_plugins.append(plugin.name.title())
-                        self.log_exception('Unable to initialize plugin {plugin}'.format(plugin=plugin.name))
+                        self.log_exception('Unable to initialise plugin {plugin}'.format(plugin=plugin.name))
         display_text = ''
         if uninitialised_plugins:
-            display_text = translate('OpenLP.PluginManager', 'Unable to initialize the following plugins:') + \
+            display_text = translate('OpenLP.PluginManager', 'Unable to initialise the following plugins:') + \
                 '\n\n'.join(uninitialised_plugins) + '\n\n'
         error_text = State().get_text()
         if error_text:
