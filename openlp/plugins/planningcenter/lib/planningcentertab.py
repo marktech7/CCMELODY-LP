@@ -75,8 +75,8 @@ class PlanningCenterTab(SettingsTab):
 
         self.notice_label.setText(
             translate('PlanningCenterPlugin.PlanningCenterTab', '<strong>Note:</strong> '
-                      'An Internet connection and a Planning Center Online Account are required in order to \
-                      import plans from Planning Center Online.')
+                      'An Internet connection and a Planning Center Online Account are '
+                      'required in order to import plans from Planning Center Online.')
         )
         self.instructions_label.setText(
             translate('PlanningCenterPlugin.PlanningCenterTab',
