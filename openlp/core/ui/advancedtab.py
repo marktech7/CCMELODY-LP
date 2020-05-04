@@ -326,7 +326,7 @@ class AdvancedTab(SettingsTab):
         self.display_workaround_group_box.setTitle(translate('OpenLP.AdvancedTab', 'Display Workarounds'))
         self.ignore_aspect_ratio_check_box.setText(translate('OpenLP.AdvancedTab', 'Ignore Aspect Ratio'))
         self.x11_bypass_check_box.setText(translate('OpenLP.AdvancedTab', 'Bypass X11 Window Manager'))
-        self.alternate_rows_check_box.setText(translate('OpenLP.AdvancedTab', 'Use alternating row colors in lists'))
+        self.alternate_rows_check_box.setText(translate('OpenLP.AdvancedTab', 'Use alternating row colours in lists'))
         self.allow_transparent_display_check_box.setText(
             translate('OpenLP.AdvancedTab', 'Disable display transparency'))
         # Slide Limits

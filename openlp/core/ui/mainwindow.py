@@ -851,7 +851,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                                'make permanent changes to your current '
                                                                                'OpenLP configuration.\n\n Importing '
                                                                                'incorrect settings may cause erratic '
-                                                                               'behavior or OpenLP to terminate '
+                                                                               'behaviour or OpenLP to terminate '
                                                                                'abnormally.'),
                                                 QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
                                                                                       QtWidgets.QMessageBox.No),
