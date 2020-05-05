@@ -24,7 +24,6 @@ a LiveWorship database into the OpenLP database.
 """
 import os
 import logging
-import ctypes
 
 from lxml import etree
 from pathlib import Path
@@ -36,29 +35,17 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.ui import SongStrings
 
-# Copied from  VCSDK_Enums.h
-EVStorageType_kDisk = 1
-EVDumpType_kSQL = 1
-EVDumpType_kXML = 2
-EVDataKind_kStructureAndRecords = 2
-EVDataKind_kRecordsOnly = 3
-
-pretty_print = 1
 
 log = logging.getLogger(__name__)
 
 
 class LiveWorshipImport(SongImport):
     """
-    The :class:`LiveWorshipImport` class provides the ability to import the
+    The :class:`LiveWorshipImport` class provides the ability to import an XML dump frorm the
     LiveWorship Valentina Database.
 
-    The approach is to use the Valentina DB ADK for C via ctypes to dump the database content to a XML
-    file that is then analysed for data extraction. It would also be possible to skip the XML and
-    extract the data directly from the database using ctypes, but that approach requires a lot of ctypes
-    interaction and type conversion that is rather fragile across platforms and versions, so the XML approach
-    is used for now.
-    It was implemented using Valentina DB ADK for C version 9.6.
+    The approach is to get the user to use the Valentina Studio to dump the database content to a XML
+    file that is then analysed for data extraction.
     """
     def __init__(self, manager, **kwargs):
         """
@@ -69,100 +56,19 @@ class LiveWorshipImport(SongImport):
 
     def do_import(self):
         """
-        Receive a path to a LiveWorship (valentina) DB.
+        Receive a path to a LiveWorship (valentina) DB XML dump.
         """
-        self.dump_file = Path(gettempdir()) / 'openlp-liveworship-dump.xml'
-        if not self.dump_valentina_to_xml():
-            return
         self.load_xml_dump()
         if self.root is None:
             return
         self.extract_songs()
-        delete_file(self.dump_file)
-
-    def dump_valentina_to_xml(self):
-        """
-        Load the LiveWorship database using the Valentina DB ADK for C and dump the DB content to a XML file.
-        """
-        self.import_wizard.increment_progress_bar(translate('SongsPlugin.LiveWorshipImport',
-                                                            'Extracting data from database'), 0)
-        # Based on OS and bitness, try to load the dll
-        libVCSDK = None
-        if is_win():
-            # The DLL path must be set depending on the bitness of the OpenLP/Python instance
-            if is_64bit_instance():
-                vcdk_install_folder = 'VCDK_x64_{adkver}'
-                dll_name = '/vcsdk_release_x64.dll'
-            else:
-                vcdk_install_folder = 'VCDK_{adkver}'
-                dll_name = '/vcsdk_release_x86.dll'
-            dll_path = '{pf}\\Paradigma Software\\{vcdk}'.format(pf=os.getenv('PROGRAMFILES'), vcdk=vcdk_install_folder)
-            dll_path2 = '{pf}\\Paradigma Software\\vcomponents_win_vc'.format(pf=os.getenv('PROGRAMFILES'))
-            os.environ['PATH'] = ';'.join([os.environ['PATH'], dll_path, dll_path2])
-            libVCSDK_path = dll_path + dll_name
-        elif is_linux():
-            libVCSDK_path = '/opt/VCSDK/libVCSDK.so'
-        elif is_macosx():
-            # The DLL path must be set depending on the bitness of the OpenLP/Python instance
-            if is_64bit_instance():
-                vcdk_install_folder = 'VCDK_x64_{adkver}'
-                dll_name = '/vcsdk_x64.dylib'
-            else:
-                vcdk_install_folder = 'VCDK_{adkver}'
-                dll_name = '/vcsdk_x86.dylib'
-            libVCSDK_path = '/Users/Shared/Paradigma Software/{folder}/{dll}'.format(folder=vcdk_install_folder,
-                                                                                     dll=dll_name)
-        # Try to make this somewhat future proof by trying versions 9 to 15
-        found_dll = False
-        if '{adkver}' in libVCSDK_path:
-            for i in range(9, 16):
-                if os.path.exists(libVCSDK_path.format(adkver=i)):
-                    found_dll = True
-                    libVCSDK_path = libVCSDK_path.format(adkver=i)
-                    break
-            if not found_dll:
-                libVCSDK_path = libVCSDK_path.format(adkver=9)
-        elif os.path.exists(libVCSDK_path):
-            found_dll = True
-        if not found_dll:
-            adk_name = "Valentina DB ADK for C, {bitness} bit"
-            if is_64bit_instance():
-                adk_name = adk_name.format(bitness=64)
-            else:
-                adk_name = adk_name.format(bitness=32)
-            critical_error_message_box(translate('SongsPlugin.LiveWorshipImport',
-                                                 'Could not find Valentina DB ADK libraries '),
-                                       translate('SongsPlugin.LiveWorshipImport',
-                                                 'Could not find "{dllpath}", please install "{adk}"'
-                                                 .format(dllpath=libVCSDK_path, adk=adk_name)))
-            return False
-        libVCSDK = ctypes.CDLL(libVCSDK_path)
-        # cache size set to 1024, got no idea what this means...
-        # serial numbers set to None - only 10 minutes access, should be enough :)
-        libVCSDK.Valentina_Init(1024, None, None, None)
-        # Create a DB instance
-        Database_New = libVCSDK.Database_New
-        Database_New.argtypes = [ctypes.c_int]
-        Database_New.restype = ctypes.c_void_p
-        database = Database_New(EVStorageType_kDisk)
-        database_ptr = ctypes.c_void_p(database)
-        # Load the file into our instance
-        libVCSDK.Database_Open(database_ptr, ctypes.c_char_p(str(self.import_source).encode()))
-        # Dump the database to XML
-        libVCSDK.Database_Dump(database_ptr, ctypes.c_char_p(str(self.dump_file).encode()), EVDumpType_kXML,
-                               EVDataKind_kStructureAndRecords, pretty_print, ctypes.c_char_p(b'utf-8'))
-        # Close the DB
-        libVCSDK.Database_Close(database_ptr)
-        # Shutdown Valentina
-        libVCSDK.Valentina_Shutdown()
-        return True
 
     def load_xml_dump(self):
         self.import_wizard.increment_progress_bar(translate('SongsPlugin.LiveWorshipImport',
                                                             'Loading the extracting data'), 0)
-        # The file can contain the EOT control character and certain invalid tags with missing attributewhich
+        # The file can contain the EOT control character and certain invalid tags with missing attribute which
         # will make lxml fail, so it must be removed.
-        xml_file = open(self.dump_file, 'rt')
+        xml_file = open(self.import_source, 'rt')
         xml_content = xml_file.read()
         xml_file.close()
         xml_content = xml_content.replace('\4', '**EOT**').replace('CustomProperty =""', 'CustomProperty a=""', 1)
