@@ -72,4 +72,3 @@ class UiThemeProgressDialog(object):
         :param about_dialog: The QDialog object to translate
         """
         theme_progress_dialog.setWindowTitle(translate('OpenLP.Themes', 'Recreating Theme Thumbnails'))
-        self.label.setText(translate('OpenLP.Themes', 'TextLabel'))

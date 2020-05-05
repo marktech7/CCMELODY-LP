@@ -73,7 +73,7 @@ def test_build_file_mask_string(media_item):
 
 def test_clean_up_thumbnails(media_item):
     """
-    Test that the clean_up_thumbnails method works as expected when files exists.
+    Test that the clean_up_thumbnails method works as expected when files exist.
     """
     # GIVEN: A mocked controller, and mocked os.path.getmtime
     mocked_disabled_controller = MagicMock()
@@ -123,7 +123,7 @@ def test_clean_up_thumbnails_missing_file(media_item):
         # WHEN: calling clean_up_thumbnails
         media_item.clean_up_thumbnails(presentation_file, True)
 
-    # THEN: doc.presentation_deleted should have been called since the presentation file did not exists.
+    # THEN: doc.presentation_deleted should have been called since the presentation file did not exist.
     mocked_doc.assert_has_calls([call.get_thumbnail_path(1, True), call.presentation_deleted()], True)
 
 

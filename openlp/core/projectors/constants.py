@@ -115,7 +115,7 @@ S_NETWORK_IDLE = 400
 S_NETWORK_SENDING = 401
 S_NETWORK_RECEIVING = 402
 
-# Map PJlink errors to local status
+# Map PJLink errors to local status
 PJLINK_ERRORS = {
     'ERRA': E_AUTHENTICATION,   # Authentication error
     'ERR1': E_UNDEFINED,        # Undefined command error
@@ -417,7 +417,7 @@ STATUS_MSG = {
     E_LAMP: translate('OpenLP.ProjectorConstants', 'Projector lamp error'),
     E_NETWORK: translate('OpenLP.ProjectorConstants',
                          'An error occurred with the network (Possibly someone pulled the plug?)'),
-    E_NO_AUTHENTICATION: translate('OpenLP.ProjectorConstants', 'PJlink authentication Mismatch Error'),
+    E_NO_AUTHENTICATION: translate('OpenLP.ProjectorConstants', 'PJLink authentication Mismatch Error'),
     E_NOT_CONNECTED: translate('OpenLP.ProjectorConstants', 'Projector not connected error'),
     E_PARAMETER: translate('OpenLP.ProjectorConstants', 'PJLink returned "ERR2: Invalid Parameter"'),
     E_PREFIX: translate('OpenLP.ProjectorConstants', 'PJLink Invalid prefix character'),

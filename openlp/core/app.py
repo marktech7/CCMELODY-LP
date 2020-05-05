@@ -170,7 +170,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                                     'stored on removable device, that device needs to be made available.\n\nYou may '
                                     'reset the data location back to the default location, or you can try to make the '
                                     'current location available.\n\nDo you want to reset to the default data location? '
-                                    'If not, OpenLP will be closed so you can try to fix the the problem.')
+                                    'If not, OpenLP will be closed so you can try to fix the problem.')
                 .format(path=data_folder_path),
                 QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
                 QtWidgets.QMessageBox.No)

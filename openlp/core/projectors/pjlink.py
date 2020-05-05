@@ -207,7 +207,7 @@ class PJLink(QtNetwork.QTcpSocket):
         :param poll_time: Time (in seconds) to poll connected projector
         :param socket_timeout: Time (in seconds) to abort the connection if no response
         """
-        log.debug('PJlink(projector="{projector}", args="{args}" kwargs="{kwargs}")'.format(projector=projector,
+        log.debug('PJLink(projector="{projector}", args="{args}" kwargs="{kwargs}")'.format(projector=projector,
                                                                                             args=args,
                                                                                             kwargs=kwargs))
         super().__init__()

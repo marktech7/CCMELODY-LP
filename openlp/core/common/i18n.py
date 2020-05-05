@@ -451,8 +451,8 @@ class UiStrings(metaclass=Singleton):
         self.View = translate('OpenLP.Ui', 'View')
         self.ViewMode = translate('OpenLP.Ui', 'View Mode')
         self.Video = translate('OpenLP.Ui', 'Video')
-        self.WebDownloadText = translate('OpenLP.Ui', 'Web Interface, Download and Install latest Version')
-        self.ZeroconfErrorIntro = translate('OpenLP.Ui', 'There was a problem avertising OpenLP\'s remote '
+        self.WebDownloadText = translate('OpenLP.Ui', 'Web Interface, Download and Install Latest Version')
+        self.ZeroconfErrorIntro = translate('OpenLP.Ui', 'There was a problem advertising OpenLP\'s remote '
                                                          'interface on the network:')
         self.ZeroconfGenericError = translate('OpenLP.Ui', 'An unknown error occurred')
         self.ZeroconfNonUniqueError = translate('OpenLP.Ui', 'OpenLP already seems to be advertising itself')

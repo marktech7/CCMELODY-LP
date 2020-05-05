@@ -168,7 +168,7 @@ class ProxyDialog(QtWidgets.QDialog):
 
     def accept(self):
         """
-        Reimplement the the accept slot so that the ProxyWidget settings can be saved.
+        Reimplement the accept slot so that the ProxyWidget settings can be saved.
         :rtype: None
         """
         self.proxy_widget.save()

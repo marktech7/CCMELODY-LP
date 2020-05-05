@@ -219,7 +219,7 @@ class PathType(types.TypeDecorator):
 
     def coerce_compared_value(self, op, value):
         """
-        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the the
+        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the
         PathType to a UnicodeText type.
 
         :param op: The operation being carried out. Not used, as we only care about the type that is being used with the

@@ -73,8 +73,8 @@ class PlanningCenterPlugin(Plugin):
                                                     text=translate('PlanningCenterPlugin', 'Planning Center Service'),
                                                     visible=False,
                                                     statustip=translate('PlanningCenterPlugin',
-                                                                        'Import Planning Center Service Plan \
-                                                                        from Planning Center Online.'),
+                                                                        'Import Planning Center Service Plan '
+                                                                        'from Planning Center Online.'),
                                                     triggers=self.on_import_planning_center_triggered
                                                     )
         import_menu.addAction(self.import_planning_center)
@@ -102,8 +102,8 @@ class PlanningCenterPlugin(Plugin):
         PlanningCenter plugin
         """
         return translate('PlanningCenterPlugin', '<strong>PlanningCenter Plugin</strong>'
-                         '<br />The planningcenter plugin provides an interface to import \
-                        service plans from the Planning Center Online v2 API.')
+                         '<br />The planningcenter plugin provides an interface to import '
+                         'service plans from the Planning Center Online v2 API.')
 
     def set_plugin_text_strings(self):
         """
@@ -124,8 +124,8 @@ class PlanningCenterPlugin(Plugin):
         # Middle Header Bar
         tooltips = {
             'load': '',
-            'import': translate('PlanningCenterPlugin', 'Import All Plan Items \
-            into Current Service'),
+            'import': translate('PlanningCenterPlugin', 'Import All Plan Items '
+                                'into Current Service'),
             'new': '',
             'edit': '',
             'delete': '',

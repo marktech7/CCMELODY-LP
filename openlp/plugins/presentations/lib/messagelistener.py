@@ -35,7 +35,7 @@ log = logging.getLogger(__name__)
 
 class Controller(object):
     """
-    This is the Presentation listener who acts on events from the slide controller and passes the messages on the the
+    This is the Presentation listener who acts on events from the slide controller and passes the messages on the
     correct presentation handlers.
     """
     log.info('Controller loaded')

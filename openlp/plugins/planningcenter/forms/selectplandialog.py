@@ -76,11 +76,11 @@ class Ui_SelectPlanDialog(object):
                                                        'Import As New Service'))
         self.update_existing_button.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Refresh Service'))
         self.update_existing_button.setToolTip(translate('PlanningCenterPlugin.PlanningCenterForm',
-                                                         'Refresh Existing Service from Planning Center.  \
-                                                         This will update song lyrics or item orders that \
-                                                         have changed'))
+                                                         'Refresh Existing Service from Planning Center. '
+                                                         'This will update song lyrics or item orders that '
+                                                         'have changed'))
         self.edit_auth_button.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Edit Authentication'))
-        self.edit_auth_button.setToolTip(translate('PlanningCenterPlugin.PlanningCenterForm', 'Edit the Application \
-                                                    ID and Secret Code to login to Planning Center Online'))
+        self.edit_auth_button.setToolTip(translate('PlanningCenterPlugin.PlanningCenterForm', 'Edit the Application '
+                                                   'ID and Secret Code to login to Planning Center Online'))
         self.song_theme_selection_label.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Song Theme'))
         self.slide_theme_selection_label.setText(translate('PlanningCenterPlugin.PlanningCenterForm', 'Slide Theme'))

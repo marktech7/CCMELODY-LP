@@ -810,7 +810,7 @@ def send_error_message(error_type):
         critical_error_message_box(
             translate('BiblesPlugin.HTTPBible', 'Download Error'),
             translate('BiblesPlugin.HTTPBible', 'There was a problem downloading your verse selection. Please check '
-                      'your Internet connection, and if this error continues to occur please consider reporting a bug'
+                      'your Internet connection, and if this error continues to occur, please consider reporting a bug'
                       '.'))
     elif error_type == 'parse':
         critical_error_message_box(

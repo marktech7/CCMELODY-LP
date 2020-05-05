@@ -197,9 +197,9 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.application.set_normal_cursor()
             return
         if not os.path.exists(path):
-            log.debug('Given path does not exists')
+            log.debug('Given path does not exist')
             critical_error_message_box(message=translate('MediaPlugin.MediaClipSelectorForm',
-                                                         'Given path does not exists'))
+                                                         'Given path does not exist'))
             self.toggle_disable_load_media(False)
             self.application.set_normal_cursor()
             return
