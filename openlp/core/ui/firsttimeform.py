@@ -521,7 +521,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.previous_size = 0
             if not download_file(self, '{url}{file}'.format(url=self.themes_url, file=item.file_name),
                                  themes_destination_path / item.file_name, item.sha256):
-                missed_files.append('Theme: name'.format(name=item.file_name))
+                missed_files.append('Theme: {name}'.format(name=item.file_name))
         # Remote
         if self.remote_page.can_download_remote:
             self._increment_progress_bar(self.downloading.format(name='Web Remote'), 0)

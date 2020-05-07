@@ -285,10 +285,10 @@ class SongFormat(object):
         },
         LiveWorship: {
             'class': LiveWorshipImport,
-            'name': 'LiveWorship Database',
+            'name': 'LiveWorship Database Dump',
             'prefix': 'liveWorship',
             'selectMode': SongFormatSelect.SingleFile,
-            'filter': '{text} (*.vdb)'.format(text=translate('SongsPlugin.ImportWizardForm',
+            'filter': '{text} (*.xml)'.format(text=translate('SongsPlugin.ImportWizardForm',
                                                              'LiveWorship Database'))
         },
         Lyrix: {

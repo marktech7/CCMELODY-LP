@@ -629,7 +629,7 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
         if adev:
             options += ':"dshow-adev={adev}" '.format(adev=self.colon_escape(adev))
         if vsize:
-            options += ':dshow-size={vsize}'.format(vsize)
+            options += ':dshow-size={vsize}'.format(vsize=vsize)
         self.callback(main_file, options)
 
     def has_support_for_mrl(self, mrl):
