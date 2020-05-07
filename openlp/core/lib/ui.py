@@ -115,7 +115,12 @@ def critical_error_message_box(title=None, message=None, parent=None, question=F
         return QtWidgets.QMessageBox.critical(parent, UiStrings().Error, message,
                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
                                                                                     QtWidgets.QMessageBox.No))
-    return Registry().get('main_window').error_message(title if title else UiStrings().Error, message)
+    # If used before the main window is created, fall back to direct use of QMessageBox
+    main_window = Registry().get('main_window')
+    if main_window:
+        return main_window.error_message(title if title else UiStrings().Error, message)
+    else:
+        QtWidgets.QMessageBox.critical(parent, title, message)
 
 
 def create_horizontal_adjusting_combo_box(parent, name):
