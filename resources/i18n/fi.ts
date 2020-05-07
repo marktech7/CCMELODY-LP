@@ -1138,8 +1138,8 @@ tarkista ”Asetukset &gt; Raamatut” sivulta, ettei Raamattujen kieleksi ole v
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="810"/>
-        <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur please consider reporting a bug.</source>
-        <translation>Ohjelma havaitsi ongelmia valittujen jakeiden lataamisessa. Ole hyvä ja tarkasta internet-yhteyden toimivuus. Jos ongelma ei poistu, harkitse raportointia virheestä kehittäjille.</translation>
+        <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="816"/>
@@ -1847,12 +1847,12 @@ automaattisesti sekä asettaa taustakuvia.</translation>
         <translation>Sinun pitää syöttää ryhmälle nimi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="654"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="655"/>
         <source>Could not add the new group.</source>
         <translation>Ryhmää ei voida lisätä.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="657"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="658"/>
         <source>This group already exists.</source>
         <translation>Ryhmä on jo olemassa.</translation>
     </message>
@@ -1921,34 +1921,34 @@ automaattisesti sekä asettaa taustakuvia.</translation>
         <translation>Haluatko varmasti poistaa &quot;{name}&quot; ja sen kaiken sisällön?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="601"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="602"/>
         <source>Missing Image(s)</source>
         <translation>Puuttuvat kuva(t)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="595"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="596"/>
         <source>The following image(s) no longer exist: {names}</source>
         <translation>Seuraavia kuvia ei enää ole olemassa: {names}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="601"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="602"/>
         <source>The following image(s) no longer exist: {names}
 Do you want to add the other images anyway?</source>
         <translation>Seuraavia kuvia ei enää ole olemassa: {names}
 Haluatko kuitenkin lisätä muut kuvat?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="678"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="679"/>
         <source>You must select an image to replace the background with.</source>
         <translation>Sinun pitää valita kuva, jolla korvaa taustan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="692"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="693"/>
         <source>There was no display item to amend.</source>
         <translation>Muutettavaa näytön kohdetta ei ole.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="696"/>
+        <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="697"/>
         <source>There was a problem replacing your background, the image file &quot;{name}&quot; no longer exists.</source>
         <translation>Taustakuvan korvaaminen ei onnistunut. 
 OpenLP ei löytänyt tätä tiedostoa: &quot;{name}&quot;</translation>
@@ -2124,8 +2124,8 @@ Nämä vaativat toimiakseen mediasoittimen.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="201"/>
-        <source>Given path does not exists</source>
-        <translation>Annettua polkua ei ole olemassa</translation>
+        <source>Given path does not exist</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="218"/>
@@ -2186,17 +2186,17 @@ Nämä vaativat toimiakseen mediasoittimen.</translation>
 <context>
     <name>MediaPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="390"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="392"/>
         <source>VLC is not available</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="361"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="363"/>
         <source>Device streaming support requires VLC.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="390"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="392"/>
         <source>Network streaming support requires VLC.</source>
         <translation type="unfinished"/>
     </message>
@@ -2241,37 +2241,37 @@ Nämä vaativat toimiakseen mediasoittimen.</translation>
         <translation>Tiedostoa {name} ei enää ole olemassa.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="221"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="223"/>
         <source>Videos ({video});;Audio ({audio});;{files} (*)</source>
         <translation>Videoita ({video});;Äänitiedostoja ({audio});;{files} (*)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="231"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="233"/>
         <source>You must select a media file to delete.</source>
         <translation>Sinun täytyy valita mediatiedosto poistettavaksi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="332"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="334"/>
         <source>Optical device support requires VLC.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="344"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="346"/>
         <source>Mediaclip already saved</source>
         <translation>Medialeike on jo tallennettu</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="344"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="346"/>
         <source>This mediaclip has already been saved</source>
         <translation>Medialeike on tallennettu aiemmin</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="402"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="404"/>
         <source>Stream already saved</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="402"/>
+        <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="404"/>
         <source>This stream has already been saved</source>
         <translation type="unfinished"/>
     </message>
@@ -2478,12 +2478,12 @@ Nämä vaativat toimiakseen mediasoittimen.</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="165"/>
+        <location filename="../../openlp/core/app.py" line="166"/>
         <source>Data Directory Error</source>
         <translation>Tiedostokansion virhe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="165"/>
+        <location filename="../../openlp/core/app.py" line="166"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2492,36 +2492,28 @@ The location of the data folder was previously changed from the OpenLP's default
 
 You may reset the data location back to the default location, or you can try to make the current location available.
 
-Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the the problem.</source>
-        <translation>OpenLP datahakemistoa ei löytynyt
-
-%s
-
-Tämä datahakemisto on siirtynyt OpenLP:n oletussijainnista. Jos se sijaitsi siirrettävällä medialla, tällöin median pitää olla kytkettynä koneeseen..
-
-Voit nollata sijainnnin takaisin oletusarvoo tai voit yrittää kytkeä siirrettävän median takaisin koneeseen.
-
-Tahdotko nollata sijainnin? Jos et, OpenLP suljetaan ja voit yrittää korjata ongelman myöhemmin uudelleen.</translation>
+Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the problem.</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="241"/>
+        <location filename="../../openlp/core/app.py" line="242"/>
         <source>Backup</source>
         <translation>Varmuuskopiointi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="224"/>
+        <location filename="../../openlp/core/app.py" line="225"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP on päivitetty, haluatko varmuuskopioida 
 OpenLP:n vanhan tiedostokansion?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="235"/>
+        <location filename="../../openlp/core/app.py" line="236"/>
         <source>Backup of the data folder failed!</source>
         <translation>Tiedostokansion varmuuskopionti epäonnistui!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="238"/>
+        <location filename="../../openlp/core/app.py" line="239"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2530,24 +2522,24 @@ OpenLP:n vanhan tiedostokansion?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="417"/>
+        <location filename="../../openlp/core/app.py" line="418"/>
         <source>Settings Upgrade</source>
         <translation>Asetusten päivittäminen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="410"/>
+        <location filename="../../openlp/core/app.py" line="411"/>
         <source>Your settings are about to be upgraded. A backup will be created at {back_up_path}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="417"/>
+        <location filename="../../openlp/core/app.py" line="418"/>
         <source>Settings back up failed.
 
 Continuing to upgrade.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="426"/>
+        <location filename="../../openlp/core/common/__init__.py" line="441"/>
         <source>Image Files</source>
         <translation>Kuvatiedostot</translation>
     </message>
@@ -4375,22 +4367,22 @@ Tämän avulla voidaan muuttaa joitakin asetuksia
 sekä ladata esimerkiksi lauluja ja Raamattuja.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="743"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="742"/>
         <source>OpenLP Main Display Blanked</source>
         <translation>OpenLP:n Esitys on pimennetty</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="743"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="742"/>
         <source>The Main Display has been blanked out</source>
         <translation>Esityksen näyttö on pimennetty</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="848"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="847"/>
         <source>Import settings?</source>
         <translation>Tuodaanko asetukset?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="848"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="847"/>
         <source>Are you sure you want to import settings?
 
  Importing settings will make permanent changes to your current OpenLP configuration.
@@ -4404,17 +4396,17 @@ Viallinen asetustiedosto voi aiheuttaa virheellistä&lt;br&gt;
 toimintaa ja ohjelma saattaa sulkeutua yllättäen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="940"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="939"/>
         <source>Import settings</source>
         <translation>Tuo asetukset</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="952"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="951"/>
         <source>OpenLP Settings (*.conf)</source>
         <translation>OpenLP:n asetukset (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="898"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="897"/>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
@@ -4423,66 +4415,66 @@ Processing has terminated and no changes have been made.</source>
 Käsittely on keskeytetty eikä muutoksia ole tehty.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="940"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="939"/>
         <source>OpenLP will now close.  Imported settings will be applied the next time you start OpenLP.</source>
         <translation>OpenLP sulkeutuu nyt. Tuodut asetukset otetaan käyttöön seuraavan käynnistyksen yhteydessä.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="952"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="951"/>
         <source>Export Settings File</source>
         <translation>Vie asetustiedosto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="965"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="964"/>
         <source>Export setting error</source>
         <translation>Asetusten vienti epäonnistui</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="965"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="964"/>
         <source>An error occurred while exporting the settings: {err}</source>
         <translation>Asetuksia viedessä tapahtui virhe:
 {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1044"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1043"/>
         <source>Exit OpenLP</source>
         <translation>Sulje OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1044"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1043"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Haluatko varmasti sulkea OpenLP:n?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1051"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1050"/>
         <source>&amp;Exit OpenLP</source>
         <translation>&amp;Sulje OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1138"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1142"/>
         <source>Default Theme: {theme}</source>
         <translation>Yleinen teema: {theme}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1292"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1296"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Tyhjennä luettelo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1292"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1296"/>
         <source>Clear the list of recent files.</source>
         <translation>Tyhjentää viimeksi käytettyjen listatiedostojen luettelon.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1373"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1377"/>
         <source>Copying OpenLP data to new data directory location - {path} - Please wait for copy to finish</source>
         <translation>Kopioidaan OpenLP:n tiedostoja uuteen tiedostokansion sijaintiin:
 {path} 
 Ole hyvä ja odota kopioinnin loppumista.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1381"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1385"/>
         <source>OpenLP Data directory copy failed
 
 {err}</source>
@@ -4491,7 +4483,7 @@ Ole hyvä ja odota kopioinnin loppumista.</translation>
 {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1383"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1387"/>
         <source>New Data Directory Error</source>
         <translation>Virhe uudessa tiedostokansiossa</translation>
     </message>
@@ -5064,7 +5056,7 @@ File extension not supported</source>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="420"/>
-        <source>PJlink authentication Mismatch Error</source>
+        <source>PJLink authentication Mismatch Error</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -5938,17 +5930,17 @@ jos toista näyttöä ei ole kytketty</translation>
 <context>
     <name>OpenLP.ServiceItem</name>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="327"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="333"/>
         <source>[slide {frame:d}]</source>
         <translation>[dia {frame:d}]</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="634"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="691"/>
         <source>&lt;strong&gt;Start&lt;/strong&gt;: {start}</source>
         <translation>&lt;strong&gt;Alku&lt;/strong&gt;: {start}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="638"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="695"/>
         <source>&lt;strong&gt;Length&lt;/strong&gt;: {length}</source>
         <translation>&lt;strong&gt;Pituus&lt;/strong&gt;: {length}</translation>
     </message>
@@ -6129,7 +6121,7 @@ jos toista näyttöä ei ole kytketty</translation>
         <translation>Toista &amp;loppuun.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="816"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="877"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Viive diojen välissä.</translation>
     </message>
@@ -6144,37 +6136,37 @@ jos toista näyttöä ei ole kytketty</translation>
         <translation>&amp;Muuta kohteen teemaa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="374"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="375"/>
         <source>Untitled Service</source>
         <translation>Tallentamaton Lista</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
         <source>Open File</source>
         <translation>Tiedoston valinta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
         <source>OpenLP Service Files (*.osz *.oszl)</source>
         <translation>OpenLP:n Lista (*.osz *.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="479"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
         <source>Modified Service</source>
         <translation>Sulkeminen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="479"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
         <source>The current service has been modified. Would you like to save this service?</source>
         <translation>Nykyistä Listaa on muokattu, haluatko tallentaa sen?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="575"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="617"/>
         <source>Service File(s) Missing</source>
         <translation>Jumalanpalveluksen tiedosto(t) puuttuvat</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="576"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="618"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
@@ -6183,84 +6175,84 @@ These files will be removed if you continue to save.</source>
 Nämä tiedostot poistetaan jos jatkat tallenntamista.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="620"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
         <source>Error Saving File</source>
         <translation>Virhe tallennettaessa tiedostoa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="620"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
         <source>There was an error saving your file.
 
 {error}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="657"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="699"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
         <translation>OpenLP palvelutiedostot - lite (*.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="658"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="700"/>
         <source>OpenLP Service Files (*.osz)</source>
         <translation>OpenLP ajolistat (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="730"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="791"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="827"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="888"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Automaattinen toisto - päällä</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="831"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="892"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Automaattinen toisto - Ei päällä</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="910"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
         <source>Input delay</source>
         <translation>Vaihtoaika</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="910"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
         <source>Delay between slides in seconds.</source>
         <translation>Automaattisen toiston vaihtoaika sekunteina.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1239"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1300"/>
         <source>Edit</source>
         <translation>Muokkaa valittua</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1240"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1301"/>
         <source>Service copy only</source>
         <translation>Vain ajoilstan kopio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1243"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1304"/>
         <source>Slide theme</source>
         <translation>Dian teema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1247"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1308"/>
         <source>Notes</source>
         <translation>Muistiinpanot</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1491"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
         <source>Missing Display Handler</source>
         <translation>Puuttuva näytön käsittelijä</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1425"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1487"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Näyttöelementtiä ei voi näyttää, koska sen näyttämiseen ei ole määritelty näyttöä.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1491"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Kohdetta ei voida näyttää!
 
@@ -6269,12 +6261,12 @@ Kohteen tarvitsemaa moduulia ei ole asennettu tai se on otettu pois käytöstä.
 Voit hallita moduuleja ”Asetukset” valikon kautta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1516"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
         <source>Rename item title</source>
         <translation>&amp;Uudelleennimeä otsikko</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1516"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
         <source>Title:</source>
         <translation>Nimi:</translation>
     </message>
@@ -6381,167 +6373,162 @@ ole hyvä ja valitse toinen pikanäppäin.</translation>
 <context>
     <name>OpenLP.SlideController</name>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="249"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="251"/>
         <source>Previous Slide</source>
         <translation>Edellinen dia</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="249"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="251"/>
         <source>Move to previous.</source>
         <translation>Siirry edelliseen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="256"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="258"/>
         <source>Next Slide</source>
         <translation>Seuraava dia</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="256"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="258"/>
         <source>Move to next.</source>
         <translation>Siirry seuraavaan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="272"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="274"/>
         <source>Hide</source>
         <translation>Piilota</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="274"/>
-        <source>Move to preview.</source>
-        <translation>Siirry esikatseluun</translation>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="277"/>
+        <source>Show Presentation</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="278"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="282"/>
         <source>Show Desktop</source>
         <translation>Näytä työpöytä.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="283"/>
-        <source>Toggle Desktop</source>
-        <translation>Näytä / piilota työpöytä</translation>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="287"/>
+        <source>Show Theme</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="288"/>
-        <source>Toggle Blank to Theme</source>
-        <translation>Pimennä teemaan</translation>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="292"/>
+        <source>Show Black</source>
+        <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="293"/>
-        <source>Toggle Blank Screen</source>
-        <translation>Pimennä näyttölaite</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="322"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="341"/>
         <source>Play Slides</source>
         <translation>Toista diat</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="342"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="361"/>
         <source>Delay between slides in seconds.</source>
         <translation>Automaattisen toiston vaihtoaika sekunteina.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="346"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="365"/>
         <source>Move to live.</source>
         <translation>Lähetä Esitykseen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="349"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="368"/>
         <source>Add to Service.</source>
         <translation>Lisää Listaan.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="353"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="372"/>
         <source>Edit and reload song preview.</source>
         <translation>Muokkaa ja esikatsele.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="357"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="376"/>
         <source>Clear</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="364"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="383"/>
         <source>Start playing media.</source>
         <translation>Aloita median toistaminen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="368"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="387"/>
         <source>Pause playing media.</source>
         <translation>Pysäytä median toistaminen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="372"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="391"/>
         <source>Stop playing media.</source>
         <translation>Keskeytä median toistaminen. </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="376"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="395"/>
         <source>Loop playing media.</source>
         <translation>Uudelleentoista mediaa automaattisesti.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="383"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="402"/>
         <source>Video timer.</source>
         <translation>Videon ajastin.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="392"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="411"/>
         <source>Video position.</source>
         <translation>Videon kohta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="403"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="422"/>
         <source>Audio Volume.</source>
         <translation>Äänenvoimakkuus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="441"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="460"/>
         <source>Go to &quot;Verse&quot;</source>
         <translation>Siirry &quot;Säkeistöön&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="442"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="461"/>
         <source>Go to &quot;Chorus&quot;</source>
         <translation>Siirry &quot;Kertosäkeeseen&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="443"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="462"/>
         <source>Go to &quot;Bridge&quot;</source>
         <translation>Siirry &quot;Bridgeen (C-osaan)&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="445"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="464"/>
         <source>Go to &quot;Pre-Chorus&quot;</source>
         <translation>Siirry &quot;Esi-kertosäkeeseen&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="446"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="465"/>
         <source>Go to &quot;Intro&quot;</source>
         <translation>Siirry &quot;Introon&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="447"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="466"/>
         <source>Go to &quot;Ending&quot;</source>
         <translation>Siirry &quot;Lopetukseen&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="448"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="467"/>
         <source>Go to &quot;Other&quot;</source>
         <translation>Siirry &quot;Muuhun&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="502"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="521"/>
         <source>Go To</source>
         <translation>Valitse säe</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="585"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="604"/>
         <source>Previous Service</source>
         <translation>Siirry edelliseen Listan kohteeseen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="590"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="609"/>
         <source>Next Service</source>
         <translation>Siirry seuraavaan Listan kohteeseen</translation>
     </message>
@@ -7291,11 +7278,6 @@ resoluutiota sekä tekstin sisennystä reunoilta.</translation>
         <source>Recreating Theme Thumbnails</source>
         <translation type="unfinished"/>
     </message>
-    <message>
-        <location filename="../../openlp/core/ui/themeprogressdialog.py" line="75"/>
-        <source>TextLabel</source>
-        <translation type="unfinished"/>
-    </message>
 </context>
 <context>
     <name>OpenLP.ThemesTab</name>
@@ -7947,12 +7929,12 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="454"/>
-        <source>Web Interface, Download and Install latest Version</source>
-        <translation>Selainkäyttöliittymä, lataa ja asenna viimeisin versio</translation>
+        <source>Web Interface, Download and Install Latest Version</source>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="455"/>
-        <source>There was a problem avertising OpenLP&apos;s remote interface on the network:</source>
+        <source>There was a problem advertising OpenLP&apos;s remote interface on the network:</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8204,12 +8186,12 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="72"/>
-        <source>Import Planning Center Service Plan                                                                         from Planning Center Online.</source>
+        <source>Import Planning Center Service Plan from Planning Center Online.</source>
         <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="104"/>
-        <source>&lt;strong&gt;PlanningCenter Plugin&lt;/strong&gt;&lt;br /&gt;The planningcenter plugin provides an interface to import                         service plans from the Planning Center Online v2 API.</source>
+        <source>&lt;strong&gt;PlanningCenter Plugin&lt;/strong&gt;&lt;br /&gt;The planningcenter plugin provides an interface to import service plans from the Planning Center Online v2 API.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8232,7 +8214,7 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="127"/>
-        <source>Import All Plan Items             into Current Service</source>
+        <source>Import All Plan Items into Current Service</source>
         <translation type="unfinished"/>
     </message>
 </context>
@@ -8278,7 +8260,7 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="78"/>
-        <source>Refresh Existing Service from Planning Center.                                                           This will update song lyrics or item orders that                                                          have changed</source>
+        <source>Refresh Existing Service from Planning Center. This will update song lyrics or item orders that have changed</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8288,7 +8270,7 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="83"/>
-        <source>Edit the Application                                                     ID and Secret Code to login to Planning Center Online</source>
+        <source>Edit the Application ID and Secret Code to login to Planning Center Online</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8321,7 +8303,7 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="76"/>
-        <source>&lt;strong&gt;Note:&lt;/strong&gt; An Internet connection and a Planning Center Online Account are required in order to                       import plans from Planning Center Online.</source>
+        <source>&lt;strong&gt;Note:&lt;/strong&gt; An Internet connection and a Planning Center Online Account are required in order to import plans from Planning Center Online.</source>
         <translation type="unfinished"/>
     </message>
     <message>
@@ -8341,7 +8323,7 @@ mediasoitinta ei ole otettu käyttöön asetuksista.</translation>
 <context>
     <name>PresentationPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="148"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="152"/>
         <source>&lt;strong&gt;Presentation Plugin&lt;/strong&gt;&lt;br /&gt;The presentation plugin provides the ability to show presentations using a number of different programs. The choice of available presentation programs is available to the user in a drop down box.</source>
         <translation>&lt;strong&gt;Presentaatiot&lt;/strong&gt;&lt;br/&gt;&lt;br/&gt;
 
@@ -8356,45 +8338,45 @@ Ohjaimia on mahdollista tarkkailla&lt;br/&gt;
 ”Asetukset” valikon kautta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="161"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="165"/>
         <source>Presentation</source>
         <comment>name singular</comment>
         <translation>Presentaatiot</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="162"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="166"/>
         <source>Presentations</source>
         <comment>name plural</comment>
         <translation>Presentaatiot</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="166"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="170"/>
         <source>Presentations</source>
         <comment>container title</comment>
         <translation>Presentaatiot</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="170"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="174"/>
         <source>Load a new presentation.</source>
         <translation>Tuo presentaatio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="174"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
         <source>Delete the selected presentation.</source>
         <translation>Poista valittu presentaatio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="175"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="179"/>
         <source>Preview the selected presentation.</source>
         <translation>Esikatsele valittua presentaatiota.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="176"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="180"/>
         <source>Send the selected presentation live.</source>
         <translation>Lähetä valittu presentaatio Esitykseen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="177"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="181"/>
         <source>Add the selected presentation to the service.</source>
         <translation>Lisää valittu presentaatio Listaan.</translation>
     </message>
@@ -8402,52 +8384,52 @@ Ohjaimia on mahdollista tarkkailla&lt;br/&gt;
 <context>
     <name>PresentationPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="61"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="65"/>
         <source>Select Presentation(s)</source>
         <translation>Valitse Presentaatio(t)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="62"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="66"/>
         <source>Automatic</source>
         <translation>Automaattinen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="63"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="67"/>
         <source>Present using:</source>
         <translation>Esitä käyttäen:</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="92"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="96"/>
         <source>Presentations ({text})</source>
         <translation>Presentaatiot ({text})</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="182"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="186"/>
         <source>File Exists</source>
         <translation>Tiedosto on jo olemassa</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="182"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="186"/>
         <source>A presentation with that filename already exists.</source>
         <translation>Tällä nimellä löytyy jo toinen presentaatio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="207"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="211"/>
         <source>This type of presentation is not supported.</source>
         <translation>Tämän muotoista esitysgrafiikkaa ei tueta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="378"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
         <source>Missing Presentation</source>
         <translation>Presentaatiota ei löydy</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="378"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
         <source>The presentation {name} no longer exists.</source>
         <translation>Presentaatiota {name} ei enää ole olemassa.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="369"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="407"/>
         <source>The presentation {name} is incomplete, please reload.</source>
         <translation>Tiedosto: {name}
 on vioittunut, ole hyvä ja yritä uudestaan.</translation>
@@ -9973,17 +9955,7 @@ Jos haluat käyttää tätä tuontimuotoa, sinun on asennettava Pythonin
 <context>
     <name>SongsPlugin.LiveWorshipImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="87"/>
-        <source>Extracting data from database</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="133"/>
-        <source>Could not find Valentina DB ADK libraries </source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="161"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/liveworship.py" line="62"/>
         <source>Loading the extracting data</source>
         <translation type="unfinished"/>
     </message>
