@@ -219,10 +219,10 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.application.process_events()
         except Exception:
             log.exception('Unable to parse sample config file %s', web_config)
-            QtWidgets.QMessageBox.critical(self,
-                translate('OpenLP.FirstTimeWizard', 'Invalid index file'),
-                translate('OpenLP.FirstTimeWizard', 'OpenLP was unable to read the resource index file. '
-                                                    'Please try again later.'))
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.FirstTimeWizard', 'Invalid index file'),
+                                           translate('OpenLP.FirstTimeWizard',
+                                                     'OpenLP was unable to read the resource index file. '
+                                                     'Please try again later.'))
             return False
         return True
 

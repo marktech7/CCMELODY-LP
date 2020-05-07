@@ -278,8 +278,8 @@ def test_on_custom_button_clicked_internet_settings(mocked_proxy_dialog):
     mocked_proxy_dialog().exec.assert_called_once()
 
 
-@patch('openlp.core.ui.firsttimeform.critical_error_message_box')
-def test__parse_config_invalid_config(mocked_critical_error_message_box):
+@patch('openlp.core.ui.firsttimeform.QtWidgets.QMessageBox')
+def test__parse_config_invalid_config(mocked_message_box):
     """
     Test `FirstTimeForm._parse_config` when called with invalid data
     """
@@ -291,7 +291,9 @@ def test__parse_config_invalid_config(mocked_critical_error_message_box):
 
     # THEN: _parse_data should return False and the user should have should have been informed.
     assert result is False
-    mocked_critical_error_message_box.assert_called_once()
+    mocked_message_box.critical.assert_called_once_with(
+        first_time_form, 'Invalid index file',
+        'OpenLP was unable to read the resource index file. Please try again later.')
 
 
 @patch('openlp.core.ui.firsttimeform.get_web_page')
