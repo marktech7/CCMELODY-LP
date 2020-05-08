@@ -67,7 +67,9 @@ def run_thread(worker, thread_name, can_start=True):
     thread.started.connect(worker.start)
     worker.quit.connect(thread.quit)
     worker.quit.connect(worker.deleteLater)
-    worker.error.connect(main_window.error_message)
+    # when used from the FTW the main window is not yet available
+    if main_window:
+        worker.error.connect(main_window.error_message)
     thread.finished.connect(thread.deleteLater)
     thread.finished.connect(make_remove_thread(thread_name))
     if can_start:

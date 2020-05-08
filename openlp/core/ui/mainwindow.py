@@ -737,7 +737,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Check and display message if screen blank on setup.
         """
-        self.live_controller.main_display_set_background()
         if self.settings.value('{section}/screen blank'.format(section=self.general_settings_section)):
             if self.settings.value('{section}/blank warning'.format(section=self.general_settings_section)):
                 QtWidgets.QMessageBox.question(self, translate('OpenLP.MainWindow', 'OpenLP Main Display Blanked'),

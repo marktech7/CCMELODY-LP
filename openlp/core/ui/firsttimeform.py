@@ -219,10 +219,10 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.application.process_events()
         except Exception:
             log.exception('Unable to parse sample config file %s', web_config)
-            critical_error_message_box(
-                translate('OpenLP.FirstTimeWizard', 'Invalid index file'),
-                translate('OpenLP.FirstTimeWizard', 'OpenLP was unable to read the resource index file. '
-                                                    'Please try again later.'))
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.FirstTimeWizard', 'Invalid index file'),
+                                           translate('OpenLP.FirstTimeWizard',
+                                                     'OpenLP was unable to read the resource index file. '
+                                                     'Please try again later.'))
             return False
         return True
 
@@ -521,7 +521,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.previous_size = 0
             if not download_file(self, '{url}{file}'.format(url=self.themes_url, file=item.file_name),
                                  themes_destination_path / item.file_name, item.sha256):
-                missed_files.append('Theme: name'.format(name=item.file_name))
+                missed_files.append('Theme: {name}'.format(name=item.file_name))
         # Remote
         if self.remote_page.can_download_remote:
             self._increment_progress_bar(self.downloading.format(name='Web Remote'), 0)

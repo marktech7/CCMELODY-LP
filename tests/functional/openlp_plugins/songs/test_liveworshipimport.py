@@ -77,7 +77,7 @@ class TestLiveWorshipSongImport(TestCase):
         importer = LiveWorshipImport(mocked_manager, file_paths=[])
         importer.finish = MagicMock()
         importer.import_wizard = MagicMock()
-        importer.dump_file = TEST_PATH / 'valentina-db-simplified-dump.xml'
+        importer.import_source = TEST_PATH / 'valentina-db-simplified-dump.xml'
 
         # WHEN: The XML is loaded and processed
         importer.load_xml_dump()

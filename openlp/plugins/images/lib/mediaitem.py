@@ -24,7 +24,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import delete_file, get_images_filter
+from openlp.core.common import delete_file, get_images_filter, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
@@ -345,7 +345,7 @@ class ImageMediaItem(MediaManagerItem):
         :rtype: Path
         """
         ext = image.file_path.suffix.lower()
-        return self.service_path / '{name:d}{ext}'.format(name=image.id, ext=ext)
+        return self.service_path / '{name:s}{ext}'.format(name=image.file_hash, ext=ext)
 
     def load_full_list(self, images, initial_load=False, open_group=None):
         """
@@ -490,6 +490,7 @@ class ImageMediaItem(MediaManagerItem):
             image_file = ImageFilenames()
             image_file.group_id = group_id
             image_file.file_path = image_path
+            image_file.file_hash = sha256_file_hash(image_path)
             self.manager.save_object(image_file)
             self.main_window.increment_progress_bar()
         if reload_list and image_paths:

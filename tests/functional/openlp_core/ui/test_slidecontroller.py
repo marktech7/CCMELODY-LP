@@ -27,6 +27,7 @@ from PyQt5 import QtCore, QtGui
 
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemAction
+from openlp.core.ui import HideMode
 from openlp.core.ui.slidecontroller import NON_TEXT_MENU, WIDE_MENU, InfoLabel, LiveController, PreviewController, \
     SlideController
 
@@ -127,139 +128,184 @@ def test_receive_spin_delay(mock_settings):
 
 def test_toggle_display_blank(settings):
     """
-    Check that the toggle_display('blank') method calls the on_blank_display() method
+    Check that the toggle_display('blank') method calls set_hide_mode with the correct HideMode
     """
     # GIVEN: A new SlideController instance.
-    mocked_on_blank_display = MagicMock()
-    mocked_on_theme_display = MagicMock()
-    mocked_on_hide_display = MagicMock()
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.on_blank_display = mocked_on_blank_display
-    slide_controller.on_theme_display = mocked_on_theme_display
-    slide_controller.on_hide_display = mocked_on_hide_display
+    slide_controller.set_hide_mode = mocked_set_hide_mode
 
     # WHEN: toggle_display() is called with an argument of "blank"
     slide_controller.toggle_display('blank')
 
-    # THEN: Only on_blank_display() should have been called with an argument of True
-    mocked_on_blank_display.assert_called_once_with(True)
-    assert 0 == mocked_on_theme_display.call_count, 'on_theme_display should not have been called'
-    assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Blank
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Blank)
 
 
 def test_toggle_display_hide(settings):
     """
-    Check that the toggle_display('hide') method calls the on_blank_display() method
+    Check that the toggle_display('hide') method calls set_hide_mode with the correct HideMode
     """
     # GIVEN: A new SlideController instance.
-    mocked_on_blank_display = MagicMock()
-    mocked_on_theme_display = MagicMock()
-    mocked_on_hide_display = MagicMock()
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.on_blank_display = mocked_on_blank_display
-    slide_controller.on_theme_display = mocked_on_theme_display
-    slide_controller.on_hide_display = mocked_on_hide_display
+    slide_controller.set_hide_mode = mocked_set_hide_mode
 
     # WHEN: toggle_display() is called with an argument of "hide"
     slide_controller.toggle_display('hide')
 
-    # THEN: Only on_blank_display() should have been called with an argument of True
-    mocked_on_blank_display.assert_called_once_with(True)
-    assert 0 == mocked_on_theme_display.call_count, 'on_theme_display should not have been called'
-    assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Blank
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Blank)
 
 
 def test_toggle_display_theme(settings):
     """
-    Check that the toggle_display('theme') method calls the on_theme_display() method
+    Check that the toggle_display('theme') method calls set_hide_mode with the correct HideMode
     """
     # GIVEN: A new SlideController instance.
-    mocked_on_blank_display = MagicMock()
-    mocked_on_theme_display = MagicMock()
-    mocked_on_hide_display = MagicMock()
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.on_blank_display = mocked_on_blank_display
-    slide_controller.on_theme_display = mocked_on_theme_display
-    slide_controller.on_hide_display = mocked_on_hide_display
+    slide_controller.set_hide_mode = mocked_set_hide_mode
 
     # WHEN: toggle_display() is called with an argument of "theme"
     slide_controller.toggle_display('theme')
 
-    # THEN: Only on_theme_display() should have been called with an argument of True
-    mocked_on_theme_display.assert_called_once_with(True)
-    assert 0 == mocked_on_blank_display.call_count, 'on_blank_display should not have been called'
-    assert 0 == mocked_on_hide_display.call_count, 'on_hide_display should not have been called'
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Theme
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Theme)
 
 
 def test_toggle_display_desktop(settings):
     """
-    Check that the toggle_display('desktop') method calls the on_hide_display() method
+    Check that the toggle_display('desktop') method calls set_hide_mode with the correct HideMode
     """
     # GIVEN: A new SlideController instance.
-    mocked_on_blank_display = MagicMock()
-    mocked_on_theme_display = MagicMock()
-    mocked_on_hide_display = MagicMock()
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.on_blank_display = mocked_on_blank_display
-    slide_controller.on_theme_display = mocked_on_theme_display
-    slide_controller.on_hide_display = mocked_on_hide_display
+    slide_controller.set_hide_mode = mocked_set_hide_mode
 
     # WHEN: toggle_display() is called with an argument of "desktop"
     slide_controller.toggle_display('desktop')
 
-    # THEN: Only on_hide_display() should have been called with an argument of True
-    mocked_on_hide_display.assert_called_once_with(True)
-    assert 0 == mocked_on_blank_display.call_count, 'on_blank_display should not have been called'
-    assert 0 == mocked_on_theme_display.call_count, 'on_theme_display should not have been called'
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Screen
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Screen)
 
 
 def test_toggle_display_show(settings):
     """
-    Check that the toggle_display('show') method calls all the on_X_display() methods
+    Check that the toggle_display('show') method calls set_hide_mode with the correct HideMode
     """
     # GIVEN: A new SlideController instance.
-    mocked_on_blank_display = MagicMock()
-    mocked_on_theme_display = MagicMock()
-    mocked_on_hide_display = MagicMock()
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.on_blank_display = mocked_on_blank_display
-    slide_controller.on_theme_display = mocked_on_theme_display
-    slide_controller.on_hide_display = mocked_on_hide_display
+    slide_controller.set_hide_mode = mocked_set_hide_mode
 
     # WHEN: toggle_display() is called with an argument of "show"
     slide_controller.toggle_display('show')
 
-    # THEN: All the on_X_display() methods should have been called with an argument of False
-    mocked_on_blank_display.assert_called_once_with(False)
-    mocked_on_theme_display.assert_called_once_with(False)
-    mocked_on_hide_display.assert_called_once_with(False)
+    # THEN: set_hide_mode should have been called with an argument of None
+    mocked_set_hide_mode.assert_called_once_with(None)
 
 
-def test_on_go_live_preview_controller(registry):
+def test_on_toggle_blank(settings):
     """
-    Test that when the on_go_preview() method is called the message is sent to the preview controller and focus is
-    set correctly.
+    Check that the on_toggle_blank method calls set_hide_mode with the correct HideMode
     """
-    # GIVEN: A new SlideController instance and plugin preview then pressing go live should respond
-    mocked_display = MagicMock()
-    mocked_preview_controller = MagicMock()
-    mocked_preview_widget = MagicMock()
-    mocked_service_item = MagicMock()
-    mocked_service_item.from_service = False
-    mocked_preview_widget.current_slide_number.return_value = 1
-    mocked_preview_widget.slide_count = MagicMock(return_value=2)
-    mocked_preview_controller.preview_widget = MagicMock()
-    Registry().register('preview_controller', mocked_preview_controller)
+    # GIVEN: A new SlideController instance, and get_hide_mode returns none.
+    mocked_set_hide_mode = MagicMock()
     slide_controller = SlideController(None)
-    slide_controller.service_item = mocked_service_item
-    slide_controller.preview_widget = mocked_preview_widget
-    slide_controller.displays = [mocked_display]
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=None)
 
-    # WHEN: on_go_live() is called
-    slide_controller.on_go_preview()
+    # WHEN: on_toggle_blank() is called
+    slide_controller.on_toggle_blank()
 
-    # THEN: the preview controller should have the service item and the focus set to live
-    mocked_preview_controller.preview_widget.setFocus.assert_called_once_with()
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Blank
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Blank)
+
+
+def test_on_toggle_blank_off(settings):
+    """
+    Check that the on_toggle_blank method calls set_hide_mode with the correct HideMode
+    """
+    # GIVEN: A new SlideController instance, and get_hide_mode returns blank.
+    mocked_set_hide_mode = MagicMock()
+    slide_controller = SlideController(None)
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Blank)
+
+    # WHEN: on_toggle_blank() is called
+    slide_controller.on_toggle_blank()
+
+    # THEN: set_hide_mode should have been called with an argument of None
+    mocked_set_hide_mode.assert_called_once_with(None)
+
+
+def test_on_toggle_theme(settings):
+    """
+    Check that the on_toggle_theme method calls set_hide_mode with the correct HideMode
+    """
+    # GIVEN: A new SlideController instance, and get_hide_mode returns none.
+    mocked_set_hide_mode = MagicMock()
+    slide_controller = SlideController(None)
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=None)
+
+    # WHEN: on_toggle_theme() is called
+    slide_controller.on_toggle_theme()
+
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Theme
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Theme)
+
+
+def test_on_toggle_theme_off(settings):
+    """
+    Check that the on_toggle_theme method calls set_hide_mode with the correct HideMode
+    """
+    # GIVEN: A new SlideController instance, and get_hide_mode returns Theme.
+    mocked_set_hide_mode = MagicMock()
+    slide_controller = SlideController(None)
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Theme)
+
+    # WHEN: on_toggle_theme() is called
+    slide_controller.on_toggle_theme()
+
+    # THEN: set_hide_mode should have been called with an argument of None
+    mocked_set_hide_mode.assert_called_once_with(None)
+
+
+def test_on_toggle_desktop(settings):
+    """
+    Check that the on_toggle_desktop method calls set_hide_mode with the correct HideMode
+    """
+    # GIVEN: A new SlideController instance, and get_hide_mode returns none.
+    mocked_set_hide_mode = MagicMock()
+    slide_controller = SlideController(None)
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=None)
+
+    # WHEN: on_toggle_desktop() is called
+    slide_controller.on_toggle_desktop()
+
+    # THEN: set_hide_mode should have been called with an argument of HideMode.Screen
+    mocked_set_hide_mode.assert_called_once_with(HideMode.Screen)
+
+
+def test_on_toggle_desktop_off(settings):
+    """
+    Check that the on_toggle_desktop method calls set_hide_mode with the correct HideMode
+    """
+    # GIVEN: A new SlideController instance, and get_hide_mode returns Screen.
+    mocked_set_hide_mode = MagicMock()
+    slide_controller = SlideController(None)
+    slide_controller.set_hide_mode = mocked_set_hide_mode
+    slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Screen)
+
+    # WHEN: on_toggle_desktop() is called
+    slide_controller.on_toggle_desktop()
+
+    # THEN: set_hide_mode should have been called with an argument of None
+    mocked_set_hide_mode.assert_called_once_with(None)
 
 
 def test_on_go_live_live_controller(registry):
@@ -576,36 +622,6 @@ def test_replace_service_manager_item_same_item(settings):
     mocked_process_item.assert_called_once_with(mocked_item, 7)
 
 
-def test_on_slide_blank(settings):
-    """
-    Test on_slide_blank
-    """
-    # GIVEN: An instance of SlideController and a mocked on_blank_display
-    slide_controller = SlideController(None)
-    slide_controller.on_blank_display = MagicMock()
-
-    # WHEN: Calling on_slide_blank
-    slide_controller.on_slide_blank()
-
-    # THEN: on_blank_display should have been called with True
-    slide_controller.on_blank_display.assert_called_once_with(True)
-
-
-def test_on_slide_unblank(settings):
-    """
-    Test on_slide_unblank
-    """
-    # GIVEN: An instance of SlideController and a mocked on_blank_display
-    slide_controller = SlideController(None)
-    slide_controller.on_blank_display = MagicMock()
-
-    # WHEN: Calling on_slide_unblank
-    slide_controller.on_slide_unblank()
-
-    # THEN: on_blank_display should have been called with False
-    slide_controller.on_blank_display.assert_called_once_with(False)
-
-
 def test_on_slide_selected_index_no_service_item(settings):
     """
     Test that when there is no service item, the on_slide_selected_index() method returns immediately
@@ -740,7 +756,7 @@ def test_live_stolen_focus_shortcuts(settings):
     slide_controller.next_item = MagicMock()
     slide_controller.previous_service = MagicMock()
     slide_controller.next_service = MagicMock()
-    slide_controller.desktop_screen_enable = MagicMock()
+    slide_controller.show_screen = MagicMock()
     slide_controller.desktop_screen = MagicMock()
     slide_controller.blank_screen = MagicMock()
     slide_controller.theme_screen = MagicMock()
@@ -752,7 +768,7 @@ def test_live_stolen_focus_shortcuts(settings):
     mocked_widget.addActions.assert_called_with([
         slide_controller.previous_item, slide_controller.next_item,
         slide_controller.previous_service, slide_controller.next_service,
-        slide_controller.desktop_screen_enable, slide_controller.desktop_screen,
+        slide_controller.show_screen, slide_controller.desktop_screen,
         slide_controller.theme_screen, slide_controller.blank_screen
     ])
 

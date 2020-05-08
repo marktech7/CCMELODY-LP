@@ -357,7 +357,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         # When called from mediaitem display is None
         if display is None:
             display = controller.preview_display
-        self.vlc_player.load(display, filename)
+        self.vlc_player.load(controller, display, filename)
         self.resize(controller, self.vlc_player)
         self.current_media_players[controller.controller_type] = self.vlc_player
         if audio_track == -1 and subtitle_track == -1:

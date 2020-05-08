@@ -302,6 +302,21 @@ def md5_hash(salt=None, data=None):
     return hash_value
 
 
+def sha256_file_hash(filename):
+    """
+    Returns the hashed output of sha256 on the file content using Python3 hashlib
+
+    :param filename: Name of the file to hash
+    :returns: str
+    """
+    log.debug('sha256_hash(filename="{filename}")'.format(filename=filename))
+    hash_obj = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        for chunk in iter(lambda: f.read(65536), b''):
+            hash_obj.update(chunk)
+    return hash_obj.hexdigest()
+
+
 def qmd5_hash(salt=None, data=None):
     """
     Returns the hashed output of MD5Sum on salt, data
