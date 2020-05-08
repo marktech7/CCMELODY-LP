@@ -150,7 +150,7 @@ class BackgroundPage(GridLayoutPage):
         self.stream_color_button.setObjectName('stream_color_button')
         self.layout.addWidget(self.stream_color_button, 7, 1)
         self.stream_widgets = [self.stream_label, self.stream_lineedit, self.device_stream_select_button,
-                               self.stream_color_label, self.stream_color_button]
+                               self.network_stream_select_button, self.stream_color_label, self.stream_color_button]
         # Force everything up
         self.layout_spacer = QtWidgets.QSpacerItem(1, 1)
         self.layout.addItem(self.layout_spacer, 8, 0, 1, 4)
