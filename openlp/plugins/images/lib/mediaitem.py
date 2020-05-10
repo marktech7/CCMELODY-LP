@@ -610,7 +610,7 @@ class ImageMediaItem(MediaManagerItem):
         for image in images:
             name = image.file_path.name
             thumbnail_path = self.generate_thumbnail_path(image)
-            service_item.add_from_image(image.file_path, name, background, str(thumbnail_path))
+            service_item.add_from_image(image.file_path, name, background, thumbnail_path)
         return True
 
     def check_group_exists(self, new_group):
