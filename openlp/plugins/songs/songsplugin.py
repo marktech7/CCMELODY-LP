@@ -40,7 +40,6 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.songs import reporting
-from openlp.plugins.songs.remote import register_views
 from openlp.plugins.songs.forms.duplicatesongremovalform import DuplicateSongRemovalForm
 from openlp.plugins.songs.forms.songselectform import SongSelectForm
 from openlp.plugins.songs.lib import clean_song, upgrade
@@ -127,7 +126,6 @@ class SongsPlugin(Plugin):
         self.icon = build_icon(self.icon_path)
         self.songselect_form = None
         self.settings.extend_default_settings(song_footer)
-        register_views()
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
         if not self.settings.value('songs/last import type'):

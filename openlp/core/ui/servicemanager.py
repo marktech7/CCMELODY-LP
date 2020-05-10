@@ -316,6 +316,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     servicemanager_set_item_by_uuid = QtCore.pyqtSignal(str)
     servicemanager_next_item = QtCore.pyqtSignal()
     servicemanager_previous_item = QtCore.pyqtSignal()
+    servicemanager_new_file = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         """
@@ -344,6 +345,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.servicemanager_set_item_by_uuid.connect(self.set_item_by_uuid)
         self.servicemanager_next_item.connect(self.next_item)
         self.servicemanager_previous_item.connect(self.previous_item)
+        self.servicemanager_new_file.connect(self.new_file)
 
     def bootstrap_post_set_up(self):
         """
@@ -511,6 +513,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.set_modified(False)
         self.settings.setValue('servicemanager/last file', None)
         self.plugin_manager.new_service_created()
+        self.live_controller.slide_count = 0
 
     def create_basic_service(self):
         """

@@ -23,94 +23,62 @@ import logging
 
 from flask import abort, request, Blueprint, jsonify
 
-from openlp.core.api import app
-from openlp.core.api.lib import login_required, extract_request, old_auth
+from openlp.core.api.lib import login_required
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)
 
 
-v1_presentations = Blueprint('v1-presentations-plugin', __name__)
-v2_presentations = Blueprint('v2-presentations-plugin', __name__)
+plugins = Blueprint('v2-plugins', __name__)
 
 
-def search(text):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name('presentations')
+def search(plugin, text):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
     if plugin.status == PluginStatus.Active and plugin.media_item and plugin.media_item.has_search:
         results = plugin.media_item.search(text, False)
         return results
     return None
 
 
-def live(id):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name('presentations')
+def live(plugin, id):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
     if plugin.status == PluginStatus.Active and plugin.media_item:
-        plugin.media_item.presentations_go_live.emit([id, True])
+        plugin.media_item.songs_go_live.emit([id, True])
 
 
-def add(id):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name('presentations')
+def add(plugin, id):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
     if plugin.status == PluginStatus.Active and plugin.media_item:
         item_id = plugin.media_item.create_item_from_id(id)
-        plugin.media_item.presentations_add_to_service.emit([item_id, True])
+        plugin.media_item.songs_add_to_service.emit([item_id, True])
 
 
-@v2_presentations.route('/search')
+@plugins.route('/<plugin>/search')
 @login_required
-def search_view():
+def search_view(plugin):
     text = request.args.get('text', '')
-    result = search(text)
+    result = search(plugin, text)
     return jsonify(result)
 
 
-@v2_presentations.route('/add', methods=['POST'])
+@plugins.route('/<plugin>/add', methods=['POST'])
 @login_required
-def add_view():
+def add_view(plugin):
     data = request.json
     if not data:
         abort(400)
     id = data.get('id', -1)
-    add(id)
+    add(plugin, id)
     return '', 204
 
 
-@v2_presentations.route('/live', methods=['POST'])
+@plugins.route('/<plugin>/live', methods=['POST'])
 @login_required
-def live_view():
+def live_view(plugin):
     data = request.json
     if not data:
         abort(400)
     id = data.get('id', -1)
-    live(id)
+    live(plugin, id)
     return '', 204
-
-
-# ----------------- DEPRECATED --------------
-@v1_presentations.route('/search')
-@old_auth
-def old_search():
-    text = extract_request(request.args.get('data', ''), 'text')
-    return jsonify({'results': {'items': search(text)}})
-
-
-@v1_presentations.route('/add')
-@old_auth
-def old_add():
-    id = extract_request(request.args.get('data', ''), 'id')
-    add(id)
-    return '', 204
-
-
-@v1_presentations.route('/live')
-@old_auth
-def old_live():
-    id = extract_request(request.args.get('data', ''), 'id')
-    live(id)
-    return '', 204
-# ---------------- END DEPRECATED ----------------
-
-
-def register_views():
-    app.register_blueprint(v2_presentations, url_prefix='/api/v2/plugins/presentations/')
-    app.register_blueprint(v1_presentations, url_prefix='/api/presentations/')

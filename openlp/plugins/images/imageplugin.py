@@ -27,7 +27,6 @@ from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.images.remote import register_views
 from openlp.plugins.images.lib import upgrade
 from openlp.plugins.images.lib.mediaitem import ImageMediaItem
 from openlp.plugins.images.lib.imagetab import ImageTab
@@ -46,7 +45,6 @@ class ImagePlugin(Plugin):
         self.weight = -7
         self.icon_path = UiIcons().picture
         self.icon = build_icon(self.icon_path)
-        register_views()
         State().add_service('image', self.weight, is_plugin=True)
         State().update_pre_conditions('image', self.check_pre_conditions())
 

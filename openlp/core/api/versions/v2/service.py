@@ -101,3 +101,10 @@ def service_direction():
         abort(400)
     getattr(Registry().get('service_manager'), 'servicemanager_{action}_item'.format(action=action)).emit()
     return '', 204
+
+
+@service_views.route('/new', methods=['GET'])
+@login_required
+def new_service():
+    getattr(Registry().get('service_manager'), 'servicemanager_new_file').emit()
+    return '', 204
