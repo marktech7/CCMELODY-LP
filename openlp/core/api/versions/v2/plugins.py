@@ -33,30 +33,31 @@ log = logging.getLogger(__name__)
 plugins = Blueprint('v2-plugins', __name__)
 
 
-def search(plugin, text):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
+def search(plugin_name, text):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
     if plugin.status == PluginStatus.Active and plugin.media_item and plugin.media_item.has_search:
         results = plugin.media_item.search(text, False)
         return results
     return None
 
 
-def live(plugin, id):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
+def live(plugin_name, id):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
     if plugin.status == PluginStatus.Active and plugin.media_item:
-        plugin.media_item.songs_go_live.emit([id, True])
+        getattr(plugin.media_item, '{action}_go_live'.format(action=plugin_name)).emit([id, True])
 
 
-def add(plugin, id):
-    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin)
+def add(plugin_name, id):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
     if plugin.status == PluginStatus.Active and plugin.media_item:
         item_id = plugin.media_item.create_item_from_id(id)
-        plugin.media_item.songs_add_to_service.emit([item_id, True])
+        getattr(plugin.media_item, '{action}_add_to_service'.format(action=plugin_name)).emit([item_id, True])
 
 
 @plugins.route('/<plugin>/search')
 @login_required
 def search_view(plugin):
+    log.debug(f'{plugin}/search search called')
     text = request.args.get('text', '')
     result = search(plugin, text)
     return jsonify(result)
@@ -65,6 +66,7 @@ def search_view(plugin):
 @plugins.route('/<plugin>/add', methods=['POST'])
 @login_required
 def add_view(plugin):
+    log.debug(f'{plugin}/add search called')
     data = request.json
     if not data:
         abort(400)
@@ -76,6 +78,7 @@ def add_view(plugin):
 @plugins.route('/<plugin>/live', methods=['POST'])
 @login_required
 def live_view(plugin):
+    log.debug(f'{plugin}/live search called')
     data = request.json
     if not data:
         abort(400)
