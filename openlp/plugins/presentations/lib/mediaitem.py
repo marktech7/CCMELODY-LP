@@ -304,6 +304,7 @@ class PresentationMediaItem(MediaManagerItem):
         :param item: The Song item to be used
         :param remote: Triggered from remote
         :param context: Why is it being generated
+        :param file_path: Path for the file to be processes
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
         if item:
@@ -313,7 +314,7 @@ class PresentationMediaItem(MediaManagerItem):
             if len(items) > 1:
                 return False
         if file_path is None:
-            file_path = items[0].data(QtCore.Qt.UserRole)
+            file_path = Path(items[0].data(QtCore.Qt.UserRole))
         file_type = file_path.suffix.lower()[1:]
         if not self.display_type_combo_box.currentText():
             return False
@@ -365,7 +366,7 @@ class PresentationMediaItem(MediaManagerItem):
             service_item.processor = self.display_type_combo_box.currentText()
             service_item.add_capability(ItemCapabilities.ProvidesOwnDisplay)
             for bitem in items:
-                file_path = bitem.data(QtCore.Qt.UserRole)
+                file_path = Path(bitem.data(QtCore.Qt.UserRole))
                 path, file_name = file_path.parent, file_path.name
                 service_item.title = file_name
                 if file_path.exists():
