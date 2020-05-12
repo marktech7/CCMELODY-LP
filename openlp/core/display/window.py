@@ -128,7 +128,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         super(DisplayWindow, self).__init__(parent)
         # Gather all flags for the display window
-        flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
+        flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Window | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
         # Need to import this inline to get around a QtWebEngine issue
@@ -136,7 +136,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self._is_initialised = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
-        self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
+        self.setWindowTitle(translate('OpenLP.DisplayWindow', 'OpenLP Live'))
         self.setWindowFlags(flags)
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setAutoFillBackground(True)
