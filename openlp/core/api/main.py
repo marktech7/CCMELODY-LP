@@ -39,3 +39,13 @@ def index(path):
 @main_views.route('/assets/<path>')
 def assets(path):
     return send_from_directory(str(AppLocation.get_section_data_path('remotes') / 'assets'), path)
+
+
+@main_views.route('/stage/<name>')
+def stages(name):
+    return send_from_directory(str(AppLocation.get_section_data_path('stages') / name), '{}.html'.format(name))
+
+
+@main_views.route('/stage/<name>/<file>')
+def stage_assets(name, file):
+    return send_from_directory(str(AppLocation.get_section_data_path('stages') / name), file)
