@@ -191,7 +191,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         if self.can_add_to_service:
             toolbar_actions.append(['Service', StringContent.Service, UiIcons().add, self.on_add_click])
         for action in toolbar_actions:
-            if action[0] == StringContent.Preview:
+            if action[1] == StringContent.Preview:
                 self.toolbar.addSeparator()
             self.toolbar.add_toolbar_action('{name}{action}Action'.format(name=self.plugin.name, action=action[0]),
                                             text=self.plugin.get_string(action[1])['title'], icon=action[2],
