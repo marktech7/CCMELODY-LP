@@ -26,7 +26,6 @@ import json
 import shutil
 import os
 import zipfile
-from bs4 import BeautifulSoup
 from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -1328,10 +1327,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         service_item_from_item.service_item_type is not ServiceItemType.Text:
                     text = slide['title'].replace('\n', ' ')
                 else:
-                    text = service_item_from_item.get_rendered_frame(slide_index)
-                    # Strip off any HTML tags before displaying.
-                    txt = BeautifulSoup(text[:40], 'lxml')
-                    text = txt.get_text()
+                    text = service_item_from_item.get_rendered_frame(slide_index, clean=True)
                 child.setText(0, text[:40])
                 child.setData(0, QtCore.Qt.UserRole, slide_index)
                 if service_item == item_index:
