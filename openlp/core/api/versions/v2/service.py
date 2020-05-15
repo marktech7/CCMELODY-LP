@@ -50,7 +50,8 @@ def service_items():
             'plugin': str(service_item.name),
             'ccli_number': str(ccli_number),
             'notes': str(service_item.notes),
-            'selected': (service_item.unique_identifier == current_unique_identifier)
+            'selected': (service_item.unique_identifier == current_unique_identifier),
+            'is_valid': str(service_item.is_valid)
         })
     return jsonify(service_items)
 
@@ -100,4 +101,11 @@ def service_direction():
         log.error('Invalid data passed ' + str(data))
         abort(400)
     getattr(Registry().get('service_manager'), 'servicemanager_{action}_item'.format(action=action)).emit()
+    return '', 204
+
+
+@service_views.route('/new', methods=['GET'])
+@login_required
+def new_service():
+    getattr(Registry().get('service_manager'), 'servicemanager_new_file').emit()
     return '', 204

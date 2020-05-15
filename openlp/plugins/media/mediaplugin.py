@@ -28,7 +28,6 @@ from openlp.core.common.i18n import translate
 from openlp.core.ui.icons import UiIcons
 from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import Plugin, StringContent
-from openlp.plugins.media.remote import register_views
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 
 
@@ -50,7 +49,6 @@ class MediaPlugin(Plugin):
         self.icon = build_icon(self.icon_path)
         # passed with drag and drop messages
         self.dnd_id = 'Media'
-        register_views()
         State().add_service(self.name, self.weight, requires='mediacontroller', is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
 

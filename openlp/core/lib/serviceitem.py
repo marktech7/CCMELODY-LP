@@ -630,14 +630,18 @@ class ServiceItem(RegistryProperties):
         else:
             return self.slides
 
-    def get_rendered_frame(self, row):
+    def get_rendered_frame(self, row, clean=False):
         """
         Returns the correct frame for a given list and renders it if required.
 
         :param row: The service item slide to be returned
+        :param clean: do I want HTML tags or not
         """
         if self.service_item_type == ServiceItemType.Text:
-            return self.rendered_slides[row]['text']
+            if clean:
+                return self.display_slides[row]['text']
+            else:
+                return self.rendered_slides[row]['text']
         elif self.service_item_type == ServiceItemType.Image:
             return self.slides[row]['path']
         else:

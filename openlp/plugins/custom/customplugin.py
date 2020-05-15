@@ -31,7 +31,6 @@ from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.custom.remote import register_views
 from openlp.plugins.custom.lib.db import CustomSlide, init_schema
 from openlp.plugins.custom.lib.mediaitem import CustomMediaItem
 from openlp.plugins.custom.lib.customtab import CustomTab
@@ -55,7 +54,6 @@ class CustomPlugin(Plugin):
         self.db_manager = Manager('custom', init_schema)
         self.icon_path = UiIcons().clone
         self.icon = build_icon(self.icon_path)
-        register_views()
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
 
