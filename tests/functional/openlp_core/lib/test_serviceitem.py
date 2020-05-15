@@ -26,7 +26,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
-from openlp.core.common import ThemeLevel, md5_hash
+from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
@@ -75,7 +75,7 @@ def service_item_env(state):
     Registry().register('image_manager', MagicMock())
 
 
-def test_service_item_basic():
+def test_service_item_basic(settings):
     """
     Test the Service Item - basic test
     """
@@ -123,7 +123,7 @@ def test_service_item_load_image_from_service(state_media, settings):
     # GIVEN: A new service item and a mocked add icon function
     image_name = 'image_1.jpg'
     test_file = TEST_PATH / image_name
-    frame_array = {'path': test_file, 'title': image_name}
+    frame_array = {'path': test_file, 'title': image_name, 'file_hash': 'abcd'}
 
     service_item = ServiceItem(None)
     service_item.add_icon = MagicMock()
@@ -131,8 +131,9 @@ def test_service_item_load_image_from_service(state_media, settings):
     # WHEN: adding an image from a saved Service and mocked exists
     line = convert_file_service_item(TEST_PATH, 'serviceitem_image_1.osj')
     with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
-            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as \
-            mocked_get_section_data_path:
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
         mocked_exists.return_value = True
         mocked_get_section_data_path.return_value = Path('/path/')
         service_item.set_from_service(line, TEST_PATH)
@@ -169,8 +170,8 @@ def test_service_item_load_image_from_local_service(mocked_get_section_data_path
     image_name2 = 'image_2.jpg'
     test_file1 = os.path.join('/home', 'openlp', image_name1)
     test_file2 = os.path.join('/home', 'openlp', image_name2)
-    frame_array1 = {'path': test_file1, 'title': image_name1}
-    frame_array2 = {'path': test_file2, 'title': image_name2}
+    frame_array1 = {'path': test_file1, 'title': image_name1, 'file_hash': 'abcd'}
+    frame_array2 = {'path': test_file2, 'title': image_name2, 'file_hash': 'abcd'}
     service_item = ServiceItem(None)
     service_item.add_icon = MagicMock()
     service_item2 = ServiceItem(None)
@@ -179,8 +180,10 @@ def test_service_item_load_image_from_local_service(mocked_get_section_data_path
     # WHEN: adding an image from a saved Service and mocked exists
     line = convert_file_service_item(TEST_PATH, 'serviceitem_image_2.osj')
     line2 = convert_file_service_item(TEST_PATH, 'serviceitem_image_2.osj', 1)
-    service_item2.set_from_service(line2)
-    service_item.set_from_service(line)
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
+        service_item2.set_from_service(line2)
+        service_item.set_from_service(line)
 
     # THEN: We should get back a valid service item
     assert service_item.is_valid is True, 'The first service item should be valid'
@@ -226,7 +229,9 @@ def test_add_from_command_for_a_presentation():
              'display_title': display_title, 'notes': notes, 'thumbnail': image}
 
     # WHEN: adding presentation to service_item
-    service_item.add_from_command(TEST_PATH, presentation_name, image, display_title, notes)
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
+        service_item.add_from_command(TEST_PATH, presentation_name, image, display_title, notes)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
     assert service_item.service_item_type == ServiceItemType.Command, 'It should be a Command'
@@ -245,7 +250,9 @@ def test_add_from_command_without_display_title_and_notes():
              'display_title': None, 'notes': None, 'thumbnail': image}
 
     # WHEN: adding image to service_item
-    service_item.add_from_command(TEST_PATH, image_name, image)
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
+        service_item.add_from_command(TEST_PATH, image_name, image)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
     assert service_item.service_item_type == ServiceItemType.Command, 'It should be a Command'
@@ -268,13 +275,14 @@ def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path,
     thumb = Path('tmp') / 'test' / 'thumb.png'
     display_title = 'DisplayTitle'
     notes = 'Note1\nNote2\n'
-    expected_thumb_path = Path('mocked') / 'section' / 'path' / 'thumbnails' / \
-        md5_hash(str(TEST_PATH / presentation_name).encode('utf8')) / 'thumb.png'
-    frame = {'title': presentation_name, 'image': str(expected_thumb_path), 'path': str(TEST_PATH),
-             'display_title': display_title, 'notes': notes, 'thumbnail': str(expected_thumb_path)}
+    expected_thumb_path = Path('mocked') / 'section' / 'path' / 'thumbnails' / 'abcd' / 'thumb.png'
+    frame = {'title': presentation_name, 'image': expected_thumb_path, 'path': str(TEST_PATH),
+             'display_title': display_title, 'notes': notes, 'thumbnail': expected_thumb_path}
 
     # WHEN: adding presentation to service_item
-    service_item.add_from_command(str(TEST_PATH), presentation_name, thumb, display_title, notes)
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
+        service_item.add_from_command(str(TEST_PATH), presentation_name, thumb, display_title, notes)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
     assert service_item.service_item_type == ServiceItemType.Command, 'It should be a Command'
@@ -292,7 +300,9 @@ def test_service_item_load_optical_media_from_service(state_media):
 
     # WHEN: We load a serviceitem with optical media
     line = convert_file_service_item(TEST_PATH, 'serviceitem-dvd.osj')
-    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists:
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
         mocked_exists.return_value = True
         service_item.set_from_service(line)
 

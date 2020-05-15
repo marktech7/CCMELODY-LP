@@ -315,7 +315,7 @@ def main():
     """
     The main function which parses command line options and then runs
     """
-    log.debug(f'Entering function - main')
+    log.debug('Entering function - main')
     args = parse_options()
     qt_args = ['--disable-web-security']
     # qt_args = []

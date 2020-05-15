@@ -64,6 +64,7 @@ def init_schema(url):
             * id
             * group_id
             * file_path
+            * file_hash
     """
     session, metadata = init_db(url)
 
@@ -78,7 +79,8 @@ def init_schema(url):
     image_filenames_table = Table('image_filenames', metadata,
                                   Column('id', types.Integer(), primary_key=True),
                                   Column('group_id', types.Integer(), ForeignKey('image_groups.id'), default=None),
-                                  Column('file_path', PathType(), nullable=False)
+                                  Column('file_path', PathType(), nullable=False),
+                                  Column('file_hash', types.Unicode(128), nullable=False)
                                   )
 
     mapper(ImageGroups, image_groups_table)

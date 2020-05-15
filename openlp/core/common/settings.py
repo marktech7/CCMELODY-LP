@@ -383,7 +383,8 @@ class Settings(QtCore.QSettings):
         ('remotes/authentication enabled', 'api/authentication enabled', []),
         ('remotes/ip address', 'api/ip address', []),
         ('remotes/thumbnails', 'api/thumbnails', []),
-        ('shortcuts/escapeItem', 'shortcuts/desktopScreenEnable', []),  # Escape item was removed in 2.6.
+        ('shortcuts/escapeItem', '', []),  # Escape item was removed in 2.6.
+        ('shortcuts/desktopScreenEnable', '', []),
         ('shortcuts/offlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
         ('shortcuts/onlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
         ('bibles/advanced bible', '', []),  # Common bible search widgets combined in 2.6
@@ -477,8 +478,7 @@ class Settings(QtCore.QSettings):
             'shortcuts/displayTagItem': [],
             'shortcuts/blankScreen': [QtGui.QKeySequence(QtCore.Qt.Key_Period)],
             'shortcuts/collapse': [QtGui.QKeySequence(QtCore.Qt.Key_Minus)],
-            'shortcuts/desktopScreen': [QtGui.QKeySequence(QtCore.Qt.Key_D)],
-            'shortcuts/desktopScreenEnable': [QtGui.QKeySequence(QtCore.Qt.Key_Escape)],
+            'shortcuts/desktopScreen': [QtGui.QKeySequence(QtCore.Qt.Key_D), QtGui.QKeySequence(QtCore.Qt.Key_Escape)],
             'shortcuts/delete': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
             'shortcuts/down': [QtGui.QKeySequence(QtCore.Qt.Key_Down)],
             'shortcuts/editSong': [],
@@ -589,6 +589,7 @@ class Settings(QtCore.QSettings):
             'shortcuts/shortcutAction_7': [QtGui.QKeySequence(QtCore.Qt.Key_7)],
             'shortcuts/shortcutAction_8': [QtGui.QKeySequence(QtCore.Qt.Key_8)],
             'shortcuts/shortcutAction_9': [QtGui.QKeySequence(QtCore.Qt.Key_9)],
+            'shortcuts/showScreen': [QtGui.QKeySequence(QtCore.Qt.Key_Space)],
             'shortcuts/settingsExportItem': [],
             'shortcuts/songUsageReport': [],
             'shortcuts/songImportItem': [],

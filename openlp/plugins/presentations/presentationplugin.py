@@ -137,7 +137,11 @@ class PresentationPlugin(Plugin):
         for path in presentation_paths:
             self.media_item.clean_up_thumbnails(path, clean_for_update=True)
         self.media_item.list_view.clear()
-        self.settings.setValue('presentations/thumbnail_scheme', 'md5')
+        # Update the thumbnail scheme if needed
+        if self.settings.value('presentations/thumbnail_scheme') != 'sha256file':
+            for path in presentation_paths:
+                self.media_item.update_thumbnail_scheme(path)
+            self.settings.setValue('presentations/thumbnail_scheme', 'sha256file')
         self.media_item.validate_and_load(presentation_paths)
 
     @staticmethod

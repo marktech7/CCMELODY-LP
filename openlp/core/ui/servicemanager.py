@@ -33,8 +33,8 @@ from tempfile import NamedTemporaryFile
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.common import ThemeLevel, delete_file, sha256_file_hash
 from openlp.core.state import State
-from openlp.core.common import ThemeLevel, delete_file
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
@@ -42,10 +42,10 @@ from openlp.core.common.i18n import UiStrings, format_time, translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.lib import build_icon
+from openlp.core.lib import build_icon, ItemCapabilities
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.plugin import PluginStatus
-from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
+from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box, find_and_set_in_combo_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT
@@ -332,6 +332,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self._service_path = None
         self.service_has_all_original_files = True
         self.list_double_clicked = False
+        self.servicefile_version = None
 
     def bootstrap_initialise(self):
         """
@@ -518,9 +519,15 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :return: service array
         """
         service = []
+        # Regarding openlp-servicefile-version:
+        #  1: OpenLP 1? Not used.
+        #  2: OpenLP 2 (default when loading a service file without openlp-servicefile-version)
+        #  3: The new format introduced in OpenLP 3.0.
+        # Note that the servicefile-version numbering is not expected to follow the OpenLP version numbering.
         core = {
             'lite-service': self._save_lite,
-            'service-theme': self.service_theme
+            'service-theme': self.service_theme,
+            'openlp-servicefile-version': 3
         }
         service.append({'openlp_core': core})
         return service
@@ -530,24 +537,60 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Get a list of files used in the service and files that are missing.
 
         :return: A list of files used in the service that exist, and a list of files that don't.
-        :rtype: (list[Path], list[Path])
+        :rtype: (list[Path], list[str])
         """
         write_list = []
         missing_list = []
+        # Run through all items
         for item in self.service_items:
+            # If the item has files, see if they exists
             if item['service_item'].uses_file():
                 for frame in item['service_item'].get_frames():
                     path_from = item['service_item'].get_frame_path(frame=frame)
-                    if path_from in write_list or path_from in missing_list:
+                    path_from_path = Path(path_from)
+                    if item['service_item'].stored_filename:
+                        sha256_file_name = item['service_item'].stored_filename
+                    else:
+                        sha256_file_name = sha256_file_hash(path_from_path) + os.path.splitext(path_from)[1]
+                    path_from_tuple = (path_from_path, sha256_file_name)
+                    if path_from_tuple in write_list or str(path_from_path) in missing_list:
                         continue
                     if not os.path.exists(path_from):
-                        missing_list.append(Path(path_from))
+                        missing_list.append(str(path_from_path))
                     else:
-                        write_list.append(Path(path_from))
+                        write_list.append(path_from_tuple)
+                # For items that has thumbnails, add them to the list
+                if item['service_item'].is_capable(ItemCapabilities.HasThumbnails):
+                    thumbnail_path = item['service_item'].get_thumbnail_path()
+                    thumbnail_path_parent = Path(thumbnail_path).parent
+                    if item['service_item'].is_command():
+                        # Run through everything in the thumbnail folder and add pictures
+                        for filename in os.listdir(thumbnail_path):
+                            # Skip non-pictures
+                            if os.path.splitext(filename)[1] not in ['.png', '.jpg']:
+                                continue
+                            filename_path = Path(thumbnail_path) / Path(filename)
+                            # Create a thumbnail path in the zip/service file
+                            service_path = filename_path.relative_to(thumbnail_path_parent)
+                            write_list.append((filename_path, service_path))
+                    elif item['service_item'].is_image():
+                        # Find all image thumbnails and store them
+                        # All image thumbnails will be put in a folder named 'thumbnails'
+                        for frame in item['service_item'].get_frames():
+                            if 'thumbnail' in frame:
+                                filename_path = Path(thumbnail_path) / Path(frame['thumbnail'])
+                                # Create a thumbnail path in the zip/service file
+                                service_path = filename_path.relative_to(thumbnail_path_parent)
+                                path_from_tuple = (filename_path, service_path)
+                                if path_from_tuple in write_list:
+                                    continue
+                                write_list.append(path_from_tuple)
             for audio_path in item['service_item'].background_audio:
-                if audio_path in write_list:
+                service_path = sha256_file_hash(audio_path) + os.path.splitext(audio_path)[1]
+                audio_path_tuple = (audio_path, service_path)
+                if audio_path_tuple in write_list:
                     continue
-                write_list.append(audio_path)
+                write_list.append(audio_path_tuple)
         return write_list, missing_list
 
     def save_file(self):
@@ -569,7 +612,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         if not self._save_lite:
             write_list, missing_list = self.get_write_file_list()
-
             if missing_list:
                 self.application.set_normal_cursor()
                 title = translate('OpenLP.ServiceManager', 'Service File(s) Missing')
@@ -596,8 +638,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         service_content = json.dumps(service, cls=OpenLPJSONEncoder)
         service_content_size = len(bytes(service_content, encoding='utf-8'))
         total_size = service_content_size
-        for file_item in write_list:
-            total_size += file_item.stat().st_size
+        for local_file_item, zip_file_item in write_list:
+            total_size += local_file_item.stat().st_size
         self.log_debug('ServiceManager.save_file - ZIP contents size is %i bytes' % total_size)
         self.main_window.display_progress_bar(total_size)
         try:
@@ -607,9 +649,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size)
                 # Finally add all the listed media files.
-                for write_path in write_list:
-                    zip_file.write(write_path, write_path)
-                    self.main_window.increment_progress_bar(write_path.stat().st_size)
+                for local_file_item, zip_file_item in write_list:
+                    zip_file.write(str(local_file_item), str(zip_file_item))
+                    self.main_window.increment_progress_bar(local_file_item.stat().st_size)
                 with suppress(FileNotFoundError):
                     file_path.unlink()
                 os.link(temp_file.name, file_path)
@@ -699,11 +741,30 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         service_data = None
         self.application.set_busy_cursor()
         try:
-            with zipfile.ZipFile(file_path) as zip_file:
+            # TODO: figure out a way to use the presentation thumbnails from the service file
+            with zipfile.ZipFile(str(file_path)) as zip_file:
                 compressed_size = 0
                 for zip_info in zip_file.infolist():
                     compressed_size += zip_info.compress_size
                 self.main_window.display_progress_bar(compressed_size)
+                # First find the osj-file to find out how to handle the file
+                for zip_info in zip_file.infolist():
+                    # The json file has been called 'service_data.osj' since OpenLP 3.0
+                    if zip_info.filename == 'service_data.osj' or zip_info.filename.endswith('osj'):
+                        with zip_file.open(zip_info, 'r') as json_file:
+                            service_data = json_file.read()
+                        break
+                if service_data:
+                    items = json.loads(service_data, cls=OpenLPJSONDecoder)
+                else:
+                    raise ValidationError(msg='No service data found')
+                # Extract the service file version
+                for item in items:
+                    if 'openlp_core' in item:
+                        item = item['openlp_core']
+                        self.servicefile_version = item.get('openlp-servicefile-version', 2)
+                        break
+                self.log_debug('Service format version: %{ver}'.format(ver=self.servicefile_version))
                 for zip_info in zip_file.infolist():
                     self.log_debug('Extract file: {name}'.format(name=zip_info.filename))
                     # The json file has been called 'service_data.osj' since OpenLP 3.0
@@ -711,19 +772,19 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         with zip_file.open(zip_info, 'r') as json_file:
                             service_data = json_file.read()
                     else:
-                        zip_info.filename = os.path.basename(zip_info.filename)
-                        zip_file.extract(zip_info, self.service_path)
+                        # Service files from earlier versions than 3 expects that all files are extracted
+                        # into the root of the service folder.
+                        if self.servicefile_version and self.servicefile_version < 3:
+                            zip_info.filename = os.path.basename(zip_info.filename.replace('/', os.path.sep))
+                        zip_file.extract(zip_info, str(self.service_path))
                     self.main_window.increment_progress_bar(zip_info.compress_size)
-            if service_data:
-                items = json.loads(service_data, cls=OpenLPJSONDecoder)
+                # Handle the content
                 self.new_file()
                 self.process_service_items(items)
                 self.set_file_name(file_path)
                 self.main_window.add_recent_file(file_path)
                 self.set_modified(False)
                 self.settings.setValue('servicemanager/last file', file_path)
-            else:
-                raise ValidationError(msg='No service data found')
         except (NameError, OSError, ValidationError, zipfile.BadZipFile):
             self.application.set_normal_cursor()
             self.log_exception('Problem loading service file {name}'.format(name=file_path))
@@ -755,9 +816,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         self.service_theme = theme
             else:
                 if self._save_lite:
-                    service_item.set_from_service(item)
+                    service_item.set_from_service(item, version=self.servicefile_version)
                 else:
-                    service_item.set_from_service(item, self.service_path)
+                    service_item.set_from_service(item, self.service_path, self.servicefile_version)
                 service_item.validate_item(self.suffixes)
                 if service_item.is_capable(ItemCapabilities.OnLoadUpdate):
                     new_item = Registry().get(service_item.name).service_load(service_item)
@@ -1277,11 +1338,12 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Empties the service_path of temporary files on system exit.
         """
-        for file_path in self.service_path.iterdir():
-            delete_file(file_path)
-        audio_path = self.service_path / 'audio'
-        if audio_path.exists():
-            shutil.rmtree(audio_path, True)
+        for file_name in os.listdir(self.service_path):
+            file_path = Path(self.service_path, file_name)
+            if os.path.isdir(file_path):
+                shutil.rmtree(file_path, True)
+            else:
+                delete_file(file_path)
 
     def on_theme_combo_box_selected(self, current_index):
         """

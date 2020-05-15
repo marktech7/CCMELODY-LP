@@ -57,11 +57,13 @@ def test_image_filenames_table(db_url, settings):
     Test that the ImageFilenames table is correctly upgraded to the latest version
     """
     # GIVEN: An unversioned image database
-    with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')):
+    with patch.object(AppLocation, 'get_data_path', return_value=Path('/', 'test', 'dir')),\
+            patch('openlp.plugins.images.lib.upgrade.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
         # WHEN: Initalising the database manager
 
         upgrade_db(db_url, upgrade)
 
         engine = create_engine(db_url)
         conn = engine.connect()
-        assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '2'
+        assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '3'

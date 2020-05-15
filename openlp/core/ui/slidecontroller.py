@@ -58,12 +58,14 @@ LOOP_LIST = [
     'delay_spin_box'
 ]
 WIDE_MENU = [
+    'show_screen_button',
     'blank_screen_button',
     'theme_screen_button',
     'desktop_screen_button'
 ]
 
 NON_TEXT_MENU = [
+    'show_screen_button',
     'blank_screen_button',
     'desktop_screen_button'
 ]
@@ -271,36 +273,53 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.hide_menu.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
             self.hide_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Hide'), self.toolbar))
             self.toolbar.add_toolbar_widget(self.hide_menu)
-            self.toolbar.add_toolbar_action('goPreview', icon=UiIcons().live,
-                                            tooltip=translate('OpenLP.SlideController', 'Move to preview.'),
-                                            triggers=self.on_go_preview)
             # The order of the blank to modes in Shortcuts list comes from here.
-            self.desktop_screen_enable = create_action(self, 'desktopScreenEnable',
-                                                       text=translate('OpenLP.SlideController', 'Show Desktop'),
-                                                       icon=UiIcons().desktop, can_shortcuts=True,
-                                                       context=QtCore.Qt.WidgetWithChildrenShortcut,
-                                                       category=self.category, triggers=self.on_hide_display_enable)
-            self.desktop_screen = create_action(self, 'desktopScreen',
-                                                text=translate('OpenLP.SlideController', 'Toggle Desktop'),
+            self.show_screen = create_action(self, 'showScreen',
+                                             text=translate('OpenLP.SlideController', 'Show Presentation'),
+                                             icon=UiIcons().live,
+                                             checked=False, can_shortcuts=True, category=self.category,
+                                             triggers=self.on_show_display)
+            self.desktop_screen = create_action(self, 'setDesktopScreen',
+                                                text=translate('OpenLP.SlideController', 'Show Desktop'),
                                                 icon=UiIcons().desktop,
-                                                checked=False, can_shortcuts=True, category=self.category,
+                                                checked=False, can_shortcuts=False, category=self.category,
                                                 triggers=self.on_hide_display)
-            self.theme_screen = create_action(self, 'themeScreen',
-                                              text=translate('OpenLP.SlideController', 'Toggle Blank to Theme'),
+            self.theme_screen = create_action(self, 'setThemeScreen',
+                                              text=translate('OpenLP.SlideController', 'Show Theme'),
                                               icon=UiIcons().blank_theme,
-                                              checked=False, can_shortcuts=True, category=self.category,
+                                              checked=False, can_shortcuts=False, category=self.category,
                                               triggers=self.on_theme_display)
-            self.blank_screen = create_action(self, 'blankScreen',
-                                              text=translate('OpenLP.SlideController', 'Toggle Blank Screen'),
+            self.blank_screen = create_action(self, 'setBlankScreen',
+                                              text=translate('OpenLP.SlideController', 'Show Black'),
                                               icon=UiIcons().blank,
-                                              checked=False, can_shortcuts=True, category=self.category,
+                                              checked=False, can_shortcuts=False, category=self.category,
                                               triggers=self.on_blank_display)
-            self.hide_menu.setDefaultAction(self.blank_screen)
+            self.hide_menu.setDefaultAction(self.show_screen)
+            self.hide_menu.menu().addAction(self.show_screen)
             self.hide_menu.menu().addAction(self.blank_screen)
             self.hide_menu.menu().addAction(self.theme_screen)
             self.hide_menu.menu().addAction(self.desktop_screen)
-            self.hide_menu.menu().addAction(self.desktop_screen_enable)
+            # Add togglable actions for keyboard shortcuts
+            self.controller.addAction(create_action(self, 'desktopScreen',
+                                                    can_shortcuts=True,
+                                                    context=QtCore.Qt.WidgetWithChildrenShortcut,
+                                                    category=self.category,
+                                                    triggers=self.on_toggle_desktop))
+            self.controller.addAction(create_action(self, 'themeScreen',
+                                                    can_shortcuts=True,
+                                                    context=QtCore.Qt.WidgetWithChildrenShortcut,
+                                                    category=self.category,
+                                                    triggers=self.on_toggle_theme))
+            self.controller.addAction(create_action(self, 'blankScreen',
+                                                    can_shortcuts=True,
+                                                    context=QtCore.Qt.WidgetWithChildrenShortcut,
+                                                    category=self.category,
+                                                    triggers=self.on_toggle_blank))
             # Wide menu of display control buttons.
+            self.show_screen_button = QtWidgets.QToolButton(self.toolbar)
+            self.show_screen_button.setObjectName('show_screen_button')
+            self.toolbar.add_toolbar_widget(self.show_screen_button)
+            self.show_screen_button.setDefaultAction(self.show_screen)
             self.blank_screen_button = QtWidgets.QToolButton(self.toolbar)
             self.blank_screen_button.setObjectName('blank_screen_button')
             self.toolbar.add_toolbar_widget(self.blank_screen_button)
@@ -476,7 +495,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Registry().register_function('slidecontroller_{text}_change'.format(text=self.type_prefix),
                                      self.on_slide_change)
         Registry().register_function('slidecontroller_{text}_blank'.format(text=self.type_prefix),
-                                     self.on_slide_blank)
+                                     self.on_blank_display)
         Registry().register_function('slidecontroller_{text}_unblank'.format(text=self.type_prefix),
                                      self.on_slide_unblank)
         Registry().register_function('slidecontroller_update_slide_limits', self.update_slide_limits)
@@ -600,15 +619,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         :param action: The blank action to be processed.
         """
         if action == 'blank' or action == 'hide':
-            self.on_blank_display(True)
+            self.set_hide_mode(HideMode.Blank)
         elif action == 'theme':
-            self.on_theme_display(True)
+            self.set_hide_mode(HideMode.Theme)
         elif action == 'desktop':
-            self.on_hide_display(True)
+            self.set_hide_mode(HideMode.Screen)
         elif action == 'show':
-            self.on_blank_display(False)
-            self.on_theme_display(False)
-            self.on_hide_display(False)
+            self.set_hide_mode(None)
 
     def service_previous(self):
         """
@@ -664,18 +681,18 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         widget.addActions([
             self.previous_item, self.next_item,
             self.previous_service, self.next_service,
-            self.desktop_screen_enable,
+            self.show_screen,
             self.desktop_screen,
             self.theme_screen,
             self.blank_screen])
 
-    def on_controller_size_changed(self, width):
+    def on_controller_size_changed(self):
         """
         Change layout of display control buttons on controller size change
-
-        :param width: the new width of the display
         """
         if self.is_live:
+            # The new width of the display
+            width = self.controller.width()
             # Space used by the toolbar.
             used_space = self.toolbar.size().width() + self.hide_menu.size().width()
             # Add the threshold to prevent flickering.
@@ -759,7 +776,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # The layout of the toolbar is size dependent, so make sure it fits. Reset stored controller_width.
         if self.is_live:
             self.controller_width = -1
-        self.on_controller_size_changed(self.controller.width())
+        self.on_controller_size_changed()
         # Work-around for OS X, hide and then show the toolbar
         # See bug #791050
         self.toolbar.show()
@@ -879,7 +896,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.service_item.is_command():
             Registry().execute(
                 '{text}_start'.format(text=self.service_item.name.lower()),
-                [self.service_item, self.is_live, self.hide_mode(), slide_no])
+                [self.service_item, self.is_live, self.get_hide_mode(), slide_no])
         else:
             self._set_theme(self.service_item)
         # Reset blanking if needed
@@ -989,36 +1006,29 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             ratio = float(size.width()) / display_with
         self.preview_display.set_scale(ratio)
 
-    def main_display_set_background(self):
-        """
-        Allow the main display to blank the main display at startup time
-        """
-        # display_type = Settings().value(self.main_window.general_settings_section + '/screen blank')
-        # if self.screens.which_screen(self.window()) != self.screens.which_screen(self.display):
-        #     # Order done to handle initial conversion
-        #     if display_type == 'themed':
-        #         self.on_theme_display(True)
-        #     elif display_type == 'hidden':
-        #         self.on_hide_display(True)
-        #     elif display_type == 'blanked':
-        #         self.on_blank_display(True)
-        #     else:
-        #         Registry().execute('live_display_show')
-        # else:
-        #     self.on_hide_display_enable()
-
-    def on_slide_blank(self):
-        """
-        Handle the slidecontroller blank event
-        """
-        self.on_blank_display(True)
-
     def on_slide_unblank(self):
         """
         Handle the slidecontroller unblank event.
         """
         if not Registry().get_flag('replace service manager item') is True:
-            self.on_blank_display(False)
+            self.set_hide_mode(None)
+
+    def on_show_display(self, checked=None):
+        """
+        Handle the blank screen button actions
+
+        :param checked: the new state of the of the widget
+        """
+        self.set_hide_mode(None)
+
+    def on_toggle_blank(self):
+        """
+        Toggle the blank screen
+        """
+        if self.get_hide_mode() == HideMode.Blank:
+            self.set_hide_mode(None)
+        else:
+            self.set_hide_mode(HideMode.Blank)
 
     def on_blank_display(self, checked=None):
         """
@@ -1026,20 +1036,16 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
 
         :param checked: the new state of the of the widget
         """
-        if checked is None:
-            checked = self.blank_screen.isChecked()
-        self.log_debug('on_blank_display {text}'.format(text=checked))
-        self.hide_menu.setDefaultAction(self.blank_screen)
-        self.blank_screen.setChecked(checked)
-        self.theme_screen.setChecked(False)
-        self.desktop_screen.setChecked(False)
-        if checked:
-            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'blanked')
+        self.set_hide_mode(HideMode.Blank)
+
+    def on_toggle_theme(self):
+        """
+        Toggle the Theme screen
+        """
+        if self.get_hide_mode() == HideMode.Theme:
+            self.set_hide_mode(None)
         else:
-            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
-        self.blank_plugin()
-        self.update_preview()
-        self.on_toggle_loop()
+            self.set_hide_mode(HideMode.Theme)
 
     def on_theme_display(self, checked=None):
         """
@@ -1047,63 +1053,43 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
 
         :param checked: the new state of the of the widget
         """
-        if checked is None:
-            checked = self.theme_screen.isChecked()
-        self.log_debug('on_theme_display {text}'.format(text=checked))
-        self.hide_menu.setDefaultAction(self.theme_screen)
-        self.blank_screen.setChecked(False)
-        self.theme_screen.setChecked(checked)
-        self.desktop_screen.setChecked(False)
-        if checked:
-            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'themed')
+        self.set_hide_mode(HideMode.Theme)
+
+    def on_toggle_desktop(self):
+        """
+        Toggle the desktop
+        """
+        if self.get_hide_mode() == HideMode.Screen:
+            self.set_hide_mode(None)
         else:
-            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
-        self.blank_plugin()
-        self.update_preview()
-        self.on_toggle_loop()
+            self.set_hide_mode(HideMode.Screen)
 
     def on_hide_display(self, checked=None):
         """
         Handle the Hide screen button
-        This toggles the desktop screen.
+        This enables the desktop screen.
 
         :param checked: the new state of the of the widget
         """
-        if checked is None:
-            checked = self.desktop_screen.isChecked()
-        self.log_debug('on_hide_display {text}'.format(text=checked))
-        self.hide_menu.setDefaultAction(self.desktop_screen)
-        self.blank_screen.setChecked(False)
-        self.theme_screen.setChecked(False)
-        self.desktop_screen.setChecked(checked)
-        if checked:
-            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', 'hidden')
+        self.set_hide_mode(HideMode.Screen)
+
+    def set_hide_mode(self, hide_mode):
+        """
+        Blank/Hide the display screen (within a plugin if required).
+        """
+        self.log_debug('set_hide_mode {text}'.format(text=hide_mode))
+        # Update ui buttons
+        if hide_mode is None:
+            self.hide_menu.setDefaultAction(self.blank_screen)
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', False)
         else:
-            self.settings.remove(self.main_window.general_settings_section + '/screen blank')
-        self.hide_plugin(checked)
-        self.update_preview()
-        self.on_toggle_loop()
-
-    def on_hide_display_enable(self, checked=None):
-        """
-        Handle the on_hide_display_enable
-        This only enables the desktop screen.
-
-        :param checked: the new state of the of the widget
-        """
-        self.blank_screen.setChecked(False)
-        self.theme_screen.setChecked(False)
-        Registry().execute('live_display_hide', HideMode.Screen)
-        self.desktop_screen.setChecked(True)
-        self.update_preview()
-        self.on_toggle_loop()
-
-    def blank_plugin(self):
-        """
-        Blank/Hide the display screen within a plugin if required.
-        """
-        hide_mode = self.hide_mode()
-        self.log_debug('blank_plugin {text}'.format(text=hide_mode))
+            self.hide_menu.setDefaultAction(self.show_screen)
+            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', True)
+        self.show_screen.setChecked(hide_mode is None)
+        self.blank_screen.setChecked(hide_mode == HideMode.Blank)
+        self.theme_screen.setChecked(hide_mode == HideMode.Theme)
+        self.desktop_screen.setChecked(hide_mode == HideMode.Screen)
+        # Update plugin display
         if self.service_item is not None:
             if hide_mode:
                 if not self.service_item.is_command():
@@ -1120,27 +1106,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 Registry().execute('live_display_hide', hide_mode)
             else:
                 Registry().execute('live_display_show')
-
-    def hide_plugin(self, hide):
-        """
-        Tell the plugin to hide the display screen.
-        """
-        self.log_debug('hide_plugin {text}'.format(text=hide))
-        if self.service_item is not None:
-            if hide:
-                Registry().execute('live_display_hide', HideMode.Screen)
-                Registry().execute('{text}_hide'.format(text=self.service_item.name.lower()),
-                                   [self.service_item, self.is_live])
-            else:
-                if not self.service_item.is_command():
-                    Registry().execute('live_display_show')
-                Registry().execute('{text}_unblank'.format(text=self.service_item.name.lower()),
-                                   [self.service_item, self.is_live])
-        else:
-            if hide:
-                Registry().execute('live_display_hide', HideMode.Screen)
-            else:
-                Registry().execute('live_display_show')
+        # Update preview and loop state
+        self.update_preview()
+        self.on_toggle_loop()
 
     def on_slide_selected(self):
         """
@@ -1322,7 +1290,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Toggles the loop state.
         """
-        hide_mode = self.hide_mode()
+        hide_mode = self.get_hide_mode()
         if hide_mode is None and (self.play_slides_loop.isChecked() or self.play_slides_once.isChecked()):
             self.on_start_loop()
         else:
@@ -1460,27 +1428,18 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.live_controller.add_service_manager_item(self.service_item, row)
             self.live_controller.preview_widget.setFocus()
 
-    def on_go_preview(self, field=None):
-        """
-        If live copy slide item to preview controller from live Controller
-        """
-        row = self.preview_widget.current_slide_number()
-        if -1 < row < self.preview_widget.slide_count():
-            self.preview_controller.add_service_manager_item(self.service_item, row)
-            self.preview_controller.preview_widget.setFocus()
-
     def on_media_start(self, item):
         """
         Respond to the arrival of a media service item
 
         :param item: The service item to be processed
         """
-        if self.is_live and self.hide_mode() == HideMode.Theme:
+        if self.is_live and self.get_hide_mode() == HideMode.Theme:
             self.media_controller.load_video(self.controller_type, item, HideMode.Blank)
-            self.on_blank_display(True)
+            self.set_hide_mode(HideMode.Blank)
         elif self.is_live or item.is_media():
             # avoid loading the video if this is preview and the media is background
-            self.media_controller.load_video(self.controller_type, item, self.hide_mode())
+            self.media_controller.load_video(self.controller_type, item, self.get_hide_mode())
         if not self.is_live:
             self.preview_display.show()
 
@@ -1496,21 +1455,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
 
         :param no_theme: Does the new item support theme-blanking.
         """
-        hide_mode = self.hide_mode()
-        if hide_mode == HideMode.Blank:
-            self.on_blank_display(True)
-        elif hide_mode == HideMode.Theme:
+        hide_mode = self.get_hide_mode()
+        if hide_mode == HideMode.Theme and no_theme:
             # The new item-type doesn't support theme-blanking, so 'switch' to normal blanking.
-            if no_theme:
-                self.on_blank_display(True)
-            else:
-                self.on_theme_display(True)
-        elif hide_mode == HideMode.Screen:
-            self.on_hide_display(True)
+            self.set_hide_mode(HideMode.Blank)
         else:
-            self.hide_plugin(False)
+            self.set_hide_mode(hide_mode)
 
-    def hide_mode(self):
+    def get_hide_mode(self):
         """
         Determine what the hide mode should be according to the blank button
         """

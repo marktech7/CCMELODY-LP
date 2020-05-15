@@ -56,12 +56,15 @@ def _recursively_delete_group_side_effect(*args, **kwargs):
         returned_object1 = ImageFilenames()
         returned_object1.id = 1
         returned_object1.file_path = Path('/', 'tmp', 'test_file_1.jpg')
+        returned_object1.file_hash = 'abcd1'
         returned_object2 = ImageFilenames()
         returned_object2.id = 2
         returned_object2.file_path = Path('/', 'tmp', 'test_file_2.jpg')
+        returned_object2.file_hash = 'abcd2'
         returned_object3 = ImageFilenames()
         returned_object3.id = 3
         returned_object3.file_path = Path('/', 'tmp', 'test_file_3.jpg')
+        returned_object3.file_hash = 'abcd3'
         return [returned_object1, returned_object2, returned_object3]
     if args[0] == ImageGroups and args[1]:
         # Change the parent_id that is matched so we don't get into an endless loop
@@ -91,7 +94,8 @@ def test_save_new_images_list_empty_list(mocked_load_full_list, media_item):
 
 
 @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_full_list')
-def test_save_new_images_list_single_image_with_reload(mocked_load_full_list, media_item):
+@patch('openlp.plugins.images.lib.mediaitem.sha256_file_hash')
+def test_save_new_images_list_single_image_with_reload(mocked_sha256_file_hash, mocked_load_full_list, media_item):
     """
     Test that the save_new_images_list() calls load_full_list() when reload_list is set to True
     """
@@ -99,6 +103,7 @@ def test_save_new_images_list_single_image_with_reload(mocked_load_full_list, me
     image_list = [Path('test_image.jpg')]
     ImageFilenames.file_path = None
     media_item.manager = MagicMock()
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: We run save_new_images_list with reload_list=True
     media_item.save_new_images_list(image_list, reload_list=True)
@@ -111,13 +116,15 @@ def test_save_new_images_list_single_image_with_reload(mocked_load_full_list, me
 
 
 @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_full_list')
-def test_save_new_images_list_single_image_without_reload(mocked_load_full_list, media_item):
+@patch('openlp.plugins.images.lib.mediaitem.sha256_file_hash')
+def test_save_new_images_list_single_image_without_reload(mocked_sha256_file_hash, mocked_load_full_list, media_item):
     """
     Test that the save_new_images_list() doesn't call load_full_list() when reload_list is set to False
     """
     # GIVEN: A list with 1 image and a mocked out manager
     image_list = [Path('test_image.jpg')]
     media_item.manager = MagicMock()
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: We run save_new_images_list with reload_list=False
     media_item.save_new_images_list(image_list, reload_list=False)
@@ -127,13 +134,15 @@ def test_save_new_images_list_single_image_without_reload(mocked_load_full_list,
 
 
 @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_full_list')
-def test_save_new_images_list_multiple_images(mocked_load_full_list, media_item):
+@patch('openlp.plugins.images.lib.mediaitem.sha256_file_hash')
+def test_save_new_images_list_multiple_images(mocked_sha256_file_hash, mocked_load_full_list, media_item):
     """
     Test that the save_new_images_list() saves all images in the list
     """
     # GIVEN: A list with 3 images
     image_list = [Path('test_image_1.jpg'), Path('test_image_2.jpg'), Path('test_image_3.jpg')]
     media_item.manager = MagicMock()
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: We run save_new_images_list with the list of 3 images
     media_item.save_new_images_list(image_list, reload_list=False)
@@ -144,13 +153,15 @@ def test_save_new_images_list_multiple_images(mocked_load_full_list, media_item)
 
 
 @patch('openlp.plugins.images.lib.mediaitem.ImageMediaItem.load_full_list')
-def test_save_new_images_list_other_objects_in_list(mocked_load_full_list, media_item):
+@patch('openlp.plugins.images.lib.mediaitem.sha256_file_hash')
+def test_save_new_images_list_other_objects_in_list(mocked_sha256_file_hash, mocked_load_full_list, media_item):
     """
     Test that the save_new_images_list() ignores everything in the provided list except strings
     """
     # GIVEN: A list with images and objects
     image_list = [Path('test_image_1.jpg'), None, True, ImageFilenames(), Path('test_image_2.jpg')]
     media_item.manager = MagicMock()
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: We run save_new_images_list with the list of images and objects
     media_item.save_new_images_list(image_list, reload_list=False)
@@ -177,7 +188,8 @@ def test_on_reset_click(media_item):
 
 
 @patch('openlp.plugins.images.lib.mediaitem.delete_file')
-def test_recursively_delete_group(mocked_delete_file, media_item):
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_recursively_delete_group(mocked_sha256_file_hash, mocked_delete_file, media_item):
     """
     Test that recursively_delete_group() works
     """
@@ -189,6 +201,7 @@ def test_recursively_delete_group(mocked_delete_file, media_item):
     media_item.service_path = Path()
     test_group = ImageGroups()
     test_group.id = 1
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: recursively_delete_group() is called
     media_item.recursively_delete_group(test_group)
@@ -205,7 +218,8 @@ def test_recursively_delete_group(mocked_delete_file, media_item):
 
 @patch('openlp.plugins.images.lib.mediaitem.delete_file')
 @patch('openlp.plugins.images.lib.mediaitem.check_item_selected')
-def test_on_delete_click(mocked_check_item_selected, mocked_delete_file, media_item):
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_on_delete_click(mocked_sha256_file_hash, mocked_check_item_selected, mocked_delete_file, media_item):
     """
     Test that on_delete_click() works
     """
@@ -215,6 +229,7 @@ def test_on_delete_click(mocked_check_item_selected, mocked_delete_file, media_i
     test_image.id = 1
     test_image.group_id = 1
     test_image.file_path = Path('imagefile.png')
+    test_image.file_hash = 'abcd'
     media_item.manager = MagicMock()
     media_item.service_path = Path()
     media_item.list_view = MagicMock()
@@ -222,6 +237,7 @@ def test_on_delete_click(mocked_check_item_selected, mocked_delete_file, media_i
     mocked_row_item.data.return_value = test_image
     mocked_row_item.text.return_value = ''
     media_item.list_view.selectedItems.return_value = [mocked_row_item]
+    mocked_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: Calling on_delete_click
     media_item.on_delete_click()

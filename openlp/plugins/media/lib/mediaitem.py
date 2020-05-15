@@ -166,20 +166,20 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                                   'The optical disc {name} is no longer available.').format(name=name))
                 return False
             service_item.processor = 'vlc'
+            service_item.add_capability(ItemCapabilities.IsOptical)
             service_item.add_from_command(filename, name, self.clapperboard)
             service_item.title = clip_name
             # Set the length
             service_item.set_media_length(end - start)
             service_item.start_time = start
             service_item.end_time = end
-            service_item.add_capability(ItemCapabilities.IsOptical)
         elif filename.startswith('devicestream:') or filename.startswith('networkstream:'):
             # Special handling if the filename is a devicestream
             (name, mrl, options) = parse_stream_path(filename)
             service_item.processor = 'vlc'
+            service_item.add_capability(ItemCapabilities.CanStream)
             service_item.add_from_command(filename, name, self.clapperboard)
             service_item.title = name
-            service_item.add_capability(ItemCapabilities.CanStream)
         else:
             if not os.path.exists(filename):
                 if not remote:
