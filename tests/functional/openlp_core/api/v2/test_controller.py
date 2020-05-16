@@ -104,9 +104,12 @@ def test_controller_get_themes_retrieves_themes_list(flask_client, settings):
     assert type(res) is list
 
 
-def test_controller_set_theme_does_not_accept_get(flask_client):
+def test_controller_get_theme_returns_current_theme(flask_client, settings):
+    Registry().get('settings').setValue('themes/theme level', 1)
+    Registry().get('settings').setValue('themes/global theme', 'Default')
     res = flask_client.get('/api/v2/controller/theme')
-    assert res.status_code == 405
+    assert res.status_code == 200
+    assert res.get_json() == 'Default'
 
 
 def test_controller_set_theme_aborts_if_no_theme(flask_client, settings):

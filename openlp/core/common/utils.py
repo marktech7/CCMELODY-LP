@@ -22,6 +22,7 @@
 The :mod:`~openlp.core.display.window` module contains the display window
 """
 import logging
+import re
 import time
 
 from openlp.core.common.registry import Registry
@@ -47,3 +48,11 @@ def wait_for(check_func, error_message='Timed out waiting for completion', timeo
         time.sleep(0.001)
         app.process_events()
     return success
+
+
+def is_uuid(uuid):
+    if not isinstance(uuid, (str, bytes)):
+        return False
+    return (
+        re.match(r'^[0-9A-F]{8}-[0-9A-F]{4}-[14][0-9A-F]{3}-[0-9A-F]{4}-[0-9A-F]{12}$', uuid, re.IGNORECASE) is not None
+    )

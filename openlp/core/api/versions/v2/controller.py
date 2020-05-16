@@ -50,9 +50,9 @@ def controller_text_api():
             if current_item.is_text():
                 if frame['verse']:
                     item['tag'] = str(frame['verse'])
-                item['chords_text'] = str(frame.get('chords_text', ''))
                 item['text'] = frame['text']
-                item['html'] = current_item.get_rendered_frame(index)
+                item['html'] = current_item.rendered_slides[index]['text']
+                item['chords'] = current_item.rendered_slides[index]['chords']
             elif current_item.is_image() and not frame.get('image', '') and \
                     Registry().get('settings_thread').value('api/thumbnails'):
                 thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
@@ -174,6 +174,20 @@ def get_themes():
         log.error('Missing theme passed ' + str(themes))
         pass
     return jsonify(theme_list)
+
+
+@controller_views.route('/theme', methods=['GET'])
+@login_required
+def get_theme():
+    """
+    Get the current theme
+    """
+    theme_level = Registry().get('settings').value('themes/theme level')
+    if theme_level == ThemeLevel.Service:
+        theme = Registry().get('settings').value('servicemanager/service theme')
+    else:
+        theme = Registry().get('settings').value('themes/global theme')
+    return jsonify(theme)
 
 
 @controller_views.route('/theme', methods=['POST'])

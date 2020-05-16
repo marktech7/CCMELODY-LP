@@ -430,7 +430,7 @@ def main():
     translators = LanguageManager.get_translators(language)
     for translator in translators:
         if not translator.isEmpty():
-            app.installTranslator(translator)
+            application.installTranslator(translator)
     if not translators:
         log.debug('Could not find translators.')
     if args and not args.no_error_form:

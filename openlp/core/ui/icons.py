@@ -64,7 +64,8 @@ class UiIcons(metaclass=Singleton):
             'authentication': {'icon': 'fa.exclamation-triangle', 'attr': 'red'},
             'address': {'icon': 'fa.book'},
             'back': {'icon': 'fa.step-backward'},
-            'backspace': {'icon': 'fa-times-circle'},
+            'backspace': {'icon': 'fa.times'},
+            # 'backspace': {'icon': 'fa.caret-square-o-left'},
             'bible': {'icon': 'fa.book'},
             'blank': {'icon': 'fa.times-circle'},
             'blank_theme': {'icon': 'fa.file-image-o'},
@@ -181,10 +182,10 @@ class UiIcons(metaclass=Singleton):
                     else:
                         setattr(self, key, qta.icon(icon))
                 except Exception:
-                    import sys
-                    log.error('Unexpected error: %s' % sys.exc_info())
+                    log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
                     setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
             except Exception:
+                log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
                 setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
 
     @staticmethod
