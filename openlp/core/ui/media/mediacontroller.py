@@ -186,7 +186,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.has_audio = True
         if preview:
             controller.has_audio = False
-        self.vlc_player.setup(controller, self._define_display(controller), preview)
+        self.vlc_player.setup(controller, self._define_display(controller))
 
     @staticmethod
     def set_controls_visible(controller, value):

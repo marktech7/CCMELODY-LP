@@ -363,9 +363,11 @@ class BGExtract(RegistryProperties):
             return None
         books = []
         for book in content:
-            book = book.find('td')
-            if book:
-                books.append(book.contents[1])
+            td_element = book.find('td', {'class': 'book-name'})
+            span_element = td_element.find('span', {'class': 'collapse-icon'})
+            book_name = span_element.next_sibling.strip()
+            if book_name:
+                books.append(book_name)
         return books
 
     def get_bibles_from_http(self):
@@ -379,7 +381,7 @@ class BGExtract(RegistryProperties):
         soup = get_soup_for_bible_ref(bible_url)
         if not soup:
             return None
-        bible_select = soup.find('select', {'class': 'search-translation-select'})
+        bible_select = soup.find('select', {'class': 'search-dropdown'})
         if not bible_select:
             log.debug('No select tags found - did site change?')
             return None
