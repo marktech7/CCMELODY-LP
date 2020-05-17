@@ -505,9 +505,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         getattr(self,
                 'slidecontroller_{}_previous'.format(self.type_prefix)).connect(self.on_slide_selected_previous)
         if self.is_live:
+            getattr(self, 'slidecontroller_live_clear').connect(self.on_clear)
             self.mediacontroller_live_play.connect(self.media_controller.on_media_play)
             self.mediacontroller_live_pause.connect(self.media_controller.on_media_pause)
             self.mediacontroller_live_stop.connect(self.media_controller.on_media_stop)
+        else:
+            getattr(self, 'slidecontroller_preview_clear').connect(self.on_clear)
 
     def new_song_menu(self):
         """
@@ -1485,6 +1488,7 @@ class PreviewController(RegistryBase, SlideController):
     slidecontroller_preview_set = QtCore.pyqtSignal(list)
     slidecontroller_preview_next = QtCore.pyqtSignal()
     slidecontroller_preview_previous = QtCore.pyqtSignal()
+    slidecontroller_preview_clear = QtCore.pyqtSignal()
 
     def __init__(self, *args, **kwargs):
         """
@@ -1511,6 +1515,7 @@ class LiveController(RegistryBase, SlideController):
     slidecontroller_live_next = QtCore.pyqtSignal()
     slidecontroller_live_previous = QtCore.pyqtSignal()
     slidecontroller_toggle_display = QtCore.pyqtSignal(str)
+    slidecontroller_live_clear = QtCore.pyqtSignal()
     mediacontroller_live_play = QtCore.pyqtSignal()
     mediacontroller_live_pause = QtCore.pyqtSignal()
     mediacontroller_live_stop = QtCore.pyqtSignal()

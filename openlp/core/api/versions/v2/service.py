@@ -52,7 +52,7 @@ def service_items():
             'ccli_number': str(ccli_number),
             'notes': str(service_item.notes),
             'selected': (service_item.unique_identifier == current_unique_identifier),
-            'is_valid': str(service_item.is_valid)
+            'is_valid': service_item.is_valid
         })
     return jsonify(service_items)
 
