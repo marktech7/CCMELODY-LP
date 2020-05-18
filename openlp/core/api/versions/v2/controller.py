@@ -38,7 +38,7 @@ log = logging.getLogger(__name__)
 
 @controller_views.route('/live-item')
 def controller_text_api():
-    log.debug("controller-v2-live-item")
+    log.debug('controller-v2-live-item')
     live_controller = Registry().get('live_controller')
     current_item = live_controller.service_item
     data = []
@@ -86,7 +86,7 @@ def controller_text_api():
 @controller_views.route('/show', methods=['POST'])
 @login_required
 def controller_set():
-    log.debug("controller-v2-show-post")
+    log.debug('controller-v2-show-post')
     data = request.json
     if not data:
         log.error('Missing request data')
@@ -99,7 +99,7 @@ def controller_set():
 @controller_views.route('/progress', methods=['POST'])
 @login_required
 def controller_direction():
-    log.debug("controller-v2-progress-post")
+    log.debug('controller-v2-progress-post')
     ALLOWED_ACTIONS = ['next', 'previous']
     data = request.json
     if not data:
@@ -117,7 +117,7 @@ def controller_direction():
 @controller_views.route('/theme-level', methods=['GET'])
 @login_required
 def get_theme_level():
-    log.debug("controller-v2-theme-level-get")
+    log.debug('controller-v2-theme-level-get')
     theme_level = Registry().get('settings').value('themes/theme level')
     if theme_level == ThemeLevel.Global:
         theme_level = 'global'
@@ -131,7 +131,7 @@ def get_theme_level():
 @controller_views.route('/theme-level', methods=['POST'])
 @login_required
 def set_theme_level():
-    log.debug("controller-v2-theme-level-post")
+    log.debug('controller-v2-theme-level-post')
     data = request.json
     if not data:
         log.error('Missing request data')
@@ -160,7 +160,7 @@ def set_theme_level():
 @controller_views.route('/themes', methods=['GET'])
 @login_required
 def get_themes():
-    log.debug("controller-v2-themes-get")
+    log.debug('controller-v2-themes-get')
     theme_level = Registry().get('settings').value('themes/theme level')
     theme_list = []
     current_theme = ''
@@ -191,7 +191,7 @@ def get_theme():
     """
     Get the current theme
     """
-    log.debug("controller-v2-theme-get")
+    log.debug('controller-v2-theme-get')
     theme_level = Registry().get('settings').value('themes/theme level')
     if theme_level == ThemeLevel.Service:
         theme = Registry().get('settings').value('servicemanager/service theme')
@@ -203,7 +203,7 @@ def get_theme():
 @controller_views.route('/theme', methods=['POST'])
 @login_required
 def set_theme():
-    log.debug("controller-v2-themes-post")
+    log.debug('controller-v2-themes-post')
     data = request.json
     theme = ''
     theme_level = Registry().get('settings').value('themes/theme level')
@@ -227,9 +227,17 @@ def set_theme():
     return '', 204
 
 
-@controller_views.route('/clear/<controller>', methods=['GET'])
+@controller_views.route('/clear/<controller>', methods=['POST'])
 @login_required
 def controller_clear(controller):
-    log.debug("controller-v2-clear-get " + controller)
-    getattr(Registry().get(f'{controller}_controller'), f'slidecontroller_{controller}_clear').emit()
-    return '', 204
+    """
+    Clears the slide controller display
+    :param controller: the Live or Preview controller
+    :return: HTTP return code
+    """
+    log.debug(f'controller-v2-clear-get {controller}')
+    if controller in ['live', 'preview']:
+        getattr(Registry().get(f'{controller}_controller'), f'slidecontroller_{controller}_clear').emit()
+        return '', 204
+    else:
+        return '', 404
