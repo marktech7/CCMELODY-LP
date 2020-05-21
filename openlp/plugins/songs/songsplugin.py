@@ -104,6 +104,10 @@ ${title}<br/>
 %if ccli_license:
   ${ccli_license_label}&nbsp;${ccli_license}<br/>
 %endif
+
+%if ccli_streaming_license:
+  ${ccli_streaming_license_label}&nbsp;${ccli_streaming_license}<br/>
+%endif
 """,
 }
 

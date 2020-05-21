@@ -151,6 +151,8 @@ class SongsTab(SettingsTab):
             ['songbook_entries', translate('SongsPlugin.SongsTab', 'Songbook Entries'), False, True],
             ['ccli_license', translate('SongsPlugin.SongsTab', 'CCLI License'), True, False],
             ['ccli_license_label', const.format(translate('SongsPlugin.SongsTab', 'CCLI License')), False, False],
+            ['ccli_streaming_license', translate('SongsPlugin.SongsTab', 'CCLI Streaming License'), True, False],
+            ['ccli_streaming_license_label', const.format(translate('SongsPlugin.SongsTab', 'CCLI Streaming License')), False, False],
             ['ccli_number', translate('SongsPlugin.SongsTab', 'Song CCLI Number'), True, False],
             ['topics', translate('SongsPlugin.SongsTab', 'Topics'), False, True],
         ]

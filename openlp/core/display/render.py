@@ -545,8 +545,10 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             'authors_words': [AUTHOR],
             'copyright': FOOTER_COPYRIGHT,
             'ccli_license': self.settings.value('core/ccli number'),
+            'ccli_streaming_license': self.settings.value('core/ccli streaming number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
-            'ccli_number': CCLI_NO,
+            'ccli_streaming_license_label': translate('SongsPlugin.MediaItem', 'CCLI Streaming License'),
+            'ccli_number': CCLI_NO
         }
         try:
             footer_html = mako.template.Template(footer_template).render_unicode(**vars).replace('\n', '')
