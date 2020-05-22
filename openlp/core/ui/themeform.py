@@ -433,5 +433,6 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
             return
         # Set the theme background to the cache location
         self.theme.background_filename = destination_path
-        self.theme_manager.save_theme(self.theme, self.preview_box.save_screenshot())
+        self.theme_manager.save_theme(self.theme)
+        self.theme_manager.save_preview(self.theme.theme_name, self.preview_box.save_screenshot())
         return QtWidgets.QDialog.accept(self)

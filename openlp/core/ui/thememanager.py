@@ -353,6 +353,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         theme_data.theme_name = new_theme_name
         theme_data.extend_image_filename(self.theme_path)
         self.save_theme(theme_data, background_override=old_background)
+        self.update_preview_images([new_theme_name])
         self.load_themes()
 
     def on_edit_theme(self, field=None):
@@ -482,7 +483,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             new_themes.append(self.unzip_theme(file_path, self.theme_path))
         self.settings.setValue('themes/last directory import', file_path.parent)
         self.update_preview_images(new_themes)
-        self.load_themes()
         self.application.set_normal_cursor()
 
     def load_first_time_themes(self):
@@ -643,12 +643,15 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                                                  'inaccessible or not a valid theme.').format(file_name=file_path))
         finally:
             if not abort_import:
-                # As all files are closed, we can create the Theme.
-                if file_xml:
-                    if json_theme:
-                        self._create_theme_from_json(file_xml, self.theme_path)
-                    else:
-                        self._create_theme_from_xml(file_xml, self.theme_path)
+                # TODO: remove XML handling after once the upgrade path from 2.4 is no longer required
+                # As all files are closed, upgrade theme (xml to json) if needed.
+                if file_xml and not json_theme:
+                    theme_path = directory_path / theme_name
+                    xml_file_paths = theme_path.glob('*.xml')
+                    for xml_file_path in xml_file_paths:
+                        xml_file_path.unlink()
+                    theme = self._create_theme_from_xml(file_xml, self.theme_path)
+                    self.save_theme(theme)
                 return theme_name
             else:
                 return None
@@ -668,7 +671,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             return False
         return True
 
-    def save_theme(self, theme, image=None, background_override=None):
+    def save_theme(self, theme, background_override=None):
         """
         Writes the theme to the disk and including the background image and thumbnail if necessary
 
@@ -700,15 +703,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                     shutil.copyfile(background_file, theme.background_filename)
                 except OSError:
                     self.log_exception('Failed to save theme image')
-        if image:
-            sample_path_name = self.theme_path / '{file_name}.png'.format(file_name=name)
-            if sample_path_name.exists():
-                sample_path_name.unlink()
-            image.save(str(sample_path_name), 'png')
-            thumb_path = self.thumb_path / '{name}.png'.format(name=name)
-            create_thumb(sample_path_name, thumb_path, False)
-        else:
-            self.update_preview_images([name])
 
     def save_preview(self, theme_name, preview_pixmap):
         """
