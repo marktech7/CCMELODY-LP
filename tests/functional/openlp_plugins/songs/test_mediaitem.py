@@ -622,7 +622,6 @@ def test_build_song_footer_one_author_show_written_by(media_item):
                 'ccli_license': '0', 'authors_translation_label': 'Translation',
                 'authors_words_all': [],
                 'ccli_streaming_license_label': 'CCLI Streaming License',
-                'ccli_streaming_license': ''
-}
+                'ccli_streaming_license': ''}
         MockedRenderer.assert_called_once_with(**args)
         assert author_list == ['my author'], 'The author list should be returned correctly with one author'
