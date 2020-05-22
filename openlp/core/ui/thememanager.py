@@ -480,7 +480,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.application.set_busy_cursor()
         new_themes = []
         for file_path in file_paths:
-            new_themes.append(self.unzip_theme(file_path, self.theme_path))
+            new_themes.append(self.unzip_theme(file_path))
         self.settings.setValue('themes/last directory import', file_path.parent)
         self.update_preview_images(new_themes)
         self.application.set_normal_cursor()
@@ -494,7 +494,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         new_themes = []
         for theme_path in theme_paths:
             theme_path = self.theme_path / theme_path
-            new_themes.append(self.unzip_theme(theme_path, self.theme_path))
+            new_themes.append(self.unzip_theme(theme_path))
             delete_file(theme_path)
         # No themes have been found so create one
         if not theme_paths:
@@ -582,12 +582,11 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                                              defaultButton=QtWidgets.QMessageBox.No)
         return ret == QtWidgets.QMessageBox.Yes
 
-    def unzip_theme(self, file_path, directory_path):
+    def unzip_theme(self, file_path):
         """
         Unzip the theme, remove the preview file if stored. Generate a new preview file. Check the XML theme version
         and upgrade if necessary.
         :param Path file_path:
-        :param Path directory_path:
         """
         self.log_debug('Unzipping theme {name}'.format(name=file_path))
         file_xml = None
@@ -614,7 +613,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                     new_theme.load_theme(theme_zip.read(json_file[0]).decode("utf-8"))
                     theme_name = new_theme.theme_name
                     json_theme = True
-                theme_folder = directory_path / theme_name
+                theme_folder = self.theme_path / theme_name
                 if theme_folder.exists() and not self.over_write_message_box(theme_name):
                     abort_import = True
                     return
@@ -626,7 +625,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                     if split_name[-1] == '' or len(split_name) == 1:
                         # is directory or preview file
                         continue
-                    full_name = directory_path / zipped_file_rel_path
+                    full_name = self.theme_path / zipped_file_rel_path
                     create_paths(full_name.parent)
                     if zipped_file_rel_path.suffix.lower() == '.xml' or zipped_file_rel_path.suffix.lower() == '.json':
                         file_xml = str(theme_zip.read(zipped_file), 'utf-8')
@@ -646,7 +645,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 # TODO: remove XML handling after once the upgrade path from 2.4 is no longer required
                 # As all files are closed, upgrade theme (xml to json) if needed.
                 if file_xml and not json_theme:
-                    theme_path = directory_path / theme_name
+                    theme_path = self.theme_path / theme_name
                     xml_file_paths = theme_path.glob('*.xml')
                     for xml_file_path in xml_file_paths:
                         xml_file_path.unlink()
