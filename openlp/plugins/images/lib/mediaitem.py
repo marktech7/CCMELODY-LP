@@ -72,7 +72,8 @@ class ImageMediaItem(MediaManagerItem):
         self.add_group_form = AddGroupForm(self)
         self.fill_groups_combobox(self.choose_group_form.group_combobox)
         self.fill_groups_combobox(self.add_group_form.parent_group_combobox)
-        Registry().register_function('live_theme_changed', self.live_theme_changed)
+        Registry().register_function('live_theme_changed', self.on_display_changed)
+        Registry().register_function('slidecontroller_live_started', self.on_display_changed)
         # Allow DnD from the desktop.
         self.list_view.activateDnD()
 
@@ -663,9 +664,9 @@ class ImageMediaItem(MediaManagerItem):
         """
         self.reset_action.setVisible(False)
         self.reset_action_context.setVisible(False)
-        self.live_controller.display.reset_image()
+        self.live_controller.reload_theme()
 
-    def live_theme_changed(self):
+    def on_display_changed(self, service_item=None):
         """
         Triggered by the change of theme in the slide controller.
         """
@@ -686,13 +687,9 @@ class ImageMediaItem(MediaManagerItem):
                 return
             file_path = bitem.data(0, QtCore.Qt.UserRole).file_path
             if file_path.exists():
-                if self.live_controller.display.direct_image(str(file_path), background):
-                    self.reset_action.setVisible(True)
-                    self.reset_action_context.setVisible(True)
-                else:
-                    critical_error_message_box(
-                        UiStrings().LiveBGError,
-                        translate('ImagePlugin.MediaItem', 'There was no display item to amend.'))
+                self.live_controller.set_background_image(background, file_path)
+                self.reset_action.setVisible(True)
+                self.reset_action_context.setVisible(True)
             else:
                 critical_error_message_box(
                     UiStrings().LiveBGError,

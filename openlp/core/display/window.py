@@ -202,6 +202,11 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.setGeometry(screen.display_geometry)
         self.screen_number = screen.number
 
+    def set_background_image(self, bg_color, image_path):
+        image_uri = image_path.as_uri()
+        self.run_javascript('Display.setBackgroundImage("{bg_color}", "{image}");'.format(bg_color=bg_color,
+                                                                                          image=image_uri))
+
     def set_single_image(self, bg_color, image_path):
         """
         :param str bg_color: Background color
@@ -414,6 +419,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
                 theme_copy.background_footer_color = '#090909'
         exported_theme = theme_copy.export_theme(is_js=True)
         self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme), is_sync=is_sync)
+
+    def reload_theme(self):
+        """
+        Applies the set theme
+        DO NOT use this when changing slides. Only use this if you need to force an update
+        to the current visible slides.
+        """
+        self.run_javascript('Display.resetTheme();')
 
     def get_video_types(self):
         """
