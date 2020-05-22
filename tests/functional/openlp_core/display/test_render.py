@@ -24,8 +24,9 @@ Test the :mod:`~openlp.core.display.render` package.
 from unittest.mock import patch
 
 from openlp.core.display.render import compare_chord_lyric_width, find_formatting_tags, remove_tags, render_chords, \
-    render_chords_for_printing, render_tags
+    render_chords_for_printing, render_tags, Renderer
 from openlp.core.lib.formattingtags import FormattingTags
+from openlp.plugins.songs.songsplugin import song_footer
 
 
 @patch('openlp.core.display.render.FormattingTags.get_html_tags')
@@ -211,3 +212,24 @@ def test_find_formatting_tags(settings):
 
     # THEN: The list of active tags should contain only 'st'
     assert active_tags == ['st'], 'The list of active tags should contain only "st"'
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_ccli_rendered(mocked_webengine, mocked_addWidget, settings):
+    settings.extend_default_settings(song_footer)
+    renderer = Renderer()
+
+    footer = renderer.generate_footer()
+    assert "ccli" not in footer.lower()
+
+    settings.setValue('core/ccli number', '012345')
+    footer = renderer.generate_footer()
+    assert "012345" in footer
+    assert "ccli" in footer.lower()
+
+    settings.setValue('core/ccli streaming number', '543210')
+    footer = renderer.generate_footer()
+    assert "543210" in footer
+    assert "012345" in footer
+    assert "ccli" in footer.lower()

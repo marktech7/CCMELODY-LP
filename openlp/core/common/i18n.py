@@ -354,6 +354,7 @@ class UiStrings(metaclass=Singleton):
         self.Browse = translate('OpenLP.Ui', 'Browse...')
         self.Cancel = translate('OpenLP.Ui', 'Cancel')
         self.CCLINumberLabel = translate('OpenLP.Ui', 'CCLI number:')
+        self.CCLIStreamingLicense = translate('OpenLP.Ui', 'CCLI Streaming License')
         self.CCLIStreamingNumberLabel = translate('OpenLP.Ui', 'CCLI streaming number:')
         self.CCLISongNumberLabel = translate('OpenLP.Ui', 'CCLI song number:')
         self.CreateService = translate('OpenLP.Ui', 'Create a new service.')

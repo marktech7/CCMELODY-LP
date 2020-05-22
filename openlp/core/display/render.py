@@ -33,7 +33,7 @@ from PyQt5 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
-from openlp.core.common.i18n import translate
+from openlp.core.common.i18n import translate, UiStrings
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.utils import wait_for
@@ -545,9 +545,9 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             'authors_words': [AUTHOR],
             'copyright': FOOTER_COPYRIGHT,
             'ccli_license': self.settings.value('core/ccli number'),
-            'ccli_streaming_license': self.settings.value('core/ccli streaming number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
-            'ccli_streaming_license_label': translate('SongsPlugin.MediaItem', 'CCLI Streaming License'),
+            'ccli_streaming_license': self.settings.value('core/ccli streaming number'),
+            'ccli_streaming_license_label': UiStrings().CCLIStreamingLicense,
             'ccli_number': CCLI_NO
         }
         try:

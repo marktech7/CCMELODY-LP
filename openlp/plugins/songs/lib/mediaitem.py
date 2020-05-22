@@ -709,7 +709,7 @@ class SongMediaItem(MediaManagerItem):
             'ccli_license': self.settings.value('core/ccli number'),
             'ccli_streaming_license': self.settings.value('core/ccli streaming number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
-            'ccli_streaming_license_label': translate('SongsPlugin.MediaItem', 'CCLI Streaming License'),
+            'ccli_streaming_license_label': UiStrings().CCLIStreamingLicense,
             'ccli_number': song.ccli_number,
             'topics': [topic.name for topic in song.topics]
         }
