@@ -893,7 +893,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         old_item = self.service_item
         # rest to allow the remote pick up verse 1 if large imaged
         self.selected_row = 0
-        self.preview_display.go_to_slide(0)
         # take a copy not a link to the servicemanager copy.
         self.service_item = copy.copy(service_item)
         if self.service_item.is_command():
