@@ -986,6 +986,29 @@ var Display = {
     }
   },
   /**
+   * Set background image, replaced when theme is updated/applied
+   * @param bg_color Colour behind the image
+   * @param image_path Image path
+   */
+  setBackgroundImage: function (bg_color, image_path) {
+    var targetElement = $(".slides > section")[0];
+    targetElement.setAttribute("data-background", "url('" + image_path + "')");
+    targetElement.setAttribute("data-background-size", "cover");
+    Reveal.sync();
+  },
+  /**
+   * Reset/reapply the theme
+   */
+  resetTheme: function () {
+    var targetElement = $(".slides > section")[0];
+    if (!targetElement) {
+      console.warn("Couldn't reset theme: No slides exist");
+      return;
+    }
+    Display.applyTheme(targetElement, targetElement.classList.contains("text-slides"));
+    Reveal.sync();
+  },
+  /**
    * Apply the theme to the provided element
    * @param targetElement The target element to apply the theme (expected to be a <section> in the slides container)
    * @param is_text Used to decide if the main area constraints should be applied
