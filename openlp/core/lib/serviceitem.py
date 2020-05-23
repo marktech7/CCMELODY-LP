@@ -396,7 +396,8 @@ class ServiceItem(RegistryProperties):
         elif self.service_item_type == ServiceItemType.Image:
             if lite_save:
                 for slide in self.slides:
-                    service_data.append({'title': slide['title'], 'path': slide['path'],
+                    image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
+                    service_data.append({'title': slide['title'], 'image': image_path, 'path': slide['path'],
                                          'file_hash': slide['file_hash']})
             else:
                 for slide in self.slides:
@@ -498,9 +499,11 @@ class ServiceItem(RegistryProperties):
                 for text_image in service_item['serviceitem']['data']:
                     file_hash = None
                     text = text_image['title']
+                    thumbnail = None
                     if version >= 3:
                         file_hash = text_image['file_hash']
-                    self.add_from_image(text_image['path'], text, background, file_hash=file_hash)
+                        thumbnail = AppLocation.get_data_path() / text_image['image']
+                    self.add_from_image(text_image['path'], text, background, thumbnail=thumbnail, file_hash=file_hash)
         elif self.service_item_type == ServiceItemType.Command:
             for text_image in service_item['serviceitem']['data']:
                 if not self.title:
