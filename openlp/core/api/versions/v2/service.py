@@ -19,11 +19,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import logging
-from openlp.core.api.lib import login_required
 
 from flask import jsonify, request, abort, Blueprint
 
+from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
+from openlp.core.common.utils import is_uuid
 
 
 service_views = Blueprint('service', __name__)
@@ -50,41 +51,31 @@ def service_items():
             'plugin': str(service_item.name),
             'ccli_number': str(ccli_number),
             'notes': str(service_item.notes),
-            'selected': (service_item.unique_identifier == current_unique_identifier)
+            'selected': (service_item.unique_identifier == current_unique_identifier),
+            'is_valid': service_item.is_valid
         })
     return jsonify(service_items)
 
 
 @service_views.route('/show', methods=['POST'])
+@service_views.route('/show/<item_id>', methods=['POST'])
 @login_required
-def service_set():
+def service_set(item_id=None):
     data = request.json
-    if not data:
-        log.error('Missing request data')
+    item_id = item_id or data.get('id') or data.get('uid')
+    if not item_id:
+        log.error('Missing item id')
         abort(400)
+    if is_uuid(item_id):
+        Registry().get('service_manager').servicemanager_set_item_by_uuid.emit(item_id)
+        return '', 204
     try:
-        id = int(data.get('id', -1))
+        id = int(item_id)
+        Registry().get('service_manager').servicemanager_set_item.emit(id)
+        return '', 204
     except ValueError:
-        log.error('Invalid data passed ' + data)
+        log.error('Invalid item id: ' + item_id)
         abort(400)
-    Registry().get('service_manager').servicemanager_set_item.emit(id)
-    return '', 204
-
-
-@service_views.route('/show_id', methods=['POST'])
-@login_required
-def service_set_by_uid():
-    data = request.json
-    if not data:
-        log.error('Missing request data')
-        abort(400)
-    try:
-        id = str(data.get('uid', ''))
-    except ValueError:
-        log.error('Invalid data passed ' + data)
-        abort(400)
-    Registry().get('service_manager').servicemanager_set_item_by_uuid.emit(id)
-    return '', 204
 
 
 @service_views.route('/progress', methods=['POST'])
@@ -100,4 +91,11 @@ def service_direction():
         log.error('Invalid data passed ' + str(data))
         abort(400)
     getattr(Registry().get('service_manager'), 'servicemanager_{action}_item'.format(action=action)).emit()
+    return '', 204
+
+
+@service_views.route('/new', methods=['GET'])
+@login_required
+def new_service():
+    getattr(Registry().get('service_manager'), 'servicemanager_new_file').emit()
     return '', 204

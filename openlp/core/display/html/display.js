@@ -384,17 +384,30 @@ var Display = {
   },
   /**
    * Start up reveal and do any other initialisation
+   * @param {object} options - The initialisation options:
+   *                           * {bool} isDisplay         - Is this a real display output
+   *                           * {bool} doItemTransitions - Transition between service items
+   *                           * {bool} hideMouse         - Hide the cursor when hovering on this display
    */
-  init: function (isDisplay=false, doItemtransitions=false) {
+  init: function (options) {
+    // Set defaults for undefined values
+    options = options || {};
+    var isDisplay = options.isDisplay || false;
+    var doItemTransitions = options.doItemTransitions || false;
+    var hideMouse = options.hideMouse || false;
+    // Now continue to initialisation
     if (!isDisplay) {
       document.body.classList.add('checkerboard');
+    }
+    if (hideMouse) {
+      document.body.classList.add('hide-mouse');
     }
     Display._slidesContainer = $(".slides")[0];
     Display._footerContainer = $(".footer")[0];
     Display._backgroundsContainer = $(".backgrounds")[0];
     Display._doTransitions = isDisplay;
     Reveal.initialize(Display._revealConfig);
-    Display.setItemTransition(doItemtransitions && isDisplay);
+    Display.setItemTransition(doItemTransitions && isDisplay);
     displayWatcher.setInitialised(true);
   },
   /**

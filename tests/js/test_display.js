@@ -117,7 +117,7 @@ describe("The Display object", function () {
     spyOn(Reveal, "initialize");
     document.body.innerHTML = "";
     document.body.classList = "";
-    Display.init(false);
+    Display.init({isDisplay: false});
     expect(document.body.classList.contains('checkerboard')).toEqual(true);
   });
 
@@ -125,7 +125,7 @@ describe("The Display object", function () {
     spyOn(Reveal, "initialize");
     document.body.innerHTML = "";
     document.body.classList = "";
-    Display.init(true);
+    Display.init({isDisplay: true});
     expect(document.body.classList.contains('checkerboard')).toEqual(false);
   });
 
@@ -644,7 +644,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'display_horizontal_align': 3,
       'display_vertical_align': 1
@@ -669,7 +669,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_shadow': true,
       'font_main_shadow_color': "#000",
@@ -694,7 +694,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_shadow': false,
       'font_main_shadow_color': "#000",
@@ -719,7 +719,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_y': 789,
       'font_main_x': 1000,

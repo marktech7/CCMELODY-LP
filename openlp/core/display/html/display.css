@@ -22,6 +22,10 @@ body.checkerboard {
   background-size: 100%;
 }
 
+body.hide-mouse {
+  cursor: none;
+}
+
 sup {
   vertical-align: super !important;
   font-size: smaller !important;

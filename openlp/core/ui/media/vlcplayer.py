@@ -97,12 +97,11 @@ class VlcPlayer(MediaPlayer):
         self.parent = parent
         self.can_folder = True
 
-    def setup(self, controller, display, live_display):
+    def setup(self, controller, display):
         """
         Set up the media player
 
-        :param controller: The display where the media is
-        :param live_display: Is the display a live one.
+        :param controller: The display where the media is.
         :return:
         """
         vlc = get_vlc()
@@ -115,7 +114,7 @@ class VlcPlayer(MediaPlayer):
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # creating a basic vlc instance
         command_line_options = '--no-video-title-show '
-        if self.settings.value('advanced/hide mouse') and live_display:
+        if self.settings.value('advanced/hide mouse') and controller.is_live:
             command_line_options += '--mouse-hide-timeout=0 '
         if self.settings.value('media/vlc arguments'):
             options = command_line_options + ' ' + self.settings.value('media/vlc arguments')

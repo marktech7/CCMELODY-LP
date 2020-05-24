@@ -37,7 +37,7 @@ from openlp.core.lib.theme import Theme
 from openlp.core.ui import HideMode
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -54,7 +54,7 @@ def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -71,7 +71,7 @@ def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
     """
     Test that the scale js is not run if the page is not initialised
@@ -88,7 +88,7 @@ def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
     display_window.run_javascript.assert_not_called()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -106,13 +106,13 @@ def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
     """
     Test the correct steps are taken when the webview is loaded
     """
-    # GIVEN: An initialised display window and settings for item transitions returns true
+    # GIVEN: An initialised display window and settings for item transitions and hide mouse returns true
     display_window = DisplayWindow()
     display_window.is_display = True
     mock_settings.value.return_value = True
@@ -126,12 +126,43 @@ def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
     display_window.after_loaded()
 
     # THEN: The following functions should have been called
-    display_window.run_javascript.assert_called_once_with('Display.init(true, true);')
+    display_window.run_javascript.assert_called_once_with('Display.init({'
+                                                          'isDisplay: true,'
+                                                          'doItemTransitions: true,'
+                                                          'hideMouse: true'
+                                                          '});')
     display_window.set_scale.assert_called_once_with(2)
     display_window.set_startup_screen.assert_called_once()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_after_loaded_hide_mouse_not_display(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
+    """
+    # GIVEN: An initialised display window and settings for item transitions and hide mouse returns true
+    display_window = DisplayWindow()
+    display_window.is_display = False
+    mock_settings.value.return_value = True
+    display_window.scale = 2
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.set_scale = MagicMock()
+    display_window.set_startup_screen = MagicMock()
+
+    # WHEN: after_loaded is run
+    display_window.after_loaded()
+
+    # THEN: Display.init should be called where is_display=false, do_item_transitions=true, show_mouse=false
+    display_window.run_javascript.assert_called_once_with('Display.init({'
+                                                          'isDisplay: false,'
+                                                          'doItemTransitions: true,'
+                                                          'hideMouse: false'
+                                                          '});')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
 def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
@@ -151,7 +182,7 @@ def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addW
     mock_time.sleep.assert_not_called()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
 def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
@@ -176,7 +207,7 @@ def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidg
     mock_time.sleep.assert_not_called()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -200,7 +231,7 @@ def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_set
                                                           is_sync=False)
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -231,7 +262,7 @@ def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_se
                                                           is_sync=False)
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -259,10 +290,10 @@ def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_set
                                                           is_sync=False)
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
-@patch('openlp.core.common.registry.Registry.execute')
-@patch('openlp.core.display.screens.ScreenList')
+@patch('openlp.core.display.window.Registry.execute')
+@patch('openlp.core.display.window.ScreenList')
 def test_show_display(mocked_screenlist, mocked_registry_execute, mocked_webengine, mocked_addWidget, mock_settings):
     """
     Test show_display function
@@ -284,7 +315,7 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, mocked_webengi
     mocked_registry_execute.assert_called_once_with('live_display_active')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.ScreenList')
 def test_show_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):
@@ -305,7 +336,7 @@ def test_show_display_no_display(mocked_screenlist, mocked_webengine, mocked_add
     assert display_window.run_javascript.call_count == 0
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_hide_display_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -325,7 +356,7 @@ def test_hide_display_to_screen(mocked_webengine, mocked_addWidget, mock_setting
     display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_hide_display_to_blank(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -343,7 +374,7 @@ def test_hide_display_to_blank(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.toBlack();')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_hide_display_to_theme(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -361,7 +392,7 @@ def test_hide_display_to_theme(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.toTheme();')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_hide_display_to_transparent(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -381,7 +412,7 @@ def test_hide_display_to_transparent(mocked_webengine, mocked_addWidget, mock_se
     assert display_window.setVisible.call_count == 0
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_hide_transparent_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -400,7 +431,7 @@ def test_hide_transparent_to_screen(mocked_webengine, mocked_addWidget, mock_set
     display_window.setVisible.assert_called_once_with(False)
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.ScreenList')
 def test_hide_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):

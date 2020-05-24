@@ -101,7 +101,7 @@ def test_get_random_user_agent_default():
         user_agent = get_random_user_agent()
 
         # THEN: The user agent is a Linux (or ChromeOS) user agent
-        assert 'NetBSD'in user_agent, 'The user agent should be the default user agent'
+        assert 'NetBSD' in user_agent, 'The user agent should be the default user agent'
 
 
 def test_get_web_page_no_url():

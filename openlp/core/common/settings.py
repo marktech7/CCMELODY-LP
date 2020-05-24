@@ -243,7 +243,6 @@ class Settings(QtCore.QSettings):
         'core/last version test': '',
         'core/loop delay': 5,
         'core/recent files': [],
-        'core/save prompt': False,
         'core/screens': '{}',
         'core/screen blank': False,
         'core/show splash': True,
@@ -334,7 +333,6 @@ class Settings(QtCore.QSettings):
         'themes/last directory export': None,
         'themes/last directory import': None,
         'themes/theme level': ThemeLevel.Global,
-        'themes/wrap footer': False,
         'themes/item transitions': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),
@@ -401,6 +399,7 @@ class Settings(QtCore.QSettings):
         ('themes/last directory', 'themes/last directory', [(str_to_path, None)]),
         ('themes/last directory export', 'themes/last directory export', [(str_to_path, None)]),
         ('themes/last directory import', 'themes/last directory import', [(str_to_path, None)]),
+        ('themes/wrap footer', '', []),
         ('projector/last directory import', 'projector/last directory import', [(str_to_path, None)]),
         ('projector/last directory export', 'projector/last directory export', [(str_to_path, None)]),
         ('bibles/last directory import', 'bibles/last directory import', [(str_to_path, None)]),
@@ -428,7 +427,8 @@ class Settings(QtCore.QSettings):
         ('media/players', '', []),
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
-        ('core/audio repeat list', '', [])
+        ('core/audio repeat list', '', []),
+        ('core/save prompt', '', [])
     ]
 
     @staticmethod

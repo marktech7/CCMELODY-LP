@@ -104,12 +104,20 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Stop the websocket server
         """
-        if hasattr(self.server, 'ws_server'):
-            self.server.ws_server.close()
-        elif hasattr(self.server, 'server'):
-            self.server.server.close()
-        self.event_loop.stop()
-        self.event_loop.close()
+        try:
+            if hasattr(self.server, 'ws_server'):
+                self.server.ws_server.close()
+            elif hasattr(self.server, 'server'):
+                self.server.server.close()
+        except RuntimeError:
+            # Sometimes it is already closed
+            pass
+        try:
+            self.event_loop.stop()
+            self.event_loop.close()
+        except RuntimeError:
+            # Sometimes it is already closed
+            pass
 
 
 class WebSocketServer(RegistryProperties, LogMixin):

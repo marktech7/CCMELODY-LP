@@ -125,9 +125,6 @@ class GeneralTab(SettingsTab):
         self.settings_group_box.setObjectName('settings_group_box')
         self.settings_layout = QtWidgets.QFormLayout(self.settings_group_box)
         self.settings_layout.setObjectName('settings_layout')
-        self.save_check_service_check_box = QtWidgets.QCheckBox(self.settings_group_box)
-        self.save_check_service_check_box.setObjectName('save_check_service_check_box')
-        self.settings_layout.addRow(self.save_check_service_check_box)
         self.auto_unblank_check_box = QtWidgets.QCheckBox(self.settings_group_box)
         self.auto_unblank_check_box.setObjectName('auto_unblank_check_box')
         self.settings_layout.addRow(self.auto_unblank_check_box)
@@ -167,8 +164,6 @@ class GeneralTab(SettingsTab):
         self.logo_hide_on_startup_check_box.setText(translate('OpenLP.GeneralTab', 'Don\'t show logo on startup'))
         self.check_for_updates_check_box.setText(translate('OpenLP.GeneralTab', 'Check for updates to OpenLP'))
         self.settings_group_box.setTitle(translate('OpenLP.GeneralTab', 'Application Settings'))
-        self.save_check_service_check_box.setText(translate('OpenLP.GeneralTab',
-                                                  'Prompt to save before starting a new service'))
         self.click_live_slide_to_unblank_check_box.setText(translate('OpenLP.GeneralTab',
                                                            'Unblank display when changing slide in Live'))
         self.auto_unblank_check_box.setText(translate('OpenLP.GeneralTab', 'Unblank display when sending '
@@ -194,7 +189,6 @@ class GeneralTab(SettingsTab):
         self.number_edit.setText(self.settings.value('ccli number'))
         self.username_edit.setText(self.settings.value('songselect username'))
         self.password_edit.setText(self.settings.value('songselect password'))
-        self.save_check_service_check_box.setChecked(self.settings.value('save prompt'))
         self.auto_unblank_check_box.setChecked(self.settings.value('auto unblank'))
         self.click_live_slide_to_unblank_check_box.setChecked(self.settings.value('click live slide to unblank'))
         self.warning_check_box.setChecked(self.settings.value('blank warning'))
@@ -221,7 +215,6 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('logo file', self.logo_file_path_edit.path)
         self.settings.setValue('logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
         self.settings.setValue('update check', self.check_for_updates_check_box.isChecked())
-        self.settings.setValue('save prompt', self.save_check_service_check_box.isChecked())
         self.settings.setValue('auto unblank', self.auto_unblank_check_box.isChecked())
         self.settings.setValue('click live slide to unblank', self.click_live_slide_to_unblank_check_box.isChecked())
         self.settings.setValue('auto preview', self.auto_preview_check_box.isChecked())

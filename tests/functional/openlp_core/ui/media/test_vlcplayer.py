@@ -109,7 +109,7 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     vlc_player = VlcPlayer(None)
 
     # WHEN: setup() is run
-    vlc_player.setup(mocked_output_display, mocked_controller, True)
+    vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC widget should be set up correctly
     assert mocked_output_display.vlc_widget == mocked_qframe
@@ -157,7 +157,7 @@ def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mock
     vlc_player = VlcPlayer(None)
 
     # WHEN: setup() is run
-    vlc_player.setup(mocked_output_display, mocked_controller, True)
+    vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
     mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
@@ -192,7 +192,7 @@ def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, 
     vlc_player = VlcPlayer(None)
 
     # WHEN: setup() is run
-    vlc_player.setup(mocked_output_display, mocked_controller, True)
+    vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
     mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
@@ -227,7 +227,7 @@ def test_setup_windows(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked
     vlc_player = VlcPlayer(None)
 
     # WHEN: setup() is run
-    vlc_player.setup(mocked_output_display, mocked_controller, True)
+    vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: set_hwnd should be called
     mocked_media_player_new.set_hwnd.assert_called_with(2)
@@ -262,7 +262,7 @@ def test_setup_osx(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_
     vlc_player = VlcPlayer(None)
 
     # WHEN: setup() is run
-    vlc_player.setup(mocked_output_display, mocked_controller, True)
+    vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: set_nsobject should be called
     mocked_media_player_new.set_nsobject.assert_called_with(2)

@@ -249,8 +249,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         js_is_display = str(self.is_display).lower()
         item_transitions = str(self.settings.value('themes/item transitions')).lower()
-        self.run_javascript('Display.init({is_display}, {do_item_transitions});'
-                            .format(is_display=js_is_display, do_item_transitions=item_transitions))
+        hide_mouse = str(self.settings.value('advanced/hide mouse') and self.is_display).lower()
+        self.run_javascript('Display.init({{'
+                            'isDisplay: {is_display},'
+                            'doItemTransitions: {do_item_transitions},'
+                            'hideMouse: {hide_mouse}'
+                            '}});'
+                            .format(is_display=js_is_display, do_item_transitions=item_transitions,
+                                    hide_mouse=hide_mouse))
         wait_for(lambda: self._is_initialised)
         if self.scale != 1:
             self.set_scale(self.scale)

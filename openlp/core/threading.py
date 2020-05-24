@@ -115,6 +115,6 @@ def make_remove_thread(thread_name):
         :param str thread_name: The name of the thread to stop and remove
         """
         application = Registry().get('application')
-        if thread_name in application.worker_threads:
+        if application and thread_name in application.worker_threads:
             del application.worker_threads[thread_name]
     return remove_thread

@@ -221,8 +221,9 @@ class ServiceItem(RegistryProperties):
                 rendered_slide = {
                     'title': raw_slide['title'],
                     'text': render_tags(page),
+                    'chords': render_tags(page, can_render_chords=True),
                     'verse': index,
-                    'footer': self.footer_html,
+                    'footer': self.footer_html
                 }
                 self._rendered_slides.append(rendered_slide)
                 display_slide = {
@@ -630,14 +631,18 @@ class ServiceItem(RegistryProperties):
         else:
             return self.slides
 
-    def get_rendered_frame(self, row):
+    def get_rendered_frame(self, row, clean=False):
         """
         Returns the correct frame for a given list and renders it if required.
 
         :param row: The service item slide to be returned
+        :param clean: do I want HTML tags or not
         """
         if self.service_item_type == ServiceItemType.Text:
-            return self.rendered_slides[row]['text']
+            if clean:
+                return self.display_slides[row]['text']
+            else:
+                return self.rendered_slides[row]['text']
         elif self.service_item_type == ServiceItemType.Image:
             return self.slides[row]['path']
         else:
