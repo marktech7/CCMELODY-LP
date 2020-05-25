@@ -769,6 +769,41 @@ describe("Display.setImageSlides", function () {
   });
 });
 
+describe("Display.setBackgroundImage and Display.resetTheme", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    var slides_container = _createDiv({"class": "slides"});
+    Display._slidesContainer = slides_container;
+    var section = document.createElement("section");
+    Display._slidesContainer.appendChild(section);
+  });
+
+  it("should set the background image data and call sync once for set slides and again for set background", function () {
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.setBackgroundImage("#fff", "/file/path");
+
+    expect($(".slides > section")[0].getAttribute("data-background")).toEqual("url('/file/path')");
+    expect(Reveal.sync).toHaveBeenCalledTimes(1);
+  });
+
+  it("should restore the background image to the theme", function () {
+    Display._theme = {
+      'background_type': BackgroundType.Image,
+      'background_filename': '/another/path'
+    };
+    $(".slides > section")[0].setAttribute("data-background", "/file/path");
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.resetTheme();
+
+    expect($(".slides > section")[0].getAttribute("data-background")).toEqual("url('/another/path')");
+    expect(Reveal.sync).toHaveBeenCalledTimes(1);
+  });
+});
+
 describe("Display.setVideo", function () {
   beforeEach(function() {
     document.body.innerHTML = "";

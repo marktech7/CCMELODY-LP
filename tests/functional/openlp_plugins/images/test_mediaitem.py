@@ -181,10 +181,52 @@ def test_on_reset_click(media_item):
     # WHEN: on_reset_click is called
     media_item.on_reset_click()
 
-    # THEN: the reset_action should be set visible, and the image should be reset
+    # THEN: the reset_action should be set invisible, and the image should be reset
     media_item.reset_action.setVisible.assert_called_with(False)
     media_item.reset_action_context.setVisible.assert_called_with(False)
-    media_item.live_controller.display.reset_image.assert_called_with()
+    media_item.live_controller.reload_theme.assert_called_with()
+
+
+def test_on_display_changed(media_item):
+    """
+    Test that on_display_changed() hides the reset background button
+    """
+    # GIVEN: A mocked version of reset_action
+    media_item.reset_action = MagicMock()
+    media_item.reset_action_context = MagicMock()
+
+    # WHEN: on_display_changed is called
+    media_item.on_display_changed()
+
+    # THEN: the reset_action should be set invisible
+    media_item.reset_action.setVisible.assert_called_with(False)
+    media_item.reset_action_context.setVisible.assert_called_with(False)
+
+
+@patch('openlp.plugins.images.lib.mediaitem.check_item_selected')
+@patch('openlp.plugins.images.lib.mediaitem.isinstance')
+@patch('openlp.plugins.images.lib.mediaitem.QtGui.QColor')
+@patch('openlp.plugins.images.lib.mediaitem.Path.exists')
+def test_on_replace_click(mocked_exists, mocked_qcolor, mocked_isinstance, mocked_check_item_selected, media_item):
+    """
+    Test that on_replace_click() actually sets the background
+    """
+    # GIVEN: A mocked version of reset_action, and a (faked) existing selected image file
+    media_item.reset_action = MagicMock()
+    media_item.reset_action_context = MagicMock()
+    media_item.list_view = MagicMock()
+    mocked_check_item_selected.return_value = True
+    mocked_isinstance.return_value = True
+    mocked_exists.return_value = True
+    mocked_qcolor.return_value = 'BackgroundColor'
+
+    # WHEN: on_replace_click is called
+    media_item.on_replace_click()
+
+    # THEN: the reset_action should be set visible, and the image should be set
+    media_item.reset_action.setVisible.assert_called_with(True)
+    media_item.reset_action_context.setVisible.assert_called_with(True)
+    media_item.live_controller.set_background_image.assert_called_with('BackgroundColor', ANY)
 
 
 @patch('openlp.plugins.images.lib.mediaitem.delete_file')

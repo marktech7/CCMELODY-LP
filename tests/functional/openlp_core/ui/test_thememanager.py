@@ -309,19 +309,18 @@ def test_unzip_theme(registry):
     with patch('openlp.core.ui.thememanager.critical_error_message_box') \
             as mocked_critical_error_message_box:
         theme_manager = ThemeManager(None)
-        theme_manager._create_theme_from_xml = MagicMock()
         theme_manager.update_preview_images = MagicMock()
-        theme_manager.theme_path = None
-        folder_path = Path(mkdtemp())
+        theme_manager.theme_path = Path(mkdtemp())
         theme_file_path = RESOURCE_PATH / 'themes' / 'Moss_on_tree.otz'
 
         # WHEN: We try to unzip it
-        theme_manager.unzip_theme(theme_file_path, folder_path)
+        theme_manager.unzip_theme(theme_file_path)
 
-        # THEN: Files should be unpacked
-        assert (folder_path / 'Moss on tree' / 'Moss on tree.xml').exists() is True
+        # THEN: Files should be unpacked AND xml file should be upgraded to json
+        assert (theme_manager.theme_path / 'Moss on tree' / 'Moss on tree.xml').exists() is False
+        assert (theme_manager.theme_path / 'Moss on tree' / 'Moss on tree.json').exists() is True
         assert mocked_critical_error_message_box.call_count == 0, 'No errors should have happened'
-        shutil.rmtree(folder_path)
+        shutil.rmtree(theme_manager.theme_path)
 
 
 def test_unzip_theme_invalid_version(registry):
@@ -337,9 +336,10 @@ def test_unzip_theme_invalid_version(registry):
         mocked_zip_file.return_value = MagicMock(**{'namelist.return_value': [os.path.join('theme', 'theme.xml')]})
         mocked_getroot.return_value = MagicMock(**{'get.return_value': None})
         theme_manager = ThemeManager(None)
+        theme_manager.theme_path = Path('folder')
 
         # WHEN: unzip_theme is called
-        theme_manager.unzip_theme(Path('theme.file'), Path('folder'))
+        theme_manager.unzip_theme(Path('theme.file'))
 
         # THEN: The critical_error_message_box should have been called
         assert mocked_critical_error_message_box.call_count == 1, 'Should have been called once'
