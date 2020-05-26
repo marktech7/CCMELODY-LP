@@ -105,7 +105,7 @@ class PresentationMediaItem(MediaManagerItem):
         self.has_new_icon = False
         self.has_edit_icon = False
 
-    def add_end_header_bar(self):
+    def add_middle_header_bar(self):
         """
         Display custom media manager items for presentations.
         """

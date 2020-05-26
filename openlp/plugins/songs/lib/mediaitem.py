@@ -86,7 +86,7 @@ class SongMediaItem(MediaManagerItem):
             song.media_files.append(MediaFile.populate(weight=i, file_path=dest_path))
         self.plugin.manager.save_object(song, True)
 
-    def add_end_header_bar(self):
+    def add_middle_header_bar(self):
         self.toolbar.addSeparator()
         # Song Maintenance Button
         self.maintenance_action = self.toolbar.add_toolbar_action('maintenance_action',
@@ -139,7 +139,7 @@ class SongMediaItem(MediaManagerItem):
             (SongSearch.Titles, UiIcons().search_text,
                 translate('SongsPlugin.MediaItem', 'Titles'),
                 translate('SongsPlugin.MediaItem', 'Search Titles...')),
-            (SongSearch.Lyrics, UiIcons().search_lyrcs,
+            (SongSearch.Lyrics, UiIcons().search_lyrics,
                 translate('SongsPlugin.MediaItem', 'Lyrics'),
                 translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
             (SongSearch.Authors, UiIcons().user, SongStrings.Authors,

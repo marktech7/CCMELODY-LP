@@ -199,7 +199,7 @@ class ImageMediaItem(MediaManagerItem):
             self.list_view, text=UiStrings().ReplaceLiveBG, icon=UiIcons().close,
             visible=False, triggers=self.on_reset_click)
 
-    def add_start_header_bar(self):
+    def add_middle_header_bar(self):
         """
         Add custom buttons to the start of the toolbar.
         """
