@@ -565,6 +565,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 # For items that has thumbnails, add them to the list
                 if item['service_item'].is_capable(ItemCapabilities.HasThumbnails):
                     thumbnail_path = item['service_item'].get_thumbnail_path()
+                    if not thumbnail_path:
+                        continue
                     thumbnail_path_parent = Path(thumbnail_path).parent
                     if item['service_item'].is_command():
                         # Run through everything in the thumbnail folder and add pictures
@@ -1268,7 +1270,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         for item in self.service_items:
             item['order'] = count
             count += 1
-            if not item['service_item'].has_original_files:
+            if not item['service_item'].has_original_file_path:
                 self.service_has_all_original_files = False
         # Repaint the screen
         self.service_manager_list.clear()

@@ -67,8 +67,11 @@ class RemoteVersionWorker(ThreadWorker):
         while retries < 3:
             try:
                 version_info = download_version_info()
-                log.debug('New version found: %s', version_info['latest']['version'])
-                break
+                if version_info:
+                    log.debug('New version found: %s', version_info['latest']['version'])
+                    break
+                else:
+                    retries += 1
             except OSError:
                 log.exception('Unable to connect to OpenLP server to download version file')
                 retries += 1

@@ -28,7 +28,7 @@ import os
 import uuid
 from copy import deepcopy
 from pathlib import Path
-from shutil import copytree, copy
+from shutil import copytree, copy, move
 
 from PyQt5 import QtGui
 
@@ -104,7 +104,7 @@ class ServiceItem(RegistryProperties):
         self.auto_play_slides_loop = False
         self.timed_slide_interval = 0
         self.will_auto_start = False
-        self.has_original_files = True
+        self.has_original_file_path = True
         self.sha256_file_hash = None
         self.stored_filename = None
         self._new_item()
@@ -327,6 +327,7 @@ class ServiceItem(RegistryProperties):
         :param display_title: Title to show in gui/webinterface, optional.
         :param notes: Notes to show in the webinteface, optional.
         :param file_hash: Sha256 hash checksum of the file.
+        :param no_hash_filename: The file is not named using its hash, is the case when loading openlp 2.x file
         """
         self.service_item_type = ServiceItemType.Command
         # If the item should have a display title but this frame doesn't have one, we make one up
@@ -341,11 +342,12 @@ class ServiceItem(RegistryProperties):
                 self.sha256_file_hash = sha256_file_hash(file_location)
             self.stored_filename = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(file_name)[1])
         # Update image path to match servicemanager location if file was loaded from service
-        if image and not self.has_original_files and self.name == 'presentations':
+        if image and self.name == 'presentations':
             image = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.sha256_file_hash / \
                 ntpath.basename(image)
         self.slides.append({'title': file_name, 'image': image, 'path': path, 'display_title': display_title,
                             'notes': notes, 'thumbnail': image})
+        print(self.slides)
         # if self.is_capable(ItemCapabilities.HasThumbnails):
         #     self.image_manager.add_image(image, ImageSource.CommandPlugins, '#000000')
         self._new_item()
@@ -396,17 +398,37 @@ class ServiceItem(RegistryProperties):
         elif self.service_item_type == ServiceItemType.Image:
             if lite_save:
                 for slide in self.slides:
-                    image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
+                    # When saving a service that originated from openlp 2.4 thumbnail might not be available
+                    if 'thumbnail' in slide:
+                        image_path = slide['thumbnail']
+                    else:
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.stored_filename
+                        if test_thumb.exists():
+                            image_path = test_thumb
+                        else:
+                            image_path = None
                     service_data.append({'title': slide['title'], 'image': image_path, 'path': slide['path'],
                                          'file_hash': slide['file_hash']})
             else:
                 for slide in self.slides:
-                    image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
+                    # When saving a service that originated from openlp 2.4 thumbnail might not be available
+                    if 'thumbnail' in slide:
+                        image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
+                    else:
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.stored_filename
+                        if test_thumb.exists():
+                            image_path = test_thumb
+                        else:
+                            image_path = None
                     service_data.append({'title': slide['title'], 'image': image_path, 'file_hash': slide['file_hash']})
         elif self.service_item_type == ServiceItemType.Command:
             for slide in self.slides:
                 if isinstance(slide['image'], QtGui.QIcon):
                     image = 'clapperboard'
+                elif lite_save:
+                    image = slide['image']
                 else:
                     image = slide['image'].relative_to(AppLocation().get_data_path())
                 service_data.append({'title': slide['title'], 'image': image, 'path': slide['path'],
@@ -432,6 +454,7 @@ class ServiceItem(RegistryProperties):
         """
         log.debug('set_from_service called with path {path}'.format(path=path))
         header = service_item['serviceitem']['header']
+        print(service_item)
         self.title = header['title']
         self.name = header['name']
         self.service_item_type = header['type']
@@ -454,10 +477,10 @@ class ServiceItem(RegistryProperties):
         self.timed_slide_interval = header.get('timed_slide_interval', 0)
         self.will_auto_start = header.get('will_auto_start', False)
         self.processor = header.get('processor', None)
-        self.has_original_files = True
+        self.has_original_file_path = True
         self.metadata = header.get('item_meta_data', [])
         self.sha256_file_hash = header.get('sha256_file_hash', None)
-        self.stored_filename = header.get('stored_filename', self.title)
+        self.stored_filename = header.get('stored_filename', None)
         if 'background_audio' in header and State().check_preconditions('media'):
             self.background_audio = []
             for file_path in header['background_audio']:
@@ -479,7 +502,7 @@ class ServiceItem(RegistryProperties):
             settings_section = service_item['serviceitem']['header']['name']
             background = QtGui.QColor(self.settings.value(settings_section + '/background color'))
             if path:
-                self.has_original_files = False
+                self.has_original_file_path = False
                 for text_image in service_item['serviceitem']['data']:
                     file_hash = None
                     thumbnail = None
@@ -488,12 +511,21 @@ class ServiceItem(RegistryProperties):
                         file_hash = text_image['file_hash']
                         file_path = path / '{base}{ext}'.format(base=file_hash, ext=os.path.splitext(text)[1])
                         thumbnail = AppLocation.get_data_path() / text_image['image']
-                        # copy thumbnail for servicemanager path
+                        # copy thumbnail from servicemanager path
                         copy(path / 'thumbnails' / os.path.basename(text_image['image']),
                              AppLocation.get_section_data_path(self.name) / 'thumbnails')
                     else:
                         text = text_image
-                        file_path = path / text
+                        org_file_path = path / text
+                        # rename the extracted file so that it follows the sha256 based approach of openlp 3
+                        self.sha256_file_hash = sha256_file_hash(org_file_path)
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(self.title)[1])
+                        file_path = path / new_file
+                        move(org_file_path, file_path)
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
+                        if test_thumb.exists():
+                            thumbnail = test_thumb
                     self.add_from_image(file_path, text, background, thumbnail=thumbnail, file_hash=file_hash)
             else:
                 for text_image in service_item['serviceitem']['data']:
@@ -501,18 +533,27 @@ class ServiceItem(RegistryProperties):
                     text = text_image['title']
                     thumbnail = None
                     if version >= 3:
+                        file_path = text_image['path']
                         file_hash = text_image['file_hash']
                         thumbnail = AppLocation.get_data_path() / text_image['image']
-                    self.add_from_image(text_image['path'], text, background, thumbnail=thumbnail, file_hash=file_hash)
+                    else:
+                        file_path = Path(text_image['path'])
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        file_hash = sha256_file_hash(file_path)
+                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(file_path)[1])
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
+                        if test_thumb.exists():
+                            thumbnail = test_thumb
+                    self.add_from_image(file_path, text, background, thumbnail=thumbnail, file_hash=file_hash)
         elif self.service_item_type == ServiceItemType.Command:
             for text_image in service_item['serviceitem']['data']:
                 if not self.title:
                     self.title = text_image['title']
                 if self.is_capable(ItemCapabilities.IsOptical) or self.is_capable(ItemCapabilities.CanStream):
-                    self.has_original_files = False
+                    self.has_original_file_path = False
                     self.add_from_command(text_image['path'], text_image['title'], text_image['image'])
                 elif path:
-                    self.has_original_files = False
+                    self.has_original_file_path = False
                     # Copy any bundled thumbnails into the plugin thumbnail folder
                     if version >= 3 and os.path.exists(path / self.sha256_file_hash) and \
                             os.path.isdir(path / self.sha256_file_hash):
@@ -523,14 +564,32 @@ class ServiceItem(RegistryProperties):
                         except FileExistsError:
                             # Files already exists, just skip
                             pass
-                    if text_image['image'] == 'clapperboard':
-                        text_image['image'] = UiIcons().clapperboard
-                    self.add_from_command(path, text_image['title'], text_image['image'],
-                                          text_image.get('display_title', ''), text_image.get('notes', ''),
-                                          file_hash=self.sha256_file_hash)
+                    if text_image['image'] in ['clapperboard', ':/media/slidecontroller_multimedia.png']:
+                        image_path = UiIcons().clapperboard
+                    elif version < 3:
+                        # convert the thumbnail path to new sha256 based
+                        self.sha256_file_hash = sha256_file_hash(text_image['image'])
+                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(text_image['image'])[1])
+                        image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
+                            self.sha256_file_hash / new_file
+                        # rename the extracted file so that it follows the sha256 based approach of openlp 3
+                        move(org_file_path, path / new_file)
+                    else:
+                        image_path = text_image['image']
+                    self.add_from_command(path, text_image['title'], image_path, text_image.get('display_title', ''),
+                                          text_image.get('notes', ''), file_hash=self.sha256_file_hash)
                 else:
-                    self.add_from_command(Path(text_image['path']), text_image['title'], text_image['image'],
-                                          file_hash=self.sha256_file_hash)
+                    if text_image['image'] in ['clapperboard', ':/media/slidecontroller_multimedia.png']:
+                        image_path = UiIcons().clapperboard
+                    elif version < 3:
+                        # convert the thumbnail path to new sha256 based
+                        file_hash = sha256_file_hash(text_image['image'])
+                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(text_image['image'])[1])
+                        image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
+                            self.sha256_file_hash / new_file
+                    else:
+                        image_path = text_image['image']
+                    self.add_from_command(Path(text_image['path']), str(text_image['title']), image_path)
         self._new_item()
 
     def get_display_title(self):
@@ -671,7 +730,7 @@ class ServiceItem(RegistryProperties):
                 return ''
         if self.is_image() or self.is_capable(ItemCapabilities.IsOptical):
             path_from = frame['path']
-        elif self.is_command() and not self.has_original_files and self.sha256_file_hash:
+        elif self.is_command() and not self.has_original_file_path and self.sha256_file_hash:
             path_from = os.path.join(frame['path'], self.stored_filename)
         else:
             path_from = os.path.join(frame['path'], frame['title'])
@@ -763,16 +822,18 @@ class ServiceItem(RegistryProperties):
                         self.is_valid = False
                         break
                 else:
-                    if self.has_original_files:
+                    if self.has_original_file_path:
                         file_name = Path(slide['path']) / slide['title']
                     else:
                         file_name = Path(slide['path']) / self.stored_filename
                     if not file_name.exists():
+                        print('invalid 1 %s' % file_name)
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
                         file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
                         if file_suffix.lower() not in suffixes:
+                            print('invalid 2')
                             self.is_valid = False
                             break
 
@@ -783,6 +844,6 @@ class ServiceItem(RegistryProperties):
         if self.is_capable(ItemCapabilities.HasThumbnails):
             if self.is_command() and self.slides:
                 return os.path.dirname(self.slides[0]['image'])
-            elif self.is_image() and self.slides:
+            elif self.is_image() and self.slides and 'thumbnail' in self.slides[0]:
                 return os.path.dirname(self.slides[0]['thumbnail'])
         return None

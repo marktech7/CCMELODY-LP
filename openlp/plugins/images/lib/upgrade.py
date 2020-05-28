@@ -90,7 +90,7 @@ def upgrade_3(session, metadata):
             conn.execute(sql)
             # rename thumbnail to use file hash
             ext = file_path.suffix.lower()
-            old_thumb = thumb_path / '{name:s}{ext}'.format(name=file_path.stem, ext=ext)
+            old_thumb = thumb_path / '{name:d}{ext}'.format(name=row.id, ext=ext)
             new_thumb = thumb_path / '{name:s}{ext}'.format(name=hash, ext=ext)
             try:
                 shutil.move(old_thumb, new_thumb)
