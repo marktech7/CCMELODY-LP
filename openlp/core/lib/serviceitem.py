@@ -327,7 +327,6 @@ class ServiceItem(RegistryProperties):
         :param display_title: Title to show in gui/webinterface, optional.
         :param notes: Notes to show in the webinteface, optional.
         :param file_hash: Sha256 hash checksum of the file.
-        :param no_hash_filename: The file is not named using its hash, is the case when loading openlp 2.x file
         """
         self.service_item_type = ServiceItemType.Command
         # If the item should have a display title but this frame doesn't have one, we make one up
@@ -347,7 +346,6 @@ class ServiceItem(RegistryProperties):
                 ntpath.basename(image)
         self.slides.append({'title': file_name, 'image': image, 'path': path, 'display_title': display_title,
                             'notes': notes, 'thumbnail': image})
-        print(self.slides)
         # if self.is_capable(ItemCapabilities.HasThumbnails):
         #     self.image_manager.add_image(image, ImageSource.CommandPlugins, '#000000')
         self._new_item()
@@ -403,7 +401,7 @@ class ServiceItem(RegistryProperties):
                         image_path = slide['thumbnail']
                     else:
                         # Check if (by chance) the thumbnails for this image is available on this machine
-                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.stored_filename
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / stored_filename
                         if test_thumb.exists():
                             image_path = test_thumb
                         else:
@@ -417,7 +415,7 @@ class ServiceItem(RegistryProperties):
                         image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
                     else:
                         # Check if (by chance) the thumbnails for this image is available on this machine
-                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.stored_filename
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / stored_filename
                         if test_thumb.exists():
                             image_path = test_thumb
                         else:
@@ -454,7 +452,6 @@ class ServiceItem(RegistryProperties):
         """
         log.debug('set_from_service called with path {path}'.format(path=path))
         header = service_item['serviceitem']['header']
-        print(service_item)
         self.title = header['title']
         self.name = header['name']
         self.service_item_type = header['type']
@@ -546,6 +543,19 @@ class ServiceItem(RegistryProperties):
                             thumbnail = test_thumb
                     self.add_from_image(file_path, text, background, thumbnail=thumbnail, file_hash=file_hash)
         elif self.service_item_type == ServiceItemType.Command:
+            if version < 3:
+                # If this is an old servicefile with files included, we need to rename the bundled files to match
+                # the new sha256 based scheme
+                if path:
+                    file_path = Path(path) / self.title
+                    self.sha256_file_hash = sha256_file_hash(file_path)
+                    new_file = path / '{hash}{ext}'.format(hash=self.sha256_file_hash,
+                                                           ext=os.path.splitext(self.title)[1])
+                    move(file_path, new_file)
+                else:
+                    file_path = Path(service_item['serviceitem']['data'][0]['path']) / self.title
+                    self.sha256_file_hash = sha256_file_hash(file_path)
+            # Loop over the slides
             for text_image in service_item['serviceitem']['data']:
                 if not self.title:
                     self.title = text_image['title']
@@ -568,12 +578,10 @@ class ServiceItem(RegistryProperties):
                         image_path = UiIcons().clapperboard
                     elif version < 3:
                         # convert the thumbnail path to new sha256 based
-                        self.sha256_file_hash = sha256_file_hash(text_image['image'])
-                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(text_image['image'])[1])
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash,
+                                                        ext=os.path.splitext(text_image['image'])[1])
                         image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
-                            self.sha256_file_hash / new_file
-                        # rename the extracted file so that it follows the sha256 based approach of openlp 3
-                        move(org_file_path, path / new_file)
+                            self.sha256_file_hash / os.path.split(text_image['image'])[1]
                     else:
                         image_path = text_image['image']
                     self.add_from_command(path, text_image['title'], image_path, text_image.get('display_title', ''),
@@ -583,10 +591,8 @@ class ServiceItem(RegistryProperties):
                         image_path = UiIcons().clapperboard
                     elif version < 3:
                         # convert the thumbnail path to new sha256 based
-                        file_hash = sha256_file_hash(text_image['image'])
-                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(text_image['image'])[1])
                         image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
-                            self.sha256_file_hash / new_file
+                            self.sha256_file_hash / os.path.split(text_image['image'])[1]
                     else:
                         image_path = text_image['image']
                     self.add_from_command(Path(text_image['path']), str(text_image['title']), image_path)
@@ -827,13 +833,11 @@ class ServiceItem(RegistryProperties):
                     else:
                         file_name = Path(slide['path']) / self.stored_filename
                     if not file_name.exists():
-                        print('invalid 1 %s' % file_name)
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
                         file_suffix = "*.{suffx}".format(suffx=slide['title'].split('.')[-1])
                         if file_suffix.lower() not in suffixes:
-                            print('invalid 2')
                             self.is_valid = False
                             break
 
