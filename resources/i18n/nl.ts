@@ -168,65 +168,65 @@ Wilt u toch doorgaan?</translation>
 <context>
     <name>BiblesPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="94"/>
         <source>&amp;Bible</source>
         <translation>&amp;Bijbel</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="112"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="110"/>
         <source>&lt;strong&gt;Bible Plugin&lt;/strong&gt;&lt;br /&gt;The Bible plugin provides the ability to display Bible verses from different sources during the service.</source>
         <translation>&lt;strong&gt;Bijbelplug-in&lt;/strong&gt;&lt;br /&gt;De Bijbelplug-in voorziet in de mogelijkheid bijbelteksten uit verschillende bronnen weer te geven tijdens de dienst.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="145"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="143"/>
         <source>Bible</source>
         <comment>name singular</comment>
         <translation>Bijbel</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="146"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="144"/>
         <source>Bibles</source>
         <comment>name plural</comment>
         <translation>Bijbels</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="150"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="148"/>
         <source>Bibles</source>
         <comment>container title</comment>
         <translation>Bijbels</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="155"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="153"/>
         <source>Import a Bible.</source>
         <translation>Importeer een bijbel.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="156"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="154"/>
         <source>Add a new Bible.</source>
         <translation>Voeg een nieuwe bijbel toe.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="157"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="155"/>
         <source>Edit the selected Bible.</source>
         <translation>Geselecteerde bijbel bewerken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="158"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="156"/>
         <source>Delete the selected Bible.</source>
         <translation>Geselecteerde bijbel verwijderen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="159"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="157"/>
         <source>Preview the selected Bible.</source>
         <translation>Geselecteerde bijbeltekst in voorbeeldscherm tonen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="160"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="158"/>
         <source>Send the selected Bible live.</source>
         <translation>Geselecteerde bijbeltekst live tonen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="161"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="159"/>
         <source>Add the selected Bible to the service.</source>
         <translation>Geselecteerde bijbeltekst aan de liturgie toevoegen.</translation>
     </message>
@@ -711,12 +711,12 @@ Wilt u toch doorgaan?</translation>
         <translation>einde</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="710"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="712"/>
         <source>No Book Found</source>
         <translation>Geen bijbelboek gevonden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="710"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="712"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
         <translation>Er kon geen bijbelboek met die naam gevonden worden. Controleer de spelling.</translation>
     </message>
@@ -1094,38 +1094,38 @@ De namen van bijbelboeken kunnen niet aangepast worden.</translation>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="644"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="646"/>
         <source>Registering Bible and loading books...</source>
         <translation>Bezig met registreren van bijbel en laden van boeken...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="660"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="662"/>
         <source>Registering Language...</source>
         <translation>Bezig met registreren van de taal...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="667"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="669"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>Importeren {book}...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="810"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="812"/>
         <source>Download Error</source>
         <translation>Downloadfout</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="810"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="812"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="816"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="818"/>
         <source>Parse Error</source>
         <translation>Verwerkingsfout</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="816"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="818"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
         <translation>Er is een fout opgetreden bij het uitpakken van de bijbelverzen. Als dit probleem zich blijft herhalen is er misschien sprake van een programmafout.</translation>
     </message>
@@ -1555,65 +1555,65 @@ Only verses found in both Bibles will be shown.
 <context>
     <name>CustomPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="64"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="62"/>
         <source>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
         <translation>&lt;strong&gt;Custom plug-in&lt;/strong&gt;&lt;br /&gt;De custom plug-in voorziet in mogelijkheden om aangepaste tekst weer te geven op dezelfde manier als liederen. Deze plug-in voorziet in meer mogelijkheden dan de Lied plug-in.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="94"/>
         <source>Custom Slide</source>
         <comment>name singular</comment>
         <translation>Aangepaste dia</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="97"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="95"/>
         <source>Custom Slides</source>
         <comment>name plural</comment>
         <translation>Aangepaste dia’s</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="101"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="99"/>
         <source>Custom Slides</source>
         <comment>container title</comment>
         <translation>Aangepaste dia’s</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="103"/>
         <source>Load a new custom slide.</source>
         <translation>Aangepaste dia laden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="106"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="104"/>
         <source>Import a custom slide.</source>
         <translation>Aangepaste dia importeren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="107"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
         <source>Add a new custom slide.</source>
         <translation>Aangepaste dia toevoegen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="108"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="106"/>
         <source>Edit the selected custom slide.</source>
         <translation>Geselecteerde dia bewerken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="107"/>
         <source>Delete the selected custom slide.</source>
         <translation>Geselecteerde dia verwijderen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="108"/>
         <source>Preview the selected custom slide.</source>
         <translation>Voorbeeld van geselecteerde dia bekijken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="111"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
         <source>Send the selected custom slide live.</source>
         <translation>Toon geselecteerde dia live.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="112"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
         <source>Add the selected custom slide to the service.</source>
         <translation>Geselecteerde dia aan liturgie toevoegen.</translation>
     </message>
@@ -1724,60 +1724,60 @@ Only verses found in both Bibles will be shown.
 <context>
     <name>ImagePlugin</name>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="55"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="53"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
         <translation>&lt;strong&gt;Afbeeldingen plug-in&lt;/strong&gt;&lt;br /&gt;De afbeeldingen plug-in voorziet in de mogelijkheid afbeeldingen te laten zien.&lt;br /&gt;Een van de bijzondere mogelijkheden is dat meerdere afbeeldingen als groep in de liturgie worden opgenomen, zodat weergave van meerdere afbeeldingen eenvoudiger wordt. Deze plug-in maakt doorlopende diashows (bijv. om de 3 sec. een nieuwe dia) mogelijk. Ook kun met deze plug-in de achtergrondafbeelding van het thema vervangen met een andere afbeelding. Ook de combinatie van tekst en beeld is mogelijk.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="74"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="72"/>
         <source>Image</source>
         <comment>name singular</comment>
         <translation>Afbeelding</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="75"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="73"/>
         <source>Images</source>
         <comment>name plural</comment>
         <translation>Afbeeldingen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="78"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="76"/>
         <source>Images</source>
         <comment>container title</comment>
         <translation>Afbeeldingen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="81"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="79"/>
         <source>Add new image(s).</source>
         <translation>Nieuwe afbeelding(en) toevoegen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="83"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="81"/>
         <source>Add a new image.</source>
         <translation>Nieuwe afbeelding toevoegen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="84"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="82"/>
         <source>Edit the selected image.</source>
         <translation>Geselecteerde afbeelding bewerken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="85"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="83"/>
         <source>Delete the selected image.</source>
         <translation>Geselecteerde afbeelding verwijderen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="86"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="84"/>
         <source>Preview the selected image.</source>
         <translation>Voorbeeld van geselecteerde afbeelding bekijken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="87"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="85"/>
         <source>Send the selected image live.</source>
         <translation>Geselecteerde afbeelding live tonen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="88"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="86"/>
         <source>Add the selected image to the service.</source>
         <translation>Geselecteerde afbeelding aan liturgie toevoegen.</translation>
     </message>
@@ -1926,60 +1926,60 @@ Do you want to add the other images anyway?</source>
 <context>
     <name>MediaPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="74"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="72"/>
         <source>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt;The media plugin provides playback of audio and video.</source>
         <translation>&lt;strong&gt;Media plug-in&lt;/strong&gt;&lt;br /&gt;De media plug-in voorziet in de mogelijkheid om audio en video af te spelen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="84"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="82"/>
         <source>Media</source>
         <comment>name singular</comment>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="85"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="83"/>
         <source>Media</source>
         <comment>name plural</comment>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="89"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="87"/>
         <source>Media</source>
         <comment>container title</comment>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="93"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="91"/>
         <source>Load new media.</source>
         <translation>Nieuwe media laden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="95"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="93"/>
         <source>Add new media.</source>
         <translation>Nieuwe media toevoegen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="94"/>
         <source>Edit the selected media.</source>
         <translation>Geselecteerd mediabestand bewerken.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="97"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="95"/>
         <source>Delete the selected media.</source>
         <translation>Geselecteerd mediabestand verwijderen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="98"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="96"/>
         <source>Preview the selected media.</source>
         <translation>Toon voorbeeld van geselecteerd mediabestand.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="99"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="97"/>
         <source>Send the selected media live.</source>
         <translation>Geselecteerd mediabestand live tonen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="100"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="98"/>
         <source>Add the selected media to the service.</source>
         <translation>Geselecteerd mediabestand aan liturgie toevoegen.</translation>
     </message>
@@ -2427,7 +2427,7 @@ Do you want to add the other images anyway?</source>
 <context>
     <name>MediaPlugin.VlcPlayer</name>
     <message>
-        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="127"/>
+        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="126"/>
         <source>The VLC arguments are invalid.</source>
         <translation type="unfinished"/>
     </message>
@@ -5857,17 +5857,17 @@ File extension not supported</source>
 <context>
     <name>OpenLP.ServiceItem</name>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="333"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="334"/>
         <source>[slide {frame:d}]</source>
         <translation>[slide {frame:d}]</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="691"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="696"/>
         <source>&lt;strong&gt;Start&lt;/strong&gt;: {start}</source>
         <translation>&lt;strong&gt;Start&lt;/strong&gt;: {start}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="695"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="700"/>
         <source>&lt;strong&gt;Length&lt;/strong&gt;: {length}</source>
         <translation>&lt;strong&gt;Duur&lt;/strong&gt;: {length}</translation>
     </message>
@@ -6048,7 +6048,7 @@ File extension not supported</source>
         <translation>Automatisch &amp;eenmalig dia&apos;s afspelen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="877"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="880"/>
         <source>&amp;Delay between slides</source>
         <translation>Pauze tussen dia’s.</translation>
     </message>
@@ -6063,131 +6063,131 @@ File extension not supported</source>
         <translation>&amp;Wijzig onderdeel thema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="375"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="377"/>
         <source>Untitled Service</source>
         <translation>Liturgie zonder naam</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="468"/>
         <source>Open File</source>
         <translation>Open bestand</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="468"/>
         <source>OpenLP Service Files (*.osz *.oszl)</source>
         <translation>OpenLP Service bestanden (*.osz *.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="482"/>
         <source>Modified Service</source>
         <translation>Gewijzigde liturgie </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="482"/>
         <source>The current service has been modified. Would you like to save this service?</source>
         <translation>De huidige liturgie is gewijzigd. Veranderingen opslaan?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="617"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="620"/>
         <source>Service File(s) Missing</source>
         <translation>Ontbrekend(e) liturgiebestand(en)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="618"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="621"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="665"/>
         <source>Error Saving File</source>
         <translation>Fout bij het opslaan</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="665"/>
         <source>There was an error saving your file.
 
 {error}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="699"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="702"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="700"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="703"/>
         <source>OpenLP Service Files (*.osz)</source>
         <translation>OpenLP liturgie bestanden (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="791"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="794"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="888"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="891"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Auto Start - actief</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="892"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="895"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Auto Start - inactief</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="974"/>
         <source>Input delay</source>
         <translation>Invoeren vertraging</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="974"/>
         <source>Delay between slides in seconds.</source>
         <translation>Pauze tussen dia’s in seconden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1300"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1303"/>
         <source>Edit</source>
         <translation>Bewerk</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1301"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1304"/>
         <source>Service copy only</source>
         <translation>Liturgie alleen kopiëren</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1304"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1307"/>
         <source>Slide theme</source>
         <translation>Dia thema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1308"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1311"/>
         <source>Notes</source>
         <translation>Aantekeningen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1556"/>
         <source>Missing Display Handler</source>
         <translation>Ontbrekende weergaveregelaar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1487"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1490"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Dit onderdeel kan niet weergegeven worden, omdat er een regelaar ontbreekt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1556"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Dit onderdeel kan niet weergegeven worden omdat de benodigde plug-in ontbreekt of inactief is</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1581"/>
         <source>Rename item title</source>
         <translation>Titel hernoemen</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1581"/>
         <source>Title:</source>
         <translation>Titel:</translation>
     </message>
@@ -6438,17 +6438,17 @@ please use a different shortcut.</source>
         <translation>Ga naar &quot;Overige&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="521"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="524"/>
         <source>Go To</source>
         <translation>Ga naar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="604"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="607"/>
         <source>Previous Service</source>
         <translation>Vorige liturgie</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="609"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="612"/>
         <source>Next Service</source>
         <translation>Volgende liturgie</translation>
     </message>
@@ -7867,22 +7867,22 @@ Closing this instance</source>
         <translation>Geschreven door</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="164"/>
+        <location filename="../../openlp/core/lib/ui.py" line="169"/>
         <source>Delete the selected item.</source>
         <translation>Verwijder het geselecteerde item.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="167"/>
+        <location filename="../../openlp/core/lib/ui.py" line="172"/>
         <source>Move selection up one position.</source>
         <translation>Verplaats selectie een plek naar boven.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="170"/>
+        <location filename="../../openlp/core/lib/ui.py" line="175"/>
         <source>Move selection down one position.</source>
         <translation>Verplaats selectie een plek naar beneden.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="311"/>
+        <location filename="../../openlp/core/lib/ui.py" line="316"/>
         <source>&amp;Vertical Align:</source>
         <translation>&amp;Verticaal uitlijnen:</translation>
     </message>
@@ -8211,50 +8211,50 @@ Closing this instance</source>
 <context>
     <name>PresentationPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="152"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="150"/>
         <source>&lt;strong&gt;Presentation Plugin&lt;/strong&gt;&lt;br /&gt;The presentation plugin provides the ability to show presentations using a number of different programs. The choice of available presentation programs is available to the user in a drop down box.</source>
         <translation>&lt;strong&gt;Presentatie plug-in&lt;/strong&gt;&lt;br /&gt;De presentatie plug-in voorziet in de mogelijkheid om verschillende soorten presentaties weer te geven. Met een keuzemenu kan gekozen worden uit de beschikbare presentatiesoftware.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="165"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="163"/>
         <source>Presentation</source>
         <comment>name singular</comment>
         <translation>Presentatie</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="166"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="164"/>
         <source>Presentations</source>
         <comment>name plural</comment>
         <translation>Presentaties</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="170"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="168"/>
         <source>Presentations</source>
         <comment>container title</comment>
         <translation>Presentaties</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="174"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="172"/>
         <source>Load a new presentation.</source>
         <translation>Laad nieuwe presentatie.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="176"/>
         <source>Delete the selected presentation.</source>
         <translation>Geselecteerde presentatie verwijderen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="179"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="177"/>
         <source>Preview the selected presentation.</source>
         <translation>Geef van geselecteerde presentatie voorbeeld weer.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="180"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
         <source>Send the selected presentation live.</source>
         <translation>Geselecteerde presentatie Live tonen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="181"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="179"/>
         <source>Add the selected presentation to the service.</source>
         <translation>Voeg geselecteerde presentatie toe aan de liturgie.</translation>
     </message>
@@ -8297,17 +8297,17 @@ Closing this instance</source>
         <translation>Dit type presentatie wordt niet ondersteund.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="417"/>
         <source>Missing Presentation</source>
         <translation>Ontbrekende presentatie</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="417"/>
         <source>The presentation {name} no longer exists.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="407"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="408"/>
         <source>The presentation {name} is incomplete, please reload.</source>
         <translation type="unfinished"/>
     </message>
@@ -8798,130 +8798,130 @@ The encoding is responsible for the correct character representation.</source>
 De tekstcodering is verantwoordelijk voor een correcte weergave van lettertekens.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="187"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
         <source>&amp;Song</source>
         <translation>&amp;Lied</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="167"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="165"/>
         <source>Import songs using the import wizard.</source>
         <translation>Importeer liederen met de Importeren Assistent.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="173"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
         <source>CCLI SongSelect</source>
         <translation>CCLI SongSelect</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="173"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
         <source>Import songs from CCLI&apos;s SongSelect service.</source>
         <translation>Importeer liederen vanuit CCLI&apos;s SongSelect service.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="187"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
         <source>Exports songs using the export wizard.</source>
         <translation>Exporteer liederen met de Exporteren Assistent.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="204"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="202"/>
         <source>Songs</source>
         <translation>Liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
         <source>&amp;Re-index Songs</source>
         <translation>He&amp;r-indexeer liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
         <source>Re-index the songs database to improve searching and ordering.</source>
         <translation>Her-indexeer de liederen in de database om het zoeken en ordenen te verbeteren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
         <source>Find &amp;Duplicate Songs</source>
         <translation>Zoek &amp;dubbele liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
         <source>Find and remove duplicate songs in the song database.</source>
         <translation>Zoek en verwijder dubbele liederen in de liederendatabase.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="216"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Song List Report</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="216"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Produce a CSV file of all the songs in the database.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="238"/>
         <source>Reindexing songs...</source>
         <translation>Liederen her-indexeren...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="242"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
         <source>Reindexing songs</source>
         <translation>Herindexeren liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="285"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="283"/>
         <source>&lt;strong&gt;Songs Plugin&lt;/strong&gt;&lt;br /&gt;The songs plugin provides the ability to display and manage songs.</source>
         <translation>&lt;strong&gt;Lied plug-in&lt;/strong&gt;&lt;br /&gt;De lied plug-in regelt de weergave en het beheer van liederen.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="328"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="326"/>
         <source>Song</source>
         <comment>name singular</comment>
         <translation>Lied</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="329"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="327"/>
         <source>Songs</source>
         <comment>name plural</comment>
         <translation>Liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="333"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="331"/>
         <source>Songs</source>
         <comment>container title</comment>
         <translation>Liederen</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="337"/>
         <source>Add a new song.</source>
         <translation>Voeg nieuw lied toe.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="338"/>
         <source>Edit the selected song.</source>
         <translation>Bewerk het geselecteerde lied.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
         <source>Delete the selected song.</source>
         <translation>Verwijder het geselecteerde lied.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
         <source>Preview the selected song.</source>
         <translation>Toon voorbeeld van het geselecteerde lied.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="343"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
         <source>Send the selected song live.</source>
         <translation>Toon het geselecteerde lied Live.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="344"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
         <source>Add the selected song to the service.</source>
         <translation>Voeg geselecteerd lied toe aan de liturgie.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="367"/>
         <source>Importing Songs</source>
         <translation>Liederen importeren</translation>
     </message>
@@ -9642,157 +9642,162 @@ Please correct these tags before continuing.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="298"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="293"/>
+        <source>First convert your LiveWorship database to an XML text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;User Manual&lt;/a&gt;.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="302"/>
         <source>LyriX Files</source>
         <translation>LyriX-bestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="299"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="303"/>
         <source>LyriX (Exported TXT-files)</source>
         <translation>LyriX (geëxporteerde TXT-bestanden)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="306"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="310"/>
         <source>MediaShout Database</source>
         <translation>MediaShout database</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="307"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="311"/>
         <source>The MediaShout importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>MediaShout importeren wordt alleen ondersteund onder Windows. Het is uitgeschakeld omdat een bepaalde Python module ontbreekt. Om te kunnen importeren moet u de &quot;pyodbc&quot; module installeren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="323"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="327"/>
         <source>OPS Pro database</source>
         <translation>OPS Pro database</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="324"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="328"/>
         <source>The OPS Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>De OPS Pro Importer wordt alleen ondersteund onder Windows. Het is uitgeschakeld omdat een bepaalde Python module ontbreekt. Om te kunnen importeren moet u de &quot;pyodbc&quot; module installeren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="333"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="337"/>
         <source>PowerPraise Song Files</source>
         <translation>PowerPraise liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="340"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="344"/>
         <source>You need to specify a valid PowerSong 1.0 database folder.</source>
         <translation>Specificeer een geldige PowerSong 1.0 databasemap.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="347"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="351"/>
         <source>PresentationManager Song Files</source>
         <translation>PresentationManager liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="354"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="358"/>
         <source>ProPresenter Song Files</source>
         <translation>ProPresenter liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="361"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="365"/>
         <source>Singing The Faith Exported Files</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="363"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="367"/>
         <source>First use Singing The Faith Electronic edition to export the song(s) in Text format.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="375"/>
         <source>SongBeamer Files</source>
         <translation>SongBeamer bestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="379"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="383"/>
         <source>SongPro Text Files</source>
         <translation>SongPro tekstbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="380"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="384"/>
         <source>SongPro (Export File)</source>
         <translation>SongPro (geëxporteerd bestand)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="381"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="385"/>
         <source>In SongPro, export your songs using the File -&gt; Export menu</source>
         <translation>Exporteer de liederen in SongPro via het menu File -&gt; Export</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="388"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="392"/>
         <source>SongShow Plus Song Files</source>
         <translation>SongShow Plus liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="395"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="399"/>
         <source>Songs Of Fellowship Song Files</source>
         <translation>Songs Of Fellowship liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="397"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="401"/>
         <source>The Songs of Fellowship importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
         <translation>Songs of Fellowship import is uitgeschakeld omdat OpenLP zowel OpenOffice als LibreOffice niet kan vinden op deze computer.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="405"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="409"/>
         <source>SundayPlus Song Files</source>
         <translation>SundayPlus liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="412"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="416"/>
         <source>VideoPsalm Files</source>
         <translation>VideoPsalm-bestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="413"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="417"/>
         <source>VideoPsalm</source>
         <translation>VideoPsalm</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="414"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="418"/>
         <source>The VideoPsalm songbooks are normally located in {path}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="422"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="426"/>
         <source>Words Of Worship Song Files</source>
         <translation>Words Of Worship liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="430"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="434"/>
         <source>Worship Assistant Files</source>
         <translation>Worship Assistant bestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="432"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="436"/>
         <source>Worship Assistant (CSV)</source>
         <translation>Worship Assistant (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="433"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="437"/>
         <source>In Worship Assistant, export your Database to a CSV file.</source>
         <translation>Exporteer uw database naar een CSV-bestand vanuit Worship Assistant.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="441"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="445"/>
         <source>WorshipCenter Pro Song Files</source>
         <translation>WorshipCenter Pro liedbestanden</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="443"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="447"/>
         <source>The WorshipCenter Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>De WorshipCenter Pro-importeerder wordt alleen ondersteund op Windows. Het is uitgeschakeld door een missende Python-module. Als u deze importeerder wilt gebruiken, moet u de module &quot;pyodbc&quot; installeren.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="453"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="457"/>
         <source>ZionWorx (CSV)</source>
         <translation>ZionWorx (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="454"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="458"/>
         <source>First convert your ZionWorx database to a CSV text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;User Manual&lt;/a&gt;.</source>
         <translation>Converteer uw ZionWorx database eerst naar een CSV tekstbestand, zoals staat uitgelegd in de Engelstalige &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;gebruikershandleiding&lt;/a&gt;.</translation>
     </message>

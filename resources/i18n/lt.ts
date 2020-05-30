@@ -168,65 +168,65 @@ Ar vistiek norite tęsti?</translation>
 <context>
     <name>BiblesPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="94"/>
         <source>&amp;Bible</source>
         <translation>&amp;Bibliją</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="112"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="110"/>
         <source>&lt;strong&gt;Bible Plugin&lt;/strong&gt;&lt;br /&gt;The Bible plugin provides the ability to display Bible verses from different sources during the service.</source>
         <translation>&lt;strong&gt;Biblijos papildinys&lt;/strong&gt;&lt;br /&gt;Biblijos papildinys suteikia galimybę pamaldų metu rodyti Biblijos eilutes iš įvairių šaltinių.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="145"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="143"/>
         <source>Bible</source>
         <comment>name singular</comment>
         <translation>Biblija</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="146"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="144"/>
         <source>Bibles</source>
         <comment>name plural</comment>
         <translation>Biblijos</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="150"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="148"/>
         <source>Bibles</source>
         <comment>container title</comment>
         <translation>Biblijos</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="155"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="153"/>
         <source>Import a Bible.</source>
         <translation>Importuoti Bibliją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="156"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="154"/>
         <source>Add a new Bible.</source>
         <translation>Pridėti naują Bibliją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="157"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="155"/>
         <source>Edit the selected Bible.</source>
         <translation>Redaguoti pasirinktą Bibliją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="158"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="156"/>
         <source>Delete the selected Bible.</source>
         <translation>Ištrinti pasirinktą Bibliją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="159"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="157"/>
         <source>Preview the selected Bible.</source>
         <translation>Peržiūrėti pasirinktą Bibliją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="160"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="158"/>
         <source>Send the selected Bible live.</source>
         <translation>Rodyti pasirinktą Bibliją Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="161"/>
+        <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="159"/>
         <source>Add the selected Bible to the service.</source>
         <translation>Pridėti pasirinktą Bibliją į pamaldų programą.</translation>
     </message>
@@ -711,12 +711,12 @@ Ar vistiek norite tęsti?</translation>
         <translation>galas</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="710"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="712"/>
         <source>No Book Found</source>
         <translation>Knyga nerasta</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="710"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="712"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
         <translation>Šioje Biblijoje nepavyko rasti atitinkančios knygos. Patikrinkite ar teisingai parašėte knygos pavadinimą.</translation>
     </message>
@@ -1101,38 +1101,38 @@ Neįmanoma nustatyti pasirinktinus knygų pavadinimus.</translation>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="644"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="646"/>
         <source>Registering Bible and loading books...</source>
         <translation>Registruojama Biblija ir įkeliamos knygos...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="660"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="662"/>
         <source>Registering Language...</source>
         <translation>Registruojama kalba...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="667"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="669"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>Importuojama {book}...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="810"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="812"/>
         <source>Download Error</source>
         <translation>Atsisiuntimo klaida</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="810"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="812"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
-        <translation type="unfinished"/>
+        <translation>Atsirado problemų, atsiunčiant jūsų eilučių pasirinkimą. Patikrinkite savo interneto ryšį, ir jei ši klaida išlieka, praneškite apie ją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="816"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="818"/>
         <source>Parse Error</source>
         <translation>Analizavimo klaida</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="816"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="818"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
         <translation>Atsirado problemų, išskleidžiant jūsų eilučių pasirinkimą. Jei ši klaida kartosis, prašome pasvarstyti pranešti apie klaidą.</translation>
     </message>
@@ -1535,12 +1535,12 @@ Bus rodomos tik eilutės rastos abiejose Biblijose.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/wordproject.py" line="60"/>
         <source>Incorrect Bible file type, not a Zip file.</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas Biblijos failo tipas, ne Zip failas.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/wordproject.py" line="75"/>
         <source>Incorrect Bible file type, files are missing.</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas Biblijos failo tipas, trūksta failų.</translation>
     </message>
 </context>
 <context>
@@ -1548,7 +1548,7 @@ Bus rodomos tik eilutės rastos abiejose Biblijose.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="59"/>
         <source>Incorrect Bible file type. Expected data is missing.</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas Biblijos failo tipas. Trūksta laukiamų duomenų.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="95"/>
@@ -1567,65 +1567,65 @@ Bus rodomos tik eilutės rastos abiejose Biblijose.
 <context>
     <name>CustomPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="64"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="62"/>
         <source>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
-        <translation type="unfinished"/>
+        <translation>&lt;strong&gt;Tinkintos skaidrės papildinys &lt;/strong&gt;&lt;br /&gt;Tinkintos skaidrės papildinys suteikia galimybę nustatinėti tinkinto teksto skaidres, kurios gali būti rodomos ekrane taip pat, kaip ir giesmės. Šis papildinys, palyginus su giesmių papildiniu, suteikia daugiau laisvės.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="94"/>
         <source>Custom Slide</source>
         <comment>name singular</comment>
         <translation>Tinkinta skaidrė</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="97"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="95"/>
         <source>Custom Slides</source>
         <comment>name plural</comment>
         <translation>Tinkintos skaidrės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="101"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="99"/>
         <source>Custom Slides</source>
         <comment>container title</comment>
         <translation>Tinkintos skaidrės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="103"/>
         <source>Load a new custom slide.</source>
         <translation>Įkelti naują tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="106"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="104"/>
         <source>Import a custom slide.</source>
         <translation>Importuoti tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="107"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
         <source>Add a new custom slide.</source>
         <translation>Pridėti naują tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="108"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="106"/>
         <source>Edit the selected custom slide.</source>
         <translation>Redaguoti pasirinktą tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="107"/>
         <source>Delete the selected custom slide.</source>
         <translation>Ištrinti pasirinktą tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="108"/>
         <source>Preview the selected custom slide.</source>
         <translation>Peržiūrėti pasirinktą tinkintą skaidrę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="111"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
         <source>Send the selected custom slide live.</source>
         <translation>Rodyti pasirinktą tinkintą skaidrę Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/custom/customplugin.py" line="112"/>
+        <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
         <source>Add the selected custom slide to the service.</source>
         <translation>Pridėti pasirinktą tinkintą skaidrę į pamaldų programą.</translation>
     </message>
@@ -1736,60 +1736,60 @@ Bus rodomos tik eilutės rastos abiejose Biblijose.
 <context>
     <name>ImagePlugin</name>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="55"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="53"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
         <translation>&lt;strong&gt;Paveikslo papildinys&lt;/strong&gt;&lt;br /&gt;Paveikslo papildinys suteikia paveikslų rodymo galimybę.&lt;br /&gt;Vienas iš šio papildinio išskirtinių bruožų yra galimybė Pamaldų Programos Tvarkytuvėje kartu grupuoti tam tikrą paveikslų skaičių, taip padarant kelių paveikslų rodymą dar lengvesnį. Šis papildinys taip pat naudojasi OpenLP &quot;laiko ciklo&quot; funkcija, kad sukurtų prezentaciją, kuri yra automatiškai paleidžiama. Be to, paveikslai iš papildinio gali būti naudojami esamo apipavidalinimo fono nustelbimui, kas savo ruožtu sukuria tekstu pagrįstus elementus, tokius kaip giesmė su pasirinktu paveikslu, naudojamu kaip fonas, vietoj fono pateikiamo kartu su apipavidalinimu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="74"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="72"/>
         <source>Image</source>
         <comment>name singular</comment>
         <translation>Paveikslas</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="75"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="73"/>
         <source>Images</source>
         <comment>name plural</comment>
         <translation>Paveikslai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="78"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="76"/>
         <source>Images</source>
         <comment>container title</comment>
         <translation>Paveikslai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="81"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="79"/>
         <source>Add new image(s).</source>
         <translation>Pridėti naują paveikslą(-us).</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="83"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="81"/>
         <source>Add a new image.</source>
         <translation>Pridėti naują paveikslą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="84"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="82"/>
         <source>Edit the selected image.</source>
         <translation>Redaguoti pasirinktą paveikslą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="85"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="83"/>
         <source>Delete the selected image.</source>
         <translation>Ištrinti pasirinktą paveikslą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="86"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="84"/>
         <source>Preview the selected image.</source>
         <translation>Peržiūrėti pasirinktą paveikslą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="87"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="85"/>
         <source>Send the selected image live.</source>
         <translation>Rodyti pasirinktą paveikslą Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/images/imageplugin.py" line="88"/>
+        <location filename="../../openlp/plugins/images/imageplugin.py" line="86"/>
         <source>Add the selected image to the service.</source>
         <translation>Pridėti pasirinktą paveikslą į pamaldų programą.</translation>
     </message>
@@ -1939,60 +1939,60 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
 <context>
     <name>MediaPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="74"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="72"/>
         <source>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt;The media plugin provides playback of audio and video.</source>
         <translation>&lt;strong&gt;Medija papildinys&lt;/strong&gt;&lt;br /&gt;Medija papildinys atsako už garso ir vaizdo įrašų atkūrimą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="84"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="82"/>
         <source>Media</source>
         <comment>name singular</comment>
         <translation>Medija</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="85"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="83"/>
         <source>Media</source>
         <comment>name plural</comment>
         <translation>Medija</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="89"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="87"/>
         <source>Media</source>
         <comment>container title</comment>
         <translation>Medija</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="93"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="91"/>
         <source>Load new media.</source>
         <translation>Įkelti naują mediją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="95"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="93"/>
         <source>Add new media.</source>
         <translation>Pridėti naują mediją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="96"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="94"/>
         <source>Edit the selected media.</source>
         <translation>Redaguoti pasirinktą mediją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="97"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="95"/>
         <source>Delete the selected media.</source>
         <translation>Ištrinti pasirinktą mediją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="98"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="96"/>
         <source>Preview the selected media.</source>
         <translation>Peržiūrėti pasirinktą mediją.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="99"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="97"/>
         <source>Send the selected media live.</source>
         <translation>Rodyti pasirinktą mediją Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/media/mediaplugin.py" line="100"/>
+        <location filename="../../openlp/plugins/media/mediaplugin.py" line="98"/>
         <source>Add the selected media to the service.</source>
         <translation>Pridėti pasirinktą mediją į pamaldų programą.</translation>
     </message>
@@ -2095,7 +2095,7 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="201"/>
         <source>Given path does not exist</source>
-        <translation type="unfinished"/>
+        <translation>Nurodyto kelio nėra</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="218"/>
@@ -2158,7 +2158,7 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="392"/>
         <source>VLC is not available</source>
-        <translation type="unfinished"/>
+        <translation>VLC nėra prieinama</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="363"/>
@@ -2238,12 +2238,12 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="404"/>
         <source>Stream already saved</source>
-        <translation type="unfinished"/>
+        <translation>Srautas jau įrašytas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="404"/>
         <source>This stream has already been saved</source>
-        <translation type="unfinished"/>
+        <translation>Šis srautas jau buvo įrašytas</translation>
     </message>
 </context>
 <context>
@@ -2269,12 +2269,12 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="81"/>
         <source>A Stream name is needed.</source>
-        <translation type="unfinished"/>
+        <translation>Reikalingas srauto pavadinimas.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="88"/>
         <source>A MRL is needed.</source>
-        <translation type="unfinished"/>
+        <translation>Reikalingas MRL.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="163"/>
@@ -2304,17 +2304,17 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="727"/>
         <source>Stream name</source>
-        <translation type="unfinished"/>
+        <translation>Srauto pavadinimas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/networkstreamselectorform.py" line="78"/>
         <source>Network URL</source>
-        <translation type="unfinished"/>
+        <translation>Tinklo URL</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="113"/>
         <source>Device Selection</source>
-        <translation type="unfinished"/>
+        <translation>Įrenginio pasirinkimas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="114"/>
@@ -2324,37 +2324,37 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="171"/>
         <source>Video device name</source>
-        <translation type="unfinished"/>
+        <translation>Vaizdo įrenginio pavadinimas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="172"/>
         <source>Audio device name</source>
-        <translation type="unfinished"/>
+        <translation>Garso įrenginio pavadinimas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="269"/>
         <source>Video standard</source>
-        <translation type="unfinished"/>
+        <translation>Vaizdo standartas</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="270"/>
         <source>Frequency</source>
-        <translation type="unfinished"/>
+        <translation>Dažnis</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="468"/>
         <source>Tuner card</source>
-        <translation type="unfinished"/>
+        <translation>Imtuvo plokštė</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="469"/>
         <source>Delivery system</source>
-        <translation type="unfinished"/>
+        <translation>Pristatymo sistema</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="470"/>
         <source>Transponder/multiplexer frequency</source>
-        <translation type="unfinished"/>
+        <translation>Atsakiklio/tankintuvo dažnis</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="471"/>
@@ -2364,7 +2364,7 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="473"/>
         <source>Modulation / Constellation</source>
-        <translation type="unfinished"/>
+        <translation>Moduliavimas / Konsteliacija</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="474"/>
@@ -2379,37 +2379,37 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="508"/>
         <source>Auto connection</source>
-        <translation type="unfinished"/>
+        <translation>Automatinis ryšys</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="518"/>
         <source>Selected ports</source>
-        <translation type="unfinished"/>
+        <translation>Pasirinkti prievadai</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="519"/>
         <source>Channels</source>
-        <translation type="unfinished"/>
+        <translation>Kanalai</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="619"/>
         <source>Video size</source>
-        <translation type="unfinished"/>
+        <translation>Vaizdo dydis</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="671"/>
         <source>DirectShow</source>
-        <translation type="unfinished"/>
+        <translation>DirectShow</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="676"/>
         <source>Video Camera</source>
-        <translation type="unfinished"/>
+        <translation>Vaizdo kamera</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="680"/>
         <source>TV - analog</source>
-        <translation type="unfinished"/>
+        <translation>Televizija - analoginė</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="686"/>
@@ -2419,17 +2419,17 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="692"/>
         <source>TV - digital</source>
-        <translation type="unfinished"/>
+        <translation>Televizija - skaitmeninė</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="697"/>
         <source>Input devices</source>
-        <translation type="unfinished"/>
+        <translation>Įvesties įrenginiai</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="725"/>
         <source>Select Input Stream</source>
-        <translation type="unfinished"/>
+        <translation>Pasirinkti įvesties srautą</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="728"/>
@@ -2440,9 +2440,9 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
 <context>
     <name>MediaPlugin.VlcPlayer</name>
     <message>
-        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="127"/>
+        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="126"/>
         <source>The VLC arguments are invalid.</source>
-        <translation type="unfinished"/>
+        <translation>VLC argumentai yra neteisingi.</translation>
     </message>
 </context>
 <context>
@@ -2463,7 +2463,15 @@ The location of the data folder was previously changed from the OpenLP's default
 You may reset the data location back to the default location, or you can try to make the current location available.
 
 Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the problem.</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP duomenų aplankas nebuvo rastas:
+
+{path}
+
+Šio duomenų aplanko vieta anksčiau buvo pakeista į kitą, negu numatytoji OpenLP vieta. Jeigu duomenys buvo saugomi keičiamajame diske, tuomet šis diskas privalo tapti prieinamas.
+
+Jūs galite atstatyti duomenų vietą atgal į numatytąją arba pabandyti padaryti esamą vietą prieinamą.
+
+Ar norite atstatyti numatytąją duomenų vietą? Jei ne, OpenLP bus užverta, kad galėtumėte pataisyti iškilusią problemą.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="242"/>
@@ -2531,7 +2539,7 @@ Tęsiamas naujinimas.</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="46"/>
         <source>API</source>
-        <translation type="unfinished"/>
+        <translation>API</translation>
     </message>
 </context>
 <context>
@@ -2854,7 +2862,7 @@ aukštis skaidrių valdiklyje:</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="330"/>
         <source>Disable display transparency</source>
-        <translation type="unfinished"/>
+        <translation>Išjungti ekrano permatomumą</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="487"/>
@@ -3337,7 +3345,7 @@ Duomenų katalogas bus pakeistas, uždarius OpenLP.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="77"/>
         <source>Yes, download the remote now</source>
-        <translation type="unfinished"/>
+        <translation>Taip, atsisiųsti nuotolinio valdymo pultą dabar</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="78"/>
@@ -3347,7 +3355,7 @@ Duomenų katalogas bus pakeistas, uždarius OpenLP.</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="79"/>
         <source>Please confirm if you want to download the web remote.</source>
-        <translation type="unfinished"/>
+        <translation>Patvirtinkite ar norite atsisiųsti internetinį nuotolinio valdymo pultą.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="310"/>
@@ -4325,7 +4333,7 @@ To download this version, go to the Remote settings and click the Upgrade button
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="645"/>
         <source>New Web Remote Version Available</source>
-        <translation type="unfinished"/>
+        <translation>Yra prieinama nauja internetinio nuotolinio valdymo pulto versija</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="697"/>
@@ -5896,17 +5904,17 @@ Failo prievardis nėra palaikomas</translation>
 <context>
     <name>OpenLP.ServiceItem</name>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="333"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="334"/>
         <source>[slide {frame:d}]</source>
         <translation>[skaidrė {frame:d}]</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="691"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="696"/>
         <source>&lt;strong&gt;Start&lt;/strong&gt;: {start}</source>
         <translation>&lt;strong&gt;Pradžia&lt;/strong&gt;: {start}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="695"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="700"/>
         <source>&lt;strong&gt;Length&lt;/strong&gt;: {length}</source>
         <translation>&lt;strong&gt;Trukmė&lt;/strong&gt;: {length}</translation>
     </message>
@@ -6087,7 +6095,7 @@ Failo prievardis nėra palaikomas</translation>
         <translation>Automatiškai rodyti skaidres &amp;vieną kartą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="877"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="880"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Pauzė tarp skaidrių</translation>
     </message>
@@ -6102,37 +6110,37 @@ Failo prievardis nėra palaikomas</translation>
         <translation>Pa&amp;keisti elemento apipavidalinimą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="375"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="377"/>
         <source>Untitled Service</source>
         <translation>Bevardė pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="468"/>
         <source>Open File</source>
         <translation>Atverti failą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="466"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="468"/>
         <source>OpenLP Service Files (*.osz *.oszl)</source>
         <translation>OpenLP pamaldų programos failai (*.osz *.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="482"/>
         <source>Modified Service</source>
         <translation>Pakeista pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="480"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="482"/>
         <source>The current service has been modified. Would you like to save this service?</source>
         <translation>Dabartinė pamaldų programa buvo pakeista. Ar norėtumėte įrašyti šią pamaldų programą?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="617"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="620"/>
         <source>Service File(s) Missing</source>
         <translation>Trūksta pamaldų programos failo(-ų)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="618"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="621"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
@@ -6141,12 +6149,12 @@ These files will be removed if you continue to save.</source>
 Jei tęsite įrašymą, šie failai bus pašalinti.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="665"/>
         <source>Error Saving File</source>
         <translation>Klaida, bandant išsaugoti failą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="665"/>
         <source>There was an error saving your file.
 
 {error}</source>
@@ -6155,82 +6163,82 @@ Jei tęsite įrašymą, šie failai bus pašalinti.</translation>
 {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="699"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="702"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
         <translation>OpenLP pamaldų programos failai - mažieji (*.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="700"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="703"/>
         <source>OpenLP Service Files (*.osz)</source>
         <translation>OpenLP pamaldų programos failai (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="791"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="794"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
         <translation>Nepavyko įkelti pamaldų programos failo {file_path}, nes jis yra arba pažeistas, arba nepasiekiamas, arba nėra teisingas OpenLP 2 ar OpenLP 3 pamaldų programos failas.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="888"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="891"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Automatinis paleidimas - aktyvus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="892"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="895"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Automatinis paleidimas - neaktyvus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="974"/>
         <source>Input delay</source>
         <translation>Įvesties pauzė</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="971"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="974"/>
         <source>Delay between slides in seconds.</source>
         <translation>Pauzė tarp skaidrių sekundėmis.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1300"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1303"/>
         <source>Edit</source>
         <translation>Redaguoti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1301"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1304"/>
         <source>Service copy only</source>
         <translation>Kopijuoti tik pamaldų programą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1304"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1307"/>
         <source>Slide theme</source>
         <translation>Skaidrės apipavidalinimas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1308"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1311"/>
         <source>Notes</source>
         <translation>Pastabos</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1556"/>
         <source>Missing Display Handler</source>
         <translation>Trūksta ekrano doroklės</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1487"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1490"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Jūsų elementas negali būti rodomas, kadangi nėra doroklės, kuri jį rodytų</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1553"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1556"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Jūsų elementas negali būti rodomas, nes trūksta rodymui reikalingo papildinio arba jis nėra įdiegtas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1581"/>
         <source>Rename item title</source>
         <translation>Pervadinti elemento pavadinimą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1578"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1581"/>
         <source>Title:</source>
         <translation>Pavadinimas:</translation>
     </message>
@@ -6482,17 +6490,17 @@ prašome pasirinkti kitą spartųjį klavišą.</translation>
         <translation>Pereiti į &quot;Kitą&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="521"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="524"/>
         <source>Go To</source>
         <translation>Pereiti į</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="604"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="607"/>
         <source>Previous Service</source>
         <translation>Ankstesnė pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="609"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="612"/>
         <source>Next Service</source>
         <translation>Kita pamaldų programa</translation>
     </message>
@@ -7044,7 +7052,7 @@ Failas yra pažeistas, neprieinamas arba tai nėra tinkamas apipavidalinimas.</t
     <message>
         <location filename="../../openlp/core/pages/background.py" line="175"/>
         <source>Live stream</source>
-        <translation type="unfinished"/>
+        <translation>Tiesioginis srautas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="177"/>
@@ -7916,22 +7924,22 @@ Užveriamas šis egzempliorius</translation>
         <translation>Parašė</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="164"/>
+        <location filename="../../openlp/core/lib/ui.py" line="169"/>
         <source>Delete the selected item.</source>
         <translation>Ištrinti pasirinktą elementą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="167"/>
+        <location filename="../../openlp/core/lib/ui.py" line="172"/>
         <source>Move selection up one position.</source>
         <translation>Perkelti pasirinkimą viena pozicija aukščiau.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="170"/>
+        <location filename="../../openlp/core/lib/ui.py" line="175"/>
         <source>Move selection down one position.</source>
         <translation>Perkelti pasirinkimą viena pozicija žemiau.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/ui.py" line="311"/>
+        <location filename="../../openlp/core/lib/ui.py" line="316"/>
         <source>&amp;Vertical Align:</source>
         <translation>&amp;Vertikalus lygiavimas:</translation>
     </message>
@@ -8268,50 +8276,50 @@ Užveriamas šis egzempliorius</translation>
 <context>
     <name>PresentationPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="152"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="150"/>
         <source>&lt;strong&gt;Presentation Plugin&lt;/strong&gt;&lt;br /&gt;The presentation plugin provides the ability to show presentations using a number of different programs. The choice of available presentation programs is available to the user in a drop down box.</source>
         <translation>&lt;strong&gt;Pateikties papildinys&lt;/strong&gt;&lt;br /&gt;Pateikties papildinys suteikia galimybę rodyti pateiktis, naudojant kelias skirtingas programas. Prieinamas pateikčių programas naudotojas gali pasirinkti išskleidžiamajame langelyje.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="165"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="163"/>
         <source>Presentation</source>
         <comment>name singular</comment>
         <translation>Pateiktis</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="166"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="164"/>
         <source>Presentations</source>
         <comment>name plural</comment>
         <translation>Pateiktys</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="170"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="168"/>
         <source>Presentations</source>
         <comment>container title</comment>
         <translation>Pateiktys</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="174"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="172"/>
         <source>Load a new presentation.</source>
         <translation>Įkelti naują pateiktį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="176"/>
         <source>Delete the selected presentation.</source>
         <translation>Ištrinti pasirinktą pateiktį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="179"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="177"/>
         <source>Preview the selected presentation.</source>
         <translation>Peržiūrėti pasirinktą pateiktį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="180"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
         <source>Send the selected presentation live.</source>
         <translation>Siųsti pasirinktą pateiktį į rodymą Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="181"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="179"/>
         <source>Add the selected presentation to the service.</source>
         <translation>Pridėti pasirinktą pateiktį į pamaldų programą.</translation>
     </message>
@@ -8354,17 +8362,17 @@ Užveriamas šis egzempliorius</translation>
         <translation>Šis pateikties tipas nėra palaikomas.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="417"/>
         <source>Missing Presentation</source>
         <translation>Trūksta pateikties</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="416"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="417"/>
         <source>The presentation {name} no longer exists.</source>
         <translation>Pateikties {name} daugiau nebėra.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="407"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="408"/>
         <source>The presentation {name} is incomplete, please reload.</source>
         <translation>Pateiktis {name} yra nepilna, prašome ją įkelti iš naujo.</translation>
     </message>
@@ -8448,7 +8456,7 @@ esančias Windows 8 ir 10)</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="173"/>
         <source>IP address:</source>
-        <translation type="unfinished"/>
+        <translation>IP adresas:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="174"/>
@@ -8488,7 +8496,7 @@ esančias Windows 8 ir 10)</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="182"/>
         <source>Remote App</source>
-        <translation>Nuotolinės prieigos programėlė</translation>
+        <translation>Nuotolinio valdymo programėlė</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="183"/>
@@ -8508,7 +8516,7 @@ esančias Windows 8 ir 10)</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="189"/>
         <source>Check for Updates</source>
-        <translation type="unfinished"/>
+        <translation>Tikrinti, ar yra atnaujinimų</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="190"/>
@@ -8862,130 +8870,130 @@ The encoding is responsible for the correct character representation.</source>
 Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="187"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
         <source>&amp;Song</source>
         <translation>&amp;Giesmę</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="167"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="165"/>
         <source>Import songs using the import wizard.</source>
         <translation>Importuoti giesmes, naudojant importavimo vediklį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="173"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
         <source>CCLI SongSelect</source>
         <translation>CCLI SongSelect</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="173"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="171"/>
         <source>Import songs from CCLI&apos;s SongSelect service.</source>
         <translation>Importuoti giesmes iš CCLI SongSelect tarnybos.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="187"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="185"/>
         <source>Exports songs using the export wizard.</source>
         <translation>Eksportuoja giesmes per eksportavimo vediklį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="204"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="202"/>
         <source>Songs</source>
         <translation>Giesmės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
         <source>&amp;Re-index Songs</source>
         <translation>Iš naujo &amp;indeksuoti giesmes</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="205"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="203"/>
         <source>Re-index the songs database to improve searching and ordering.</source>
         <translation>Iš naujo indeksuoti giesmių duomenų bazę, siekiant pagerinti paiešką ir rikiavimą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
         <source>Find &amp;Duplicate Songs</source>
         <translation>Rasti &amp;giesmių dublikatus</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="211"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="209"/>
         <source>Find and remove duplicate songs in the song database.</source>
         <translation>Rasti ir pašalinti giesmių duomenų bazėje esančius, giesmių dublikatus.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="216"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Song List Report</source>
         <translation>Giesmių sąrašo ataskaita</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="216"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Produce a CSV file of all the songs in the database.</source>
         <translation>Sukurti visų duomenų bazėje esančių giesmių CSV failą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="238"/>
         <source>Reindexing songs...</source>
         <translation>Iš naujo indeksuojamos giesmės...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="242"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
         <source>Reindexing songs</source>
         <translation>Iš naujo indeksuojamos giesmės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="285"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="283"/>
         <source>&lt;strong&gt;Songs Plugin&lt;/strong&gt;&lt;br /&gt;The songs plugin provides the ability to display and manage songs.</source>
         <translation>&lt;strong&gt;Giesmių papildinys&lt;/strong&gt;&lt;br /&gt;Giesmių papildinys suteikia galimybę rodyti bei valdyti giesmes.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="328"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="326"/>
         <source>Song</source>
         <comment>name singular</comment>
         <translation>Giesmė</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="329"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="327"/>
         <source>Songs</source>
         <comment>name plural</comment>
         <translation>Giesmės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="333"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="331"/>
         <source>Songs</source>
         <comment>container title</comment>
         <translation>Giesmės</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="337"/>
         <source>Add a new song.</source>
         <translation>Pridėti naują giesmę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="338"/>
         <source>Edit the selected song.</source>
         <translation>Redaguoti pasirinktą giesmę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="339"/>
         <source>Delete the selected song.</source>
         <translation>Ištrinti pasirinktą giesmę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="340"/>
         <source>Preview the selected song.</source>
         <translation>Peržiūrėti pasirinktą giesmę.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="343"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="341"/>
         <source>Send the selected song live.</source>
         <translation>Siųsti pasirinktą giesmę į rodymą Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="344"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="342"/>
         <source>Add the selected song to the service.</source>
         <translation>Pridėti pasirinktą giesmę į pamaldų programą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/songsplugin.py" line="369"/>
+        <location filename="../../openlp/plugins/songs/songsplugin.py" line="367"/>
         <source>Importing Songs</source>
         <translation>Importuojamos giesmės</translation>
     </message>
@@ -9060,7 +9068,7 @@ Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/chordpro.py" line="66"/>
         <source>The file contains unreadable characters.</source>
-        <translation type="unfinished"/>
+        <translation>Faile yra neįskaitomų simbolių.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/cclifile.py" line="89"/>
@@ -9081,7 +9089,7 @@ Koduotė atsakinga už teisingą simbolių atvaizdavimą.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/easyslides.py" line="74"/>
         <source>Invalid EasySlides song file. Missing Item tag.</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas EasySlides giesmės failas. Trūksta &quot;Item&quot; žymės.</translation>
     </message>
 </context>
 <context>
@@ -9573,7 +9581,7 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/foilpresenter.py" line="131"/>
         <source>Invalid Foilpresenter song file. Missing expected tags</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas Foilpresenter giesmės failas. Trūksta laukiamų žymių</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/foilpresenter.py" line="391"/>
@@ -9712,157 +9720,162 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
         <translation>LiveWorship duomenų bazė</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="298"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="293"/>
+        <source>First convert your LiveWorship database to an XML text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;User Manual&lt;/a&gt;.</source>
+        <translation type="unfinished"/>
+    </message>
+    <message>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="302"/>
         <source>LyriX Files</source>
         <translation>LyriX failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="299"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="303"/>
         <source>LyriX (Exported TXT-files)</source>
         <translation>LyriX (Eksportuoti TXT-failai)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="306"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="310"/>
         <source>MediaShout Database</source>
         <translation>MediaShout duomenų bazė</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="307"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="311"/>
         <source>The MediaShout importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>MediaShout importavimo įrankis yra palaikomas tik operacinėje sistemoje Windows. Jis buvo išjungtas dėl trūkstamo Python modulio. Norėdami naudotis šiuo importavimo įrankiu, turėsite įdiegti &quot;pyodbc&quot; modulį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="323"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="327"/>
         <source>OPS Pro database</source>
         <translation>OPS Pro duomenų bazė</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="324"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="328"/>
         <source>The OPS Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>OPS Pro importavimo įrankis yra palaikomas tik operacinėje sistemoje Windows. Jis buvo išjungtas dėl trūkstamo Python modulio. Norėdami naudotis šiuo importavimo įrankiu, turėsite įdiegti &quot;pyodbc&quot; modulį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="333"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="337"/>
         <source>PowerPraise Song Files</source>
         <translation>PowerPraise giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="340"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="344"/>
         <source>You need to specify a valid PowerSong 1.0 database folder.</source>
         <translation>Turite nurodyti teisingą PowerSong 1.0 duomenų bazės aplanką.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="347"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="351"/>
         <source>PresentationManager Song Files</source>
         <translation>PresentationManager giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="354"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="358"/>
         <source>ProPresenter Song Files</source>
         <translation>ProPresenter giesmės failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="361"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="365"/>
         <source>Singing The Faith Exported Files</source>
         <translation>Singing The Faith eksportuoti failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="363"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="367"/>
         <source>First use Singing The Faith Electronic edition to export the song(s) in Text format.</source>
         <translation>Iš pradžių, naudokite Singing The Faith elektroninę laidą, kad eksportuotumėte giesmę(-es) tekstiniu formatu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="371"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="375"/>
         <source>SongBeamer Files</source>
         <translation>SongBeamer failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="379"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="383"/>
         <source>SongPro Text Files</source>
         <translation>SongPro tekstiniai failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="380"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="384"/>
         <source>SongPro (Export File)</source>
         <translation>SongPro (Eksportavimo failas)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="381"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="385"/>
         <source>In SongPro, export your songs using the File -&gt; Export menu</source>
         <translation>Programoje SongPro, eksportuokite savo giesmes, naudodami meniu Failas-&gt;Eksportavimas</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="388"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="392"/>
         <source>SongShow Plus Song Files</source>
         <translation>SongShow Plus giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="395"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="399"/>
         <source>Songs Of Fellowship Song Files</source>
         <translation>Songs Of Fellowship giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="397"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="401"/>
         <source>The Songs of Fellowship importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
         <translation>The Songs of Fellowship importavimo įrankis buvo išjungtas, nes OpenLP negali pasiekti OpenOffice ar LibreOffice.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="405"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="409"/>
         <source>SundayPlus Song Files</source>
         <translation>SundayPlus giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="412"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="416"/>
         <source>VideoPsalm Files</source>
         <translation>VideoPsalm failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="413"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="417"/>
         <source>VideoPsalm</source>
         <translation>VideoPsalm</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="414"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="418"/>
         <source>The VideoPsalm songbooks are normally located in {path}</source>
         <translation>VideoPsalm giesmynai įprastai yra saugomi kataloge {path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="422"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="426"/>
         <source>Words Of Worship Song Files</source>
         <translation>Words Of Worship giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="430"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="434"/>
         <source>Worship Assistant Files</source>
         <translation>Worship Assistant failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="432"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="436"/>
         <source>Worship Assistant (CSV)</source>
         <translation>Worship Assistant (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="433"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="437"/>
         <source>In Worship Assistant, export your Database to a CSV file.</source>
         <translation>Programoje Worship Assistant, eksportuokite savo duomenų bazę į CSV failą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="441"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="445"/>
         <source>WorshipCenter Pro Song Files</source>
         <translation>WorshipCenter Pro giesmių failai</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="443"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="447"/>
         <source>The WorshipCenter Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
         <translation>WorshipCenter Pro importavimo įrankis yra palaikomas tik operacinėje sistemoje Windows. Jis buvo išjungtas dėl trūkstamo Python modulio. Norėdami naudotis šiuo importavimo įrankiu, turėsite įdiegti &quot;pyodbc&quot; modulį.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="453"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="457"/>
         <source>ZionWorx (CSV)</source>
         <translation>ZionWorx (CSV)</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importer.py" line="454"/>
+        <location filename="../../openlp/plugins/songs/lib/importer.py" line="458"/>
         <source>First convert your ZionWorx database to a CSV text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;User Manual&lt;/a&gt;.</source>
         <translation>Iš pradžių konvertuokite savo ZionWorx duomenų bazę į CSV tekstinį failą, kaip tai yra paaiškinta &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;Naudotojo vadove&lt;/a&gt;.</translation>
     </message>
@@ -10057,7 +10070,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powerpraise.py" line="100"/>
         <source>Invalid PowerPraise song file. Missing needed tag.</source>
-        <translation type="unfinished"/>
+        <translation>Neteisingas PowerPraise giesmės failas. Trūksta reikalingos žymės.</translation>
     </message>
 </context>
 <context>
@@ -10103,7 +10116,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="76"/>
         <source>File is not a valid PresentationManager XMl file.</source>
-        <translation type="unfinished"/>
+        <translation>Failas nėra teisingas PresentationManager XMl failas.</translation>
     </message>
 </context>
 <context>
@@ -10111,7 +10124,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/propresenter.py" line="67"/>
         <source>File is not a valid ProPresenter XMl file.</source>
-        <translation type="unfinished"/>
+        <translation>Failas nėra teisingas ProPresenter XMl failas.</translation>
     </message>
 </context>
 <context>
@@ -10137,7 +10150,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songbeamer.py" line="137"/>
         <source>File is not a valid SongBeamer file.</source>
-        <translation type="unfinished"/>
+        <translation>Failas nėra teisingas SongBeamer failas.</translation>
     </message>
 </context>
 <context>
@@ -10322,7 +10335,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songpro.py" line="93"/>
         <source>File is not a valid SongPro file.</source>
-        <translation type="unfinished"/>
+        <translation>Failas nėra teisingas SongPro failas.</translation>
     </message>
 </context>
 <context>
@@ -10493,7 +10506,7 @@ Išsamesnei informacijai, žiūrėkite žurnalą</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songshowplus.py" line="186"/>
         <source>File is not a valid SongShowPlus file.</source>
-        <translation type="unfinished"/>
+        <translation>Failas nėra teisingas SongShowPlus failas.</translation>
     </message>
 </context>
 <context>
