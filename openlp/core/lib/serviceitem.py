@@ -512,18 +512,17 @@ class ServiceItem(RegistryProperties):
                         copy(path / 'thumbnails' / os.path.basename(text_image['image']),
                              AppLocation.get_section_data_path(self.name) / 'thumbnails')
                     else:
-                        text = text_image
-                        org_file_path = path / text
+                        org_file_path = path / text_image
                         # rename the extracted file so that it follows the sha256 based approach of openlp 3
                         self.sha256_file_hash = sha256_file_hash(org_file_path)
-                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(self.title)[1])
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(text_image)[1])
                         file_path = path / new_file
                         move(org_file_path, file_path)
                         # Check if (by chance) the thumbnails for this image is available on this machine
                         test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
                         if test_thumb.exists():
                             thumbnail = test_thumb
-                    self.add_from_image(file_path, text, background, thumbnail=thumbnail, file_hash=file_hash)
+                    self.add_from_image(file_path, text_image, background, thumbnail=thumbnail, file_hash=file_hash)
             else:
                 for text_image in service_item['serviceitem']['data']:
                     file_hash = None
