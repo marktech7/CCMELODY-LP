@@ -122,7 +122,6 @@ def test_service_item_load_image_from_service(state_media, settings):
     """
     # GIVEN: A new service item and a mocked add icon function
     image_name = 'image_1.jpg'
-    test_file = TEST_PATH / image_name
     fake_hash = 'abcd'
     extracted_file = Path(TEST_PATH) / '{base}{ext}'.format(base=fake_hash, ext=os.path.splitext(image_name)[1])
     frame_array = {'path': extracted_file, 'title': image_name, 'file_hash': fake_hash}
@@ -134,7 +133,7 @@ def test_service_item_load_image_from_service(state_media, settings):
     with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
             patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
             patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
-            patch('openlp.core.lib.serviceitem.move') as mocked_move:
+            patch('openlp.core.lib.serviceitem.move'):
         mocked_sha256_file_hash.return_value = fake_hash
         mocked_exists.return_value = True
         mocked_get_section_data_path.return_value = Path('/path/')
@@ -225,15 +224,17 @@ def test_add_from_command_for_a_presentation():
     service_item = ServiceItem(None)
     service_item.name = 'presentations'
     presentation_name = 'test.pptx'
-    image = MagicMock()
+    image = Path('thumbnails/abcd/slide1.png')
     display_title = 'DisplayTitle'
     notes = 'Note1\nNote2\n'
     frame = {'title': presentation_name, 'image': image, 'path': TEST_PATH,
              'display_title': display_title, 'notes': notes, 'thumbnail': image}
 
     # WHEN: adding presentation to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
+        mocked_get_section_data_path.return_value = Path('.')
         service_item.add_from_command(TEST_PATH, presentation_name, image, display_title, notes)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
@@ -249,13 +250,15 @@ def test_add_from_command_without_display_title_and_notes():
     service_item = ServiceItem(None)
     service_item.name = 'presentations'
     image_name = 'test.img'
-    image = MagicMock()
+    image = Path('thumbnails/abcd/slide1.png')
     frame = {'title': image_name, 'image': image, 'path': TEST_PATH,
              'display_title': None, 'notes': None, 'thumbnail': image}
 
     # WHEN: adding image to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
+        mocked_get_section_data_path.return_value = Path('.')
         service_item.add_from_command(TEST_PATH, image_name, image)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
