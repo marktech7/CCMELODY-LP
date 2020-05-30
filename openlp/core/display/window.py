@@ -319,7 +319,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         imagesr = copy.deepcopy(images)
         for image in imagesr:
             image['path'] = image['path'].as_uri()
-            image['thumbnail'] = image['thumbnail'].as_uri()
+            # Not all images has a dedicated thumbnail (such as images loaded from old or local servicefiles),
+            # in that case reuse the image
+            if image.get('thumbnail', None):
+                image['thumbnail'] = image['thumbnail'].as_uri()
+            else:
+                image['thumbnail'] = image['path']
         json_images = json.dumps(imagesr)
         self.run_javascript('Display.setImageSlides({images});'.format(images=json_images))
 
