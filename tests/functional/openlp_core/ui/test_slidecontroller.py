@@ -1025,8 +1025,8 @@ def test_paint_event_text_fits():
         info_label.width.return_value = metrics.boundingRect(test_string).width() + 20
         info_label.paintEvent(MagicMock())
 
-        # THEN: The text should be drawn centered with the complete test_string
-        mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignCenter, test_string)
+        # THEN: The text should be drawn left with the complete test_string
+        mocked_qpainter().drawText.assert_called_once_with(mocked_rect(), QtCore.Qt.AlignLeft, test_string)
 
 
 def test_paint_event_text_doesnt_fit():

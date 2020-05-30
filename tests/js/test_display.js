@@ -117,7 +117,7 @@ describe("The Display object", function () {
     spyOn(Reveal, "initialize");
     document.body.innerHTML = "";
     document.body.classList = "";
-    Display.init(false);
+    Display.init({isDisplay: false});
     expect(document.body.classList.contains('checkerboard')).toEqual(true);
   });
 
@@ -125,7 +125,7 @@ describe("The Display object", function () {
     spyOn(Reveal, "initialize");
     document.body.innerHTML = "";
     document.body.classList = "";
-    Display.init(true);
+    Display.init({isDisplay: true});
     expect(document.body.classList.contains('checkerboard')).toEqual(false);
   });
 
@@ -644,7 +644,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'display_horizontal_align': 3,
       'display_vertical_align': 1
@@ -669,7 +669,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_shadow': true,
       'font_main_shadow_color': "#000",
@@ -694,7 +694,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_shadow': false,
       'font_main_shadow_color': "#000",
@@ -719,7 +719,7 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
-    // 
+    //
     const theme = {
       'font_main_y': 789,
       'font_main_x': 1000,
@@ -765,6 +765,41 @@ describe("Display.setImageSlides", function () {
     expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
     expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
     expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect(Reveal.sync).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Display.setBackgroundImage and Display.resetTheme", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    var slides_container = _createDiv({"class": "slides"});
+    Display._slidesContainer = slides_container;
+    var section = document.createElement("section");
+    Display._slidesContainer.appendChild(section);
+  });
+
+  it("should set the background image data and call sync once for set slides and again for set background", function () {
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.setBackgroundImage("#fff", "/file/path");
+
+    expect($(".slides > section")[0].getAttribute("data-background")).toEqual("url('/file/path')");
+    expect(Reveal.sync).toHaveBeenCalledTimes(1);
+  });
+
+  it("should restore the background image to the theme", function () {
+    Display._theme = {
+      'background_type': BackgroundType.Image,
+      'background_filename': '/another/path'
+    };
+    $(".slides > section")[0].setAttribute("data-background", "/file/path");
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.resetTheme();
+
+    expect($(".slides > section")[0].getAttribute("data-background")).toEqual("url('/another/path')");
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
   });
 });

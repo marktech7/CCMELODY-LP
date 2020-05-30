@@ -140,7 +140,7 @@ class BibleMediaItem(MediaManagerItem):
         self.has_delete_icon = True
         self.add_to_service_item = False
 
-    def add_end_header_bar(self):
+    def add_middle_header_bar(self):
         self.search_tab_bar = QtWidgets.QTabBar(self)
         self.search_tab_bar.setExpanding(False)
         self.page_layout.addWidget(self.search_tab_bar)

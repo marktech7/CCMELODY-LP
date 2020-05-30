@@ -123,12 +123,7 @@ class InfoLabel(QtWidgets.QLabel):
         painter = QtGui.QPainter(self)
         metrics = QtGui.QFontMetrics(self.font())
         elided = metrics.elidedText(self.text(), QtCore.Qt.ElideRight, self.width())
-        # If the text is elided align it left to stop it jittering as the label is resized
-        if elided == self.text():
-            alignment = QtCore.Qt.AlignCenter
-        else:
-            alignment = QtCore.Qt.AlignLeft
-        painter.drawText(self.rect(), alignment, elided)
+        painter.drawText(self.rect(), QtCore.Qt.AlignLeft, elided)
 
     def setText(self, text):
         """
@@ -213,19 +208,32 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.panel_layout = QtWidgets.QVBoxLayout(self.panel)
         self.panel_layout.setSpacing(0)
         self.panel_layout.setContentsMargins(0, 0, 0, 0)
-        # Type label at the top of the slide controller
+        # Type label at the top of the slide controller with icon
+        self.top_label_horizontal = QtWidgets.QHBoxLayout()
+        self.panel_layout.addLayout(self.top_label_horizontal)
+        self.top_label_vertical = QtWidgets.QVBoxLayout()
+        if self.is_live:
+            icon = UiIcons().live
+        else:
+            icon = UiIcons().preview
+        pixmap = icon.pixmap(QtCore.QSize(34, 34))
+        self.top_icon = QtWidgets.QLabel()
+        self.top_icon.setPixmap(pixmap)
+        self.top_icon.setStyleSheet("padding: 0 10 0 25px;")
+        self.top_icon.setAlignment(QtCore.Qt.AlignRight)
+        self.top_label_horizontal.addWidget(self.top_icon, 1)
+        self.top_label_horizontal.addLayout(self.top_label_vertical, 100)
         self.type_label = QtWidgets.QLabel(self.panel)
         self.type_label.setStyleSheet('font-weight: bold; font-size: 12pt;')
-        self.type_label.setAlignment(QtCore.Qt.AlignCenter)
         if self.is_live:
             self.type_label.setText(UiStrings().Live)
         else:
             self.type_label.setText(UiStrings().Preview)
-        self.panel_layout.addWidget(self.type_label)
         # Info label for the title of the current item, at the top of the slide controller
         self.info_label = InfoLabel(self.panel)
         self.info_label.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.panel_layout.addWidget(self.info_label)
+        self.top_label_vertical.addWidget(self.type_label)
+        self.top_label_vertical.addWidget(self.info_label)
         # Splitter
         self.splitter = QtWidgets.QSplitter(self.panel)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
@@ -250,14 +258,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.toolbar.setSizePolicy(size_toolbar_policy)
         self.previous_item = create_action(self, 'previousItem_' + self.type_prefix,
                                            text=translate('OpenLP.SlideController', 'Previous Slide'),
-                                           icon=UiIcons().arrow_left,
+                                           icon=UiIcons().arrow_up,
                                            tooltip=translate('OpenLP.SlideController', 'Move to previous.'),
                                            can_shortcuts=True, context=QtCore.Qt.WidgetWithChildrenShortcut,
                                            category=self.category, triggers=self.on_slide_selected_previous)
         self.toolbar.addAction(self.previous_item)
         self.next_item = create_action(self, 'nextItem_' + self.type_prefix,
                                        text=translate('OpenLP.SlideController', 'Next Slide'),
-                                       icon=UiIcons().arrow_right,
+                                       icon=UiIcons().arrow_down,
                                        tooltip=translate('OpenLP.SlideController', 'Move to next.'),
                                        can_shortcuts=True, context=QtCore.Qt.WidgetWithChildrenShortcut,
                                        category=self.category, triggers=self.on_slide_selected_next_action)
@@ -276,28 +284,28 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             # The order of the blank to modes in Shortcuts list comes from here.
             self.show_screen = create_action(self, 'showScreen',
                                              text=translate('OpenLP.SlideController', 'Show Presentation'),
-                                             icon=UiIcons().live,
+                                             icon=UiIcons().live_presentation,
                                              checked=False, can_shortcuts=True, category=self.category,
                                              triggers=self.on_show_display)
-            self.desktop_screen = create_action(self, 'setDesktopScreen',
-                                                text=translate('OpenLP.SlideController', 'Show Desktop'),
-                                                icon=UiIcons().desktop,
-                                                checked=False, can_shortcuts=False, category=self.category,
-                                                triggers=self.on_hide_display)
             self.theme_screen = create_action(self, 'setThemeScreen',
                                               text=translate('OpenLP.SlideController', 'Show Theme'),
-                                              icon=UiIcons().blank_theme,
+                                              icon=UiIcons().live_theme,
                                               checked=False, can_shortcuts=False, category=self.category,
                                               triggers=self.on_theme_display)
             self.blank_screen = create_action(self, 'setBlankScreen',
                                               text=translate('OpenLP.SlideController', 'Show Black'),
-                                              icon=UiIcons().blank,
+                                              icon=UiIcons().live_black,
                                               checked=False, can_shortcuts=False, category=self.category,
                                               triggers=self.on_blank_display)
+            self.desktop_screen = create_action(self, 'setDesktopScreen',
+                                                text=translate('OpenLP.SlideController', 'Show Desktop'),
+                                                icon=UiIcons().live_desktop,
+                                                checked=False, can_shortcuts=False, category=self.category,
+                                                triggers=self.on_hide_display)
             self.hide_menu.setDefaultAction(self.show_screen)
             self.hide_menu.menu().addAction(self.show_screen)
-            self.hide_menu.menu().addAction(self.blank_screen)
             self.hide_menu.menu().addAction(self.theme_screen)
+            self.hide_menu.menu().addAction(self.blank_screen)
             self.hide_menu.menu().addAction(self.desktop_screen)
             # Add togglable actions for keyboard shortcuts
             self.controller.addAction(create_action(self, 'desktopScreen',
@@ -320,14 +328,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.show_screen_button.setObjectName('show_screen_button')
             self.toolbar.add_toolbar_widget(self.show_screen_button)
             self.show_screen_button.setDefaultAction(self.show_screen)
-            self.blank_screen_button = QtWidgets.QToolButton(self.toolbar)
-            self.blank_screen_button.setObjectName('blank_screen_button')
-            self.toolbar.add_toolbar_widget(self.blank_screen_button)
-            self.blank_screen_button.setDefaultAction(self.blank_screen)
             self.theme_screen_button = QtWidgets.QToolButton(self.toolbar)
             self.theme_screen_button.setObjectName('theme_screen_button')
             self.toolbar.add_toolbar_widget(self.theme_screen_button)
             self.theme_screen_button.setDefaultAction(self.theme_screen)
+            self.blank_screen_button = QtWidgets.QToolButton(self.toolbar)
+            self.blank_screen_button.setObjectName('blank_screen_button')
+            self.toolbar.add_toolbar_widget(self.blank_screen_button)
+            self.blank_screen_button.setDefaultAction(self.blank_screen)
             self.desktop_screen_button = QtWidgets.QToolButton(self.toolbar)
             self.desktop_screen_button.setObjectName('desktop_screen_button')
             self.toolbar.add_toolbar_widget(self.desktop_screen_button)
@@ -342,10 +350,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                                           self.toolbar))
             self.toolbar.add_toolbar_widget(self.play_slides_menu)
             self.play_slides_loop = create_action(self, 'playSlidesLoop', text=UiStrings().PlaySlidesInLoop,
-                                                  icon=UiIcons().clock, checked=False, can_shortcuts=True,
+                                                  icon=UiIcons().loop, checked=False, can_shortcuts=True,
                                                   category=self.category, triggers=self.on_play_slides_loop)
             self.play_slides_once = create_action(self, 'playSlidesOnce', text=UiStrings().PlaySlidesToEnd,
-                                                  icon=UiIcons().clock, checked=False, can_shortcuts=True,
+                                                  icon=UiIcons().play_slides, checked=False, can_shortcuts=True,
                                                   category=self.category, triggers=self.on_play_slides_once)
             if self.settings.value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
                 self.play_slides_menu.setDefaultAction(self.play_slides_loop)
@@ -761,10 +769,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.toolbar.set_widget_visible('song_menu', False)
         # Reset the button
         self.play_slides_once.setChecked(False)
-        self.play_slides_once.setIcon(UiIcons().clock)
+        self.play_slides_once.setIcon(UiIcons().play_slides)
         self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
         self.play_slides_loop.setChecked(False)
-        self.play_slides_loop.setIcon(UiIcons().clock)
+        self.play_slides_loop.setIcon(UiIcons().loop)
         self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         if item.is_text():
             if (self.settings.value(self.main_window.songs_settings_section + '/display songbar') and
@@ -868,6 +876,26 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.delay_spin_box.setValue(int(item.timed_slide_interval))
                 self.on_play_slides_once()
 
+    def set_background_image(self, bg_color, image_path):
+        """
+        Reload the theme on displays.
+        """
+        # Set theme for preview
+        self.preview_display.set_background_image(bg_color, image_path)
+        # Set theme for displays
+        for display in self.displays:
+            display.set_background_image(bg_color, image_path)
+
+    def reload_theme(self):
+        """
+        Reload the theme on displays.
+        """
+        # Set theme for preview
+        self.preview_display.reload_theme()
+        # Set theme for displays
+        for display in self.displays:
+            display.reload_theme()
+
     def _set_theme(self, service_item):
         """
         Set up the theme from the service item.
@@ -893,7 +921,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         old_item = self.service_item
         # rest to allow the remote pick up verse 1 if large imaged
         self.selected_row = 0
-        self.preview_display.go_to_slide(0)
         # take a copy not a link to the servicemanager copy.
         self.service_item = copy.copy(service_item)
         if self.service_item.is_command():
@@ -1328,14 +1355,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if checked:
             self.play_slides_loop.setIcon(UiIcons().stop)
             self.play_slides_loop.setText(UiStrings().StopPlaySlidesInLoop)
-            self.play_slides_once.setIcon(UiIcons().clock)
+            self.play_slides_once.setIcon(UiIcons().play_slides)
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
             self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             self.play_slides_once.setChecked(False)
             if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
-            self.play_slides_loop.setIcon(UiIcons().clock)
+            self.play_slides_loop.setIcon(UiIcons().loop)
             self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         self.on_toggle_loop()
 
@@ -1353,14 +1380,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if checked:
             self.play_slides_once.setIcon(UiIcons().stop)
             self.play_slides_once.setText(UiStrings().StopPlaySlidesToEnd)
-            self.play_slides_loop.setIcon(UiIcons().clock)
+            self.play_slides_loop.setIcon(UiIcons().loop)
             self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
             self.play_slides_menu.setDefaultAction(self.play_slides_once)
             self.play_slides_loop.setChecked(False)
             if self.settings.value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
         else:
-            self.play_slides_once.setIcon(UiIcons().clock)
+            self.play_slides_once.setIcon(UiIcons().play_slides)
             self.play_slides_once.setText(UiStrings().PlaySlidesToEnd)
         self.on_toggle_loop()
 

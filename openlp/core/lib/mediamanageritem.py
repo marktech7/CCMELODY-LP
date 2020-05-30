@@ -154,16 +154,22 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         self.add_toolbar()
         # Allow the plugin to define buttons at start of bar
         self.add_start_header_bar()
-        # Add the middle of the tool bar (pre defined)
+        # Used by this common class, unless overrided
+        self.add_common_header_bar()
+        # Allow the plugin to define buttons before the spacer
         self.add_middle_header_bar()
-        # Allow the plugin to define buttons at end of bar
+        # Add spacer
+        self.toolbar.add_spacer()
+        # Allow the plugin to define buttons after the spacer
         self.add_end_header_bar()
+        # Used by this common class to add send to preview etc, unless overrided
+        self.add_common_end_header_bar()
         # Add the list view
         self.add_list_view_to_toolbar()
 
-    def add_middle_header_bar(self):
+    def add_common_header_bar(self):
         """
-        Create buttons for the media item toolbar
+        Create common buttons for the media item toolbar, left side
         """
         toolbar_actions = []
         # Import Button
@@ -181,6 +187,13 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         # Delete Button
         if self.has_delete_icon:
             toolbar_actions.append(['Delete', StringContent.Delete, UiIcons().delete, self.on_delete_click])
+        self.add_actionlist_to_toolbar(toolbar_actions)
+
+    def add_common_end_header_bar(self):
+        """
+        Create common buttons for the media item toolbar, right side
+        """
+        toolbar_actions = []
         # Preview
         if self.can_preview:
             toolbar_actions.append(['Preview', StringContent.Preview, UiIcons().preview, self.on_preview_click])
@@ -190,11 +203,13 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         # Add to service Button
         if self.can_add_to_service:
             toolbar_actions.append(['Service', StringContent.Service, UiIcons().add, self.on_add_click])
+        self.add_actionlist_to_toolbar(toolbar_actions)
+
+    def add_actionlist_to_toolbar(self, toolbar_actions):
         for action in toolbar_actions:
-            if action[1] == StringContent.Preview:
-                self.toolbar.addSeparator()
             self.toolbar.add_toolbar_action('{name}{action}Action'.format(name=self.plugin.name, action=action[0]),
-                                            text=self.plugin.get_string(action[1])['title'], icon=action[2],
+                                            text=self.plugin.get_string(action[1])['title'],
+                                            icon=action[2],
                                             tooltip=self.plugin.get_string(action[1])['tooltip'],
                                             triggers=action[3])
 
@@ -305,13 +320,19 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
 
     def add_start_header_bar(self):
         """
-        Slot at start of toolbar for plugin to add widgets
+        Slot to add buttons before common buttons on toolbar, left side.
+        """
+        pass
+
+    def add_middle_header_bar(self):
+        """
+        Slot to add buttons after common buttons on toolbar, left side.
         """
         pass
 
     def add_end_header_bar(self):
         """
-        Slot at end of toolbar for plugin to add widgets
+        Slot to add buttons before common buttons on toolbar, right side.
         """
         pass
 

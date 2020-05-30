@@ -106,3 +106,10 @@ class OpenLPToolbar(QtWidgets.QToolBar):
             self.removeAction(act)
         except KeyError:
             log.warning(f'No handle {name} in actions list.')
+
+    def add_spacer(self):
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        separator = QtWidgets.QWidget()
+        separator.setSizePolicy(size_policy)
+        self.addWidget(separator)
+        pass
