@@ -117,13 +117,13 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.search_combobox.clear()
         self.search_results_widget.clear()
         self.view_button.setEnabled(False)
-        if self.settings.contains(self.plugin.settings_section + '/songselect password'):
-            self.username_edit.setText(self.settings.value(self.plugin.settings_section + '/songselect username'))
-            self.password_edit.setText(self.settings.value(self.plugin.settings_section + '/songselect password'))
+        if self.settings.contains('songs/songselect password'):
+            self.username_edit.setText(self.settings.value('songs/songselect username'))
+            self.password_edit.setText(self.settings.value('songs/songselect password'))
             self.save_password_checkbox.setChecked(True)
-        if self.settings.contains(self.plugin.settings_section + '/songselect searches'):
+        if self.settings.contains('songs/songselect searches'):
             self.search_combobox.addItems(
-                self.settings.value(self.plugin.settings_section + '/songselect searches').split('|'))
+                self.settings.value('songs/songselect searches').split('|'))
         self.username_edit.setFocus()
         return QtWidgets.QDialog.exec(self)
 
@@ -280,11 +280,11 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                                                             'in the public domain.')
                 )
             if self.save_password_checkbox.isChecked():
-                self.settings.setValue(self.plugin.settings_section + '/songselect username', self.username_edit.text())
-                self.settings.setValue(self.plugin.settings_section + '/songselect password', self.password_edit.text())
+                self.settings.setValue('songs/songselect username', self.username_edit.text())
+                self.settings.setValue('songs/songselect password', self.password_edit.text())
             else:
-                self.settings.remove(self.plugin.settings_section + '/songselect username')
-                self.settings.remove(self.plugin.settings_section + '/songselect password')
+                self.settings.remove('songs/songselect username')
+                self.settings.remove('songs/songselect password')
             self.stacked_widget.setCurrentIndex(1)
         self.login_progress_bar.setVisible(False)
         self.login_progress_bar.setValue(0)
@@ -314,7 +314,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.application.process_events()
         self.song_count = 0
         search_history = self.search_combobox.getItems()
-        self.settings.setValue(self.plugin.settings_section + '/songselect searches', '|'.join(search_history))
+        self.settings.setValue('songs/songselect searches', '|'.join(search_history))
         # Create thread and run search
         worker = SearchWorker(self.song_select_importer, self.search_combobox.currentText())
         worker.show_info.connect(self.on_search_show_info)

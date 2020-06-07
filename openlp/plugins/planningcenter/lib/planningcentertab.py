@@ -104,10 +104,8 @@ below.  Personal Access Tokens are created by doing the following:
         """
         Load the settings into the UI.
         """
-        self.settings.beginGroup(self.settings_section)
-        self.application_id = self.settings.value('application_id')
-        self.secret = self.settings.value('secret')
-        self.settings.endGroup()
+        self.application_id = self.settings.value('planningcenter/application_id')
+        self.secret = self.settings.value('planningcenter/secret')
         self.application_id_line_edit.setText(self.application_id)
         self.secret_line_edit.setText(self.secret)
 
@@ -115,10 +113,8 @@ below.  Personal Access Tokens are created by doing the following:
         """
         Save the changes on exit of the Settings dialog.
         """
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('application_id', self.application_id_line_edit.text())
-        self.settings.setValue('secret', self.secret_line_edit.text())
-        self.settings.endGroup()
+        self.settings.setValue('planningcenter/application_id', self.application_id_line_edit.text())
+        self.settings.setValue('planningcenter/secret', self.secret_line_edit.text())
 
     def on_test_credentials_button_clicked(self):
         """

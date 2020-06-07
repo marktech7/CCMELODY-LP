@@ -187,16 +187,14 @@ class AlertsTab(SettingsTab):
         """
         Load the settings into the UI.
         """
-        self.settings.beginGroup(self.settings_section)
-        self.timeout = self.settings.value('timeout')
-        self.font_color = self.settings.value('font color')
-        self.font_size = self.settings.value('font size')
-        self.background_color = self.settings.value('background color')
-        self.font_face = self.settings.value('font face')
-        self.location = self.settings.value('location')
-        self.repeat = self.settings.value('repeat')
-        self.scroll = self.settings.value('scroll')
-        self.settings.endGroup()
+        self.timeout = self.settings.value('alerts/timeout')
+        self.font_color = self.settings.value('alerts/font color')
+        self.font_size = self.settings.value('alerts/font size')
+        self.background_color = self.settings.value('alerts/background color')
+        self.font_face = self.settings.value('alerts/font face')
+        self.location = self.settings.value('alerts/location')
+        self.repeat = self.settings.value('alerts/repeat')
+        self.scroll = self.settings.value('alerts/scroll')
         self.font_size_spin_box.setValue(self.font_size)
         self.timeout_spin_box.setValue(self.timeout)
         self.font_color_button.color = self.font_color
@@ -215,21 +213,19 @@ class AlertsTab(SettingsTab):
         """
         Save the changes on exit of the Settings dialog.
         """
-        self.settings.beginGroup(self.settings_section)
         # Check value has changed as no event handles this field
-        if self.settings.value('location') != self.vertical_combo_box.currentIndex():
+        if self.settings.value('alerts/location') != self.vertical_combo_box.currentIndex():
             self.changed = True
-        self.settings.setValue('background color', self.background_color)
-        self.settings.setValue('font color', self.font_color)
-        self.settings.setValue('font size', self.font_size)
+        self.settings.setValue('alerts/background color', self.background_color)
+        self.settings.setValue('alerts/font color', self.font_color)
+        self.settings.setValue('alerts/font size', self.font_size)
         self.font_face = self.font_combo_box.currentFont().family()
-        self.settings.setValue('font face', self.font_face)
-        self.settings.setValue('timeout', self.timeout)
+        self.settings.setValue('alerts/font face', self.font_face)
+        self.settings.setValue('alerts/timeout', self.timeout)
         self.location = self.vertical_combo_box.currentIndex()
-        self.settings.setValue('location', self.location)
-        self.settings.setValue('repeat', self.repeat)
-        self.settings.setValue('scroll', self.scroll_check_box.isChecked())
-        self.settings.endGroup()
+        self.settings.setValue('alerts/location', self.location)
+        self.settings.setValue('alerts/repeat', self.repeat)
+        self.settings.setValue('alerts/scroll', self.scroll_check_box.isChecked())
         if self.changed:
             self.settings_form.register_post_process('update_display_css')
         self.changed = False

@@ -40,7 +40,6 @@ def media_item(settings):
     with patch('openlp.plugins.media.lib.mediaitem.MediaManagerItem._setup'), \
             patch('openlp.plugins.media.lib.mediaitem.MediaMediaItem.setup_item'):
         m_item = MediaMediaItem(None, mocked_plugin)
-        m_item.settings_section = 'media'
     return m_item
 
 
@@ -49,7 +48,7 @@ def test_search_found(media_item):
     Media Remote Search Successful find
     """
     # GIVEN: The Mediaitem set up a list of media
-    media_item.settings.setValue(media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+    media_item.settings.setValue('media/media files', [Path('test.mp3'), Path('test.mp4')])
     # WHEN: Retrieving the test file
     result = media_item.search('test.mp4', False)
     # THEN: a file should be found
@@ -61,7 +60,7 @@ def test_search_not_found(media_item):
     Media Remote Search not find
     """
     # GIVEN: The Mediaitem set up a list of media
-    media_item.settings.setValue(media_item.settings_section + '/media files', [Path('test.mp3'), Path('test.mp4')])
+    media_item.settings.setValue('media/media files', [Path('test.mp3'), Path('test.mp4')])
     # WHEN: Retrieving the test file
     result = media_item.search('test.mpx', False)
     # THEN: a file should be found

@@ -135,11 +135,9 @@ class ThemesTab(SettingsTab):
         """
         Load the theme settings into the tab
         """
-        self.settings.beginGroup(self.settings_section)
-        self.theme_level = self.settings.value('theme level')
-        self.global_theme = self.settings.value('global theme')
-        self.item_transitions_check_box.setChecked(self.settings.value('item transitions'))
-        self.settings.endGroup()
+        self.theme_level = self.settings.value('themes/theme level')
+        self.global_theme = self.settings.value('themes/global theme')
+        self.item_transitions_check_box.setChecked(self.settings.value('themes/item transitions'))
         if self.theme_level == ThemeLevel.Global:
             self.global_level_radio_button.setChecked(True)
         elif self.theme_level == ThemeLevel.Service:
@@ -151,11 +149,9 @@ class ThemesTab(SettingsTab):
         """
         Save the settings
         """
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('theme level', self.theme_level)
-        self.settings.setValue('global theme', self.global_theme)
-        self.settings.setValue('item transitions', self.item_transitions_check_box.isChecked())
-        self.settings.endGroup()
+        self.settings.setValue('themes/theme level', self.theme_level)
+        self.settings.setValue('themes/global theme', self.global_theme)
+        self.settings.setValue('themes/item transitions', self.item_transitions_check_box.isChecked())
         self.renderer.set_theme_level(self.theme_level)
         if self.tab_visited:
             self.settings_form.register_post_process('theme_update_global')

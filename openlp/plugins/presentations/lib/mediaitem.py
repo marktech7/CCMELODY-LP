@@ -129,7 +129,7 @@ class PresentationMediaItem(MediaManagerItem):
         Populate the media manager tab
         """
         self.list_view.setIconSize(QtCore.QSize(88, 50))
-        file_paths = self.settings.value(self.settings_section + '/presentations files')
+        file_paths = self.settings.value('presentations/presentations files')
         self.load_list(file_paths, initial_load=True)
         self.populate_display_types()
 
@@ -149,7 +149,7 @@ class PresentationMediaItem(MediaManagerItem):
         if self.display_type_combo_box.count() > 1:
             self.display_type_combo_box.insertItem(0, self.automatic, userData='automatic')
             self.display_type_combo_box.setCurrentIndex(0)
-        if self.settings.value(self.settings_section + '/override app') == QtCore.Qt.Checked:
+        if self.settings.value('presentations/override app') == QtCore.Qt.Checked:
             self.presentation_widget.show()
         else:
             self.presentation_widget.hide()
@@ -237,7 +237,7 @@ class PresentationMediaItem(MediaManagerItem):
             self.main_window.finished_progress_bar()
             for row in row_list:
                 self.list_view.takeItem(row)
-            self.settings.setValue(self.settings_section + '/presentations files', self.get_file_list())
+            self.settings.setValue('presentations/presentations files', self.get_file_list())
             self.application.set_normal_cursor()
 
     def clean_up_thumbnails(self, file_path, clean_for_update=False):
@@ -451,7 +451,7 @@ class PresentationMediaItem(MediaManagerItem):
         :param show_error: not used
         :return:
         """
-        file_paths = self.settings.value(self.settings_section + '/presentations files')
+        file_paths = self.settings.value('presentations/presentations files')
         results = []
         string = string.lower()
         for file_path in file_paths:

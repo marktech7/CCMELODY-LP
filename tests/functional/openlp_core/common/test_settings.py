@@ -122,8 +122,7 @@ def test_settings_override_with_group():
 
     # WHEN reading a setting for the first time
     settings = Settings()
-    settings.beginGroup('test')
-    extend = settings.value('extend')
+    extend = settings.value('test/extend')
 
     # THEN the default value is returned
     assert 'very wide' == extend, 'The default value defined should be returned'

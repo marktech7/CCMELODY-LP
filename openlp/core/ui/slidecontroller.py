@@ -355,7 +355,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_once = create_action(self, 'playSlidesOnce', text=UiStrings().PlaySlidesToEnd,
                                                   icon=UiIcons().play_slides, checked=False, can_shortcuts=True,
                                                   category=self.category, triggers=self.on_play_slides_once)
-            if self.settings.value(self.main_window.advanced_settings_section + '/slide limits') == SlideLimits.Wrap:
+            if self.settings.value('advanced/slide limits') == SlideLimits.Wrap:
                 self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             else:
                 self.play_slides_menu.setDefaultAction(self.play_slides_once)
@@ -741,7 +741,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Updates the Slide Limits variable from the settings.
         """
-        self.slide_limits = self.settings.value(self.main_window.advanced_settings_section + '/slide limits')
+        self.slide_limits = self.settings.value('advanced/slide limits')
 
     def enable_tool_bar(self, item):
         """
@@ -775,8 +775,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.play_slides_loop.setIcon(UiIcons().loop)
         self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         if item.is_text():
-            if (self.settings.value(self.main_window.songs_settings_section + '/display songbar') and
-                    not self.song_menu.menu().isEmpty()):
+            if (self.settings.value('songs/display songbar') and not self.song_menu.menu().isEmpty()):
                 self.toolbar.set_widget_visible('song_menu', True)
         if item.is_capable(ItemCapabilities.CanLoop) and len(item.slides) > 1:
             self.toolbar.set_widget_visible(LOOP_LIST)
@@ -1111,10 +1110,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Update ui buttons
         if hide_mode is None:
             self.hide_menu.setDefaultAction(self.blank_screen)
-            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', False)
+            self.settings.setValue('core/screen blank', False)
         else:
             self.hide_menu.setDefaultAction(self.show_screen)
-            self.settings.setValue(self.main_window.general_settings_section + '/screen blank', True)
+            self.settings.setValue('core/screen blank', True)
         self.show_screen.setChecked(hide_mode is None)
         self.blank_screen.setChecked(hide_mode == HideMode.Blank)
         self.theme_screen.setChecked(hide_mode == HideMode.Theme)

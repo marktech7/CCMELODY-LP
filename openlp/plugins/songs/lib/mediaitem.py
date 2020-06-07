@@ -115,8 +115,8 @@ class SongMediaItem(MediaManagerItem):
         """
         log.debug('config_updated')
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
-        self.update_service_on_edit = self.settings.value(self.settings_section + '/update service on edit')
-        self.add_song_from_service = self.settings.value(self.settings_section + '/add song from service')
+        self.update_service_on_edit = self.settings.value('songs/update service on edit')
+        self.add_song_from_service = self.settings.value('songs/add song from service')
 
     def retranslate_ui(self):
         self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))

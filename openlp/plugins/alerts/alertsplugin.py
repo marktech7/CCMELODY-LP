@@ -171,7 +171,7 @@ class AlertsPlugin(Plugin):
         Switch the alerts state
         """
         self.alerts_active = not self.alerts_active
-        self.settings.setValue(self.settings_section + '/active', self.alerts_active)
+        self.settings.setValue('alerts/active', self.alerts_active)
 
     def on_alerts_trigger(self):
         """

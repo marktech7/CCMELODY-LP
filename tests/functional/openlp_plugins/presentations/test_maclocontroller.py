@@ -59,7 +59,6 @@ class TestMacLOController(TestCase, TestMixin):
         Registry().register('settings', Settings())
         self.mock_plugin = MagicMock()
         self.temp_folder = mkdtemp()
-        self.mock_plugin.settings_section = self.temp_folder
 
     def tearDown(self):
         """

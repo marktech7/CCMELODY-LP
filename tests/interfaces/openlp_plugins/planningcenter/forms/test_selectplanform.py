@@ -64,7 +64,7 @@ class TestSelectPlanForm(TestCase, TestMixin):
         self.build_settings()
         State().load_settings()
         Registry().register('settings', Settings())
-        Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
+        Registry().register('main_window', MagicMock())
         self.application_id = 'abc'
         self.secret = '123'
         Settings().setValue('planningcenter/application_id', self.application_id)
@@ -358,7 +358,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
                 songs_plugin = SongsPlugin()
                 song_media_item = SongMediaItem(None, songs_plugin)
                 song_media_item.search_text_edit = MagicMock()
-                song_media_item.settings_section = 'songs'
                 song_media_item.initialise()
                 # init custom plugin
                 custom_plugin = CustomPlugin()

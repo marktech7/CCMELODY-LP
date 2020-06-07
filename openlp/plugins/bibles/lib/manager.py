@@ -114,10 +114,10 @@ class BibleManager(LogMixin, RegistryProperties):
         """
         log.debug('Bible Initialising')
         self.parent = parent
-        self.settings_section = 'bibles'
+
         self.web = 'Web'
         self.db_cache = None
-        self.path = AppLocation.get_section_data_path(self.settings_section)
+        self.path = AppLocation.get_section_data_path('bibles')
         self.suffix = '.sqlite'
         self.import_wizard = None
         self.reload_bibles()
@@ -129,7 +129,7 @@ class BibleManager(LogMixin, RegistryProperties):
         of HTTPBible is loaded instead of the BibleDB class.
         """
         log.debug('Reload bibles')
-        file_paths = AppLocation.get_files(self.settings_section, self.suffix)
+        file_paths = AppLocation.get_files('bibles', self.suffix)
         if Path('alternative_book_names.sqlite') in file_paths:
             file_paths.remove(Path('alternative_book_names.sqlite'))
         log.debug('Bible Files {text}'.format(text=file_paths))
@@ -296,7 +296,7 @@ class BibleManager(LogMixin, RegistryProperties):
         if not language_selection or language_selection.value == "None" or language_selection.value == "-1":
             # If None is returned, it's not the singleton object but a
             # BibleMeta object with the value "None"
-            language_selection = Registry().get('settings').value(self.settings_section + '/book name language')
+            language_selection = Registry().get('settings').value('bibles/book name language')
         else:
             language_selection = language_selection.value
         try:

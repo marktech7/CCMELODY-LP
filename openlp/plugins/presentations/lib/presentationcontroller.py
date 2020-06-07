@@ -460,10 +460,10 @@ class PresentationController(object):
         self.name = name
         self.display_name = display_name if display_name is not None else name
         self.document_class = document_class
-        self.settings_section = self.plugin.settings_section
+
         self.available = None
-        self.temp_folder = AppLocation.get_section_data_path(self.settings_section) / name
-        self.thumbnail_folder = AppLocation.get_section_data_path(self.settings_section) / 'thumbnails'
+        self.temp_folder = AppLocation.get_section_data_path('presentations') / name
+        self.thumbnail_folder = AppLocation.get_section_data_path('presentations') / 'thumbnails'
         self.thumbnail_prefix = 'slide'
         create_paths(self.thumbnail_folder, self.temp_folder)
 
@@ -471,7 +471,7 @@ class PresentationController(object):
         """
         Return whether the controller is currently enabled
         """
-        if Registry().get('settings').value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
+        if Registry().get('settings').value('presentations/' + self.name) == QtCore.Qt.Checked:
             return self.is_available()
         else:
             return False

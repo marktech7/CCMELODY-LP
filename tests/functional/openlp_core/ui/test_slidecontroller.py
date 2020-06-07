@@ -411,7 +411,7 @@ def test_update_slide_limits(mock_settings):
     """
     # GIVEN: A mocked out Settings object, a new SlideController and a mocked out main_window
     mock_settings.value.return_value = 10
-    mocked_main_window = MagicMock(advanced_settings_section='advanced')
+    mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
     slide_controller = SlideController(None)
 

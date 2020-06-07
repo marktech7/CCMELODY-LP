@@ -662,7 +662,6 @@ class BibleImportForm(OpenLPWizard):
         """
         Set default values for the wizard pages.
         """
-        self.settings.beginGroup(self.plugin.settings_section)
         self.restart()
         self.finish_button.setVisible(False)
         self.cancel_button.setVisible(True)
@@ -685,7 +684,6 @@ class BibleImportForm(OpenLPWizard):
         self.setField('license_full_license', self.full_license_edit.toPlainText())
         self.full_license_edit.setPlaceholderText(UiStrings().OptionalHideInFooter)
         self.on_web_source_combo_box_index_changed(WebDownload.Crosswalk)
-        self.settings.endGroup()
 
     def pre_wizard(self):
         """

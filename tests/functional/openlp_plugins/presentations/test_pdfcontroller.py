@@ -31,7 +31,6 @@ from unittest.mock import MagicMock, patch
 from PyQt5 import QtCore, QtGui
 
 from openlp.core.common import is_macosx, is_linux, is_win
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.pdfcontroller import PdfController, PdfDocument
 from tests.utils.constants import RESOURCE_PATH
@@ -127,10 +126,11 @@ def load_pdf_pictures(exe_path, pdf_env):
     test_file_path = RESOURCE_PATH / 'presentations' / 'pdf_test1.pdf'
 
     # WHEN: The Pdf is loaded
+    settings = pdf_env[0]
     mock_plugin = pdf_env[1]
     temp_folder_path = pdf_env[2]
     thumbnail_folder_path = pdf_env[3]
-    Settings().setValue('presentations/pdf_program', exe_path)
+    settings.setValue('presentations/pdf_program', exe_path)
     controller = PdfController(plugin=mock_plugin)
     controller.temp_folder = temp_folder_path
     controller.thumbnail_folder = thumbnail_folder_path

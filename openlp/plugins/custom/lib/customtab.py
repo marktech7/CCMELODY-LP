@@ -81,21 +81,17 @@ class CustomTab(SettingsTab):
 
         Load the settings into the dialog
         """
-        self.settings.beginGroup(self.settings_section)
-        self.display_footer = self.settings.value('display footer')
-        self.update_load = self.settings.value('add custom from service')
+        self.display_footer = self.settings.value('custom/display footer')
+        self.update_load = self.settings.value('custom/add custom from service')
         self.display_footer_check_box.setChecked(self.display_footer)
         self.add_from_service_checkbox.setChecked(self.update_load)
-        self.settings.endGroup()
 
     def save(self):
         """
         Save the Dialog settings
         """
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('display footer', self.display_footer)
-        self.settings.setValue('add custom from service', self.update_load)
-        self.settings.endGroup()
+        self.settings.setValue('custom/display footer', self.display_footer)
+        self.settings.setValue('custom/add custom from service', self.update_load)
         if self.tab_visited:
             self.settings_form.register_post_process('custom_config_updated')
         self.tab_visited = False

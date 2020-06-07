@@ -66,15 +66,11 @@ class ImageTab(SettingsTab):
         self.background_color = color
 
     def load(self):
-        self.settings.beginGroup(self.settings_section)
-        self.background_color = self.settings.value('background color')
+        self.background_color = self.settings.value('images/background color')
         self.initial_color = self.background_color
-        self.settings.endGroup()
         self.background_color_button.color = self.background_color
 
     def save(self):
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('background color', self.background_color)
-        self.settings.endGroup()
+        self.settings.setValue('images/background color', self.background_color)
         if self.initial_color != self.background_color:
             self.settings_form.register_post_process('images_config_updated')

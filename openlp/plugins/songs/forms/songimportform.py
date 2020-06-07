@@ -231,13 +231,13 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         filters += '{text} (*)'.format(text=UiStrings().AllFiles)
         file_paths, filter_used = FileDialog.getOpenFileNames(
             self, title,
-            self.settings.value(self.plugin.settings_section + '/last directory import'), filters)
+            self.settings.value('presentations/last directory import'), filters)
         for file_path in file_paths:
             list_item = QtWidgets.QListWidgetItem(str(file_path))
             list_item.setData(QtCore.Qt.UserRole, file_path)
             listbox.addItem(list_item)
         if file_paths:
-            self.settings.setValue(self.plugin.settings_section + '/last directory import', file_paths[0].parent)
+            self.settings.setValue('song/last directory import', file_paths[0].parent)
 
     def get_list_of_paths(self, list_box):
         """

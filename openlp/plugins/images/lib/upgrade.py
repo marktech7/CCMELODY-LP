@@ -23,6 +23,7 @@ The :mod:`upgrade` module provides the migration path for the OLP Paths database
 """
 import json
 import logging
+import shutil
 from pathlib import Path
 
 from sqlalchemy import Column, Table, types
@@ -81,8 +82,18 @@ def upgrade_3(session, metadata):
         op.add_column('image_filenames', Column('file_hash', types.Unicode(128)))
         conn = op.get_bind()
         results = conn.execute('SELECT * FROM image_filenames')
+        thumb_path = AppLocation.get_data_path() / 'images' / 'thumbnails'
         for row in results.fetchall():
             file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
             hash = sha256_file_hash(file_path)
             sql = 'UPDATE image_filenames SET file_hash = \'{hash}\' WHERE id = {id}'.format(hash=hash, id=row.id)
             conn.execute(sql)
+            # rename thumbnail to use file hash
+            ext = file_path.suffix.lower()
+            old_thumb = thumb_path / '{name:d}{ext}'.format(name=row.id, ext=ext)
+            new_thumb = thumb_path / '{name:s}{ext}'.format(name=hash, ext=ext)
+            try:
+                shutil.move(old_thumb, new_thumb)
+            except OSError:
+                log.exception('Failed in renaming image thumb from {oldt} to {newt}'.format(oldt=old_thumb,
+                                                                                            newt=new_thumb))

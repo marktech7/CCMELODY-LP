@@ -40,7 +40,6 @@ def media_item(mock_settings):
             patch('openlp.plugins.bibles.lib.mediaitem.BibleMediaItem.setup_item'):
         m_item = BibleMediaItem(None, MagicMock())
     media_item.plugin = MagicMock()
-    m_item.settings_section = 'bibles'
     m_item.results_view_tab = MagicMock()
     return m_item
 

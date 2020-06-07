@@ -56,7 +56,7 @@ class TestServiceManager(TestCase, TestMixin):
         Registry.create()
         self.setup_application()
         Registry().register('application', MagicMock())
-        Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
+        Registry().register('main_window', MagicMock())
         Registry().register('settings', Settings())
         self.service_manager = ServiceManager()
         self.add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')

@@ -54,15 +54,15 @@ class SongUsageDetailForm(QtWidgets.QDialog, Ui_SongUsageDetailDialog, RegistryP
         """
         We need to set up the screen
         """
-        to_date = self.settings.value(self.plugin.settings_section + '/to date')
+        to_date = self.settings.value('songusage/to date')
         if not (isinstance(to_date, QtCore.QDate) and to_date.isValid()):
             to_date = QtCore.QDate.currentDate()
-        from_date = self.settings.value(self.plugin.settings_section + '/from date')
+        from_date = self.settings.value('songusage/from date')
         if not (isinstance(from_date, QtCore.QDate) and from_date.isValid()):
             from_date = to_date.addYears(-1)
         self.from_date_calendar.setSelectedDate(from_date)
         self.to_date_calendar.setSelectedDate(to_date)
-        self.report_path_edit.path = self.settings.value(self.plugin.settings_section + '/last directory export')
+        self.report_path_edit.path = self.settings.value('songusage/last directory export')
 
     def on_report_path_edit_path_changed(self, file_path):
         """
@@ -71,7 +71,7 @@ class SongUsageDetailForm(QtWidgets.QDialog, Ui_SongUsageDetailDialog, RegistryP
         :param pathlib.Path file_path: The new path.
         :rtype: None
         """
-        self.settings.setValue(self.plugin.settings_section + '/last directory export', file_path)
+        self.settings.setValue('songusage/last directory export', file_path)
 
     def accept(self):
         """
@@ -91,8 +91,8 @@ class SongUsageDetailForm(QtWidgets.QDialog, Ui_SongUsageDetailDialog, RegistryP
                               'usage_detail_{old}_{new}.txt'
                               ).format(old=self.from_date_calendar.selectedDate().toString('ddMMyyyy'),
                                        new=self.to_date_calendar.selectedDate().toString('ddMMyyyy'))
-        self.settings.setValue(self.plugin.settings_section + '/from date', self.from_date_calendar.selectedDate())
-        self.settings.setValue(self.plugin.settings_section + '/to date', self.to_date_calendar.selectedDate())
+        self.settings.setValue('songusage/from date', self.from_date_calendar.selectedDate())
+        self.settings.setValue('songusage/to date', self.to_date_calendar.selectedDate())
         usage = self.plugin.manager.get_all_objects(
             SongUsageItem, and_(SongUsageItem.usagedate >= self.from_date_calendar.selectedDate().toPyDate(),
                                 SongUsageItem.usagedate < self.to_date_calendar.selectedDate().toPyDate()),

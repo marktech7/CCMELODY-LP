@@ -476,18 +476,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         super(MainWindow, self).__init__()
         Registry().register('main_window', self)
         self.clipboard = QtWidgets.QApplication.clipboard()
-        # Set up settings sections for the main application (not for use by plugins).
-        self.ui_settings_section = 'user interface'
-        self.general_settings_section = 'core'
-        self.advanced_settings_section = 'advanced'
-        self.shortcuts_settings_section = 'shortcuts'
-        self.service_manager_settings_section = 'servicemanager'
-        self.songs_settings_section = 'songs'
-        self.themes_settings_section = 'themes'
-        self.projector_settings_section = 'projector'
-        self.players_settings_section = 'players'
-        self.display_tags_section = 'displayTags'
-        self.header_section = 'SettingsImport'
         self.recent_files = []
         self.timer_id = 0
         self.new_data_path = None
@@ -657,11 +645,11 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # If not we need to see if we want to use the previous file.so count of 1
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
-        elif self.settings.value(self.general_settings_section + '/auto open'):
+        elif self.settings.value('core/auto open'):
             self.service_manager_contents.load_last_file()
         # This will store currently used layout preset so it remains enabled on next startup.
         # If any panel is enabled/disabled after preset is set, this setting is not saved.
-        view_mode = self.settings.value('{section}/view mode'.format(section=self.general_settings_section))
+        view_mode = self.settings.value('core/view mode')
         if view_mode == 'default' and self.settings.value('user interface/is preset layout'):
             self.mode_default_item.setChecked(True)
         elif view_mode == 'setup' and self.settings.value('user interface/is preset layout'):
@@ -737,8 +725,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Check and display message if screen blank on setup.
         """
-        if self.settings.value('{section}/screen blank'.format(section=self.general_settings_section)):
-            if self.settings.value('{section}/blank warning'.format(section=self.general_settings_section)):
+        if self.settings.value('core/screen blank'):
+            if self.settings.value('core/blank warning'):
                 QtWidgets.QMessageBox.question(self, translate('OpenLP.MainWindow', 'OpenLP Main Display Blanked'),
                                                translate('OpenLP.MainWindow', 'The Main Display has been blanked out'))
 
@@ -866,16 +854,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             return
         setting_sections = []
         # Add main sections.
-        setting_sections.extend([self.general_settings_section])
-        setting_sections.extend([self.advanced_settings_section])
-        setting_sections.extend([self.ui_settings_section])
-        setting_sections.extend([self.shortcuts_settings_section])
-        setting_sections.extend([self.service_manager_settings_section])
-        setting_sections.extend([self.themes_settings_section])
-        setting_sections.extend([self.projector_settings_section])
-        setting_sections.extend([self.players_settings_section])
-        setting_sections.extend([self.display_tags_section])
-        setting_sections.extend([self.header_section])
+        setting_sections.extend(['core'])
+        setting_sections.extend(['advanced'])
+        setting_sections.extend(['user interface'])
+        setting_sections.extend(['shortcuts'])
+        setting_sections.extend(['servicemanager'])
+        setting_sections.extend(['themes'])
+        setting_sections.extend(['projector'])
+        setting_sections.extend(['players'])
+        setting_sections.extend(['displayTags'])
+        setting_sections.extend(['SettingsImport'])
         setting_sections.extend(['crashreport'])
         # Add plugin sections.
         setting_sections.extend([plugin.name for plugin in State().list_plugins()])
@@ -929,10 +917,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             if value is not None:
                 self.settings.setValue('{key}'.format(key=section_key), value)
         now = datetime.now()
-        self.settings.beginGroup(self.header_section)
-        self.settings.setValue('file_imported', import_file_path)
-        self.settings.setValue('file_date_imported', now.strftime("%Y-%m-%d %H:%M"))
-        self.settings.endGroup()
+        self.settings.setValue('SettingsImport/file_imported', import_file_path)
+        self.settings.setValue('SettingsImport/file_date_imported', now.strftime("%Y-%m-%d %H:%M"))
         self.settings.sync()
         # We must do an immediate restart or current configuration will overwrite what was just imported when
         # application terminates normally.   We need to exit without saving configuration.
@@ -996,7 +982,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         Set OpenLP to a different view mode.
         """
         if mode:
-            self.settings.setValue('{section}/view mode'.format(section=self.general_settings_section), mode)
+            self.settings.setValue('core/view mode', mode)
         self.media_manager_dock.setVisible(media)
         self.service_manager_dock.setVisible(service)
         self.theme_manager_dock.setVisible(theme)
@@ -1240,20 +1226,16 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Remove obsolete entries.
         self.settings.remove('custom slide')
         self.settings.remove('service')
-        self.settings.beginGroup(self.general_settings_section)
-        self.recent_files = self.settings.value('recent files')
-        self.settings.endGroup()
-        self.settings.beginGroup(self.ui_settings_section)
-        self.move(self.settings.value('main window position'))
-        self.restoreGeometry(self.settings.value('main window geometry'))
-        self.restoreState(self.settings.value('main window state'))
-        self.live_controller.splitter.restoreState(self.settings.value('live splitter geometry'))
-        self.preview_controller.splitter.restoreState(self.settings.value('preview splitter geometry'))
-        self.control_splitter.restoreState(self.settings.value('main window splitter geometry'))
+        self.recent_files = self.settings.value('core/recent files')
+        self.move(self.settings.value('user interface/main window position'))
+        self.restoreGeometry(self.settings.value('user interface/main window geometry'))
+        self.restoreState(self.settings.value('user interface/main window state'))
+        self.live_controller.splitter.restoreState(self.settings.value('user interface/live splitter geometry'))
+        self.preview_controller.splitter.restoreState(self.settings.value('user interface/preview splitter geometry'))
+        self.control_splitter.restoreState(self.settings.value('user interface/main window splitter geometry'))
         # This needs to be called after restoreState(), because saveState() also saves the "Collapsible" property
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
-        self.settings.endGroup()
 
     def save_settings(self):
         """
@@ -1262,17 +1244,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Exit if we just did a settings import.
         if self.settings_imported:
             return
-        self.settings.beginGroup(self.general_settings_section)
-        self.settings.setValue('recent files', self.recent_files)
-        self.settings.endGroup()
-        self.settings.beginGroup(self.ui_settings_section)
-        self.settings.setValue('main window position', self.pos())
-        self.settings.setValue('main window state', self.saveState())
-        self.settings.setValue('main window geometry', self.saveGeometry())
-        self.settings.setValue('live splitter geometry', self.live_controller.splitter.saveState())
-        self.settings.setValue('preview splitter geometry', self.preview_controller.splitter.saveState())
-        self.settings.setValue('main window splitter geometry', self.control_splitter.saveState())
-        self.settings.endGroup()
+        self.settings.setValue('core/recent files', self.recent_files)
+        self.settings.setValue('user interface/main window position', self.pos())
+        self.settings.setValue('user interface/main window state', self.saveState())
+        self.settings.setValue('user interface/main window geometry', self.saveGeometry())
+        self.settings.setValue('user interface/live splitter geometry', self.live_controller.splitter.saveState())
+        self.settings.setValue('user interface/preview splitter geometry', self.preview_controller.splitter.saveState())
+        self.settings.setValue('user interface/main window splitter geometry', self.control_splitter.saveState())
 
     def update_recent_files_menu(self):
         """

@@ -142,7 +142,6 @@ def test_search(mock_setup, mock_item, registry):
     mocked_returned_settings.value.return_value = [path_1, path_2, path_3]
     Registry().register('settings', mocked_returned_settings)
     media_item = PresentationMediaItem(None, MagicMock(), None)
-    media_item.settings_section = ''
 
     # WHEN: Calling search
     results = media_item.search('IMPRE', False)

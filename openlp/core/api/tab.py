@@ -256,16 +256,16 @@ class ApiTab(SettingsTab):
         """
         Load the configuration and update the server configuration if necessary
         """
-        self.port_spin_box.setText(str(self.settings.value(self.settings_section + '/port')))
-        self.address_edit.setText(self.settings.value(self.settings_section + '/ip address'))
-        self.twelve_hour = self.settings.value(self.settings_section + '/twelve hour')
+        self.port_spin_box.setText(str(self.settings.value('api/port')))
+        self.address_edit.setText(self.settings.value('api/ip address'))
+        self.twelve_hour = self.settings.value('api/twelve hour')
         self.twelve_hour_check_box.setChecked(self.twelve_hour)
-        self.thumbnails = self.settings.value(self.settings_section + '/thumbnails')
+        self.thumbnails = self.settings.value('api/thumbnails')
         self.thumbnails_check_box.setChecked(self.thumbnails)
-        self.user_login_group_box.setChecked(self.settings.value(self.settings_section + '/authentication enabled'))
-        self.user_id.setText(self.settings.value(self.settings_section + '/user id'))
-        self.password.setText(self.settings.value(self.settings_section + '/password'))
-        self.current_version_value.setText(self.settings.value(self.settings_section + '/download version'))
+        self.user_login_group_box.setChecked(self.settings.value('api/authentication enabled'))
+        self.user_id.setText(self.settings.value('api/user id'))
+        self.password.setText(self.settings.value('api/password'))
+        self.current_version_value.setText(self.settings.value('api/download version'))
         self.set_master_version()
         self.set_urls()
 
@@ -273,14 +273,14 @@ class ApiTab(SettingsTab):
         """
         Save the configuration and update the server configuration if necessary
         """
-        if self.settings.value(self.settings_section + '/ip address') != self.address_edit.text():
+        if self.settings.value('api/ip address') != self.address_edit.text():
             self.settings_form.register_post_process('remotes_config_updated')
-        self.settings.setValue(self.settings_section + '/ip address', self.address_edit.text())
-        self.settings.setValue(self.settings_section + '/twelve hour', self.twelve_hour)
-        self.settings.setValue(self.settings_section + '/thumbnails', self.thumbnails)
-        self.settings.setValue(self.settings_section + '/authentication enabled', self.user_login_group_box.isChecked())
-        self.settings.setValue(self.settings_section + '/user id', self.user_id.text())
-        self.settings.setValue(self.settings_section + '/password', self.password.text())
+        self.settings.setValue('api/ip address', self.address_edit.text())
+        self.settings.setValue('api/twelve hour', self.twelve_hour)
+        self.settings.setValue('api/thumbnails', self.thumbnails)
+        self.settings.setValue('api/authentication enabled', self.user_login_group_box.isChecked())
+        self.settings.setValue('api/user id', self.user_id.text())
+        self.settings.setValue('api/password', self.password.text())
 
     def on_twelve_hour_check_box_changed(self, check_state):
         """
@@ -332,5 +332,5 @@ class ApiTab(SettingsTab):
         progress.close()
         app.process_events()
         self.current_version_value.setText(downloaded_version)
-        self.settings.setValue(self.settings_section + '/download version', downloaded_version)
+        self.settings.setValue('api/download version', downloaded_version)
         self.upgrade_button.setEnabled(self.can_enable_upgrade_button())

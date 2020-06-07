@@ -201,17 +201,16 @@ class SongsTab(SettingsTab):
         self.chord_notation = 'neo-latin'
 
     def on_footer_reset_button_clicked(self):
-        self.footer_edit_box.setPlainText(self.settings.get_default_value(self.settings_section + '/footer template'))
+        self.footer_edit_box.setPlainText(self.settings.get_default_value('songs/footer template'))
 
     def load(self):
-        self.settings.beginGroup(self.settings_section)
-        self.tool_bar = self.settings.value('display songbar')
-        self.update_edit = self.settings.value('update service on edit')
-        self.update_load = self.settings.value('add song from service')
-        self.songbook_slide = self.settings.value('add songbook slide')
-        self.enable_chords = self.settings.value('enable chords')
-        self.chord_notation = self.settings.value('chord notation')
-        self.disable_chords_import = self.settings.value('disable chords import')
+        self.tool_bar = self.settings.value('songs/display songbar')
+        self.update_edit = self.settings.value('songs/update service on edit')
+        self.update_load = self.settings.value('songs/add song from service')
+        self.songbook_slide = self.settings.value('songs/add songbook slide')
+        self.enable_chords = self.settings.value('songs/enable chords')
+        self.chord_notation = self.settings.value('songs/chord notation')
+        self.disable_chords_import = self.settings.value('songs/disable chords import')
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
@@ -223,22 +222,19 @@ class SongsTab(SettingsTab):
             self.neolatin_notation_radio_button.setChecked(True)
         else:
             self.english_notation_radio_button.setChecked(True)
-        self.footer_edit_box.setPlainText(self.settings.value('footer template'))
-        self.settings.endGroup()
+        self.footer_edit_box.setPlainText(self.settings.value('songs/footer template'))
 
     def save(self):
-        self.settings.beginGroup(self.settings_section)
-        self.settings.setValue('display songbar', self.tool_bar)
-        self.settings.setValue('update service on edit', self.update_edit)
-        self.settings.setValue('add song from service', self.update_load)
-        self.settings.setValue('enable chords', self.chords_group_box.isChecked())
-        self.settings.setValue('disable chords import', self.disable_chords_import)
-        self.settings.setValue('chord notation', self.chord_notation)
+        self.settings.setValue('songs/display songbar', self.tool_bar)
+        self.settings.setValue('songs/update service on edit', self.update_edit)
+        self.settings.setValue('songs/add song from service', self.update_load)
+        self.settings.setValue('songs/enable chords', self.chords_group_box.isChecked())
+        self.settings.setValue('songs/disable chords import', self.disable_chords_import)
+        self.settings.setValue('songs/chord notation', self.chord_notation)
         # Only save footer template if it has been changed. This allows future updates
-        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('footer template'):
-            self.settings.setValue('footer template', self.footer_edit_box.toPlainText())
-        self.settings.setValue('add songbook slide', self.songbook_slide)
-        self.settings.endGroup()
+        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('songs/footer template'):
+            self.settings.setValue('songs/footer template', self.footer_edit_box.toPlainText())
+        self.settings.setValue('songs/add songbook slide', self.songbook_slide)
         if self.tab_visited:
             self.settings_form.register_post_process('songs_config_updated')
         self.tab_visited = False

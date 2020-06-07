@@ -170,10 +170,8 @@ def init_url(plugin_name, db_file_name=None):
     :rtype: str
     """
     settings = Registry().get('settings')
-    settings.beginGroup(plugin_name)
-    db_type = settings.value('db type')
+    db_type = settings.value(f'{plugin_name}/db type')
     if db_type == 'sqlite':
-        settings.endGroup()
         db_url = get_db_path(plugin_name, db_file_name)
     else:
         db_url = '{type}://{user}:{password}@{host}/{db}'.format(type=db_type,
@@ -181,7 +179,6 @@ def init_url(plugin_name, db_file_name=None):
                                                                  password=urlquote(settings.value('db password')),
                                                                  host=urlquote(settings.value('db hostname')),
                                                                  db=urlquote(settings.value('db database')))
-        settings.endGroup()
     return db_url
 
 

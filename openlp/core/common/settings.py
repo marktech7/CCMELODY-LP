@@ -762,19 +762,17 @@ class Settings(QtCore.QSettings):
         now = datetime.datetime.now()
         # Write INI format using QSettings.
         # Write our header.
-        export_settings.beginGroup('SettingsImport')
-        export_settings.setValue('Make_Changes', 'At_Own_RISK')
-        export_settings.setValue('type', 'OpenLP_settings_export')
-        export_settings.setValue('file_date_created', now.strftime("%Y-%m-%d %H:%M"))
-        export_settings.endGroup()
+        export_settings.setValue('SettingsImport/Make_Changes', 'At_Own_RISK')
+        export_settings.setValue('SettingsImport/type', 'OpenLP_settings_export')
+        export_settings.setValue('SettingsImport/file_date_created', now.strftime("%Y-%m-%d %H:%M"))
         # Write all the sections and keys.
         for section_key in keys:
-            # FIXME: We are conflicting with the standard "General" section.
-            if 'eneral' in section_key:
-                section_key = section_key.lower()
-            key_value = super().value(section_key)
-            if key_value is not None:
-                export_settings.setValue(section_key, key_value)
+            try:
+                key_value = super().value(section_key)
+                if key_value is not None:
+                    export_settings.setValue(section_key, key_value)
+            except TypeError:
+                log.exception(f'Key Value invalid and bypassed for {section_key}')
         export_settings.sync()
         # Temp CONF file has been written.  Blanks in keys are now '%20'.
         # Read the  temp file and output the user's CONF file with blanks to

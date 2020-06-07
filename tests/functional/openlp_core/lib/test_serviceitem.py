@@ -122,9 +122,9 @@ def test_service_item_load_image_from_service(state_media, settings):
     """
     # GIVEN: A new service item and a mocked add icon function
     image_name = 'image_1.jpg'
-    test_file = TEST_PATH / image_name
-    frame_array = {'path': test_file, 'title': image_name, 'file_hash': 'abcd'}
-
+    fake_hash = 'abcd'
+    extracted_file = Path(TEST_PATH) / '{base}{ext}'.format(base=fake_hash, ext=os.path.splitext(image_name)[1])
+    frame_array = {'path': extracted_file, 'title': image_name, 'file_hash': fake_hash}
     service_item = ServiceItem(None)
     service_item.add_icon = MagicMock()
 
@@ -132,17 +132,18 @@ def test_service_item_load_image_from_service(state_media, settings):
     line = convert_file_service_item(TEST_PATH, 'serviceitem_image_1.osj')
     with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
             patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
-            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
-        mocked_sha256_file_hash.return_value = 'abcd'
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.move'):
+        mocked_sha256_file_hash.return_value = fake_hash
         mocked_exists.return_value = True
         mocked_get_section_data_path.return_value = Path('/path/')
         service_item.set_from_service(line, TEST_PATH)
 
     # THEN: We should get back a valid service item
     assert service_item.is_valid is True, 'The new service item should be valid'
-    assert test_file == service_item.get_rendered_frame(0), 'The first frame should match the path to the image'
+    assert extracted_file == service_item.get_rendered_frame(0), 'The first frame should match the path to the image'
     assert frame_array == service_item.get_frames()[0], 'The return should match frame array1'
-    assert test_file == service_item.get_frame_path(0), \
+    assert extracted_file == service_item.get_frame_path(0), \
         'The frame path should match the full path to the image'
     assert image_name == service_item.get_frame_title(0), 'The frame title should match the image name'
     assert image_name == service_item.get_display_title(), 'The display title should match the first image name'
@@ -168,8 +169,8 @@ def test_service_item_load_image_from_local_service(mocked_get_section_data_path
     mocked_exists.return_value = True
     image_name1 = 'image_1.jpg'
     image_name2 = 'image_2.jpg'
-    test_file1 = os.path.join('/home', 'openlp', image_name1)
-    test_file2 = os.path.join('/home', 'openlp', image_name2)
+    test_file1 = Path('/home/openlp') / image_name1
+    test_file2 = Path('/home/openlp') / image_name2
     frame_array1 = {'path': test_file1, 'title': image_name1, 'file_hash': 'abcd'}
     frame_array2 = {'path': test_file2, 'title': image_name2, 'file_hash': 'abcd'}
     service_item = ServiceItem(None)
@@ -196,9 +197,9 @@ def test_service_item_load_image_from_local_service(mocked_get_section_data_path
             'The Second frame should match the path to the image'
         assert frame_array1 == service_item.get_frames()[0], 'The return should match the frame array1'
         assert frame_array2 == service_item2.get_frames()[0], 'The return should match the frame array2'
-        assert test_file1 == str(service_item.get_frame_path(0)), \
+        assert test_file1 == service_item.get_frame_path(0), \
             'The frame path should match the full path to the image'
-        assert test_file2 == str(service_item2.get_frame_path(0)), \
+        assert test_file2 == service_item2.get_frame_path(0), \
             'The frame path should match the full path to the image'
     assert image_name1 == service_item.get_frame_title(0), 'The 1st frame title should match the image name'
     assert image_name2 == service_item2.get_frame_title(0), 'The 2nd frame title should match the image name'
@@ -221,16 +222,19 @@ def test_add_from_command_for_a_presentation():
     """
     # GIVEN: A service item, a mocked icon and presentation data
     service_item = ServiceItem(None)
+    service_item.name = 'presentations'
     presentation_name = 'test.pptx'
-    image = MagicMock()
+    image = Path('thumbnails/abcd/slide1.png')
     display_title = 'DisplayTitle'
     notes = 'Note1\nNote2\n'
     frame = {'title': presentation_name, 'image': image, 'path': TEST_PATH,
              'display_title': display_title, 'notes': notes, 'thumbnail': image}
 
     # WHEN: adding presentation to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
+        mocked_get_section_data_path.return_value = Path('.')
         service_item.add_from_command(TEST_PATH, presentation_name, image, display_title, notes)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
@@ -244,14 +248,17 @@ def test_add_from_command_without_display_title_and_notes():
     """
     # GIVEN: A new service item, a mocked icon and image data
     service_item = ServiceItem(None)
+    service_item.name = 'presentations'
     image_name = 'test.img'
-    image = MagicMock()
+    image = Path('thumbnails/abcd/slide1.png')
     frame = {'title': image_name, 'image': image, 'path': TEST_PATH,
              'display_title': None, 'notes': None, 'thumbnail': image}
 
     # WHEN: adding image to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
+        mocked_get_section_data_path.return_value = Path('.')
         service_item.add_from_command(TEST_PATH, image_name, image)
 
     # THEN: verify that it is setup as a Command and that the frame data matches
@@ -259,7 +266,7 @@ def test_add_from_command_without_display_title_and_notes():
     assert service_item.get_frames()[0] == frame, 'Frames should match'
 
 
-@patch(u'openlp.core.lib.serviceitem.ServiceItem.image_manager')
+@patch('openlp.core.lib.serviceitem.ServiceItem.image_manager')
 @patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path')
 def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path, mocked_image_manager):
     """

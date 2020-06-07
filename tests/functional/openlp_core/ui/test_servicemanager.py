@@ -635,7 +635,6 @@ def test_save_file_raises_permission_error(mocked_os, mocked_save_file_as, mocke
     """
     # GIVEN: A service manager, a service to save
     mocked_main_window = MagicMock()
-    mocked_main_window.service_manager_settings_section = 'servicemanager'
     Registry().register('main_window', mocked_main_window)
     Registry().register('application', MagicMock())
     service_manager = ServiceManager(None)

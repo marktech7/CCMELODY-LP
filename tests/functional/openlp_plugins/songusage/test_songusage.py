@@ -90,5 +90,5 @@ def test_toggle_song_usage_state(MockedManager, settings, state):
     # WHEN: calling toggle_song_usage_state
     song_usage.toggle_song_usage_state()
 
-    # THEN: song_usage_state should have been toogled
+    # THEN: song_usage_state should have been toggled
     assert song_usage.song_usage_active is False

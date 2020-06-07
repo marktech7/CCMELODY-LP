@@ -123,9 +123,7 @@ class TestPlanningCenterTab(TestCase, TestMixin):
         self.tab.save()
         # THEN: The settings version of application_id and secret should reflect the new values
         settings = Settings()
-        settings.beginGroup(self.tab.settings_section)
-        application_id = settings.value('application_id')
-        secret = settings.value('secret')
+        application_id = settings.value('planningcenter/application_id')
+        secret = settings.value('planningcenter/secret')
         self.assertEqual(application_id, new_application_id)
         self.assertEqual(secret, new_secret)
-        settings.endGroup()

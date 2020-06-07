@@ -25,10 +25,10 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.plugins.alerts.lib.db import AlertItem
 
-from .alertdialog import Ui_AlertDialog
+from openlp.plugins.alerts.forms.alertdialog import AlertDialog
 
 
-class AlertForm(QtWidgets.QDialog, Ui_AlertDialog):
+class AlertForm(QtWidgets.QDialog, AlertDialog):
     """
     Provide UI for the alert system
     """

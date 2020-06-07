@@ -197,7 +197,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         service_item.add_capability(ItemCapabilities.RequiresMedia)
-        if self.settings.value(self.settings_section + '/media auto start') == QtCore.Qt.Checked:
+        if self.settings.value('media/media auto start') == QtCore.Qt.Checked:
             service_item.will_auto_start = True
         # force a non-existent theme
         service_item.theme = -1
@@ -210,9 +210,9 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         Initialize media item.
         """
         self.list_view.clear()
-        self.service_path = AppLocation.get_section_data_path(self.settings_section) / 'thumbnails'
+        self.service_path = AppLocation.get_section_data_path('media') / 'thumbnails'
         create_paths(self.service_path)
-        self.load_list([path_to_str(file) for file in self.settings.value(self.settings_section + '/media files')])
+        self.load_list([path_to_str(file) for file in self.settings.value('media/media files')])
         self.rebuild_players()
 
     def rebuild_players(self):
@@ -236,7 +236,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
             row_list.sort(reverse=True)
             for row in row_list:
                 self.list_view.takeItem(row)
-            self.settings.setValue(self.settings_section + '/media files', self.get_file_list())
+            self.settings.setValue('media/media files', self.get_file_list())
 
     def load_list(self, media, target_group=None):
         """
@@ -296,7 +296,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :param media_type: Type to get, defaults to audio.
         :return: The media list
         """
-        media_file_paths = self.settings.value(self.settings_section + '/media files')
+        media_file_paths = self.settings.value('media/media files')
         media_file_paths.sort(key=lambda file_path: get_natural_key(os.path.split(str(file_path))[1]))
         if media_type == MediaType.Audio:
             extension = AUDIO_EXT
@@ -316,7 +316,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         """
         results = []
         string = string.lower()
-        for file_path in self.settings.value(self.settings_section + '/media files'):
+        for file_path in self.settings.value('media/media files'):
             file_name = file_path.name
             if file_name.lower().find(string) > -1:
                 results.append([str(file_path), file_name])
@@ -349,7 +349,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         # Append the optical string to the media list
         file_paths.append(optical)
         self.load_list([str(optical)])
-        self.settings.setValue(self.settings_section + '/media files', file_paths)
+        self.settings.setValue('media/media files', file_paths)
 
     def on_open_device_stream(self):
         """
@@ -378,7 +378,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         # Append the device stream string to the media list
         file_paths.append(stream)
         self.load_list([str(stream)])
-        self.settings.setValue(self.settings_section + '/media files', file_paths)
+        self.settings.setValue('media/media files', file_paths)
 
     def on_open_network_stream(self):
         """
@@ -407,4 +407,4 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         # Append the device stream string to the media list
         file_paths.append(stream)
         self.load_list([str(stream)])
-        self.settings.setValue(self.settings_section + '/media files', file_paths)
+        self.settings.setValue('media/media files', file_paths)

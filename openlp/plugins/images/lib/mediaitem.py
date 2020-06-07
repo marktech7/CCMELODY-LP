@@ -407,7 +407,7 @@ class ImageMediaItem(MediaManagerItem):
         self.application.set_normal_cursor()
         self.load_list(file_paths, target_group)
         last_dir = file_paths[0].parent
-        self.settings.setValue(self.settings_section + '/last directory', last_dir)
+        self.settings.setValue('images/last directory', last_dir)
 
     def load_list(self, image_paths, target_group=None, initial_load=False):
         """
@@ -553,7 +553,7 @@ class ImageMediaItem(MediaManagerItem):
         :param context: Why is it being generated
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
-        background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
+        background = QtGui.QColor(self.settings.value('images/background color'))
         if item:
             items = [item]
         else:
@@ -680,7 +680,7 @@ class ImageMediaItem(MediaManagerItem):
         if check_item_selected(
                 self.list_view,
                 translate('ImagePlugin.MediaItem', 'You must select an image to replace the background with.')):
-            background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
+            background = QtGui.QColor(self.settings.value('images/background color'))
             bitem = self.list_view.selectedItems()[0]
             if not isinstance(bitem.data(0, QtCore.Qt.UserRole), ImageFilenames):
                 # Only continue when an image is selected.

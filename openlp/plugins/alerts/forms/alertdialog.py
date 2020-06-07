@@ -26,7 +26,7 @@ from openlp.core.lib.ui import create_button, create_button_box
 from openlp.core.ui.icons import UiIcons
 
 
-class Ui_AlertDialog(object):
+class AlertDialog(object):
     """
     Alert UI Class
     """
