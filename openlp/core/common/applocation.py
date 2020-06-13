@@ -68,7 +68,11 @@ class AppLocation(object):
             path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
             path = _get_os_dir_path(dir_type)
-        return path
+        # resolve() does not work on windows
+        if is_win():
+            return Path.cwd() / path
+        else:
+            return path.resolve()
 
     @staticmethod
     def get_data_path():

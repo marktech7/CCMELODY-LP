@@ -538,6 +538,7 @@ class SongMediaItem(MediaManagerItem):
                     new_media_file.weight = media_file.weight
                     new_song.media_files.append(new_media_file)
             self.plugin.manager.save_object(new_song)
+            new_song.init_on_load()
         self.on_song_list_load()
 
     def generate_slide_data(self, service_item, *, item=None, context=ServiceItemContext.Service, **kwargs):
