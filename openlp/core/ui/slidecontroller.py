@@ -202,7 +202,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.update_slide_limits()
         self.panel = QtWidgets.QWidget(self.main_window.control_splitter)
         self.slide_list = {}
-        self.slide_count = 0
         self.controller_width = -1
         # Layout for holding panel
         self.panel_layout = QtWidgets.QVBoxLayout(self.panel)
@@ -1201,7 +1200,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.preview_display.set_single_image('#000', image_path)
         else:
             self.preview_display.go_to_slide(self.selected_row)
-        self.slide_count += 1
 
     def display_maindisplay(self):
         """
