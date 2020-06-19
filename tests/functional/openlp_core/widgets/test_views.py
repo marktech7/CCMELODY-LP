@@ -119,10 +119,9 @@ def test_new_list_preview_widget(preview_widget_env, mock_settings):
     assert list_preview_widget.screen_ratio == 1, 'Should not be called'
 
 
-@patch(u'openlp.core.widgets.views.ListPreviewWidget.image_manager')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.setRowHeight')
-def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToContents, mocked_image_manager,
+def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToContents,
                                      preview_widget_env, mock_settings):
     """
     Test that thubmails for different slides are loaded properly in replace_service_item.
@@ -151,8 +150,6 @@ def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToCon
     mocked_cmd_service_item.is_capable.return_value = True
     mocked_cmd_service_item.get_frames.return_value = [{'title': None, 'path': 'FAIL', 'image': 'TEST3'},
                                                        {'title': None, 'path': 'FAIL', 'image': 'TEST4'}]
-    # Mock image_manager
-    mocked_image_manager.get_image.return_value = QtGui.QImage()
 
     # init ListPreviewWidget and load service item
     list_preview_widget = ListPreviewWidget(None, 1)
@@ -160,11 +157,6 @@ def test_replace_service_item_thumbs(mocked_setRowHeight, mocked_resizeRowsToCon
     # WHEN: replace_service_item is called
     list_preview_widget.replace_service_item(mocked_img_service_item, 200, 0)
     list_preview_widget.replace_service_item(mocked_cmd_service_item, 200, 0)
-    # THEN: The ImageManager should be called in the appriopriate manner for each service item.
-    # assert mocked_image_manager.get_image.call_count == 4, 'Should be called once for each slide'
-    # calls = [call('TEST1', ImageSource.ImagePlugin), call('TEST2', ImageSource.ImagePlugin),
-    #          call('TEST3', ImageSource.CommandPlugins), call('TEST4', ImageSource.CommandPlugins)]
-    # mocked_image_manager.get_image.assert_has_calls(calls)
 
 
 @patch(u'openlp.core.widgets.views.ListPreviewWidget.resizeRowsToContents')

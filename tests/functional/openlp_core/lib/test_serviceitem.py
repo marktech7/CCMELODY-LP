@@ -268,7 +268,7 @@ def test_add_from_command_without_display_title_and_notes():
 @patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path')
 def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path):
     """
-    Test the Service Item - adding a presentation, updating the thumb path & adding the thumb to image_manager
+    Test the Service Item - adding a presentation, updating the thumb path & adding the thumb
     """
     # GIVEN: A service item, a mocked AppLocation and presentation data
     mocked_get_section_data_path.return_value = Path('mocked') / 'section' / 'path'
@@ -292,7 +292,6 @@ def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path)
     # THEN: verify that it is setup as a Command and that the frame data matches
     assert service_item.service_item_type == ServiceItemType.Command, 'It should be a Command'
     assert service_item.get_frames()[0] == frame, 'Frames should match'
-    # assert 1 == mocked_image_manager.add_image.call_count, 'image_manager should be used'
 
 
 def test_service_item_load_optical_media_from_service(state_media):
