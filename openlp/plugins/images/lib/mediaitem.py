@@ -553,7 +553,6 @@ class ImageMediaItem(MediaManagerItem):
         :param context: Why is it being generated
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
-        background = QtGui.QColor(self.settings.value('images/background color'))
         if item:
             items = [item]
         else:
@@ -611,7 +610,7 @@ class ImageMediaItem(MediaManagerItem):
         for image in images:
             name = image.file_path.name
             thumbnail_path = self.generate_thumbnail_path(image)
-            service_item.add_from_image(image.file_path, name, background, thumbnail_path)
+            service_item.add_from_image(image.file_path, name, thumbnail_path)
         return True
 
     def check_group_exists(self, new_group):
