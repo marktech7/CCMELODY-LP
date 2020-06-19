@@ -991,7 +991,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         The screen has changed so we have to update components such as the renderer.
         """
         self.application.set_busy_cursor()
-        # self.image_manager.update_display()
         self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
         self.preview_controller.screen_size_changed()
         self.live_controller.setup_displays()

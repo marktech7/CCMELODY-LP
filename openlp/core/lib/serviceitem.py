@@ -96,7 +96,6 @@ class ServiceItem(RegistryProperties):
         self.end_time = 0
         self.media_length = 0
         self.from_service = False
-        self.image_border = '#000000'
         self.background_audio = []
         self.theme_overwritten = False
         self.temporary_edit = False
@@ -279,17 +278,15 @@ class ServiceItem(RegistryProperties):
                     self._print_slides.append(slide)
         return self._print_slides
 
-    def add_from_image(self, path, title, background=None, thumbnail=None, file_hash=None):
+    def add_from_image(self, path, title, thumbnail=None, file_hash=None):
         """
         Add an image slide to the service item.
 
         :param path: The directory in which the image file is located.
         :param title: A title for the slide in the service item.
-        :param background: The background colour
         :param thumbnail: Optional alternative thumbnail, used for remote thumbnails.
+        :param file_hash: Unique Reference to file .
         """
-        if background:
-            self.image_border = background
         self.service_item_type = ServiceItemType.Image
         if not file_hash:
             file_hash = sha256_file_hash(path)
@@ -297,7 +294,6 @@ class ServiceItem(RegistryProperties):
         if thumbnail:
             slide['thumbnail'] = thumbnail
         self.slides.append(slide)
-        # self.image_manager.add_image(path, ImageSource.ImagePlugin, self.image_border)
         self._new_item()
 
     def add_from_text(self, text, verse_tag=None):
@@ -346,8 +342,6 @@ class ServiceItem(RegistryProperties):
                 ntpath.basename(image)
         self.slides.append({'title': file_name, 'image': image, 'path': path, 'display_title': display_title,
                             'notes': notes, 'thumbnail': image})
-        # if self.is_capable(ItemCapabilities.HasThumbnails):
-        #     self.image_manager.add_image(image, ImageSource.CommandPlugins, '#000000')
         self._new_item()
 
     def get_service_repr(self, lite_save):
@@ -496,8 +490,6 @@ class ServiceItem(RegistryProperties):
                 self.add_from_text(slide['raw_slide'], slide['verseTag'])
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
-            settings_section = service_item['serviceitem']['header']['name']
-            background = QtGui.QColor(self.settings.value(settings_section + '/background color'))
             if path:
                 self.has_original_file_path = False
                 for text_image in service_item['serviceitem']['data']:
@@ -522,7 +514,7 @@ class ServiceItem(RegistryProperties):
                         test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
                         if test_thumb.exists():
                             thumbnail = test_thumb
-                    self.add_from_image(file_path, text_image, background, thumbnail=thumbnail, file_hash=file_hash)
+                    self.add_from_image(file_path, text_image, thumbnail=thumbnail, file_hash=file_hash)
             else:
                 for text_image in service_item['serviceitem']['data']:
                     file_hash = None
@@ -540,7 +532,7 @@ class ServiceItem(RegistryProperties):
                         test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
                         if test_thumb.exists():
                             thumbnail = test_thumb
-                    self.add_from_image(file_path, text, background, thumbnail=thumbnail, file_hash=file_hash)
+                    self.add_from_image(file_path, text, thumbnail=thumbnail, file_hash=file_hash)
         elif self.service_item_type == ServiceItemType.Command:
             if version < 3:
                 # If this is an old servicefile with files included, we need to rename the bundled files to match

@@ -114,7 +114,6 @@ class RegistryProperties(object):
     """
     _application = None
     _plugin_manager = None
-    _image_manager = None
     _media_controller = None
     _service_manager = None
     _preview_controller = None
@@ -148,15 +147,6 @@ class RegistryProperties(object):
         if not hasattr(self, '_plugin_manager') or not self._plugin_manager:
             self._plugin_manager = Registry().get('plugin_manager')
         return self._plugin_manager
-
-    @property
-    def image_manager(self):
-        """
-        Adds the image manager to the class dynamically
-        """
-        if not hasattr(self, '_image_manager') or not self._image_manager:
-            self._image_manager = Registry().get('image_manager')
-        return self._image_manager
 
     @property
     def media_controller(self):

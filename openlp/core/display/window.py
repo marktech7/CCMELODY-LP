@@ -326,7 +326,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             else:
                 image['thumbnail'] = image['path']
         json_images = json.dumps(imagesr)
-        self.run_javascript('Display.setImageSlides({images});'.format(images=json_images))
+        background = self.settings.value('images/background color')
+        self.run_javascript('Display.setImageSlides({images}, "{background}");'.format(images=json_images,
+                                                                                       background=background))
 
     def load_video(self, video):
         """
