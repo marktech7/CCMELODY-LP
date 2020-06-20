@@ -27,38 +27,38 @@ test_script:
   - cd..
 
 after_test:
-  # This is where we create a package using PyInstaller
-  # Install PyInstaller
-  - "%PYTHON%\\python.exe -m pip install pyinstaller==3.5"
-  # Disabled portable installers - can't figure out how to make them silent
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
-  # - PortableApps.comInstaller_3.4.4.paf.exe /S
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Launcher/PortableApps.comLauncher_2.2.1.paf.exe
-  # - PortableApps.comLauncher_2.2.1.paf.exe /S
-  # - curl -L -O http://downloads.sourceforge.net/project/portableapps/NSIS%20Portable/NSISPortable_3.0_English.paf.exe
-  # - NSISPortable_3.0_English.paf.exe /S
-  # Download and unpack portable-bundle
-  - appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
-  - 7z x portable-setup.7z
-  # Install VLC
-  - choco install %CHOCO_VLC%
-  # Install HTML Help Workshop
-  - choco install html-help-workshop
-  # Get the packaging code
-  - appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
-  - 7z x packaging-master.zip
-
-  # If this is trunk we should also build the manual
+  # Only package on the master repo
   - ps: >-
-      If ($env:APPVEYOR_REPO_TAG -eq $True) {
-        &"$env:PYTHON\python.exe" -m pip install sphinx
-        Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
-        7z x documentation-master.zip
-        cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --release "$env:APPVEYOR_REPO_TAG_NAME" --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
-      } else {
-        cd packaging-master
-        &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+      If ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -eq "") {
+          # This is where we create a package using PyInstaller
+          # Install PyInstaller 
+          &"$env:PYTHON\python.exe" -m pip install pyinstaller
+          # Disabled portable installers - can't figure out how to make them silent
+          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
+          # - PortableApps.comInstaller_3.4.4.paf.exe /S
+          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Launcher/PortableApps.comLauncher_2.2.1.paf.exe
+          # - PortableApps.comLauncher_2.2.1.paf.exe /S
+          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/NSIS%20Portable/NSISPortable_3.0_English.paf.exe
+          # - NSISPortable_3.0_English.paf.exe /S
+          # Download and unpack portable-bundle
+          appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
+          7z x portable-setup.7z
+          # Install VLC
+          choco install %CHOCO_VLC%
+          # Get the packaging code
+          appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
+          7z x packaging-master.zip
+          # If this is tag/replease we should also build the manual
+          If ($env:APPVEYOR_REPO_TAG -eq $True) {
+            &"$env:PYTHON\python.exe" -m pip install sphinx
+            Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
+            7z x documentation-master.zip
+            cd packaging-master
+            &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
+          } else {
+            cd packaging-master
+            &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+          }
       }
 
 artifacts:
