@@ -31,7 +31,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.lib.ui import create_widget_action
 from openlp.core.projectors import DialogSourceStyle
 from openlp.core.projectors.constants import E_AUTHENTICATION, E_ERROR, E_NETWORK, E_NOT_CONNECTED, E_SOCKET_TIMEOUT,\
@@ -361,10 +360,10 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         Retrieve the saved settings
         """
         log.debug('Updating ProjectorManager settings')
-        self.autostart = Settings().value('projector/connect on start')
-        self.poll_time = Settings().value('projector/poll time')
-        self.socket_timeout = Settings().value('projector/socket timeout')
-        self.source_select_dialog_type = Settings().value('projector/source dialog type')
+        self.autostart = self.settings.value('projector/connect on start')
+        self.poll_time = self.settings.value('projector/poll time')
+        self.socket_timeout = self.settings.value('projector/socket timeout')
+        self.source_select_dialog_type = self.settings.value('projector/source dialog type')
 
     def context_menu(self, point):
         """

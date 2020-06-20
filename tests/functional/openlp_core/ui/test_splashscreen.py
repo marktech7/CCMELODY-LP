@@ -26,21 +26,17 @@ from PyQt5 import QtCore
 from openlp.core.ui.splashscreen import SplashScreen
 
 
-class TestSplashScreen():
+def test_splashscreen():
     """
-    This will test the SplachScreen.py file
+    Test that the SpashScreen is created correctly
     """
-    def test_SplashScreen(self):
-        """
-        Test that the SpashScreen is created correctly
-        """
-        # GIVEN: the SplashScreen class
-        # WHEN: An object is created
+    # GIVEN: the SplashScreen class
+    # WHEN: An object is created
 
-        ss = SplashScreen()
-        # THEN: Nothing should go wrong and the instance should have the correct values
-        assert ss.objectName() == 'splashScreen', 'The ObjectName should have be ' \
-            'splashScreen'
-        assert ss.frameSize() == QtCore.QSize(370, 370), 'The frameSize should be (370, 370)'
-        assert ss.contextMenuPolicy() == QtCore.Qt.PreventContextMenu, 'The ContextMenuPolicy ' \
-            'should have been QtCore.Qt.PreventContextMenu or 4'
+    ss = SplashScreen()
+    # THEN: Nothing should go wrong and the instance should have the correct values
+    assert ss.objectName() == 'splashScreen', 'The ObjectName should have be ' \
+        'splashScreen'
+    assert ss.frameSize() == QtCore.QSize(370, 370), 'The frameSize should be (370, 370)'
+    assert ss.contextMenuPolicy() == QtCore.Qt.PreventContextMenu, 'The ContextMenuPolicy ' \
+        'should have been QtCore.Qt.PreventContextMenu or 4'

@@ -43,7 +43,6 @@ class SettingsTab(QtWidgets.QWidget, RegistryProperties):
         super(SettingsTab, self).__init__(parent)
         self.tab_title = title
         self.tab_title_visible = visible_title
-        self.settings_section = self.tab_title.lower()
         self.tab_visited = False
         if icon_path:
             self.icon_path = icon_path

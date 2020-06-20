@@ -27,6 +27,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
+from openlp.core.common import is_win
 from openlp.core.common.json import JSONMixin, OpenLPJSONDecoder, OpenLPJSONEncoder, PathSerializer, _registered_classes
 
 
@@ -187,7 +188,22 @@ class TestOpenLPJSONDecoder(TestCase):
         """
         # GIVEN: A JSON encoded string
         json_string = '[{"parts": ["test", "path1"], "json_meta": {"class": "Path", "version": 1}}, ' \
-                      '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}]'
+                      '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}, ' \
+                      '{"key": "value", "json_meta": {"class": "Object"}}]'
+
+        # WHEN: Decoding the string using the OpenLPJsonDecoder class
+        obj = json.loads(json_string, cls=OpenLPJSONDecoder)
+
+        # THEN: The object returned should be a python version of the JSON string
+        assert obj == [Path('test', 'path1'), Path('test', 'path2'), {'key': 'value', 'json_meta': {'class': 'Object'}}]
+
+    def test_json_decode_old_style(self):
+        """
+        Test the OpenLPJsonDecoder when decoding a JSON string with an old-style Path object
+        """
+        # GIVEN: A JSON encoded string
+        json_string = '[{"__Path__": ["test", "path1"]}, ' \
+                      '{"__Path__": ["test", "path2"]}]'
 
         # WHEN: Decoding the string using the OpenLPJsonDecoder class
         obj = json.loads(json_string, cls=OpenLPJSONDecoder)
@@ -283,6 +299,25 @@ class TestPathSerializer(TestCase):
 
         # THEN: A JSON decodeable object should have been returned.
         assert obj == {'parts': (os.sep, 'base', 'path', 'to', 'fi.le'), "json_meta": {"class": "Path", "version": 1}}
+
+    def test_path_json_object_is_js(self):
+        """
+        Test that `Path.json_object` creates a JSON decode-able object from a Path object
+        """
+        # GIVEN: A Path object from openlp.core.common.path
+        if is_win():
+            path = Path('c:\\', 'base', 'path', 'to', 'fi.le')
+        else:
+            path = Path('/base', 'path', 'to', 'fi.le')
+
+        # WHEN: Calling json_object
+        obj = PathSerializer().json_object(path, is_js=True, extra=1, args=2)
+
+        # THEN: A URI should be returned
+        if is_win():
+            assert obj == 'file:///c:/base/path/to/fi.le'
+        else:
+            assert obj == 'file:///base/path/to/fi.le'
 
     def test_path_json_object_base_path(self):
         """

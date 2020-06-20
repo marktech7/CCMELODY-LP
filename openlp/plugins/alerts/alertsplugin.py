@@ -22,16 +22,14 @@
 import logging
 
 from openlp.core.state import State
-from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.alerts.endpoint import api_alerts_endpoint, alerts_endpoint
+from openlp.plugins.alerts.remote import register_views
 from openlp.plugins.alerts.forms.alertform import AlertForm
 from openlp.plugins.alerts.lib.alertsmanager import AlertsManager
 from openlp.plugins.alerts.lib.alertstab import AlertsTab
@@ -129,8 +127,7 @@ class AlertsPlugin(Plugin):
         AlertsManager(self)
         self.manager = Manager('alerts', init_schema)
         self.alert_form = AlertForm(self)
-        register_endpoint(alerts_endpoint)
-        register_endpoint(api_alerts_endpoint)
+        register_views()
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
 
@@ -174,7 +171,7 @@ class AlertsPlugin(Plugin):
         Switch the alerts state
         """
         self.alerts_active = not self.alerts_active
-        Settings().setValue(self.settings_section + '/active', self.alerts_active)
+        self.settings.setValue('alerts/active', self.alerts_active)
 
     def on_alerts_trigger(self):
         """

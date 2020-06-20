@@ -24,12 +24,12 @@ from pathlib import Path
 
 from PyQt5 import QtCore
 
-from openlp.core.common import md5_hash
+from openlp.core.common import md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
-from openlp.core.lib import create_thumb, validate_thumb
+from openlp.core.lib import create_thumb
 
 
 log = logging.getLogger(__name__)
@@ -97,6 +97,8 @@ class PresentationDocument(object):
         :rtype: None
         """
         self.controller = controller
+        self._sha256_file_hash = None
+        self.settings = Registry().get('settings')
         self._setup(document_path)
 
     def _setup(self, document_path):
@@ -143,8 +145,14 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_temp_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
+        elif Settings().value('presentations/thumbnail_scheme') == 'sha256file':
+            if self._sha256_file_hash:
+                folder = self._sha256_file_hash
+            else:
+                self._sha256_file_hash = sha256_file_hash(self.file_path)
+                folder = self._sha256_file_hash
         else:
             folder = self.file_path.name
         return Path(self.controller.thumbnail_folder, folder)
@@ -158,15 +166,22 @@ class PresentationDocument(object):
         """
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       get_thumbnail_folder and PresentationPluginapp_startup is removed
-        if Settings().value('presentations/thumbnail_scheme') == 'md5':
+        if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
+        elif Settings().value('presentations/thumbnail_scheme') == 'sha256file':
+            if self._sha256_file_hash:
+                folder = self._sha256_file_hash
+            else:
+                self._sha256_file_hash = sha256_file_hash(self.file_path)
+                folder = self._sha256_file_hash
         else:
             folder = self.file_path.name
         return Path(self.controller.temp_folder, folder)
 
     def check_thumbnails(self):
         """
-        Check that the last thumbnail image exists and is valid and are more recent than the powerpoint file.
+        Check that the last thumbnail image exists and is valid. It is not checked if presentation file is newer than
+        thumbnail since the path is based on the file hash, so if it exists it is by definition up to date.
 
         :return: If the thumbnail is valid
         :rtype: bool
@@ -174,7 +189,7 @@ class PresentationDocument(object):
         last_image_path = self.get_thumbnail_path(self.get_slide_count(), True)
         if not (last_image_path and last_image_path.is_file()):
             return False
-        return validate_thumb(Path(self.file_path), Path(last_image_path))
+        return True
 
     def close_presentation(self):
         """
@@ -359,6 +374,17 @@ class PresentationDocument(object):
                 notes_path = self.get_thumbnail_folder() / 'slideNotes{number:d}.txt'.format(number=slide_no)
                 notes_path.write_text(note)
 
+    def get_sha256_file_hash(self):
+        """
+        Returns the sha256 file hash for the file.
+
+        :return: The sha256 file hash
+        :rtype: str
+        """
+        if not self._sha256_file_hash:
+            self._sha256_file_hash = sha256_file_hash(self.file_path)
+        return self._sha256_file_hash
+
 
 class PresentationController(object):
     """
@@ -434,10 +460,10 @@ class PresentationController(object):
         self.name = name
         self.display_name = display_name if display_name is not None else name
         self.document_class = document_class
-        self.settings_section = self.plugin.settings_section
+
         self.available = None
-        self.temp_folder = AppLocation.get_section_data_path(self.settings_section) / name
-        self.thumbnail_folder = AppLocation.get_section_data_path(self.settings_section) / 'thumbnails'
+        self.temp_folder = AppLocation.get_section_data_path('presentations') / name
+        self.thumbnail_folder = AppLocation.get_section_data_path('presentations') / 'thumbnails'
         self.thumbnail_prefix = 'slide'
         create_paths(self.thumbnail_folder, self.temp_folder)
 
@@ -445,7 +471,7 @@ class PresentationController(object):
         """
         Return whether the controller is currently enabled
         """
-        if Settings().value(self.settings_section + '/' + self.name) == QtCore.Qt.Checked:
+        if Registry().get('settings').value('presentations/' + self.name) == QtCore.Qt.Checked:
             return self.is_available()
         else:
             return False

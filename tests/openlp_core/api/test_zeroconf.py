@@ -23,18 +23,14 @@ from unittest.mock import MagicMock, call, patch
 from openlp.core.api.zeroconf import ZeroconfWorker, start_zeroconf
 
 
-@patch('openlp.core.api.zeroconf.socket.inet_aton')
-def test_zeroconf_worker_constructor(mocked_inet_aton):
+def test_zeroconf_worker_constructor():
     """Test creating the Zeroconf worker object"""
-    # GIVEN: A ZeroconfWorker class and a mocked inet_aton
-    mocked_inet_aton.return_value = 'processed_ip'
-
+    # GIVEN: A ZeroconfWorker class
     # WHEN: An instance of the ZeroconfWorker is created
-    worker = ZeroconfWorker('127.0.0.1', 8000, 8001)
+    worker = ZeroconfWorker(['127.0.0.1'], 8000, 8001)
 
     # THEN: The inet_aton function should have been called and the attrs should be set
-    mocked_inet_aton.assert_called_once_with('127.0.0.1')
-    assert worker.address == 'processed_ip'
+    assert worker.addresses == ['127.0.0.1']
     assert worker.http_port == 8000
     assert worker.ws_port == 8001
 
@@ -49,7 +45,7 @@ def test_zeroconf_worker_start(MockedZeroconf, MockedServiceInfo):
     mocked_zc = MagicMock()
     MockedServiceInfo.side_effect = [mocked_http_info, mocked_ws_info]
     MockedZeroconf.return_value = mocked_zc
-    worker = ZeroconfWorker('127.0.0.1', 8000, 8001)
+    worker = ZeroconfWorker(['127.0.0.1'], 8000, 8001)
 
     # WHEN: The start() method is called
     with patch.object(worker, 'can_run') as mocked_can_run:
@@ -58,20 +54,22 @@ def test_zeroconf_worker_start(MockedZeroconf, MockedServiceInfo):
 
     # THEN: The correct calls are made
     assert MockedServiceInfo.call_args_list == [
-        call('_http._tcp.local.', 'OpenLP._http._tcp.local.', address=b'\x7f\x00\x00\x01', port=8000, properties={}),
-        call('_ws._tcp.local.', 'OpenLP._ws._tcp.local.', address=b'\x7f\x00\x00\x01', port=8001, properties={})
+        call('_http._tcp.local.', 'OpenLP._http._tcp.local.', addresses=[b'\x7f\x00\x00\x01'], port=8000,
+             properties={}),
+        call('_ws._tcp.local.', 'OpenLP._ws._tcp.local.', addresses=[b'\x7f\x00\x00\x01'], port=8001,
+             properties={})
     ]
     assert MockedZeroconf.call_count == 1
     assert mocked_zc.register_service.call_args_list == [call(mocked_http_info), call(mocked_ws_info)]
     assert mocked_can_run.call_count == 2
-    assert mocked_zc.unregister_service.call_args_list == [call(mocked_http_info), call(mocked_ws_info)]
-    assert mocked_zc.close.call_count == 1
+    mocked_zc.unregister_all_services.assert_called_once_with()
+    mocked_zc.close.assert_called_once_with()
 
 
 def test_zeroconf_worker_stop():
     """Test that the ZeroconfWorker.stop() method correctly stops the service"""
     # GIVEN: A worker object with _can_run set to True
-    worker = ZeroconfWorker('127.0.0.1', 8000, 8001)
+    worker = ZeroconfWorker(['127.0.0.1'], 8000, 8001)
     worker._can_run = True
 
     # WHEN: stop() is called
@@ -83,11 +81,9 @@ def test_zeroconf_worker_stop():
 
 @patch('openlp.core.api.zeroconf.get_network_interfaces')
 @patch('openlp.core.api.zeroconf.Registry')
-@patch('openlp.core.api.zeroconf.Settings')
 @patch('openlp.core.api.zeroconf.ZeroconfWorker')
 @patch('openlp.core.api.zeroconf.run_thread')
-def test_start_zeroconf(mocked_run_thread, MockedZeroconfWorker, MockedSettings, MockedRegistry,
-                        mocked_get_network_interfaces):
+def test_start_zeroconf(mocked_run_thread, MockedZeroconfWorker, MockedRegistry, mocked_get_network_interfaces):
     """Test the start_zeroconf() function"""
     # GIVEN: A whole bunch of stuff that's mocked out
     mocked_get_network_interfaces.return_value = {
@@ -100,7 +96,7 @@ def test_start_zeroconf(mocked_run_thread, MockedZeroconfWorker, MockedSettings,
         }
     }
     MockedRegistry.return_value.get_flag.return_value = False
-    MockedSettings.return_value.value.side_effect = [8000, 8001]
+    MockedRegistry.settings.return_value.value.side_effect = [8000, 8001]
     mocked_worker = MagicMock()
     MockedZeroconfWorker.return_value = mocked_worker
 
@@ -108,4 +104,4 @@ def test_start_zeroconf(mocked_run_thread, MockedZeroconfWorker, MockedSettings,
     start_zeroconf()
 
     # THEN: A worker is added to the list of threads
-    mocked_run_thread.assert_called_once_with(mocked_worker, 'api_zeroconf_eth0')
+    mocked_run_thread.assert_called_once_with(mocked_worker, 'api_zeroconf')

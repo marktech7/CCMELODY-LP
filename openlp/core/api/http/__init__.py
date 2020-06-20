@@ -24,38 +24,7 @@ from functools import wraps
 
 from webob import Response
 
-from openlp.core.api.http.wsgiapp import WSGIApplication
-from openlp.core.common.settings import Settings
-
-application = WSGIApplication('api')
-
-
-def _route_from_url(url_prefix, url):
-    """
-    Create a route from the URL
-    """
-    url_prefix = '/{prefix}/'.format(prefix=url_prefix.strip('/'))
-    if not url:
-        url = url_prefix[:-1]
-    else:
-        url = url_prefix + url
-    url = url.replace('//', '/')
-    return url
-
-
-def register_endpoint(end_point):
-    """
-    Register an endpoint with the app
-    """
-    for url, view_func, method in end_point.routes:
-        # Set the view functions
-        route = _route_from_url(end_point.url_prefix, url)
-        application.add_route(route, view_func, method)
-        # Add a static route if necessary
-        if end_point.static_dir:
-            static_route = _route_from_url(end_point.url_prefix, 'static')
-            static_route += '(.*)'
-            application.add_static_route(static_route, end_point.static_dir)
+from openlp.core.common.registry import Registry
 
 
 def check_auth(auth):
@@ -65,8 +34,8 @@ def check_auth(auth):
     :param auth: the authorisation object which needs to be tested
     :return Whether authentication have been successful
     """
-    auth_code = "{user}:{password}".format(user=Settings().value('api/user id'),
-                                           password=Settings().value('api/password'))
+    auth_code = "{user}:{password}".format(user=Registry().get('settings_thread').value('api/user id'),
+                                           password=Registry().get('settings_thread').value('api/password'))
     try:
         auth_base = base64.b64encode(auth_code)
     except TypeError:
@@ -95,7 +64,7 @@ def requires_auth(f):
     """
     @wraps(f)
     def decorated(*args, **kwargs):
-        if not Settings().value('api/authentication enabled'):
+        if not Registry().get('settings_thread').value('api/authentication enabled'):
             return f(*args, **kwargs)
         req = args[0]
         if not hasattr(req, 'authorization'):

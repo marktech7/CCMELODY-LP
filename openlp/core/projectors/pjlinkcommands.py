@@ -30,7 +30,7 @@ import logging
 import re
 import string
 
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 from openlp.core.projectors.constants import E_AUTHENTICATION, PJLINK_DEFAULT_CODES, PJLINK_ERRORS, \
     PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_TOKEN_SIZE, \
@@ -345,7 +345,7 @@ def process_lkup(projector, data):
     :param data: Data packet from remote
     """
     log.debug('({ip}) Processing LKUP command'.format(ip=projector.entry.name))
-    if Settings().value('projector/connect when LKUP received'):
+    if Registry().get('settings').value('projector/connect when LKUP received'):
         projector.connect_to_host()
 
 

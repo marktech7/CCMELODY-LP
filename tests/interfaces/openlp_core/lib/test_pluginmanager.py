@@ -95,5 +95,5 @@ class TestPluginManager(TestCase, TestMixin):
         assert 'images' in plugin_names, 'There should be a "images" plugin'
         assert 'media' in plugin_names, 'There should be a "media" plugin'
         assert 'custom' in plugin_names, 'There should be a "custom" plugin'
-        assert 'songusage'in plugin_names, 'There should be a "songusage" plugin'
+        assert 'songusage' in plugin_names, 'There should be a "songusage" plugin'
         assert 'alerts' in plugin_names, 'There should be a "alerts" plugin'

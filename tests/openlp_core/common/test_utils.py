@@ -24,7 +24,7 @@ Interface tests to test the themeManager class and related methods.
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.utils import wait_for
+from openlp.core.common.utils import wait_for, is_uuid
 
 
 def test_wait_for(registry):
@@ -42,3 +42,18 @@ def test_wait_for(registry):
 
     # THEN: the functions got called
     assert mock_func.call_count == 2
+
+
+def test_uuid_not_str():
+    """Test that a non-string UUID returns False"""
+    assert not is_uuid(10), 'is_uuid() should return False when given something that is not a string'
+
+
+def test_uuid_not_valid():
+    """Test that an invalid string UUID returns False"""
+    assert not is_uuid('this is a string'), 'is_uuid() should return False when given an invalid string'
+
+
+def test_uuid_valid():
+    """Test that an valid string UUID returns True"""
+    assert is_uuid('2596ac84-9735-11ea-a665-8fa61362d04a'), 'is_uuid() should return True when given a valid UUID'

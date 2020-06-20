@@ -28,7 +28,7 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
 from openlp.core.ui.style import HAS_DARK_STYLE
 
@@ -64,7 +64,8 @@ class UiIcons(metaclass=Singleton):
             'authentication': {'icon': 'fa.exclamation-triangle', 'attr': 'red'},
             'address': {'icon': 'fa.book'},
             'back': {'icon': 'fa.step-backward'},
-            'backspace': {'icon': 'mdi.backspace-outline'},
+            'backspace': {'icon': 'fa.times'},
+            # 'backspace': {'icon': 'fa.caret-square-o-left'},
             'bible': {'icon': 'fa.book'},
             'blank': {'icon': 'fa.times-circle'},
             'blank_theme': {'icon': 'fa.file-image-o'},
@@ -82,8 +83,9 @@ class UiIcons(metaclass=Singleton):
             'default': {'icon': 'fa.info-circle'},
             'desktop': {'icon': 'fa.desktop'},
             'delete': {'icon': 'fa.trash'},
+            'device_stream': {'icon': 'fa.video-camera'},
             'download': {'icon': 'fa.download'},
-            'edit': {'icon': 'fa.edit'},
+            'edit': {'icon': 'op.edit'},
             'email': {'icon': 'fa.envelope'},
             'error': {'icon': 'fa.exclamation', 'attr': 'red'},
             'exception': {'icon': 'fa.times-circle'},
@@ -93,20 +95,31 @@ class UiIcons(metaclass=Singleton):
             'info': {'icon': 'fa.info'},
             'italic': {'icon': 'fa.italic'},
             'light_bulb': {'icon': 'fa.lightbulb-o'},
-            'live': {'icon': 'fa.eye'},
+            'live': {'icon': 'op.live'},
+            'live_presentation': {'icon': 'op.live-presentation'},
+            'live_theme': {'icon': 'op.live-theme'},
+            'live_black': {'icon': 'op.live-black'},
+            'live_desktop': {'icon': 'op.live-desktop'},
+            'loop': {'icon': 'op.loop'},
             'manual': {'icon': 'fa.graduation-cap'},
             'media': {'icon': 'fa.fax'},
             'minus': {'icon': 'fa.minus'},
+            'move_start': {'icon': 'op.move-start'},
+            'move_up': {'icon': 'op.move-up'},
+            'move_down': {'icon': 'op.move-down'},
+            'move_end': {'icon': 'op.move-end'},
             'music': {'icon': 'fa.music'},
-            'new': {'icon': 'fa.file'},
+            'network_stream': {'icon': 'fa.link'},
+            'new': {'icon': 'op.new'},
             'new_group': {'icon': 'fa.folder'},
             'notes': {'icon': 'fa.sticky-note'},
             'open': {'icon': 'fa.folder-open'},
-            'optical': {'icon': 'fa.file-video-o'},
+            'optical': {'icon': 'fa.circle-thin'},
             'pause': {'icon': 'fa.pause'},
             'planning_center': {'icon': 'fa.cloud-download'},
             'play': {'icon': 'fa.play'},
             'player': {'icon': 'fa.tablet'},
+            'play_slides': {'icon': 'op.play-slides'},
             'plugin_list': {'icon': 'fa.puzzle-piece'},
             'plus': {'icon': 'fa.plus'},
             'presentation': {'icon': 'fa.bar-chart'},
@@ -132,7 +145,7 @@ class UiIcons(metaclass=Singleton):
             'search': {'icon': 'fa.search'},
             'search_ccli': {'icon': 'op.search-CCLI'},
             'search_comb': {'icon': 'fa.columns'},
-            'search_lyrcs': {'icon': 'op.search-lyrcs'},
+            'search_lyrics': {'icon': 'op.search-lyrics'},
             'search_minus': {'icon': 'fa.search-minus'},
             'search_plus': {'icon': 'fa.search-plus'},
             'search_ref': {'icon': 'fa.institution'},
@@ -142,10 +155,10 @@ class UiIcons(metaclass=Singleton):
             'settings': {'icon': 'fa.cogs'},
             'shortcuts': {'icon': 'fa.wrench'},
             'song_usage': {'icon': 'fa.line-chart'},
-            'song_usage_active': {'icon': 'op.plus_sign'},
-            'song_usage_inactive': {'icon': 'op.minus_sign'},
+            'song_usage_active': {'icon': 'op.plus-sign'},
+            'song_usage_inactive': {'icon': 'op.minus-sign'},
             'sort': {'icon': 'fa.sort'},
-            'stop': {'icon': 'fa.stop'},
+            'stop': {'icon': 'op.stop'},
             'square': {'icon': 'fa.square'},
             'text': {'icon': 'op.file-text'},
             'time': {'icon': 'fa.history'},
@@ -166,7 +179,7 @@ class UiIcons(metaclass=Singleton):
         """
         Load the list of icons to be processed
         """
-        is_dark = (HAS_DARK_STYLE and Settings().value('advanced/use_dark_style'))
+        is_dark = (HAS_DARK_STYLE and Registry().get('settings').value('advanced/use_dark_style'))
         for key in icon_list:
             try:
                 icon = icon_list[key]['icon']
@@ -179,11 +192,11 @@ class UiIcons(metaclass=Singleton):
                     else:
                         setattr(self, key, qta.icon(icon))
                 except Exception:
-                    import sys
-                    log.error('Unexpected error: %s' % sys.exc_info())
-                    setattr(self, key, qta.icon('fa.plus-circle', color='red'))
+                    log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                    setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
             except Exception:
-                setattr(self, key, qta.icon('fa.plus-circle', color='red'))
+                log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
 
     @staticmethod
     def _print_icons():

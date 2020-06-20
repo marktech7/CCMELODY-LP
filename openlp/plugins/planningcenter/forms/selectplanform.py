@@ -30,7 +30,6 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.bibles.lib import parse_reference
 from openlp.plugins.planningcenter.forms.selectplandialog import Ui_SelectPlanDialog
 from openlp.plugins.planningcenter.lib.customimport import PlanningCenterCustomImport
@@ -49,8 +48,8 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         QtWidgets.QDialog.__init__(self, parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint)
         self.plugin = plugin
         # create an Planning Center API Object
-        application_id = Settings().value("planningcenter/application_id")
-        secret = Settings().value("planningcenter/secret")
+        application_id = Registry().get('settings').value("planningcenter/application_id")
+        secret = Registry().get('settings').value("planningcenter/secret")
         self.planning_center_api = PlanningCenterAPI(application_id, secret)
         self.setup_ui(self)
         self.service_type_combo_box.currentIndexChanged.connect(self.on_service_type_combobox_changed)
@@ -69,8 +68,10 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         # check our credentials and connection to the PlanningCenter server
         organization = self.planning_center_api.check_credentials()
         if len(organization) == 0:
-            QtWidgets.QMessageBox.warning(self.parent(), "Authentication Failed", "Authentiation Failed.  Check your \
-                credentials in OpenLP Settings", QtWidgets.QMessageBox.Ok)
+            QtWidgets.QMessageBox.warning(self.parent(), 'Authentication Failed',
+                                          'Authentiation Failed.  '
+                                          'Check your credentials in OpenLP Settings.',
+                                          QtWidgets.QMessageBox.Ok)
             return
         # set the Service Type Dropdown Box from PCO
         service_types_list = self.planning_center_api.get_service_type_list()
@@ -91,7 +92,7 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         """
         Close dialog.
 
-        :param r: The result of the dialog.
+        :param result_code: The result of the dialog.
         """
         log.debug('Closing PlanningCenterForm')
         return QtWidgets.QDialog.done(self, result_code)

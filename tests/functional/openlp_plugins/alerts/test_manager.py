@@ -21,60 +21,52 @@
 """
 This module contains tests for the CSV Bible importer.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock
 
-from openlp.core.common.registry import Registry
 from openlp.plugins.alerts.lib.alertsmanager import AlertsManager
 
 
-class TestAlertManager(TestCase):
+def test_remove_message_text(registry):
+    """
+    Test that Alerts are not triggered with empty strings
+    """
+    # GIVEN: A valid Alert Manager
+    alert_manager = AlertsManager(None)
+    alert_manager.display_alert = MagicMock()
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
+    # WHEN: Called with an empty string
+    alert_manager.alert_text('')
 
-    def test_remove_message_text(self):
-        """
-        Test that Alerts are not triggered with empty strings
-        """
-        # GIVEN: A valid Alert Manager
-        alert_manager = AlertsManager(None)
-        alert_manager.display_alert = MagicMock()
+    # THEN: the display should not have been triggered
+    assert alert_manager.display_alert.called is False, 'The Alert should not have been called'
 
-        # WHEN: Called with an empty string
-        alert_manager.alert_text('')
 
-        # THEN: the display should not have been triggered
-        assert alert_manager.display_alert.called is False, 'The Alert should not have been called'
+def test_trigger_message_text(registry):
+    """
+    Test that Alerts are triggered with a text string
+    """
+    # GIVEN: A valid Alert Manager
+    alert_manager = AlertsManager(None)
+    alert_manager.display_alert = MagicMock()
 
-    def test_trigger_message_text(self):
-        """
-        Test that Alerts are triggered with a text string
-        """
-        # GIVEN: A valid Alert Manager
-        alert_manager = AlertsManager(None)
-        alert_manager.display_alert = MagicMock()
+    # WHEN: Called with an empty string
+    alert_manager.alert_text(['This is a string'])
 
-        # WHEN: Called with an empty string
-        alert_manager.alert_text(['This is a string'])
+    # THEN: the display should have been triggered
+    assert alert_manager.display_alert.called is True, 'The Alert should have been called'
 
-        # THEN: the display should have been triggered
-        assert alert_manager.display_alert.called is True, 'The Alert should have been called'
 
-    def test_line_break_message_text(self):
-        """
-        Test that Alerts are triggered with a text string but line breaks are removed
-        """
-        # GIVEN: A valid Alert Manager
-        alert_manager = AlertsManager(None)
-        alert_manager.display_alert = MagicMock()
+def test_line_break_message_text(registry):
+    """
+    Test that Alerts are triggered with a text string but line breaks are removed
+    """
+    # GIVEN: A valid Alert Manager
+    alert_manager = AlertsManager(None)
+    alert_manager.display_alert = MagicMock()
 
-        # WHEN: Called with an empty string
-        alert_manager.alert_text(['This is \n a string'])
+    # WHEN: Called with an empty string
+    alert_manager.alert_text(['This is \n a string'])
 
-        # THEN: the display should have been triggered
-        assert alert_manager.display_alert.called is True, 'The Alert should have been called'
-        alert_manager.display_alert.assert_called_once_with('This is   a string')
+    # THEN: the display should have been triggered
+    assert alert_manager.display_alert.called is True, 'The Alert should have been called'
+    alert_manager.display_alert.assert_called_once_with('This is   a string')

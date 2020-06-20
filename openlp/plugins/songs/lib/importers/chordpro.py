@@ -26,7 +26,6 @@ import logging
 import re
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.db import AuthorType
 
@@ -109,8 +108,8 @@ class ChordProImport(SongImport):
                         if current_verse.strip():
                             # Add collected verse to the lyrics
                             # Strip out chords if set up to
-                            if not Settings().value('songs/enable chords') or Settings().value(
-                                    'songs/disable chords import'):
+                            if not self.settings.value('songs/enable chords') or \
+                                    self.settings.value('songs/disable chords import'):
                                 current_verse = re.sub(r'\[.*?\]', '', current_verse)
                             self.add_verse(current_verse.rstrip(), current_verse_type)
                             current_verse_type = 'v'
@@ -123,7 +122,8 @@ class ChordProImport(SongImport):
                 elif tag_name in ['end_of_chorus', 'eoc']:
                     # Add collected chorus to the lyrics
                     # Strip out chords if set up to
-                    if not Settings().value('songs/enable chords') or Settings().value('songs/disable chords import'):
+                    if not self.settings.value('songs/enable chords') or \
+                            self.settings.value('songs/disable chords import'):
                         current_verse = re.sub(r'\[.*?\]', '', current_verse)
                     self.add_verse(current_verse.rstrip(), current_verse_type)
                     current_verse_type = 'v'
@@ -132,8 +132,8 @@ class ChordProImport(SongImport):
                     if current_verse.strip():
                         # Add collected verse to the lyrics
                         # Strip out chords if set up to
-                        if not Settings().value('songs/enable chords') or Settings().value(
-                                'songs/disable chords import'):
+                        if not self.settings.value('songs/enable chords') or \
+                                self.settings.value('songs/disable chords import'):
                             current_verse = re.sub(r'\[.*?\]', '', current_verse)
                         self.add_verse(current_verse.rstrip(), current_verse_type)
                         current_verse_type = 'v'
@@ -146,8 +146,8 @@ class ChordProImport(SongImport):
                     if self.verses and self.title:
                         if current_verse.strip():
                             # Strip out chords if set up to
-                            if not Settings().value('songs/enable chords') or Settings().value(
-                                    'songs/disable chords import'):
+                            if not self.settings.value('songs/enable chords') or \
+                                    self.settings.value('songs/disable chords import'):
                                 current_verse = re.sub(r'\[.*?\]', '', current_verse)
                             self.add_verse(current_verse.rstrip(), current_verse_type)
                         if not self.finish():
@@ -170,7 +170,8 @@ class ChordProImport(SongImport):
                 elif line == '' and current_verse.strip() and current_verse_type != 'c':
                     # Add collected verse to the lyrics
                     # Strip out chords if set up to
-                    if not Settings().value('songs/enable chords') or Settings().value('songs/disable chords import'):
+                    if not self.settings.value('songs/enable chords') or \
+                            self.settings.value('songs/disable chords import'):
                         current_verse = re.sub(r'\[.*?\]', '', current_verse)
                     self.add_verse(current_verse.rstrip(), current_verse_type)
                     current_verse_type = 'v'
@@ -182,7 +183,7 @@ class ChordProImport(SongImport):
                         current_verse += line + '\n'
         if current_verse.strip():
             # Strip out chords if set up to
-            if not Settings().value('songs/enable chords') or Settings().value(
+            if not self.settings.value('songs/enable chords') or self.settings.value(
                     'songs/disable chords import'):
                 current_verse = re.sub(r'\[.*?\]', '', current_verse)
             self.add_verse(current_verse.rstrip(), current_verse_type)

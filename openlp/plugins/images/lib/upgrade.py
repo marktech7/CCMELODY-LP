@@ -23,18 +23,20 @@ The :mod:`upgrade` module provides the migration path for the OLP Paths database
 """
 import json
 import logging
+import shutil
 from pathlib import Path
 
-from sqlalchemy import Column, Table
+from sqlalchemy import Column, Table, types
 
+from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.db import drop_columns
-from openlp.core.common.json import OpenLPJSONEncoder
+from openlp.core.common.json import OpenLPJSONEncoder, OpenLPJSONDecoder
 from openlp.core.lib.db import PathType, get_upgrade_op
 
 
 log = logging.getLogger(__name__)
-__version__ = 2
+__version__ = 3
 
 
 def upgrade_1(session, metadata):
@@ -67,3 +69,31 @@ def upgrade_2(session, metadata):
         else:
             op.drop_constraint('image_filenames', 'foreignkey')
             op.drop_column('image_filenames', 'filenames')
+
+
+def upgrade_3(session, metadata):
+    """
+    Version 3 upgrade - add sha256 hash
+    """
+    log.debug('Starting upgrade_3 for adding sha256 hashes')
+    old_table = Table('image_filenames', metadata, autoload=True)
+    if 'file_hash' not in [col.name for col in old_table.c.values()]:
+        op = get_upgrade_op(session)
+        op.add_column('image_filenames', Column('file_hash', types.Unicode(128)))
+        conn = op.get_bind()
+        results = conn.execute('SELECT * FROM image_filenames')
+        thumb_path = AppLocation.get_data_path() / 'images' / 'thumbnails'
+        for row in results.fetchall():
+            file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
+            hash = sha256_file_hash(file_path)
+            sql = 'UPDATE image_filenames SET file_hash = \'{hash}\' WHERE id = {id}'.format(hash=hash, id=row.id)
+            conn.execute(sql)
+            # rename thumbnail to use file hash
+            ext = file_path.suffix.lower()
+            old_thumb = thumb_path / '{name:d}{ext}'.format(name=row.id, ext=ext)
+            new_thumb = thumb_path / '{name:s}{ext}'.format(name=hash, ext=ext)
+            try:
+                shutil.move(old_thumb, new_thumb)
+            except OSError:
+                log.exception('Failed in renaming image thumb from {oldt} to {newt}'.format(oldt=old_thumb,
+                                                                                            newt=new_thumb))

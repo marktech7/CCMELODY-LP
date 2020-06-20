@@ -31,41 +31,66 @@ from websockets import serve
 
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
+
+USERS = set()
 
 
 log = logging.getLogger(__name__)
 
 
-async def handle_websocket(request, path):
+async def handle_websocket(websocket, path):
     """
-    Handle web socket requests and return the poll information
+    Handle web socket requests and return the state information
+    Check every 0.2 seconds to get the latest position and send if it changed.
 
-    Check every 0.2 seconds to get the latest position and send if it changed. This only gets triggered when the first
-    client connects.
-
-    :param request: request from client
-    :param path: determines the endpoints supported
+    :param websocket: request from client
+    :param path: determines the endpoints supported - Not needed
     """
-    log.debug('WebSocket handler registered with client')
-    previous_poll = None
-    previous_main_poll = None
-    poller = Registry().get('poller')
-    if path == '/state':
+    log.debug('WebSocket handle_websocket connection')
+    await register(websocket)
+    reply = Registry().get('poller').poll_first_time()
+    if reply:
+        json_reply = json.dumps(reply).encode()
+        await websocket.send(json_reply)
+    try:
         while True:
-            current_poll = poller.poll()
-            if current_poll != previous_poll:
-                await request.send(json.dumps(current_poll).encode())
-                previous_poll = current_poll
+            await notify_users()
             await asyncio.sleep(0.2)
-    elif path == '/live_changed':
-        while True:
-            main_poll = poller.main_poll()
-            if main_poll != previous_main_poll:
-                await request.send(main_poll)
-                previous_main_poll = main_poll
-            await asyncio.sleep(0.2)
+    finally:
+        await unregister(websocket)
+
+
+async def register(websocket):
+    """
+    Register Clients
+    :param websocket: The client details
+    :return:
+    """
+    log.debug('WebSocket handler register')
+    USERS.add(websocket)
+
+
+async def unregister(websocket):
+    """
+    Unregister Clients
+    :param websocket: The client details
+    :return:
+    """
+    log.debug('WebSocket handler unregister')
+    USERS.remove(websocket)
+
+
+async def notify_users():
+    """
+    Dispatch state to all registered users if we have any changes
+    :return:
+    """
+    if USERS:  # asyncio.wait doesn't accept an empty list
+        reply = Registry().get('poller').poll()
+        if reply:
+            json_reply = json.dumps(reply).encode()
+            await asyncio.wait([user.send(json_reply) for user in USERS])
 
 
 class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
@@ -76,8 +101,9 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Run the worker.
         """
-        address = Settings().value('api/ip address')
-        port = Settings().value('api/websocket port')
+        settings = Registry().get('settings_thread')
+        address = settings.value('api/ip address')
+        port = settings.value('api/websocket port')
         # Start the event loop
         self.event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.event_loop)
@@ -104,12 +130,20 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Stop the websocket server
         """
-        if hasattr(self.server, 'ws_server'):
-            self.server.ws_server.close()
-        elif hasattr(self.server, 'server'):
-            self.server.server.close()
-        self.event_loop.stop()
-        self.event_loop.close()
+        try:
+            if hasattr(self.server, 'ws_server'):
+                self.server.ws_server.close()
+            elif hasattr(self.server, 'server'):
+                self.server.server.close()
+        except RuntimeError:
+            # Sometimes it is already closed
+            pass
+        try:
+            self.event_loop.stop()
+            self.event_loop.close()
+        except RuntimeError:
+            # Sometimes it is already closed
+            pass
 
 
 class WebSocketServer(RegistryProperties, LogMixin):

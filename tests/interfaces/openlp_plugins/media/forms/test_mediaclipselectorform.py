@@ -21,154 +21,142 @@
 """
 Module to test the MediaClipSelectorForm.
 """
+import pytest
 import os
-from unittest import SkipTest, TestCase
+from unittest import SkipTest
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtTest, QtWidgets
 
-from openlp.core.common.registry import Registry
 from openlp.core.ui.media.vlcplayer import get_vlc
 from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
-from tests.helpers.testmixin import TestMixin
 
 
 if os.name == 'nt' and not get_vlc():
     raise SkipTest('Windows without VLC, skipping this test since it cannot run without vlc')
 
 
-class TestMediaClipSelectorForm(TestCase, TestMixin):
+@pytest.yield_fixture()
+def form(settings):
+    main_window = QtWidgets.QMainWindow()
+    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
+    vlc_patcher.start()
+    timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
+    timer_patcher.start()
+    # Mock the media item
+    mock_media_item = MagicMock()
+    # create form to test
+    frm = MediaClipSelectorForm(mock_media_item, main_window, None)
+    mock_media_state_wait = MagicMock()
+    mock_media_state_wait.return_value = True
+    frm.media_state_wait = mock_media_state_wait
+    frm.application.set_busy_cursor = MagicMock()
+    frm.application.set_normal_cursor = MagicMock()
+    frm.find_optical_devices = MagicMock()
+    yield frm
+    del frm
+    vlc_patcher.stop()
+    timer_patcher.stop()
+    del main_window
+
+
+def test_basic(form):
     """
-    Test the EditCustomSlideForm.
+    Test if the dialog is correctly set up.
     """
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-        # Mock VLC so we don't actually use it
-        self.vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
-        self.vlc_patcher.start()
-        self.timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
-        self.timer_patcher.start()
-        Registry().register('application', self.app)
-        # Mock the media item
-        self.mock_media_item = MagicMock()
-        # create form to test
-        self.form = MediaClipSelectorForm(self.mock_media_item, self.main_window, None)
-        mock_media_state_wait = MagicMock()
-        mock_media_state_wait.return_value = True
-        self.form.media_state_wait = mock_media_state_wait
-        self.form.application.set_busy_cursor = MagicMock()
-        self.form.application.set_normal_cursor = MagicMock()
-        self.form.find_optical_devices = MagicMock()
+    # GIVEN: A mocked QDialog.exec() method
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        # WHEN: Show the dialog.
+        form.exec()
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.form
-        self.vlc_patcher.stop()
-        self.timer_patcher.stop()
-        del self.main_window
+        # THEN: The media path should be empty.
+        assert form.media_path_combobox.currentText() == '', 'There should not be any text in the media path.'
 
-    def test_basic(self):
-        """
-        Test if the dialog is correctly set up.
-        """
-        # GIVEN: A mocked QDialog.exec() method
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            # WHEN: Show the dialog.
-            self.form.exec()
 
-            # THEN: The media path should be empty.
-            assert self.form.media_path_combobox.currentText() == '', 'There should not be any text in the media path.'
+def test_click_load_button(form):
+    """
+    Test that the correct function is called when load is clicked, and that it behaves as expected.
+    """
+    # GIVEN: Mocked methods.
+    with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
+            mocked_critical_error_message_box,\
+            patch('openlp.plugins.media.forms.mediaclipselectorform.os.path.exists') as mocked_os_path_exists,\
+            patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
 
-    def test_click_load_button(self):
-        """
-        Test that the correct function is called when load is clicked, and that it behaves as expected.
-        """
-        # GIVEN: Mocked methods.
-        with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
-                mocked_critical_error_message_box,\
-                patch('openlp.plugins.media.forms.mediaclipselectorform.os.path.exists') as mocked_os_path_exists,\
-                patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
+        # WHEN: The load button is clicked with no path set
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
 
-            # WHEN: The load button is clicked with no path set
-            QtTest.QTest.mouseClick(self.form.load_disc_button, QtCore.Qt.LeftButton)
+        # THEN: we should get an error
+        mocked_critical_error_message_box.assert_called_with(message='No path was given')
 
-            # THEN: we should get an error
-            mocked_critical_error_message_box.assert_called_with(message='No path was given')
+        # WHEN: The load button is clicked with a non-existing path
+        mocked_os_path_exists.return_value = False
+        form.media_path_combobox.insertItem(0, '/non-existing/test-path.test')
+        form.media_path_combobox.setCurrentIndex(0)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
 
-            # WHEN: The load button is clicked with a non-existing path
-            mocked_os_path_exists.return_value = False
-            self.form.media_path_combobox.insertItem(0, '/non-existing/test-path.test')
-            self.form.media_path_combobox.setCurrentIndex(0)
-            QtTest.QTest.mouseClick(self.form.load_disc_button, QtCore.Qt.LeftButton)
+        # THEN: we should get an error
+        assert form.media_path_combobox.currentText() == '/non-existing/test-path.test',\
+            'The media path should be the given one.'
+        mocked_critical_error_message_box.assert_called_with(message='Given path does not exist')
 
-            # THEN: we should get an error
-            assert self.form.media_path_combobox.currentText() == '/non-existing/test-path.test',\
-                'The media path should be the given one.'
-            mocked_critical_error_message_box.assert_called_with(message='Given path does not exists')
+        # WHEN: The load button is clicked with a mocked existing path
+        mocked_os_path_exists.return_value = True
+        form.vlc_media_player = MagicMock()
+        form.vlc_media_player.play.return_value = -1
+        form.media_path_combobox.insertItem(0, '/existing/test-path.test')
+        form.media_path_combobox.setCurrentIndex(0)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
 
-            # WHEN: The load button is clicked with a mocked existing path
-            mocked_os_path_exists.return_value = True
-            self.form.vlc_media_player = MagicMock()
-            self.form.vlc_media_player.play.return_value = -1
-            self.form.media_path_combobox.insertItem(0, '/existing/test-path.test')
-            self.form.media_path_combobox.setCurrentIndex(0)
-            QtTest.QTest.mouseClick(self.form.load_disc_button, QtCore.Qt.LeftButton)
+        # THEN: we should get an error
+        assert form.media_path_combobox.currentText() == '/existing/test-path.test',\
+            'The media path should be the given one.'
+        mocked_critical_error_message_box.assert_called_with(message='VLC player failed playing the media')
 
-            # THEN: we should get an error
-            assert self.form.media_path_combobox.currentText() == '/existing/test-path.test',\
-                'The media path should be the given one.'
-            mocked_critical_error_message_box.assert_called_with(message='VLC player failed playing the media')
 
-    def test_title_combobox(self):
-        """
-        Test the behavior when the title combobox is updated
-        """
-        # GIVEN: Mocked methods and some entries in the title combobox.
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-            self.form.vlc_media_player.get_length.return_value = 1000
-            self.form.audio_tracks_combobox.itemData = MagicMock()
-            self.form.subtitle_tracks_combobox.itemData = MagicMock()
-            self.form.audio_tracks_combobox.itemData.return_value = None
-            self.form.subtitle_tracks_combobox.itemData.return_value = None
-            self.form.titles_combo_box.insertItem(0, 'Test Title 0')
-            self.form.titles_combo_box.insertItem(1, 'Test Title 1')
+def test_title_combobox(form):
+    """
+    Test the behavior when the title combobox is updated
+    """
+    # GIVEN: Mocked methods and some entries in the title combobox.
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+        form.vlc_media_player.get_length.return_value = 1000
+        form.audio_tracks_combobox.itemData = MagicMock()
+        form.subtitle_tracks_combobox.itemData = MagicMock()
+        form.audio_tracks_combobox.itemData.return_value = None
+        form.subtitle_tracks_combobox.itemData.return_value = None
+        form.titles_combo_box.insertItem(0, 'Test Title 0')
+        form.titles_combo_box.insertItem(1, 'Test Title 1')
 
-            # WHEN: There exists audio and subtitle tracks and the index is updated.
-            self.form.vlc_media_player.audio_get_track_description.return_value = [(-1, b'Disabled'),
-                                                                                   (0, b'Audio Track 1')]
-            self.form.vlc_media_player.video_get_spu_description.return_value = [(-1, b'Disabled'),
-                                                                                 (0, b'Subtitle Track 1')]
-            self.form.titles_combo_box.setCurrentIndex(1)
+        # WHEN: There exists audio and subtitle tracks and the index is updated.
+        form.vlc_media_player.audio_get_track_description.return_value = [(-1, b'Disabled'),
+                                                                          (0, b'Audio Track 1')]
+        form.vlc_media_player.video_get_spu_description.return_value = [(-1, b'Disabled'),
+                                                                        (0, b'Subtitle Track 1')]
+        form.titles_combo_box.setCurrentIndex(1)
 
-            # THEN: The subtitle and audio track comboboxes should be updated and get signals and call itemData.
-            self.form.audio_tracks_combobox.itemData.assert_any_call(0)
-            self.form.audio_tracks_combobox.itemData.assert_any_call(1)
-            self.form.subtitle_tracks_combobox.itemData.assert_any_call(0)
+        # THEN: The subtitle and audio track comboboxes should be updated and get signals and call itemData.
+        form.audio_tracks_combobox.itemData.assert_any_call(0)
+        form.audio_tracks_combobox.itemData.assert_any_call(1)
+        form.subtitle_tracks_combobox.itemData.assert_any_call(0)
 
-    def test_click_save_button(self):
-        """
-        Test that the correct function is called when save is clicked, and that it behaves as expected.
-        """
-        # GIVEN: Mocked methods.
-        with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
-                mocked_critical_error_message_box,\
-                patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
 
-            # WHEN: The save button is clicked with a NoneType in start_time_ms or end_time_ms
-            self.form.accept()
+def test_click_save_button(form):
+    """
+    Test that the correct function is called when save is clicked, and that it behaves as expected.
+    """
+    # GIVEN: Mocked methods.
+    with patch('openlp.plugins.media.forms.mediaclipselectorform.critical_error_message_box') as \
+            mocked_critical_error_message_box,\
+            patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
 
-            # THEN: we should get an error message
-            mocked_critical_error_message_box.assert_called_with('DVD not loaded correctly',
-                                                                 'The DVD was not loaded correctly, '
-                                                                 'please re-load and try again.')
+        # WHEN: The save button is clicked with a NoneType in start_time_ms or end_time_ms
+        form.accept()
+
+        # THEN: we should get an error message
+        mocked_critical_error_message_box.assert_called_with('DVD not loaded correctly',
+                                                             'The DVD was not loaded correctly, '
+                                                             'please re-load and try again.')

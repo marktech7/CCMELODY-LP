@@ -28,7 +28,6 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import create_separated_list
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.common.i18n import get_natural_key
@@ -128,7 +127,7 @@ class SongExportForm(OpenLPWizard):
         self.output_directory_path_edit = PathEdit(
             self.export_song_page, PathEditType.Directories,
             dialog_caption=translate('SongsPlugin.ExportWizardForm', 'Select Destination Folder'), show_revert=False)
-        self.output_directory_path_edit.path = Settings().value('songs/last directory export')
+        self.output_directory_path_edit.path = self.settings.value('songs/last directory export')
         self.directory_label = QtWidgets.QLabel(self.export_song_page)
         self.directory_label.setObjectName('directory_label')
         self.grid_layout.addWidget(self.directory_label, 0, 0)
@@ -191,7 +190,7 @@ class SongExportForm(OpenLPWizard):
                     translate('SongsPlugin.ExportWizardForm', 'No Save Location specified'),
                     translate('SongsPlugin.ExportWizardForm', 'You need to specify a directory.'))
                 return False
-            Settings().setValue('songs/last directory export', self.output_directory_path_edit.path)
+            self.settings.setValue('songs/last directory export', self.output_directory_path_edit.path)
             return True
         elif self.currentPage() == self.progress_page:
             self.available_list_widget.clear()

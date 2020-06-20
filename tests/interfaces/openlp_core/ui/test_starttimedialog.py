@@ -21,92 +21,78 @@
 """
 Package to test the openlp.core.ui package.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtTest, QtWidgets
+from PyQt5 import QtCore, QtTest
 
-from openlp.core.common.registry import Registry
-from openlp.core.ui import starttimeform
-from tests.helpers.testmixin import TestMixin
+from openlp.core.ui.starttimeform import StartTimeForm
 
 
-class TestStartTimeDialog(TestCase, TestMixin):
+@pytest.fixture()
+def form(mock_settings):
+    frm = StartTimeForm()
+    return frm
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-        self.form = starttimeform.StartTimeForm()
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.form
-        del self.main_window
+def test_ui_defaults(form):
+    """
+    Test StartTimeDialog are defaults correct
+    """
+    assert form.hour_spin_box.minimum() == 0, 'The minimum hour should stay the same as the dialog'
+    assert form.hour_spin_box.maximum() == 4, 'The maximum hour should stay the same as the dialog'
+    assert form.minute_spin_box.minimum() == 0, 'The minimum minute should stay the same as the dialog'
+    assert form.minute_spin_box.maximum() == 59, 'The maximum minute should stay the same as the dialog'
+    assert form.second_spin_box.minimum() == 0, 'The minimum second should stay the same as the dialog'
+    assert form.second_spin_box.maximum() == 59, 'The maximum second should stay the same as the dialog'
+    assert form.hour_finish_spin_box.minimum() == 0, \
+        'The minimum finish hour should stay the same as the dialog'
+    assert form.hour_finish_spin_box.maximum() == 4, \
+        'The maximum finish hour should stay the same as the dialog'
+    assert form.minute_finish_spin_box.minimum() == 0, \
+        'The minimum finish minute should stay the same as the dialog'
+    assert form.minute_finish_spin_box.maximum() == 59, \
+        'The maximum finish minute should stay the same as the dialog'
+    assert form.second_finish_spin_box.minimum() == 0, \
+        'The minimum finish second should stay the same as the dialog'
+    assert form.second_finish_spin_box.maximum() == 59, \
+        'The maximum finish second should stay the same as the dialog'
 
-    def test_ui_defaults(self):
-        """
-        Test StartTimeDialog are defaults correct
-        """
-        assert self.form.hour_spin_box.minimum() == 0, 'The minimum hour should stay the same as the dialog'
-        assert self.form.hour_spin_box.maximum() == 4, 'The maximum hour should stay the same as the dialog'
-        assert self.form.minute_spin_box.minimum() == 0, 'The minimum minute should stay the same as the dialog'
-        assert self.form.minute_spin_box.maximum() == 59, 'The maximum minute should stay the same as the dialog'
-        assert self.form.second_spin_box.minimum() == 0, 'The minimum second should stay the same as the dialog'
-        assert self.form.second_spin_box.maximum() == 59, 'The maximum second should stay the same as the dialog'
-        assert self.form.hour_finish_spin_box.minimum() == 0, \
-            'The minimum finish hour should stay the same as the dialog'
-        assert self.form.hour_finish_spin_box.maximum() == 4, \
-            'The maximum finish hour should stay the same as the dialog'
-        assert self.form.minute_finish_spin_box.minimum() == 0, \
-            'The minimum finish minute should stay the same as the dialog'
-        assert self.form.minute_finish_spin_box.maximum() == 59, \
-            'The maximum finish minute should stay the same as the dialog'
-        assert self.form.second_finish_spin_box.minimum() == 0, \
-            'The minimum finish second should stay the same as the dialog'
-        assert self.form.second_finish_spin_box.maximum() == 59, \
-            'The maximum finish second should stay the same as the dialog'
 
-    def test_time_display(self):
-        """
-        Test StartTimeDialog display functionality
-        """
-        # GIVEN: A service item with with time
-        mocked_serviceitem = MagicMock()
-        mocked_serviceitem.start_time = 61
-        mocked_serviceitem.end_time = 3701
-        mocked_serviceitem.media_length = 3701
+def test_time_display(form):
+    """
+    Test StartTimeDialog display functionality
+    """
+    # GIVEN: A service item with with time
+    mocked_serviceitem = MagicMock()
+    mocked_serviceitem.start_time = 61
+    mocked_serviceitem.end_time = 3701
+    mocked_serviceitem.media_length = 3701
 
-        # WHEN displaying the UI and pressing enter
-        self.form.item = {'service_item': mocked_serviceitem}
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-        ok_widget = self.form.button_box.button(self.form.button_box.Ok)
-        QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    # WHEN displaying the UI and pressing enter
+    form.item = {'service_item': mocked_serviceitem}
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+    ok_widget = form.button_box.button(form.button_box.Ok)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
-        # THEN the following input values are returned
-        assert self.form.hour_spin_box.value() == 0
-        assert self.form.minute_spin_box.value() == 1
-        assert self.form.second_spin_box.value() == 1
-        assert self.form.item['service_item'].start_time == 61, 'The start time should stay the same'
+    # THEN the following input values are returned
+    assert form.hour_spin_box.value() == 0
+    assert form.minute_spin_box.value() == 1
+    assert form.second_spin_box.value() == 1
+    assert form.item['service_item'].start_time == 61, 'The start time should stay the same'
 
-        # WHEN displaying the UI, changing the time to 2min 3secs and pressing enter
-        self.form.item = {'service_item': mocked_serviceitem}
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-        self.form.minute_spin_box.setValue(2)
-        self.form.second_spin_box.setValue(3)
-        ok_widget = self.form.button_box.button(self.form.button_box.Ok)
-        QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    # WHEN displaying the UI, changing the time to 2min 3secs and pressing enter
+    form.item = {'service_item': mocked_serviceitem}
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+    form.minute_spin_box.setValue(2)
+    form.second_spin_box.setValue(3)
+    ok_widget = form.button_box.button(form.button_box.Ok)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
-        # THEN the following values are returned
-        assert self.form.hour_spin_box.value() == 0
-        assert self.form.minute_spin_box.value() == 2
-        assert self.form.second_spin_box.value() == 3
-        assert self.form.item['service_item'].start_time == 123, 'The start time should have changed'
+    # THEN the following values are returned
+    assert form.hour_spin_box.value() == 0
+    assert form.minute_spin_box.value() == 2
+    assert form.second_spin_box.value() == 3
+    assert form.item['service_item'].start_time == 123, 'The start time should have changed'

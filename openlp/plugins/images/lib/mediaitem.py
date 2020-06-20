@@ -24,7 +24,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import delete_file, get_images_filter
+from openlp.core.common import delete_file, get_images_filter, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
@@ -72,7 +72,8 @@ class ImageMediaItem(MediaManagerItem):
         self.add_group_form = AddGroupForm(self)
         self.fill_groups_combobox(self.choose_group_form.group_combobox)
         self.fill_groups_combobox(self.add_group_form.parent_group_combobox)
-        Registry().register_function('live_theme_changed', self.live_theme_changed)
+        Registry().register_function('live_theme_changed', self.on_display_changed)
+        Registry().register_function('slidecontroller_live_started', self.on_display_changed)
         # Allow DnD from the desktop.
         self.list_view.activateDnD()
 
@@ -198,7 +199,7 @@ class ImageMediaItem(MediaManagerItem):
             self.list_view, text=UiStrings().ReplaceLiveBG, icon=UiIcons().close,
             visible=False, triggers=self.on_reset_click)
 
-    def add_start_header_bar(self):
+    def add_middle_header_bar(self):
         """
         Add custom buttons to the start of the toolbar.
         """
@@ -345,7 +346,7 @@ class ImageMediaItem(MediaManagerItem):
         :rtype: Path
         """
         ext = image.file_path.suffix.lower()
-        return self.service_path / '{name:d}{ext}'.format(name=image.id, ext=ext)
+        return self.service_path / '{name:s}{ext}'.format(name=image.file_hash, ext=ext)
 
     def load_full_list(self, images, initial_load=False, open_group=None):
         """
@@ -406,7 +407,7 @@ class ImageMediaItem(MediaManagerItem):
         self.application.set_normal_cursor()
         self.load_list(file_paths, target_group)
         last_dir = file_paths[0].parent
-        self.settings.setValue(self.settings_section + '/last directory', last_dir)
+        self.settings.setValue('images/last directory', last_dir)
 
     def load_list(self, image_paths, target_group=None, initial_load=False):
         """
@@ -490,6 +491,7 @@ class ImageMediaItem(MediaManagerItem):
             image_file = ImageFilenames()
             image_file.group_id = group_id
             image_file.file_path = image_path
+            image_file.file_hash = sha256_file_hash(image_path)
             self.manager.save_object(image_file)
             self.main_window.increment_progress_bar()
         if reload_list and image_paths:
@@ -551,7 +553,6 @@ class ImageMediaItem(MediaManagerItem):
         :param context: Why is it being generated
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
-        background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
         if item:
             items = [item]
         else:
@@ -609,7 +610,7 @@ class ImageMediaItem(MediaManagerItem):
         for image in images:
             name = image.file_path.name
             thumbnail_path = self.generate_thumbnail_path(image)
-            service_item.add_from_image(image.file_path, name, background, str(thumbnail_path))
+            service_item.add_from_image(image.file_path, name, thumbnail_path)
         return True
 
     def check_group_exists(self, new_group):
@@ -662,9 +663,9 @@ class ImageMediaItem(MediaManagerItem):
         """
         self.reset_action.setVisible(False)
         self.reset_action_context.setVisible(False)
-        self.live_controller.display.reset_image()
+        self.live_controller.reload_theme()
 
-    def live_theme_changed(self):
+    def on_display_changed(self, service_item=None):
         """
         Triggered by the change of theme in the slide controller.
         """
@@ -678,20 +679,16 @@ class ImageMediaItem(MediaManagerItem):
         if check_item_selected(
                 self.list_view,
                 translate('ImagePlugin.MediaItem', 'You must select an image to replace the background with.')):
-            background = QtGui.QColor(self.settings.value(self.settings_section + '/background color'))
+            background = QtGui.QColor(self.settings.value('images/background color'))
             bitem = self.list_view.selectedItems()[0]
             if not isinstance(bitem.data(0, QtCore.Qt.UserRole), ImageFilenames):
                 # Only continue when an image is selected.
                 return
             file_path = bitem.data(0, QtCore.Qt.UserRole).file_path
             if file_path.exists():
-                if self.live_controller.display.direct_image(str(file_path), background):
-                    self.reset_action.setVisible(True)
-                    self.reset_action_context.setVisible(True)
-                else:
-                    critical_error_message_box(
-                        UiStrings().LiveBGError,
-                        translate('ImagePlugin.MediaItem', 'There was no display item to amend.'))
+                self.live_controller.set_background_image(background, file_path)
+                self.reset_action.setVisible(True)
+                self.reset_action_context.setVisible(True)
             else:
                 critical_error_message_box(
                     UiStrings().LiveBGError,

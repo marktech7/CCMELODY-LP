@@ -163,6 +163,9 @@ class ItemCapabilities(object):
 
     ``HasBackgroundVideo``
             That a video file is present with the text
+
+    ``HasBackgroundStream``
+            That a video stream is present with the text
     """
     CanPreview = 1
     CanEdit = 2
@@ -188,6 +191,7 @@ class ItemCapabilities(object):
     HasMetaData = 22
     CanStream = 23
     HasBackgroundVideo = 24
+    HasBackgroundStream = 25
 
 
 def get_text_file_string(text_file_path):
@@ -246,7 +250,7 @@ def build_icon(icon):
         pix_map = QtGui.QPixmap(icon)
     elif isinstance(icon, Path):
         pix_map = QtGui.QPixmap(str(icon))
-    elif isinstance(icon, QtGui.QImage):
+    elif isinstance(icon, QtGui.QImage):            # pragma: no cover
         pix_map = QtGui.QPixmap.fromImage(icon)
     if pix_map:
         button_icon.addPixmap(pix_map, QtGui.QIcon.Normal, QtGui.QIcon.Off)

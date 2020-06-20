@@ -25,7 +25,6 @@ from pathlib import Path
 from PyQt5 import QtCore
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext
 from openlp.core.ui import HideMode
 from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETYPES
@@ -36,7 +35,7 @@ log = logging.getLogger(__name__)
 
 class Controller(object):
     """
-    This is the Presentation listener who acts on events from the slide controller and passes the messages on the the
+    This is the Presentation listener who acts on events from the slide controller and passes the messages on the
     correct presentation handlers.
     """
     log.info('Controller loaded')
@@ -343,7 +342,7 @@ class MessageListener(object):
             item.iconic_representation = item_cpy.icon
             item.image_border = item_cpy.image_border
             item.main = item_cpy.main
-            item.theme_data = item_cpy.theme_data
+            item.theme = item_cpy.theme
             # When presenting PDF/XPS/OXPS, we are using the image presentation code,
             # so handler & processor is set to None, and we skip adding the handler.
             self.handler = None
@@ -416,7 +415,7 @@ class MessageListener(object):
         is_live = message[1]
         if is_live:
             ret = self.live_handler.next()
-            if Settings().value('core/click live slide to unblank'):
+            if Registry().get('settings').value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
             return ret
         else:
@@ -431,7 +430,7 @@ class MessageListener(object):
         is_live = message[1]
         if is_live:
             ret = self.live_handler.previous()
-            if Settings().value('core/click live slide to unblank'):
+            if Registry().get('settings').value('core/click live slide to unblank'):
                 Registry().execute('slidecontroller_live_unblank')
             return ret
         else:

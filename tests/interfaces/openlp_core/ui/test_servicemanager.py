@@ -26,6 +26,7 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.ui.servicemanager import ServiceManager
@@ -55,7 +56,8 @@ class TestServiceManager(TestCase, TestMixin):
         Registry.create()
         self.setup_application()
         Registry().register('application', MagicMock())
-        Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
+        Registry().register('main_window', MagicMock())
+        Registry().register('settings', Settings())
         self.service_manager = ServiceManager()
         self.add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
         self.mocked_add_toolbar_action = self.add_toolbar_action_patcher.start()
@@ -417,6 +419,21 @@ class TestServiceManager(TestCase, TestMixin):
         # THEN the on_move_selection_up function should have been called.
         self.service_manager.on_move_selection_up.assert_called_once_with()
 
+    def test_delete_selection_on_delete_key(self):
+        """
+        Test that a delete key press event calls the on_delete_from_service function
+        """
+        # GIVEN a mocked on_delete_from_service function
+        self.service_manager.on_delete_from_service = MagicMock()
+
+        # WHEN the delete key event is called
+        self.service_manager.setup_ui(self.service_manager)
+        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Delete, QtCore.Qt.NoModifier)
+        self.service_manager.service_manager_list.keyPressEvent(event)
+
+        # THEN the on_delete_from_service function should have been called.
+        self.service_manager.on_delete_from_service.assert_called_once_with()
+
     def _setup_service_manager_list(self):
         self.service_manager.expanded = MagicMock()
         self.service_manager.collapsed = MagicMock()
@@ -494,3 +511,35 @@ class TestServiceManager(TestCase, TestMixin):
         assert self.service_manager.service_manager_list.currentItem() == song_item, \
             'Top item should have been selected'
         self.service_manager.collapsed.assert_called_once_with(song_item)
+
+    def test_replace_service_item(self):
+        """
+        Tests that the replace_service_item function replaces items as expected
+        """
+        # GIVEN a service item list and a new item which name and edit_id match a service item
+        self.service_manager.repaint_service_list = MagicMock()
+        Registry().register('live_controller', MagicMock())
+        item1 = MagicMock()
+        item1.edit_id = 'abcd'
+        item1.name = 'itemA'
+        item2 = MagicMock()
+        item2.edit_id = 'abcd'
+        item2.name = 'itemB'
+        item3 = MagicMock()
+        item3.edit_id = 'cfgh'
+        item3.name = 'itemA'
+        self.service_manager.service_items = [
+            {'service_item': item1},
+            {'service_item': item2},
+            {'service_item': item3}
+        ]
+        new_item = MagicMock()
+        new_item.edit_id = 'abcd'
+        new_item.name = 'itemA'
+
+        # WHEN replace_service_item is called
+        self.service_manager.replace_service_item(new_item)
+
+        # THEN new_item should replace item1, and only replaces that one item
+        assert self.service_manager.service_items[0]['service_item'] == new_item
+        new_item.merge.assert_called_once_with(item1)

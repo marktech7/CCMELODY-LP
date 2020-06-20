@@ -61,7 +61,7 @@ import re
 from lxml import etree, objectify
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.version import get_version
 from openlp.plugins.songs.lib import VerseType, clean_song
@@ -631,7 +631,8 @@ class OpenLyrics(object):
             return text
         # Convert chords to ChordPro format which OpenLP uses internally
         elif element.tag == NSMAP.format(tag='chord'):
-            if Settings().value('songs/enable chords') and not Settings().value('songs/disable chords import'):
+            if Registry().get('settings').value('songs/enable chords') and not \
+                    Registry().get('settings').value('songs/disable chords import'):
                 text += '[{chord}]'.format(chord=element.get('name'))
             if element.tail:
                 # Append tail text at chord element.

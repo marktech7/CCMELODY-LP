@@ -31,7 +31,6 @@ from tempfile import gettempdir
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.state import State
-from openlp.core.api.http import register_endpoint
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
@@ -41,7 +40,6 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.songs import reporting
-from openlp.plugins.songs.endpoint import api_songs_endpoint, songs_endpoint
 from openlp.plugins.songs.forms.duplicatesongremovalform import DuplicateSongRemovalForm
 from openlp.plugins.songs.forms.songselectform import SongSelectForm
 from openlp.plugins.songs.lib import clean_song, upgrade
@@ -129,8 +127,6 @@ class SongsPlugin(Plugin):
         self.icon = build_icon(self.icon_path)
         self.songselect_form = None
         self.settings.extend_default_settings(song_footer)
-        register_endpoint(songs_endpoint)
-        register_endpoint(api_songs_endpoint)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
         if not self.settings.value('songs/last import type'):

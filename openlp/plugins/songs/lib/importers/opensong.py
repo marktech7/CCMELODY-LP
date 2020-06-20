@@ -25,7 +25,6 @@ from lxml import objectify, etree
 
 from openlp.core.common import normalize_str
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.ui import SongStrings
@@ -254,7 +253,7 @@ class OpenSongImport(SongImport):
                 verses[verse_tag][verse_num][inst] = []
                 our_verse_order.append([verse_tag, verse_num, inst])
             # If chords exists insert them
-            if chords and Settings().value('songs/enable chords') and not Settings().value(
+            if chords and self.settings.value('songs/enable chords') and not self.settings.value(
                     'songs/disable chords import'):
                 offset = 0
                 for (column, chord) in chords:

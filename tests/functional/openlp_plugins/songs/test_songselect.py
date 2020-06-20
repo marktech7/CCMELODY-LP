@@ -246,15 +246,15 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(string='James, John'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(string='Philip'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # rest of the stuff
@@ -291,22 +291,22 @@ class TestSongSelectImport(TestCase, TestMixin):
         # first search result
         mocked_result1 = MagicMock()
         mocked_result1.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(string='James, John'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 1'))),
             MagicMock(find=MagicMock(return_value={'href': '/url1'}))
         ]
         # second search result
         mocked_result2 = MagicMock()
         mocked_result2.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(string='Philip'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 2'))),
             MagicMock(find=MagicMock(return_value={'href': '/url2'}))
         ]
         # third search result
         mocked_result3 = MagicMock()
         mocked_result3.find.side_effect = [
-            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 3'))),
             MagicMock(string='Luke, Matthew'),
+            MagicMock(find=MagicMock(return_value=MagicMock(string='Title 3'))),
             MagicMock(find=MagicMock(return_value={'href': '/url3'}))
         ]
         # rest of the stuff
@@ -553,6 +553,7 @@ class TestSongSelectForm(TestCase, TestMixin):
         self.app.process_events = lambda: None
         Registry.create()
         Registry().register('application', self.app)
+        Registry().register('settings', MagicMock())
 
     def test_create_form(self):
         """
@@ -802,10 +803,9 @@ class TestSongSelectForm(TestCase, TestMixin):
         assert ssform.search_button.isEnabled() is True
         assert ssform.search_combobox.isEnabled() is True
 
-    @patch('openlp.plugins.songs.forms.songselectform.Settings')
     @patch('openlp.plugins.songs.forms.songselectform.run_thread')
     @patch('openlp.plugins.songs.forms.songselectform.SearchWorker')
-    def test_on_search_button_clicked(self, MockedSearchWorker, mocked_run_thread, MockedSettings):
+    def test_on_search_button_clicked(self, MockedSearchWorker, mocked_run_thread):
         """
         Test that search fields are disabled when search button is clicked.
         """

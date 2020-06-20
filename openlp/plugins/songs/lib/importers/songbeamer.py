@@ -30,7 +30,6 @@ from pathlib import Path
 
 from openlp.core.common import get_file_encoding, is_macosx, is_win
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
@@ -223,7 +222,7 @@ class SongBeamerImport(SongImport):
         :param linenumber: Number of the current line
         :param line: The line of lyrics to insert chords
         """
-        if self.chord_table and Settings().value('songs/enable chords') and not Settings().value(
+        if self.chord_table and self.settings.value('songs/enable chords') and not self.settings.value(
                 'songs/disable chords import') and line_number in self.chord_table:
             line_idx = sorted(self.chord_table[line_number].keys(), reverse=True)
             for idx in line_idx:
@@ -432,5 +431,5 @@ class SongBeamerImport(SongImport):
         if audio_file_path.is_file():
             self.add_media_file(audio_file_path)
         else:
-            log.debug('Could not import mediafile "{audio_file_path}" since it does not exists!'
+            log.debug('Could not import mediafile "{audio_file_path}" since it does not exist!'
                       .format(audio_file_path=audio_file_path))

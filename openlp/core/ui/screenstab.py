@@ -24,7 +24,6 @@ The screen settings tab in the configuration dialog
 from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.common.registry import Registry
@@ -81,13 +80,12 @@ class ScreensTab(SettingsTab):
         """
         Load the settings to populate the tab
         """
-        Settings().beginGroup(self.settings_section)
         self.screen_selection_widget.load()
         # Load generic settings
-        self.display_on_monitor_check.setChecked(Settings().value('core/display on monitor'))
+        self.display_on_monitor_check.setChecked(self.settings.value('core/display on monitor'))
 
     def save(self):
         self.screen_selection_widget.save()
-        Settings().setValue('core/display on monitor', self.display_on_monitor_check.isChecked())
+        self.settings.setValue('core/display on monitor', self.display_on_monitor_check.isChecked())
         # On save update the screens as well
         self.settings_form.register_post_process('config_screen_changed')

@@ -21,69 +21,54 @@
 """
 Package to test the openlp.core.ui package.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import patch
 
-from PyQt5 import QtCore, QtTest, QtWidgets
+from PyQt5 import QtCore, QtTest
 
-from openlp.core.common.registry import Registry
-from openlp.core.ui import servicenoteform
-from tests.helpers.testmixin import TestMixin
+from openlp.core.ui.servicenoteform import ServiceNoteForm
 
 
-class TestStartNoteDialog(TestCase, TestMixin):
+@pytest.fixture()
+def form(settings):
+    frm = ServiceNoteForm()
+    return frm
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-        self.form = servicenoteform.ServiceNoteForm()
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.form
-        del self.main_window
+def test_basic_display(form):
+    """
+    Test Service Note form functionality
+    """
+    # GIVEN: A dialog with an empty text box
+    form.text_edit.setPlainText('')
 
-    def test_basic_display(self):
-        """
-        Test Service Note form functionality
-        """
-        # GIVEN: A dialog with an empty text box
-        self.form.text_edit.setPlainText('')
+    # WHEN displaying the UI and pressing enter
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+    ok_widget = form.button_box.button(form.button_box.Save)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
-        # WHEN displaying the UI and pressing enter
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-        ok_widget = self.form.button_box.button(self.form.button_box.Save)
-        QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    # THEN the following input text is returned
+    assert form.text_edit.toPlainText() == '', 'The returned text should be empty'
 
-        # THEN the following input text is returned
-        assert self.form.text_edit.toPlainText() == '', 'The returned text should be empty'
+    # WHEN displaying the UI, having set the text and pressing enter
+    text = 'OpenLP is the best worship software'
+    form.text_edit.setPlainText(text)
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+    ok_widget = form.button_box.button(form.button_box.Save)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
-        # WHEN displaying the UI, having set the text and pressing enter
-        text = 'OpenLP is the best worship software'
-        self.form.text_edit.setPlainText(text)
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-        ok_widget = self.form.button_box.button(self.form.button_box.Save)
-        QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    # THEN the following text is returned
+    assert form.text_edit.toPlainText() == text, 'The text originally entered should still be there'
 
-        # THEN the following text is returned
-        assert self.form.text_edit.toPlainText() == text, 'The text originally entered should still be there'
+    # WHEN displaying the UI, having set the text and pressing enter
+    form.text_edit.setPlainText('')
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        form.exec()
+        form.text_edit.setPlainText(text)
+    ok_widget = form.button_box.button(form.button_box.Save)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
-        # WHEN displaying the UI, having set the text and pressing enter
-        self.form.text_edit.setPlainText('')
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            self.form.exec()
-            self.form.text_edit.setPlainText(text)
-        ok_widget = self.form.button_box.button(self.form.button_box.Save)
-        QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
-
-        # THEN the following text is returned
-        assert self.form.text_edit.toPlainText() == text, 'The new text should be returned'
+    # THEN the following text is returned
+    assert form.text_edit.toPlainText() == text, 'The new text should be returned'

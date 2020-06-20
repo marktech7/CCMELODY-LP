@@ -21,110 +21,78 @@
 """
 Package to test the openlp.core.lib.screenlist package.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore
 
-from openlp.core.common.registry import Registry
 from openlp.core.display.screens import Screen, ScreenList
 
 
-SCREEN = {
-    'primary': False,
-    'number': 1,
-    'size': QtCore.QRect(0, 0, 1024, 768)
-}
+def test_current_display_screen():
+    """
+    Test that the "current" property returns the first display screen
+    """
+    # GIVEN: A new ScreenList object with some screens
+    screen_list = ScreenList()
+    screen_list.screens = [
+        Screen(number=0, geometry=QtCore.QRect(0, 0, 1024, 768), is_primary=True),
+        Screen(number=1, geometry=QtCore.QRect(1024, 0, 1024, 768), is_primary=False, is_display=True)
+    ]
+
+    # WHEN: The current property is accessed
+    screen = screen_list.current
+
+    # THEN: It should be the display screen
+    assert screen.number == 1
+    assert screen.geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen.is_primary is False
+    assert screen.is_display is True
 
 
-class TestScreenList(TestCase):
+def test_current_primary_screen():
+    """
+    Test that the "current" property returns the first primary screen
+    """
+    # GIVEN: A new ScreenList object with some screens
+    screen_list = ScreenList()
+    screen_list.screens = [
+        Screen(number=0, geometry=QtCore.QRect(0, 0, 1024, 768), is_primary=True)
+    ]
 
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        # Mocked out desktop object
-        self.desktop = MagicMock()
-        self.desktop.primaryScreen.return_value = SCREEN['primary']
-        self.desktop.screenCount.return_value = SCREEN['number']
-        self.desktop.screenGeometry.return_value = SCREEN['size']
+    # WHEN: The current property is accessed
+    screen = screen_list.current
 
-        self.application = QtWidgets.QApplication.instance()
-        Registry.create()
-        self.application.setOrganizationName('OpenLP-tests')
-        self.application.setOrganizationDomain('openlp.org')
-        self.screens = ScreenList.create(self.desktop)
+    # THEN: It should be the display screen
+    assert screen.number == 0
+    assert screen.geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen.is_primary is True
+    assert screen.is_display is False
 
-    def tearDown(self):
-        """
-        Delete QApplication.
-        """
-        del self.screens
-        del self.application
 
-    def test_current_display_screen(self):
-        """
-        Test that the "current" property returns the first display screen
-        """
-        # GIVEN: A new ScreenList object with some screens
-        screen_list = ScreenList()
-        screen_list.screens = [
-            Screen(number=0, geometry=QtCore.QRect(0, 0, 1024, 768), is_primary=True),
-            Screen(number=1, geometry=QtCore.QRect(1024, 0, 1024, 768), is_primary=False, is_display=True)
-        ]
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_create_screen_list(mocked_screens, settings):
+    """
+    Create the screen list
+    """
+    # GIVEN: Mocked desktop
+    mocked_desktop = MagicMock()
+    mocked_desktop.screenCount.return_value = 2
+    mocked_desktop.primaryScreen.return_value = 0
+    mocked_screens.return_value = [
+        MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)}),
+        MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    ]
 
-        # WHEN: The current property is accessed
-        screen = screen_list.current
+    # WHEN: create() is called
+    screen_list = ScreenList.create(mocked_desktop)
 
-        # THEN: It should be the display screen
-        assert screen.number == 1
-        assert screen.geometry == QtCore.QRect(1024, 0, 1024, 768)
-        assert screen.is_primary is False
-        assert screen.is_display is True
-
-    def test_current_primary_screen(self):
-        """
-        Test that the "current" property returns the first primary screen
-        """
-        # GIVEN: A new ScreenList object with some screens
-        screen_list = ScreenList()
-        screen_list.screens = [
-            Screen(number=0, geometry=QtCore.QRect(0, 0, 1024, 768), is_primary=True)
-        ]
-
-        # WHEN: The current property is accessed
-        screen = screen_list.current
-
-        # THEN: It should be the display screen
-        assert screen.number == 0
-        assert screen.geometry == QtCore.QRect(0, 0, 1024, 768)
-        assert screen.is_primary is True
-        assert screen.is_display is False
-
-    @patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
-    def test_create_screen_list(self, mocked_screens):
-        """
-        Create the screen list
-        """
-        # GIVEN: Mocked desktop
-        mocked_desktop = MagicMock()
-        mocked_desktop.screenCount.return_value = 2
-        mocked_desktop.primaryScreen.return_value = 0
-        mocked_screens.return_value = [
-            MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)}),
-            MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
-        ]
-
-        # WHEN: create() is called
-        screen_list = ScreenList.create(mocked_desktop)
-
-        # THEN: The correct screens have been set up
-        assert screen_list.screens[0].number == 0
-        assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
-        assert screen_list.screens[0].is_primary is True
-        assert screen_list.screens[1].number == 1
-        assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
-        assert screen_list.screens[1].is_primary is False
+    # THEN: The correct screens have been set up
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
 
 
 def test_screen_from_dict():

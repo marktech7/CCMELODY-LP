@@ -63,7 +63,8 @@ class TestSelectPlanForm(TestCase, TestMixin):
         self.setup_application()
         self.build_settings()
         State().load_settings()
-        Registry().register('main_window', MagicMock(service_manager_settings_section='servicemanager'))
+        Registry().register('settings', Settings())
+        Registry().register('main_window', MagicMock())
         self.application_id = 'abc'
         self.secret = '123'
         Settings().setValue('planningcenter/application_id', self.application_id)
@@ -108,9 +109,10 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # The first service type is selected
         self.assertEqual(self.form.service_type_combo_box.currentText(), 'gbf',
                          'The service_type_combo_box defaults to "gbf"')
-        # the selected plan is today (the mocked date is a Sunday)
-        self.assertEqual(self.form.plan_selection_combo_box.currentText(),
-                         date.strftime(mock_date.today.return_value, '%B %d, %Y'),
+        # the selected plan is today (the mocked date is a Sunday). Set to lowercase beacuse in some locales
+        # months is not capitalized.
+        self.assertEqual(self.form.plan_selection_combo_box.currentText().lower(),
+                         date.strftime(mock_date.today.return_value, '%B %d, %Y').lower(),
                          'Incorrect default date selected for Plan Date')
         # count the number of themes listed and make sure it matches expected value
         self.assertEqual(self.form.song_theme_selection_combo_box.count(),
@@ -234,7 +236,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get'), \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish') \
                 as mock_song_import, \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide') as mock_custom_slide_import, \
@@ -244,6 +245,11 @@ class TestSelectPlanForm(TestCase, TestMixin):
             mock_date.today.return_value = date(2019, 9, 29)
             mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
             self.form.exec()
+            Registry().register('service_manager', MagicMock())
+            Registry().register('plugin_manager', MagicMock())
+            Registry().register('songs', MagicMock())
+            Registry().register('bibles', MagicMock())
+            Registry().register('custom', MagicMock())
             # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is set to
             # index 1 and the "Import New" button is clicked
             self.form.service_type_combo_box.setCurrentIndex(1)
@@ -261,7 +267,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get'), \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish') \
                 as mock_song_import, \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide') as mock_custom_slide_import, \
@@ -271,6 +276,11 @@ class TestSelectPlanForm(TestCase, TestMixin):
             mock_date.today.return_value = date(2019, 9, 29)
             mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
             self.form.exec()
+            Registry().register('service_manager', MagicMock())
+            Registry().register('plugin_manager', MagicMock())
+            Registry().register('songs', MagicMock())
+            Registry().register('bibles', MagicMock())
+            Registry().register('custom', MagicMock())
             # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is
             # set to index 1 and the "Update" button is clicked
             self.form.service_type_combo_box.setCurrentIndex(1)
@@ -288,7 +298,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
         # GIVEN: An SelectPlanForm instance with airplane mode enabled, resources available,
         # mocked out "on_new_service_clicked"
         with patch('PyQt5.QtWidgets.QDialog.exec'), \
-                patch('openlp.core.common.registry.Registry.get') as mock_get, \
                 patch('openlp.plugins.planningcenter.lib.songimport.PlanningCenterSongImport.finish'), \
                 patch('openlp.plugins.planningcenter.lib.customimport.CustomSlide'), \
                 patch('openlp.plugins.planningcenter.forms.selectplanform.parse_reference') as mock_bible_import, \
@@ -298,8 +307,11 @@ class TestSelectPlanForm(TestCase, TestMixin):
             mock_date.side_effect = lambda *args, **kw: date(*args, **kw)
             mock_bibles = {}
             mock_bibles['other_bible'] = MagicMock()
-            mock_get.return_value.plugin.manager.get_bibles.return_value = mock_bibles
-            mock_get.return_value.version_combo_box.currentText.return_value = ''
+            Registry().register('service_manager', MagicMock())
+            Registry().register('plugin_manager', MagicMock())
+            Registry().register('songs', MagicMock())
+            Registry().register('bibles', MagicMock())
+            Registry().register('custom', MagicMock())
             self.form.exec()
             # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
             # is set to index 1 and the "Import New" button is clicked
@@ -346,7 +358,6 @@ class TestSelectPlanForm(TestCase, TestMixin):
                 songs_plugin = SongsPlugin()
                 song_media_item = SongMediaItem(None, songs_plugin)
                 song_media_item.search_text_edit = MagicMock()
-                song_media_item.settings_section = 'songs'
                 song_media_item.initialise()
                 # init custom plugin
                 custom_plugin = CustomPlugin()

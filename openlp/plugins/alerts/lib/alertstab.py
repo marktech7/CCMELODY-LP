@@ -22,7 +22,6 @@
 from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import create_valign_selection_widgets
 from openlp.core.widgets.buttons import ColorButton
@@ -188,17 +187,14 @@ class AlertsTab(SettingsTab):
         """
         Load the settings into the UI.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.timeout = settings.value('timeout')
-        self.font_color = settings.value('font color')
-        self.font_size = settings.value('font size')
-        self.background_color = settings.value('background color')
-        self.font_face = settings.value('font face')
-        self.location = settings.value('location')
-        self.repeat = settings.value('repeat')
-        self.scroll = settings.value('scroll')
-        settings.endGroup()
+        self.timeout = self.settings.value('alerts/timeout')
+        self.font_color = self.settings.value('alerts/font color')
+        self.font_size = self.settings.value('alerts/font size')
+        self.background_color = self.settings.value('alerts/background color')
+        self.font_face = self.settings.value('alerts/font face')
+        self.location = self.settings.value('alerts/location')
+        self.repeat = self.settings.value('alerts/repeat')
+        self.scroll = self.settings.value('alerts/scroll')
         self.font_size_spin_box.setValue(self.font_size)
         self.timeout_spin_box.setValue(self.timeout)
         self.font_color_button.color = self.font_color
@@ -217,22 +213,19 @@ class AlertsTab(SettingsTab):
         """
         Save the changes on exit of the Settings dialog.
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
         # Check value has changed as no event handles this field
-        if settings.value('location') != self.vertical_combo_box.currentIndex():
+        if self.settings.value('alerts/location') != self.vertical_combo_box.currentIndex():
             self.changed = True
-        settings.setValue('background color', self.background_color)
-        settings.setValue('font color', self.font_color)
-        settings.setValue('font size', self.font_size)
+        self.settings.setValue('alerts/background color', self.background_color)
+        self.settings.setValue('alerts/font color', self.font_color)
+        self.settings.setValue('alerts/font size', self.font_size)
         self.font_face = self.font_combo_box.currentFont().family()
-        settings.setValue('font face', self.font_face)
-        settings.setValue('timeout', self.timeout)
+        self.settings.setValue('alerts/font face', self.font_face)
+        self.settings.setValue('alerts/timeout', self.timeout)
         self.location = self.vertical_combo_box.currentIndex()
-        settings.setValue('location', self.location)
-        settings.setValue('repeat', self.repeat)
-        settings.setValue('scroll', self.scroll_check_box.isChecked())
-        settings.endGroup()
+        self.settings.setValue('alerts/location', self.location)
+        self.settings.setValue('alerts/repeat', self.repeat)
+        self.settings.setValue('alerts/scroll', self.scroll_check_box.isChecked())
         if self.changed:
             self.settings_form.register_post_process('update_display_css')
         self.changed = False

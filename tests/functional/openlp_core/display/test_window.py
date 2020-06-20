@@ -32,9 +32,12 @@ from PyQt5 import QtCore
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.display.window import DisplayWindow
+from openlp.core.common.enum import ServiceItemType
+from openlp.core.lib.theme import Theme
+from openlp.core.ui import HideMode
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -51,7 +54,7 @@ def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -68,7 +71,7 @@ def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
     """
     Test that the scale js is not run if the page is not initialised
@@ -85,7 +88,7 @@ def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
     display_window.run_javascript.assert_not_called()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings):
     """
@@ -103,7 +106,63 @@ def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the correct steps are taken when the webview is loaded
+    """
+    # GIVEN: An initialised display window and settings for item transitions and hide mouse returns true
+    display_window = DisplayWindow()
+    display_window.is_display = True
+    mock_settings.value.return_value = True
+    display_window.scale = 2
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.set_scale = MagicMock()
+    display_window.set_startup_screen = MagicMock()
+
+    # WHEN: after_loaded is run
+    display_window.after_loaded()
+
+    # THEN: The following functions should have been called
+    display_window.run_javascript.assert_called_once_with('Display.init({'
+                                                          'isDisplay: true,'
+                                                          'doItemTransitions: true,'
+                                                          'hideMouse: true'
+                                                          '});')
+    display_window.set_scale.assert_called_once_with(2)
+    display_window.set_startup_screen.assert_called_once()
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_after_loaded_hide_mouse_not_display(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
+    """
+    # GIVEN: An initialised display window and settings for item transitions and hide mouse returns true
+    display_window = DisplayWindow()
+    display_window.is_display = False
+    mock_settings.value.return_value = True
+    display_window.scale = 2
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.set_scale = MagicMock()
+    display_window.set_startup_screen = MagicMock()
+
+    # WHEN: after_loaded is run
+    display_window.after_loaded()
+
+    # THEN: Display.init should be called where is_display=false, do_item_transitions=true, show_mouse=false
+    display_window.run_javascript.assert_called_once_with('Display.init({'
+                                                          'isDisplay: false,'
+                                                          'doItemTransitions: true,'
+                                                          'hideMouse: false'
+                                                          '});')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
 def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
@@ -123,7 +182,7 @@ def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addW
     mock_time.sleep.assert_not_called()
 
 
-@patch('PyQt5.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
 def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
@@ -146,3 +205,248 @@ def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidg
     assert result == 1234
     webengine_page.runJavaScript.assert_called_once()
     mock_time.sleep.assert_not_called()
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the set_theme function
+    """
+    # GIVEN: A display window and a video theme
+    display_window = DisplayWindow()
+    display_window.is_display = True
+    display_window.run_javascript = MagicMock()
+    theme = Theme()
+    theme.background_type = 'video'
+    result_theme = Theme()
+    result_theme.background_type = 'transparent'
+    result_theme = result_theme.export_theme(is_js=True)
+
+    # WHEN: The set theme function is called
+    display_window.set_theme(theme, is_sync=False, service_item_type=ServiceItemType.Text)
+
+    # THEN: The final theme should be transparent
+    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
+                                                          is_sync=False)
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the set_theme function
+    """
+    # GIVEN: A display window and a video theme
+    display_window = DisplayWindow()
+    display_window.is_display = False
+    display_window.run_javascript = MagicMock()
+    theme = Theme()
+    theme.background_type = 'video'
+    theme.background_border_color = 'border_colour'
+    result_theme = Theme()
+    result_theme.background_type = 'solid'
+    result_theme.background_border_color = 'border_colour'
+    result_theme.background_start_color = 'border_colour'
+    result_theme.background_end_color = 'border_colour'
+    result_theme.background_main_color = 'border_colour'
+    result_theme.background_footer_color = 'border_colour'
+    result_theme.background_color = 'border_colour'
+    result_theme = result_theme.export_theme(is_js=True)
+
+    # WHEN: The set theme function is called
+    display_window.set_theme(theme, is_sync=False, service_item_type=False)
+
+    # THEN: The final theme should use 'border_colour' for it's colour values
+    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
+                                                          is_sync=False)
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test the set_theme function
+    """
+    # GIVEN: A display window and a video theme
+    display_window = DisplayWindow()
+    display_window.is_display = False
+    display_window.run_javascript = MagicMock()
+    theme = Theme()
+    theme.background_type = 'live'
+    result_theme = Theme()
+    result_theme.background_type = 'solid'
+    result_theme.background_start_color = '#590909'
+    result_theme.background_end_color = '#590909'
+    result_theme.background_main_color = '#090909'
+    result_theme.background_footer_color = '#090909'
+    result_theme = result_theme.export_theme(is_js=True)
+
+    # WHEN: The set theme function is called
+    display_window.set_theme(theme, is_sync=False, service_item_type=False)
+
+    # THEN: The final theme should use the preset colour values
+    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
+                                                          is_sync=False)
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+@patch('openlp.core.display.window.Registry.execute')
+@patch('openlp.core.display.window.ScreenList')
+def test_show_display(mocked_screenlist, mocked_registry_execute, mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test show_display function
+    """
+    # GIVEN: Display window as the active display
+    display_window = DisplayWindow()
+    display_window.is_display = True
+    display_window.isHidden = MagicMock(return_value=True)
+    display_window.setVisible = MagicMock()
+    display_window.run_javascript = MagicMock()
+    mocked_screenlist.screens = [1, 2]
+
+    # WHEN: Show display is run
+    display_window.show_display()
+
+    # THEN: Should show the display and set the hide mode to none
+    display_window.setVisible.assert_called_once_with(True)
+    display_window.run_javascript.assert_called_once_with('Display.show();')
+    mocked_registry_execute.assert_called_once_with('live_display_active')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+@patch('openlp.core.display.window.ScreenList')
+def test_show_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test show_display function when no displays are available
+    """
+    # GIVEN: A Display window, one screen and core/display on monitor disabled
+    display_window = DisplayWindow()
+    display_window.run_javascript = MagicMock()
+    display_window.is_display = True
+    mocked_screenlist.return_value = [1]
+    mock_settings.value.return_value = False
+
+    # WHEN: Show display is run
+    display_window.show_display()
+
+    # THEN: Shouldn't run the js show fn
+    assert display_window.run_javascript.call_count == 0
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_hide_display_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test hide to screen in the hide_display function
+    """
+    # GIVEN: Display window and setting advanced/disable transparent display = False
+    display_window = DisplayWindow()
+    display_window.run_javascript = MagicMock()
+    display_window.setVisible = MagicMock()
+    mock_settings.value.return_value = False
+
+    # WHEN: Hide display is run with no mode (should default to Screen)
+    display_window.hide_display()
+
+    # THEN: Should hide the display with the js transparency function (not setVisible)
+    display_window.setVisible.call_count == 0
+    display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_hide_display_to_blank(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test hide to screen in the hide_display function
+    """
+    # GIVEN: Display window and setting advanced/disable transparent display = False
+    display_window = DisplayWindow()
+    display_window.run_javascript = MagicMock()
+    mock_settings.value.return_value = False
+
+    # WHEN: Hide display is run with HideMode.Blank
+    display_window.hide_display(HideMode.Blank)
+
+    # THEN: Should run the correct javascript on the display and set the hide mode
+    display_window.run_javascript.assert_called_once_with('Display.toBlack();')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_hide_display_to_theme(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test hide to screen in the hide_display function
+    """
+    # GIVEN: Display window and setting advanced/disable transparent display = False
+    display_window = DisplayWindow()
+    display_window.run_javascript = MagicMock()
+    mock_settings.value.return_value = False
+
+    # WHEN: Hide display is run with HideMode.Theme
+    display_window.hide_display(HideMode.Theme)
+
+    # THEN: Should run the correct javascript on the display and set the hide mode
+    display_window.run_javascript.assert_called_once_with('Display.toTheme();')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_hide_display_to_transparent(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test hide to screen in the hide_display function
+    """
+    # GIVEN: Display window and setting advanced/disable transparent display = False
+    display_window = DisplayWindow()
+    display_window.run_javascript = MagicMock()
+    display_window.setVisible = MagicMock()
+    mock_settings.value.return_value = False
+
+    # WHEN: Hide display is run with HideMode.Screen
+    display_window.hide_display(HideMode.Screen)
+
+    # THEN: Should run the correct javascript on the display and not set the visiblity
+    display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
+    assert display_window.setVisible.call_count == 0
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_hide_transparent_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that when going transparent, and the disable transparent setting is enabled,
+    the screen mode should be used.
+    """
+    # GIVEN: Display window and setting advanced/disable transparent display = True
+    display_window = DisplayWindow()
+    display_window.setVisible = MagicMock()
+    mock_settings.value.return_value = True
+
+    # WHEN: Hide display is run with HideMode.Screen
+    display_window.hide_display(HideMode.Screen)
+
+    # THEN: Should run setVisible(False)
+    display_window.setVisible.assert_called_once_with(False)
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+@patch('openlp.core.display.window.ScreenList')
+def test_hide_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test show_display function when no displays are available
+    """
+    # GIVEN: A Display window, one screen and core/display on monitor disabled
+    display_window = DisplayWindow()
+    display_window.hide_mode = None
+    display_window.is_display = True
+    mocked_screenlist.return_value = [1]
+    mock_settings.value.return_value = False
+
+    # WHEN: Hide display is run
+    display_window.hide_display(HideMode.Screen)
+
+    # THEN: Hide mode should still be none
+    assert display_window.hide_mode is None

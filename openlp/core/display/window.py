@@ -31,7 +31,7 @@ from PyQt5 import QtCore, QtWebChannel, QtWidgets
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
-from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry
 from openlp.core.common.utils import wait_for
@@ -118,7 +118,7 @@ class DisplayWatcher(QtCore.QObject):
         self.initialised.emit(is_initialised)
 
 
-class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
+class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
     """
     This is a window to show the output
     """
@@ -146,6 +146,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         self.webview = WebEngineView(self)
         self.webview.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.webview.page().setBackgroundColor(QtCore.Qt.transparent)
+        self.webview.display_clicked = self.disable_display
         self.layout.addWidget(self.webview)
         self.webview.loadFinished.connect(self.after_loaded)
         display_base_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'display' / 'html'
@@ -201,6 +202,11 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         self.setGeometry(screen.display_geometry)
         self.screen_number = screen.number
 
+    def set_background_image(self, bg_color, image_path):
+        image_uri = image_path.as_uri()
+        self.run_javascript('Display.setBackgroundImage("{bg_color}", "{image}");'.format(bg_color=bg_color,
+                                                                                          image=image_uri))
+
     def set_single_image(self, bg_color, image_path):
         """
         :param str bg_color: Background color
@@ -220,6 +226,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         if path_to_str(image).startswith(':'):
             image = self.openlp_splash_screen_path
         image_uri = image.as_uri()
+        # if set to hide logo on startup, do not send the logo
+        if self.settings.value('core/logo hide on startup'):
+            image_uri = ''
         self.run_javascript('Display.setStartupSplashScreen("{bg_color}", "{image}");'.format(bg_color=bg_color,
                                                                                               image=image_uri))
 
@@ -244,7 +253,15 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         Add stuff after page initialisation
         """
         js_is_display = str(self.is_display).lower()
-        self.run_javascript('Display.init({do_transitions});'.format(do_transitions=js_is_display))
+        item_transitions = str(self.settings.value('themes/item transitions')).lower()
+        hide_mouse = str(self.settings.value('advanced/hide mouse') and self.is_display).lower()
+        self.run_javascript('Display.init({{'
+                            'isDisplay: {is_display},'
+                            'doItemTransitions: {do_item_transitions},'
+                            'hideMouse: {hide_mouse}'
+                            '}});'
+                            .format(is_display=js_is_display, do_item_transitions=item_transitions,
+                                    hide_mouse=hide_mouse))
         wait_for(lambda: self._is_initialised)
         if self.scale != 1:
             self.set_scale(self.scale)
@@ -279,7 +296,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             return self.__script_result
         else:
             self.webview.page().runJavaScript(script)
-        self.raise_()
 
     def go_to_slide(self, verse):
         """
@@ -303,8 +319,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
         imagesr = copy.deepcopy(images)
         for image in imagesr:
             image['path'] = image['path'].as_uri()
+            # Not all images has a dedicated thumbnail (such as images loaded from old or local servicefiles),
+            # in that case reuse the image
+            if image.get('thumbnail', None):
+                image['thumbnail'] = image['thumbnail'].as_uri()
+            else:
+                image['thumbnail'] = image['path']
         json_images = json.dumps(imagesr)
-        self.run_javascript('Display.setImageSlides({images});'.format(images=json_images))
+        background = self.settings.value('images/background color')
+        self.run_javascript('Display.setImageSlides({images}, "{background}");'.format(images=json_images,
+                                                                                       background=background))
 
     def load_video(self, video):
         """
@@ -384,22 +408,31 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
                 if theme.background_type == 'video' or theme.background_type == 'stream':
                     theme_copy.background_type = 'transparent'
         else:
-            # If review Display for media so we need to display black box.
-            if theme.background_type == 'stream':
-                theme_copy.background_type = 'transparent'
-            elif service_item_type == ServiceItemType.Command or theme.background_type == 'video' or \
-                    theme.background_type == 'live':
+            # If preview Display with media background we just show the background color, no media
+            if theme.background_type == 'stream' or theme.background_type == 'video':
+                theme_copy.background_type = 'solid'
+                theme_copy.background_start_color = theme.background_border_color
+                theme_copy.background_end_color = theme.background_border_color
+                theme_copy.background_main_color = theme.background_border_color
+                theme_copy.background_footer_color = theme.background_border_color
+                theme_copy.background_color = theme.background_border_color
+            # If preview Display for media so we need to display black box.
+            elif service_item_type == ServiceItemType.Command or theme.background_type == 'live':
                 theme_copy.background_type = 'solid'
                 theme_copy.background_start_color = '#590909'
                 theme_copy.background_end_color = '#590909'
                 theme_copy.background_main_color = '#090909'
                 theme_copy.background_footer_color = '#090909'
-            # If background is transparent and this is not a display, inject checkerboard background image instead
-            elif theme.background_type == 'transparent':
-                theme_copy.background_type = 'image'
-                theme_copy.background_filename = self.checkerboard_path
         exported_theme = theme_copy.export_theme(is_js=True)
         self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme), is_sync=is_sync)
+
+    def reload_theme(self):
+        """
+        Applies the set theme
+        DO NOT use this when changing slides. Only use this if you need to force an update
+        to the current visible slides.
+        """
+        self.run_javascript('Display.resetTheme();')
 
     def get_video_types(self):
         """
@@ -416,20 +449,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
         self.run_javascript('Display.show();')
-        # Check if setting for hiding logo on startup is enabled.
-        # If it is, display should remain hidden, otherwise logo is shown. (from def setup)
-        if self.isHidden() and not self.settings.value('core/logo hide on startup'):
+        if self.isHidden():
             self.setVisible(True)
         self.hide_mode = None
         # Trigger actions when display is active again.
         if self.is_display:
             Registry().execute('live_display_active')
-
-    def blank_to_theme(self):
-        """
-        Blank to theme
-        """
-        self.run_javascript('Display.blankToTheme();')
 
     def hide_display(self, mode=HideMode.Screen):
         """
@@ -442,17 +467,28 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
+        # Update display to the selected mode
         if mode == HideMode.Screen:
-            self.setVisible(False)
+            if self.settings.value('advanced/disable transparent display'):
+                self.setVisible(False)
+            else:
+                self.run_javascript('Display.toTransparent();')
         elif mode == HideMode.Blank:
-            self.run_javascript('Display.blankToBlack();')
-        else:
-            self.run_javascript('Display.blankToTheme();')
+            self.run_javascript('Display.toBlack();')
+        elif mode == HideMode.Theme:
+            self.run_javascript('Display.toTheme();')
         if mode != HideMode.Screen:
             if self.isHidden():
                 self.setVisible(True)
-                self.webview.setVisible(True)
         self.hide_mode = mode
+
+    def disable_display(self):
+        """
+        Removes the display if showing desktop
+        This allows users to click though the screen even if the screen is only transparent
+        """
+        if self.is_display and self.hide_mode == HideMode.Screen:
+            self.setVisible(False)
 
     def set_scale(self, scale):
         """

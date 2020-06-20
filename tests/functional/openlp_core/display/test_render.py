@@ -197,7 +197,7 @@ def test_render_chords_for_printing(settings):
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected!'
 
 
-def test_find_formatting_tags():
+def test_find_formatting_tags(settings):
     """
     Test that find_formatting_tags works as expected
     """

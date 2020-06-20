@@ -40,15 +40,12 @@ class TestOpenSongFileImport(SongImportTestHelper):
         self.importer_module_name = 'opensong'
         super(TestOpenSongFileImport, self).__init__(*args, **kwargs)
 
-    @patch('openlp.plugins.songs.lib.importers.opensong.Settings')
-    def test_song_import(self, mocked_settings):
+    def test_song_import(self):
         """
         Test that loading an OpenSong file works correctly on various files
         """
         # Mock out the settings - always return False
-        mocked_returned_settings = MagicMock()
-        mocked_returned_settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        mocked_settings.return_value = mocked_returned_settings
+        self.settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
         # Do the test import
         self.file_import([TEST_PATH / 'Amazing Grace'],
                          self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))

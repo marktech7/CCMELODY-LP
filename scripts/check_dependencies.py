@@ -83,6 +83,8 @@ MODULES = [
     'alembic',
     'lxml',
     'chardet',
+    'flask',
+    'flask_cors',
     'bs4',
     'mako',
     'websockets',
@@ -108,6 +110,7 @@ OPTIONAL_MODULES = [
     # development/testing modules
     ('jenkins', '(access jenkins api)'),
     ('pytest', '(testing framework)'),
+    ('pytest-qt', '(testing framework)'),
     ('flake8', '(linter)')
 ]
 

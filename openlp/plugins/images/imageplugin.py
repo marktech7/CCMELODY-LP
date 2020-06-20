@@ -21,17 +21,12 @@
 
 import logging
 
-from PyQt5 import QtGui
-
 from openlp.core.state import State
-from openlp.core.api.http import register_endpoint
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
-from openlp.core.lib import ImageSource, build_icon
+from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.images.endpoint import api_images_endpoint, images_endpoint
 from openlp.plugins.images.lib import upgrade
 from openlp.plugins.images.lib.mediaitem import ImageMediaItem
 from openlp.plugins.images.lib.imagetab import ImageTab
@@ -50,8 +45,6 @@ class ImagePlugin(Plugin):
         self.weight = -7
         self.icon_path = UiIcons().picture
         self.icon = build_icon(self.icon_path)
-        register_endpoint(images_endpoint)
-        register_endpoint(api_images_endpoint)
         State().add_service('image', self.weight, is_plugin=True)
         State().update_pre_conditions('image', self.check_pre_conditions())
 
@@ -93,12 +86,3 @@ class ImagePlugin(Plugin):
             'service': translate('ImagePlugin', 'Add the selected image to the service.')
         }
         self.set_plugin_ui_text_strings(tooltips)
-
-    def config_update(self):
-        """
-        Triggered by saving and changing the image border.  Sets the images in image manager to require updates. Actual
-        update is triggered by the last part of saving the config.
-        """
-        log.info('Images config_update')
-        background = QtGui.QColor(Settings().value(self.settings_section + '/background color'))
-        self.image_manager.update_images_border(ImageSource.ImagePlugin, background)

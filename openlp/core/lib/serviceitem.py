@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
@@ -29,11 +28,12 @@ import os
 import uuid
 from copy import deepcopy
 from pathlib import Path
+from shutil import copytree, copy, move
 
 from PyQt5 import QtGui
 
 from openlp.core.state import State
-from openlp.core.common import ThemeLevel, md5_hash
+from openlp.core.common import ThemeLevel, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
@@ -43,6 +43,7 @@ from openlp.core.display.render import remove_tags, render_tags, render_chords_f
 from openlp.core.lib import ItemCapabilities
 from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.media import parse_stream_path
 
 
 log = logging.getLogger(__name__)
@@ -95,7 +96,6 @@ class ServiceItem(RegistryProperties):
         self.end_time = 0
         self.media_length = 0
         self.from_service = False
-        self.image_border = '#000000'
         self.background_audio = []
         self.theme_overwritten = False
         self.temporary_edit = False
@@ -103,7 +103,9 @@ class ServiceItem(RegistryProperties):
         self.auto_play_slides_loop = False
         self.timed_slide_interval = 0
         self.will_auto_start = False
-        self.has_original_files = True
+        self.has_original_file_path = True
+        self.sha256_file_hash = None
+        self.stored_filename = None
         self._new_item()
         self.metadata = []
 
@@ -130,12 +132,17 @@ class ServiceItem(RegistryProperties):
         theme = theme_manager.get_theme_data(theme)
         # Clean up capabilities and reload from the theme.
         if self.is_text():
+            # Cleanup capabilities
             if self.is_capable(ItemCapabilities.CanStream):
                 self.remove_capability(ItemCapabilities.CanStream)
             if self.is_capable(ItemCapabilities.HasBackgroundVideo):
                 self.remove_capability(ItemCapabilities.HasBackgroundVideo)
+            if self.is_capable(ItemCapabilities.HasBackgroundStream):
+                self.remove_capability(ItemCapabilities.HasBackgroundStream)
+            # Reload capabilities
             if theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
-                self.add_capability(ItemCapabilities.CanStream)
+                self.add_capability(ItemCapabilities.HasBackgroundStream)
+                self.stream_mrl = theme.background_filename
             if theme.background_type == BackgroundType.to_string(BackgroundType.Video):
                 self.video_file_name = theme.background_filename
                 self.add_capability(ItemCapabilities.HasBackgroundVideo)
@@ -213,8 +220,9 @@ class ServiceItem(RegistryProperties):
                 rendered_slide = {
                     'title': raw_slide['title'],
                     'text': render_tags(page),
+                    'chords': render_tags(page, can_render_chords=True),
                     'verse': index,
-                    'footer': self.footer_html,
+                    'footer': self.footer_html
                 }
                 self._rendered_slides.append(rendered_slide)
                 display_slide = {
@@ -270,23 +278,22 @@ class ServiceItem(RegistryProperties):
                     self._print_slides.append(slide)
         return self._print_slides
 
-    def add_from_image(self, path, title, background=None, thumbnail=None):
+    def add_from_image(self, path, title, thumbnail=None, file_hash=None):
         """
         Add an image slide to the service item.
 
         :param path: The directory in which the image file is located.
         :param title: A title for the slide in the service item.
-        :param background: The background colour
         :param thumbnail: Optional alternative thumbnail, used for remote thumbnails.
+        :param file_hash: Unique Reference to file .
         """
-        if background:
-            self.image_border = background
         self.service_item_type = ServiceItemType.Image
-        slide = {'title': title, 'path': path}
+        if not file_hash:
+            file_hash = sha256_file_hash(path)
+        slide = {'title': title, 'path': path, 'file_hash': file_hash}
         if thumbnail:
             slide['thumbnail'] = thumbnail
         self.slides.append(slide)
-        # self.image_manager.add_image(path, ImageSource.ImagePlugin, self.image_border)
         self._new_item()
 
     def add_from_text(self, text, verse_tag=None):
@@ -306,7 +313,7 @@ class ServiceItem(RegistryProperties):
         self.slides.append({'title': title, 'text': text, 'verse': verse_tag})
         self._new_item()
 
-    def add_from_command(self, path, file_name, image, display_title=None, notes=None):
+    def add_from_command(self, path, file_name, image, display_title=None, notes=None, file_hash=None):
         """
         Add a slide from a command.
 
@@ -315,28 +322,36 @@ class ServiceItem(RegistryProperties):
         :param image: The command of/for the slide.
         :param display_title: Title to show in gui/webinterface, optional.
         :param notes: Notes to show in the webinteface, optional.
+        :param file_hash: Sha256 hash checksum of the file.
         """
         self.service_item_type = ServiceItemType.Command
         # If the item should have a display title but this frame doesn't have one, we make one up
         if self.is_capable(ItemCapabilities.HasDisplayTitle) and not display_title:
             display_title = translate('OpenLP.ServiceItem',
                                       '[slide {frame:d}]').format(frame=len(self.slides) + 1)
+        if self.uses_file():
+            if file_hash:
+                self.sha256_file_hash = file_hash
+            else:
+                file_location = Path(path) / file_name
+                self.sha256_file_hash = sha256_file_hash(file_location)
+            self.stored_filename = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(file_name)[1])
         # Update image path to match servicemanager location if file was loaded from service
-        if image and not self.has_original_files and self.name == 'presentations':
-            file_location = os.path.join(path, file_name)
-            file_location_hash = md5_hash(file_location.encode('utf-8'))
-            image = os.path.join(AppLocation.get_section_data_path(self.name), 'thumbnails', file_location_hash,
-                                 ntpath.basename(image))  # TODO: Pathlib
+        if image and self.name == 'presentations':
+            image = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.sha256_file_hash / \
+                ntpath.basename(image)
         self.slides.append({'title': file_name, 'image': image, 'path': path, 'display_title': display_title,
                             'notes': notes, 'thumbnail': image})
-        # if self.is_capable(ItemCapabilities.HasThumbnails):
-        #     self.image_manager.add_image(image, ImageSource.CommandPlugins, '#000000')
         self._new_item()
 
     def get_service_repr(self, lite_save):
         """
         This method returns some text which can be saved into the service file to represent this item.
         """
+        if self.sha256_file_hash:
+            stored_filename = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(self.title)[1])
+        else:
+            stored_filename = None
         service_header = {
             'name': self.name,
             'plugin': self.name,
@@ -361,7 +376,9 @@ class ServiceItem(RegistryProperties):
             'theme_overwritten': self.theme_overwritten,
             'will_auto_start': self.will_auto_start,
             'processor': self.processor,
-            'metadata': self.metadata
+            'metadata': self.metadata,
+            'sha256_file_hash': self.sha256_file_hash,
+            'stored_filename': stored_filename
         }
         service_data = []
         if self.service_item_type == ServiceItemType.Text:
@@ -373,15 +390,39 @@ class ServiceItem(RegistryProperties):
         elif self.service_item_type == ServiceItemType.Image:
             if lite_save:
                 for slide in self.slides:
-                    service_data.append({'title': slide['title'], 'path': slide['path']})
+                    # When saving a service that originated from openlp 2.4 thumbnail might not be available
+                    if 'thumbnail' in slide:
+                        image_path = slide['thumbnail']
+                    else:
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / stored_filename
+                        if test_thumb.exists():
+                            image_path = test_thumb
+                        else:
+                            image_path = None
+                    service_data.append({'title': slide['title'], 'image': image_path, 'path': slide['path'],
+                                         'file_hash': slide['file_hash']})
             else:
-                service_data = [slide['title'] for slide in self.slides]
+                for slide in self.slides:
+                    # When saving a service that originated from openlp 2.4 thumbnail might not be available
+                    if 'thumbnail' in slide:
+                        image_path = slide['thumbnail'].relative_to(AppLocation().get_data_path())
+                    else:
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / stored_filename
+                        if test_thumb.exists():
+                            image_path = test_thumb
+                        else:
+                            image_path = None
+                    service_data.append({'title': slide['title'], 'image': image_path, 'file_hash': slide['file_hash']})
         elif self.service_item_type == ServiceItemType.Command:
             for slide in self.slides:
                 if isinstance(slide['image'], QtGui.QIcon):
-                    image = "clapperboard"
-                else:
+                    image = 'clapperboard'
+                elif lite_save:
                     image = slide['image']
+                else:
+                    image = slide['image'].relative_to(AppLocation().get_data_path())
                 service_data.append({'title': slide['title'], 'image': image, 'path': slide['path'],
                                      'display_title': slide['display_title'], 'notes': slide['notes']})
         return {'header': service_header, 'data': service_data}
@@ -393,7 +434,7 @@ class ServiceItem(RegistryProperties):
         self._display_slides = []
         self._rendered_slides = []
 
-    def set_from_service(self, service_item, path=None):
+    def set_from_service(self, service_item, path=None, version=2):
         """
         This method takes a service item from a saved service file (passed from the ServiceManager) and extracts the
         data actually required.
@@ -401,6 +442,7 @@ class ServiceItem(RegistryProperties):
         :param service_item: The item to extract data from.
         :param path: Defaults to *None*. This is the service manager path for things which have their files saved
             with them or None when the saved service is lite and the original file paths need to be preserved.
+        :param version: Format version of the data.
         """
         log.debug('set_from_service called with path {path}'.format(path=path))
         header = service_item['serviceitem']['header']
@@ -426,13 +468,18 @@ class ServiceItem(RegistryProperties):
         self.timed_slide_interval = header.get('timed_slide_interval', 0)
         self.will_auto_start = header.get('will_auto_start', False)
         self.processor = header.get('processor', None)
-        self.has_original_files = True
+        self.has_original_file_path = True
         self.metadata = header.get('item_meta_data', [])
+        self.sha256_file_hash = header.get('sha256_file_hash', None)
+        self.stored_filename = header.get('stored_filename', None)
         if 'background_audio' in header and State().check_preconditions('media'):
             self.background_audio = []
             for file_path in header['background_audio']:
                 # In OpenLP 3.0 we switched to storing Path objects in JSON files
-                if isinstance(file_path, str):
+                if version >= 3:
+                    if path:
+                        file_path = path / file_path
+                else:
                     # Handle service files prior to OpenLP 3.0
                     # Windows can handle both forward and backward slashes, so we use ntpath to get the basename
                     file_path = path / ntpath.basename(file_path)
@@ -443,31 +490,103 @@ class ServiceItem(RegistryProperties):
                 self.add_from_text(slide['raw_slide'], slide['verseTag'])
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
-            settings_section = service_item['serviceitem']['header']['name']
-            background = QtGui.QColor(self.settings.value(settings_section + '/background color'))
             if path:
-                self.has_original_files = False
+                self.has_original_file_path = False
                 for text_image in service_item['serviceitem']['data']:
-                    file_path = path / text_image
-                    self.add_from_image(file_path, text_image, background)
+                    file_hash = None
+                    thumbnail = None
+                    if version >= 3:
+                        text = text_image['title']
+                        file_hash = text_image['file_hash']
+                        file_path = path / '{base}{ext}'.format(base=file_hash, ext=os.path.splitext(text)[1])
+                        thumbnail = AppLocation.get_data_path() / text_image['image']
+                        # copy thumbnail from servicemanager path
+                        copy(path / 'thumbnails' / os.path.basename(text_image['image']),
+                             AppLocation.get_section_data_path(self.name) / 'thumbnails')
+                    else:
+                        org_file_path = path / text_image
+                        # rename the extracted file so that it follows the sha256 based approach of openlp 3
+                        self.sha256_file_hash = sha256_file_hash(org_file_path)
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(text_image)[1])
+                        file_path = path / new_file
+                        move(org_file_path, file_path)
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
+                        if test_thumb.exists():
+                            thumbnail = test_thumb
+                    self.add_from_image(file_path, text_image, thumbnail=thumbnail, file_hash=file_hash)
             else:
                 for text_image in service_item['serviceitem']['data']:
-                    self.add_from_image(text_image['path'], text_image['title'], background)
+                    file_hash = None
+                    text = text_image['title']
+                    thumbnail = None
+                    if version >= 3:
+                        file_path = text_image['path']
+                        file_hash = text_image['file_hash']
+                        thumbnail = AppLocation.get_data_path() / text_image['image']
+                    else:
+                        file_path = Path(text_image['path'])
+                        # Check if (by chance) the thumbnails for this image is available on this machine
+                        file_hash = sha256_file_hash(file_path)
+                        new_file = '{hash}{ext}'.format(hash=file_hash, ext=os.path.splitext(file_path)[1])
+                        test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
+                        if test_thumb.exists():
+                            thumbnail = test_thumb
+                    self.add_from_image(file_path, text, thumbnail=thumbnail, file_hash=file_hash)
         elif self.service_item_type == ServiceItemType.Command:
+            if version < 3:
+                # If this is an old servicefile with files included, we need to rename the bundled files to match
+                # the new sha256 based scheme
+                if path:
+                    file_path = Path(path) / self.title
+                    self.sha256_file_hash = sha256_file_hash(file_path)
+                    new_file = path / '{hash}{ext}'.format(hash=self.sha256_file_hash,
+                                                           ext=os.path.splitext(self.title)[1])
+                    move(file_path, new_file)
+                else:
+                    file_path = Path(service_item['serviceitem']['data'][0]['path']) / self.title
+                    self.sha256_file_hash = sha256_file_hash(file_path)
+            # Loop over the slides
             for text_image in service_item['serviceitem']['data']:
                 if not self.title:
                     self.title = text_image['title']
-                if self.is_capable(ItemCapabilities.IsOptical):
-                    self.has_original_files = False
+                if self.is_capable(ItemCapabilities.IsOptical) or self.is_capable(ItemCapabilities.CanStream):
+                    self.has_original_file_path = False
                     self.add_from_command(text_image['path'], text_image['title'], text_image['image'])
                 elif path:
-                    self.has_original_files = False
-                    if text_image['image'] == "clapperboard":
-                        text_image['image'] = UiIcons().clapperboard
-                    self.add_from_command(path, text_image['title'], text_image['image'],
-                                          text_image.get('display_title', ''), text_image.get('notes', ''))
+                    self.has_original_file_path = False
+                    # Copy any bundled thumbnails into the plugin thumbnail folder
+                    if version >= 3 and os.path.exists(path / self.sha256_file_hash) and \
+                            os.path.isdir(path / self.sha256_file_hash):
+                        try:
+                            copytree(path / self.sha256_file_hash,
+                                     AppLocation.get_section_data_path(self.name) / 'thumbnails' /
+                                     self.sha256_file_hash)
+                        except FileExistsError:
+                            # Files already exists, just skip
+                            pass
+                    if text_image['image'] in ['clapperboard', ':/media/slidecontroller_multimedia.png']:
+                        image_path = UiIcons().clapperboard
+                    elif version < 3:
+                        # convert the thumbnail path to new sha256 based
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash,
+                                                        ext=os.path.splitext(text_image['image'])[1])
+                        image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
+                            self.sha256_file_hash / os.path.split(text_image['image'])[1]
+                    else:
+                        image_path = text_image['image']
+                    self.add_from_command(path, text_image['title'], image_path, text_image.get('display_title', ''),
+                                          text_image.get('notes', ''), file_hash=self.sha256_file_hash)
                 else:
-                    self.add_from_command(Path(text_image['path']), text_image['title'], text_image['image'])
+                    if text_image['image'] in ['clapperboard', ':/media/slidecontroller_multimedia.png']:
+                        image_path = UiIcons().clapperboard
+                    elif version < 3:
+                        # convert the thumbnail path to new sha256 based
+                        image_path = AppLocation.get_section_data_path(self.name) / 'thumbnails' / \
+                            self.sha256_file_hash / os.path.split(text_image['image'])[1]
+                    else:
+                        image_path = text_image['image']
+                    self.add_from_command(Path(text_image['path']), str(text_image['title']), image_path)
         self._new_item()
 
     def get_display_title(self):
@@ -543,7 +662,8 @@ class ServiceItem(RegistryProperties):
         Confirms if the ServiceItem uses a file
         """
         return self.service_item_type == ServiceItemType.Image or \
-            (self.service_item_type == ServiceItemType.Command and not self.is_capable(ItemCapabilities.IsOptical))
+            (self.service_item_type == ServiceItemType.Command and not self.is_capable(ItemCapabilities.IsOptical)
+             and not self.is_capable(ItemCapabilities.CanStream))
 
     def is_text(self):
         """
@@ -570,14 +690,18 @@ class ServiceItem(RegistryProperties):
         else:
             return self.slides
 
-    def get_rendered_frame(self, row):
+    def get_rendered_frame(self, row, clean=False):
         """
         Returns the correct frame for a given list and renders it if required.
 
         :param row: The service item slide to be returned
+        :param clean: do I want HTML tags or not
         """
         if self.service_item_type == ServiceItemType.Text:
-            return self.rendered_slides[row]['text']
+            if clean:
+                return self.display_slides[row]['text']
+            else:
+                return self.rendered_slides[row]['text']
         elif self.service_item_type == ServiceItemType.Image:
             return self.slides[row]['path']
         else:
@@ -603,6 +727,8 @@ class ServiceItem(RegistryProperties):
                 return ''
         if self.is_image() or self.is_capable(ItemCapabilities.IsOptical):
             path_from = frame['path']
+        elif self.is_command() and not self.has_original_file_path and self.sha256_file_hash:
+            path_from = os.path.join(frame['path'], self.stored_filename)
         else:
             path_from = os.path.join(frame['path'], frame['title'])
         if isinstance(path_from, str):
@@ -663,7 +789,7 @@ class ServiceItem(RegistryProperties):
     def requires_media(self):
         return self.is_capable(ItemCapabilities.HasBackgroundAudio) or \
             self.is_capable(ItemCapabilities.HasBackgroundVideo) or \
-            self.is_capable(ItemCapabilities.CanStream)
+            self.is_capable(ItemCapabilities.HasBackgroundStream)
 
     def missing_frames(self):
         """
@@ -687,9 +813,17 @@ class ServiceItem(RegistryProperties):
                     if not os.path.exists(slide['title']):
                         self.is_valid = False
                         break
+                elif self.is_capable(ItemCapabilities.CanStream):
+                    (name, mrl, options) = parse_stream_path(slide['path'])
+                    if not name or not mrl or not options:
+                        self.is_valid = False
+                        break
                 else:
-                    file_name = os.path.join(slide['path'], slide['title'])
-                    if not os.path.exists(file_name):
+                    if self.has_original_file_path:
+                        file_name = Path(slide['path']) / slide['title']
+                    else:
+                        file_name = Path(slide['path']) / self.stored_filename
+                    if not file_name.exists():
                         self.is_valid = False
                         break
                     if suffixes and not self.is_text():
@@ -697,3 +831,14 @@ class ServiceItem(RegistryProperties):
                         if file_suffix.lower() not in suffixes:
                             self.is_valid = False
                             break
+
+    def get_thumbnail_path(self):
+        """
+        Returns the thumbnail folder. Should only be used for items that support thumbnails.
+        """
+        if self.is_capable(ItemCapabilities.HasThumbnails):
+            if self.is_command() and self.slides:
+                return os.path.dirname(self.slides[0]['image'])
+            elif self.is_image() and self.slides and 'thumbnail' in self.slides[0]:
+                return os.path.dirname(self.slides[0]['thumbnail'])
+        return None

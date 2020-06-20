@@ -285,11 +285,15 @@ class SongFormat(object):
         },
         LiveWorship: {
             'class': LiveWorshipImport,
-            'name': 'LiveWorship Database',
+            'name': 'LiveWorship Database Dump',
             'prefix': 'liveWorship',
             'selectMode': SongFormatSelect.SingleFile,
-            'filter': '{text} (*.vdb)'.format(text=translate('SongsPlugin.ImportWizardForm',
-                                                             'LiveWorship Database'))
+            'filter': '{text} (*.xml)'.format(text=translate('SongsPlugin.ImportWizardForm',
+                                                             'LiveWorship Database')),
+            'descriptionText': translate('SongsPlugin.ImportWizardForm',
+                                         'First convert your LiveWorship database to an XML text file, as '
+                                         'explained in the <a href="http://manual.openlp.org/songs.html'
+                                         '#importing-from-liveworship">User Manual</a>.')
         },
         Lyrix: {
             'class': LyrixImport,

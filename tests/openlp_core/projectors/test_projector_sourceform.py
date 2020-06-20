@@ -23,19 +23,33 @@
 
 Tests for the Projector Source Select form.
 """
-import os
-import time
-from unittest import TestCase
+import pytest
 from unittest.mock import patch
 
 from PyQt5.QtWidgets import QDialog
 
-from openlp.core.common.registry import Registry
 from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES, PJLINK_DEFAULT_SOURCES
 from openlp.core.projectors.db import Projector, ProjectorDB
 from openlp.core.projectors.sourceselectform import SourceSelectSingle, source_group
-from tests.helpers.testmixin import TestMixin
 from tests.resources.projector.data import TEST1_DATA, TEST_DB
+
+
+@pytest.yield_fixture()
+def projector_env(settings):
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = 'sqlite:///{}'.format(TEST_DB)
+        projectordb = ProjectorDB()
+    # Retrieve/create a database record
+    projector = projectordb.get_projector_by_ip(TEST1_DATA['ip'])
+    if not projector:
+        projectordb.add_projector(projector=Projector(**TEST1_DATA))
+        projector = projectordb.get_projector_by_ip(TEST1_DATA['ip'])
+    projector.dbid = projector.id
+    projector.db_item = projector
+    yield projector, projectordb
+    projectordb.session.close()
+    del projectordb
+    del projector
 
 
 def build_source_dict():
@@ -52,97 +66,60 @@ def build_source_dict():
     return test_group
 
 
-class ProjectorSourceFormTest(TestCase, TestMixin):
+def test_source_dict():
     """
-    Test class for the Projector Source Select form module
+    Test that source list dict returned from sourceselectform module is a valid dict with proper entries
     """
-    @patch('openlp.core.projectors.db.init_url')
-    def setUp(self, mocked_init_url):
-        """
-        Set up anything necessary for all tests
-        """
-        mocked_init_url.return_value = 'sqlite:///{}'.format(TEST_DB)
-        self.setup_application()
-        self.build_settings()
-        Registry.create()
-        # Do not try to recreate if we've already been created from a previous test
-        if not hasattr(self, 'projectordb'):
-            self.projectordb = ProjectorDB()
-        # Retrieve/create a database record
-        self.projector = self.projectordb.get_projector_by_ip(TEST1_DATA['ip'])
-        if not self.projector:
-            self.projectordb.add_projector(projector=Projector(**TEST1_DATA))
-            self.projector = self.projectordb.get_projector_by_ip(TEST1_DATA['ip'])
-        self.projector.dbid = self.projector.id
-        self.projector.db_item = self.projector
+    # GIVEN: A list of inputs
+    codes = []
+    for item in PJLINK_DEFAULT_CODES.keys():
+        codes.append(item)
+    codes.sort()
 
-    def tearDown(self):
-        """
-        Close database session.
-        Delete all C++ objects at end so we don't segfault.
-        """
-        self.projectordb.session.close()
-        del self.projectordb
-        del self.projector
-        retries = 0
-        while retries < 5:
-            try:
-                if os.path.exists(TEST_DB):
-                    os.unlink(TEST_DB)
-                break
-            except Exception:
-                time.sleep(1)
-                retries += 1
-        self.destroy_settings()
+    # WHEN: projector.sourceselectform.source_select() is called
+    check = source_group(codes, PJLINK_DEFAULT_CODES)
 
-    def test_source_dict(self):
-        """
-        Test that source list dict returned from sourceselectform module is a valid dict with proper entries
-        """
-        # GIVEN: A list of inputs
-        codes = []
-        for item in PJLINK_DEFAULT_CODES.keys():
-            codes.append(item)
-        codes.sort()
+    # THEN: return dictionary should match test dictionary
+    assert check == build_source_dict(), "Source group dictionary should match test dictionary"
 
-        # WHEN: projector.sourceselectform.source_select() is called
-        check = source_group(codes, PJLINK_DEFAULT_CODES)
 
-        # THEN: return dictionary should match test dictionary
-        assert check == build_source_dict(), "Source group dictionary should match test dictionary"
+@patch.object(QDialog, 'exec')
+def test_source_select_edit_button(mocked_qdialog, projector_env):
+    """
+    Test source select form edit has Ok, Cancel, Reset, and Revert buttons
+    """
+    # GIVEN: Initial setup and mocks
+    projector = projector_env[0]
+    projectordb = projector_env[1]
+    projector.source_available = ['11', ]
+    projector.source = '11'
 
-    @patch.object(QDialog, 'exec')
-    def test_source_select_edit_button(self, mocked_qdialog):
-        """
-        Test source select form edit has Ok, Cancel, Reset, and Revert buttons
-        """
-        # GIVEN: Initial setup and mocks
-        self.projector.source_available = ['11', ]
-        self.projector.source = '11'
+    # WHEN we create a source select widget and set edit=True
+    select_form = SourceSelectSingle(parent=None, projectordb=projectordb)
+    select_form.edit = True
+    select_form.exec(projector=projector)
 
-        # WHEN we create a source select widget and set edit=True
-        select_form = SourceSelectSingle(parent=None, projectordb=self.projectordb)
-        select_form.edit = True
-        select_form.exec(projector=self.projector)
+    # THEN: Verify all 4 buttons are available
+    assert len(select_form.button_box.buttons()) == 4, \
+        'SourceSelect dialog box should have "OK", "Cancel", "Rest", and "Revert" buttons available'
 
-        # THEN: Verify all 4 buttons are available
-        assert len(select_form.button_box.buttons()) == 4, \
-            'SourceSelect dialog box should have "OK", "Cancel", "Rest", and "Revert" buttons available'
 
-    @patch.object(QDialog, 'exec')
-    def test_source_select_noedit_button(self, mocked_qdialog):
-        """
-        Test source select form view has OK and Cancel buttons only
-        """
-        # GIVEN: Initial setup and mocks
-        self.projector.source_available = ['11', ]
-        self.projector.source = '11'
+@patch.object(QDialog, 'exec')
+def test_source_select_noedit_button(mocked_qdialog, projector_env):
+    """
+    Test source select form view has OK and Cancel buttons only
+    """
+    # GIVEN: Initial setup and mocks
+    projector = projector_env[0]
+    projectordb = projector_env[1]
+    projector.source_available = ['11', ]
+    projector.source = '11'
 
-        # WHEN we create a source select widget and set edit=False
-        select_form = SourceSelectSingle(parent=None, projectordb=self.projectordb)
-        select_form.edit = False
-        select_form.exec(projector=self.projector)
+    # WHEN we create a source select widget and set edit=False
+    select_form = SourceSelectSingle(parent=None, projectordb=projectordb)
+    select_form.edit = False
+    select_form.exec(projector=projector)
 
-        # THEN: Verify only 2 buttons are available
-        assert len(select_form.button_box.buttons()) == 2, \
-            'SourceSelect dialog box should only have "OK" and "Cancel" buttons available'
+    # THEN: Verify only 2 buttons are available
+    assert len(select_form.button_box.buttons()) == 2, \
+        'SourceSelect dialog box should only have "OK" and "Cancel" buttons available'

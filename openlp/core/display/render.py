@@ -32,10 +32,10 @@ import time
 from PyQt5 import QtWidgets, QtGui
 
 from openlp.core.common import ThemeLevel
+from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
@@ -509,7 +509,7 @@ def get_start_tags(raw_text):
     return raw_text + ''.join(end_tags), ''.join(start_tags), ''.join(html_tags)
 
 
-class ThemePreviewRenderer(LogMixin, DisplayWindow):
+class ThemePreviewRenderer(DisplayWindow, LogMixin):
     """
     A virtual display used for rendering thumbnails and other offscreen tasks
     """
@@ -535,7 +535,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
     def generate_footer(self):
         """
         """
-        footer_template = Settings().value('songs/footer template')
+        footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
             'title': TITLE,
@@ -544,7 +544,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
                                              'Author who wrote the lyrics of a song'),
             'authors_words': [AUTHOR],
             'copyright': FOOTER_COPYRIGHT,
-            'ccli_license': Settings().value('core/ccli number'),
+            'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': CCLI_NO,
         }
@@ -567,7 +567,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
-            self.set_theme(theme_data, is_sync=True)
+            self.set_theme(theme_data, is_sync=True, service_item_type=ServiceItemType.Text)
             slides = self.format_slide(VERSE, None)
             verses = dict()
             verses['title'] = TITLE
@@ -812,7 +812,7 @@ class ThemePreviewRenderer(LogMixin, DisplayWindow):
         """
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
-        self.run_javascript('Display.addTextSlide("v1", "{text}", "Dummy Footer");'
+        self.run_javascript('Display.setTextSlide("{text}");'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
         does_text_fits = self.run_javascript('Display.doesContentFit();', is_sync=True)

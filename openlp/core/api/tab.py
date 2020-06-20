@@ -21,14 +21,17 @@
 """
 The :mod:`~openlp.core.api.tab` module contains the settings tab for the API
 """
+from time import sleep
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 
+from openlp.core.api.deploy import download_and_check, download_version_info
 from openlp.core.common import get_network_interfaces
-from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.ui.icons import UiIcons
+from openlp.core.widgets.dialogs import DownloadProgressDialog
 
 
 ZERO_URL = '0.0.0.0'
@@ -40,7 +43,8 @@ class ApiTab(SettingsTab):
     """
     def __init__(self, parent):
         self.icon_path = UiIcons().remote
-        advanced_translated = translate('OpenLP.AdvancedTab', 'Advanced')
+        advanced_translated = translate('OpenLP.APITab', 'API')
+        self._master_version = None
         super(ApiTab, self).__init__(parent, 'api', advanced_translated)
 
     def setup_ui(self):
@@ -116,23 +120,30 @@ class ApiTab(SettingsTab):
         self.password.setObjectName('password')
         self.user_login_layout.addRow(self.password_label, self.password)
         self.left_layout.addWidget(self.user_login_group_box)
-        self.update_site_group_box = QtWidgets.QGroupBox(self.left_column)
-        self.update_site_group_box.setCheckable(True)
-        self.update_site_group_box.setChecked(False)
-        self.update_site_group_box.setObjectName('update_site_group_box')
-        self.update_site_layout = QtWidgets.QFormLayout(self.update_site_group_box)
-        self.update_site_layout.setObjectName('update_site_layout')
-        self.current_version_label = QtWidgets.QLabel(self.update_site_group_box)
+        self.web_remote_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.web_remote_group_box.setObjectName('web_remote_group_box')
+        self.web_remote_layout = QtWidgets.QGridLayout(self.web_remote_group_box)
+        self.web_remote_layout.setObjectName('web_remote_layout')
+        self.current_version_label = QtWidgets.QLabel(self.web_remote_group_box)
+        self.web_remote_layout.addWidget(self.current_version_label, 0, 0)
         self.current_version_label.setObjectName('current_version_label')
-        self.current_version_value = QtWidgets.QLabel(self.update_site_group_box)
+        self.current_version_value = QtWidgets.QLabel(self.web_remote_group_box)
         self.current_version_value.setObjectName('current_version_value')
-        self.update_site_layout.addRow(self.current_version_label, self.current_version_value)
-        self.master_version_label = QtWidgets.QLabel(self.update_site_group_box)
+        self.web_remote_layout.addWidget(self.current_version_value, 0, 1)
+        self.upgrade_button = QtWidgets.QPushButton(self.web_remote_group_box)
+        self.upgrade_button.setEnabled(False)
+        self.upgrade_button.setObjectName('upgrade_button')
+        self.web_remote_layout.addWidget(self.upgrade_button, 0, 2)
+        self.master_version_label = QtWidgets.QLabel(self.web_remote_group_box)
         self.master_version_label.setObjectName('master_version_label')
-        self.master_version_value = QtWidgets.QLabel(self.update_site_group_box)
+        self.web_remote_layout.addWidget(self.master_version_label, 1, 0)
+        self.master_version_value = QtWidgets.QLabel(self.web_remote_group_box)
         self.master_version_value.setObjectName('master_version_value')
-        self.update_site_layout.addRow(self.master_version_label, self.master_version_value)
-        self.left_layout.addWidget(self.update_site_group_box)
+        self.web_remote_layout.addWidget(self.master_version_value, 1, 1)
+        self.check_version_button = QtWidgets.QPushButton(self.web_remote_group_box)
+        self.check_version_button.setObjectName('check_version_button')
+        self.web_remote_layout.addWidget(self.check_version_button, 1, 2)
+        self.left_layout.addWidget(self.web_remote_group_box)
         self.app_group_box = QtWidgets.QGroupBox(self.right_column)
         self.app_group_box.setObjectName('app_group_box')
         self.right_layout.addWidget(self.app_group_box)
@@ -153,11 +164,13 @@ class ApiTab(SettingsTab):
         self.twelve_hour_check_box.stateChanged.connect(self.on_twelve_hour_check_box_changed)
         self.thumbnails_check_box.stateChanged.connect(self.on_thumbnails_check_box_changed)
         self.address_edit.textChanged.connect(self.set_urls)
+        self.upgrade_button.clicked.connect(self.on_upgrade_button_clicked)
+        self.check_version_button.clicked.connect(self.on_check_version_button_clicked)
 
     def retranslate_ui(self):
         self.tab_title_visible = translate('RemotePlugin.RemoteTab', 'Remote Interface')
         self.server_settings_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Server Settings'))
-        self.address_label.setText(translate('RemotePlugin.RemoteTab', 'Serve on IP address:'))
+        self.address_label.setText(translate('RemotePlugin.RemoteTab', 'IP address:'))
         self.port_label.setText(translate('RemotePlugin.RemoteTab', 'Port number:'))
         self.remote_url_label.setText(translate('RemotePlugin.RemoteTab', 'Remote URL:'))
         self.stage_url_label.setText(translate('RemotePlugin.RemoteTab', 'Stage view URL:'))
@@ -172,12 +185,44 @@ class ApiTab(SettingsTab):
                       'Scan the QR code or click <a href="{qr}">download</a> to download an app for your mobile device'
                       ).format(qr='https://openlp.org/#mobile-app-downloads'))
         self.user_login_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'User Authentication'))
-        self.aa = UiStrings()
-        self.update_site_group_box.setTitle(UiStrings().WebDownloadText)
+        self.web_remote_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Web Remote'))
+        self.check_version_button.setText(translate('RemotePlugin.RemoteTab', 'Check for Updates'))
+        self.upgrade_button.setText(translate('RemotePlugin.RemoteTab', 'Upgrade'))
         self.user_id_label.setText(translate('RemotePlugin.RemoteTab', 'User id:'))
         self.password_label.setText(translate('RemotePlugin.RemoteTab', 'Password:'))
-        self.current_version_label.setText(translate('RemotePlugin.RemoteTab', 'Current Version number:'))
-        self.master_version_label.setText(translate('RemotePlugin.RemoteTab', 'Latest Version number:'))
+        self.current_version_label.setText(translate('RemotePlugin.RemoteTab', 'Current version:'))
+        self.master_version_label.setText(translate('RemotePlugin.RemoteTab', 'Latest version:'))
+        self._unknown_version = translate('RemotePlugin.RemoteTab', '(unknown)')
+
+    @property
+    def master_version(self):
+        """
+        Property getter for the remote master version
+        """
+        return self._master_version
+
+    @master_version.setter
+    def master_version(self, value):
+        """
+        Property setter for the remote master version
+        """
+        self._master_version = value
+        self.master_version_value.setText(self._master_version or self._unknown_version)
+        self.upgrade_button.setEnabled(self.can_enable_upgrade_button())
+
+    def can_enable_upgrade_button(self):
+        """
+        Do a couple checks to set the upgrade button state
+        """
+        return self.master_version_value.text() != self._unknown_version and \
+            self.master_version_value.text() != self.current_version_value.text()
+
+    def set_master_version(self):
+        """
+        Check if the master version is not set, and set it to None to invoke the "unknown version" label
+        """
+        if not self._master_version:
+            self.master_version = None
 
     def set_urls(self):
         """
@@ -211,35 +256,31 @@ class ApiTab(SettingsTab):
         """
         Load the configuration and update the server configuration if necessary
         """
-        self.port_spin_box.setText(str(Settings().value(self.settings_section + '/port')))
-        self.address_edit.setText(Settings().value(self.settings_section + '/ip address'))
-        self.twelve_hour = Settings().value(self.settings_section + '/twelve hour')
+        self.port_spin_box.setText(str(self.settings.value('api/port')))
+        self.address_edit.setText(self.settings.value('api/ip address'))
+        self.twelve_hour = self.settings.value('api/twelve hour')
         self.twelve_hour_check_box.setChecked(self.twelve_hour)
-        self.thumbnails = Settings().value(self.settings_section + '/thumbnails')
+        self.thumbnails = self.settings.value('api/thumbnails')
         self.thumbnails_check_box.setChecked(self.thumbnails)
-        self.user_login_group_box.setChecked(Settings().value(self.settings_section + '/authentication enabled'))
-        self.user_id.setText(Settings().value(self.settings_section + '/user id'))
-        self.password.setText(Settings().value(self.settings_section + '/password'))
-        self.current_version_value.setText(Settings().value('remotes/download version'))
-        self.master_version_value.setText(Registry().get_flag('website_version'))
-        if self.master_version_value.text() == self.current_version_value.text():
-            self.update_site_group_box.setEnabled(False)
+        self.user_login_group_box.setChecked(self.settings.value('api/authentication enabled'))
+        self.user_id.setText(self.settings.value('api/user id'))
+        self.password.setText(self.settings.value('api/password'))
+        self.current_version_value.setText(self.settings.value('api/download version'))
+        self.set_master_version()
         self.set_urls()
 
     def save(self):
         """
         Save the configuration and update the server configuration if necessary
         """
-        if Settings().value(self.settings_section + '/ip address') != self.address_edit.text():
+        if self.settings.value('api/ip address') != self.address_edit.text():
             self.settings_form.register_post_process('remotes_config_updated')
-        Settings().setValue(self.settings_section + '/ip address', self.address_edit.text())
-        Settings().setValue(self.settings_section + '/twelve hour', self.twelve_hour)
-        Settings().setValue(self.settings_section + '/thumbnails', self.thumbnails)
-        Settings().setValue(self.settings_section + '/authentication enabled', self.user_login_group_box.isChecked())
-        Settings().setValue(self.settings_section + '/user id', self.user_id.text())
-        Settings().setValue(self.settings_section + '/password', self.password.text())
-        if self.update_site_group_box.isChecked():
-            self.settings_form.register_post_process('download_website')
+        self.settings.setValue('api/ip address', self.address_edit.text())
+        self.settings.setValue('api/twelve hour', self.twelve_hour)
+        self.settings.setValue('api/thumbnails', self.thumbnails)
+        self.settings.setValue('api/authentication enabled', self.user_login_group_box.isChecked())
+        self.settings.setValue('api/user id', self.user_id.text())
+        self.settings.setValue('api/password', self.password.text())
 
     def on_twelve_hour_check_box_changed(self, check_state):
         """
@@ -258,3 +299,38 @@ class ApiTab(SettingsTab):
         # we have a set value convert to True/False
         if check_state == QtCore.Qt.Checked:
             self.thumbnails = True
+
+    def on_check_version_button_clicked(self):
+        """
+        Check for the latest version on the server
+        """
+        app = Registry().get('application')
+        app.set_busy_cursor()
+        app.process_events()
+        version_info = download_version_info()
+        app.process_events()
+        self.master_version = version_info['latest']['version']
+        app.process_events()
+        app.set_normal_cursor()
+        app.process_events()
+        if self.can_enable_upgrade_button():
+            Registry().get('main_window').information_message('New version available!',
+                                                              'There\'s a new version of the web remote available.')
+
+    def on_upgrade_button_clicked(self):
+        """
+        Download/upgrade the web remote
+        """
+        app = Registry().get('application')
+        progress = DownloadProgressDialog(self, app)
+        progress.show()
+        app.process_events()
+        sleep(0.5)
+        downloaded_version = download_and_check(progress)
+        app.process_events()
+        sleep(0.5)
+        progress.close()
+        app.process_events()
+        self.current_version_value.setText(downloaded_version)
+        self.settings.setValue('api/download version', downloaded_version)
+        self.upgrade_button.setEnabled(self.can_enable_upgrade_button())

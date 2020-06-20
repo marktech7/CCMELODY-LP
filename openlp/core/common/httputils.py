@@ -34,7 +34,7 @@ from PyQt5 import QtCore
 
 from openlp.core.common import trace_error_handler
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import ProxyMode, Settings
+from openlp.core.common.settings import ProxyMode
 from openlp.core.threading import ThreadWorker
 
 
@@ -77,7 +77,7 @@ def get_proxy_settings(mode=None):
     :return: A dict using the format expected by the requests library.
     :rtype: dict | None
     """
-    settings = Settings()
+    settings = Registry().get('settings')
     if mode is None:
         mode = settings.value('advanced/proxy mode')
     if mode == ProxyMode.NO_PROXY:
@@ -102,15 +102,22 @@ def get_proxy_settings(mode=None):
         return {'http': http_value, 'https': https_value}
 
 
-def get_user_agent():
+def get_random_user_agent():
     """
-    Return a user agent customised for the platform the user is on.
+    Return a random user agent customised for the platform the user is on.
     """
     browser_list = USER_AGENTS.get(sys.platform, None)
     if not browser_list:
         browser_list = USER_AGENTS['default']
     random_index = randint(0, len(browser_list) - 1)
     return browser_list[random_index]
+
+
+def get_openlp_user_agent():
+    """
+    Return the OpenLP user agent
+    """
+    return 'OpenLP/' + Registry().get('application-qt').applicationVersion()
 
 
 def get_web_page(url, headers=None, update_openlp=False, proxy=None):
@@ -128,7 +135,7 @@ def get_web_page(url, headers=None, update_openlp=False, proxy=None):
     if not headers:
         headers = {}
     if 'user-agent' not in [key.lower() for key in headers.keys()]:
-        headers['User-Agent'] = get_user_agent()
+        headers['User-Agent'] = get_random_user_agent()
     if not isinstance(proxy, dict):
         proxy = get_proxy_settings(mode=proxy)
     log.debug('Downloading URL = %s' % url)
@@ -207,7 +214,7 @@ def download_file(update_object, url, file_path, sha256=None, proxy=None):
                     hasher = hashlib.sha256()
                 # Download until finished or canceled.
                 for chunk in response.iter_content(chunk_size=block_size):
-                    if hasattr(update_object, 'was_cancelled') and update_object.was_cancelled:
+                    if hasattr(update_object, 'is_cancelled') and update_object.is_cancelled:
                         break
                     saved_file.write(chunk)
                     if sha256:
@@ -233,7 +240,7 @@ def download_file(update_object, url, file_path, sha256=None, proxy=None):
                 retries += 1
                 time.sleep(0.1)
                 continue
-    if hasattr(update_object, 'was_cancelled') and update_object.was_cancelled and file_path.exists():
+    if hasattr(update_object, 'is_cancelled') and update_object.is_cancelled and file_path.exists():
         file_path.unlink()
     return True
 
@@ -251,21 +258,21 @@ class DownloadWorker(ThreadWorker):
         """
         self._base_url = base_url
         self._file_name = file_name
-        self.was_cancelled = False
+        self.is_cancelled = False
         super().__init__()
 
     def start(self):
         """
         Download the url to the temporary directory
         """
-        if self.was_cancelled:
+        if self.is_cancelled:
             self.quit.emit()
             return
         try:
             dest_path = Path(gettempdir()) / 'openlp' / self._file_name
             url = '{url}{name}'.format(url=self._base_url, name=self._file_name)
             is_success = download_file(self, url, dest_path)
-            if is_success and not self.was_cancelled:
+            if is_success and not self.is_cancelled:
                 self.download_succeeded.emit(dest_path)
             else:
                 self.download_failed.emit()
@@ -280,4 +287,4 @@ class DownloadWorker(ThreadWorker):
         """
         A slot to allow the download to be cancelled from outside of the thread
         """
-        self.was_cancelled = True
+        self.is_cancelled = True

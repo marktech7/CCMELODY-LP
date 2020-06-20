@@ -28,7 +28,6 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.widgets.buttons import ColorButton
@@ -126,9 +125,6 @@ class GeneralTab(SettingsTab):
         self.settings_group_box.setObjectName('settings_group_box')
         self.settings_layout = QtWidgets.QFormLayout(self.settings_group_box)
         self.settings_layout.setObjectName('settings_layout')
-        self.save_check_service_check_box = QtWidgets.QCheckBox(self.settings_group_box)
-        self.save_check_service_check_box.setObjectName('save_check_service_check_box')
-        self.settings_layout.addRow(self.save_check_service_check_box)
         self.auto_unblank_check_box = QtWidgets.QCheckBox(self.settings_group_box)
         self.auto_unblank_check_box.setObjectName('auto_unblank_check_box')
         self.settings_layout.addRow(self.auto_unblank_check_box)
@@ -168,8 +164,6 @@ class GeneralTab(SettingsTab):
         self.logo_hide_on_startup_check_box.setText(translate('OpenLP.GeneralTab', 'Don\'t show logo on startup'))
         self.check_for_updates_check_box.setText(translate('OpenLP.GeneralTab', 'Check for updates to OpenLP'))
         self.settings_group_box.setTitle(translate('OpenLP.GeneralTab', 'Application Settings'))
-        self.save_check_service_check_box.setText(translate('OpenLP.GeneralTab',
-                                                  'Prompt to save before starting a new service'))
         self.click_live_slide_to_unblank_check_box.setText(translate('OpenLP.GeneralTab',
                                                            'Unblank display when changing slide in Live'))
         self.auto_unblank_check_box.setText(translate('OpenLP.GeneralTab', 'Unblank display when sending '
@@ -191,48 +185,41 @@ class GeneralTab(SettingsTab):
         """
         Load the settings to populate the form
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.number_edit.setText(settings.value('ccli number'))
-        self.username_edit.setText(settings.value('songselect username'))
-        self.password_edit.setText(settings.value('songselect password'))
-        self.save_check_service_check_box.setChecked(settings.value('save prompt'))
-        self.auto_unblank_check_box.setChecked(settings.value('auto unblank'))
-        self.click_live_slide_to_unblank_check_box.setChecked(settings.value('click live slide to unblank'))
-        self.warning_check_box.setChecked(settings.value('blank warning'))
-        self.auto_open_check_box.setChecked(settings.value('auto open'))
-        self.show_splash_check_box.setChecked(settings.value('show splash'))
-        self.logo_background_color = settings.value('logo background color')
-        self.logo_file_path_edit.path = settings.value('logo file')
-        self.logo_hide_on_startup_check_box.setChecked(settings.value('logo hide on startup'))
+        self.number_edit.setText(self.settings.value('core/ccli number'))
+        self.username_edit.setText(self.settings.value('core/songselect username'))
+        self.password_edit.setText(self.settings.value('core/songselect password'))
+        self.auto_unblank_check_box.setChecked(self.settings.value('core/auto unblank'))
+        self.click_live_slide_to_unblank_check_box.setChecked(self.settings.value('core/click live slide to unblank'))
+        self.warning_check_box.setChecked(self.settings.value('core/blank warning'))
+        self.auto_open_check_box.setChecked(self.settings.value('core/auto open'))
+        self.show_splash_check_box.setChecked(self.settings.value('core/show splash'))
+        self.logo_background_color = self.settings.value('core/logo background color')
+        self.logo_file_path_edit.path = self.settings.value('core/logo file')
+        self.logo_hide_on_startup_check_box.setChecked(self.settings.value('core/logo hide on startup'))
         self.logo_color_button.color = self.logo_background_color
-        self.check_for_updates_check_box.setChecked(settings.value('update check'))
-        self.auto_preview_check_box.setChecked(settings.value('auto preview'))
-        self.timeout_spin_box.setValue(settings.value('loop delay'))
-        settings.endGroup()
+        self.check_for_updates_check_box.setChecked(self.settings.value('core/update check'))
+        self.auto_preview_check_box.setChecked(self.settings.value('core/auto preview'))
+        self.timeout_spin_box.setValue(self.settings.value('core/loop delay'))
 
     def save(self):
         """
         Save the settings from the form
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('blank warning', self.warning_check_box.isChecked())
-        settings.setValue('auto open', self.auto_open_check_box.isChecked())
-        settings.setValue('show splash', self.show_splash_check_box.isChecked())
-        settings.setValue('logo background color', self.logo_background_color)
-        settings.setValue('logo file', self.logo_file_path_edit.path)
-        settings.setValue('logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
-        settings.setValue('update check', self.check_for_updates_check_box.isChecked())
-        settings.setValue('save prompt', self.save_check_service_check_box.isChecked())
-        settings.setValue('auto unblank', self.auto_unblank_check_box.isChecked())
-        settings.setValue('click live slide to unblank', self.click_live_slide_to_unblank_check_box.isChecked())
-        settings.setValue('auto preview', self.auto_preview_check_box.isChecked())
-        settings.setValue('loop delay', self.timeout_spin_box.value())
-        settings.setValue('ccli number', self.number_edit.displayText())
-        settings.setValue('songselect username', self.username_edit.displayText())
-        settings.setValue('songselect password', self.password_edit.displayText())
-        settings.endGroup()
+        self.settings.setValue('core/blank warning', self.warning_check_box.isChecked())
+        self.settings.setValue('core/auto open', self.auto_open_check_box.isChecked())
+        self.settings.setValue('core/show splash', self.show_splash_check_box.isChecked())
+        self.settings.setValue('core/logo background color', self.logo_background_color)
+        self.settings.setValue('core/logo file', self.logo_file_path_edit.path)
+        self.settings.setValue('core/logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
+        self.settings.setValue('core/update check', self.check_for_updates_check_box.isChecked())
+        self.settings.setValue('core/auto unblank', self.auto_unblank_check_box.isChecked())
+        self.settings.setValue('core/click live slide to unblank',
+                               self.click_live_slide_to_unblank_check_box.isChecked())
+        self.settings.setValue('core/auto preview', self.auto_preview_check_box.isChecked())
+        self.settings.setValue('core/loop delay', self.timeout_spin_box.value())
+        self.settings.setValue('core/ccli number', self.number_edit.displayText())
+        self.settings.setValue('core/songselect username', self.username_edit.displayText())
+        self.settings.setValue('core/songselect password', self.password_edit.displayText())
         self.post_set_up()
 
     def post_set_up(self):

@@ -29,7 +29,6 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.plugin import StringContent
 from openlp.core.lib.serviceitem import ServiceItem
@@ -155,16 +154,22 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         self.add_toolbar()
         # Allow the plugin to define buttons at start of bar
         self.add_start_header_bar()
-        # Add the middle of the tool bar (pre defined)
+        # Used by this common class, unless overrided
+        self.add_common_header_bar()
+        # Allow the plugin to define buttons before the spacer
         self.add_middle_header_bar()
-        # Allow the plugin to define buttons at end of bar
+        # Add spacer
+        self.toolbar.add_spacer()
+        # Allow the plugin to define buttons after the spacer
         self.add_end_header_bar()
+        # Used by this common class to add send to preview etc, unless overrided
+        self.add_common_end_header_bar()
         # Add the list view
         self.add_list_view_to_toolbar()
 
-    def add_middle_header_bar(self):
+    def add_common_header_bar(self):
         """
-        Create buttons for the media item toolbar
+        Create common buttons for the media item toolbar, left side
         """
         toolbar_actions = []
         # Import Button
@@ -182,6 +187,13 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         # Delete Button
         if self.has_delete_icon:
             toolbar_actions.append(['Delete', StringContent.Delete, UiIcons().delete, self.on_delete_click])
+        self.add_actionlist_to_toolbar(toolbar_actions)
+
+    def add_common_end_header_bar(self):
+        """
+        Create common buttons for the media item toolbar, right side
+        """
+        toolbar_actions = []
         # Preview
         if self.can_preview:
             toolbar_actions.append(['Preview', StringContent.Preview, UiIcons().preview, self.on_preview_click])
@@ -191,11 +203,13 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         # Add to service Button
         if self.can_add_to_service:
             toolbar_actions.append(['Service', StringContent.Service, UiIcons().add, self.on_add_click])
+        self.add_actionlist_to_toolbar(toolbar_actions)
+
+    def add_actionlist_to_toolbar(self, toolbar_actions):
         for action in toolbar_actions:
-            if action[0] == StringContent.Preview:
-                self.toolbar.addSeparator()
             self.toolbar.add_toolbar_action('{name}{action}Action'.format(name=self.plugin.name, action=action[0]),
-                                            text=self.plugin.get_string(action[1])['title'], icon=action[2],
+                                            text=self.plugin.get_string(action[1])['title'],
+                                            icon=action[2],
                                             tooltip=self.plugin.get_string(action[1])['tooltip'],
                                             triggers=action[3])
 
@@ -306,13 +320,19 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
 
     def add_start_header_bar(self):
         """
-        Slot at start of toolbar for plugin to add widgets
+        Slot to add buttons before common buttons on toolbar, left side.
+        """
+        pass
+
+    def add_middle_header_bar(self):
+        """
+        Slot to add buttons after common buttons on toolbar, left side.
         """
         pass
 
     def add_end_header_bar(self):
         """
-        Slot at end of toolbar for plugin to add widgets
+        Slot to add buttons before common buttons on toolbar, right side.
         """
         pass
 
@@ -322,7 +342,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         file_paths, selected_filter = FileDialog.getOpenFileNames(
             self, self.on_new_prompt,
-            Settings().value(self.settings_section + '/last directory'),
+            self.settings.value(self.settings_section + '/last directory'),
             self.on_new_file_masks)
         log.info('New file(s) {file_paths}'.format(file_paths=file_paths))
         if file_paths:
@@ -385,8 +405,9 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             if target_group is None:
                 self.list_view.clear()
             self.load_list(full_list, target_group)
-            Settings().setValue(self.settings_section + '/last directory', file_paths[0].parent)
-            Settings().setValue('{section}/{section} files'.format(section=self.settings_section), self.get_file_list())
+            self.settings.setValue(self.settings_section + '/last directory', file_paths[0].parent)
+            self.settings.setValue('{section}/{section} files'.
+                                   format(section=self.settings_section), self.get_file_list())
         if duplicates_found:
             critical_error_message_box(UiStrings().Duplicate,
                                        translate('OpenLP.MediaManagerItem',
@@ -414,9 +435,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         for index in range(self.list_view.count()):
             list_item = self.list_view.item(index)
             file_path = list_item.data(QtCore.Qt.UserRole)
-            # This is added as start of OpenLP each time
-            if file_path != UiStrings().LiveStream:
-                file_paths.append(file_path)
+            file_paths.append(file_path)
         return file_paths
 
     def load_list(self, load_list, target_group):
@@ -470,10 +489,10 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         Allows the list click action to be determined dynamically
         """
-        if Settings().value('advanced/double click live'):
+        if self.settings.value('advanced/double click live'):
             if self.can_make_live:
                 self.on_live_click()
-        elif not Settings().value('advanced/single click preview'):
+        elif not self.settings.value('advanced/single click preview'):
             # NOTE: The above check is necessary to prevent bug #1419300
             if self.can_preview:
                 self.on_preview_click()
@@ -482,7 +501,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         Allows the change of current item in the list to be actioned
         """
-        if Settings().value('advanced/single click preview') and self.quick_preview_allowed \
+        if self.settings.value('advanced/single click preview') and self.quick_preview_allowed \
                 and self.list_view.selectedIndexes() and self.auto_select_id == -1:
             self.on_preview_click(True)
 

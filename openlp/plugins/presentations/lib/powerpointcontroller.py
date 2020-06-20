@@ -29,7 +29,6 @@ import logging
 from openlp.core.common import is_win, trace_error_handler
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box, translate
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
@@ -328,7 +327,7 @@ class PowerpointDocument(PresentationDocument):
                 log.exception('Caught exception while in start_presentation')
                 trace_error_handler(log)
                 self.show_error_msg()
-            if ppt_window and not Settings().value('presentations/powerpoint control window'):
+            if ppt_window and not Registry().get('settings').value('presentations/powerpoint control window'):
                 try:
                     ppt_window.Top = size.y() * 72 / dpi
                     ppt_window.Height = size.height() * 72 / dpi
@@ -422,7 +421,7 @@ class PowerpointDocument(PresentationDocument):
         """
         log.debug('goto_slide')
         try:
-            if Settings().value('presentations/powerpoint slide click advance') \
+            if Registry().get('settings').value('presentations/powerpoint slide click advance') \
                     and self.get_slide_number() == slide_no:
                 click_index = self.presentation.SlideShowWindow.View.GetClickIndex()
                 click_count = self.presentation.SlideShowWindow.View.GetClickCount()

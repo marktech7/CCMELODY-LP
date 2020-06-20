@@ -21,91 +21,72 @@
 """
     Package to test the openlp.core.widgets.views.
 """
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
+import pytest
+from unittest.mock import patch
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt5 import QtWidgets
 
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.serviceitem import ServiceItem
-from openlp.core.state import State
 from openlp.core.widgets.views import ListPreviewWidget
-from tests.helpers.testmixin import TestMixin
 from tests.utils.osdinteraction import read_service_from_file
 
 
-class TestListPreviewWidget(TestCase, TestMixin):
+@pytest.fixture()
+def preview_widget(settings):
+    main_window = QtWidgets.QMainWindow()
+    Registry().register('main_window', main_window)
+    p_widget = ListPreviewWidget(main_window, 2)
+    return p_widget
 
-    def setUp(self):
-        """
-        Create the UI.
-        """
-        Registry.create()
-        self.setup_application()
-        State().load_settings()
-        State().add_service("media", 0)
-        State().update_pre_conditions("media", True)
-        State().flush_preconditions()
-        self.main_window = QtWidgets.QMainWindow()
-        self.image = QtGui.QImage(1, 1, QtGui.QImage.Format_RGB32)
-        self.image_manager = MagicMock()
-        self.image_manager.get_image.return_value = self.image
-        Registry().register('image_manager', self.image_manager)
-        self.preview_widget = ListPreviewWidget(self.main_window, 2)
-        Registry().register('settings', Settings())
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault.
-        """
-        del self.preview_widget
-        del self.main_window
+def test_initial_slide_count(preview_widget):
+    """
+    Test the initial slide count .
+    """
+    # GIVEN: A new ListPreviewWidget instance.
+    # WHEN: No SlideItem has been added yet.
+    # THEN: The count of items should be zero.
+    assert preview_widget.slide_count() == 0, 'The slide list should be empty.'
 
-    def test_initial_slide_count(self):
-        """
-        Test the initial slide count .
-        """
-        # GIVEN: A new ListPreviewWidget instance.
-        # WHEN: No SlideItem has been added yet.
-        # THEN: The count of items should be zero.
-        assert self.preview_widget.slide_count() == 0, 'The slide list should be empty.'
 
-    def test_initial_slide_number(self):
-        """
-        Test the initial current slide number.
-        """
-        # GIVEN: A new ListPreviewWidget instance.
-        # WHEN: No SlideItem has been added yet.
-        # THEN: The number of the current item should be -1.
-        assert self.preview_widget.current_slide_number() == -1, 'The slide number should be -1.'
+def test_initial_slide_number(preview_widget):
+    """
+    Test the initial current slide number.
+    """
+    # GIVEN: A new ListPreviewWidget instance.
+    # WHEN: No SlideItem has been added yet.
+    # THEN: The number of the current item should be -1.
+    assert preview_widget.current_slide_number() == -1, 'The slide number should be -1.'
 
-    def test_replace_service_item(self):
-        """
-        Test item counts and current number with a service item.
-        """
-        # GIVEN: A ServiceItem with two frames.
-        service_item = ServiceItem(None)
-        service = read_service_from_file('serviceitem_image_3.osj')
-        with patch('os.path.exists'):
-            service_item.set_from_service(service[0])
-        # WHEN: Added to the preview widget.
-        self.preview_widget.replace_service_item(service_item, 1, 1)
-        # THEN: The slide count and number should fit.
-        assert self.preview_widget.slide_count() == 2, 'The slide count should be 2.'
-        assert self.preview_widget.current_slide_number() == 1, 'The current slide number should  be 1.'
 
-    def test_change_slide(self):
-        """
-        Test the change_slide method.
-        """
-        # GIVEN: A ServiceItem with two frames content.
-        service_item = ServiceItem(None)
-        service = read_service_from_file('serviceitem_image_3.osj')
-        with patch('os.path.exists'):
-            service_item.set_from_service(service[0])
-        # WHEN: Added to the preview widget and switched to the second frame.
-        self.preview_widget.replace_service_item(service_item, 1, 0)
-        self.preview_widget.change_slide(1)
-        # THEN: The current_slide_number should reflect the change.
-        assert self.preview_widget.current_slide_number() == 1, 'The current slide number should  be 1.'
+def test_replace_service_item(preview_widget, state_media):
+    """
+    Test item counts and current number with a service item.
+    """
+    # GIVEN: A ServiceItem with two frames.
+    service_item = ServiceItem(None)
+    service = read_service_from_file('serviceitem_image_3.osj')
+    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash'):
+        service_item.set_from_service(service[0])
+    # WHEN: Added to the preview widget.
+    preview_widget.replace_service_item(service_item, 1, 1)
+    # THEN: The slide count and number should fit.
+    assert preview_widget.slide_count() == 2, 'The slide count should be 2.'
+    assert preview_widget.current_slide_number() == 1, 'The current slide number should  be 1.'
+
+
+def test_change_slide(preview_widget, state_media):
+    """
+    Test the change_slide method.
+    """
+    # GIVEN: A ServiceItem with two frames content.
+    service_item = ServiceItem(None)
+    service = read_service_from_file('serviceitem_image_3.osj')
+    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash'):
+        service_item.set_from_service(service[0])
+    # WHEN: Added to the preview widget and switched to the second frame.
+    preview_widget.replace_service_item(service_item, 1, 0)
+    preview_widget.change_slide(1)
+    # THEN: The current_slide_number should reflect the change.
+    assert preview_widget.current_slide_number() == 1, 'The current slide number should  be 1.'

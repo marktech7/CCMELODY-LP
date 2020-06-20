@@ -140,7 +140,7 @@ class BibleMediaItem(MediaManagerItem):
         self.has_delete_icon = True
         self.add_to_service_item = False
 
-    def add_end_header_bar(self):
+    def add_middle_header_bar(self):
         self.search_tab_bar = QtWidgets.QTabBar(self)
         self.search_tab_bar.setExpanding(False)
         self.page_layout.addWidget(self.search_tab_bar)
@@ -149,7 +149,7 @@ class BibleMediaItem(MediaManagerItem):
         self.search_tab.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
         self.search_tab_bar.addTab(translate('BiblesPlugin.MediaItem', 'Find'))
         self.search_layout = QtWidgets.QFormLayout(self.search_tab)
-        self.search_edit = SearchEdit(self.search_tab, self.settings_section)
+        self.search_edit = SearchEdit(self.search_tab, 'bibles')
         self.search_layout.addRow(translate('BiblesPlugin.MediaItem', 'Find:'), self.search_edit)
         self.search_tab.setVisible(True)
         self.page_layout.addWidget(self.search_tab)
@@ -292,7 +292,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         log.debug('config_update')
-        visible = self.settings.value('{settings_section}/second bibles'.format(settings_section=self.settings_section))
+        visible = self.settings.value('bibles/second bibles')
         self.general_bible_layout.labelForField(self.second_combo_box).setVisible(visible)
         self.second_combo_box.setVisible(visible)
 
@@ -316,8 +316,7 @@ class BibleMediaItem(MediaManagerItem):
                 translate('BiblesPlugin.MediaItem', 'Text Search'),
                 translate('BiblesPlugin.MediaItem', 'Search Text...'))
         ])
-        if self.settings.value(
-                '{settings_section}/reset to combined quick search'.format(settings_section=self.settings_section)):
+        if self.settings.value('bibles/reset to combined quick search'):
             self.search_edit.set_current_search_type(BibleSearch.Combined)
         self.config_update()
         log.debug('bible manager initialise complete')
@@ -340,7 +339,7 @@ class BibleMediaItem(MediaManagerItem):
             self.version_combo_box.addItem(bible[0], bible[1])
             self.second_combo_box.addItem(bible[0], bible[1])
         # set the default value
-        bible = self.settings.value('{settings_section}/primary bible'.format(settings_section=self.settings_section))
+        bible = self.settings.value('bibles/primary bible')
         find_and_set_in_combo_box(self.version_combo_box, bible)
 
     def reload_bibles(self):
@@ -548,7 +547,7 @@ class BibleMediaItem(MediaManagerItem):
         # TODO: Change layout_style to a property
         self.settings_tab.layout_style = index
         self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
-        self.settings.setValue('{section}/verse layout style'.format(section=self.settings_section), index)
+        self.settings.setValue('bibles/verse layout style')
 
     def on_version_combo_box_index_changed(self):
         """
@@ -558,7 +557,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         self.bible = self.version_combo_box.currentData()
         if self.bible is not None:
-            self.settings.setValue('{section}/primary bible'.format(section=self.settings_section), self.bible.name)
+            self.settings.setValue('bibles/primary bible', self.bible.name)
         self.initialise_advanced_bible(self.select_book_combo_box.currentData())
 
     def on_second_combo_box_index_changed(self, selection):

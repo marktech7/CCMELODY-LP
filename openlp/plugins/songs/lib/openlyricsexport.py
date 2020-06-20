@@ -70,7 +70,9 @@ class OpenLyricsExport(RegistryProperties):
             xml = open_lyrics.song_to_xml(song)
             tree = etree.ElementTree(etree.fromstring(xml.encode()))
             filename = '{title} ({author})'.format(title=song.title,
-                                                   author=', '.join([author.display_name for author in song.authors]))
+                                                   author=', '.join([author.display_name for author in
+                                                                     sorted(song.authors,
+                                                                            key=lambda a: a.display_name)]))
             filename = clean_filename(filename)
             # Ensure the filename isn't too long for some filesystems
             path_length = len(str(self.save_path))

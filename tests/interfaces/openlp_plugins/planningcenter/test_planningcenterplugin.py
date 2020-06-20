@@ -22,7 +22,7 @@
 Package to test the openlp.plugins.planningcenter.planningcenterplugin package.
 """
 from unittest import TestCase
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtWidgets
 
@@ -47,6 +47,7 @@ class TestPlanningCenterPlugin(TestCase, TestMixin):
         self.registry = Registry()
         Registry.create()
         State().load_settings()
+        Registry().register('settings', Settings())
         self.plugin = PlanningCenterPlugin()
         self.settings_form = SettingsForm()
 
@@ -151,3 +152,16 @@ class TestPlanningCenterPlugin(TestCase, TestMixin):
         return_value = self.plugin.about()
         # THEN:
         self.assertGreater(len(return_value), 0, "About function returned some text")
+
+    def test_finalise(self):
+        """
+        Test that the finalise function cleans up after the plugin
+        """
+        # GIVEN: A PlanningcenterPlugin Class with a bunch of mocks
+        self.plugin.import_planning_center = MagicMock()
+
+        # WHEN: finalise has been called on the class
+        self.plugin.finalise()
+
+        # THEN: it cleans up after itself
+        self.plugin.import_planning_center.setVisible.assert_called_once_with(False)

@@ -21,77 +21,67 @@
 """
 Package to test the openlp.core.pages package.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, call, patch
 
 import pytest
 
 from openlp.core.pages import GridLayoutPage
-from tests.helpers.testmixin import TestMixin
 
 
-class TestGridLayoutPage(TestCase, TestMixin):
+@patch('openlp.core.pages.GridLayoutPage.setup_ui')
+@patch('openlp.core.pages.GridLayoutPage.retranslate_ui')
+def test_resize_event(mocked_retranslate_ui, mocked_setup_ui, settings):
+    """
+    Test that the `resizeEvent()` method called the `resize_columns()` method.
+    """
+    # GIVEN: An instance of GridLayoutPage with a mocked out "resize_columns" method
+    instance = GridLayoutPage()
+    instance.resize_columns = MagicMock()
 
-    def setUp(self):
-        """Test setup"""
-        self.setup_application()
-        self.build_settings()
+    # WHEN: resizeEvent is called
+    instance.resizeEvent(None)
 
-    def tearDown(self):
-        """Tear down tests"""
-        del self.app
+    # THEN: resize_widgets should have been called
+    instance.resize_columns.assert_called_once()
 
-    @patch('openlp.core.pages.GridLayoutPage.setup_ui')
-    @patch('openlp.core.pages.GridLayoutPage.retranslate_ui')
-    def test_resize_event(self, mocked_retranslate_ui, mocked_setup_ui):
-        """
-        Test that the `resizeEvent()` method called the `resize_columns()` method.
-        """
-        # GIVEN: An instance of GridLayoutPage with a mocked out "resize_columns" method
-        instance = GridLayoutPage()
-        instance.resize_columns = MagicMock()
 
-        # WHEN: resizeEvent is called
-        instance.resizeEvent(None)
+def test_unimplemented_setup_ui(settings):
+    """
+    Test that setup_ui() throws a NotImplementedError
+    """
+    with pytest.raises(NotImplementedError, match='Descendant pages need to implement setup_ui'):
+        GridLayoutPage()
 
-        # THEN: resize_widgets should have been called
-        instance.resize_columns.assert_called_once()
 
-    def test_unimplemented_setup_ui(self):
-        """
-        Test that setup_ui() throws a NotImplementedError
-        """
-        with pytest.raises(NotImplementedError, match='Descendant pages need to implement setup_ui'):
-            GridLayoutPage()
+@patch('openlp.core.pages.GridLayoutPage.setup_ui')
+def test_unimplemented_retranslate_ui(mocked_setup_ui, settings):
+    """
+    Test that retranslate_ui() throws a NotImplementedError
+    """
+    with pytest.raises(NotImplementedError, match='Descendant pages need to implement retranslate_ui'):
+        GridLayoutPage()
 
-    @patch('openlp.core.pages.GridLayoutPage.setup_ui')
-    def test_unimplemented_retranslate_ui(self, mocked_setup_ui):
-        """
-        Test that retranslate_ui() throws a NotImplementedError
-        """
-        with pytest.raises(NotImplementedError, match='Descendant pages need to implement retranslate_ui'):
-            GridLayoutPage()
 
-    @patch('openlp.core.pages.GridLayoutPage.setup_ui')
-    @patch('openlp.core.pages.GridLayoutPage.retranslate_ui')
-    def test_resize_columns(self, mocked_retranslate_ui, mocked_setup_ui):
-        """
-        Test the `resize_columns()` method with an implemented page
-        """
-        # GIVEN: An instance of GridLayoutPage and various mocked out methods
-        instance = GridLayoutPage()
-        instance.layout.contentsRect = MagicMock(return_value=MagicMock(**{'width.return_value': 100}))
-        instance.layout.horizontalSpacing = MagicMock(return_value=6)
-        instance.layout.columnCount = MagicMock(return_value=4)
-        instance.layout.setColumnMinimumWidth = MagicMock()
+@patch('openlp.core.pages.GridLayoutPage.setup_ui')
+@patch('openlp.core.pages.GridLayoutPage.retranslate_ui')
+def test_resize_columns(mocked_retranslate_ui, mocked_setup_ui, settings):
+    """
+    Test the `resize_columns()` method with an implemented page
+    """
+    # GIVEN: An instance of GridLayoutPage and various mocked out methods
+    instance = GridLayoutPage()
+    instance.layout.contentsRect = MagicMock(return_value=MagicMock(**{'width.return_value': 100}))
+    instance.layout.horizontalSpacing = MagicMock(return_value=6)
+    instance.layout.columnCount = MagicMock(return_value=4)
+    instance.layout.setColumnMinimumWidth = MagicMock()
 
-        # WHEN: `resize_columns()` is called
-        instance.resize_columns()
+    # WHEN: `resize_columns()` is called
+    instance.resize_columns()
 
-        # THEN: The column widths should be set to 16
-        instance.layout.contentsRect.assert_called_once()
-        instance.layout.horizontalSpacing.assert_called_once()
-        instance.layout.columnCount.assert_called_once()
-        assert instance._column_width == 20
-        assert instance.layout.setColumnMinimumWidth.call_args_list == [call(0, 20), call(1, 20),
-                                                                        call(2, 20), call(3, 20)]
+    # THEN: The column widths should be set to 16
+    instance.layout.contentsRect.assert_called_once()
+    instance.layout.horizontalSpacing.assert_called_once()
+    instance.layout.columnCount.assert_called_once()
+    assert instance._column_width == 20
+    assert instance.layout.setColumnMinimumWidth.call_args_list == [call(0, 20), call(1, 20),
+                                                                    call(2, 20), call(3, 20)]

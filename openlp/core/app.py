@@ -31,24 +31,26 @@ import os
 import sys
 import time
 from datetime import datetime
+from logging.handlers import RotatingFileHandler
 from pathlib import Path
 from shutil import copytree
 from traceback import format_exception
 
 from PyQt5 import QtCore, QtWebEngineWidgets, QtWidgets  # noqa
 
-from openlp.core.state import State
+from openlp.core.api.deploy import check_for_remote_update
 from openlp.core.common import is_macosx, is_win
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.mixins import LogMixin
-from openlp.core.loader import loader
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
+from openlp.core.common.mixins import LogMixin
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
+from openlp.core.loader import loader
 from openlp.core.resources import qInitResources
 from openlp.core.server import Server
+from openlp.core.state import State
 from openlp.core.ui.exceptionform import ExceptionForm
 from openlp.core.ui.firsttimeform import FirstTimeForm
 from openlp.core.ui.firsttimelanguageform import FirstTimeLanguageForm
@@ -97,16 +99,16 @@ class OpenLP(QtCore.QObject, LogMixin):
         # Decide how many screens we have and their size
         screens = ScreenList.create(QtWidgets.QApplication.desktop())
         # First time checks in settings
-        has_run_wizard = Settings().value('core/has run wizard')
+        has_run_wizard = self.settings.value('core/has run wizard')
         if not has_run_wizard:
             ftw = FirstTimeForm()
             ftw.initialize(screens)
             if ftw.exec() == QtWidgets.QDialog.Accepted:
-                Settings().setValue('core/has run wizard', True)
+                self.settings.setValue('core/has run wizard', True)
             else:
                 QtCore.QCoreApplication.exit()
                 sys.exit()
-        can_show_splash = Settings().value('core/show splash')
+        can_show_splash = self.settings.value('core/show splash')
         if can_show_splash:
             self.splash = SplashScreen()
             self.splash.show()
@@ -138,8 +140,10 @@ class OpenLP(QtCore.QObject, LogMixin):
         QtWidgets.QApplication.processEvents()
         if not has_run_wizard:
             self.main_window.first_time()
-        if Settings().value('core/update check'):
+        if self.settings.value('core/update check'):
             check_for_update(self.main_window)
+        if self.settings.value('api/update check'):
+            check_for_remote_update(self.main_window)
         self.main_window.is_display_blank()
         Registry().execute('bootstrap_completion')
         return self.exec()
@@ -152,8 +156,7 @@ class OpenLP(QtCore.QObject, LogMixin):
         QtWidgets.QMessageBox.critical(None, UiStrings().Error, UiStrings().OpenLPStart,
                                        QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
 
-    @staticmethod
-    def is_data_path_missing():
+    def is_data_path_missing(self):
         """
         Check if the data folder path exists.
         """
@@ -167,7 +170,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                                     'stored on removable device, that device needs to be made available.\n\nYou may '
                                     'reset the data location back to the default location, or you can try to make the '
                                     'current location available.\n\nDo you want to reset to the default data location? '
-                                    'If not, OpenLP will be closed so you can try to fix the the problem.')
+                                    'If not, OpenLP will be closed so you can try to fix the problem.')
                 .format(path=data_folder_path),
                 QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
                 QtWidgets.QMessageBox.No)
@@ -176,7 +179,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                 log.info('User requested termination')
                 return True
             # If answer was "Yes", remove the custom data path thus resetting the default location.
-            Settings().remove('advanced/data path')
+            self.settings.remove('advanced/data path')
             log.info('Database location has been reset to the default settings.')
             return False
 
@@ -210,11 +213,11 @@ class OpenLP(QtCore.QObject, LogMixin):
         :param has_run_wizard: OpenLP has been run before
         :param can_show_splash: Should OpenLP show the splash screen
         """
-        data_version = Settings().value('core/application version')
+        data_version = self.settings.value('core/application version')
         openlp_version = get_version()['version']
         # New installation, no need to create backup
         if not has_run_wizard:
-            Settings().setValue('core/application version', openlp_version)
+            self.settings.setValue('core/application version', openlp_version)
         # If data_version is different from the current version ask if we should backup the data folder
         elif data_version != openlp_version:
             if can_show_splash and self.splash.isVisible():
@@ -239,7 +242,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                 QtWidgets.QMessageBox.information(None, translate('OpenLP', 'Backup'), message)
 
             # Update the version in the settings
-            Settings().setValue('core/application version', openlp_version)
+            self.settings.setValue('core/application version', openlp_version)
             if can_show_splash:
                 self.splash.show()
 
@@ -301,7 +304,7 @@ def set_up_logging(log_path):
     """
     create_paths(log_path, do_not_log=True)
     file_path = log_path / 'openlp.log'
-    logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
+    logfile = RotatingFileHandler(str(file_path), 'w', encoding='UTF-8', backupCount=2)
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
     if log.isEnabledFor(logging.DEBUG):
@@ -312,6 +315,7 @@ def main():
     """
     The main function which parses command line options and then runs
     """
+    log.debug('Entering function - main')
     args = parse_options()
     qt_args = ['--disable-web-security']
     # qt_args = []
@@ -373,12 +377,16 @@ def main():
     app = OpenLP()
     # Initialise the Registry
     Registry.create()
+    settings = Settings()
+    Registry().register('settings', settings)
+    # Need settings object for the threads.
+    settings_thread = Settings()
+    Registry().register('settings_thread', settings_thread)
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
-    settings = Settings()
-    Registry().register('settings', settings)
+    app.settings = settings
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     server = Server()
@@ -422,7 +430,7 @@ def main():
     translators = LanguageManager.get_translators(language)
     for translator in translators:
         if not translator.isEmpty():
-            app.installTranslator(translator)
+            application.installTranslator(translator)
     if not translators:
         log.debug('Could not find translators.')
     if args and not args.no_error_form:

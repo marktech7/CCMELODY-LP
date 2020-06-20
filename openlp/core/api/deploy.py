@@ -21,11 +21,64 @@
 """
 Download and "install" the remote web client
 """
+import json
+import logging
+from datetime import date
+from distutils.version import LooseVersion
 from zipfile import ZipFile
-from PyQt5 import QtWidgets
+
+from PyQt5 import QtCore
 
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.httputils import download_file, get_url_file_size, get_web_page
+from openlp.core.common.httputils import download_file, get_web_page, get_openlp_user_agent
+from openlp.core.common.registry import Registry
+from openlp.core.threading import ThreadWorker, run_thread
+
+REMOTE_URL = 'https://get.openlp.org/remote/'
+
+log = logging.getLogger(__name__)
+
+
+class RemoteVersionWorker(ThreadWorker):
+    """
+    A worker class to fetch the version of the web remote. This is run from within a thread so that it
+    doesn't affect the loading time of OpenLP.
+    """
+    new_version = QtCore.pyqtSignal(str)
+    no_internet = QtCore.pyqtSignal()
+
+    def __init__(self, current_version):
+        """
+        Constructor for the version check worker.
+
+        :param string current_version: The current version of the web remote
+        """
+        log.debug('VersionWorker - Initialise')
+        super().__init__(None)
+        self.current_version = current_version or '0.0'
+
+    def start(self):
+        """
+        Check the latest version of the web remote against the version file on the OpenLP server.
+        """
+        log.debug('RemoteVersionWorker - Start')
+        version_info = None
+        retries = 0
+        while retries < 3:
+            try:
+                version_info = download_version_info()
+                log.debug('New version found: %s', version_info['latest']['version'])
+                break
+            except (OSError, TypeError):
+                log.exception('Unable to connect to OpenLP server to download version file')
+                retries += 1
+        else:
+            self.no_internet.emit()
+        if version_info and LooseVersion(version_info['latest']['version']) > LooseVersion(self.current_version):
+            Registry().get('settings').setValue('api/last version test', date.today().strftime('%Y-%m-%d'))
+            Registry().get('settings_form').api_tab.master_version = version_info['latest']['version']
+            self.new_version.emit(version_info['latest']['version'])
+        self.quit.emit()
 
 
 def deploy_zipfile(app_root_path, zip_name):
@@ -42,29 +95,61 @@ def deploy_zipfile(app_root_path, zip_name):
     web_zip.extractall(app_root_path)
 
 
-def download_sha256():
+def download_version_info():
     """
-    Download the config file to extract the sha256 and version number
+    Download the version information file
     """
-    user_agent = 'OpenLP/' + QtWidgets.QApplication.applicationVersion()
     try:
-        web_config = get_web_page('https://get.openlp.org/webclient/download.cfg', headers={'User-Agent': user_agent})
+        file_contents = get_web_page(REMOTE_URL + 'version.json', headers={'User-Agent': get_openlp_user_agent()})
     except ConnectionError:
         return False
-    if not web_config:
+    if not file_contents:
         return None
-    file_bits = web_config.split()
-    return file_bits[0], file_bits[2]
+    return json.loads(file_contents)
 
 
-def download_and_check(callback=None):
+def get_latest_size():
+    """
+    Download the version info file and get the size of the latest file
+    """
+    version_info = download_version_info()
+    if not version_info:
+        log.warning('Unable to access the version information, abandoning download')
+        return 0
+    return version_info['latest']['size']
+
+
+def download_and_check(callback=None, can_update_range=True):
     """
     Download the web site and deploy it.
     """
-    sha256, version = download_sha256()
-    file_size = get_url_file_size('https://get.openlp.org/webclient/site.zip')
-    callback.setRange(0, file_size)
-    if download_file(callback, 'https://get.openlp.org/webclient/site.zip',
-                     AppLocation.get_section_data_path('remotes') / 'site.zip',
-                     sha256=sha256):
-        deploy_zipfile(AppLocation.get_section_data_path('remotes'), 'site.zip')
+    version_info = download_version_info()
+    if not version_info:
+        log.warning('Unable to access the version information, abandoning download')
+        # Show the user an error message
+        return None
+    file_size = version_info['latest']['size']
+    if can_update_range:
+        callback.setRange(0, file_size)
+    if download_file(callback, REMOTE_URL + '{version}/{filename}'.format(**version_info['latest']),
+                     AppLocation.get_section_data_path('remotes') / 'remote.zip'):
+        deploy_zipfile(AppLocation.get_section_data_path('remotes'), 'remote.zip')
+        return version_info['latest']['version']
+    return None
+
+
+def check_for_remote_update(main_window):
+    """
+    Run a thread to download and check the version of OpenLP
+
+    :param MainWindow main_window: The OpenLP main window.
+    """
+    last_check_date = Registry().get('settings').value('api/last version test')
+    if date.today().strftime('%Y-%m-%d') <= last_check_date:
+        log.debug('Version check skipped, last checked today')
+        return
+    worker = RemoteVersionWorker(Registry().get('settings').value('api/download version'))
+    worker.new_version.connect(main_window.on_new_remote_version)
+    # TODO: Use this to figure out if there's an Internet connection?
+    # worker.no_internet.connect(main_window.on_no_internet)
+    run_thread(worker, 'remote-version')

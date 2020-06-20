@@ -81,9 +81,18 @@ class WebEngineView(QtWebEngineWidgets.QWebEngineView):
         """
         Emit delegatePaint on paint event of the last added QOpenGLWidget child
         """
-        if obj == self._child and ev.type() == QtCore.QEvent.Paint:
-            self.delegatePaint.emit()
+        if obj == self._child:
+            if ev.type() == QtCore.QEvent.MouseButtonPress or ev.type() == QtCore.QEvent.TouchBegin:
+                self.display_clicked()
+            if ev.type() == QtCore.QEvent.Paint:
+                self.delegatePaint.emit()
         return super(WebEngineView, self).eventFilter(obj, ev)
+
+    def display_clicked(self):
+        """
+        Dummy method to be overridden
+        """
+        pass
 
     def event(self, ev):
         """

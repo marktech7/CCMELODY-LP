@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
@@ -21,24 +20,18 @@
 """
 Package to test the openlp.core.ui.icons package.
 """
-from unittest import TestCase
 from unittest.mock import patch
-
 from PyQt5 import QtGui
 
 from openlp.core.ui.icons import UiIcons
-from tests.helpers.testmixin import TestMixin
 
 
-class TestIcons(TestCase, TestMixin):
-
-    @patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None)
-    def test_simple_icon(self, _):
-        # GIVEN: an basic set of icons
+def test_simple_icon(settings):
+    # GIVEN: an basic set of icons
+    with patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None):
         icons = UiIcons()
         icon_list = {
             'active': {'icon': 'fa.child'}
-
         }
 
         icons.load_icons(icon_list)

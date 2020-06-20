@@ -137,6 +137,7 @@ class Settings(QtCore.QSettings):
     __default_settings__ = {
         'settings/version': 0,
         'advanced/add page break': False,
+        'advanced/disable transparent display': True,
         'advanced/alternate rows': not is_win(),
         'advanced/autoscrolling': {'dist': 1, 'pos': 0},
         'advanced/current media plugin': -1,
@@ -194,6 +195,9 @@ class Settings(QtCore.QSettings):
         'api/authentication enabled': False,
         'api/ip address': '0.0.0.0',
         'api/thumbnails': True,
+        'api/download version': '0.0',
+        'api/last version test': '',
+        'api/update check': True,
         'bibles/db type': 'sqlite',
         'bibles/db username': '',
         'bibles/db password': '',
@@ -234,13 +238,12 @@ class Settings(QtCore.QSettings):
         'core/click live slide to unblank': False,
         'core/blank warning': False,
         'core/ccli number': '',
-        'advanced/experimental': False,
         'core/has run wizard': False,
         'core/language': '[en]',
         'core/last version test': '',
         'core/loop delay': 5,
         'core/recent files': [],
-        'core/save prompt': False,
+        'core/screens': '{}',
         'core/screen blank': False,
         'core/show splash': True,
         'core/logo background color': '#ffffff',
@@ -268,13 +271,9 @@ class Settings(QtCore.QSettings):
         'media/media files': [],
         'media/last directory': None,
         'media/media auto start': QtCore.Qt.Unchecked,
-        'media/stream command': '',
         'media/vlc arguments': '',
-        'media/video': '',
-        'media/audio': '',
         'media/live volume': 50,
         'media/preview volume': 0,
-        'remotes/download version': '0.0',
         'players/background color': '#000000',
         'planningcenter/status': PluginStatus.Inactive,
         'planningcenter/application_id': '',
@@ -318,7 +317,6 @@ class Settings(QtCore.QSettings):
         'songs/songselect searches': '',
         'songs/enable chords': True,
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
-        'songs/mainview chords': False,
         'songs/disable chords import': False,
         'songusage/status': PluginStatus.Inactive,
         'songusage/db type': 'sqlite',
@@ -335,7 +333,7 @@ class Settings(QtCore.QSettings):
         'themes/last directory export': None,
         'themes/last directory import': None,
         'themes/theme level': ThemeLevel.Global,
-        'themes/wrap footer': False,
+        'themes/item transitions': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),
         'user interface/lock panel': True,
@@ -383,7 +381,8 @@ class Settings(QtCore.QSettings):
         ('remotes/authentication enabled', 'api/authentication enabled', []),
         ('remotes/ip address', 'api/ip address', []),
         ('remotes/thumbnails', 'api/thumbnails', []),
-        ('shortcuts/escapeItem', 'shortcuts/desktopScreenEnable', []),  # Escape item was removed in 2.6.
+        ('shortcuts/escapeItem', '', []),  # Escape item was removed in 2.6.
+        ('shortcuts/desktopScreenEnable', '', []),
         ('shortcuts/offlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
         ('shortcuts/onlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
         ('bibles/advanced bible', '', []),  # Common bible search widgets combined in 2.6
@@ -400,6 +399,7 @@ class Settings(QtCore.QSettings):
         ('themes/last directory', 'themes/last directory', [(str_to_path, None)]),
         ('themes/last directory export', 'themes/last directory export', [(str_to_path, None)]),
         ('themes/last directory import', 'themes/last directory import', [(str_to_path, None)]),
+        ('themes/wrap footer', '', []),
         ('projector/last directory import', 'projector/last directory import', [(str_to_path, None)]),
         ('projector/last directory export', 'projector/last directory export', [(str_to_path, None)]),
         ('bibles/last directory import', 'bibles/last directory import', [(str_to_path, None)]),
@@ -427,7 +427,8 @@ class Settings(QtCore.QSettings):
         ('media/players', '', []),
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
-        ('core/audio repeat list', '', [])
+        ('core/audio repeat list', '', []),
+        ('core/save prompt', '', [])
     ]
 
     @staticmethod
@@ -477,8 +478,7 @@ class Settings(QtCore.QSettings):
             'shortcuts/displayTagItem': [],
             'shortcuts/blankScreen': [QtGui.QKeySequence(QtCore.Qt.Key_Period)],
             'shortcuts/collapse': [QtGui.QKeySequence(QtCore.Qt.Key_Minus)],
-            'shortcuts/desktopScreen': [QtGui.QKeySequence(QtCore.Qt.Key_D)],
-            'shortcuts/desktopScreenEnable': [QtGui.QKeySequence(QtCore.Qt.Key_Escape)],
+            'shortcuts/desktopScreen': [QtGui.QKeySequence(QtCore.Qt.Key_D), QtGui.QKeySequence(QtCore.Qt.Key_Escape)],
             'shortcuts/delete': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
             'shortcuts/down': [QtGui.QKeySequence(QtCore.Qt.Key_Down)],
             'shortcuts/editSong': [],
@@ -589,6 +589,7 @@ class Settings(QtCore.QSettings):
             'shortcuts/shortcutAction_7': [QtGui.QKeySequence(QtCore.Qt.Key_7)],
             'shortcuts/shortcutAction_8': [QtGui.QKeySequence(QtCore.Qt.Key_8)],
             'shortcuts/shortcutAction_9': [QtGui.QKeySequence(QtCore.Qt.Key_9)],
+            'shortcuts/showScreen': [QtGui.QKeySequence(QtCore.Qt.Key_Space)],
             'shortcuts/settingsExportItem': [],
             'shortcuts/songUsageReport': [],
             'shortcuts/songImportItem': [],
@@ -682,7 +683,10 @@ class Settings(QtCore.QSettings):
             default_value = Settings.__default_settings__[self.group() + '/' + key]
         else:
             default_value = Settings.__default_settings__[key]
-        setting = super(Settings, self).value(key, default_value)
+        try:
+            setting = super().value(key, default_value)
+        except TypeError:
+            setting = default_value
         return self._convert_value(setting, default_value)
 
     def setValue(self, key, value):
@@ -752,25 +756,23 @@ class Settings(QtCore.QSettings):
         self.remove('SettingsImport')
         # Get the settings.
         keys = self.allKeys()
-        export_settings = QtCore.QSettings(str(temp_path), Settings.IniFormat)
+        export_settings = QtCore.QSettings(str(temp_path), QtCore.QSettings.IniFormat)
         # Add a header section.
         # This is to insure it's our conf file for import.
         now = datetime.datetime.now()
         # Write INI format using QSettings.
         # Write our header.
-        export_settings.beginGroup('SettingsImport')
-        export_settings.setValue('Make_Changes', 'At_Own_RISK')
-        export_settings.setValue('type', 'OpenLP_settings_export')
-        export_settings.setValue('file_date_created', now.strftime("%Y-%m-%d %H:%M"))
-        export_settings.endGroup()
+        export_settings.setValue('SettingsImport/Make_Changes', 'At_Own_RISK')
+        export_settings.setValue('SettingsImport/type', 'OpenLP_settings_export')
+        export_settings.setValue('SettingsImport/file_date_created', now.strftime("%Y-%m-%d %H:%M"))
         # Write all the sections and keys.
         for section_key in keys:
-            # FIXME: We are conflicting with the standard "General" section.
-            if 'eneral' in section_key:
-                section_key = section_key.lower()
-            key_value = super().value(section_key)
-            if key_value is not None:
-                export_settings.setValue(section_key, key_value)
+            try:
+                key_value = super().value(section_key)
+                if key_value is not None:
+                    export_settings.setValue(section_key, key_value)
+            except TypeError:
+                log.exception(f'Key Value invalid and bypassed for {section_key}')
         export_settings.sync()
         # Temp CONF file has been written.  Blanks in keys are now '%20'.
         # Read the  temp file and output the user's CONF file with blanks to

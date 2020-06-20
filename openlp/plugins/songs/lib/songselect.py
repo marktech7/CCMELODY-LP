@@ -175,7 +175,7 @@ class SongSelectImport(object):
         songs = []
         while self.run_search:
             if current_page > 1:
-                params['page'] = current_page
+                params['CurrentPage'] = current_page
             try:
                 results_page = BeautifulSoup(self.opener.open(SEARCH_URL + '?' + urlencode(params)).read(), 'lxml')
                 search_results = results_page.find_all('div', 'song-result')
@@ -196,9 +196,14 @@ class SongSelectImport(object):
                     songs.append(song)
                 break
             for result in search_results:
+                authors = result.find('p', 'song-result-subtitle').string
+                if authors:
+                    authors = unescape(authors).strip().split(', ')
+                else:
+                    authors = ""
                 song = {
                     'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
-                    'authors': unescape(result.find('p', 'song-result-subtitle').string).strip().split(', '),
+                    'authors': authors,
                     'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
                 }
                 if callback:

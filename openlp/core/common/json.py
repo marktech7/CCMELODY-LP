@@ -31,7 +31,7 @@ class JSONMixin(object):
 
     :cvar:`_json_keys` is used to specify the attributes of the subclass that you wish to serialize.
     :vartype _json_keys: list[str]
-    :cvar:`_name` set to override the the subclass name, useful if using a `proxy` class
+    :cvar:`_name` set to override the subclass name, useful if using a `proxy` class
     :vartype _name: str
     """
     _json_keys = []

@@ -29,6 +29,7 @@ from openlp.core.lib.ui import add_welcome_page
 from openlp.core.ui.icons import UiIcons
 
 from openlp.core.display.screens import ScreenList
+from openlp.core.pages import GridLayoutPage
 from openlp.core.widgets.widgets import ScreenSelectionWidget
 
 
@@ -42,10 +43,53 @@ class FirstTimePage(object):
     SampleOption = 3
     Download = 4
     NoInternet = 5
-    Songs = 6
-    Bibles = 7
-    Themes = 8
-    Progress = 9
+    Remote = 6
+    Songs = 7
+    Bibles = 8
+    Themes = 9
+    Progress = 10
+
+
+class RemotePage(GridLayoutPage):
+    """
+    A page for the web remote
+    """
+    def setup_ui(self):
+        """
+        Set up the page
+        """
+        self.remote_label = QtWidgets.QLabel(self)
+        self.remote_label.setWordWrap(True)
+        self.remote_label.setObjectName('remote_label')
+        self.layout.addWidget(self.remote_label, 0, 0, 1, 4)
+        self.download_checkbox = QtWidgets.QCheckBox(self)
+        self.setObjectName('download_checkbox')
+        self.layout.addWidget(self.download_checkbox, 1, 1, 1, 3)
+
+    def retranslate_ui(self):
+        """
+        Translate the interface
+        """
+        self.remote_label.setText(translate('OpenLP.FirstTimeWizard', 'OpenLP has a web remote, which enables you to '
+                                            'control OpenLP from another computer, phone or tablet on the same network '
+                                            'as the OpenLP computer. OpenLP can download this web remote for you now, '
+                                            'or you can download it later via the remote settings.'))
+        self.download_checkbox.setText(translate('OpenLP.FirstTimeWizard', 'Yes, download the remote now'))
+        self.setTitle(translate('OpenLP.FirstTimeWizard', 'Web-based Remote Interface'))
+        self.setSubTitle(translate('OpenLP.FirstTimeWizard', 'Please confirm if you want to download the web remote.'))
+
+    @property
+    def can_download_remote(self):
+        """
+        The get method of a property to determine if the user selected the "Download remote now" checkbox
+        """
+        return self.download_checkbox.isChecked()
+
+    @can_download_remote.setter
+    def can_download_remote(self, value):
+        if not isinstance(value, bool):
+            raise TypeError('Must be a bool')
+        self.download_checkbox.setChecked(value)
 
 
 class ThemeListWidget(QtWidgets.QListWidget):
@@ -187,6 +231,9 @@ class UiFirstTimeWizard(object):
         self.alert_check_box.setObjectName('alert_check_box')
         self.plugin_layout.addWidget(self.alert_check_box)
         first_time_wizard.setPage(FirstTimePage.Plugins, self.plugin_page)
+        # Web Remote page
+        self.remote_page = RemotePage(self)
+        first_time_wizard.setPage(FirstTimePage.Remote, self.remote_page)
         # The song samples page
         self.songs_page = QtWidgets.QWizardPage()
         self.songs_page.setObjectName('songs_page')

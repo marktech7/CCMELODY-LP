@@ -30,19 +30,13 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'sundayplus'
 
 
-class TestSundayPlusFileImport(SongImportTestHelper):
+def test_sunday_plus(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'SundayPlusImport'
-        self.importer_module_name = 'sundayplus'
-        super(TestSundayPlusFileImport, self).__init__(*args, **kwargs)
-
-    def test_song_import(self):
-        """
-        Test that loading an SundayPlus file works correctly on various files
-        """
-        with patch('openlp.plugins.songs.lib.importers.sundayplus.retrieve_windows_encoding') as \
-                mocked_retrieve_windows_encoding:
-            mocked_retrieve_windows_encoding.return_value = 'cp1252'
-            self.file_import([TEST_PATH / 'Amazing Grace.ptf'],
-                             self.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+    test_file_import = SongImportTestHelper('SundayPlusImport', 'sundayplus')
+    test_file_import.setUp()
+    with patch('openlp.plugins.songs.lib.importers.sundayplus.retrieve_windows_encoding') as \
+            mocked_retrieve_windows_encoding:
+        mocked_retrieve_windows_encoding.return_value = 'cp1252'
+        test_file_import.file_import([TEST_PATH / 'Amazing Grace.ptf'],
+                                     test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json'))
+    test_file_import.tearDown()

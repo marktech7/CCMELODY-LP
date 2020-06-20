@@ -13,13 +13,61 @@
 }
 
 body {
-  background: transparent !important;
+  background: transparent;
   color: rgb(255, 255, 255) !important;
+}
+
+body.checkerboard {
+  background: url('checkerboard.png');
+  background-size: 100%;
+}
+
+body.hide-mouse {
+  cursor: none;
 }
 
 sup {
   vertical-align: super !important;
   font-size: smaller !important;
+}
+
+body,
+.reveal .slides,
+.reveal .footer {
+  transition: none;
+  z-index: 2;
+}
+
+body.transition,
+body.transition .reveal .slides,
+body.transition .reveal .footer {
+  /* Transition speed for content visibility */
+  transition: opacity 800ms ease-in-out !important;
+}
+
+.reveal .slide-background {
+  opacity: 1;
+  visibility: visible;
+  transition: none !important;
+  z-index: 2;
+  /* important required to override inline attributes */
+  background-repeat: no-repeat !important;
+  background-size: cover !important;
+  background-position: 50% 50% !important;
+}
+
+.reveal .slide-background:nth-child(n+3) {
+  /* Hide backgrounds beyond the first 2 (prevents ugly transitions in corner case) */
+  visibility: hidden;
+}
+
+.reveal .slide-background.future,
+.reveal .slide-background.past {
+  opacity: 0;
+}
+
+body.transition .reveal .slide-background {
+  transition: all 800ms ease-in-out !important;
 }
 
 .reveal .slides > section,
@@ -28,8 +76,8 @@ sup {
   max-height: 100%;
 }
 
-.reveal .slides > section.text-slides {
-  /* Need to override reveal styles to use our text aligment */
+.reveal .slides > section {
+  /* Need to override reveal styles to use our text alignment */
   display: flex !important;
   flex-direction: column;
   word-wrap: break-word;
@@ -318,21 +366,24 @@ sup {
 .reveal[class*=fade] .slides section.present:not([data-transition]) {
   transition-delay: 400ms; }
 
-.reveal .slides section.present[data-transition*=fade],
+.reveal .slides section.present[data-transition-speed="fast"][data-transition*=fade],
 .reveal[data-transition-speed="fast"][class*=fade] .slides section.present:not([data-transition]) {
   transition-delay: 200ms; }
 
-.reveal .slides section.present[data-transition*=fade],
+.reveal .slides section.present[data-transition-speed="slow"][data-transition*=fade],
 .reveal[data-transition-speed="slow"][class*=fade] .slides section.present:not([data-transition]) {
   transition-delay: 800ms; }
 
-.reveal[class*=fade] .slides section {
+.reveal[class*=fade] .slides section,
+.reveal .slides section[class*=fade] {
   transition-duration: 400ms !important; }
 
-.reveal[data-transition-speed="fast"][class*=fade] .slides section {
+.reveal[data-transition-speed="fast"][class*=fade] .slides section,
+.reveal .slides section[data-transition-speed="fast"][class*=fade] {
   transition-duration: 200ms !important; }
 
-.reveal[data-transition-speed="slow"][class*=fade] .slides section {
+.reveal[data-transition-speed="slow"][class*=fade] .slides section,
+.reveal .slides section[data-transition-speed="slow"][class*=fade] {
   transition-duration: 800ms !important; }
 
 .reveal[class*=fade].overview .slides section {

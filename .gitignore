@@ -48,3 +48,4 @@ package-lock.json
 tags
 test
 openlp-test-projectordb.sqlite
+*/test-results.xml

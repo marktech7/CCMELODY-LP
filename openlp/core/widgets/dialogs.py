@@ -19,9 +19,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """ Patch the QFileDialog so it accepts and returns Path objects"""
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.path import path_to_str, replace_params, str_to_path
+from openlp.core.common.i18n import UiStrings, translate
 
 
 class FileDialog(QtWidgets.QFileDialog):
@@ -107,3 +108,42 @@ class FileDialog(QtWidgets.QFileDialog):
         # getSaveFileName returns a tuple. The first item represents the path as a str. The string is empty if the user
         # cancels the dialog.
         return str_to_path(file_name), selected_filter
+
+
+class DownloadProgressDialog(QtWidgets.QProgressDialog):
+    """
+    Local class to handle download display based and supporting httputils:get_web_page
+    """
+    def __init__(self, parent, app):
+        super(DownloadProgressDialog, self).__init__(parent)
+        self.parent = parent
+        self.app = app
+        self.setWindowModality(QtCore.Qt.WindowModal)
+        self.setWindowTitle(translate('OpenLP.RemotePlugin', 'Importing Website'))
+        self.setLabelText(UiStrings().StartingImport)
+        self.setCancelButton(None)
+        self.setRange(0, 1)
+        self.setMinimumDuration(0)
+        self.was_cancelled = False
+        self.previous_size = 0
+
+    def update_progress(self, count, block_size):
+        """
+        Calculate and display the download progress.
+        """
+        increment = (count * block_size) - self.previous_size
+        self._increment_progress_bar(None, increment)
+        self.previous_size = count * block_size
+
+    def _increment_progress_bar(self, status_text, increment=1):
+        """
+        Update the wizard progress page.
+
+        :param status_text: Current status information to display.
+        :param increment: The value to increment the progress bar by.
+        """
+        if status_text:
+            self.setText(status_text)
+        if increment > 0:
+            self.setValue(self.value() + increment)
+        self.app.process_events()

@@ -22,7 +22,6 @@
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.plugins.songs.lib.db import AuthorType
 
@@ -63,9 +62,6 @@ class SongsTab(SettingsTab):
         self.chords_info_label = QtWidgets.QLabel(self.chords_group_box)
         self.chords_info_label.setWordWrap(True)
         self.chords_layout.addWidget(self.chords_info_label)
-        self.mainview_chords_check_box = QtWidgets.QCheckBox(self.mode_group_box)
-        self.mainview_chords_check_box.setObjectName('mainview_chords_check_box')
-        self.chords_layout.addWidget(self.mainview_chords_check_box)
         self.disable_chords_import_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.disable_chords_import_check_box.setObjectName('disable_chords_import_check_box')
         self.chords_layout.addWidget(self.disable_chords_import_check_box)
@@ -105,7 +101,6 @@ class SongsTab(SettingsTab):
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
         self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
-        self.mainview_chords_check_box.stateChanged.connect(self.on_mainview_chords_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
         self.english_notation_radio_button.clicked.connect(self.on_english_notation_button_clicked)
         self.german_notation_radio_button.clicked.connect(self.on_german_notation_button_clicked)
@@ -124,7 +119,6 @@ class SongsTab(SettingsTab):
         self.chords_info_label.setText(translate('SongsPlugin.SongsTab', 'If enabled all text between "[" and "]" will '
                                                                          'be regarded as chords.'))
         self.chords_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Chords'))
-        self.mainview_chords_check_box.setText(translate('SongsPlugin.SongsTab', 'Display chords in the main view'))
         self.disable_chords_import_check_box.setText(translate('SongsPlugin.SongsTab',
                                                                'Ignore chords when importing songs'))
         self.chord_notation_label.setText(translate('SongsPlugin.SongsTab', 'Chord notation to use:'))
@@ -160,17 +154,16 @@ class SongsTab(SettingsTab):
             ['ccli_number', translate('SongsPlugin.SongsTab', 'Song CCLI Number'), True, False],
             ['topics', translate('SongsPlugin.SongsTab', 'Topics'), False, True],
         ]
-        placeholder_info = '<table style="background: #eee">\n<tr><th><b>{ph}</b></th><th><b>{desc}</b></th></tr>\n'\
-            .format(ph=translate('SongsPlugin.SongsTab', 'Placeholder'),
-                    desc=translate('SongsPlugin.SongsTab', 'Description'))
+        placeholder_info = '<table><tr><th><b>{ph}</b></th><th><b>{desc}</b></th></tr>'.format(
+            ph=translate('SongsPlugin.SongsTab', 'Placeholder'), desc=translate('SongsPlugin.SongsTab', 'Description'))
         for placeholder in placeholders:
-            placeholder_info += '<tr><td>${{{pl}}}</td><td>{des}{opt}</td></tr>\n'\
-                                .format(pl=placeholder[0], des=placeholder[1],
-                                        opt=('&nbsp;¹' if placeholder[2] else '') +
-                                            ('&nbsp;²' if placeholder[3] else ''))
+            placeholder_info += '<tr><td>${{{pl}}}</td><td>{des}{opt}</td></tr>'.format(
+                pl=placeholder[0], des=placeholder[1], opt=('&nbsp;<sup>1</sup>' if placeholder[2] else '') +
+                ('&nbsp;<sup>2</sup>' if placeholder[3] else ''))
         placeholder_info += '</table>'
-        placeholder_info += '\n<br/>¹ {}'.format(translate('SongsPlugin.SongsTab', 'can be empty'))
-        placeholder_info += '\n<br/>² {}'.format(translate('SongsPlugin.SongsTab', 'list of entries, can be empty'))
+        placeholder_info += '<p><sup>1</sup> {}<br/>'.format(translate('SongsPlugin.SongsTab', 'can be empty'))
+        placeholder_info += '<sup>2</sup> {}</p>'.format(
+            translate('SongsPlugin.SongsTab', 'list of entries, can be empty'))
         self.footer_placeholder_info.setHtml(placeholder_info)
         self.footer_placeholder_info.setReadOnly(True)
 
@@ -195,9 +188,6 @@ class SongsTab(SettingsTab):
     def on_songbook_slide_check_box_changed(self, check_state):
         self.songbook_slide = (check_state == QtCore.Qt.Checked)
 
-    def on_mainview_chords_check_box_changed(self, check_state):
-        self.mainview_chords = (check_state == QtCore.Qt.Checked)
-
     def on_disable_chords_import_check_box_changed(self, check_state):
         self.disable_chords_import = (check_state == QtCore.Qt.Checked)
 
@@ -211,24 +201,20 @@ class SongsTab(SettingsTab):
         self.chord_notation = 'neo-latin'
 
     def on_footer_reset_button_clicked(self):
-        self.footer_edit_box.setPlainText(Settings().get_default_value('songs/footer template'))
+        self.footer_edit_box.setPlainText(self.settings.get_default_value('songs/footer template'))
 
     def load(self):
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.tool_bar = settings.value('display songbar')
-        self.update_edit = settings.value('update service on edit')
-        self.update_load = settings.value('add song from service')
-        self.songbook_slide = settings.value('add songbook slide')
-        self.enable_chords = settings.value('enable chords')
-        self.chord_notation = settings.value('chord notation')
-        self.mainview_chords = settings.value('mainview chords')
-        self.disable_chords_import = settings.value('disable chords import')
+        self.tool_bar = self.settings.value('songs/display songbar')
+        self.update_edit = self.settings.value('songs/update service on edit')
+        self.update_load = self.settings.value('songs/add song from service')
+        self.songbook_slide = self.settings.value('songs/add songbook slide')
+        self.enable_chords = self.settings.value('songs/enable chords')
+        self.chord_notation = self.settings.value('songs/chord notation')
+        self.disable_chords_import = self.settings.value('songs/disable chords import')
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
         self.chords_group_box.setChecked(self.enable_chords)
-        self.mainview_chords_check_box.setChecked(self.mainview_chords)
         self.disable_chords_import_check_box.setChecked(self.disable_chords_import)
         if self.chord_notation == 'german':
             self.german_notation_radio_button.setChecked(True)
@@ -236,24 +222,19 @@ class SongsTab(SettingsTab):
             self.neolatin_notation_radio_button.setChecked(True)
         else:
             self.english_notation_radio_button.setChecked(True)
-        self.footer_edit_box.setPlainText(settings.value('footer template'))
-        settings.endGroup()
+        self.footer_edit_box.setPlainText(self.settings.value('songs/footer template'))
 
     def save(self):
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('display songbar', self.tool_bar)
-        settings.setValue('update service on edit', self.update_edit)
-        settings.setValue('add song from service', self.update_load)
-        settings.setValue('enable chords', self.chords_group_box.isChecked())
-        settings.setValue('mainview chords', self.mainview_chords)
-        settings.setValue('disable chords import', self.disable_chords_import)
-        settings.setValue('chord notation', self.chord_notation)
+        self.settings.setValue('songs/display songbar', self.tool_bar)
+        self.settings.setValue('songs/update service on edit', self.update_edit)
+        self.settings.setValue('songs/add song from service', self.update_load)
+        self.settings.setValue('songs/enable chords', self.chords_group_box.isChecked())
+        self.settings.setValue('songs/disable chords import', self.disable_chords_import)
+        self.settings.setValue('songs/chord notation', self.chord_notation)
         # Only save footer template if it has been changed. This allows future updates
-        if self.footer_edit_box.toPlainText() != Settings().get_default_value('songs/footer template'):
-            settings.setValue('footer template', self.footer_edit_box.toPlainText())
-        settings.setValue('add songbook slide', self.songbook_slide)
-        settings.endGroup()
+        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('songs/footer template'):
+            self.settings.setValue('songs/footer template', self.footer_edit_box.toPlainText())
+        self.settings.setValue('songs/add songbook slide', self.songbook_slide)
         if self.tab_visited:
             self.settings_form.register_post_process('songs_config_updated')
         self.tab_visited = False

@@ -25,7 +25,6 @@ for the Custom Slides plugin, which is inserted into the configuration dialog.
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 
 
@@ -82,23 +81,17 @@ class CustomTab(SettingsTab):
 
         Load the settings into the dialog
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.display_footer = settings.value('display footer')
-        self.update_load = settings.value('add custom from service')
+        self.display_footer = self.settings.value('custom/display footer')
+        self.update_load = self.settings.value('custom/add custom from service')
         self.display_footer_check_box.setChecked(self.display_footer)
         self.add_from_service_checkbox.setChecked(self.update_load)
-        settings.endGroup()
 
     def save(self):
         """
         Save the Dialog settings
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('display footer', self.display_footer)
-        settings.setValue('add custom from service', self.update_load)
-        settings.endGroup()
+        self.settings.setValue('custom/display footer', self.display_footer)
+        self.settings.setValue('custom/add custom from service', self.update_load)
         if self.tab_visited:
             self.settings_form.register_post_process('custom_config_updated')
         self.tab_visited = False

@@ -21,87 +21,68 @@
 """
 This module contains tests for the lib submodule of the Songs plugin.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore
-
-from openlp.core.common.registry import Registry
 from openlp.plugins.songs.forms.editsongform import EditSongForm
-from tests.helpers.testmixin import TestMixin
 
 
-class TestEditSongForm(TestCase, TestMixin):
+@pytest.fixture()
+def edit_song_form():
+    with patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__', return_value=None):
+        return EditSongForm(None, MagicMock(), MagicMock())
+
+
+def test_validate_matching_tags(edit_song_form):
+    # Given a set of tags
+    tags = ['{r}', '{/r}', '{bl}', '{/bl}', '{su}', '{/su}']
+
+    # WHEN we validate them
+    valid = edit_song_form._validate_tags(tags)
+
+    # THEN they should be valid
+    assert valid is True, "The tags list should be valid"
+
+
+def test_validate_nonmatching_tags(edit_song_form):
+    # Given a set of tags
+    tags = ['{r}', '{/r}', '{bl}', '{/bl}', '{br}', '{su}', '{/su}']
+
+    # WHEN we validate them
+    valid = edit_song_form._validate_tags(tags)
+
+    # THEN they should be valid
+    assert valid is True, "The tags list should be valid"
+
+
+@patch('openlp.plugins.songs.forms.editsongform.set_case_insensitive_completer')
+def test_load_objects(mocked_set_case_insensitive_completer, edit_song_form, settings):
     """
-    Test the functions in the :mod:`lib` module.
+    Test the _load_objects() method
     """
-    def setUp(self):
-        """
-        Set up the components need for all tests.
-        """
-        Registry.create()
-        Registry().register('service_list', MagicMock())
-        Registry().register('main_window', MagicMock())
-        with patch('openlp.plugins.songs.forms.editsongform.EditSongForm.__init__', return_value=None):
-            self.edit_song_form = EditSongForm(None, MagicMock(), MagicMock())
-        self.setup_application()
-        self.build_settings()
-        QtCore.QLocale.setDefault(QtCore.QLocale('en_GB'))
+    # GIVEN: A song edit form and some mocked stuff
+    mocked_class = MagicMock()
+    mocked_class.name = 'Author'
+    mocked_combo = MagicMock()
+    mocked_combo.count.return_value = 0
+    mocked_cache = MagicMock()
+    mocked_object = MagicMock()
+    mocked_object.name = 'Charles'
+    mocked_object.id = 1
+    mocked_manager = MagicMock()
+    mocked_manager.get_all_objects.return_value = [mocked_object]
+    edit_song_form.manager = mocked_manager
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        self.destroy_settings()
+    # WHEN: _load_objects() is called
+    edit_song_form._load_objects(mocked_class, mocked_combo, mocked_cache)
 
-    def test_validate_matching_tags(self):
-        # Given a set of tags
-        tags = ['{r}', '{/r}', '{bl}', '{/bl}', '{su}', '{/su}']
-
-        # WHEN we validate them
-        valid = self.edit_song_form._validate_tags(tags)
-
-        # THEN they should be valid
-        assert valid is True, "The tags list should be valid"
-
-    def test_validate_nonmatching_tags(self):
-        # Given a set of tags
-        tags = ['{r}', '{/r}', '{bl}', '{/bl}', '{br}', '{su}', '{/su}']
-
-        # WHEN we validate them
-        valid = self.edit_song_form._validate_tags(tags)
-
-        # THEN they should be valid
-        assert valid is True, "The tags list should be valid"
-
-    @patch('openlp.plugins.songs.forms.editsongform.set_case_insensitive_completer')
-    def test_load_objects(self, mocked_set_case_insensitive_completer):
-        """
-        Test the _load_objects() method
-        """
-        # GIVEN: A song edit form and some mocked stuff
-        mocked_class = MagicMock()
-        mocked_class.name = 'Author'
-        mocked_combo = MagicMock()
-        mocked_combo.count.return_value = 0
-        mocked_cache = MagicMock()
-        mocked_object = MagicMock()
-        mocked_object.name = 'Charles'
-        mocked_object.id = 1
-        mocked_manager = MagicMock()
-        mocked_manager.get_all_objects.return_value = [mocked_object]
-        self.edit_song_form.manager = mocked_manager
-
-        # WHEN: _load_objects() is called
-        self.edit_song_form._load_objects(mocked_class, mocked_combo, mocked_cache)
-
-        # THEN: All the correct methods should have been called
-        self.edit_song_form.manager.get_all_objects.assert_called_once_with(mocked_class)
-        mocked_combo.clear.assert_called_once_with()
-        mocked_combo.count.assert_called_once_with()
-        mocked_combo.addItem.assert_called_once_with('Charles')
-        mocked_cache.append.assert_called_once_with('Charles')
-        mocked_combo.setItemData.assert_called_once_with(0, 1)
-        mocked_set_case_insensitive_completer.assert_called_once_with(mocked_cache, mocked_combo)
-        mocked_combo.setCurrentIndex.assert_called_once_with(-1)
-        mocked_combo.setCurrentText.assert_called_once_with('')
+    # THEN: All the correct methods should have been called
+    edit_song_form.manager.get_all_objects.assert_called_once_with(mocked_class)
+    mocked_combo.clear.assert_called_once_with()
+    mocked_combo.count.assert_called_once_with()
+    mocked_combo.addItem.assert_called_once_with('Charles')
+    mocked_cache.append.assert_called_once_with('Charles')
+    mocked_combo.setItemData.assert_called_once_with(0, 1)
+    mocked_set_case_insensitive_completer.assert_called_once_with(mocked_cache, mocked_combo)
+    mocked_combo.setCurrentIndex.assert_called_once_with(-1)
+    mocked_combo.setCurrentText.assert_called_once_with('')

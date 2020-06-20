@@ -25,29 +25,41 @@ RESTful API for devices on the network to discover.
 import socket
 from time import sleep
 
-from zeroconf import ServiceInfo, Zeroconf
+from zeroconf import ServiceInfo, Zeroconf, Error, NonUniqueNameException
 
 from openlp.core.common import get_network_interfaces
+from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.threading import ThreadWorker, run_thread
+
+
+def _get_error_message(exc):
+    """
+    Zeroconf doesn't have error messages, so we have to make up our own
+    """
+    error_message = UiStrings().ZeroconfErrorIntro + '\n\n'
+    if isinstance(exc, NonUniqueNameException):
+        error_message += UiStrings().ZeroconfNonUniqueError
+    else:
+        error_message += UiStrings().ZeroconfGenericError
+    return error_message
 
 
 class ZeroconfWorker(ThreadWorker):
     """
     This thread worker runs a Zeroconf service
     """
-    address = None
+    ip_address = None
     http_port = 4316
     ws_port = 4317
     _can_run = False
 
-    def __init__(self, ip_address, http_port=4316, ws_port=4317):
+    def __init__(self, addresses, http_port=4316, ws_port=4317):
         """
         Create the worker for the Zeroconf service
         """
         super().__init__()
-        self.address = socket.inet_aton(ip_address)
+        self.addresses = addresses
         self.http_port = http_port
         self.ws_port = ws_port
 
@@ -62,20 +74,24 @@ class ZeroconfWorker(ThreadWorker):
         """
         Start the service
         """
+        addresses = [socket.inet_aton(addr) for addr in self.addresses]
         http_info = ServiceInfo('_http._tcp.local.', 'OpenLP._http._tcp.local.',
-                                address=self.address, port=self.http_port, properties={})
+                                addresses=addresses, port=self.http_port, properties={})
         ws_info = ServiceInfo('_ws._tcp.local.', 'OpenLP._ws._tcp.local.',
-                              address=self.address, port=self.ws_port, properties={})
+                              addresses=addresses, port=self.ws_port, properties={})
         zc = Zeroconf()
-        zc.register_service(http_info)
-        zc.register_service(ws_info)
-        self._can_run = True
-        while self.can_run():
-            sleep(0.1)
-        zc.unregister_service(http_info)
-        zc.unregister_service(ws_info)
-        zc.close()
-        self.quit.emit()
+        try:
+            zc.register_service(http_info)
+            zc.register_service(ws_info)
+            self._can_run = True
+            while self.can_run():
+                sleep(0.1)
+        except Error as e:
+            self.error.emit('Cannot start Zeroconf service', _get_error_message(e))
+        finally:
+            zc.unregister_all_services()
+            zc.close()
+            self.quit.emit()
 
     def stop(self):
         """
@@ -91,8 +107,7 @@ def start_zeroconf():
     # When we're running tests, just skip this set up if this flag is set
     if Registry().get_flag('no_web_server'):
         return
-    http_port = Settings().value('api/port')
-    ws_port = Settings().value('api/websocket port')
-    for name, interface in get_network_interfaces().items():
-        worker = ZeroconfWorker(interface['ip'], http_port, ws_port)
-        run_thread(worker, 'api_zeroconf_{name}'.format(name=name))
+    http_port = Registry().get('settings_thread').value('api/port')
+    ws_port = Registry().get('settings_thread').value('api/websocket port')
+    worker = ZeroconfWorker([iface['ip'] for iface in get_network_interfaces().values()], http_port, ws_port)
+    run_thread(worker, 'api_zeroconf')

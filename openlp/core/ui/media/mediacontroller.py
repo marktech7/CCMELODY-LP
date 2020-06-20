@@ -33,7 +33,6 @@ from subprocess import check_output
 from PyQt5 import QtCore
 
 from openlp.core.state import State
-from openlp.core.api.http import register_endpoint
 from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
@@ -41,9 +40,10 @@ from openlp.core.common.path import path_to_str
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.ui import DisplayControllerType
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, VIDEO_EXT, AUDIO_EXT
-from openlp.core.ui.media.endpoint import media_endpoint
+from openlp.core.ui import DisplayControllerType, HideMode
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path, \
+    VIDEO_EXT, AUDIO_EXT
+from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 
 
@@ -81,7 +81,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         Registry().register_function('songs_hide', self.media_hide)
         Registry().register_function('songs_blank', self.media_blank)
         Registry().register_function('songs_unblank', self.media_unblank)
-        register_endpoint(media_endpoint)
+        register_views()
 
     def bootstrap_initialise(self):
         """
@@ -186,7 +186,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.has_audio = True
         if preview:
             controller.has_audio = False
-        self.vlc_player.setup(controller, self._define_display(controller), preview)
+        self.vlc_player.setup(controller, self._define_display(controller))
 
     @staticmethod
     def set_controls_visible(controller, value):
@@ -230,46 +230,55 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
             controller.media_info.file_info = service_item.background_audio
         else:
-            if service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
+            if service_item.is_capable(ItemCapabilities.HasBackgroundStream):
+                (name, mrl, options) = parse_stream_path(service_item.stream_mrl)
+                controller.media_info.file_info = (mrl, options)
+                controller.media_info.is_background = True
+                controller.media_info.media_type = MediaType.Stream
+            elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
                 service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
                 controller.media_info.is_looping_playback = True
-                controller.media_info.is_background = True
-            elif service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.file_info = []
                 controller.media_info.is_background = True
             else:
                 controller.media_info.file_info = [service_item.get_frame_path()]
         display = self._define_display(controller)
         if controller.is_live:
             # if this is an optical device use special handling
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                is_valid = self._check_file_type(controller, display, True)
-                controller.media_info.media_type = MediaType.Stream
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and live')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                log.debug('video is stream and live')
+                path = service_item.get_frames()[0]['path']
+                controller.media_info.media_type = MediaType.Stream
+                (name, mrl, options) = parse_stream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
-                log.debug('video is not optical and live')
+                log.debug('video is not optical or stream, but live')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
             controller.media_info.start_time = service_item.start_time
             controller.media_info.end_time = service_item.end_time
         elif controller.preview_display:
-            if service_item.is_capable(ItemCapabilities.CanStream):
-                controller.media_info.media_type = MediaType.Stream
-                is_valid = self._check_file_type(controller, display, True)
-            elif service_item.is_capable(ItemCapabilities.IsOptical):
+            if service_item.is_capable(ItemCapabilities.IsOptical):
                 log.debug('video is optical and preview')
                 path = service_item.get_frame_path()
                 (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
+            elif service_item.is_capable(ItemCapabilities.CanStream):
+                path = service_item.get_frames()[0]['path']
+                controller.media_info.media_type = MediaType.Stream
+                (name, mrl, options) = parse_stream_path(path)
+                controller.media_info.file_info = (mrl, options)
+                is_valid = self._check_file_type(controller, display)
             else:
-                log.debug('video is not optical and preview')
+                log.debug('video is not optical or stream, but preview')
                 controller.media_info.length = service_item.media_length
                 is_valid = self._check_file_type(controller, display)
         if not is_valid:
@@ -348,7 +357,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         # When called from mediaitem display is None
         if display is None:
             display = controller.preview_display
-        self.vlc_player.load(display, filename)
+        self.vlc_player.load(controller, display, filename)
         self.resize(controller, self.vlc_player)
         self.current_media_players[controller.controller_type] = self.vlc_player
         if audio_track == -1 and subtitle_track == -1:
@@ -357,21 +366,19 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.media_type = MediaType.DVD
         return True
 
-    def _check_file_type(self, controller, display, stream=False):
+    def _check_file_type(self, controller, display):
         """
         Select the correct media Player type from the prioritized Player list
 
         :param controller: First element is the controller which should be used
         :param display: Which display to use
-        :param stream: Are we streaming or not
         """
-        if stream:
+        if controller.media_info.media_type == MediaType.Stream:
             self.resize(controller, self.vlc_player)
-            controller.media_info.media_type = MediaType.Stream
-            if self.vlc_player.load(controller, display, None):
+            if self.vlc_player.load(controller, display, controller.media_info.file_info):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True
-            return True
+            return False
         for file in controller.media_info.file_info:
             if file.is_file:
                 suffix = '*%s' % file.suffix.lower()
@@ -404,13 +411,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param msg: First element is the controller which should be used
         :param status:
         """
-        self.media_play(msg[0], status)
+        return self.media_play(msg[0], status)
 
     def on_media_play(self):
         """
         Responds to the request to play a loaded video from the web.
         """
-        self.media_play(Registry().get('live_controller'), False)
+        return self.media_play(Registry().get('live_controller'), False)
 
     def media_play(self, controller, first_time=True):
         """
@@ -447,7 +454,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.media_info.is_playing = True
         if not controller.media_info.is_background:
             display = self._define_display(controller)
-            display.setVisible(False)
+            display.hide_display(HideMode.Screen)
+            controller._set_theme(controller.service_item)
+            display.load_verses([{"verse": "v1", "text": "", "footer": " "}])
         return True
 
     def tick(self, controller):
@@ -459,9 +468,14 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         start_again = False
         if controller.media_info.is_playing and controller.media_info.length > 0:
             if controller.media_info.timer > controller.media_info.length:
-                self.media_stop(controller)
                 if controller.media_info.is_looping_playback:
                     start_again = True
+                else:
+                    self.media_stop(controller)
+            elif controller.media_info.timer > controller.media_info.length - TICK_TIME * 4:
+                if not controller.media_info.is_looping_playback:
+                    display = self._define_display(controller)
+                    display.show_display()
             controller.media_info.timer += TICK_TIME
             seconds = controller.media_info.timer // 1000
             minutes = seconds // 60
@@ -472,7 +486,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.position_label.setText(' %02d:%02d / %02d:%02d' %
                                               (minutes, seconds, total_minutes, total_seconds))
         if start_again:
-            self.media_play(controller, True)
+            controller.seek_slider.setSliderPosition(0)
+            self.media_play(controller, False)
 
     def media_pause_msg(self, msg):
         """
@@ -480,13 +495,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param msg: First element is the controller which should be used
         """
-        self.media_pause(msg[0])
+        return self.media_pause(msg[0])
 
     def on_media_pause(self):
         """
         Responds to the request to pause a loaded video from the web.
         """
-        self.media_pause(Registry().get('live_controller'))
+        return self.media_pause(Registry().get('live_controller'))
 
     def media_pause(self, controller):
         """
@@ -500,6 +515,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.mediabar.actions['playbackStop'].setDisabled(False)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
+            return True
+        return False
 
     def media_loop_msg(self, msg):
         """
@@ -525,13 +542,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param msg: First element is the controller which should be used
         """
-        self.media_stop(msg[0])
+        return self.media_stop(msg[0])
 
     def on_media_stop(self):
         """
         Responds to the request to stop a loaded video from the web.
         """
-        self.media_stop(Registry().get('live_controller'))
+        return self.media_stop(Registry().get('live_controller'))
 
     def media_stop(self, controller):
         """
@@ -553,6 +570,10 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.is_playing = False
             controller.media_info.timer = 1000
             controller.media_timer = 0
+            display = self._define_display(controller)
+            display.show_display()
+            return True
+        return False
 
     def media_volume_msg(self, msg):
         """
@@ -608,6 +629,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         self.set_controls_visible(controller, False)
         if controller.controller_type in self.current_media_players:
+            display = self._define_display(controller)
+            display.show_display()
             self.current_media_players[controller.controller_type].reset(controller)
             self.current_media_players[controller.controller_type].set_visible(controller, False)
             del self.current_media_players[controller.controller_type]

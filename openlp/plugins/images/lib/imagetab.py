@@ -22,7 +22,6 @@
 from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.widgets.buttons import ColorButton
 
@@ -67,17 +66,11 @@ class ImageTab(SettingsTab):
         self.background_color = color
 
     def load(self):
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.background_color = settings.value('background color')
+        self.background_color = self.settings.value('images/background color')
         self.initial_color = self.background_color
-        settings.endGroup()
         self.background_color_button.color = self.background_color
 
     def save(self):
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('background color', self.background_color)
-        settings.endGroup()
+        self.settings.setValue('images/background color', self.background_color)
         if self.initial_color != self.background_color:
             self.settings_form.register_post_process('images_config_updated')

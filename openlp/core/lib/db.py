@@ -40,7 +40,7 @@ from openlp.core.common import delete_file
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
 
 
@@ -169,9 +169,8 @@ def init_url(plugin_name, db_file_name=None):
     :return: The database URL
     :rtype: str
     """
-    settings = Settings()
-    settings.beginGroup(plugin_name)
-    db_type = settings.value('db type')
+    settings = Registry().get('settings')
+    db_type = settings.value(f'{plugin_name}/db type')
     if db_type == 'sqlite':
         db_url = get_db_path(plugin_name, db_file_name)
     else:
@@ -180,7 +179,6 @@ def init_url(plugin_name, db_file_name=None):
                                                                  password=urlquote(settings.value('db password')),
                                                                  host=urlquote(settings.value('db hostname')),
                                                                  db=urlquote(settings.value('db database')))
-    settings.endGroup()
     return db_url
 
 
@@ -218,7 +216,7 @@ class PathType(types.TypeDecorator):
 
     def coerce_compared_value(self, op, value):
         """
-        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the the
+        Some times it make sense to compare a PathType with a string. In the case a string is used coerce the
         PathType to a UnicodeText type.
 
         :param op: The operation being carried out. Not used, as we only care about the type that is being used with the

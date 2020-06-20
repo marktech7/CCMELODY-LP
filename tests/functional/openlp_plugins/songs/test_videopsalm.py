@@ -21,8 +21,7 @@
 """
 This module contains tests for the VideoPsalm song importer.
 """
-from unittest.mock import MagicMock, patch
-
+from openlp.core.common.registry import Registry
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -30,24 +29,14 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'videopsalm'
 
 
-class TestVideoPsalmFileImport(SongImportTestHelper):
+def test_video_psalms(mock_settings):
 
-    def __init__(self, *args, **kwargs):
-        self.importer_class_name = 'VideoPsalmImport'
-        self.importer_module_name = 'videopsalm'
-        super(TestVideoPsalmFileImport, self).__init__(*args, **kwargs)
-
-    @patch('openlp.plugins.songs.lib.importers.videopsalm.Settings')
-    def test_song_import(self, mocked_settings):
-        """
-        Test that loading an VideoPsalm file works correctly on various files
-        """
-        # Mock out the settings - always return False
-        mocked_returned_settings = MagicMock()
-        mocked_returned_settings.value.side_effect = lambda value: True if value == 'songs/enable chords' else False
-        mocked_settings.return_value = mocked_returned_settings
-        # Do the test import
-        self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
-                         self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))
-        self.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold2.json',
-                         self.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold2.json'))
+    test_file_import = SongImportTestHelper('VideoPsalmImport', 'videopsalm')
+    test_file_import.setUp()
+    Registry().get('settings').value.side_effect = lambda value: True if value == 'songs/enable chords' else False
+    # Do the test import
+    test_file_import.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold.json',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold.json'))
+    test_file_import.file_import(TEST_PATH / 'videopsalm-as-safe-a-stronghold2.json',
+                                 test_file_import.load_external_result_data(TEST_PATH / 'as-safe-a-stronghold2.json'))
+    test_file_import.tearDown()

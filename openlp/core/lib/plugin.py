@@ -27,7 +27,6 @@ from openlp.core.common.enum import PluginStatus
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase
-from openlp.core.common.settings import Settings
 from openlp.core.version import get_version
 
 
@@ -61,9 +60,6 @@ class Plugin(RegistryBase, RegistryProperties):
 
     ``version``
         The version number of this iteration of the plugin.
-
-    ``settings_section``
-        The namespace to store settings for the plugin.
 
     ``icon``
         An instance of QIcon, which holds an icon for this plugin.
@@ -127,7 +123,6 @@ class Plugin(RegistryBase, RegistryProperties):
         self.text_strings = {}
         self.set_plugin_text_strings()
         self.name_strings = self.text_strings[StringContent.Name]
-        self.settings_section = self.name
         self.icon = None
         self.media_item_class = media_item_class
         self.settings_tab_class = settings_tab_class
@@ -164,14 +159,14 @@ class Plugin(RegistryBase, RegistryProperties):
         """
         Sets the status of the plugin
         """
-        self.status = Settings().value(self.settings_section + '/status')
+        self.status = self.settings.value(f'{self.name}/status')
 
     def toggle_status(self, new_status):
         """
         Changes the status of the plugin and remembers it
         """
         self.status = new_status
-        Settings().setValue(self.settings_section + '/status', self.status)
+        self.settings.setValue(f'{self.name}/status', self.status)
         if new_status == PluginStatus.Active:
             self.initialise()
         elif new_status == PluginStatus.Inactive:

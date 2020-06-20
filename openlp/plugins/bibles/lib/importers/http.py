@@ -363,9 +363,11 @@ class BGExtract(RegistryProperties):
             return None
         books = []
         for book in content:
-            book = book.find('td')
-            if book:
-                books.append(book.contents[1])
+            td_element = book.find('td', {'class': 'book-name'})
+            strings = [text for text in td_element.stripped_strings]
+            book_name = strings[2].strip()
+            if book_name:
+                books.append(book_name)
         return books
 
     def get_bibles_from_http(self):
@@ -379,7 +381,7 @@ class BGExtract(RegistryProperties):
         soup = get_soup_for_bible_ref(bible_url)
         if not soup:
             return None
-        bible_select = soup.find('select', {'class': 'search-translation-select'})
+        bible_select = soup.find('select', {'class': 'search-dropdown'})
         if not bible_select:
             log.debug('No select tags found - did site change?')
             return None
@@ -810,7 +812,7 @@ def send_error_message(error_type):
         critical_error_message_box(
             translate('BiblesPlugin.HTTPBible', 'Download Error'),
             translate('BiblesPlugin.HTTPBible', 'There was a problem downloading your verse selection. Please check '
-                      'your Internet connection, and if this error continues to occur please consider reporting a bug'
+                      'your Internet connection, and if this error continues to occur, please consider reporting a bug'
                       '.'))
     elif error_type == 'parse':
         critical_error_message_box(

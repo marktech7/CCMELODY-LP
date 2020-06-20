@@ -31,7 +31,7 @@ import appdirs
 import openlp
 from openlp.core.common import get_frozen_path, is_macosx, is_win
 from openlp.core.common.path import create_paths
-from openlp.core.common.settings import Settings
+from openlp.core.common.registry import Registry
 
 
 log = logging.getLogger(__name__)
@@ -68,7 +68,11 @@ class AppLocation(object):
             path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
             path = _get_os_dir_path(dir_type)
-        return path
+        # resolve() does not work on windows
+        if is_win():
+            return Path.cwd() / path
+        else:
+            return path.resolve()
 
     @staticmethod
     def get_data_path():
@@ -79,8 +83,8 @@ class AppLocation(object):
         :rtype: Path
         """
         # Check if we have a different data location.
-        if Settings().contains('advanced/data path'):
-            path = Path(Settings().value('advanced/data path'))
+        if Registry().get('settings').contains('advanced/data path'):
+            path = Path(Registry().get('settings').value('advanced/data path'))
         else:
             path = AppLocation.get_directory(AppLocation.DataDir)
             create_paths(path)

@@ -26,7 +26,6 @@ import logging
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.state import State
@@ -74,8 +73,8 @@ class PlanningCenterPlugin(Plugin):
                                                     text=translate('PlanningCenterPlugin', 'Planning Center Service'),
                                                     visible=False,
                                                     statustip=translate('PlanningCenterPlugin',
-                                                                        'Import Planning Center Service Plan \
-                                                                        from Planning Center Online.'),
+                                                                        'Import Planning Center Service Plan '
+                                                                        'from Planning Center Online.'),
                                                     triggers=self.on_import_planning_center_triggered
                                                     )
         import_menu.addAction(self.import_planning_center)
@@ -85,8 +84,8 @@ class PlanningCenterPlugin(Plugin):
         Run the PlanningCenter importer.
         """
         # Determine which dialog to show based on whether the auth values are set yet
-        self.application_id = Settings().value("planningcenter/application_id")
-        self.secret = Settings().value("planningcenter/secret")
+        self.application_id = self.settings.value("planningcenter/application_id")
+        self.secret = self.settings.value("planningcenter/secret")
         if len(self.application_id) == 0 or len(self.secret) == 0:
             self.planningcenter_form = Registry().get('settings_form')
             self.planningcenter_form.exec(translate('PlanningCenterPlugin', 'PlanningCenter'))
@@ -103,8 +102,8 @@ class PlanningCenterPlugin(Plugin):
         PlanningCenter plugin
         """
         return translate('PlanningCenterPlugin', '<strong>PlanningCenter Plugin</strong>'
-                         '<br />The planningcenter plugin provides an interface to import \
-                        service plans from the Planning Center Online v2 API.')
+                         '<br />The planningcenter plugin provides an interface to import '
+                         'service plans from the Planning Center Online v2 API.')
 
     def set_plugin_text_strings(self):
         """
@@ -125,8 +124,8 @@ class PlanningCenterPlugin(Plugin):
         # Middle Header Bar
         tooltips = {
             'load': '',
-            'import': translate('PlanningCenterPlugin', 'Import All Plan Items \
-            into Current Service'),
+            'import': translate('PlanningCenterPlugin', 'Import All Plan Items '
+                                'into Current Service'),
             'new': '',
             'edit': '',
             'delete': '',

@@ -23,10 +23,14 @@ All the tests
 """
 import os
 import sys
+import shutil
+from tempfile import mkdtemp
 from tempfile import mkstemp
 from unittest.mock import MagicMock
 
 import pytest
+from pytestqt.qt_compat import qt_api
+
 from PyQt5 import QtCore, QtWidgets  # noqa
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
@@ -37,8 +41,9 @@ from openlp.core.common.settings import Settings
 
 
 @pytest.yield_fixture
-def qapp():
+def qapp(qtbot):
     """An instance of QApplication"""
+    qt_api.QApplication.instance()
     app = OpenLP()
     yield app
     del app
@@ -52,10 +57,11 @@ def mocked_qapp():
     del app
 
 
-@pytest.fixture
+@pytest.yield_fixture
 def registry():
     """An instance of the Registry"""
-    Registry.create()
+    yield Registry.create()
+    Registry._instances = {}
 
 
 @pytest.yield_fixture
@@ -68,23 +74,46 @@ def settings(qapp, registry):
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
     Registry().register('settings', sets)
+    Registry().register('settings_thread', sets)
+    Registry().register('application', qapp)
+    qapp.settings = sets
     yield sets
     del sets
+    Registry().remove('settings')
+    Registry().remove('settings_thread')
     os.close(fd)
     os.unlink(Settings().fileName())
 
 
 @pytest.yield_fixture
-def mock_settings(registry):
+def mock_settings(qapp, registry):
     """A Mock Settings() instance"""
     # Create and register a mock settings object to work with
-    mock_settings = MagicMock()
-    Registry().register('settings', mock_settings)
-    yield mock_settings
+    mk_settings = MagicMock()
+    Registry().register('settings', mk_settings)
+    Registry().register('application', qapp)
+    Registry().register('settings_thread', mk_settings)
+    yield mk_settings
     Registry().remove('settings')
-    del mock_settings
+    Registry().remove('settings_thread')
+    del mk_settings
 
 
-@pytest.fixture(scope='function')
+@pytest.yield_fixture
 def state():
-    State().load_settings()
+    yield State().load_settings()
+    State._instances = {}
+
+
+@pytest.fixture()
+def state_media(state):
+    State().add_service("media", 0)
+    State().update_pre_conditions("media", True)
+    State().flush_preconditions()
+
+
+@pytest.yield_fixture()
+def temp_folder():
+    t_folder = mkdtemp(prefix='openlp_')
+    yield t_folder
+    shutil.rmtree(t_folder, ignore_errors=True)

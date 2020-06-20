@@ -26,7 +26,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import ThemeLevel
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.lib.ui import find_and_set_in_combo_box
 from openlp.core.ui.icons import UiIcons
@@ -67,9 +66,9 @@ class ThemesTab(SettingsTab):
         self.universal_group_box.setObjectName('universal_group_box')
         self.universal_group_box_layout = QtWidgets.QVBoxLayout(self.universal_group_box)
         self.universal_group_box_layout.setObjectName('universal_group_box_layout')
-        self.wrap_footer_check_box = QtWidgets.QCheckBox(self.universal_group_box)
-        self.wrap_footer_check_box.setObjectName('wrap_footer_check_box')
-        self.universal_group_box_layout.addWidget(self.wrap_footer_check_box)
+        self.item_transitions_check_box = QtWidgets.QCheckBox(self.universal_group_box)
+        self.item_transitions_check_box.setObjectName('item_transitions_check_box')
+        self.universal_group_box_layout.addWidget(self.item_transitions_check_box)
         self.left_layout.addWidget(self.universal_group_box)
         self.left_layout.addStretch()
         self.level_group_box = QtWidgets.QGroupBox(self.right_column)
@@ -115,7 +114,7 @@ class ThemesTab(SettingsTab):
         self.tab_title_visible = UiStrings().Themes
         self.global_group_box.setTitle(translate('OpenLP.ThemesTab', 'Global Theme'))
         self.universal_group_box.setTitle(translate('OpenLP.ThemesTab', 'Universal Settings'))
-        self.wrap_footer_check_box.setText(translate('OpenLP.ThemesTab', '&Wrap footer text'))
+        self.item_transitions_check_box.setText(translate('OpenLP.ThemesTab', '&Transition between service items'))
         self.level_group_box.setTitle(translate('OpenLP.ThemesTab', 'Theme Level'))
         self.song_level_radio_button.setText(translate('OpenLP.ThemesTab', 'S&ong Level'))
         self.song_level_label.setText(
@@ -136,12 +135,9 @@ class ThemesTab(SettingsTab):
         """
         Load the theme settings into the tab
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        self.theme_level = settings.value('theme level')
-        self.global_theme = settings.value('global theme')
-        self.wrap_footer_check_box.setChecked(settings.value('wrap footer'))
-        settings.endGroup()
+        self.theme_level = self.settings.value('themes/theme level')
+        self.global_theme = self.settings.value('themes/global theme')
+        self.item_transitions_check_box.setChecked(self.settings.value('themes/item transitions'))
         if self.theme_level == ThemeLevel.Global:
             self.global_level_radio_button.setChecked(True)
         elif self.theme_level == ThemeLevel.Service:
@@ -153,12 +149,9 @@ class ThemesTab(SettingsTab):
         """
         Save the settings
         """
-        settings = Settings()
-        settings.beginGroup(self.settings_section)
-        settings.setValue('theme level', self.theme_level)
-        settings.setValue('global theme', self.global_theme)
-        settings.setValue('wrap footer', self.wrap_footer_check_box.isChecked())
-        settings.endGroup()
+        self.settings.setValue('themes/theme level', self.theme_level)
+        self.settings.setValue('themes/global theme', self.global_theme)
+        self.settings.setValue('themes/item transitions', self.item_transitions_check_box.isChecked())
         self.renderer.set_theme_level(self.theme_level)
         if self.tab_visited:
             self.settings_form.register_post_process('theme_update_global')
@@ -199,7 +192,7 @@ class ThemesTab(SettingsTab):
                 ['Bible Theme', 'Song Theme']
         """
         # Reload as may have been triggered by the ThemeManager.
-        self.global_theme = Settings().value(self.settings_section + '/global theme')
+        self.global_theme = self.settings.value('themes/global theme')
         self.default_combo_box.clear()
         self.default_combo_box.addItems(theme_list)
         find_and_set_in_combo_box(self.default_combo_box, self.global_theme)

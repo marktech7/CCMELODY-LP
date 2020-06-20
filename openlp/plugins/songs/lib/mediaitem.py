@@ -86,7 +86,7 @@ class SongMediaItem(MediaManagerItem):
             song.media_files.append(MediaFile.populate(weight=i, file_path=dest_path))
         self.plugin.manager.save_object(song, True)
 
-    def add_end_header_bar(self):
+    def add_middle_header_bar(self):
         self.toolbar.addSeparator()
         # Song Maintenance Button
         self.maintenance_action = self.toolbar.add_toolbar_action('maintenance_action',
@@ -115,8 +115,8 @@ class SongMediaItem(MediaManagerItem):
         """
         log.debug('config_updated')
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
-        self.update_service_on_edit = self.settings.value(self.settings_section + '/update service on edit')
-        self.add_song_from_service = self.settings.value(self.settings_section + '/add song from service')
+        self.update_service_on_edit = self.settings.value('songs/update service on edit')
+        self.add_song_from_service = self.settings.value('songs/add song from service')
 
     def retranslate_ui(self):
         self.search_text_label.setText('{text}:'.format(text=UiStrings().Search))
@@ -139,7 +139,7 @@ class SongMediaItem(MediaManagerItem):
             (SongSearch.Titles, UiIcons().search_text,
                 translate('SongsPlugin.MediaItem', 'Titles'),
                 translate('SongsPlugin.MediaItem', 'Search Titles...')),
-            (SongSearch.Lyrics, UiIcons().search_lyrcs,
+            (SongSearch.Lyrics, UiIcons().search_lyrics,
                 translate('SongsPlugin.MediaItem', 'Lyrics'),
                 translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
             (SongSearch.Authors, UiIcons().user, SongStrings.Authors,
@@ -539,6 +539,7 @@ class SongMediaItem(MediaManagerItem):
                     new_media_file.weight = media_file.weight
                     new_song.media_files.append(new_media_file)
             self.plugin.manager.save_object(new_song)
+            new_song.init_on_load()
         self.on_song_list_load()
 
     def generate_slide_data(self, service_item, *, item=None, context=ServiceItemContext.Service, **kwargs):
@@ -614,7 +615,11 @@ class SongMediaItem(MediaManagerItem):
                             service_item.add_from_text(split_verse, verse_def)
         service_item.title = song.title
         author_list = self.generate_footer(service_item, song)
-        service_item.data_string = {'title': song.search_title, 'authors': ', '.join(author_list)}
+        service_item.data_string = {
+            'title': song.search_title,
+            'authors': ', '.join(author_list),
+            'ccli_number': song.ccli_number
+        }
         service_item.xml_version = self.open_lyrics.song_to_xml(song)
         # Add the audio file to the service item.
         if song.media_files:
@@ -742,6 +747,7 @@ class SongMediaItem(MediaManagerItem):
             if item.background_audio:
                 self._update_background_audio(song, item)
             edit_id = song.id
+            song.init_on_load()
             self.on_search_text_button_clicked()
         elif add_song and not self.add_song_from_service:
             # Make sure we temporary import formatting tags.

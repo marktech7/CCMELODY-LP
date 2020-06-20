@@ -352,6 +352,9 @@ AudioPlayer.prototype.stop = function () {
  * The Display object is what we use from OpenLP
  */
 var Display = {
+  _slidesContainer: null,
+  _footerContainer: null,
+  _backgroundsContainer: null,
   _alerts: [],
   _slides: {},
   _alertSettings: {},
@@ -359,6 +362,8 @@ var Display = {
   _transitionState: TransitionState.NoTransition,
   _animationState: AnimationState.NoAnimation,
   _doTransitions: false,
+  _doItemTransitions: false,
+  _themeApplied: true,
   _revealConfig: {
     margin: 0.0,
     minScale: 1.0,
@@ -379,10 +384,30 @@ var Display = {
   },
   /**
    * Start up reveal and do any other initialisation
+   * @param {object} options - The initialisation options:
+   *                           * {bool} isDisplay         - Is this a real display output
+   *                           * {bool} doItemTransitions - Transition between service items
+   *                           * {bool} hideMouse         - Hide the cursor when hovering on this display
    */
-  init: function (doTransitions=false) {
-    Display._doTransitions = doTransitions;
+  init: function (options) {
+    // Set defaults for undefined values
+    options = options || {};
+    var isDisplay = options.isDisplay || false;
+    var doItemTransitions = options.doItemTransitions || false;
+    var hideMouse = options.hideMouse || false;
+    // Now continue to initialisation
+    if (!isDisplay) {
+      document.body.classList.add('checkerboard');
+    }
+    if (hideMouse) {
+      document.body.classList.add('hide-mouse');
+    }
+    Display._slidesContainer = $(".slides")[0];
+    Display._footerContainer = $(".footer")[0];
+    Display._backgroundsContainer = $(".backgrounds")[0];
+    Display._doTransitions = isDisplay;
     Reveal.initialize(Display._revealConfig);
+    Display.setItemTransition(doItemTransitions && isDisplay);
     displayWatcher.setInitialised(true);
   },
   /**
@@ -394,19 +419,68 @@ var Display = {
     Reveal.slide(0);
   },
   /**
-   * Set the transition type
-   * @param {string} transitionType - Can be one of "none", "fade", "slide", "convex", "concave", "zoom"
-   * @param {string} transitionSpeed - Can be one of "default", "fast", "slow"
+   * Enable/Disable item transitions
    */
-  setTransition: function (transitionType, transitionSpeed) {
-    Reveal.configure({"transition": transitionType, "transitionSpeed": transitionSpeed});
+  setItemTransition: function (enable) {
+    Display._doItemTransitions = enable;
+    var body = $("body")[0];
+    if (enable) {
+      body.classList.add("transition");
+      Reveal.configure({"backgroundTransition": "fade", "transitionSpeed": "default"});
+    } else {
+      body.classList.remove("transition");
+      Reveal.configure({"backgroundTransition": "none"});
+    }
   },
   /**
    * Clear the current list of slides
   */
   clearSlides: function () {
-    $(".slides")[0].innerHTML = "";
+    Display._slidesContainer.innerHTML = "";
+    Display._clearSlidesList();
+  },
+  /**
+   * Clear the current list of slides
+  */
+  _clearSlidesList: function () {
+    Display._footerContainer.innerHTML = "";
     Display._slides = {};
+  },
+  /**
+   * Add new item/slides, replacing the old one
+   * Clears current list of slides but allows time for a transition animation
+   * Items are ordered newest to oldest in the slides container
+   * @param {element} new_slides - New slides to display
+   * @param {element} is_text - Used to decide if the theme main area constraints should apply
+  */
+  replaceSlides: function (new_slides, is_text=false) {
+    if (Display._doItemTransitions) {
+      new_slides.setAttribute('data-transition', "fade");
+      new_slides.setAttribute('data-transition-speed', "default");
+    }
+    new_slides.classList.add("future");
+    Display.applyTheme(new_slides, is_text);
+    Display._slidesContainer.prepend(new_slides);
+    var currentSlide = Reveal.getIndices();
+    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2) {
+      // Set the slide one section ahead so we'll stay on the old slide after reinit
+      Reveal.slide(1, currentSlide.v);
+      Display.reinit();
+      // Timeout to allow time to transition before deleting the old slides
+      setTimeout (Display._removeLastSection, 5000);
+    } else {
+      Reveal.slide(0, currentSlide.v);
+      Reveal.sync();
+      Display._removeLastSection();
+    }
+  },
+  /**
+   * Removes the last slides item if there are more than one
+  */
+  _removeLastSection: function () {
+    if (Display._slidesContainer.children.length > 1) {
+      Display._slidesContainer.lastChild.remove();
+    }
   },
   /**
    * Checks if the present slide content fits within the slide
@@ -414,10 +488,10 @@ var Display = {
   doesContentFit: function () {
     var currSlide = $("section.text-slides");
     if (currSlide.length === 0) {
-      currSlide = $(".slides");
+      currSlide = Display._footerContainer;
+    } else {
+      currSlide = currSlide[0];
     }
-    currSlide = currSlide[0];
-    console.debug("scrollHeight: " + currSlide.scrollHeight + ", clientHeight: " + currSlide.clientHeight);
     return currSlide.clientHeight >= currSlide.scrollHeight;
   },
   /**
@@ -426,22 +500,17 @@ var Display = {
    * @param {string} image - Path to the splash image
    */
   setStartupSplashScreen: function(bg_color, image) {
-    Display.clearSlides();
-    var globalBackground = $("#global-background")[0];
-    globalBackground.style.cssText = "";
-    globalBackground.style.setProperty("background", bg_color);
-    var slidesDiv = $(".slides")[0];
+    Display._clearSlidesList();
     var section = document.createElement("section");
     section.setAttribute("id", 0);
     section.setAttribute("data-background", bg_color);
-    section.setAttribute("style", "height: 100%; width: 100%; position: relative;");
+    section.setAttribute("style", "height: 100%; width: 100%;");
     var img = document.createElement('img');
     img.src = image;
     img.setAttribute("style", "position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto; max-height: 100%; max-width: 100%");
     section.appendChild(img);
-    slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
-    Display.reinit();
+    Display.replaceSlides(section);
   },
   /**
    * Set fullscreen image from path
@@ -450,10 +519,6 @@ var Display = {
    */
   setFullscreenImage: function(bg_color, image) {
     Display.clearSlides();
-    var globalBackground = $("#global-background")[0];
-    globalBackground.style.cssText = "";
-    globalBackground.style.setProperty("background", bg_color);
-    var slidesDiv = $(".slides")[0];
     var section = document.createElement("section");
     section.setAttribute("id", 0);
     section.setAttribute("data-background", bg_color);
@@ -462,9 +527,8 @@ var Display = {
     img.src = image;
     img.setAttribute("style", "height: 100%; width: 100%");
     section.appendChild(img);
-    slidesDiv.appendChild(section);
     Display._slides['0'] = 0;
-    Display.reinit();
+    Display.replaceSlides(parentSection);
   },
   /**
    * Set fullscreen image from base64 data
@@ -473,10 +537,6 @@ var Display = {
    */
   setFullscreenImageFromData: function(bg_color, image_data) {
     Display.clearSlides();
-    var globalBackground = $("#global-background")[0];
-    globalBackground.style.cssText = "";
-    globalBackground.style.setProperty("background", bg_color);
-    var slidesDiv = $(".slides")[0];
     var section = document.createElement("section");
     section.setAttribute("id", 0);
     section.setAttribute("data-background", bg_color);
@@ -485,7 +545,7 @@ var Display = {
     img.src = 'data:image/png;base64,' + image_data;
     img.setAttribute("style", "height: 100%; width: 100%");
     section.appendChild(img);
-    slidesDiv.appendChild(section);
+    Display._slidesContainer.appendChild(section);
     Display._slides['0'] = 0;
     Display.reinit();
   },
@@ -632,76 +692,77 @@ var Display = {
     }
   },
   /**
-   * Add a slide. If the slide exists but the HTML is different, update the slide.
+   * Create a text slide.
    * @param {string} verse - The verse number, e.g. "v1"
    * @param {string} text - The HTML for the verse, e.g. "line1<br>line2"
-   * @param {string} footer_text - The HTML for the footer
-   * @param {bool} reinit - True if React should reinit when creating a new slide
    */
-  addTextSlide: function (verse, text, footerText, reinit=true) {
+  _createTextSlide: function (verse, text) {
     var slide;
     var html = _prepareText(text);
-    if (Display._slides.hasOwnProperty(verse)) {
-      slide = $("#" + verse)[0];
-      if (slide.innerHTML != html) {
-        slide.innerHTML = html;
-      }
-    } else {
-      var parent = $("section.text-slides");
-      if (parent.length === 0) {
-        Display._createTextContainer();
-        parent = $("section.text-slides");
-      }
-      parent = parent[0];
-      slide = document.createElement("section");
-      slide.setAttribute("id", verse);
-      slide.innerHTML = html;
-      parent.appendChild(slide);
-      Display._slides[verse] = parent.children.length - 1;
-      if (footerText) {
-        $(".footer")[0].innerHTML = footerText;
-      }
-      if (reinit) {
-        Display.reinit();
-      }
-    }
+    slide = document.createElement("section");
+    slide.setAttribute("id", verse);
+    slide.innerHTML = html;
+    return slide;
   },
   /**
    * Set text slides.
    * @param {Object[]} slides - A list of slides to add as JS objects: {"verse": "v1", "text": "line 1\nline2"}
    */
   setTextSlides: function (slides) {
-    Display.clearSlides();
+    Display._clearSlidesList();
+    var slide_html;
+    var parentSection = document.createElement("section");
+    parentSection.classList = "text-slides";
     slides.forEach(function (slide) {
-      Display.addTextSlide(slide.verse, slide.text, slide.footer, false);
+      slide_html = Display._createTextSlide(slide.verse, slide.text);
+      parentSection.appendChild(slide_html);
+      Display._slides[slide.verse] = parentSection.children.length - 1;
+      if (slide.footer) {
+        Display._footerContainer.innerHTML = slide.footer;
+      }
     });
-    Display.reinit();
+    Display.replaceSlides(parentSection, true);
   },
   /**
-   * Create the <section> that will contain text slides (vertical slides in react)
+   * Set a single text slide. This changes the slide with no transition.
+   * Prevents the need to reapply the theme if only changing content.
+   * @param String slide - Text to put on the slide
    */
-  _createTextContainer: function () {
-    var slideContainer = document.createElement("section");
-    slideContainer.classList = "text-slides";
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.appendChild(slideContainer);
-    // Apply the current theme to the new container
-    if (!!Display._theme) {
-      Display.setTheme(Display._theme);
+  setTextSlide: function (text) {
+    if (Display._slides.hasOwnProperty("test-slide") && Object.keys(Display._slides).length === 1) {
+      var slide = $("#" + "test-slide")[0];
+      var html = _prepareText(text);
+      if (slide.innerHTML != html) {
+        slide.innerHTML = html;
+      }
+      if (!Display._themeApplied) {
+        Display.applyTheme(slide.parent);
+      }
+    } else {
+      Display._clearSlidesList();
+      var slide_html;
+      var parentSection = document.createElement("section");
+      parentSection.classList = "text-slides";
+      slide_html = Display._createTextSlide("test-slide", text);
+      parentSection.appendChild(slide_html);
+      Display._slides["test-slide"] = 0;
+      Display.applyTheme(parentSection);
+      Display._slidesContainer.innerHTML = "";
+      Display._slidesContainer.prepend(parentSection);
+      Display.reinit();
     }
   },
   /**
    * Set image slides
    * @param {Object[]} slides - A list of images to add as JS objects [{"path": "url/to/file"}]
    */
-  setImageSlides: function (slides) {
-    Display.clearSlides();
-    var slidesDiv = $(".slides")[0];
+  setImageSlides: function (slides, background) {
+    Display._clearSlidesList();
     var parentSection = document.createElement("section");
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
       section.setAttribute("id", index);
-      section.setAttribute("data-background", "#000");
+      section.setAttribute("data-background", background);
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
       img.src = slide.path;
@@ -710,15 +771,14 @@ var Display = {
       parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
     });
-    slidesDiv.appendChild(parentSection);
-    Display.reinit();
+    Display.replaceSlides(parentSection);
   },
   /**
    * Set a video
    * @param {Object} video - The video to show as a JS object: {"path": "url/to/file"}
    */
   setVideo: function (video) {
-    Display.clearSlides();
+    Display._clearSlidesList();
     var section = document.createElement("section");
     section.setAttribute("data-background", "#000");
     var videoElement = document.createElement("video");
@@ -747,8 +807,7 @@ var Display = {
       mediaWatcher.has_muted(event.target.muted);
     });
     section.appendChild(videoElement);
-    $(".slides")[0].appendChild(section);
-    Display.reinit();
+    Display.replaceSlides(section);
   },
   /**
    * Play a video
@@ -856,21 +915,34 @@ var Display = {
   /**
    * Blank the screen
   */
-  blankToBlack: function () {
+  toBlack: function () {
+    var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
     if (!Reveal.isPaused()) {
       Reveal.togglePause();
     }
-    // var slidesDiv = $(".slides")[0];
   },
   /**
-   * Blank to theme
+   * Hide all but theme background
   */
-  blankToTheme: function () {
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.style.visibility = "hidden";
-    var footerDiv = $(".footer")[0];
-    footerDiv.style.visibility = "hidden";
+  toTheme: function () {
+    var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
+    Display._slidesContainer.style.opacity = 0;
+    Display._footerContainer.style.opacity = 0;
     if (Reveal.isPaused()) {
+      Reveal.togglePause();
+    }
+  },
+  /**
+   * Hide everything (CAUTION: Causes a invisible mouse barrier)
+  */
+  toTransparent: function () {
+    Display._slidesContainer.style.opacity = 0;
+    Display._footerContainer.style.opacity = 0;
+    var documentBody = $("body")[0];
+    documentBody.style.opacity = 0;
+    if (!Reveal.isPaused()) {
       Reveal.togglePause();
     }
   },
@@ -878,10 +950,10 @@ var Display = {
    * Show the screen
   */
   show: function () {
-    var slidesDiv = $(".slides")[0];
-    slidesDiv.style.visibility = "visible";
-    var footerDiv = $(".footer")[0];
-    footerDiv.style.visibility = "visible";
+    var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
+    Display._slidesContainer.style.opacity = 1;
+    Display._footerContainer.style.opacity = 1;
     if (Reveal.isPaused()) {
       Reveal.togglePause();
     }
@@ -903,13 +975,54 @@ var Display = {
     var dh = parseFloat(_getStyle(d, "height"));
     return Math.floor(dh / lh);
   },
+  /**
+   * Prepare the theme for the next item to be added
+   * @param theme The theme to be used
+   */
   setTheme: function (theme) {
-    Display._theme = theme;
+    if (Display._theme != theme) {
+      Display._themeApplied = false;
+      Display._theme = theme;
+    }
+  },
+  /**
+   * Set background image, replaced when theme is updated/applied
+   * @param bg_color Colour behind the image
+   * @param image_path Image path
+   */
+  setBackgroundImage: function (bg_color, image_path) {
+    var targetElement = $(".slides > section")[0];
+    targetElement.setAttribute("data-background", "url('" + image_path + "')");
+    targetElement.setAttribute("data-background-size", "cover");
+    Reveal.sync();
+  },
+  /**
+   * Reset/reapply the theme
+   */
+  resetTheme: function () {
+    var targetElement = $(".slides > section")[0];
+    if (!targetElement) {
+      console.warn("Couldn't reset theme: No slides exist");
+      return;
+    }
+    Display.applyTheme(targetElement, targetElement.classList.contains("text-slides"));
+    Reveal.sync();
+  },
+  /**
+   * Apply the theme to the provided element
+   * @param targetElement The target element to apply the theme (expected to be a <section> in the slides container)
+   * @param is_text Used to decide if the main area constraints should be applied
+   */
+  applyTheme: function (targetElement, is_text=true) {
+    Display._themeApplied = true;
+    if (!Display._theme) {
+      return;
+    }
     // Set slide transitions
     var new_transition_type = "none",
         new_transition_speed = "default";
-    if (!!theme.display_slide_transition && Display._doTransitions) {
-      switch (theme.display_slide_transition_type) {
+    if (!!Display._theme.display_slide_transition && Display._doTransitions) {
+      switch (Display._theme.display_slide_transition_type) {
         case TransitionType.Fade:
           new_transition_type = "fade";
           break;
@@ -928,7 +1041,7 @@ var Display = {
         default:
           new_transition_type = "fade";
       }
-      switch (theme.display_slide_transition_speed) {
+      switch (Display._theme.display_slide_transition_speed) {
         case TransitionSpeed.Normal:
           new_transition_speed = "default";
           break;
@@ -941,7 +1054,7 @@ var Display = {
         default:
           new_transition_speed = "default";
       }
-      switch (theme.display_slide_transition_direction) {
+      switch (Display._theme.display_slide_transition_direction) {
         case TransitionDirection.Vertical:
           new_transition_type += "-vertical";
           break;
@@ -949,94 +1062,99 @@ var Display = {
         default:
           new_transition_type += "-horizontal";
       }
-      if (theme.display_slide_transition_reverse) {
+      if (Display._theme.display_slide_transition_reverse) {
         new_transition_type += "-reverse";
       }
     }
-
-    Display.setTransition(new_transition_type, new_transition_speed);
+    var slides = targetElement.children;
+    for (var i = 0; i < slides.length; i++) {
+      slides[i].setAttribute("data-transition", new_transition_type);
+      slides[i].setAttribute("data-transition-speed", new_transition_speed);
+    }
     // Set the background
-    var globalBackground = $("#global-background")[0];
-    var backgroundStyle = {};
+    var backgroundContent = "";
     var backgroundHtml = "";
-    switch (theme.background_type) {
+    switch (Display._theme.background_type) {
       case BackgroundType.Transparent:
-        backgroundStyle.background = "transparent";
+        backgroundContent = "transparent";
         break;
       case BackgroundType.Solid:
-        backgroundStyle.background = theme.background_color;
+        backgroundContent = Display._theme.background_color;
         break;
       case BackgroundType.Gradient:
-        switch (theme.background_direction) {
+        switch (Display._theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundStyle.background = _buildLinearGradient("left top", "left bottom",
-                                                                 theme.background_start_color,
-                                                                 theme.background_end_color);
+            backgroundContent = _buildLinearGradient("left top", "left bottom",
+                                                                 Display._theme.background_start_color,
+                                                                 Display._theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundStyle.background = _buildLinearGradient("left top", "right top",
-                                                                 theme.background_start_color,
-                                                                 theme.background_end_color);
+            backgroundContent = _buildLinearGradient("left top", "right top",
+                                                                 Display._theme.background_start_color,
+                                                                 Display._theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundStyle.background = _buildLinearGradient("left top", "right bottom",
-                                                                 theme.background_start_color,
-                                                                 theme.background_end_color);
+            backgroundContent = _buildLinearGradient("left top", "right bottom",
+                                                                 Display._theme.background_start_color,
+                                                                 Display._theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundStyle.background = _buildLinearGradient("left bottom", "right top",
-                                                                 theme.background_start_color,
-                                                                 theme.background_end_color);
+            backgroundContent = _buildLinearGradient("left bottom", "right top",
+                                                                 Display._theme.background_start_color,
+                                                                 Display._theme.background_end_color);
             break;
           case GradientType.Circular:
-            backgroundStyle.background = _buildRadialGradient(window.innerWidth / 2, theme.background_start_color,
-                                                                 theme.background_end_color);
+            backgroundContent = _buildRadialGradient(window.innerWidth / 2, Display._theme.background_start_color,
+                                                                 Display._theme.background_end_color);
             break;
           default:
-            backgroundStyle.background = "#000";
+            backgroundContent = "#000";
         }
         break;
       case BackgroundType.Image:
-        backgroundStyle["background-image"] = "url('" + theme.background_filename + "')";
-        console.warn(backgroundStyle["background-image"]);
+        backgroundContent = "url('" + Display._theme.background_filename + "')";
+        console.warn(backgroundContent);
         break;
       case BackgroundType.Video:
-        backgroundStyle["background-color"] = theme.background_border_color;
-        backgroundHtml = "<video loop autoplay muted><source src='" + theme.background_filename + "'></video>";
+        // never actually used since background type is overridden from video to transparent in window.py
+        backgroundContent = Display._theme.background_border_color;
+        backgroundHtml = "<video loop autoplay muted><source src='" + Display._theme.background_filename + "'></video>";
         console.warn(backgroundHtml);
         break;
       default:
-        backgroundStyle.background = "#000";
+        backgroundContent = "#000";
     }
-    globalBackground.style.cssText = "";
-    for (var bgKey in backgroundStyle) {
-      if (backgroundStyle.hasOwnProperty(bgKey)) {
-        globalBackground.style.setProperty(bgKey, backgroundStyle[bgKey]);
-      }
-    }
+    targetElement.style.cssText = "";
+    targetElement.setAttribute("data-background", backgroundContent);
+    targetElement.setAttribute("data-background-size", "cover");
     if (!!backgroundHtml) {
-      globalBackground.innerHTML = backgroundHtml;
+      background.innerHTML = backgroundHtml;
     }
+
     // set up the main area
+    if (!is_text) {
+      // only transition and background for non text slides
+      return;
+    }
     mainStyle = {};
-    if (!!theme.font_main_outline) {
-      mainStyle["-webkit-text-stroke"] = "" + theme.font_main_outline_size + "pt " +
-                                         theme.font_main_outline_color;
-      mainStyle["-webkit-text-fill-color"] = theme.font_main_color;
+    if (!!Display._theme.font_main_outline) {
+      mainStyle["-webkit-text-stroke"] = "" + Display._theme.font_main_outline_size + "pt " +
+                                         Display._theme.font_main_outline_color;
+      mainStyle["-webkit-text-fill-color"] = Display._theme.font_main_color;
     }
     // These need to be fixed, in the Python they use a width passed in as a parameter
-    mainStyle.width = theme.font_main_width + "px";
-    mainStyle.height = theme.font_main_height + "px";
-    mainStyle.top = "" + theme.font_main_y + "px";
-    mainStyle.left = "" + theme.font_main_x + "px";
-    mainStyle.color = theme.font_main_color;
-    mainStyle["font-family"] = theme.font_main_name;
-    mainStyle["font-size"] = "" + theme.font_main_size + "pt";
-    mainStyle["font-style"] = !!theme.font_main_italics ? "italic" : "";
-    mainStyle["font-weight"] = !!theme.font_main_bold ? "bold" : "";
-    mainStyle["line-height"] = "" + (100 + theme.font_main_line_adjustment) + "%";
+    mainStyle.width = Display._theme.font_main_width + "px";
+    mainStyle.height = Display._theme.font_main_height + "px";
+    mainStyle["margin-top"] = "" + Display._theme.font_main_y + "px";
+    mainStyle.left = "" + Display._theme.font_main_x + "px";
+    mainStyle.color = Display._theme.font_main_color;
+    mainStyle["font-family"] = Display._theme.font_main_name;
+    mainStyle["font-size"] = "" + Display._theme.font_main_size + "pt";
+    mainStyle["font-style"] = !!Display._theme.font_main_italics ? "italic" : "";
+    mainStyle["font-weight"] = !!Display._theme.font_main_bold ? "bold" : "";
+    mainStyle["line-height"] = "" + (100 + Display._theme.font_main_line_adjustment) + "%";
     // Using text-align-last because there is a <br> seperating each line
-    switch (theme.display_horizontal_align) {
+    switch (Display._theme.display_horizontal_align) {
       case HorizontalAlign.Justify:
         mainStyle["text-align"] = "justify";
         mainStyle["text-align-last"] = "justify";
@@ -1057,7 +1175,7 @@ var Display = {
         mainStyle["text-align"] = "center";
         mainStyle["text-align-last"] = "center";
     }
-    switch (theme.display_vertical_align) {
+    switch (Display._theme.display_vertical_align) {
       case VerticalAlign.Middle:
         mainStyle["justify-content"] = "center";
         break;
@@ -1067,23 +1185,19 @@ var Display = {
       case VerticalAlign.Bottom:
         mainStyle["justify-content"] = "flex-end";
         // This gets around the webkit scroll height bug
-        mainStyle["padding-bottom"] = "" + (theme.font_main_size / 8) + "px";
+        mainStyle["padding-bottom"] = "" + (Display._theme.font_main_size / 8) + "px";
         break;
       default:
         mainStyle["justify-content"] = "center";
     }
-    if (theme.hasOwnProperty('font_main_shadow_size') && !!theme.font_main_shadow) {
-      mainStyle["text-shadow"] = theme.font_main_shadow_color + " " + theme.font_main_shadow_size + "pt " +
-                                 theme.font_main_shadow_size + "pt";
+    if (Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
+      mainStyle["text-shadow"] = Display._theme.font_main_shadow_color + " " + Display._theme.font_main_shadow_size + "pt " +
+                                 Display._theme.font_main_shadow_size + "pt";
     }
-    var slidesDiv = $("section.text-slides");
-    if (slidesDiv.length > 0) {
-      slidesDiv = slidesDiv[0];
-      slidesDiv.style.cssText = "";
-      for (var mainKey in mainStyle) {
-        if (mainStyle.hasOwnProperty(mainKey)) {
-          slidesDiv.style.setProperty(mainKey, mainStyle[mainKey]);
-        }
+    targetElement.style.cssText = "";
+    for (var mainKey in mainStyle) {
+      if (mainStyle.hasOwnProperty(mainKey)) {
+        targetElement.style.setProperty(mainKey, mainStyle[mainKey]);
       }
     }
     // Set up the footer
@@ -1091,19 +1205,20 @@ var Display = {
       "text-align": "left"
     };
     footerStyle.position = "absolute";
-    footerStyle.left = "" + theme.font_footer_x + "px";
-    footerStyle.top = "" + theme.font_footer_y + "px";
-    footerStyle.width = "" + theme.font_footer_width + "px";
-    footerStyle.height = "" + theme.font_footer_height + "px";
-    footerStyle.color = theme.font_footer_color;
-    footerStyle["font-family"] = theme.font_footer_name;
-    footerStyle["font-size"] = "" + theme.font_footer_size + "pt";
-    footerStyle["white-space"] = theme.font_footer_wrap ? "normal" : "nowrap";
-    var footer = $(".footer")[0];
-    footer.style.cssText = "";
+    footerStyle.left = "" + Display._theme.font_footer_x + "px";
+    footerStyle.top = "" + Display._theme.font_footer_y + "px";
+    footerStyle.width = "" + Display._theme.font_footer_width + "px";
+    footerStyle.height = "" + Display._theme.font_footer_height + "px";
+    footerStyle.color = Display._theme.font_footer_color;
+    footerStyle["font-family"] = Display._theme.font_footer_name;
+    footerStyle["font-size"] = "" + Display._theme.font_footer_size + "pt";
+    footerStyle["font-style"] = !!Display._theme.font_footer_italics ? "italic" : "";
+    footerStyle["font-weight"] = !!Display._theme.font_footer_bold ? "bold" : "";
+    footerStyle["white-space"] = Display._theme.font_footer_wrap ? "normal" : "nowrap";
+    Display._footerContainer.style.cssText = "";
     for (var footerKey in footerStyle) {
       if (footerStyle.hasOwnProperty(footerKey)) {
-        footer.style.setProperty(footerKey, footerStyle[footerKey]);
+        Display._footerContainer.style.setProperty(footerKey, footerStyle[footerKey]);
       }
     }
   },

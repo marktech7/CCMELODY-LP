@@ -21,24 +21,18 @@
 """
 Package to test the openlp.core.lib.exceptions package.
 """
-from unittest import TestCase
-
 from openlp.core.lib.exceptions import ValidationError
 
 
-class TestValidationError(TestCase):
+def test_validation_error():
     """
-    Test the ValidationError Class
+    Test the creation of a ValidationError
     """
-    def test_validation_error(self):
-        """
-        Test the creation of a ValidationError
-        """
-        # GIVEN: The ValidationError class
+    # GIVEN: The ValidationError class
 
-        # WHEN: Creating an instance of ValidationError
-        error = ValidationError('Test ValidationError')
+    # WHEN: Creating an instance of ValidationError
+    error = ValidationError('Test ValidationError')
 
-        # THEN: Then calling str on the error should return the correct text and it should be an instance of `Exception`
-        assert str(error) == 'Test ValidationError'
-        assert isinstance(error, Exception)
+    # THEN: Then calling str on the error should return the correct text and it should be an instance of `Exception`
+    assert str(error) == 'Test ValidationError'
+    assert isinstance(error, Exception)

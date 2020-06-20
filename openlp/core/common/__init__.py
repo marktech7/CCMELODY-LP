@@ -57,7 +57,7 @@ REPLACMENT_CHARS_MAP = str.maketrans({'\u2018': '\'', '\u2019': '\'', '\u201c': 
                                       '\u2013': '-', '\u2014': '-', '\v': '\n\n', '\f': '\n\n'})
 NEW_LINE_REGEX = re.compile(r' ?(\r\n?|\n) ?')
 WHITESPACE_REGEX = re.compile(r'[ \t]+')
-INTERFACE_FILTER = re.compile('lo|loopback|docker|tun', re.IGNORECASE)
+INTERFACE_FILTER = re.compile('^lo|loopback|docker|tun', re.IGNORECASE)
 
 
 def get_network_interfaces():
@@ -300,6 +300,21 @@ def md5_hash(salt=None, data=None):
     hash_value = hash_obj.hexdigest()
     log.debug('md5_hash() returning "{text}"'.format(text=hash_value))
     return hash_value
+
+
+def sha256_file_hash(filename):
+    """
+    Returns the hashed output of sha256 on the file content using Python3 hashlib
+
+    :param filename: Name of the file to hash
+    :returns: str
+    """
+    log.debug('sha256_hash(filename="{filename}")'.format(filename=filename))
+    hash_obj = hashlib.sha256()
+    with open(filename, 'rb') as f:
+        for chunk in iter(lambda: f.read(65536), b''):
+            hash_obj.update(chunk)
+    return hash_obj.hexdigest()
 
 
 def qmd5_hash(salt=None, data=None):

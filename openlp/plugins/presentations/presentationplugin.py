@@ -25,15 +25,13 @@ presentations from a variety of document formats.
 import logging
 import os
 
-from openlp.core.api.http import register_endpoint
+
 from openlp.core.common import extension_loader
 from openlp.core.common.i18n import translate
-from openlp.core.common.settings import Settings
 from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.presentations.endpoint import api_presentations_endpoint, presentations_endpoint
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController
 from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
 from openlp.plugins.presentations.lib.presentationtab import PresentationTab
@@ -59,8 +57,6 @@ class PresentationPlugin(Plugin):
         self.weight = -8
         self.icon_path = UiIcons().presentation
         self.icon = build_icon(self.icon_path)
-        register_endpoint(presentations_endpoint)
-        register_endpoint(api_presentations_endpoint)
         State().add_service('presentation', self.weight, is_plugin=True)
         State().update_pre_conditions('presentation', self.check_pre_conditions())
 
@@ -135,11 +131,15 @@ class PresentationPlugin(Plugin):
         # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
         #       PresentationDocument.get_thumbnail_folder and PresentationDocument.get_temp_folder is removed
         super().app_startup()
-        presentation_paths = Settings().value('presentations/presentations files')
+        presentation_paths = self.settings.value('presentations/presentations files')
         for path in presentation_paths:
             self.media_item.clean_up_thumbnails(path, clean_for_update=True)
         self.media_item.list_view.clear()
-        Settings().setValue('presentations/thumbnail_scheme', 'md5')
+        # Update the thumbnail scheme if needed
+        if self.settings.value('presentations/thumbnail_scheme') != 'sha256file':
+            for path in presentation_paths:
+                self.media_item.update_thumbnail_scheme(path)
+            self.settings.setValue('presentations/thumbnail_scheme', 'sha256file')
         self.media_item.validate_and_load(presentation_paths)
 
     @staticmethod

@@ -21,85 +21,72 @@
 """
 Package to test the openlp.core.ui package.
 """
-from unittest import TestCase
+import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtTest, QtWidgets
+from PyQt5 import QtTest
 
-from openlp.core.common.registry import Registry
 from openlp.core.ui.filerenameform import FileRenameForm
-from tests.helpers.testmixin import TestMixin
 
 
-class TestStartFileRenameForm(TestCase, TestMixin):
+@pytest.fixture()
+def form(settings):
+    frm = FileRenameForm()
+    return frm
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-        self.form = FileRenameForm()
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        del self.form
-        del self.main_window
+def test_window_title(form):
+    """
+    Test the windowTitle of the FileRenameDialog
+    """
+    # GIVEN: A mocked QDialog.exec() method
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
 
-    def test_window_title(self):
-        """
-        Test the windowTitle of the FileRenameDialog
-        """
-        # GIVEN: A mocked QDialog.exec() method
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
+        # WHEN: The form is executed with no args
+        form.exec()
 
-            # WHEN: The form is executed with no args
-            self.form.exec()
+        # THEN: the window title is set correctly
+        assert form.windowTitle() == 'File Rename', 'The window title should be "File Rename"'
 
-            # THEN: the window title is set correctly
-            assert self.form.windowTitle() == 'File Rename', 'The window title should be "File Rename"'
+        # WHEN: The form is executed with False arg
+        form.exec(False)
 
-            # WHEN: The form is executed with False arg
-            self.form.exec(False)
+        # THEN: the window title is set correctly
+        assert form.windowTitle() == 'File Rename', 'The window title should be "File Rename"'
 
-            # THEN: the window title is set correctly
-            assert self.form.windowTitle() == 'File Rename', 'The window title should be "File Rename"'
+        # WHEN: The form is executed with True arg
+        form.exec(True)
 
-            # WHEN: The form is executed with True arg
-            self.form.exec(True)
+        # THEN: the window title is set correctly
+        assert form.windowTitle() == 'File Copy', 'The window title should be "File Copy"'
 
-            # THEN: the window title is set correctly
-            assert self.form.windowTitle() == 'File Copy', 'The window title should be "File Copy"'
 
-    def test_line_edit_focus(self):
-        """
-        Regression test for bug1067251
-        Test that the file_name_edit setFocus has called with True when executed
-        """
-        # GIVEN: A mocked QDialog.exec() method and mocked file_name_edit.setFocus() method.
-        with patch('PyQt5.QtWidgets.QDialog.exec'):
-            mocked_set_focus = MagicMock()
-            self.form.file_name_edit.setFocus = mocked_set_focus
+def test_line_edit_focus(form):
+    """
+    Regression test for bug1067251
+    Test that the file_name_edit setFocus has called with True when executed
+    """
+    # GIVEN: A mocked QDialog.exec() method and mocked file_name_edit.setFocus() method.
+    with patch('PyQt5.QtWidgets.QDialog.exec'):
+        mocked_set_focus = MagicMock()
+        form.file_name_edit.setFocus = mocked_set_focus
 
-            # WHEN: The form is executed
-            self.form.exec()
+        # WHEN: The form is executed
+        form.exec()
 
-            # THEN: the setFocus method of the file_name_edit has been called with True
-            mocked_set_focus.assert_called_with()
+        # THEN: the setFocus method of the file_name_edit has been called with True
+        mocked_set_focus.assert_called_with()
 
-    def test_file_name_validation(self):
-        """
-        Test the file_name_edit validation
-        """
-        # GIVEN: QLineEdit with a validator set with illegal file name characters.
 
-        # WHEN: 'Typing' a string containing invalid file characters.
-        QtTest.QTest.keyClicks(self.form.file_name_edit, r'I/n\\v?a*l|i<d> \F[i\l]e" :N+a%me')
+def test_file_name_validation(form):
+    """
+    Test the file_name_edit validation
+    """
+    # GIVEN: QLineEdit with a validator set with illegal file name characters.
 
-        # THEN: The text in the QLineEdit should be the same as the input string with the invalid characters filtered
-        # out.
-        assert self.form.file_name_edit.text() == 'Invalid File Name'
+    # WHEN: 'Typing' a string containing invalid file characters.
+    QtTest.QTest.keyClicks(form.file_name_edit, r'I/n\\v?a*l|i<d> \F[i\l]e" :N+a%me')
+
+    # THEN: The text in the QLineEdit should be the same as the input string with the invalid characters filtered
+    # out.
+    assert form.file_name_edit.text() == 'Invalid File Name'

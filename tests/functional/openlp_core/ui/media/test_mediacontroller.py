@@ -324,3 +324,23 @@ def test_setup_display(MockItemMediaInfo, media_env):
     assert controller.has_audio is False
     media_env.media_controller._define_display.assert_called_once_with(controller)
     media_env.media_controller.vlc_player.setup(controller, mocked_display, False)
+
+
+def test_media_play(media_env):
+    """
+    Test that the display/controllers are set up correctly
+    """
+    # GIVEN: A mocked controller where is_background is false
+    media_env.current_media_players = MagicMock()
+    Registry().register('settings', MagicMock())
+    media_env.live_timer = MagicMock()
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.is_background = False
+
+    # WHEN: media_play is called
+    result = media_env.media_play(mocked_controller)
+
+    # THEN: The web display should become transparent (only tests that the theme is reset here)
+    # And the function should return true to indicate success
+    assert result is True
+    mocked_controller._set_theme.assert_called_once()
