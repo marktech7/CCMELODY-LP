@@ -646,17 +646,17 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         for local_file_item, zip_file_item in write_list:
             total_size += local_file_item.stat().st_size
         self.log_debug('ServiceManager.save_file - ZIP contents size is %i bytes' % total_size)
-        self.main_window.display_progress_bar(total_size)
+        self.main_window.display_progress_bar(1000)
         try:
             with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
                     zipfile.ZipFile(temp_file, 'w') as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
-                self.main_window.increment_progress_bar(service_content_size)
+                self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
                 # Finally add all the listed media files.
                 for local_file_item, zip_file_item in write_list:
                     zip_file.write(str(local_file_item), str(zip_file_item))
-                    self.main_window.increment_progress_bar(local_file_item.stat().st_size)
+                    self.main_window.increment_progress_bar(local_file_item.stat().st_size / total_size * 1000)
                 with suppress(FileNotFoundError):
                     file_path.unlink()
                 os.link(temp_file.name, file_path)
