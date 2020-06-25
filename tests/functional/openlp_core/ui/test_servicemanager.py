@@ -684,7 +684,7 @@ def test_save_file_large_file(mocked_len, mocked_os, mocked_save_file_as, mocked
     mocked_zipfile.ZipFile.return_value = MagicMock()
     mocked_len.return_value = 10000000000000
 
-    # WHEN: The service is saved and a PermissionError is raised
+    # WHEN: The service is saved and no error is raised
     result = service_manager.save_file()
 
     # THEN: The "save_as" method is called to save the service
