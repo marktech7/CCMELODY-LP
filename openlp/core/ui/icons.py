@@ -49,9 +49,9 @@ class UiIcons(metaclass=Singleton):
         qta.load_font('op', font_path, charmap_path)
         palette = QtWidgets.QApplication.palette()
         qta.set_defaults(color=palette.color(QtGui.QPalette.Active,
-                                             QtGui.QPalette.ButtonText),
+                                             QtGui.QPalette.WindowText),
                          color_disabled=palette.color(QtGui.QPalette.Disabled,
-                                                      QtGui.QPalette.ButtonText))
+                                                      QtGui.QPalette.WindowText))
         icon_list = {
             'active': {'icon': 'fa.child'},
             'add': {'icon': 'fa.plus-circle'},

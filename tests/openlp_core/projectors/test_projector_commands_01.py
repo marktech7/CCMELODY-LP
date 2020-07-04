@@ -28,6 +28,22 @@ from openlp.core.projectors.pjlinkcommands import process_command
 from openlp.core.projectors.constants import E_ERROR, E_WARN, PJLINK_ERST_DATA, PJLINK_ERST_STATUS, S_OK
 
 
+@patch.object(openlp.core.projectors.pjlinkcommands, 'log')
+def test_projector_ackn(mock_log, pjlink):
+    """
+    Test ackn command (empty test)
+    """
+    # GIVEN: Test setup
+    log_debug_text = [call('({ip}) Processing command "ACKN" with data "0"'.format(ip=pjlink.name)),
+                      call('({ip}) Calling function for ACKN'.format(ip=pjlink.name))]
+
+    # WHEN: Called with setting shutter closed and mute on
+    process_command(projector=pjlink, cmd='ACKN', data='0')
+
+    # THEN: Shutter should be closed and mute should be True
+    mock_log.debug.assert_has_calls(log_debug_text)
+
+
 @patch.object(openlp.core.projectors.pjlink.PJLink, 'projectorUpdateIcons')
 @patch.object(openlp.core.projectors.pjlinkcommands, 'log')
 def test_projector_avmt_audio_muted(mock_log, mock_UpdateIcons, pjlink):
