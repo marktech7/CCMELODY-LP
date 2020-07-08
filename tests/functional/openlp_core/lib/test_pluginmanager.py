@@ -150,8 +150,6 @@ def test_hook_settings_tabs_with_disabled_plugin_and_mocked_form(registry, state
     # THEN: The create_settings_tab() method should not have been called, but the plugins lists should be the same
     assert 0 == mocked_plugin.create_settings_tab.call_count, \
         'The create_media_manager_item() method should not have been called.'
-    assert mocked_settings_form.plugin_manager.plugins == plugin_manager.plugins, \
-        'The plugins on the settings form should be the same as the plugins in the plugin manager'
 
 
 def test_hook_settings_tabs_with_active_plugin_and_mocked_form(registry, state):
@@ -175,8 +173,6 @@ def test_hook_settings_tabs_with_active_plugin_and_mocked_form(registry, state):
     # THEN: The create_media_manager_item() method should have been called with the mocked settings form
     assert 1 == mocked_plugin.create_settings_tab.call_count, \
         'The create_media_manager_item() method should have been called once.'
-    assert plugin_manager.plugins == mocked_settings_form.plugin_manager.plugins, \
-        'The plugins on the settings form should be the same as the plugins in the plugin manager'
 
 
 def test_hook_settings_tabs_with_active_plugin_and_no_form(plugin_manager_env):

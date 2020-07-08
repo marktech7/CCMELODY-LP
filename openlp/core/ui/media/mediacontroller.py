@@ -411,13 +411,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param msg: First element is the controller which should be used
         :param status:
         """
-        self.media_play(msg[0], status)
+        return self.media_play(msg[0], status)
 
     def on_media_play(self):
         """
         Responds to the request to play a loaded video from the web.
         """
-        self.media_play(Registry().get('live_controller'), False)
+        return self.media_play(Registry().get('live_controller'), False)
 
     def media_play(self, controller, first_time=True):
         """
@@ -495,13 +495,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param msg: First element is the controller which should be used
         """
-        self.media_pause(msg[0])
+        return self.media_pause(msg[0])
 
     def on_media_pause(self):
         """
         Responds to the request to pause a loaded video from the web.
         """
-        self.media_pause(Registry().get('live_controller'))
+        return self.media_pause(Registry().get('live_controller'))
 
     def media_pause(self, controller):
         """
@@ -515,6 +515,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.mediabar.actions['playbackStop'].setDisabled(False)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
+            return True
+        return False
 
     def media_loop_msg(self, msg):
         """
@@ -540,13 +542,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param msg: First element is the controller which should be used
         """
-        self.media_stop(msg[0])
+        return self.media_stop(msg[0])
 
     def on_media_stop(self):
         """
         Responds to the request to stop a loaded video from the web.
         """
-        self.media_stop(Registry().get('live_controller'))
+        return self.media_stop(Registry().get('live_controller'))
 
     def media_stop(self, controller):
         """
@@ -570,6 +572,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_timer = 0
             display = self._define_display(controller)
             display.show_display()
+            return True
+        return False
 
     def media_volume_msg(self, msg):
         """

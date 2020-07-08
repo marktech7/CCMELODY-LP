@@ -69,6 +69,9 @@ class ThemesTab(SettingsTab):
         self.item_transitions_check_box = QtWidgets.QCheckBox(self.universal_group_box)
         self.item_transitions_check_box.setObjectName('item_transitions_check_box')
         self.universal_group_box_layout.addWidget(self.item_transitions_check_box)
+        self.theme_hot_reload = QtWidgets.QCheckBox(self.universal_group_box)
+        self.theme_hot_reload.setObjectName('theme_hot_reload')
+        self.universal_group_box_layout.addWidget(self.theme_hot_reload)
         self.left_layout.addWidget(self.universal_group_box)
         self.left_layout.addStretch()
         self.level_group_box = QtWidgets.QGroupBox(self.right_column)
@@ -115,6 +118,7 @@ class ThemesTab(SettingsTab):
         self.global_group_box.setTitle(translate('OpenLP.ThemesTab', 'Global Theme'))
         self.universal_group_box.setTitle(translate('OpenLP.ThemesTab', 'Universal Settings'))
         self.item_transitions_check_box.setText(translate('OpenLP.ThemesTab', '&Transition between service items'))
+        self.theme_hot_reload.setText(translate('OpenLP.ThemesTab', '&Reload live theme when changed'))
         self.level_group_box.setTitle(translate('OpenLP.ThemesTab', 'Theme Level'))
         self.song_level_radio_button.setText(translate('OpenLP.ThemesTab', 'S&ong Level'))
         self.song_level_label.setText(
@@ -138,6 +142,7 @@ class ThemesTab(SettingsTab):
         self.theme_level = self.settings.value('themes/theme level')
         self.global_theme = self.settings.value('themes/global theme')
         self.item_transitions_check_box.setChecked(self.settings.value('themes/item transitions'))
+        self.theme_hot_reload.setChecked(self.settings.value('themes/hot reload'))
         if self.theme_level == ThemeLevel.Global:
             self.global_level_radio_button.setChecked(True)
         elif self.theme_level == ThemeLevel.Service:
@@ -152,6 +157,7 @@ class ThemesTab(SettingsTab):
         self.settings.setValue('themes/theme level', self.theme_level)
         self.settings.setValue('themes/global theme', self.global_theme)
         self.settings.setValue('themes/item transitions', self.item_transitions_check_box.isChecked())
+        self.settings.setValue('themes/hot reload', self.theme_hot_reload.isChecked())
         self.renderer.set_theme_level(self.theme_level)
         if self.tab_visited:
             self.settings_form.register_post_process('theme_update_global')

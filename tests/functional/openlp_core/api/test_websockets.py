@@ -67,19 +67,6 @@ def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, regist
     assert MockWebSocketWorker.call_count == 0, 'The http thread should not have been called'
 
 
-def test_main_poll(poller):
-    """
-    Test the main_poll function returns the correct JSON
-    """
-    # WHEN: the live controller has 5 slides
-    mocked_live_controller = MagicMock()
-    mocked_live_controller.slide_count = 5
-    Registry().register('live_controller', mocked_live_controller)
-    # THEN: the live json should be generated
-    main_json = poller.main_poll()
-    assert b'{"results": {"slide_count": 5}}' == main_json, 'The return value should match the defined json'
-
-
 def test_poll(poller, settings):
     """
     Test the poll function returns the correct JSON
@@ -97,19 +84,12 @@ def test_poll(poller, settings):
     Registry().register('live_controller', mocked_live_controller)
     Registry().register('service_manager', mocked_service_manager)
     # WHEN: The poller polls
-    with patch.object(poller, 'is_stage_active') as mocked_is_stage_active, \
-            patch.object(poller, 'is_live_active') as mocked_is_live_active, \
-            patch.object(poller, 'is_chords_active') as mocked_is_chords_active:
-        mocked_is_stage_active.return_value = True
-        mocked_is_live_active.return_value = True
-        mocked_is_chords_active.return_value = True
-        poll_json = poller.poll()
+    poll_json = poller.poll()
     # THEN: the live json should be generated and match expected results
     assert poll_json['results']['blank'] is True, 'The blank return value should be True'
     assert poll_json['results']['theme'] is False, 'The theme return value should be False'
     assert poll_json['results']['display'] is False, 'The display return value should be False'
     assert poll_json['results']['isSecure'] is False, 'The isSecure return value should be False'
-    assert poll_json['results']['isAuthorised'] is False, 'The isAuthorised return value should be False'
     assert poll_json['results']['twelve'] is True, 'The twelve return value should be True'
     assert poll_json['results']['version'] == 3, 'The version return value should be 3'
     assert poll_json['results']['slide'] == 5, 'The slide return value should be 5'

@@ -47,7 +47,6 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
         super(PluginManager, self).__init__(parent)
         self.log_info('Plugin manager Initialising')
         self.log_debug('Base path {path}'.format(path=AppLocation.get_directory(AppLocation.PluginsDir)))
-        self.plugins = []
         self.log_info('Plugin manager Initialised')
 
     def bootstrap_initialise(self):

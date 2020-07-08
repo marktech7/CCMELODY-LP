@@ -314,12 +314,21 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         :param show_error: Should the error be shown (True)
         :return: The search result.
         """
+        from pathlib import Path
         results = []
         string = string.lower()
         for file_path in self.settings.value('media/media files'):
-            file_name = file_path.name
-            if file_name.lower().find(string) > -1:
-                results.append([str(file_path), file_name])
+            if isinstance(file_path, Path):
+                file_name = file_path.name
+                if file_name.lower().find(string) > -1:
+                    results.append([str(file_path), file_name])
+            else:
+                if file_path.lower().find(string) > -1:
+                    if file_path.startswith('device'):
+                        (name, _, _) = parse_stream_path(file_path)
+                        results.append([str(file_path), name])
+                    else:
+                        results.append([str(file_path), file_path])
         return results
 
     def on_load_optical(self):

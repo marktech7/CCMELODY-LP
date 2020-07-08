@@ -57,7 +57,7 @@ def add(plugin_name, id):
 @plugins.route('/<plugin>/search')
 @login_required
 def search_view(plugin):
-    log.debug(f'{plugin}/search search called')
+    log.debug(f'{plugin}/search called')
     text = request.args.get('text', '')
     result = search(plugin, text)
     return jsonify(result)
@@ -66,7 +66,7 @@ def search_view(plugin):
 @plugins.route('/<plugin>/add', methods=['POST'])
 @login_required
 def add_view(plugin):
-    log.debug(f'{plugin}/add search called')
+    log.debug(f'{plugin}/add called')
     data = request.json
     if not data:
         abort(400)
@@ -78,7 +78,7 @@ def add_view(plugin):
 @plugins.route('/<plugin>/live', methods=['POST'])
 @login_required
 def live_view(plugin):
-    log.debug(f'{plugin}/live search called')
+    log.debug(f'{plugin}/live called')
     data = request.json
     if not data:
         abort(400)

@@ -144,6 +144,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         # Variables
         self._theme_list = {}
         self.old_background_image_path = None
+        Registry().register_function('config_screen_changed', self.screen_changed)
 
     def get_global_theme(self):
         return self.get_theme_data(self.global_theme)
@@ -183,6 +184,14 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
         Registry().register_function('theme_update_global', self.change_global_from_tab)
+
+    def screen_changed(self):
+        """
+        Update the default theme location and size for when screen size changed
+        """
+        for theme_name in self._theme_list:
+            theme_object = self._theme_list[theme_name]
+            theme_object.set_default_header_footer()
 
     def upgrade_themes(self):
         """
@@ -292,7 +301,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param field:
         """
         theme = Theme()
-        theme.set_default_header_footer()
         self.theme_form.theme = theme
         self.theme_form.exec()
         self.load_themes()
@@ -566,7 +574,9 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         if not theme_data:
             self.log_debug('No theme data - using default theme')
             return Theme()
-        return self._create_theme_from_json(theme_data, self.theme_path)
+        theme_object = self._create_theme_from_json(theme_data, self.theme_path)
+        theme_object.set_default_header_footer()
+        return theme_object
 
     def over_write_message_box(self, theme_name):
         """
@@ -675,7 +685,6 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         Writes the theme to the disk and including the background image and thumbnail if necessary
 
         :param Theme theme: The theme data object.
-        :param image: The theme thumbnail. Optionally.
         :param background_override: Background to use rather than background_source. Optionally.
         :rtype: None
         """

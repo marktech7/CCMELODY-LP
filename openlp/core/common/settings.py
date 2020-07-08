@@ -334,6 +334,7 @@ class Settings(QtCore.QSettings):
         'themes/last directory import': None,
         'themes/theme level': ThemeLevel.Global,
         'themes/item transitions': False,
+        'themes/hot reload': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),
         'user interface/lock panel': True,

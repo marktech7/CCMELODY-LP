@@ -72,7 +72,6 @@ def service_item_env(state):
     mocked_slide_formater = MagicMock(side_effect=side_effect_return_arg)
     mocked_renderer.format_slide = mocked_slide_formater
     Registry().register('renderer', mocked_renderer)
-    Registry().register('image_manager', MagicMock())
 
 
 def test_service_item_basic(settings):
@@ -119,6 +118,56 @@ def test_service_item_load_custom_from_service(state_media, settings, service_it
 def test_service_item_load_image_from_service(state_media, settings):
     """
     Test the Service Item - adding an image from a saved service
+    tests a version 3 service file serviceitem (openlp-servicefile-version == 3)
+    """
+    # GIVEN: A new service item (pre encoded from the json format) and a mocked add icon function
+    image_name = 'BrightDots.png'
+    fake_hash = 'abcd'
+    extracted_file = Path(TEST_PATH) / '{base}{ext}'.format(base=fake_hash, ext=os.path.splitext(image_name)[1])
+    frame_array = {'path': extracted_file, 'title': image_name, 'file_hash': fake_hash,
+                   'thumbnail': Path("/path/images/thumbnails/abcd.png")}
+    service_item = ServiceItem(None)
+    service_item.add_icon = MagicMock()
+    item = {'serviceitem': {'header': {'name': 'images', 'plugin': 'images', 'theme': -1, 'title': 'BrightDots.png',
+                                       'footer': [], 'type': 2, 'audit': '', 'notes': '', 'from_plugin': False,
+                                       'capabilities': [3, 1, 5, 6, 17, 21], 'search': '', 'data': '',
+                                       'xml_version': None, 'auto_play_slides_once': False,
+                                       'auto_play_slides_loop': False, 'timed_slide_interval': 0, 'start_time': 0,
+                                       'end_time': 0, 'media_length': 0, 'background_audio': [],
+                                       'theme_overwritten': False, 'will_auto_start': False, 'processor': None,
+                                       'metadata': [], 'sha256_file_hash': None, 'stored_filename': None},
+                            'data': [{'title': 'BrightDots.png',
+                                      'image': Path('images/thumbnails/{}.png'.format(fake_hash)),
+                                      'file_hash': fake_hash}]}}
+
+    # WHEN: adding an image from a saved Service and mocked exists
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_data_path') as mocked_get_data_path,\
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.copy'),\
+            patch('openlp.core.lib.serviceitem.move'):
+        mocked_sha256_file_hash.return_value = fake_hash
+        mocked_exists.return_value = True
+        mocked_get_section_data_path.return_value = Path('/path/')
+        mocked_get_data_path.return_value = Path('/path/')
+        service_item.set_from_service(item, TEST_PATH, 3)
+
+    # THEN: We should get back a valid service item
+    assert service_item.is_valid is True, 'The new service item should be valid'
+    assert extracted_file == service_item.get_rendered_frame(0), 'The first frame should match the path to the image'
+    assert frame_array == service_item.get_frames()[0], 'The return should match frame array1'
+    assert extracted_file == service_item.get_frame_path(0), \
+        'The frame path should match the full path to the image'
+    assert image_name == service_item.get_frame_title(0), 'The frame title should match the image name'
+    assert image_name == service_item.get_display_title(), 'The display title should match the first image name'
+    assert service_item.is_image() is True, 'This service item should be of an "image" type'
+
+
+def test_old_service_item_load_image_from_service(state_media, settings):
+    """
+    Test the Service Item - adding an image from a saved service
+    tests a old service file serviceitem (openlp-servicefile-version < 3)
     """
     # GIVEN: A new service item and a mocked add icon function
     image_name = 'image_1.jpg'
@@ -266,11 +315,10 @@ def test_add_from_command_without_display_title_and_notes():
     assert service_item.get_frames()[0] == frame, 'Frames should match'
 
 
-@patch('openlp.core.lib.serviceitem.ServiceItem.image_manager')
 @patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path')
-def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path, mocked_image_manager):
+def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path):
     """
-    Test the Service Item - adding a presentation, updating the thumb path & adding the thumb to image_manager
+    Test the Service Item - adding a presentation, updating the thumb path & adding the thumb
     """
     # GIVEN: A service item, a mocked AppLocation and presentation data
     mocked_get_section_data_path.return_value = Path('mocked') / 'section' / 'path'
@@ -294,7 +342,6 @@ def test_add_from_command_for_a_presentation_thumb(mocked_get_section_data_path,
     # THEN: verify that it is setup as a Command and that the frame data matches
     assert service_item.service_item_type == ServiceItemType.Command, 'It should be a Command'
     assert service_item.get_frames()[0] == frame, 'Frames should match'
-    # assert 1 == mocked_image_manager.add_image.call_count, 'image_manager should be used'
 
 
 def test_service_item_load_optical_media_from_service(state_media):

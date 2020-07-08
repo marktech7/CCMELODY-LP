@@ -23,6 +23,7 @@ Package to test the openlp.core.display.window package.
 """
 import sys
 import time
+import pytest
 
 from unittest.mock import MagicMock, patch
 
@@ -35,6 +36,18 @@ from openlp.core.display.window import DisplayWindow
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.theme import Theme
 from openlp.core.ui import HideMode
+
+
+@pytest.fixture
+def mock_geometry():
+    mocked_screen = MagicMock()
+    mocked_screen.display_geometry = QtCore.QRect(10, 20, 400, 600)
+    mocked_screenlist = MagicMock()
+    mocked_screenlist.current = mocked_screen
+    screenlist_patcher = patch('openlp.core.lib.theme.ScreenList', return_value=mocked_screenlist)
+    screenlist_patcher.start()
+    yield
+    screenlist_patcher.stop()
 
 
 @patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
@@ -209,7 +222,7 @@ def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidg
 
 @patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_settings):
+def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """
@@ -233,7 +246,7 @@ def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_set
 
 @patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_settings):
+def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """
@@ -264,7 +277,7 @@ def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_se
 
 @patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_settings):
+def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """

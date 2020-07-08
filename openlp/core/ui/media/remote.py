@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
 ###############################################################################
 # OpenLP - Open Source Lyrics Projection                                      #
@@ -20,79 +19,58 @@
 # Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
 ###############################################################################
 """
-The :mod:`~openlp.core.api.endpoint` module contains various API endpoints
+The :mod:`~openlp.core.ui.media` module contains various API endpoints
 """
 import logging
-from flask import abort, jsonify, Blueprint
+from flask import abort, Blueprint
 
 from openlp.core.api import app
-from openlp.core.api.lib import login_required, old_auth
+from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)
 
-v1_media = Blueprint('v1-media-controller', __name__)
 v2_media = Blueprint('v2-media-controller', __name__)
 
 
 @v2_media.route('/play', methods=['POST'])
 @login_required
 def media_play():
-    media = Registry().get('media_controller')
+    log.debug('media_play')
     live = Registry().get('live_controller')
-    try:
-        status = media.media_play(live, True)
-    except Exception:
-        # The current item probably isn't a media item
+    if live.service_item.name != 'media':
         abort(400)
+    status = live.mediacontroller_live_play.emit()
     if status:
-        return '', 204
+        return '', 202
     abort(400)
 
 
 @v2_media.route('/pause', methods=['POST'])
 @login_required
 def media_pause():
-    media = Registry().get('media_controller')
+    log.debug('media_pause')
     live = Registry().get('live_controller')
-    media.media_pause(live)
-    return '', 204
+    if live.service_item.name != 'media':
+        abort(400)
+    status = live.mediacontroller_live_pause.emit()
+    if status:
+        return '', 202
+    abort(400)
 
 
 @v2_media.route('/stop', methods=['POST'])
 @login_required
 def media_stop():
-    Registry().get('live_controller').mediacontroller_live_stop.emit()
-    return '', 204
-
-
-# -------------- DEPRECATED ------------------------
-@v1_media.route('/play')
-@old_auth
-def v1_media_play():
-    media = Registry().get('media_controller')
+    log.debug('media_stop')
     live = Registry().get('live_controller')
-    status = media.media_play(live, False)
-    return jsonify({'success': status})
-
-
-@v1_media.route('/pause')
-@old_auth
-def v1_media_pause():
-    media = Registry().get('media_controller')
-    live = Registry().get('live_controller')
-    status = media.media_pause(live)
-    return jsonify({'success': status})
-
-
-@v1_media.route('/stop')
-@old_auth
-def v1_media_stop():
-    Registry().get('live_controller').mediacontroller_live_stop.emit()
-    return ''
-# -------------- END OF DEPRECATED ------------------------
+    if live.service_item.name != 'media':
+        abort(400)
+    status = live.mediacontroller_live_stop.emit()
+    if status:
+        return '', 202
+    abort(400)
 
 
 def register_views():
     app.register_blueprint(v2_media, url_prefix='/api/v2/media/')
-    app.register_blueprint(v1_media, url_prefix='/api/media/')

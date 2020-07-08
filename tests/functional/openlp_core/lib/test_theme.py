@@ -21,10 +21,24 @@
 """
 Package to test the openlp.core.lib.theme package.
 """
+import pytest
+from PyQt5 import QtCore
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from openlp.core.lib.theme import BackgroundType, BackgroundGradientType, TransitionType, TransitionSpeed, Theme
+
+
+@pytest.fixture
+def mock_geometry():
+    mocked_screen = MagicMock()
+    mocked_screen.display_geometry = QtCore.QRect(10, 20, 400, 600)
+    mocked_screenlist = MagicMock()
+    mocked_screenlist.current = mocked_screen
+    screenlist_patcher = patch('openlp.core.lib.theme.ScreenList', return_value=mocked_screenlist)
+    screenlist_patcher.start()
+    yield
+    screenlist_patcher.stop()
 
 
 def test_background_type_to_string():
@@ -183,7 +197,7 @@ def test_transition_speed_from_string():
     assert TransitionSpeed.from_string(transition_speed_slow) == TransitionSpeed.Slow
 
 
-def test_new_theme():
+def test_new_theme(mock_geometry):
     """
     Test the Theme constructor
     """
@@ -195,7 +209,7 @@ def test_new_theme():
     check_theme(default_theme)
 
 
-def test_expand_json():
+def test_expand_json(mock_geometry):
     """
     Test the expand_json method
     """
@@ -226,7 +240,7 @@ def test_expand_json():
     check_theme(theme)
 
 
-def test_extend_image_filename():
+def test_extend_image_filename(mock_geometry):
     """
     Test the extend_image_filename method
     """
@@ -246,7 +260,7 @@ def test_extend_image_filename():
     assert 'MyBeautifulTheme' == theme.theme_name
 
 
-def test_save_retrieve():
+def test_save_retrieve(mock_geometry):
     """
     Load a dummy theme, save it and reload it
     """
@@ -260,16 +274,31 @@ def test_save_retrieve():
     check_theme(lt)
 
 
-@patch('openlp.core.display.screens.ScreenList.current')
+def test_set_default_header_footer_overridden(mock_geometry):
+    """
+    Check that when the theme header and footer locations are overridden, the defaults are not set
+    """
+    # GIVEN: A theme with the overrides on
+    theme = Theme()
+    theme.set_default_header = MagicMock()
+    theme.set_default_footer = MagicMock()
+    theme.font_main_override = True
+    theme.font_footer_override = True
+
+    # WHEN: set_default_header_footer is called
+    theme.set_default_header_footer()
+
+    # THEN: Neither header or footer default fns should have been called
+    assert theme.set_default_header.call_count == 0
+    assert theme.set_default_footer.call_count == 0
+
+
 def test_set_default_footer(mock_geometry):
     """
     Test the set_default_footer function sets the footer back to default
     (reletive to the screen)
     """
     # GIVEN: A screen geometry object and a Theme footer with a strange area
-    mock_geometry.display_geometry = MagicMock()
-    mock_geometry.display_geometry.height.return_value = 600
-    mock_geometry.display_geometry.width.return_value = 400
     theme = Theme()
     theme.font_main_x = 20
     theme.font_footer_x = 207
@@ -288,16 +317,12 @@ def test_set_default_footer(mock_geometry):
     assert theme.font_footer_height == 60, 'height should have been reset to (screen_size_height / 10)'
 
 
-@patch('openlp.core.display.screens.ScreenList.current')
 def test_set_default_header(mock_geometry):
     """
     Test the set_default_header function sets the header back to default
     (reletive to the screen)
     """
     # GIVEN: A screen geometry object and a Theme header with a strange area
-    mock_geometry.display_geometry = MagicMock()
-    mock_geometry.display_geometry.height.return_value = 600
-    mock_geometry.display_geometry.width.return_value = 400
     theme = Theme()
     theme.font_footer_x = 200
     theme.font_main_x = 687
@@ -316,14 +341,12 @@ def test_set_default_header(mock_geometry):
     assert theme.font_main_height == 540, 'height should have been reset to (screen_size_height * 9 / 10)'
 
 
-@patch('openlp.core.display.screens.ScreenList.current')
 def test_set_default_header_footer(mock_geometry):
     """
     Test the set_default_header_footer function sets the header and footer back to default
     (reletive to the screen)
     """
     # GIVEN: A screen geometry object and a Theme header with a strange area
-    mock_geometry.display_geometry = MagicMock()
     theme = Theme()
     theme.font_footer_x = 200
     theme.font_main_x = 687

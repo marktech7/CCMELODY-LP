@@ -756,13 +756,13 @@ var Display = {
    * Set image slides
    * @param {Object[]} slides - A list of images to add as JS objects [{"path": "url/to/file"}]
    */
-  setImageSlides: function (slides) {
+  setImageSlides: function (slides, background) {
     Display._clearSlidesList();
     var parentSection = document.createElement("section");
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
       section.setAttribute("id", index);
-      section.setAttribute("data-background", "#000");
+      section.setAttribute("data-background", background);
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
       img.src = slide.path;

@@ -221,6 +221,7 @@ class OpenLyrics(object):
     IMPLEMENTED_VERSION = '0.8'
     START_TAGS_REGEX = re.compile(r'\{(\w+)\}')
     END_TAGS_REGEX = re.compile(r'\{/(\w+)\}')
+    CHORD_TAGS_REGEX = re.compile(r'\[(\w.*?)\]')
     VERSE_TAG_SPLITTER = re.compile('([a-zA-Z]+)([0-9]*)([a-zA-Z]?)')
 
     def __init__(self, manager):
@@ -319,13 +320,15 @@ class OpenLyrics(object):
                 optional_verse = start_tags + optional_verse
                 start_tags, end_tags = self._get_missing_tags(optional_verse)
                 optional_verse += end_tags
+                # convert chords
+                optional_verse = self._chordpro_to_openlyrics(optional_verse)
                 # Add formatting tags to text
                 lines_element = self._add_text_with_tags_to_lines(verse_element, optional_verse, tags_element)
                 # Do not add the break attribute to the last lines element.
                 if index < len(optional_verses) - 1:
                     lines_element.set('break', 'optional')
         xml_text = self._extract_xml(song_xml).decode()
-        return self._chordpro_to_openlyrics(xml_text)
+        return xml_text
 
     def _chordpro_to_openlyrics(self, text):
         """
@@ -335,7 +338,7 @@ class OpenLyrics(object):
         :return: the lyrics with the converted chords
         """
         # Process chords.
-        new_text = re.sub(r'\[(\w.*?)\]', r'<chord name="\1"/>', text)
+        new_text = re.sub(OpenLyrics.CHORD_TAGS_REGEX, r'<chord name="\1"/>', text)
         return new_text
 
     def _get_missing_tags(self, text):

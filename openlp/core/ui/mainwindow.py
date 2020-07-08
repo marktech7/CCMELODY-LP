@@ -42,6 +42,7 @@ from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import create_action
@@ -573,8 +574,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         process the bootstrap post setup request
         """
-        # self.preview_controller.panel.setVisible(self.settings.value('user interface/preview panel'))
-        # self.live_controller.panel.setVisible(self.settings.value('user interface/live panel'))
         self.load_settings()
         self.restore_current_media_manager_item()
         Registry().execute('theme_update_global')
@@ -637,8 +636,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         Show the main form, as well as the display form
         """
         QtWidgets.QWidget.show(self)
-        # if self.live_controller.display.isVisible():
-        #     self.live_controller.display.setFocus()
         self.activateWindow()
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
@@ -872,7 +869,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         create_paths(temp_dir_path)
         temp_config_path = temp_dir_path / import_file_path.name
         shutil.copyfile(import_file_path, temp_config_path)
-        import_settings = QtCore.QSettings(str(temp_config_path), QtCore.QSettings.IniFormat)
+        import_settings = Settings(str(temp_config_path), QtCore.QSettings.IniFormat)
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
@@ -995,7 +992,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         The screen has changed so we have to update components such as the renderer.
         """
         self.application.set_busy_cursor()
-        # self.image_manager.update_display()
         self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
         self.preview_controller.screen_size_changed()
         self.live_controller.setup_displays()
@@ -1041,11 +1037,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                     event.ignore()
             else:
                 event.accept()
-        # Included here as it is only needed to help force the logging rollover not for general logging use.
-        # Rollover require as when WebSocket exits having been used it will destroy the application log on exit.
-        import logging
-        log_man = logging.getLogger()
-        log_man.handlers[0].doRollover()
         if event.isAccepted():
             # Wait for all the threads to complete
             self._wait_for_threads()

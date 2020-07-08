@@ -120,11 +120,11 @@ class Registry(metaclass=Singleton):
         :param args:  Parameters to be passed to the function.
         :param kwargs: Parameters to be passed to the function.
         """
+        log.debug(f'Running function {event}')
         results = []
         if event in self.functions_list:
             for function in self.functions_list[event]:
                 try:
-                    log.debug('Running function {} for {}'.format(function, event))
                     result = function(*args, **kwargs)
                     if result is not None:
                         results.append(result)

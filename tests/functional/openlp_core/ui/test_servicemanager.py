@@ -655,6 +655,43 @@ def test_save_file_raises_permission_error(mocked_os, mocked_save_file_as, mocke
     mocked_save_file_as.assert_called_with()
 
 
+@patch('openlp.core.ui.servicemanager.zipfile')
+@patch('openlp.core.ui.servicemanager.ServiceManager.save_file_as')
+@patch('openlp.core.ui.servicemanager.os')
+@patch('openlp.core.ui.servicemanager.len')
+def test_save_file_large_file(mocked_len, mocked_os, mocked_save_file_as, mocked_zipfile, registry):
+    """
+    Test that when a file size size larger than a 32bit signed int is attempted to save, the progress bar
+    should be provided a value that fits in a 32bit int (because it's passed to C++ as a 32bit unsigned int)
+    """
+    # GIVEN: A service manager, a service to save, and len() returns a huge value (file size)
+    def check_for_i32_overflow(val):
+        if val > 2147483647:
+            raise OverflowError
+    mocked_main_window = MagicMock()
+    mocked_main_window.display_progress_bar.side_effect = check_for_i32_overflow
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('application', MagicMock())
+    mocked_settings = MagicMock()
+    Registry().register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager._service_path = MagicMock()
+    service_manager._save_lite = False
+    service_manager.service_items = []
+    service_manager.service_theme = 'Default'
+    service_manager.service_manager_list = MagicMock()
+    mocked_save_file_as.return_value = True
+    mocked_zipfile.ZipFile.return_value = MagicMock()
+    mocked_len.return_value = 10000000000000
+
+    # WHEN: The service is saved and no error is raised
+    result = service_manager.save_file()
+
+    # THEN: The "save_as" method is called to save the service
+    assert result is True
+    mocked_save_file_as.assert_called_with()
+
+
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
 def test_theme_change_global(mocked_regenerate_service_items, registry):
     """

@@ -88,6 +88,22 @@ def test_critical_error_message_box(MockRegistry):
     MockRegistry.return_value.get.return_value.error_message.assert_called_once_with('Error', 'This is an error')
 
 
+@patch('openlp.core.lib.ui.Registry')
+@patch('openlp.core.lib.ui.QtWidgets.QMessageBox.critical')
+def test_critical_error_message_box_without_mainwindow(mocked_critical, MockRegistry):
+    """
+    Test the critical_error_message_box() function
+    """
+    # GIVEN: A mocked Registry with no MainWindow
+    MockRegistry.return_value.get.return_value = None
+
+    # WHEN: critical_error_message_box() is called
+    critical_error_message_box('Error', 'This is an error')
+
+    # THEN: The error_message() method on the main window should be called
+    mocked_critical.assert_called_once_with(None, 'Error', 'This is an error')
+
+
 @patch('openlp.core.lib.ui.QtWidgets.QMessageBox.critical')
 def test_critical_error_question(mocked_critical):
     """

@@ -160,6 +160,8 @@ class PresentationMediaItem(MediaManagerItem):
         existing files, and when the user adds new files via the media manager.
 
         :param list[pathlib.Path] file_paths: List of file paths to add to the media manager.
+        :param list[pathlib.Path] target_group: Group to load.
+        :param boolean initial_load: Is this the initial load of the list at start up
         """
         current_paths = self.get_file_list()
         titles = [file_path.name for file_path in current_paths]

@@ -155,7 +155,7 @@ def test_mainwindow_configuration(main_window):
                              'authentication_token', 'settings_form', 'service_manager', 'theme_manager',
                              'projector_manager']
     expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
-                               'theme_update_global', 'config_screen_changed']
+                               'config_screen_changed', 'theme_update_global']
     assert list(Registry().service_list.keys()) == expected_service_list, \
         'The service list should have been {}'.format(Registry().service_list.keys())
     assert list(Registry().functions_list.keys()) == expected_functions_list, \

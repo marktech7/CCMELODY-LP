@@ -301,6 +301,7 @@ class Theme(object):
         json_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'lib' / 'json' / 'theme.json'
         jsn = get_text_file_string(json_path)
         self.load_theme(jsn)
+        self.set_default_header_footer()
         self.background_filename = None
         self.background_source = None
         self.version = 2
@@ -334,13 +335,18 @@ class Theme(object):
 
     def set_default_header_footer(self):
         """
-        Set the header and footer size into the current primary screen.
-        10 px on each side is removed to allow for a border.
+        Set the default header and footer size to match the current primary screen.
+        Obeys theme override variables.
         """
-        self.set_default_header()
-        self.set_default_footer()
+        if not self.font_main_override:
+            self.set_default_header()
+        if not self.font_footer_override:
+            self.set_default_footer()
 
     def set_default_header(self):
+        """
+        Sets the default header position and size, ignores font_main_override
+        """
         current_screen_geometry = ScreenList().current.display_geometry
         self.font_main_x = 10
         self.font_main_y = 0
@@ -348,6 +354,9 @@ class Theme(object):
         self.font_main_height = current_screen_geometry.height() * 9 / 10
 
     def set_default_footer(self):
+        """
+        Sets the default footer position and size, ignores font_footer_override
+        """
         current_screen_geometry = ScreenList().current.display_geometry
         self.font_footer_x = 10
         self.font_footer_y = current_screen_geometry.height() * 9 / 10

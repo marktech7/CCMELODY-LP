@@ -55,6 +55,18 @@ def test_search_found(media_item):
     assert result == [['test.mp4', 'test.mp4']], 'The result file contain the file name'
 
 
+def test_search_found_mixed(media_item):
+    """
+    Media Remote Search Successful find with Paths and Strings
+    """
+    # GIVEN: The Mediaitem set up a list of media
+    media_item.settings.setValue('media/media files', [Path('test.mp3'), 'test.mp4'])
+    # WHEN: Retrieving the test file
+    result = media_item.search('test.mp4', False)
+    # THEN: a file should be found
+    assert result == [['test.mp4', 'test.mp4']], 'The result file contain the file name'
+
+
 def test_search_not_found(media_item):
     """
     Media Remote Search not find

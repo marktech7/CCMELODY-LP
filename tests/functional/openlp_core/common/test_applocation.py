@@ -138,7 +138,7 @@ def test_get_directory_for_app_dir(mocked_get_frozen_path):
     directory = AppLocation.get_directory(AppLocation.AppDir)
 
     # THEN: check that the correct directory is returned
-    assert directory == Path('app', 'dir'), 'Directory should be "app/dir"'
+    assert directory == Path.cwd() / Path('app', 'dir'), 'Directory should be "app/dir"'
 
 
 @patch('openlp.core.common.applocation.get_frozen_path')
@@ -160,7 +160,7 @@ def test_get_directory_for_plugins_dir(mocked_sys, mocked_split, mocked_abspath,
     directory = AppLocation.get_directory(AppLocation.PluginsDir)
 
     # THEN: The correct directory should be returned
-    assert directory == Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
+    assert directory == Path.cwd() / Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
 
 
 @patch('openlp.core.common.sys')
