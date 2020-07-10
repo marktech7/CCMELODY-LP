@@ -48,7 +48,7 @@ test_script:
 after_test:
   # Only package on the master repo
   - ps: >-
-      If ((Test-Path $env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME) -Or ($env:FORCE_PACKAGING -eq 1)) {
+      If (!(Test-Path env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME) -Or ($env:FORCE_PACKAGING -eq 1)) {
           # Continue on eror
           $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
