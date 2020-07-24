@@ -19,16 +19,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import logging
-import os
-import urllib.request
-from pathlib import Path
 
 from openlp.core.api.lib import login_required
 from openlp.core.common import ThemeLevel
 from openlp.core.common.registry import Registry
-from openlp.core.common.applocation import AppLocation
-from openlp.core.lib import create_thumb
-from openlp.core.lib.serviceitem import ItemCapabilities
 
 from flask import jsonify, request, abort, Blueprint
 
@@ -41,44 +35,11 @@ def controller_text_api():
     log.debug('controller-v2-live-item')
     live_controller = Registry().get('live_controller')
     current_item = live_controller.service_item
-    data = []
+    live_item = {}
     if current_item:
-        for index, frame in enumerate(current_item.get_frames()):
-            item = {}
-            item['tag'] = index + 1
-            item['selected'] = live_controller.selected_row == index
-            item['title'] = current_item.title
-            if current_item.is_text():
-                if frame['verse']:
-                    item['tag'] = str(frame['verse'])
-                item['text'] = frame['text']
-                item['html'] = current_item.rendered_slides[index]['text']
-                item['chords'] = current_item.rendered_slides[index]['chords']
-            elif current_item.is_image() and not frame.get('image', '') and \
-                    Registry().get('settings_thread').value('api/thumbnails'):
-                thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
-                full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
-                if not full_thumbnail_path.exists():
-                    create_thumb(Path(current_item.get_frame_path(index)), full_thumbnail_path, False)
-                item['img'] = urllib.request.pathname2url(os.path.sep + str(thumbnail_path))
-                item['text'] = str(frame['title'])
-                item['html'] = str(frame['title'])
-            else:
-                # presentations and other things
-                if current_item.is_capable(ItemCapabilities.HasDisplayTitle):
-                    item['title'] = str(frame['display_title'])
-                if current_item.is_capable(ItemCapabilities.HasNotes):
-                    item['slide_notes'] = str(frame['notes'])
-                if current_item.is_capable(ItemCapabilities.HasThumbnails) and \
-                        Registry().get('settings_thread').value('api/thumbnails'):
-                    # If the file is under our app directory tree send the portion after the match
-                    data_path = str(AppLocation.get_data_path())
-                    if frame['image'][0:len(data_path)] == data_path:
-                        item['img'] = urllib.request.pathname2url(frame['image'][len(data_path):])
-                item['text'] = str(frame['title'])
-                item['html'] = str(frame['title'])
-            data.append(item)
-    return jsonify(data)
+        live_item = current_item.to_dict()
+        live_item['slides'][live_controller.selected_row]['selected'] = True
+    return jsonify(live_item)
 
 
 @controller_views.route('/show', methods=['POST'])

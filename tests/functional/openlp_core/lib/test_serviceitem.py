@@ -76,14 +76,29 @@ def service_item_env(state):
 
 def test_service_item_basic(settings):
     """
-    Test the Service Item - basic test
+    Test creating a new Service Item without a plugin
     """
     # GIVEN: A new service item
-
     # WHEN: A service item is created (without a plugin)
     service_item = ServiceItem(None)
 
     # THEN: We should get back a valid service item
+    assert service_item.is_valid is True, 'The new service item should be valid'
+    assert service_item.missing_frames() is True, 'There should not be any frames in the service item'
+
+
+def test_service_item_with_plugin(settings):
+    """
+    Test creating a new Service Item with a plugin
+    """
+    # GIVEN: A new service item
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'songs'
+    # WHEN: A service item is created (with a plugin)
+    service_item = ServiceItem(mocked_plugin)
+
+    # THEN: We should get back a valid service item
+    assert service_item.name == 'songs', 'The service item name should be the same as the plugin name'
     assert service_item.is_valid is True, 'The new service item should be valid'
     assert service_item.missing_frames() is True, 'There should not be any frames in the service item'
 
@@ -522,3 +537,249 @@ def test_service_item_get_theme_data_song_level_global_fallback(settings):
 
     # THEN: theme should be the global theme
     assert theme == mocked_theme_manager.global_theme
+
+
+def test_remove_capability(settings):
+    # GIVEN: A service item with a capability
+    service_item = ServiceItem(None)
+    service_item.add_capability(ItemCapabilities.CanEdit)
+    assert ItemCapabilities.CanEdit in service_item.capabilities
+
+    # WHEN: A capability is removed
+    service_item.remove_capability(ItemCapabilities.CanEdit)
+
+    # THEN: The capability should no longer be there
+    assert ItemCapabilities.CanEdit not in service_item.capabilities, 'The capability should not be in the list'
+
+
+def test_to_dict_text_item(state_media, settings, service_item_env):
+    """
+    Test that the to_dict() method returns the correct data for the service item
+    """
+    # GIVEN: A ServiceItem with a service loaded from file
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'songs'
+    service_item = ServiceItem(mocked_plugin)
+    service_item.add_icon = MagicMock()
+    FormattingTags.load_tags()
+    line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
+    service_item.set_from_service(line, Path('/test/'))
+
+    # WHEN: to_dict() is called
+    result = service_item.to_dict()
+
+    # THEN: The correct dictionary should be returned
+    expected_dict = {
+
+        'audit': ['Amazing Grace', ['John Newton'], '', ''],
+        'backgroundAudio': ['/test/amazing_grace.mp3'],
+        'capabilities': [2, 1, 5, 8, 9, 13, 15],
+        'footer': ['Amazing Grace', 'Written by: John Newton'],
+        'fromPlugin': False,
+        'isThemeOverwritten': False,
+        'name': 'songs',
+        'notes': '',
+        'slides': [
+            {
+                'chords': 'Amazing Grace! how sweet the sound\n'
+                          'That saved a wretch like me;\n'
+                          'I once was lost, but now am found,\n'
+                          'Was blind, but now I see.',
+                'html': 'Amazing Grace! how sweet the sound\n'
+                        'That saved a wretch like me;\n'
+                        'I once was lost, but now am found,\n'
+                        'Was blind, but now I see.',
+                'selected': False,
+                'tag': 'V1',
+                'text': 'Amazing Grace! how sweet the sound\n'
+                        'That saved a wretch like me;\n'
+                        'I once was lost, but now am found,\n'
+                        'Was blind, but now I see.',
+                'title': 'Amazing Grace'
+            },
+            {
+                'chords': '’Twas grace that taught my heart to fear,\n'
+                          'And grace my fears relieved;\n'
+                          'How precious did that grace appear,\n'
+                          'The hour I first believed!',
+                'html': '’Twas grace that taught my heart to fear,\n'
+                        'And grace my fears relieved;\n'
+                        'How precious did that grace appear,\n'
+                        'The hour I first believed!',
+                'selected': False,
+                'tag': 'V2',
+                'text': '’Twas grace that taught my heart to fear,\n'
+                        'And grace my fears relieved;\n'
+                        'How precious did that grace appear,\n'
+                        'The hour I first believed!',
+                'title': 'Amazing Grace'
+            },
+            {
+                'chords': 'Through many dangers, toils and snares\n'
+                          'I have already come;\n'
+                          '’Tis grace that brought me safe thus far,\n'
+                          'And grace will lead me home.',
+                'html': 'Through many dangers, toils and snares\n'
+                        'I have already come;\n'
+                        '’Tis grace that brought me safe thus far,\n'
+                        'And grace will lead me home.',
+                'selected': False,
+                'tag': 'V3',
+                'text': 'Through many dangers, toils and snares\n'
+                        'I have already come;\n'
+                        '’Tis grace that brought me safe thus far,\n'
+                        'And grace will lead me home.',
+                'title': 'Amazing Grace'
+            },
+            {
+                'chords': 'The Lord has promised good to me,\n'
+                          'His word my hope secures;\n'
+                          'He will my shield and portion be\n'
+                          'As long as life endures.',
+                'html': 'The Lord has promised good to me,\n'
+                        'His word my hope secures;\n'
+                        'He will my shield and portion be\n'
+                        'As long as life endures.',
+                'selected': False,
+                'tag': 'V4',
+                'text': 'The Lord has promised good to me,\n'
+                        'His word my hope secures;\n'
+                        'He will my shield and portion be\n'
+                        'As long as life endures.',
+                'title': 'Amazing Grace'
+            },
+            {
+                'chords': 'Yes, when this heart and flesh shall fail,\n'
+                          'And mortal life shall cease,\n'
+                          'I shall possess within the veil\n'
+                          'A life of joy and peace.',
+                'html': 'Yes, when this heart and flesh shall fail,\n'
+                        'And mortal life shall cease,\n'
+                        'I shall possess within the veil\n'
+                        'A life of joy and peace.',
+                'selected': False,
+                'tag': 'V5',
+                'text': 'Yes, when this heart and flesh shall fail,\n'
+                        'And mortal life shall cease,\n'
+                        'I shall possess within the veil\n'
+                        'A life of joy and peace.',
+                'title': 'Amazing Grace'
+            },
+            {
+                'chords': 'When we’ve been there a thousand years,\n'
+                          'Bright shining as the sun,\n'
+                          'We’ve no less days to sing God’s praise\n'
+                          'Than when we first begun.',
+                'html': 'When we’ve been there a thousand years,\n'
+                        'Bright shining as the sun,\n'
+                        'We’ve no less days to sing God’s praise\n'
+                        'Than when we first begun.',
+                'selected': False,
+                'tag': 'V6',
+                'text': 'When we’ve been there a thousand years,\n'
+                        'Bright shining as the sun,\n'
+                        'We’ve no less days to sing God’s praise\n'
+                        'Than when we first begun.',
+                'title': 'Amazing Grace'
+            }
+        ],
+        'theme': None,
+        'title': 'Amazing Grace',
+        'type': 'ServiceItemType.Text'
+    }
+    assert result == expected_dict
+
+
+def test_to_dict_image_item(state_media, settings, service_item_env):
+    """
+    Test that the to_dict() method returns the correct data for the service item
+    """
+    # GIVEN: A ServiceItem with a service loaded from file
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'image'
+    service_item = ServiceItem(mocked_plugin)
+    service_item.add_icon = MagicMock()
+    FormattingTags.load_tags()
+    line = convert_file_service_item(TEST_PATH, 'serviceitem_image_2.osj')
+
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = '3a7ccbdb0b5a3db169c4692d7aad0ec8'
+        service_item.set_from_service(line)
+
+    # WHEN: to_dict() is called
+    result = service_item.to_dict()
+
+    # THEN: The correct dictionary should be returned
+    expected_dict = {
+        'audit': '',
+        'backgroundAudio': [],
+        'capabilities': [3, 1, 5, 6],
+        'footer': [],
+        'fromPlugin': False,
+        'isThemeOverwritten': False,
+        'name': 'images',
+        'notes': '',
+        'slides': [
+            {
+                'html': 'image_1.jpg',
+                'img': '/images/thumbnails/image_1.jpg',
+                'selected': False,
+                'tag': 1,
+                'text': 'image_1.jpg',
+                'title': 'Images'
+            }
+        ],
+        'theme': -1,
+        'title': 'Images',
+        'type': 'ServiceItemType.Image'
+    }
+    assert result == expected_dict
+
+
+def test_to_dict_presentation_item(state_media, settings, service_item_env):
+    """
+    Test that the to_dict() method returns the correct data for the service item
+    """
+    # GIVEN: A ServiceItem with a service loaded from file
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'presentations'
+    service_item = ServiceItem(mocked_plugin)
+    presentation_name = 'test.pptx'
+    image = Path('thumbnails/abcd/slide1.png')
+    display_title = 'DisplayTitle'
+    notes = 'Note1\nNote2\n'
+
+    # WHEN: adding presentation to service_item
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
+        mocked_sha256_file_hash.return_value = '4a067fed6834ea2bc4b8819f11636365'
+        mocked_get_section_data_path.return_value = Path('.')
+        service_item.add_from_command(TEST_PATH, presentation_name, image, display_title, notes)
+
+    # WHEN: to_dict() is called
+    result = service_item.to_dict()
+
+    # THEN: The correct dictionary should be returned
+    expected_dict = {
+        'audit': '',
+        'backgroundAudio': [],
+        'capabilities': [],
+        'footer': [],
+        'fromPlugin': False,
+        'isThemeOverwritten': False,
+        'name': 'presentations',
+        'notes': '',
+        'slides': [
+            {
+                'html': 'test.pptx',
+                'selected': False,
+                'tag': 1,
+                'text': 'test.pptx',
+                'title': ''
+            }
+        ],
+        'theme': None,
+        'title': '',
+        'type': 'ServiceItemType.Command'
+    }
+    assert result == expected_dict

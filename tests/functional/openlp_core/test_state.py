@@ -29,6 +29,26 @@ Test the States class.
 """
 
 
+def test_load_settings(state):
+    # GIVEN: Some modules
+    State().modules = {'mock': MagicMock}
+
+    # WHEN: load_settings() is run
+    State().load_settings()
+
+    # THEN: the modules should be empty
+    assert State().modules == {}, 'There should be no modules in the State object'
+
+
+def test_save_settings(state):
+    # GIVEN: Niks
+    # WHEN: save_settings() is run
+    State().save_settings()
+
+    # THEN: Nothing should happen
+    assert True, 'There should be no exceptions'
+
+
 def test_add_service(state):
     # GIVEN a new state
     # WHEN I add a new service
@@ -128,3 +148,62 @@ def test_basic_preconditions_pass(state, registry):
     assert State().modules['test'].pass_preconditions is True
     assert State().modules['test2'].pass_preconditions is False
     assert State().modules['test1'].pass_preconditions is True
+
+
+def test_missing_text(state):
+    """
+    Test that settings the missing text in a module works
+    """
+    # GIVEN: A state with a module
+    State().modules['test'] = MagicMock()
+
+    # WHEN: missing_text() is called
+    State().missing_text('test', 'Test test')
+
+    # THEN: The text is set
+    assert State().modules['test'].text == 'Test test', 'The text on the module should have been set'
+
+
+def test_get_text(state):
+    """
+    Test that the get_text() method returns the text of all the states
+    """
+    # GIVEN: Some states with text
+    State().modules.update({'test1': MagicMock(text='Test 1'), 'test2': MagicMock(text='Test 2')})
+
+    # WHEN: get_text() is called
+    result = State().get_text()
+
+    # THEN: The correct text is returned
+    assert result == 'Test 1\nTest 2\n', 'The full text is returned'
+
+
+def test_check_preconditions_no_required(state):
+    """
+    Test that the check_preconditions() method returns the correct attribute when there are no requirements
+    """
+    # GIVEN: A State with no requires
+    State().modules.update({'test_pre1': MagicMock(requires=None, pass_preconditions=True)})
+
+    # WHEN: check_preconditions() is called
+    result = State().check_preconditions('test_pre1')
+
+    # THEN: The correct result should be returned
+    assert result is True
+
+
+def test_check_preconditions_required_module(state):
+    """
+    Test that the check_preconditions() method returns the correct attribute when there is another required module
+    """
+    # GIVEN: A State with two modules
+    State().modules.update({
+        'test_pre2': MagicMock(requires='test_pre3', pass_preconditions=True),
+        'test_pre3': MagicMock(requires=None, pass_preconditions=False)
+    })
+
+    # WHEN: check_preconditions() is called
+    result = State().check_preconditions('test_pre2')
+
+    # THEN: The correct result should be returned
+    assert result is False

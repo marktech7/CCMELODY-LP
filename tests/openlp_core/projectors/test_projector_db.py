@@ -27,7 +27,7 @@ PREREQUISITE: add_record() and get_all() functions validated.
 import pytest
 import os
 import shutil
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from openlp.core.lib.db import upgrade_db
 from openlp.core.projectors import upgrade
@@ -322,6 +322,21 @@ def test_get_projector_by_id_none(projector):
 
 def test_get_projector_all_none(projector):
     """
+    Test get_projector_all() when self.get_all_objects() returns None
+    """
+    # GIVEN: Mocked out get_all_objects
+    with patch.object(projector, 'get_all_objects') as mocked_get_all_objects:
+        mocked_get_all_objects.return_value = None
+
+        # WHEN: We retrieve the database entries
+        results = projector.get_projector_all()
+
+    # THEN: Verify results is empty
+    assert [] == results, 'Returned results should have returned an empty list'
+
+
+def test_get_projector_all_empty(projector):
+    """
     Test get_projector_all() with no projectors in db
     """
     # GIVEN: Test object with no data
@@ -329,7 +344,7 @@ def test_get_projector_all_none(projector):
     # WHEN: We retrieve the database entries
     results = projector.get_projector_all()
 
-    # THEN: Verify results is None
+    # THEN: Verify results is empty
     assert [] == results, 'Returned results should have returned an empty list'
 
 
@@ -436,3 +451,111 @@ def test_delete_projector_fail(projector):
 
     # THEN: Results should be False
     assert results is False, 'delete_projector() should have returned False'
+
+
+def test_get_source_list_no_sources(projector):
+    """
+    Test that an empty source list is returned
+    """
+    # GIVEN: A mocked projector
+    mocked_projector = MagicMock(id='1', source_available=[])
+
+    # WHEN: get_source_list is run
+    results = projector.get_source_list(mocked_projector)
+
+    # THEN: The list should be empty
+    assert results == {}, 'The list of sources returned should be empty'
+
+
+def test_get_source_list_source_is_none(projector):
+    """
+    Test that a default code is returned when a source is not in the database
+    """
+    # GIVEN: A mocked projector
+    mocked_projector = MagicMock(id='1', source_available=['11'])
+
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = None
+        # WHEN: get_source_list is run
+        results = projector.get_source_list(mocked_projector)
+
+    # THEN: The list should contain the one default item
+    assert results == {'11': 'RGB 1'}, 'The list of sources returned should contain "RGB1"'
+
+
+def test_get_source_list_source_has_item(projector):
+    """
+    Test that a default code is returned when a source is in the database
+    """
+    # GIVEN: A mocked projector
+    mocked_projector = MagicMock(entry=MagicMock(id='1'), source_available=['5Y'])
+
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = MagicMock(text='VGA 1')
+        # WHEN: get_source_list is run
+        results = projector.get_source_list(mocked_projector)
+
+    # THEN: The list should contain the one default item
+    assert results == {'5Y': 'VGA 1'}, 'The list of sources returned should contain "RGB1"'
+
+
+def test_get_source_by_id_none(projector):
+    """
+    Test that no source in the db returns None
+    """
+    # GIVEN: A Mocked get_object_filtered method
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = None
+
+        # WHEN: Get the source by ID
+        result = projector.get_source_by_id('source')
+
+    # THEN: The result should be None
+    assert result is None, 'None should be returned by get_source_by_id'
+
+
+def test_get_source_by_id(projector):
+    """
+    Test that a source in the db returns that source
+    """
+    # GIVEN: A Mocked get_object_filtered method
+    mocked_entry = MagicMock()
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = mocked_entry
+
+        # WHEN: Get the source by ID
+        result = projector.get_source_by_id('source')
+
+    # THEN: The result should be the mocked entry
+    assert result is mocked_entry, 'The mocked entry should be returned by get_source_by_id'
+
+
+def test_get_source_by_code_none(projector):
+    """
+    Test that no source in the db returns None
+    """
+    # GIVEN: A Mocked get_object_filtered method
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = None
+
+        # WHEN: Get the source by code
+        result = projector.get_source_by_code('11', 52)
+
+    # THEN: The result should be None
+    assert result is None, 'None should be returned by get_source_by_code'
+
+
+def test_get_source_by_code(projector):
+    """
+    Test that a source in the db returns that source
+    """
+    # GIVEN: A Mocked get_object_filtered method
+    mocked_entry = MagicMock()
+    with patch.object(projector, 'get_object_filtered') as mocked_get_object_filtered:
+        mocked_get_object_filtered.return_value = mocked_entry
+
+        # WHEN: Get the source by code
+        result = projector.get_source_by_code('5Y', 12)
+
+    # THEN: The result should be the mocked entry
+    assert result is mocked_entry, 'The mocked entry should be returned by get_source_by_code'

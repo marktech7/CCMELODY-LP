@@ -417,10 +417,10 @@ class ProjectorDB(Manager):
         """
         source_dict = {}
         # Apparently, there was a change to the projector object. Test for which object has db id
-        if hasattr(projector, "id"):
-            chk = projector.id
-        elif hasattr(projector.entry, "id"):
+        if hasattr(projector, 'entry') and hasattr(projector.entry, 'id'):
             chk = projector.entry.id
+        else:
+            chk = projector.id
 
         # Get default list first
         for key in projector.source_available:

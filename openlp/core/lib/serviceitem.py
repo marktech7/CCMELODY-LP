@@ -25,6 +25,7 @@ import datetime
 import logging
 import ntpath
 import os
+import urllib.request
 import uuid
 from copy import deepcopy
 from pathlib import Path
@@ -32,7 +33,6 @@ from shutil import copytree, copy, move
 
 from PyQt5 import QtGui
 
-from openlp.core.state import State
 from openlp.core.common import ThemeLevel, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
@@ -41,7 +41,9 @@ from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import ItemCapabilities
+from openlp.core.lib import create_thumb
 from openlp.core.lib.theme import BackgroundType
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import parse_stream_path
 
@@ -844,3 +846,59 @@ class ServiceItem(RegistryProperties):
             elif self.is_image() and self.slides and 'thumbnail' in self.slides[0]:
                 return os.path.dirname(self.slides[0]['thumbnail'])
         return None
+
+    def to_dict(self):
+        """
+        Convert the service item into a dictionary
+        """
+        data_dict = {
+            'title': self.title,
+            'name': self.name,
+            'type': str(self.service_item_type),
+            'theme': self.theme,
+            'footer': self.raw_footer,
+            'audit': self.audit,
+            'notes': self.notes,
+            'fromPlugin': self.from_plugin,
+            'capabilities': self.capabilities,
+            'backgroundAudio': [str(file_path) for file_path in self.background_audio],
+            'isThemeOverwritten': self.theme_overwritten,
+            'slides': []
+        }
+        for index, frame in enumerate(self.get_frames()):
+            item = {
+                'tag': index + 1,
+                'title': self.title,
+                'selected': False
+            }
+            if self.is_text():
+                if frame['verse']:
+                    item['tag'] = str(frame['verse'])
+                item['text'] = frame['text']
+                item['html'] = self.rendered_slides[index]['text']
+                item['chords'] = self.rendered_slides[index]['chords']
+            elif self.is_image() and not frame.get('image', '') and \
+                    Registry().get('settings_thread').value('api/thumbnails'):
+                thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
+                full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
+                if not full_thumbnail_path.exists():
+                    create_thumb(Path(self.get_frame_path(index)), full_thumbnail_path, False)
+                item['img'] = urllib.request.pathname2url(os.path.sep + str(thumbnail_path))
+                item['text'] = str(frame['title'])
+                item['html'] = str(frame['title'])
+            else:
+                # presentations and other things
+                if self.is_capable(ItemCapabilities.HasDisplayTitle):
+                    item['title'] = str(frame['display_title'])
+                if self.is_capable(ItemCapabilities.HasNotes):
+                    item['slide_notes'] = str(frame['notes'])
+                if self.is_capable(ItemCapabilities.HasThumbnails) and \
+                        Registry().get('settings_thread').value('api/thumbnails'):
+                    # If the file is under our app directory tree send the portion after the match
+                    data_path = str(AppLocation.get_data_path())
+                    if frame['image'][0:len(data_path)] == data_path:
+                        item['img'] = urllib.request.pathname2url(frame['image'][len(data_path):])
+                item['text'] = str(frame['title'])
+                item['html'] = str(frame['title'])
+            data_dict['slides'].append(item)
+        return data_dict
