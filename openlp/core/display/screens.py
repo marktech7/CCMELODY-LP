@@ -315,17 +315,12 @@ class ScreenList(metaclass=Singleton):
         """
         Set screen number ``number`` to be the display screen.
 
-        At the moment, this is forced to be only a single screen, but later when we support multiple monitors it
-        will need to be updated.
-
         :param int number: The number of the screen
         :param bool can_save: If the screen settings should be saved, defaults to False.
         """
         for screen in self.screens:
             if screen.number == number:
                 screen.is_display = True
-            # else:
-                # screen.is_display = False
         if can_save:
             self.save_screen_settings()
 

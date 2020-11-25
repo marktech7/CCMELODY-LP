@@ -174,9 +174,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 display.setParent(None)
                 del display
             self.displays = []
-        for screen_num, screen in enumerate(self.screens):
+        for screen in self.screens:
             if screen.is_display:
-                display = DisplayWindow(self, screen, is_secondary=screen_num != 0)
+                display = DisplayWindow(self, screen, is_secondary=len(self.displays) != 0)
                 self.displays.append(display)
                 self._reset_blank(False)
         if self.display:
