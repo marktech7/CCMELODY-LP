@@ -319,8 +319,6 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
             self.use_screen_check_box.setChecked(True)
             self.display_group_box.setChecked(True)
         else:
-            for screen in self.screens:
-                screen.is_display = False
             self.current_screen.is_display = True
 
     def _save_screen(self, screen):
@@ -432,11 +430,8 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.display_group_box.setChecked(screen.is_display)
         self.full_screen_radio_button.setChecked(screen.custom_geometry is None)
         self.custom_geometry_button.setChecked(screen.custom_geometry is not None)
-        self._setup_spin_box(self.left_spin_box, screen.display_geometry.y(), screen.display_geometry.right(),
-                             screen.display_geometry.x())
-        self._setup_spin_box(self.top_spin_box, screen.display_geometry.y(), screen.display_geometry.bottom(),
-                             screen.display_geometry.y())
-        self._setup_spin_box(self.width_spin_box, 0, screen.display_geometry.width(), screen.display_geometry.width())
-        self._setup_spin_box(self.height_spin_box, 0, screen.display_geometry.height(),
-                             screen.display_geometry.height())
+        self._setup_spin_box(self.left_spin_box, 0, 9999, screen.display_geometry.x())
+        self._setup_spin_box(self.top_spin_box, 0, 9999, screen.display_geometry.y())
+        self._setup_spin_box(self.width_spin_box, 0, 9999, screen.display_geometry.width())
+        self._setup_spin_box(self.height_spin_box, 0, 9999, screen.display_geometry.height())
         self.current_screen = screen
