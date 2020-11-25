@@ -64,7 +64,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
     """
     This is a window to show the output
     """
-    def __init__(self, parent=None, screen=None, can_show_startup_screen=True):
+    def __init__(self, parent=None, screen=None, can_show_startup_screen=True, is_secondary=False):
         """
         Create the display window
         """
@@ -75,12 +75,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
+        self.is_secondary = is_secondary
         self._is_initialised = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
         self.setWindowFlags(flags)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.setAutoFillBackground(True)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
         self.layout = QtWidgets.QVBoxLayout(self)
@@ -89,23 +89,37 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.webview.setAttribute(QtCore.Qt.WA_TranslucentBackground)
         self.webview.page().setBackgroundColor(QtCore.Qt.transparent)
         self.webview.display_clicked = self.disable_display
-        self.layout.addWidget(self.webview)
-        self.webview.loadFinished.connect(self.after_loaded)
-        display_base_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'display' / 'html'
-        self.display_path = display_base_path / 'display.html'
-        self.checkerboard_path = display_base_path / 'checkerboard.png'
-        self.openlp_splash_screen_path = display_base_path / 'openlp-splash-screen.png'
-        self.channel = QtWebChannel.QWebChannel(self)
-        self.display_watcher = DisplayWatcher(self)
-        self.channel.registerObject('displayWatcher', self.display_watcher)
-        self.webview.page().setWebChannel(self.channel)
-        self.display_watcher.initialised.connect(self.on_initialised)
-        self.set_url(QtCore.QUrl.fromLocalFile(path_to_str(self.display_path)))
+        if self.is_secondary:
+            self.setStyleSheet('background-color:black;')
+            self.viewer = QtWidgets.QLabel(self)
+            self.layout.addStretch()
+            self.layout.addWidget(self.viewer)
+            self.layout.addStretch()
+            self.live_timer = QtCore.QTimer()
+            self.live_timer.setInterval(16)
+            self.live_timer.timeout.connect(self._update_viewer)
+            start_timer = lambda: self.live_timer.start()
+            QtCore.QTimer.singleShot(5000, start_timer)
+        else:
+            self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+            self.layout.addWidget(self.webview)
+            self.webview.loadFinished.connect(self.after_loaded)
+            display_base_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'display' / 'html'
+            self.display_path = display_base_path / 'display.html'
+            self.checkerboard_path = display_base_path / 'checkerboard.png'
+            self.openlp_splash_screen_path = display_base_path / 'openlp-splash-screen.png'
+            self.channel = QtWebChannel.QWebChannel(self)
+            self.display_watcher = DisplayWatcher(self)
+            self.channel.registerObject('displayWatcher', self.display_watcher)
+            self.webview.page().setWebChannel(self.channel)
+            self.display_watcher.initialised.connect(self.on_initialised)
+            self.set_url(QtCore.QUrl.fromLocalFile(path_to_str(self.display_path)))
         self.is_display = False
         self.scale = 1
         self.hide_mode = None
         self.__script_done = True
         self.__script_result = None
+        self.screen = screen
         if screen and screen.is_display:
             Registry().register_function('live_display_hide', self.hide_display)
             Registry().register_function('live_display_show', self.show_display)
@@ -228,6 +242,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         :param script: The script to run, a string
         :param is_sync: Run the script synchronously. Defaults to False
         """
+        if self.is_secondary:
+            return
         log.debug((script[:80] + '..') if len(script) > 80 else script)
         # Wait for previous scripts to finish
         wait_for(lambda: self.__script_done)
@@ -461,3 +477,18 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         Set an alert
         """
         self.run_javascript('Display.alert("{text}", {settings});'.format(text=text, settings=settings))
+
+    def _update_viewer(self):
+        """
+        Utility method to update the global theme preview image.
+        """
+        # image_path = self.theme_manager.theme_path / '{file_name}.png'.format(file_name=self.global_theme)
+        # preview = QtGui.QPixmap(str(image_path))
+        win_id = QtWidgets.QApplication.desktop().winId()
+        screen = QtWidgets.QApplication.primaryScreen()
+        rect = ScreenList().current.display_geometry
+        preview = screen.grabWindow(win_id, rect.x(), rect.y(), rect.width(), rect.height())
+        if not preview.isNull():
+            preview = preview.scaled(self.screen.display_geometry.width(), self.screen.display_geometry.height(), QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+        self.viewer.setPixmap(preview)
+        self.setGeometry(self.screen.display_geometry)

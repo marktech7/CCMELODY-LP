@@ -324,8 +324,8 @@ class ScreenList(metaclass=Singleton):
         for screen in self.screens:
             if screen.number == number:
                 screen.is_display = True
-            else:
-                screen.is_display = False
+            # else:
+                # screen.is_display = False
         if can_save:
             self.save_screen_settings()
 

@@ -174,9 +174,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 display.setParent(None)
                 del display
             self.displays = []
-        for screen in self.screens:
+        for screen_num, screen in enumerate(self.screens):
             if screen.is_display:
-                display = DisplayWindow(self, screen)
+                display = DisplayWindow(self, screen, is_secondary=screen_num != 0)
                 self.displays.append(display)
                 self._reset_blank(False)
         if self.display:
@@ -675,7 +675,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         size = self.screens.current.display_geometry.size()
         if self.is_live and self.displays:
             for display in self.displays:
-                display.resize(size)
+                display.resize(display.screen.display_geometry.size())
         old_preview_width = self.preview_display.size().width()
         scale = old_preview_width / size.width()
         new_preview_size = size * scale
@@ -1049,8 +1049,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         display_with = 0
         for screen in self.screens:
+            # TODO: get main display here
             if screen.is_display:
                 display_with = screen.display_geometry.width()
+                break
         if display_with == 0:
             ratio = 0.25
         else:
