@@ -32,7 +32,7 @@ log = logging.getLogger(__name__)
 
 @core.route('/poll')
 def poll():
-    return jsonify(Registry().get('poller').poll())
+    return jsonify(Registry().get('poller').raw_poll())
 
 
 @core.route('/display', methods=['POST'])

@@ -30,7 +30,8 @@ core_views = Blueprint('old_core', __name__)
 
 @core_views.route('/api/poll')
 def poll():
-    return jsonify(Registry().get('poller').poll())
+    poll_result = Registry().get('poller').raw_poll()
+    return jsonify({'results': poll_result})
 
 
 @core_views.route('/api/display/<display>')
