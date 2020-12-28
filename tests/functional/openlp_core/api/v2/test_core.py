@@ -55,7 +55,7 @@ def test_system_information(flask_client, settings):
 
 def test_poll(flask_client):
     class FakePoller:
-        def poll(self):
+        def raw_poll(self):
             return {'foo': 'bar'}
     Registry.create().register('poller', FakePoller())
     res = flask_client.get('/api/v2/core/poll').get_json()
