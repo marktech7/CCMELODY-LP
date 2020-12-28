@@ -52,7 +52,7 @@ async def handle_websocket(websocket, path):
     """
     log.debug('WebSocket handle_websocket connection')
     await register(websocket)
-    reply = Registry().get('poller').poll_first_time()
+    reply = Registry().get('poller').poll()
     if reply:
         json_reply = json.dumps(reply).encode()
         await websocket.send(json_reply)
@@ -94,7 +94,8 @@ async def notify_users():
     """
     if USERS:  # asyncio.wait doesn't accept an empty list
         reply = Registry().get('poller').poll()
-        if reply:
+        if reply != Registry().get_flag('websockets old reply'):
+            Registry().set_flag('websockets old reply', reply)
             json_reply = json.dumps(reply).encode()
             await asyncio.wait([user.send(json_reply) for user in USERS])
 
@@ -110,6 +111,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         settings = Registry().get('settings_thread')
         address = settings.value('api/ip address')
         port = settings.value('api/websocket port')
+        Registry().set_flag('websockets old reply', {})
         # Start the event loop
         self.event_loop = asyncio.new_event_loop()
         asyncio.set_event_loop(self.event_loop)
