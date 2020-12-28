@@ -18,7 +18,10 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from unittest.mock import MagicMock
+
 from openlp.core.common.registry import Registry
+from openlp.core.api.poll import Poller
 from openlp.core.state import State
 from openlp.core.lib.plugin import PluginStatus, StringContent
 
@@ -55,11 +58,42 @@ def test_system_information(flask_client, settings):
 
 def test_poll(flask_client):
     class FakePoller:
-        def raw_poll(self):
+        def poll(self):
             return {'foo': 'bar'}
     Registry.create().register('poller', FakePoller())
     res = flask_client.get('/api/v2/core/poll').get_json()
     assert res['foo'] == 'bar'
+
+
+def test_poll_backend(settings):
+    """
+    Test the raw poll function returns the correct JSON
+    """
+    # GIVEN: the system is configured with a set of data
+    poller = Poller()
+    mocked_service_manager = MagicMock()
+    mocked_service_manager.service_id = 21
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.selected_row = 5
+    mocked_live_controller.service_item = MagicMock()
+    mocked_live_controller.service_item.unique_identifier = '23-34-45'
+    mocked_live_controller.blank_screen.isChecked.return_value = True
+    mocked_live_controller.theme_screen.isChecked.return_value = False
+    mocked_live_controller.desktop_screen.isChecked.return_value = False
+    Registry().register('live_controller', mocked_live_controller)
+    Registry().register('service_manager', mocked_service_manager)
+    # WHEN: The poller polls
+    poll_json = poller.poll()
+    # THEN: the live json should be generated and match expected results
+    assert poll_json['results']['blank'] is True, 'The blank return value should be True'
+    assert poll_json['results']['theme'] is False, 'The theme return value should be False'
+    assert poll_json['results']['display'] is False, 'The display return value should be False'
+    assert poll_json['results']['isSecure'] is False, 'The isSecure return value should be False'
+    assert poll_json['results']['twelve'] is True, 'The twelve return value should be True'
+    assert poll_json['results']['version'] == 3, 'The version return value should be 3'
+    assert poll_json['results']['slide'] == 5, 'The slide return value should be 5'
+    assert poll_json['results']['service'] == 21, 'The version return value should be 21'
+    assert poll_json['results']['item'] == '23-34-45', 'The item return value should match 23-34-45'
 
 
 def test_login_get_is_refused(flask_client):
