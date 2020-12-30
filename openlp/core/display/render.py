@@ -616,8 +616,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                     text = text.replace(' [---]', '[---]')
                 while '[---] ' in text:
                     text = text.replace('[---] ', '[---]')
-                # Grab the number of occurrences of "[---]" in the text to use as a max number of loops
-                count = text.count('[---]')
+                # Grab the number of lines in the text to use as a max number of loops
+                count = text.count('\n') + 1
                 for _ in range(count):
                     slides = text.split('\n[---]\n', 2)
                     # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
@@ -664,7 +664,6 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                         lines = text.strip('\n').split('\n')
                         pages.extend(self._paginate_slide(lines, line_end))
                         break
-                    count += 1
             else:
                 # Clean up line endings.
                 pages = self._paginate_slide(text.split('\n'), line_end)
