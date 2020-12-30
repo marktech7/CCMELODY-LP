@@ -548,9 +548,10 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         # TODO: Change layout_style to a property
+        print("Hello")
         self.settings_tab.layout_style = index
         self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
-        self.settings.setValue('bibles/verse layout style')
+        self.settings.setValue('bibles/verse layout style', self.settings_tab.layout_style)
 
     def on_version_combo_box_index_changed(self):
         """
