@@ -616,8 +616,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                     text = text.replace(' [---]', '[---]')
                 while '[---] ' in text:
                     text = text.replace('[---] ', '[---]')
-                # Grab the number of occurrences of "[---]" in the text to use as a max number of loops
-                count = text.count('[---]')
+                # Grab the number of lines in the text to use as a max number of loops
+                count = text.count('\n') + 1
                 for _ in range(count):
                     slides = text.split('\n[---]\n', 2)
                     # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
@@ -664,7 +664,6 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                         lines = text.strip('\n').split('\n')
                         pages.extend(self._paginate_slide(lines, line_end))
                         break
-                    count += 1
             else:
                 # Clean up line endings.
                 pages = self._paginate_slide(text.split('\n'), line_end)
@@ -694,11 +693,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         html_lines = list(map(render_tags, lines))
         # Text too long so go to next page.
         if not self._text_fits_on_slide(separator.join(html_lines)):
-            html_text, previous_raw = self._binary_chop(
+            previous_html, previous_raw = self._binary_chop(
                 formatted, previous_html, previous_raw, html_lines, lines, separator, '')
         else:
             previous_raw = separator.join(lines)
-        formatted.append(previous_raw)
+            previous_html = True
+        if previous_html:
+            formatted.append(previous_raw)
         return formatted
 
     def _paginate_slide_words(self, lines, line_end):
@@ -739,7 +740,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 previous_html += html_line + line_end
                 previous_raw += line + line_end
-        formatted.append(previous_raw)
+        if previous_html:
+            formatted.append(previous_raw)
         return formatted
 
     def _binary_chop(self, formatted, previous_html, previous_raw, html_list, raw_list, separator, line_end):
@@ -751,7 +753,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         :param formatted: The list to append any slides.
         :param previous_html: The html text which is know to fit on a slide, but is not yet added to the list of
         slides. (unicode string)
-        :param previous_raw: The raw text (with formatting tags) which is know to fit on a slide, but is not yet added
+        :param previous_raw: The raw text (with formatting tags) which is known to fit on a slide, but is not yet added
         to the list of slides. (unicode string)
         :param html_list: The elements which do not fit on a slide and needs to be processed using the binary chop.
         The text contains html.
@@ -772,7 +774,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 smallest_index = index
                 index = index + (highest_index - index) // 2
-            # We found the number of words which will fit.
+            # We found the number of elements which will fit.
             if smallest_index == index or highest_index == index:
                 index = smallest_index
                 text = previous_raw.rstrip('<br>') + separator.join(raw_list[:index + 1])
@@ -787,9 +789,10 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 continue
             # Check if the remaining elements fit on the slide.
-            if self._text_fits_on_slide(html_tags + separator.join(html_list[index + 1:]).strip()):
-                previous_html = html_tags + separator.join(html_list[index + 1:]).strip() + line_end
-                previous_raw = raw_tags + separator.join(raw_list[index + 1:]).strip() + line_end
+            check_string = separator.join(html_list[index + 1:]).strip()
+            if self._text_fits_on_slide(html_tags + check_string):
+                previous_html = html_tags + check_string + line_end
+                previous_raw = raw_tags + check_string + line_end
                 break
             else:
                 # The remaining elements do not fit, thus reset the indexes, create a new list and continue.
@@ -806,16 +809,19 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
     def _text_fits_on_slide(self, text):
         """
         Checks if the given ``text`` fits on a slide. If it does ``True`` is returned, otherwise ``False``.
+        Text should always "fit" for empty strings
 
         :param text:  The text to check. It may contain HTML tags.
         """
+        if text == '':
+            return True
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
         self.run_javascript('Display.setTextSlide("{text}");'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
-        does_text_fits = self.run_javascript('Display.doesContentFit();', is_sync=True)
-        return does_text_fits
+        does_text_fit = self.run_javascript('Display.doesContentFit();', is_sync=True)
+        return does_text_fit
 
     def save_screenshot(self, fname=None):
         """
