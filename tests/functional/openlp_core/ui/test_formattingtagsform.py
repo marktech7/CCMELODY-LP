@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,7 +27,7 @@ from unittest.mock import MagicMock, call, patch
 from openlp.core.ui.formattingtagform import FormattingTagForm
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def tagform_env(registry):
     setup_patcher = patch('openlp.core.ui.formattingtagform.FormattingTagForm._setup')
     mocked_setup_patcher = setup_patcher.start()

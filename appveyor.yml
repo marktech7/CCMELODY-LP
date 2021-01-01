@@ -48,7 +48,7 @@ test_script:
 after_test:
   # Only package on the master repo
   - ps: >-
-      If (($env:APPVEYOR_REPO_TAG) -Or ($env:APPVEYOR_SCHEDULED_BUILD) -Or ($env:FORCE_PACKAGING -eq 1)) {
+      If (($env:APPVEYOR_REPO_TAG -eq $True) -Or ($env:APPVEYOR_SCHEDULED_BUILD -eq $True) -Or ($env:FORCE_PACKAGING -eq 1)) {
           # Continue on error
           $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
@@ -92,15 +92,17 @@ after_test:
             # If this is a release build, set release argument
             $releaseArg = ""
             If ($env:APPVEYOR_REPO_TAG -eq $True) {
-                $releaseArg = "--release $env:APPVEYOR_REPO_TAG_NAME"
+                $releaseArg = "--release ""$env:APPVEYOR_REPO_TAG_NAME"""
             }
             cd packaging-master
             If ($isWindows) {
-                python builders/windows-builder.py $releaseArg --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
+                $cmd = "python builders/windows-builder.py $releaseArg --skip-update -c windows/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master --portable"
+                iex $cmd
             } else {
                 # Install qt to get the lrelease tool
                 brew install qt
-                python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master
+                $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
+                iex $cmd
             }
           } else {
             cd packaging-master

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,7 +27,7 @@ from openlp.core.projectors.pjlink import PJLink
 from tests.resources.projector.data import TEST1_DATA
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def pjlink():
     pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
     yield pj_link

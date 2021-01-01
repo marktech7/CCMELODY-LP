@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -102,7 +102,7 @@ def test_upgrade_old_projector_db(temp_folder):
     assert updated_to_version == latest_version, 'The projector DB should have been upgrade to the latest version'
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def projector(temp_folder, settings):
     """
     Set up anything necessary for all tests

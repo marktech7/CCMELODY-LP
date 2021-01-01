@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ from openlp.core.api.websockets import WebSocketServer
 from openlp.core.common.registry import Registry
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def poller(settings):
     poll = Poller()
     yield poll

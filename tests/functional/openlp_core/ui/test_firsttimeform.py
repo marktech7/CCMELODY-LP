@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -48,7 +48,7 @@ def ftf_app(registry, qapp):
     Registry().register('application', qapp)
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def download_env(registry):
     download_worker_patcher = patch('openlp.core.ui.firsttimeform.DownloadWorker')
     run_thread_patcher = patch('openlp.core.ui.firsttimeform.run_thread')

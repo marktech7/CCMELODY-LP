@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,7 +35,7 @@ from openlp.plugins.bibles.lib import upgrade
 from tests.utils.constants import RESOURCE_PATH
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def mock_message_box():
     patched_message_box = patch('openlp.plugins.bibles.lib.upgrade.QtWidgets.QMessageBox')
     mocked_message_box = patched_message_box.start()
@@ -51,7 +51,7 @@ def mock_message_box():
     patched_message_box.stop()
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def db_url():
     tmp_path = Path(mkdtemp())
     db_path = RESOURCE_PATH / 'bibles' / 'web-bible-2.4.6-proxy-meta-v1.sqlite'

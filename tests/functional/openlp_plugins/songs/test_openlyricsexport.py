@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,7 +32,7 @@ import pytest
 from openlp.plugins.songs.lib.openlyricsexport import OpenLyricsExport
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def temp_folder():
     temp_path = Path(mkdtemp())
     yield temp_path

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -548,6 +548,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         # TODO: Change layout_style to a property
+        print("Hello")
         self.settings_tab.layout_style = index
         self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
         self.settings.setValue('bibles/verse layout style', self.settings_tab.layout_style)

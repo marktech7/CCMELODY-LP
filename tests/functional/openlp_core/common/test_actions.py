@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,7 +34,7 @@ MOCK_ACTION1 = MagicMock(**{'text.return_value': 'first'})
 MOCK_ACTION2 = MagicMock(**{'text.return_value': 'second'})
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def action_list(settings):
     act_list = ActionList.get_instance()
     yield act_list

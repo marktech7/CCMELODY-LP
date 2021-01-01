@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,7 +27,7 @@ from unittest.mock import MagicMock, call, patch
 from openlp.core.widgets.buttons import ColorButton
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def buttons_env():
     change_color_patcher = patch('openlp.core.widgets.buttons.ColorButton.change_color')
     clicked_patcher = patch('openlp.core.widgets.buttons.ColorButton.clicked')

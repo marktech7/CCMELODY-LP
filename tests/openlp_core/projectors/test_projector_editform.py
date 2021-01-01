@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +30,7 @@ from openlp.core.projectors.editform import ProjectorEditForm
 from tests.resources.projector.data import TEST1_DATA, TEST_DB
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def projector_form(settings):
     with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
         mocked_init_url.return_value = 'sqlite:///' + TEST_DB

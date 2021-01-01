@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,7 +35,7 @@ from openlp.plugins.presentations.lib.pdfcontroller import PdfController, PdfDoc
 from tests.utils.constants import RESOURCE_PATH
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def pdf_env(settings, mock_plugin, mocked_qapp):
     temp_folder_path = Path(mkdtemp())
     thumbnail_folder_path = Path(mkdtemp())

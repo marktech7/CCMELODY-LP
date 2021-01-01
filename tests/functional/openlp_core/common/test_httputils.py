@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -31,7 +31,7 @@ from openlp.core.common.httputils import ProxyMode, download_file, get_proxy_set
     get_random_user_agent, get_web_page
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def temp_file(settings):
     tmp_file = os.path.join(tempfile.gettempdir(), 'testfile')
     yield tmp_file

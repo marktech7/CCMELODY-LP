@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ from openlp.plugins.bibles import lib
 from openlp.plugins.bibles.lib import SearchResults, get_reference_match, update_reference_separators
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def mocked_bible_test(registry):
     """Local test setup"""
     ret_value = MagicMock(**{'value.return_value': ''})

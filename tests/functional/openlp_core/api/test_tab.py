@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -33,7 +33,7 @@ from openlp.core.common.registry import Registry
 ZERO_URL = '0.0.0.0'
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def api_tab(settings):
     Registry().set_flag('website_version', '00-00-0000')
     parent = QtWidgets.QMainWindow()

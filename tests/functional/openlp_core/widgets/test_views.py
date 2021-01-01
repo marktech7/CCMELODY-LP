@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -37,7 +37,7 @@ def clapperboard(mock_settings):
     return UiIcons().clapperboard
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def preview_widget_env():
     """Local test setup"""
     parent_patcher = patch('openlp.core.widgets.views.ListPreviewWidget.parent')

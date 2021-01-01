@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -40,7 +40,7 @@ def media_item(settings):
     return m_item
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def mock_plugin(temp_folder):
     m_plugin = MagicMock()
     m_plugin.settings_section = temp_folder

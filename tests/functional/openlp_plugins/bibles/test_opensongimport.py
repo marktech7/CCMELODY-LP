@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,14 +35,14 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'bibles'
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def manager():
     db_man = patch('openlp.plugins.bibles.lib.db.Manager')
     yield db_man.start()
     db_man.stop()
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def mocked_find_and_create_book():
     facb = patch.object(BibleImport, 'find_and_create_book')
     yield facb.start()
