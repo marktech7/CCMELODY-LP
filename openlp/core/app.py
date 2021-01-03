@@ -339,6 +339,7 @@ def main():
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
+    QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     application = QtWidgets.QApplication(qt_args)
     application.setOrganizationName('OpenLP')
     application.setOrganizationDomain('openlp.org')
