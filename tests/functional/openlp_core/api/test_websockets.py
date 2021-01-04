@@ -24,7 +24,7 @@ Functional tests to test the Http Server Class.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from openlp.core.api.poll import WebSocketPoller
+from openlp.core.api.websocketspoll import WebSocketPoller
 from openlp.core.api.websockets import WebSocketServer
 from openlp.core.common.registry import Registry
 
@@ -67,9 +67,9 @@ def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, regist
     assert MockWebSocketWorker.call_count == 0, 'The http thread should not have been called'
 
 
-def test_poll(poller, settings):
+def test_poller_get_state(poller, settings):
     """
-    Test the poll function returns the correct JSON
+    Test the get_state function returns the correct JSON
     """
     # GIVEN: the system is configured with a set of data
     mocked_service_manager = MagicMock()
@@ -84,7 +84,7 @@ def test_poll(poller, settings):
     Registry().register('live_controller', mocked_live_controller)
     Registry().register('service_manager', mocked_service_manager)
     # WHEN: The poller polls
-    poll_json = poller.poll()
+    poll_json = poller.get_state()
     # THEN: the live json should be generated and match expected results
     assert poll_json['results']['blank'] is True, 'The blank return value should be True'
     assert poll_json['results']['theme'] is False, 'The theme return value should be False'
@@ -95,3 +95,28 @@ def test_poll(poller, settings):
     assert poll_json['results']['slide'] == 5, 'The slide return value should be 5'
     assert poll_json['results']['service'] == 21, 'The version return value should be 21'
     assert poll_json['results']['item'] == '23-34-45', 'The item return value should match 23-34-45'
+
+
+def test_poller_get_state_if_changed(poller, settings):
+    """
+    Test the get_state_if_changed function returns None if the state has not changed
+    """
+    # GIVEN: the system is configured with a set of data
+    poller._previous = {}
+    mocked_service_manager = MagicMock()
+    mocked_service_manager.service_id = 21
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.selected_row = 5
+    mocked_live_controller.service_item = MagicMock()
+    mocked_live_controller.service_item.unique_identifier = '23-34-45'
+    mocked_live_controller.blank_screen.isChecked.return_value = True
+    mocked_live_controller.theme_screen.isChecked.return_value = False
+    mocked_live_controller.desktop_screen.isChecked.return_value = False
+    Registry().register('live_controller', mocked_live_controller)
+    Registry().register('service_manager', mocked_service_manager)
+    # WHEN: The poller polls twice
+    poll_json = poller.get_state_if_changed()
+    poll_json2 = poller.get_state_if_changed()
+    # THEN: The get_state_if_changed function should return None on the second call because the state has not changed
+    assert poll_json is not None, 'The first get_state_if_changed function call should have not returned None'
+    assert poll_json2 is None, 'The second get_state_if_changed function should return None'
