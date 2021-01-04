@@ -56,15 +56,6 @@ def test_system_information(flask_client, settings):
     assert not res['login_required']
 
 
-def test_poll(flask_client):
-    class FakePoller:
-        def poll(self):
-            return {'foo': 'bar'}
-    Registry.create().register('poller', FakePoller())
-    res = flask_client.get('/api/v2/core/poll').get_json()
-    assert res['foo'] == 'bar'
-
-
 def test_poll_backend(settings):
     """
     Test the raw poll function returns the correct JSON
