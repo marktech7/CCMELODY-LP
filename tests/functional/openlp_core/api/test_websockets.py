@@ -24,14 +24,14 @@ Functional tests to test the Http Server Class.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from openlp.core.api.poll import Poller
+from openlp.core.api.poll import WebSocketPoller
 from openlp.core.api.websockets import WebSocketServer
 from openlp.core.common.registry import Registry
 
 
 @pytest.fixture
 def poller(settings):
-    poll = Poller()
+    poll = WebSocketPoller()
     yield poll
 
 
