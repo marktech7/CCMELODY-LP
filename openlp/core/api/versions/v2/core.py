@@ -30,11 +30,6 @@ core = Blueprint('core', __name__)
 log = logging.getLogger(__name__)
 
 
-@core.route('/poll')
-def poll():
-    return jsonify(Registry().get('poller').poll())
-
-
 @core.route('/display', methods=['POST'])
 @login_required
 def toggle_display():

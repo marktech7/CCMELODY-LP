@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2020 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,21 +21,18 @@
 from openlp.core.common.mixins import RegistryProperties
 
 
-class Poller(RegistryProperties):
+class WebSocketPoller(RegistryProperties):
     """
-    Accessed by the web layer to get status type information from the application
-
-    WARNING:
-    This class is DEPRECATED, if you need the state of the program, use the registry to access variables.
-    Used only for the deprecated V1 HTTP API.
+    Accessed by web sockets to get status type information from the application
     """
     def __init__(self):
         """
-        Constructor for the poll builder class.
+        Constructor for the web sockets poll builder class.
         """
-        super(Poller, self).__init__()
+        super(WebSocketPoller, self).__init__()
+        self._previous = {}
 
-    def poll(self):
+    def get_state(self):
         return {'results': {
             'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
@@ -49,3 +46,18 @@ class Poller(RegistryProperties):
             'isSecure': self.settings.value('api/authentication enabled'),
             'chordNotation': self.settings.value('songs/chord notation')
         }}
+
+    def get_state_if_changed(self):
+        """
+        Poll OpenLP to determine current state if it has changed.
+
+        This must only be used by web sockets or else we could miss a state change.
+
+        :return: The current application state or None if unchanged since last call
+        """
+        current = self.get_state()
+        if self._previous != current:
+            self._previous = current
+            return current
+        else:
+            return None

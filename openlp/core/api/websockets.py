@@ -19,8 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`http` module contains the API web server. This is a lightweight web server used by remotes to interact
-with OpenLP. It uses JSON to communicate with the remotes.
+The :mod:`websockets` module contains the websockets server. This is a server used by remotes to listen for stage
+changes from within OpenLP. It uses JSON to communicate with the remotes.
 """
 import asyncio
 import json
@@ -32,8 +32,10 @@ from websockets import serve
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.core.threading import ThreadWorker, run_thread
+from openlp.core.api.websocketspoll import WebSocketPoller
 
 USERS = set()
+poller = WebSocketPoller()
 
 
 log = logging.getLogger(__name__)
@@ -52,7 +54,7 @@ async def handle_websocket(websocket, path):
     """
     log.debug('WebSocket handle_websocket connection')
     await register(websocket)
-    reply = Registry().get('poller').poll_first_time()
+    reply = poller.get_state()
     if reply:
         json_reply = json.dumps(reply).encode()
         await websocket.send(json_reply)
@@ -93,7 +95,7 @@ async def notify_users():
     :return:
     """
     if USERS:  # asyncio.wait doesn't accept an empty list
-        reply = Registry().get('poller').poll()
+        reply = poller.get_state_if_changed()
         if reply:
             json_reply = json.dumps(reply).encode()
             await asyncio.wait([user.send(json_reply) for user in USERS])
