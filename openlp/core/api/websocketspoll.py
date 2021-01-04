@@ -30,10 +30,10 @@ class WebSocketPoller(RegistryProperties):
         Constructor for the web sockets poll builder class.
         """
         super(WebSocketPoller, self).__init__()
-        self.previous = {}
+        self._previous = {}
 
-    def raw_poll(self):
-        return {
+    def get_state(self):
+        return {'results': {
             'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
             'slide': self.live_controller.selected_row or 0,
@@ -45,23 +45,19 @@ class WebSocketPoller(RegistryProperties):
             'version': 3,
             'isSecure': self.settings.value('api/authentication enabled'),
             'chordNotation': self.settings.value('songs/chord notation')
-        }
+        }}
 
-    def poll(self):
+    def get_state_if_changed(self):
         """
         Poll OpenLP to determine current state if it has changed.
 
         This must only be used by web sockets or else we could miss a state change.
+
+        :return: The current application state or None if unchanged since last call
         """
-        current = self.raw_poll()
-        if self.previous != current:
-            self.previous = current
-            return {'results': current}
+        current = self.get_state()
+        if self._previous != current:
+            self._previous = current
+            return current
         else:
             return None
-
-    def poll_first_time(self):
-        """
-        Poll OpenLP to determine the current state.
-        """
-        return {'results': self.raw_poll()}

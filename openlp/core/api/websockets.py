@@ -54,7 +54,7 @@ async def handle_websocket(websocket, path):
     """
     log.debug('WebSocket handle_websocket connection')
     await register(websocket)
-    reply = poller.poll_first_time()
+    reply = poller.get_state()
     if reply:
         json_reply = json.dumps(reply).encode()
         await websocket.send(json_reply)
@@ -95,7 +95,7 @@ async def notify_users():
     :return:
     """
     if USERS:  # asyncio.wait doesn't accept an empty list
-        reply = poller.poll()
+        reply = poller.get_state_if_changed()
         if reply:
             json_reply = json.dumps(reply).encode()
             await asyncio.wait([user.send(json_reply) for user in USERS])
