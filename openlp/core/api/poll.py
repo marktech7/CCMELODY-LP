@@ -24,6 +24,10 @@ from openlp.core.common.mixins import RegistryProperties
 class Poller(RegistryProperties):
     """
     Accessed by the web layer to get status type information from the application
+
+    WARNING:
+    This class is DEPRECATED, if you need the state of the program, use the registry to access variables.
+    Used only for the deprecated V1 HTTP API.
     """
     def __init__(self):
         """
