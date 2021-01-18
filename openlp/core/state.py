@@ -147,11 +147,15 @@ class State(LogMixin, metaclass=Singleton):
         :return: Have the preconditions been met.
         :rtype: bool
         """
-        if self.modules[name].requires is None:
-            return self.modules[name].pass_preconditions
-        else:
-            mod = self.modules[name].requires
-            return self.modules[mod].pass_preconditions
+        try:
+            if self.modules[name].requires is None:
+                return self.modules[name].pass_preconditions
+            else:
+                mod = self.modules[name].requires
+                return self.modules[mod].pass_preconditions
+        except KeyError:
+            # Module is missing so therefore not found.
+            return False
 
     def list_plugins(self):
         """

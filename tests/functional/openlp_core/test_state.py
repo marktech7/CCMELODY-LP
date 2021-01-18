@@ -207,3 +207,20 @@ def test_check_preconditions_required_module(state):
 
     # THEN: The correct result should be returned
     assert result is False
+
+
+def test_check_preconditions_missing_module(state):
+    """
+    Test that the check_preconditions() method returns the correct attribute when the module is missing
+    """
+    # GIVEN: A State with two modules
+    State().modules.update({
+        'test_pre2': MagicMock(requires='test_pre3', pass_preconditions=True),
+        'test_pre3': MagicMock(requires=None, pass_preconditions=False)
+    })
+
+    # WHEN: check_preconditions() is called
+    result = State().check_preconditions('test_pre1')
+
+    # THEN: The correct result should be returned
+    assert result is False
