@@ -9,12 +9,12 @@ stack: python 3.8
 environment:
   matrix:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      PY_DIR: C:\\Python39-x64
+      PY_DIR: C:\\Python38-x64
       CHOCO_VLC_ARG:
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      PY_DIR: C:\\Python39
+      PY_DIR: C:\\Python38
       CHOCO_VLC_ARG: --forcex86
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
