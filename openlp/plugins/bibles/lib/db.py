@@ -761,7 +761,7 @@ class AlternativeBookNamesDB(Manager):
         If necessary loads up the database and creates the tables if the database doesn't exist.
         """
         if AlternativeBookNamesDB.cursor is None:
-            file_path = AppLocation.get_directory(AppLocation.DataDir) / 'bibles' / 'alternative_book_names.sqlite'
+            file_path = AppLocation.get_section_data_path('bibles') / 'alternative_book_names.sqlite'
             exists = file_path.exists()
             AlternativeBookNamesDB.conn = sqlite3.connect(str(file_path))
             if not exists:
