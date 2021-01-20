@@ -328,7 +328,8 @@ def test_populate_bible_combo_boxes(media_item):
     media_item.plugin.manager.get_bibles.return_value = \
         {'Bible 2': bible_2, 'Bible 1': bible_1, 'Bible 3': bible_3}
     with patch('openlp.plugins.bibles.lib.mediaitem.get_locale_key', side_effect=lambda x: x), \
-            patch('openlp.plugins.bibles.lib.mediaitem.find_and_set_in_combo_box'):
+            patch('openlp.plugins.bibles.lib.mediaitem.find_and_set_in_combo_box'), \
+            patch.object(media_item, 'on_version_combo_box_index_changed'):
 
         # WHEN: Calling populate_bible_combo_boxes
         media_item.populate_bible_combo_boxes()
