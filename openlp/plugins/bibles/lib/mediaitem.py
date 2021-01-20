@@ -344,6 +344,8 @@ class BibleMediaItem(MediaManagerItem):
         # set the default value
         bible = self.settings.value('bibles/primary bible')
         find_and_set_in_combo_box(self.version_combo_box, bible)
+        # make sure the selected bible ripples down to other gui elements
+        self.on_version_combo_box_index_changed()
 
     def reload_bibles(self):
         """
