@@ -182,7 +182,7 @@ class SongSelectImport(object):
         except (TypeError, URLError) as error:
             log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
-        lyrics_link = song_page.find('a', title='View song lyrics')['href']
+        lyrics_link = song_page.find('section', 'page-section').find('a')['href']
         if callback:
             callback()
         try:
@@ -192,15 +192,13 @@ class SongSelectImport(object):
             return None
         if callback:
             callback()
-        copyright_elements = []
         theme_elements = []
-        copyrights_regex = re.compile(r'\bCopyrights\b')
+        # Themes regex only works if the ccli site is in english.
         themes_regex = re.compile(r'\bThemes\b')
         for ul in song_page.find_all('ul', 'song-meta-list'):
-            if ul.find('li', string=copyrights_regex):
-                copyright_elements.extend(ul.find_all('li')[1:])
             if ul.find('li', string=themes_regex):
                 theme_elements.extend(ul.find_all('li')[1:])
+        copyright_elements = lyrics_page.find('ul', 'copyright').find_all('li')
         author_elements = song_page.find('div', 'content-title').find('ul', 'authors').find_all('li')
         song['title'] = unescape(song_page.find('div', 'content-title').find('h1').string.strip())
         song['authors'] = [unescape(li.find('a').string).strip() for li in author_elements]
