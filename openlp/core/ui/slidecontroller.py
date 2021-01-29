@@ -1013,6 +1013,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.application.process_events()
             self.ignore_toolbar_resize_events = False
             self.on_controller_size_changed()
+            if self.settings.value('core/auto unblank'):
+                self.set_hide_mode(None)
         self.log_debug('_process_item end')
 
     def on_slide_selected_index(self, message):
@@ -1489,7 +1491,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Triggered when a preview slide item is double clicked
         """
         if self.service_item:
-            if self.settings.value('advanced/double click live') and self.settings.value('core/auto unblank'):
+            if self.settings.value('advanced/double click live'):
                 # Live and Preview have issues if we have video or presentations
                 # playing in both at the same time.
                 if self.service_item.is_command():
