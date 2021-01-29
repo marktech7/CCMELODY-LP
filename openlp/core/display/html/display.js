@@ -654,7 +654,7 @@ var Display = {
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
       img.src = slide.path;
-      img.setAttribute("style", "max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);");
+      img.setAttribute("style", "width: 100%; height: 100%; margin: 0; object-fit: contain;");
       section.appendChild(img);
       parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
