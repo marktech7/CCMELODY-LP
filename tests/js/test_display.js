@@ -772,9 +772,9 @@ describe("Display.setImageSlides", function () {
     expect($(".slides > section > section").length).toEqual(2);
     expect($(".slides > section > section > img").length).toEqual(2);
     expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
-    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
     expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
-    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
   });
 });
