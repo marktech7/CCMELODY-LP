@@ -1099,7 +1099,6 @@ var Display = {
     footerStyle["font-style"] = !!Display._theme.font_footer_italics ? "italic" : "";
     footerStyle["font-weight"] = !!Display._theme.font_footer_bold ? "bold" : "";
     footerStyle["white-space"] = Display._theme.font_footer_wrap ? "normal" : "nowrap";
-    Display._footerContainer.style.cssText = "";
     for (var footerKey in footerStyle) {
       if (footerStyle.hasOwnProperty(footerKey)) {
         Display._footerContainer.style.setProperty(footerKey, footerStyle[footerKey]);
