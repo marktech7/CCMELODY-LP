@@ -1507,3 +1507,75 @@ def test_display_results_results(media_item):
         # THEN: addItem should have been with the display items
         mocked_add_built_results_to_list_widget.assert_called_once_with(
             [{'item_title': 'Title 1'}, {'item_title': 'Title 2'}])
+
+
+def test_search_options(media_item):
+    """
+    Test that the bible search options are returned
+    """
+    # GIVEN: An instance of BibleMediaItem, and mocked primary bible setting
+    media_item.plugin.manager.get_bibles.return_value = MagicMock(keys=MagicMock(return_value=['a', 'b', 'c']))
+    media_item.settings.value = lambda key: {'bibles/primary bible': 'b'}[key]
+
+    # WHEN: calling search_options
+    result = media_item.search_options()
+
+    # THEN: result should be correct
+    assert result == [{'name': 'primary bible', 'list': ['a', 'b', 'c'], 'selected': 'b'}]
+
+
+def test_set_search_option(media_item):
+    """
+    Test that the bible set search option function works
+    """
+    # GIVEN: An instance of BibleMediaItem, with a mocked get_bibles and a mocked populate_bible_combo_boxes function
+    media_item.plugin.manager.get_bibles.return_value = MagicMock(keys=MagicMock(return_value=['a', 'b', 'c']))
+    populate_bible_combo_boxes = MagicMock()
+    Registry().remove_function('populate_bible_combo_boxes', media_item.populate_bible_combo_boxes)
+    Registry().register_function('populate_bible_combo_boxes', populate_bible_combo_boxes)
+
+    # WHEN: calling set_search_option
+    result = media_item.set_search_option('primary bible', 'c')
+
+    # THEN: result should be correct and the new bible set, and combo boxes updated
+    assert result is True
+    media_item.settings.setValue.assert_called_once_with('bibles/primary bible', 'c')
+    populate_bible_combo_boxes.assert_called_once()
+
+
+def test_set_search_option_invalid_option(media_item):
+    """
+    Test that the bible set search option function rejects when using non existing option
+    """
+    # GIVEN: An instance of BibleMediaItem, with a mocked get_bibles and a mocked populate_bible_combo_boxes function
+    media_item.plugin.manager.get_bibles.return_value = MagicMock(keys=MagicMock(return_value=['a', 'b', 'c']))
+    populate_bible_combo_boxes = MagicMock()
+    Registry().remove_function('populate_bible_combo_boxes', media_item.populate_bible_combo_boxes)
+    Registry().register_function('populate_bible_combo_boxes', populate_bible_combo_boxes)
+
+    # WHEN: calling set_search_option with invalid option
+    result = media_item.set_search_option('not an option', 'a')
+
+    # THEN: result should be False and nothing set, and combo boxes not updated
+    assert result is False
+    media_item.settings.setValue.assert_not_called()
+    populate_bible_combo_boxes.assert_not_called()
+
+
+def test_set_search_option_invalid_value(media_item):
+    """
+    Test that the bible set search option function rejects when using non existing value
+    """
+    # GIVEN: An instance of BibleMediaItem, with a mocked get_bibles and a mocked populate_bible_combo_boxes function
+    media_item.plugin.manager.get_bibles.return_value = MagicMock(keys=MagicMock(return_value=['a', 'b', 'c']))
+    populate_bible_combo_boxes = MagicMock()
+    Registry().remove_function('populate_bible_combo_boxes', media_item.populate_bible_combo_boxes)
+    Registry().register_function('populate_bible_combo_boxes', populate_bible_combo_boxes)
+
+    # WHEN: calling set_search_option with invalid value
+    result = media_item.set_search_option('primary bible', 'not a value')
+
+    # THEN: result should be False and nothing set, and combo boxes not updated
+    assert result is False
+    media_item.settings.setValue.assert_not_called()
+    populate_bible_combo_boxes.assert_not_called()
