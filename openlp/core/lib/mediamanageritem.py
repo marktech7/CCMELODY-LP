@@ -700,6 +700,27 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             if item:
                 self.auto_select_id = item.data(QtCore.Qt.UserRole)
 
+    def search_options(self, option=None):
+        """
+        Returns a list of search options and values for bibles
+        Must return in this format:
+        [{name:'<option_name>',list:[<possible values...>],selected:<selected_value>}]
+
+        :param option: Can be set to an option to only return that option
+        """
+        # By default plugins have no search options
+        return []
+
+    def set_search_option(self, search_option, value):
+        """
+        Sets a search option
+
+        :param search_option: The option to be set
+        :param value: The new value for the search option
+        :return: True if the search_option was successfully set
+        """
+        return False
+
     def search(self, string, show_error=True):
         """
         Performs a plugin specific search for items containing ``string``
