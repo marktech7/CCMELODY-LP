@@ -314,12 +314,11 @@ class TestSongSelectImport(TestCase, TestMixin):
           </ul>
         </div>
         <div class="song-content-data"><ul><li><strong>1234_cclinumber_5678</strong></li></ul></div>
-        <a title="View song lyrics" href="pretend link"></a>
+        <section class="page-section">
+          <a title="View song lyrics" href="pretend link"></a>
+        </section>
         <ul class="song-meta-list">
           <li>Themes</li><li><a>theme1</a></li><li><a>theme2</a></li>
-        </ul>
-        <ul class="song-meta-list">
-          <li>Copyrights</li><li>Copy thing</li><li>Copy thing 2</li>
         </ul>
         </body></html>
         '''
@@ -330,6 +329,9 @@ class TestSongSelectImport(TestCase, TestMixin):
             <h3>Verse 2</h3>
             <p>verse thing 2</p>
         </div>
+        <ul class="copyright">
+          <li>Copy thing</li><li>Copy thing 2</li>
+        </ul>
         </body></html>
         '''
         mocked_get_page.side_effect = [fake_song_page, fake_lyrics_page]
