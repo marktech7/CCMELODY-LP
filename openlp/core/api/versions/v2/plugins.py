@@ -54,6 +54,22 @@ def add(plugin_name, id):
         getattr(plugin.media_item, '{action}_add_to_service'.format(action=plugin_name)).emit([item_id, True])
 
 
+def get_options(plugin_name):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
+    if plugin.status == PluginStatus.Active and plugin.media_item:
+        options = plugin.media_item.search_options()
+        return options
+    return []
+
+
+def set_option(plugin_name, search_option, value):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
+    success = False
+    if plugin.status == PluginStatus.Active and plugin.media_item:
+        success = plugin.media_item.set_search_option(search_option, value)
+    return success
+
+
 @plugins.route('/<plugin>/search')
 @login_required
 def search_view(plugin):
@@ -93,13 +109,7 @@ def search_options(plugin):
     Get the plugin's search options
     """
     log.debug(f'{plugin}/search-options called')
-    if plugin == 'bibles':
-        bible_plugin = Registry().get('bible_plugin')
-        bibles = list(bible_plugin.manager.get_bibles().keys())
-        primary = Registry().get('settings').value('bibles/primary bible')
-        return jsonify(primary=primary, bibles=bibles)
-    else:
-        return '', 501
+    return jsonify(get_options(plugin))
 
 
 @plugins.route('/<plugin>/search-options', methods=['POST'])
@@ -110,22 +120,17 @@ def set_search_option(plugin):
     """
     log.debug(f'{plugin}/search-options-set called')
     data = request.json
-    option = ''
     if not data:
         log.error('Missing request data')
         abort(400)
-    elif type(data.get('option')) is not (str or int):
-        abort(400)
-    try:
-        option = data.get('option')
-    except ValueError:
-        log.error('Invalid data passed: ' + option)
+    option = data.get('option', None)
+    value = data.get('value', None)
+    if value is None:
+        log.error('Invalid data passed in value')
         abort(400)
 
-    if plugin == 'bibles':
-        Registry().get('settings').setValue('bibles/primary bible', option)
-        Registry().execute('populate_bible_combo_boxes')
+    if set_option(plugin, option, value):
         return '', 204
     else:
-        log.error('Unimplemented method')
-        return '', 501
+        log.error('Invalid option or value')
+        return '', 400
