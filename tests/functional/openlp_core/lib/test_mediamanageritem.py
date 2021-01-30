@@ -118,3 +118,31 @@ def test_on_double_clicked_single_click_preview(mocked_on_preview_click, mocked_
     # THEN: on_live_click() should have been called
     assert 0 == mocked_on_live_click.call_count, 'on_live_click() should not have been called'
     assert 0 == mocked_on_preview_click.call_count, 'on_preview_click() should not have been called'
+
+
+def test_search_options(media_env):
+    """
+    Test that the default search options return a empty list
+    """
+    # GIVEN: A media manager item
+    mmi = MediaManagerItem(None)
+
+    # WHEN: The search options are requested
+    result = mmi.search_options()
+
+    # THEN: should return a empty list
+    assert result == []
+
+
+def test_set_search_option(media_env):
+    """
+    Test that the default set search option return false because it's setting a non existant setting
+    """
+    # GIVEN: A media manager item
+    mmi = MediaManagerItem(None)
+
+    # WHEN: The a search option is set
+    result = mmi.set_search_option('my option', 'my value')
+
+    # THEN: should return false
+    assert result is False
