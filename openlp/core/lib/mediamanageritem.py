@@ -378,7 +378,8 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         if new_file_paths:
             if 'target' in data:
                 self.validate_and_load(new_file_paths, data['target'])
-            self.validate_and_load(new_file_paths)
+            else:
+                self.validate_and_load(new_file_paths)
 
     def dnd_move_internal(self, target):
         """
