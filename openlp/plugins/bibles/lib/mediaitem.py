@@ -1000,6 +1000,39 @@ class BibleMediaItem(MediaManagerItem):
         }[self.settings_tab.display_style]
         return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
 
+    def search_options(self, option=None):
+        """
+        Returns a list of search options and values for bibles
+
+        :param option: Can be set to an option to only return that option
+        """
+        if (option is not None and option != 'primary bible'):
+            return []
+        bibles = list(self.plugin.manager.get_bibles().keys())
+        primary = Registry().get('settings').value('bibles/primary bible')
+        return [
+            {
+                'name': 'primary bible',
+                'list': bibles,
+                'selected': primary
+            }
+        ]
+
+    def set_search_option(self, search_option, value):
+        """
+        Sets a search option
+
+        :param search_option: The option to be set
+        :param value: The new value for the search option
+        :return: True if the search_option was successfully set
+        """
+        if search_option == 'primary bible' and value in self.search_options('primary bible')[0]['list']:
+            Registry().get('settings').setValue('bibles/primary bible', value)
+            Registry().execute('populate_bible_combo_boxes')
+            return True
+        else:
+            return False
+
     def search(self, string, show_error=True):
         """
         Search for some Bible verses (by reference).
