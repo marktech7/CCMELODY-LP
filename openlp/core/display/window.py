@@ -177,7 +177,10 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         image = self.settings.value('core/logo file')
         if path_to_str(image).startswith(':'):
             image = self.openlp_splash_screen_path
-        image_uri = image.as_uri()
+        try:
+            image_uri = image.as_uri()
+        except Exception:
+            image_uri = ''
         # if set to hide logo on startup, do not send the logo
         if self.settings.value('core/logo hide on startup'):
             image_uri = ''
