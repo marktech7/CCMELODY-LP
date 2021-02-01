@@ -24,6 +24,7 @@ Package to test the openlp.core.display.window package.
 import sys
 import time
 import pytest
+from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
@@ -50,9 +51,18 @@ def mock_geometry():
     screenlist_patcher.stop()
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
+@pytest.fixture
+def display_window_env():
+    box_layout_patcher = patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+    web_view_patcher = patch('openlp.core.display.webengine.WebEngineView')
+    box_layout_patcher.start()
+    web_view_patcher.start()
+    yield
+    box_layout_patcher.stop()
+    web_view_patcher.stop()
+
+
+def test_x11_override_on(display_window_env, mock_settings):
     """
     Test that the x11 override option bit is set
     """
@@ -67,9 +77,7 @@ def test_x11_override_on(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
+def test_x11_override_off(display_window_env, mock_settings):
     """
     Test that the x11 override option bit is not set when setting if off
     """
@@ -84,8 +92,7 @@ def test_x11_override_off(mocked_webengine, mocked_addWidget, mock_settings):
     assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
+def test_set_scale_not_initialised(display_window_env, mock_settings):
     """
     Test that the scale js is not run if the page is not initialised
     """
@@ -101,13 +108,11 @@ def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
     display_window.run_javascript.assert_not_called()
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings):
+def test_set_scale_initialised(display_window_env, mock_settings):
     """
-    Test that the scale js is not run if the page is not initialised
+    Test that the scale js is run if the page is initialised
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A initialised display window
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -119,9 +124,103 @@ def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
+def test_set_startup_screen(display_window_env, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window and mocked settings with logo path
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'red',
+        'core/logo file': Path('/my/image.png'),
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set_startup_screen is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should be run
+    display_window.run_javascript.assert_called_once_with(
+        'Display.setStartupSplashScreen("red", "file:///my/image.png");')
+
+
+def test_set_startup_screen_default_image(display_window_env, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window and mocked settings with logo path
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'blue',
+        'core/logo file': Path(':/graphics/openlp-splash-screen.png'),
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set_startup_screen is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should be run
+    display_window.run_javascript.assert_called_with(
+        'Display.setStartupSplashScreen("blue", "file:///default/splash_screen.png");')
+
+
+def test_set_startup_screen_missing(display_window_env, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window and mocked settings with logo path missing
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'green',
+        'core/logo file': None,
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set_startup_screen is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should be run
+    display_window.run_javascript.assert_called_with(
+        'Display.setStartupSplashScreen("green", "");')
+
+
+def test_set_startup_screen_hide(display_window_env, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window and mocked settings with hide logo true
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'orange',
+        'core/logo file': Path('/my/image.png'),
+        'core/logo hide on startup': True
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set_startup_screen is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should be run
+    display_window.run_javascript.assert_called_once_with(
+        'Display.setStartupSplashScreen("orange", "");')
+
+
+def test_after_loaded(display_window_env, mock_settings):
     """
     Test the correct steps are taken when the webview is loaded
     """
@@ -148,9 +247,7 @@ def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
     display_window.set_startup_screen.assert_called_once()
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_after_loaded_hide_mouse_not_display(mocked_webengine, mocked_addWidget, mock_settings):
+def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
     """
     Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
     """
@@ -175,10 +272,8 @@ def test_after_loaded_hide_mouse_not_display(mocked_webengine, mocked_addWidget,
                                                           '});')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
-def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
+def test_run_javascript_no_sync_no_wait(mock_time, display_window_env, mock_settings):
     """
     test a script is run on the webview
     """
@@ -195,10 +290,8 @@ def test_run_javascript_no_sync_no_wait(mock_time, mocked_webengine, mocked_addW
     mock_time.sleep.assert_not_called()
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch.object(time, 'time')
-def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidget, mock_settings):
+def test_run_javascript_sync_no_wait(mock_time, display_window_env, mock_settings):
     """
     test a synced script is run on the webview and immediately returns a result
     """
@@ -220,10 +313,8 @@ def test_run_javascript_sync_no_wait(mock_time, mocked_webengine, mocked_addWidg
     mock_time.sleep.assert_not_called()
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_bold_windows(mocked_is_win, mocked_webengine, mocked_layout, mock_settings):
+def test_fix_font_bold_windows(mocked_is_win, display_window_env, mock_settings):
     """
     Test that on Windows, fonts that end with "Bold" are handled
     """
@@ -241,10 +332,8 @@ def test_fix_font_bold_windows(mocked_is_win, mocked_webengine, mocked_layout, m
     assert result == 'Arial Rounded MT'
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_bold_not_windows(mocked_is_win, mocked_webengine, mocked_layout, mock_settings):
+def test_fix_font_bold_not_windows(mocked_is_win, display_window_env, mock_settings):
     """
     Test that on NOT Windows, fonts that end with "Bold" are ignored
     """
@@ -262,10 +351,8 @@ def test_fix_font_bold_not_windows(mocked_is_win, mocked_webengine, mocked_layou
     assert result == 'Arial Rounded MT Bold'
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_foundry(mocked_is_win, mocked_webengine, mocked_layout, mock_settings):
+def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings):
     """
     Test that a font with a foundry name in it has the foundry removed
     """
@@ -283,9 +370,7 @@ def test_fix_font_foundry(mocked_is_win, mocked_webengine, mocked_layout, mock_s
     assert result == 'CMG Sans'
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
+def test_set_theme_is_display_video(display_window_env, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """
@@ -307,9 +392,7 @@ def test_set_theme_is_display_video(mocked_webengine, mocked_addWidget, mock_set
                                                           is_sync=False)
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
+def test_set_theme_not_display_video(display_window_env, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """
@@ -338,9 +421,7 @@ def test_set_theme_not_display_video(mocked_webengine, mocked_addWidget, mock_se
                                                           is_sync=False)
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_settings, mock_geometry):
+def test_set_theme_not_display_live(display_window_env, mock_settings, mock_geometry):
     """
     Test the set_theme function
     """
@@ -366,11 +447,9 @@ def test_set_theme_not_display_live(mocked_webengine, mocked_addWidget, mock_set
                                                           is_sync=False)
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.Registry.execute')
 @patch('openlp.core.display.window.ScreenList')
-def test_show_display(mocked_screenlist, mocked_registry_execute, mocked_webengine, mocked_addWidget, mock_settings):
+def test_show_display(mocked_screenlist, mocked_registry_execute, display_window_env, mock_settings):
     """
     Test show_display function
     """
@@ -391,10 +470,8 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, mocked_webengi
     mocked_registry_execute.assert_called_once_with('live_display_active')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.ScreenList')
-def test_show_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):
+def test_show_display_no_display(mocked_screenlist, display_window_env, mock_settings):
     """
     Test show_display function when no displays are available
     """
@@ -412,9 +489,7 @@ def test_show_display_no_display(mocked_screenlist, mocked_webengine, mocked_add
     assert display_window.run_javascript.call_count == 0
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_hide_display_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_display_to_screen(display_window_env, mock_settings):
     """
     Test hide to screen in the hide_display function
     """
@@ -432,9 +507,7 @@ def test_hide_display_to_screen(mocked_webengine, mocked_addWidget, mock_setting
     display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_hide_display_to_blank(mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_display_to_blank(display_window_env, mock_settings):
     """
     Test hide to screen in the hide_display function
     """
@@ -450,9 +523,7 @@ def test_hide_display_to_blank(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.toBlack();')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_hide_display_to_theme(mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_display_to_theme(display_window_env, mock_settings):
     """
     Test hide to screen in the hide_display function
     """
@@ -468,9 +539,7 @@ def test_hide_display_to_theme(mocked_webengine, mocked_addWidget, mock_settings
     display_window.run_javascript.assert_called_once_with('Display.toTheme();')
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_hide_display_to_transparent(mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_display_to_transparent(display_window_env, mock_settings):
     """
     Test hide to screen in the hide_display function
     """
@@ -488,9 +557,7 @@ def test_hide_display_to_transparent(mocked_webengine, mocked_addWidget, mock_se
     assert display_window.setVisible.call_count == 0
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
-def test_hide_transparent_to_screen(mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_transparent_to_screen(display_window_env, mock_settings):
     """
     Test that when going transparent, and the disable transparent setting is enabled,
     the screen mode should be used.
@@ -507,10 +574,8 @@ def test_hide_transparent_to_screen(mocked_webengine, mocked_addWidget, mock_set
     display_window.setVisible.assert_called_once_with(False)
 
 
-@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
-@patch('openlp.core.display.webengine.WebEngineView')
 @patch('openlp.core.display.window.ScreenList')
-def test_hide_display_no_display(mocked_screenlist, mocked_webengine, mocked_addWidget, mock_settings):
+def test_hide_display_no_display(mocked_screenlist, display_window_env, mock_settings):
     """
     Test show_display function when no displays are available
     """

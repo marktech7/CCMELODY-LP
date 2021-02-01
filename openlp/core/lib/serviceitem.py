@@ -910,12 +910,12 @@ class ServiceItem(RegistryProperties):
                     item['chords'] = self.rendered_slides[index]['chords']
                     item['footer'] = self.rendered_slides[index]['footer']
                 elif self.is_image() and not frame.get('image', '') and \
-                        Registry().get('settings_thread').value('api/thumbnails'):
-                    thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
-                    full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
-                    if not full_thumbnail_path.exists():
-                        create_thumb(Path(self.get_frame_path(index)), full_thumbnail_path, False)
-                    item['img'] = image_to_data_uri(full_thumbnail_path)
+                        Registry().get('settings_thread').value('api/thumbnails') and \
+                        self.is_capable(ItemCapabilities.HasThumbnails):
+                    thumbnail_path = frame['thumbnail']
+                    if not thumbnail_path.exists():
+                        create_thumb(Path(self.get_frame_path(index)), thumbnail_path, False)
+                    item['img'] = image_to_data_uri(thumbnail_path)
                     item['text'] = str(frame['title'])
                     item['html'] = str(frame['title'])
                 else:
