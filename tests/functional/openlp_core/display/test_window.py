@@ -121,6 +121,110 @@ def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings
 
 @patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
 @patch('openlp.core.display.webengine.WebEngineView')
+def test_set_startup_screen(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'red',
+        'core/logo file': Path('/my/image.png'),
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set scale is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_called_once_with(
+        'Display.setStartupSplashScreen("red", "file:///my/image.png");')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_startup_screen_default_image(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'blue',
+        'core/logo file': Path(':/graphics/openlp-splash-screen.png'),
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set scale is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_called_with(
+        'Display.setStartupSplashScreen("blue", "file:///default/splash_screen.png");')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_startup_screen_missing(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'green',
+        'core/logo file': None,
+        'core/logo hide on startup': False
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set scale is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_called_with(
+        'Display.setStartupSplashScreen("green", "");')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
+def test_set_startup_screen_hide(mocked_webengine, mocked_addWidget, mock_settings):
+    """
+    Test that the startup screen get set correctly
+    """
+    # GIVEN: A display window not yet initialised
+    display_window = DisplayWindow()
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    settings = {
+        'core/logo background color': 'orange',
+        'core/logo file': Path('/my/image.png'),
+        'core/logo hide on startup': True
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+
+    # WHEN: set scale is run
+    display_window.set_startup_screen()
+
+    # THEN: javascript should not be run
+    display_window.run_javascript.assert_called_once_with(
+        'Display.setStartupSplashScreen("orange", "");')
+
+
+@patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+@patch('openlp.core.display.webengine.WebEngineView')
 def test_after_loaded(mocked_webengine, mocked_addWidget, mock_settings):
     """
     Test the correct steps are taken when the webview is loaded
