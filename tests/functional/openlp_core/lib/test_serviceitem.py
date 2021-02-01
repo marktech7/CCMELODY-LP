@@ -23,6 +23,7 @@ Package to test the openlp.core.lib package.
 """
 import os
 import pytest
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
@@ -834,9 +835,7 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
     assert result == expected_dict
 
 
-@patch('openlp.core.lib.serviceitem.AppLocation.get_data_path')
-@patch('openlp.core.lib.serviceitem.image_to_data_uri')
-def test_to_dict_image_item(mocked_image_to_data_uri, mocked_get_data_path, state_media, settings, service_item_env):
+def test_to_dict_image_item(state_media, settings, service_item_env):
     """
     Test that the to_dict() method returns the correct data for the service item
     """
@@ -847,12 +846,7 @@ def test_to_dict_image_item(mocked_image_to_data_uri, mocked_get_data_path, stat
     service_item.add_icon = MagicMock()
     FormattingTags.load_tags()
     line = convert_file_service_item(TEST_PATH, 'serviceitem_image_2.osj')
-    mocked_get_data_path.return_value = Path('/path/to/')
-    mocked_image_to_data_uri.side_effect = lambda x: 'your image uri at: {}'.format(x.as_posix())
-
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
-        mocked_sha256_file_hash.return_value = '3a7ccbdb0b5a3db169c4692d7aad0ec8'
-        service_item.set_from_service(line)
+    service_item.set_from_service(line)
 
     # WHEN: to_dict() is called
     result = service_item.to_dict()
@@ -870,7 +864,6 @@ def test_to_dict_image_item(mocked_image_to_data_uri, mocked_get_data_path, stat
         'slides': [
             {
                 'html': 'image_1.jpg',
-                'img': 'your image uri at: /path/to/images/thumbnails/image_1.jpg',
                 'selected': False,
                 'tag': 1,
                 'text': 'image_1.jpg',
