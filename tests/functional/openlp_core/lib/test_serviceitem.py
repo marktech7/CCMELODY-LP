@@ -23,7 +23,6 @@ Package to test the openlp.core.lib package.
 """
 import os
 import pytest
-import tempfile
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
