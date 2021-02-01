@@ -346,7 +346,7 @@ class ServiceItem(RegistryProperties):
         # Update image path to match servicemanager location if file was loaded from service
         if image and self.name == 'presentations':
             image = AppLocation.get_section_data_path(self.name) / 'thumbnails' / self.sha256_file_hash / \
-                os.path.basename(image)
+                ntpath.basename(image)
         self.slides.append({'title': file_name, 'image': image, 'path': path, 'display_title': display_title,
                             'notes': notes, 'thumbnail': image})
         self._new_item()
