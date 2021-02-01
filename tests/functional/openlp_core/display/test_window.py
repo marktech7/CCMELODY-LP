@@ -24,6 +24,7 @@ Package to test the openlp.core.display.window package.
 import sys
 import time
 import pytest
+from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
@@ -105,9 +106,9 @@ def test_set_scale_not_initialised(mocked_addWidget, mock_settings):
 @patch('openlp.core.display.webengine.WebEngineView')
 def test_set_scale_initialised(mocked_webengine, mocked_addWidget, mock_settings):
     """
-    Test that the scale js is not run if the page is not initialised
+    Test that the scale js is run if the page is initialised
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A initialised display window
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -125,7 +126,7 @@ def test_set_startup_screen(mocked_webengine, mocked_addWidget, mock_settings):
     """
     Test that the startup screen get set correctly
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A display window and mocked settings with logo path
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -137,10 +138,10 @@ def test_set_startup_screen(mocked_webengine, mocked_addWidget, mock_settings):
     }
     mock_settings.value.side_effect = lambda key: settings[key]
 
-    # WHEN: set scale is run
+    # WHEN: set_startup_screen is run
     display_window.set_startup_screen()
 
-    # THEN: javascript should not be run
+    # THEN: javascript should be run
     display_window.run_javascript.assert_called_once_with(
         'Display.setStartupSplashScreen("red", "file:///my/image.png");')
 
@@ -151,7 +152,7 @@ def test_set_startup_screen_default_image(mocked_webengine, mocked_addWidget, mo
     """
     Test that the startup screen get set correctly
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A display window and mocked settings with logo path
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -163,10 +164,10 @@ def test_set_startup_screen_default_image(mocked_webengine, mocked_addWidget, mo
     }
     mock_settings.value.side_effect = lambda key: settings[key]
 
-    # WHEN: set scale is run
+    # WHEN: set_startup_screen is run
     display_window.set_startup_screen()
 
-    # THEN: javascript should not be run
+    # THEN: javascript should be run
     display_window.run_javascript.assert_called_with(
         'Display.setStartupSplashScreen("blue", "file:///default/splash_screen.png");')
 
@@ -177,7 +178,7 @@ def test_set_startup_screen_missing(mocked_webengine, mocked_addWidget, mock_set
     """
     Test that the startup screen get set correctly
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A display window and mocked settings with logo path missing
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -189,10 +190,10 @@ def test_set_startup_screen_missing(mocked_webengine, mocked_addWidget, mock_set
     }
     mock_settings.value.side_effect = lambda key: settings[key]
 
-    # WHEN: set scale is run
+    # WHEN: set_startup_screen is run
     display_window.set_startup_screen()
 
-    # THEN: javascript should not be run
+    # THEN: javascript should be run
     display_window.run_javascript.assert_called_with(
         'Display.setStartupSplashScreen("green", "");')
 
@@ -203,7 +204,7 @@ def test_set_startup_screen_hide(mocked_webengine, mocked_addWidget, mock_settin
     """
     Test that the startup screen get set correctly
     """
-    # GIVEN: A display window not yet initialised
+    # GIVEN: A display window and mocked settings with hide logo true
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
@@ -215,10 +216,10 @@ def test_set_startup_screen_hide(mocked_webengine, mocked_addWidget, mock_settin
     }
     mock_settings.value.side_effect = lambda key: settings[key]
 
-    # WHEN: set scale is run
+    # WHEN: set_startup_screen is run
     display_window.set_startup_screen()
 
-    # THEN: javascript should not be run
+    # THEN: javascript should be run
     display_window.run_javascript.assert_called_once_with(
         'Display.setStartupSplashScreen("orange", "");')
 
