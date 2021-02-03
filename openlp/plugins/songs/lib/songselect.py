@@ -182,7 +182,11 @@ class SongSelectImport(object):
         except (TypeError, URLError) as error:
             log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
-        lyrics_link = song_page.find('section', 'page-section').find('a')['href']
+        try:
+            lyrics_link = song_page.find('section', 'page-section').find('a')['href']
+        except KeyError as error:
+            # can't find a link to the song - most likely the user account has no access to it
+            return None
         if callback:
             callback()
         try:

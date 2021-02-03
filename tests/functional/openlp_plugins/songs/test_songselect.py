@@ -268,7 +268,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that when BeautifulSoup gets a bad song page the get_song() method returns None
         """
         # GIVEN: A mocked callback and an importer object
-        mocked_get_page.side_effect = None
+        mocked_get_page().side_effect = Exception('TypeError')
         mocked_callback = MagicMock()
         importer = SongSelectImport(None, MagicMock())
 
@@ -297,6 +297,52 @@ class TestSongSelectImport(TestCase, TestMixin):
 
         # THEN: The callback should have been called twice and None should be returned
         assert 2 == mocked_callback.call_count, 'The callback should have been called twice'
+        assert result is None, 'The get_song() method should have returned None'
+
+    @patch('openlp.plugins.songs.lib.songselect.log.exception')
+    @patch('openlp.plugins.songs.lib.songselect.SongSelectImport.get_song_number_from_url')
+    @patch('openlp.plugins.songs.lib.songselect.SongSelectImport.get_page')
+    def test_get_song_no_access(self, mocked_get_page, mock_get_num, mock_log_exception):
+        """
+        Test that the get_song() handles the case when the user's CCLI account has no access to the song
+        """
+        fake_song_page = '''<!DOCTYPE html><html><body>
+        <div class="content-title">
+          <h1>Song Title</h1>
+          <ul class="authors">
+            <li><a>Author 1</a></li>
+            <li><a>Author 2</a></li>
+          </ul>
+        </div>
+        <div class="song-content-data"><ul><li><strong>1234_cclinumber_5678</strong></li></ul></div>
+        <section class="page-section">
+          <a title="View song lyrics" data-open="ssUpgradeModal"></a>
+        </section>
+        <ul class="song-meta-list">
+          <li>Themes</li><li><a>theme1</a></li><li><a>theme2</a></li>
+        </ul>
+        </body></html>
+        '''
+        fake_lyrics_page = '''<!DOCTYPE html><html><body>
+        <div class="song-viewer lyrics">
+            <h3>Verse 1</h3>
+            <p>verse thing 1<br>line 2</p>
+            <h3>Verse 2</h3>
+            <p>verse thing 2</p>
+        </div>
+        <ul class="copyright">
+          <li>Copy thing</li><li>Copy thing 2</li>
+        </ul>
+        </body></html>
+        '''
+        mocked_get_page.side_effect = [fake_song_page, fake_lyrics_page]
+        mocked_callback = MagicMock()
+        importer = SongSelectImport(None, MagicMock())
+
+        # WHEN: get_song is called
+        result = importer.get_song(callback=mocked_callback)
+
+        # THEN: None should be returned
         assert result is None, 'The get_song() method should have returned None'
 
     @patch('openlp.plugins.songs.lib.songselect.SongSelectImport.get_song_number_from_url')
