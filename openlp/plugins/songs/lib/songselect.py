@@ -184,7 +184,7 @@ class SongSelectImport(object):
             return None
         try:
             lyrics_link = song_page.find('section', 'page-section').find('a')['href']
-        except KeyError as error:
+        except KeyError:
             # can't find a link to the song - most likely the user account has no access to it
             return None
         if callback:
