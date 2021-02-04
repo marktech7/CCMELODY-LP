@@ -39,6 +39,7 @@ class EditColumn(object):
     Tag = 1
     StartHtml = 2
     EndHtml = 3
+    Hidden = 4
 
 
 class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTagController):
@@ -96,6 +97,10 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
         self.tag_table_widget.setItem(new_row, 2,
                                       QtWidgets.QTableWidgetItem(translate('OpenLP.FormattingTagForm', '<HTML here>')))
         self.tag_table_widget.setItem(new_row, 3, QtWidgets.QTableWidgetItem(''))
+        hiddencheckbox = QtWidgets.QTableWidgetItem()
+        hiddencheckbox.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+        hiddencheckbox.setCheckState(QtCore.Qt.Unchecked)
+        self.tag_table_widget.setItem(new_row, 4, hiddencheckbox)
         self.tag_table_widget.resizeRowsToContents()
         self.tag_table_widget.scrollToBottom()
         self.tag_table_widget.selectRow(new_row)
@@ -119,7 +124,9 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
             error = self.services.validate_for_save(self.tag_table_widget.item(count, 0).text(),
                                                     self.tag_table_widget.item(count, 1).text(),
                                                     self.tag_table_widget.item(count, 2).text(),
-                                                    self.tag_table_widget.item(count, 3).text())
+                                                    self.tag_table_widget.item(count, 3).text(),
+                                                    True if self.tag_table_widget.item(count, 4)\
+                                                        .checkState() == QtCore.Qt.Checked else False)
             if error:
                 QtWidgets.QMessageBox.warning(self, translate('OpenLP.FormattingTagForm', 'Validation Error'), error)
                 self.tag_table_widget.selectRow(count)
@@ -155,6 +162,16 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
                 self.tag_table_widget.setItem(line, 1, QtWidgets.QTableWidgetItem(self._strip(html['start tag'])))
                 self.tag_table_widget.setItem(line, 2, QtWidgets.QTableWidgetItem(html['start html']))
                 self.tag_table_widget.setItem(line, 3, QtWidgets.QTableWidgetItem(html['end html']))
+                hiddencheckbox = QtWidgets.QTableWidgetItem()
+                hiddencheckbox.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
+                if 'hidden' in html.keys():
+                    if html['hidden']:
+                        hiddencheckbox.setCheckState(QtCore.Qt.Checked)
+                    else:
+                        hiddencheckbox.setCheckState(QtCore.Qt.Unchecked)
+                else:
+                    hiddencheckbox.setCheckState(QtCore.Qt.Unchecked)
+                self.tag_table_widget.setItem(line, 4, hiddencheckbox)
                 self.tag_table_widget.resizeRowsToContents()
                 # Permanent (persistent) tags do not have this key
                 html['temporary'] = False

@@ -52,7 +52,7 @@ class FormattingTagController(object):
         self.protected_tags = [tag for tag in FormattingTags.html_expands if tag.get('protected')]
         self.custom_tags = []
 
-    def validate_for_save(self, desc, tag, start_html, end_html):
+    def validate_for_save(self, desc, tag, start_html, end_html, hidden):
         """
         Validate a custom tag and add to the tags array if valid..
 
@@ -67,6 +67,9 @@ class FormattingTagController(object):
 
         `end_html`
             The end html tag.
+
+        `hidden`
+            Tag for hiding tag content from main window.
 
         """
         for line_number, html1 in enumerate(self.protected_tags):
@@ -85,6 +88,7 @@ class FormattingTagController(object):
             'start html': start_html,
             'end tag': '{{/{tag}}}'.format(tag=tag),
             'end html': end_html,
+            'hidden': hidden,
             'protected': False,
             'temporary': False
         }
