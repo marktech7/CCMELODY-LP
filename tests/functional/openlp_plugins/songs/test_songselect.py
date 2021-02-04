@@ -268,7 +268,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         Test that when BeautifulSoup gets a bad song page the get_song() method returns None
         """
         # GIVEN: A mocked callback and an importer object
-        mocked_get_page().side_effect = Exception('TypeError')
+        mocked_get_page.side_effect = None
         mocked_callback = MagicMock()
         importer = SongSelectImport(None, MagicMock())
 
