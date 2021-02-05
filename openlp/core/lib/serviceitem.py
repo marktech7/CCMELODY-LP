@@ -507,10 +507,11 @@ class ServiceItem(RegistryProperties):
                         text = text_image['title']
                         file_hash = text_image['file_hash']
                         file_path = path / '{base}{ext}'.format(base=file_hash, ext=os.path.splitext(text)[1])
-                        thumbnail = AppLocation.get_data_path() / text_image['image']
-                        # copy thumbnail from servicemanager path
-                        copy(path / 'thumbnails' / os.path.basename(text_image['image']),
-                             AppLocation.get_section_data_path(self.name) / 'thumbnails')
+                        if text_image['image']:
+                            thumbnail = AppLocation.get_data_path() / text_image['image']
+                            # copy thumbnail from servicemanager path
+                            copy(path / 'thumbnails' / os.path.basename(text_image['image']),
+                                 AppLocation.get_section_data_path(self.name) / 'thumbnails')
                     else:
                         text = text_image
                         org_file_path = path / text
@@ -532,7 +533,8 @@ class ServiceItem(RegistryProperties):
                     if version >= 3:
                         file_path = text_image['path']
                         file_hash = text_image['file_hash']
-                        thumbnail = AppLocation.get_data_path() / text_image['image']
+                        if text_image['image']:
+                            thumbnail = AppLocation.get_data_path() / text_image['image']
                     else:
                         file_path = Path(text_image['path'])
                         # Check if (by chance) the thumbnails for this image is available on this machine
