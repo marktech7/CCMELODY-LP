@@ -64,7 +64,6 @@ def test_on_new_clicked(tagform_env):
     # WHEN: on_new_clicked is run (i.e. the Add new button was clicked)
     with patch('openlp.core.ui.formattingtagform.QtWidgets.QTableWidgetItem') as MockedQTableWidgetItem:
         mocked_table_widget = MagicMock()
-        mocked_table_widget_checkbox = MagicMock()
         MockedQTableWidgetItem.return_value = mocked_table_widget
         form.on_new_clicked()
 
@@ -76,7 +75,7 @@ def test_on_new_clicked(tagform_env):
             call(row_count, 1, mocked_table_widget),
             call(row_count, 2, mocked_table_widget),
             call(row_count, 3, mocked_table_widget),
-            call(row_count, 4, mocked_table_widget_checkbox)
+            call(row_count, 4, mocked_table_widget)
         ]
         assert expected_set_item_calls == form.tag_table_widget.setItem.call_args_list, \
             'setItem should have been called correctly'
