@@ -590,13 +590,6 @@ class OpenLyrics(object):
             start_tag = '{{{name}}}'.format(name=name[:5])
             # Some tags have only start tag e.g. {br}
             end_tag = '{{/{name}}}'.format(name=name[:5]) if hasattr(tag, 'close') else ''
-            if hasattr(tag, 'hidden'):
-                if tag.hidden.text == 'True':
-                    hidden = True
-                else:
-                    hidden = False
-            else:
-                hidden = False
             openlp_tag = {
                 'desc': name,
                 'start tag': start_tag,
@@ -608,7 +601,7 @@ class OpenLyrics(object):
                 # Add 'temporary' key in case the formatting tag should not be saved otherwise it is supposed that
                 # formatting tag is permanent.
                 'temporary': temporary,
-                'hidden': hidden
+                'hidden': True if hasattr(tag, 'hidden') and tag.hidden.text == 'True' else False
             }
             found_tags.append(openlp_tag)
         existing_tag_ids = [tag['start tag'] for tag in FormattingTags.get_html_tags()]
