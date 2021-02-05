@@ -154,7 +154,7 @@ def remove_tags(text, can_remove_chords=False):
     text = text.replace('&nbsp;', ' ')
     for tag in FormattingTags.get_html_tags():
         if tag['hidden']:
-            text = re.sub(r'' + tag['start tag'] + ".*?"+tag['end tag'], '', text)
+            text = re.sub(r'' + tag['start tag'] + ".*?" + tag['end tag'], '', text)
         else:
             text = text.replace(tag['start tag'], '')
             text = text.replace(tag['end tag'], '')

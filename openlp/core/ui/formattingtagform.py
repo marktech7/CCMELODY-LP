@@ -125,8 +125,8 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
                                                     self.tag_table_widget.item(count, 1).text(),
                                                     self.tag_table_widget.item(count, 2).text(),
                                                     self.tag_table_widget.item(count, 3).text(),
-                                                    True if self.tag_table_widget.item(count, 4)\
-                                                        .checkState() == QtCore.Qt.Checked else False)
+                                                    True if self.tag_table_widget.item(count, 4).checkState() ==
+                                                    QtCore.Qt.Checked else False)
             if error:
                 QtWidgets.QMessageBox.warning(self, translate('OpenLP.FormattingTagForm', 'Validation Error'), error)
                 self.tag_table_widget.selectRow(count)
