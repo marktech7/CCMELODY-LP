@@ -34,6 +34,7 @@ from PyQt5 import QtCore
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.display.window import DisplayWindow, DisplayWatcher
+from openlp.core.common import is_win
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.theme import Theme
 from openlp.core.ui import HideMode
@@ -132,10 +133,15 @@ def test_set_startup_screen(display_window_env, mock_settings):
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
+
+    if is_win():
+        image_path = 'c:\\my\\image.png'
+    else:
+        image_path = '/my/image.png'
     display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
     settings = {
         'core/logo background color': 'red',
-        'core/logo file': Path('/my/image.png'),
+        'core/logo file': Path(image_path),
         'core/logo hide on startup': False
     }
     mock_settings.value.side_effect = lambda key: settings[key]
@@ -145,7 +151,7 @@ def test_set_startup_screen(display_window_env, mock_settings):
 
     # THEN: javascript should be run
     display_window.run_javascript.assert_called_once_with(
-        'Display.setStartupSplashScreen("red", "file:///my/image.png");')
+        'Display.setStartupSplashScreen("red", "file://{path}");'.format(path=image_path))
 
 
 def test_set_startup_screen_default_image(display_window_env, mock_settings):
@@ -156,7 +162,11 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
     display_window = DisplayWindow()
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
-    display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
+    if is_win():
+        splash_screen_path = 'c:\\default\\splash_screen.png'
+    else:
+        splash_screen_path = '/default/splash_screen.png'
+    display_window.openlp_splash_screen_path = Path()
     settings = {
         'core/logo background color': 'blue',
         'core/logo file': Path(':/graphics/openlp-splash-screen.png'),
@@ -169,7 +179,7 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
 
     # THEN: javascript should be run
     display_window.run_javascript.assert_called_with(
-        'Display.setStartupSplashScreen("blue", "file:///default/splash_screen.png");')
+        'Display.setStartupSplashScreen("blue", "file://{path}");'.format(path=splash_screen_path))
 
 
 def test_set_startup_screen_missing(display_window_env, mock_settings):
