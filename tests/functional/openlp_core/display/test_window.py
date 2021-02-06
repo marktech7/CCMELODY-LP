@@ -136,7 +136,7 @@ def test_set_startup_screen(display_window_env, mock_settings):
 
     if is_win():
         image_path = 'c:/my/image.png'
-        expect_image_path '/' + image_path
+        expect_image_path = '/' + image_path
     else:
         image_path = '/my/image.png'
         expect_image_path = image_path
@@ -166,11 +166,11 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
     display_window.run_javascript = MagicMock()
     if is_win():
         splash_screen_path = 'c:/default/splash_screen.png'
-        expect_splash_screen_path '/' + splash_screen_path
+        expect_splash_screen_path = '/' + splash_screen_path
     else:
         splash_screen_path = '/default/splash_screen.png'
         expect_splash_screen_path = splash_screen_path
-    display_window.openlp_splash_screen_path = Path()
+    display_window.openlp_splash_screen_path = Path(splash_screen_path)
     settings = {
         'core/logo background color': 'blue',
         'core/logo file': Path(':/graphics/openlp-splash-screen.png'),
