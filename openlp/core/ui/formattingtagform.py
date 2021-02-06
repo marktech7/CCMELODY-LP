@@ -164,11 +164,8 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
                 self.tag_table_widget.setItem(line, 3, QtWidgets.QTableWidgetItem(html['end html']))
                 hiddencheckbox = QtWidgets.QTableWidgetItem()
                 hiddencheckbox.setFlags(QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-                if 'hidden' in html.keys():
-                    if html['hidden']:
-                        hiddencheckbox.setCheckState(QtCore.Qt.Checked)
-                    else:
-                        hiddencheckbox.setCheckState(QtCore.Qt.Unchecked)
+                if html['hidden']:
+                    hiddencheckbox.setCheckState(QtCore.Qt.Checked)
                 else:
                     hiddencheckbox.setCheckState(QtCore.Qt.Unchecked)
                 self.tag_table_widget.setItem(line, 4, hiddencheckbox)

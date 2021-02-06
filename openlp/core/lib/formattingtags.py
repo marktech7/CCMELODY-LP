@@ -156,6 +156,9 @@ class FormattingTags(object):
         # If we have some user ones added them as well
         if user_expands_string:
             user_tags = json.loads(user_expands_string)
+            for tag in user_tags:
+                if 'hidden' not in tag.keys():
+                    tag['hidden'] = False
             FormattingTags.add_html_tags(user_tags)
 
     @staticmethod
