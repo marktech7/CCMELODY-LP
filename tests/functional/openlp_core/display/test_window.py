@@ -135,9 +135,11 @@ def test_set_startup_screen(display_window_env, mock_settings):
     display_window.run_javascript = MagicMock()
 
     if is_win():
-        image_path = 'c:\\my\\image.png'
+        image_path = 'c:/my/image.png'
+        expect_image_path '/' + image_path
     else:
         image_path = '/my/image.png'
+        expect_image_path = image_path
     display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
     settings = {
         'core/logo background color': 'red',
@@ -151,7 +153,7 @@ def test_set_startup_screen(display_window_env, mock_settings):
 
     # THEN: javascript should be run
     display_window.run_javascript.assert_called_once_with(
-        'Display.setStartupSplashScreen("red", "file://{path}");'.format(path=image_path))
+        'Display.setStartupSplashScreen("red", "file://{path}");'.format(path=expect_image_path))
 
 
 def test_set_startup_screen_default_image(display_window_env, mock_settings):
@@ -163,9 +165,11 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
     display_window._is_initialised = True
     display_window.run_javascript = MagicMock()
     if is_win():
-        splash_screen_path = 'c:\\default\\splash_screen.png'
+        splash_screen_path = 'c:/default/splash_screen.png'
+        expect_splash_screen_path '/' + splash_screen_path
     else:
         splash_screen_path = '/default/splash_screen.png'
+        expect_splash_screen_path = splash_screen_path
     display_window.openlp_splash_screen_path = Path()
     settings = {
         'core/logo background color': 'blue',
@@ -179,7 +183,7 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
 
     # THEN: javascript should be run
     display_window.run_javascript.assert_called_with(
-        'Display.setStartupSplashScreen("blue", "file://{path}");'.format(path=splash_screen_path))
+        'Display.setStartupSplashScreen("blue", "file://{path}");'.format(path=expect_splash_screen_path))
 
 
 def test_set_startup_screen_missing(display_window_env, mock_settings):
