@@ -46,6 +46,6 @@ def stages(path):
     return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), 'stage.html')
 
 
-@main_views.route('/stage/<path>/<file>')
+@main_views.route('/stage/<path:path>/<file>')
 def stage_assets(path, file):
     return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), file)
