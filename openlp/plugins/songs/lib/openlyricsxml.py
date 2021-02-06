@@ -600,7 +600,7 @@ class OpenLyrics(object):
                 # Add 'temporary' key in case the formatting tag should not be saved otherwise it is supposed that
                 # formatting tag is permanent.
                 'temporary': temporary,
-                'hidden': True if tag.hidden.text == 'True' else False
+                'hidden': True if hasattr(tag, 'hidden') and tag.hidden.text == 'True' else False
             }
             found_tags.append(openlp_tag)
         existing_tag_ids = [tag['start tag'] for tag in FormattingTags.get_html_tags()]
