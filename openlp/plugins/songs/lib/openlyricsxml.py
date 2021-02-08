@@ -649,7 +649,7 @@ class OpenLyrics(object):
             text += '{{{name}}}'.format(name=element.get('name'))
             # Some formattings may have only start tag.
             # Handle this case if element has no children and contains no text.
-            if not element and not element.text:
+            if element is None and element.text is None:
                 use_endtag = False
         # Append text from element.
         if element.text:

@@ -66,7 +66,7 @@ class OpenLyricsImport(SongImport):
                 root = parsed_file.getroot()
                 for elem in root.iter('{*}lines'):
                     self._strip_whitespace(elem)
-                    for subelem in elem.iter('*'):
+                    for subelem in elem.iter('{*}br'):
                         self._strip_whitespace(subelem)
 
                 xml = etree.tostring(root).decode()
