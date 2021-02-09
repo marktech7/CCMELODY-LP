@@ -345,8 +345,8 @@ class PowerPointMacDocument(AppleScriptBaseDocument):
                     # keep aspect ratio
                     scale = min(640 / src_size.width, 480 / src_size.height)
                     m = fitz.Matrix(scale, scale)
-                    page.getPixmap(m, alpha=False).writeImage(str(self.get_thumbnail_folder() /
-                                                                  'slide{num}.png'.format(num=i)))
+                    page.getPixmap(matrix=m, alpha=False).writeImage(str(self.get_thumbnail_folder() /
+                                                                     'slide{num}.png'.format(num=i)))
                 pdf.close()
                 # delete pdf
                 pdf_file.unlink()
