@@ -32,7 +32,6 @@ from openlp.plugins.songs.forms.songselectdialog import Ui_SongSelectDialog
 from openlp.plugins.songs.lib.db import Song
 from openlp.plugins.songs.lib.songselect import SongSelectImport, Pages
 
-
 log = logging.getLogger(__name__)
 
 
@@ -100,8 +99,15 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
             self.song_progress_bar.setMaximum(3)
             self.song_progress_bar.setValue(0)
             self.song = self.song_select_importer.get_song(self._update_song_progress)
-            self.import_button.setEnabled(True)
-            self.view_button.setEnabled(True)
+            if self.song:
+                self.import_button.setEnabled(True)
+                self.view_button.setEnabled(True)
+            else:
+                QtWidgets.QMessageBox.critical(
+                    self, translate('SongsPlugin.SongSelectForm', 'No access to song'),
+                    translate('SongsPlugin.SongSelectForm', 'This song cannot be read. Perhaps your CCLI account '
+                                                            'does not give you access to this song.'),
+                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
             self.back_button.setEnabled(True)
         if page_type == Pages.Other:
             self.back_button.setEnabled(True)
