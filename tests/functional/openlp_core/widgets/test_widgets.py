@@ -29,9 +29,7 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtWidgets, QtCore, QtTest
 
-from openlp.core.ui.settingsform import SettingsForm
-from openlp.core.widgets.widgets import ScreenButton, ScreenSelectionWidget
-from openlp.core.display.screens import ScreenList, Screen
+from openlp.core.widgets.widgets import ScreenSelectionWidget
 
 
 @pytest.fixture()
@@ -74,7 +72,6 @@ def test_screen_buttons_show_pixels(mocked_screenList, form):
     # THEN: The screen buttons should show the correct size of that screen
     screen_0_button = form.findChild(QtWidgets.QPushButton, 'screen_0_button')
     screen_1_button = form.findChild(QtWidgets.QPushButton, 'screen_1_button')
-    text = screen_0_button.text()
     assert '1920' in str(screen_0_button.text())
     assert '1080' in str(screen_0_button.text())
     assert '1366' in str(screen_1_button.text())
