@@ -28,7 +28,6 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import ProxyMode
 from openlp.core.lib.ui import critical_error_message_box
 
-import sys
 
 SCREENS_LAYOUT_STYLE = """
 #screen_frame {
