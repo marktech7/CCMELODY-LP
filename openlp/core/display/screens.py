@@ -46,7 +46,11 @@ class Screen(object):
 
         :param int number: The Qt number of this screen
         :param QRect geometry: The geometry of this screen as a QRect object
+            In this geometry the top and left values are the coordinates of the extended desktop scheme
+            for example, where the left value increases as a mouse moves right from one screen to the next
         :param QRect custom_geometry: The custom geometry of this screen as a QRect object
+            The custom geometry left and top values are relative to that particular screen,
+            so left = 0, top = 0 refers to the top left of that screen.
         :param bool is_primary: Whether or not this screen is the primary screen
         :param bool is_display: Whether or not this screen should be used to display lyrics
         """

@@ -107,6 +107,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.__script_done = True
         self.__script_result = None
         if screen and screen.is_display:
+            # use log_debug to set up function wrapping before registering functions
+            self.log_debug('registering live display show/hide functions')
             Registry().register_function('live_display_hide', self.hide_display)
             Registry().register_function('live_display_show', self.show_display)
             self.update_from_screen(screen)

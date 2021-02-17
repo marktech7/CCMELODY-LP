@@ -191,6 +191,7 @@ def test_screen_button_initialisation():
     # GIVEN: A mocked screen object
     screen_mock = MagicMock(spec=Screen)
     screen_mock.number = 0
+    screen_mock.geometry = None
     screen_mock.__str__.return_value = 'Mocked Screen Object'
 
     # WHEN: initialising the ScreenButton object
