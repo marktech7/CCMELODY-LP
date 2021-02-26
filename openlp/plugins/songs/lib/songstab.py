@@ -269,7 +269,7 @@ class SongsTab(SettingsTab):
             if answer == QtWidgets.QMessageBox.Yes:
                 self.settings.setValue('songs/songselect password', self.ccli_password.text())
         # Only save footer template if it has been changed. This allows future updates
-        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('songs/footer template'):
+        if self.footer_edit_box.toPlainText() != self.settings.value('songs/footer template'):
             self.settings.setValue('songs/footer template', self.footer_edit_box.toPlainText())
         self.settings.setValue('songs/add songbook slide', self.songbook_slide)
         if self.tab_visited:
