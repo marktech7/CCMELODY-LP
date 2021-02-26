@@ -206,6 +206,20 @@ def test_footer_reset(form):
     assert form.footer_edit_box.toPlainText() == form.settings.get_default_value('songs/footer template')
 
 
+def test_footer_reset_save(form):
+    """
+    Test the footer is reset when reset clicked
+    """
+    # GIVEN: A default footer and different content in the edit box
+    form.settings.setValue('songs/footer template', 'hello')
+    default_footer = form.settings.get_default_value('songs/footer template')
+    form.footer_edit_box.setPlainText(default_footer)
+    # WHEN: save is invoked
+    form.save()
+    # THEN: footer edit box should have been reset to the settings value
+    assert form.settings.value('songs/footer template') == form.settings.get_default_value('songs/footer template')
+
+
 def test_save_tab_nochange(form):
     """
     Test no changes does not trigger post processing
