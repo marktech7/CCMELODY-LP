@@ -279,7 +279,7 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
                 # Normal media file handling.
                 file_name = os.path.split(track_str)[1]
                 item_name = QtWidgets.QListWidgetItem(file_name)
-                search = file_name.split('.')[-1].lower()
+                search = "*." + file_name.split('.')[-1].lower()
                 if search in AUDIO_EXT:
                     item_name.setIcon(UiIcons().audio)
                 else:
