@@ -462,10 +462,10 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.volume_slider.blockSignals(False)
         controller.media_info.is_playing = True
         if not controller.media_info.is_background:
+            display = self._define_display(controller)
             if controller.is_live:
                 controller.set_hide_mode(None)
-            display = self._define_display(controller)
-            display.hide_display(HideMode.Screen)
+                display.hide_display(HideMode.Screen)
             controller._set_theme(controller.service_item)
             display.load_verses([{"verse": "v1", "text": "", "footer": " "}])
         controller.output_has_changed()
