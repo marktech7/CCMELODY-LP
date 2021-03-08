@@ -127,9 +127,10 @@ class Ui_SongSelectDialog(object):
         self.close_button.setIcon(UiIcons().close)
         self.close_button.setObjectName('close_button')
         self.bottom_button_layout.addWidget(self.close_button, 0, 0, 1, 1)
-        self.spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding,
-                                            QtWidgets.QSizePolicy.Minimum)
-        self.bottom_button_layout.addItem(self.spacer, 0, 1, 1, 7)
+        self.message_area = QtWidgets.QLabel()
+        self.message_area.setWordWrap(True)
+        self.message_area.setObjectName('message_area')
+        self.bottom_button_layout.addWidget(self.message_area, 0, 1, 1, 7)
         self.view_button = QtWidgets.QPushButton(songselect_dialog)
         self.view_button.setIcon(UiIcons().search)
         self.view_button.setObjectName('view_button')

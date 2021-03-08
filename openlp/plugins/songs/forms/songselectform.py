@@ -89,6 +89,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.import_button.setEnabled(False)
         self.view_button.setEnabled(False)
         self.back_button.setEnabled(False)
+        self.message_area.setText('')
 
     def page_loaded(self, successful):
         self.song = None
@@ -103,11 +104,9 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                 self.import_button.setEnabled(True)
                 self.view_button.setEnabled(True)
             else:
-                QtWidgets.QMessageBox.critical(
-                    self, translate('SongsPlugin.SongSelectForm', 'No access to song'),
-                    translate('SongsPlugin.SongSelectForm', 'This song cannot be read. Perhaps your CCLI account '
-                                                            'does not give you access to this song.'),
-                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
+                message = translate('SongsPlugin.SongSelectForm', 'This song cannot be read. Perhaps your CCLI account '
+                                                                  'does not give you access to this song.')
+                self.message_area.setText(message)
             self.back_button.setEnabled(True)
         if page_type == Pages.Other:
             self.back_button.setEnabled(True)

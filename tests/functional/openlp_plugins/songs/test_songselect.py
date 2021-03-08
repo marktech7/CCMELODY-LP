@@ -649,6 +649,7 @@ class TestSongSelectForm(TestCase, TestMixin):
         ssform.view_button = MagicMock()
         ssform.back_button = MagicMock()
         ssform.url_bar = MagicMock()
+        ssform.message_area = MagicMock()
 
         # WHEN: The method is run
         ssform.page_load_started()
@@ -659,6 +660,7 @@ class TestSongSelectForm(TestCase, TestMixin):
         ssform.import_button.setEnabled.assert_called_with(False)
         ssform.view_button.setEnabled.assert_called_with(False)
         ssform.back_button.setEnabled.assert_called_with(False)
+        ssform.message_area.setText.assert_called_with('')
 
     def test_page_loaded_login(self):
         """
@@ -694,6 +696,28 @@ class TestSongSelectForm(TestCase, TestMixin):
         # THEN: Progress bar should have been set max 3 (for loading song)
         ssform.song_progress_bar.setMaximum.assert_called_with(3)
         ssform.song_progress_bar.setVisible.call_count == 2
+
+    @patch('openlp.plugins.songs.forms.songselectform.translate')
+    def test_page_loaded_song_no_access(self, mocked_translate):
+        """
+        Test the page_loaded method for a "Song" page to which the CCLI account has no access
+        """
+        # GIVEN: The SongSelectForm and mocked song page and translate function
+        ssform = SongSelectForm(None, MagicMock(), MagicMock())
+        ssform.song_select_importer = MagicMock()
+        ssform.song_select_importer.get_page_type.return_value = Pages.Song
+        ssform.song_select_importer.get_song.return_value = None
+        ssform.song_progress_bar = MagicMock()
+        ssform.url_bar = MagicMock()
+        ssform.message_area = MagicMock()
+        mocked_translate.return_value = 'some message'
+
+        # WHEN: The method is run
+        ssform.page_loaded(True)
+
+        # THEN: The no access message should be shown and the progress bar should be less than 3
+        ssform.message_area.setText.assert_called_with('some message')
+        ssform.song_progress_bar.setValue.call_count < 4
 
     def test_page_loaded_other(self):
         """
