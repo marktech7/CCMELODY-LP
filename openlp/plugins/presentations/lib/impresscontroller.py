@@ -264,13 +264,25 @@ class ImpressController(PresentationController):
         property_object.Value = value
         return property_object
 
+    def add_document(self, document_path, unique_id=None):
+        """
+        Called when a new presentation document is opened.
+
+        :param Path document_path: Path to the document to load
+        :return: The document
+        :rtype: PresentationDocument
+        """
+        document = self.document_class(self, document_path, unique_id)
+        self.docs.append(document)
+        return document
+
 
 class ImpressDocument(PresentationDocument):
     """
     Class which holds information and controls a single presentation.
     """
 
-    def __init__(self, controller, document_path):
+    def __init__(self, controller, document_path, unique_id=None):
         """
         Constructor, store information about the file and initialise.
 
@@ -284,6 +296,7 @@ class ImpressDocument(PresentationDocument):
         self.control = None
         self.slide_ended = False
         self.slide_ended_reverse = False
+        self.unique_id = unique_id
 
     def load_presentation(self):
         """

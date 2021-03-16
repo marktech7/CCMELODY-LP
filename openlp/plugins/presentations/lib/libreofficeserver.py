@@ -172,7 +172,7 @@ class LibreOfficeServer(object):
             log.exception('Failed to get UNO desktop')
         return None
 
-    def shutdown(self):
+    def shutdown(self, unique_id=None):
         """
         Shut down the server
         """

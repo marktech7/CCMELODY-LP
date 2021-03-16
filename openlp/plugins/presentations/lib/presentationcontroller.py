@@ -500,7 +500,7 @@ class PresentationController(object):
         log.debug('Kill')
         self.close_presentation()
 
-    def add_document(self, document_path):
+    def add_document(self, document_path, unique_id=None):
         """
         Called when a new presentation document is opened.
 
