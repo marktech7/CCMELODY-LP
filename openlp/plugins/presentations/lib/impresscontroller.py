@@ -35,7 +35,7 @@ import time
 
 from PyQt5 import QtCore
 
-from openlp.core.common import delete_file, get_uno_command, get_uno_instance, is_win, trace_error_handler
+from openlp.core.common import Singleton, delete_file, get_uno_command, get_uno_instance, is_win, trace_error_handler
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
@@ -277,6 +277,37 @@ class ImpressController(PresentationController):
         return document
 
 
+class ImpressPresentationList(metaclass=Singleton):
+    """
+    This is a singleton class which maintains a list of ImpressDocument instances for presentations
+    which have been started.
+    The ImpressDocument.load_presentation method is called several times - for example, when the
+    odp files are being loaded into the library - but an ImpressDocument is included in this
+    ImpressPresentationList only when the presentation is actually displayed.
+    In this case the loading is initiated by a Registry 'presentation_start' event, the message
+    includes the service item, and the unique_identifier from the service item is used as the id
+    to differentiate the ImpressDocument instances within this ImpressPresentationList.
+    The purpose of this is so that the 'presentation_stop' event, which also includes the service
+    item and its unique identifier, can result in the correct presentation being stopped.
+    This fixes issue #700
+    """
+
+    def __init__(self):
+        self._presentations = {}
+
+    def add(self, impressDocument, unique_id):
+        self._presentations[unique_id] = impressDocument
+
+    def remove(self, unique_id):
+        del self._presentations[unique_id]
+
+    def get_presentation_by_id(self, unique_id):
+        if unique_id in self._presentations:
+            return self._presentations[unique_id]
+        else:
+            return None
+
+
 class ImpressDocument(PresentationDocument):
     """
     Class which holds information and controls a single presentation.
@@ -296,7 +327,9 @@ class ImpressDocument(PresentationDocument):
         self.control = None
         self.slide_ended = False
         self.slide_ended_reverse = False
-        self.unique_id = unique_id
+        if unique_id:
+            self.unique_id = unique_id
+            ImpressPresentationList().add(self, unique_id)
 
     def load_presentation(self):
         """

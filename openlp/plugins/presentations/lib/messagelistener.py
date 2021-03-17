@@ -28,7 +28,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext
 from openlp.core.ui import HideMode
 from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETYPES
-from openlp.plugins.presentations.lib.impresscontroller import ImpressDocument
+from openlp.plugins.presentations.lib.impresscontroller import ImpressDocument, ImpressPresentationList
 
 
 log = logging.getLogger(__name__)
@@ -59,7 +59,8 @@ class Controller(object):
         self.controller = controller
         if self.doc is not None:
             if isinstance(self.doc, ImpressDocument) and hasattr(self.doc, "unique_id"):
-                self.shutdown(self.doc.unique_id)
+                pass
+                # self.shutdown(self.doc.unique_id)
             else:
                 self.shutdown()
         self.doc = self.controller.add_document(file, unique_id)
@@ -217,9 +218,10 @@ class Controller(object):
         if not self.doc:
             return
         if isinstance(self.doc, ImpressDocument) and hasattr(self.doc, "unique_id"):
-            if self.doc.unique_id == unique_id:
-                self.doc.close_presentation()
-                self.doc = None
+            presentation_to_close = ImpressPresentationList().get_presentation_by_id(unique_id)
+            if presentation_to_close:
+                presentation_to_close.close_presentation()
+                ImpressPresentationList().remove(unique_id)
         else:
             self.doc.close_presentation()
             self.doc = None

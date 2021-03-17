@@ -24,7 +24,8 @@ Functional tests to test the Impress class and related methods.
 import pytest
 from unittest.mock import MagicMock, call, patch
 
-from openlp.plugins.presentations.lib.impresscontroller import ImpressController, ImpressDocument, TextType
+from openlp.plugins.presentations.lib.impresscontroller import ImpressController, ImpressDocument, \
+    ImpressPresentationList, TextType
 from tests.utils.constants import RESOURCE_PATH
 
 
@@ -35,6 +36,15 @@ def doc(settings):
     file_name = RESOURCE_PATH / 'presentations' / 'test.pptx'
     ppc = ImpressController(mocked_plugin)
     return ImpressDocument(ppc, file_name)
+
+
+@pytest.fixture()
+def doc_with_id(settings):
+    mocked_plugin = MagicMock()
+    mocked_plugin.settings_section = 'presentations'
+    file_name = RESOURCE_PATH / 'presentations' / 'test.pptx'
+    ppc = ImpressController(mocked_plugin)
+    return ImpressDocument(ppc, file_name, "unique id")
 
 
 def test_constructor(settings, mock_plugin):
@@ -289,3 +299,43 @@ def _get_page_shape_side_effect(*args):
     else:
         page_shape.getString.return_value = 'String'
     return page_shape
+
+
+def test_impress_presentation_list_is_singleton():
+    """
+    Test ImpressPresentationList is a singleton class
+    """
+    # GIVEN: an ImpressPresentationList
+    presentation_list = ImpressPresentationList()
+
+    # WHEN: I try to create another instance
+    presentation_list_2 = ImpressPresentationList()
+
+    # THEN: I get the same instance returned
+    assert presentation_list_2 is presentation_list
+
+
+def test_impress_presentation_list_add_and_retrieve(doc_with_id):
+    """
+    Test adding an ImpressDocument and later retrieving it
+    """
+    # GIVEN: a fixture with an ImpressPresentationList with a mocked document
+
+    # WHEN: I retrieve the ImpressDocument
+    retrieved_presentation = ImpressPresentationList().get_presentation_by_id("unique id")
+
+    # THEN: I get the same instance returned
+    retrieved_presentation is doc_with_id
+
+
+def test_impress_presentation_list_remove(doc_with_id):
+    """
+    Test removing an ImpressDocument from the list
+    """
+    # GIVEN: a fixture with an ImpressPresentationList with a mocked document
+
+    # WHEN: I remove the ImpressDocument
+    ImpressPresentationList().remove("unique id")
+
+    # THEN: That document shouldn't be in the list
+    ImpressPresentationList().get_presentation_by_id("unique id") is None
