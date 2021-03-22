@@ -47,6 +47,29 @@ from openlp.core.lib.ui import critical_error_message_box
 log = logging.getLogger(__name__)
 
 
+def _set_url_database(url: URL, database):
+    try:
+        ret = URL.create(
+            drivername=url.drivername,
+            username=url.username,
+            password=url.password,
+            host=url.host,
+            port=url.port,
+            database=database,
+            query=url.query
+        )
+    except AttributeError:  # SQLAlchemy <1.4
+        url.database = database
+        ret = url
+    assert ret.database == database, ret
+    return ret
+
+
+def _get_scalar_result(engine, sql):
+    with engine.connect() as conn:
+        return conn.scalar(sql)
+
+
 def _sqlite_file_exists(database):
     if not os.path.isfile(database) or os.path.getsize(database) < 100:
         return False
@@ -57,14 +80,9 @@ def _sqlite_file_exists(database):
     return header[:16] == b'SQLite format 3\x00'
 
 
-def database_exists(url, databases=None):
-    """
-    Copied from https://github.com/kvesteri/sqlalchemy-utils/pull/463
-
-    Check if a database exists.
+def database_exists(url):
+    """Check if a database exists.
     :param url: A SQLAlchemy engine URL.
-    :databases: Only applies to postgres. List of databases to try to connect
-        to.
     Performs backend-specific testing to quickly determine if a database
     exists on the server. ::
         database_exists('postgresql://postgres@localhost/name')  #=> False
@@ -75,18 +93,20 @@ def database_exists(url, databases=None):
         database_exists(engine.url)  #=> False
         create_database(engine.url)
         database_exists(engine.url)  #=> True
+    
+    Borrowed from SQLAlchemy_Utils since we only need this one function.
+    Copied from a fork/pull request since SQLAlchemy_Utils didn't supprt SQLAlchemy 1.4 when it was released:
+ https://github.com/nsoranzo/sqlalchemy-utils/blob/4f52578/sqlalchemy_utils/functions/database.py
     """
 
     url = copy(make_url(url))
-    database, url.database = url.database, None
+    database = url.database
     dialect_name = url.get_dialect().name
 
     if dialect_name == 'postgresql':
         text = "SELECT 1 FROM pg_database WHERE datname='%s'" % database
-        if databases is None:
-            databases = ('postgres', 'template0', 'template1', None)
-        for db in databases:
-            url.database = db
+        for db in (database, 'postgres', 'template1', 'template0', None):
+            url = _set_url_database(url, database=db)
             engine = create_engine(url, poolclass=NullPool)
             try:
                 return bool(_get_scalar_result(engine, text))
@@ -95,12 +115,14 @@ def database_exists(url, databases=None):
         return False
 
     elif dialect_name == 'mysql':
+        url = _set_url_database(url, database=None)
         engine = create_engine(url, poolclass=NullPool)
         text = ("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA "
                 "WHERE SCHEMA_NAME = '%s'" % database)
         return bool(_get_scalar_result(engine, text))
 
     elif dialect_name == 'sqlite':
+        url = _set_url_database(url, database=None)
         engine = create_engine(url, poolclass=NullPool)
         if database:
             return database == ':memory:' or _sqlite_file_exists(database)
@@ -111,12 +133,11 @@ def database_exists(url, databases=None):
     else:
         text = 'SELECT 1'
         try:
-            url.database = database
             engine = create_engine(url, poolclass=NullPool)
             return bool(_get_scalar_result(engine, text))
-
         except (ProgrammingError, OperationalError):
             return False
+
 
 def init_db(url, auto_flush=True, auto_commit=False, base=None):
     """
