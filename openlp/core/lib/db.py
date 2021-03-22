@@ -47,7 +47,7 @@ from openlp.core.lib.ui import critical_error_message_box
 log = logging.getLogger(__name__)
 
 
-def _set_url_database(url: URL, database):
+def _set_url_database(url, database):
     try:
         ret = URL.create(
             drivername=url.drivername,
