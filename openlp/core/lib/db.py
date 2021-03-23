@@ -31,7 +31,7 @@ from urllib.parse import quote_plus as urlquote
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
 from sqlalchemy import Column, MetaData, Table, UnicodeText, create_engine, types
-from sqlalchemy.engine.url import make_url
+from sqlalchemy.engine.url import make_url, URL
 from sqlalchemy.exc import DBAPIError, InvalidRequestError, OperationalError, ProgrammingError, SQLAlchemyError
 from sqlalchemy.orm import mapper, scoped_session, sessionmaker
 from sqlalchemy.pool import NullPool
