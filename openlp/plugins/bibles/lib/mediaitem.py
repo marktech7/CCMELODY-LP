@@ -950,6 +950,24 @@ class BibleMediaItem(MediaManagerItem):
                 bible_text = '{bible} {verse}{data[text]}'.format(bible=bible_text, verse=verse_text, data=data)
             bible_text = bible_text.strip(' ')
             old_chapter = data['chapter']
+        # Add service item data (handy things for http api)
+        # Bibles in array to make api compatible with any number of bibles.
+        bibles = []
+        if data['version']:
+            bibles.append({
+                'version': data['version'],
+                'copyright': data['copyright'],
+                'permissions': data['permissions']
+            })
+        if data['second_bible']:
+            bibles.append({
+                'version': data['second_bible'],
+                'copyright': data['second_copyright'],
+                'permissions': data['second_permissions']
+            })
+        service_item.data_string = {
+            'bibles': bibles
+        }
         # Add footer
         service_item.raw_footer.append(verses.format_verses())
         if data['second_bible']:
