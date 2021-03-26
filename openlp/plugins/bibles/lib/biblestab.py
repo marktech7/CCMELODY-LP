@@ -366,41 +366,45 @@ class BiblesTab(SettingsTab):
         self.layout_style_combo_box.setCurrentIndex(self.layout_style)
         self.bible_second_check_box.setChecked(self.second_bibles)
         verse_separator = self.settings.value('bibles/verse separator')
-        if (verse_separator.strip('|') == '') or (verse_separator == get_reference_separator('sep_v_default')):
+        if verse_separator.strip('|') == '':
             self.verse_separator_line_edit.setText(get_reference_separator('sep_v_default'))
             self.verse_separator_line_edit.setPalette(self.get_grey_text_palette(True))
             self.verse_separator_check_box.setChecked(False)
         else:
             self.verse_separator_line_edit.setText(verse_separator)
             self.verse_separator_line_edit.setPalette(self.get_grey_text_palette(False))
-            self.verse_separator_check_box.setChecked(True)
+            verse_separator_set = self.settings.contains('bibles/verse separator')
+            self.verse_separator_check_box.setChecked(verse_separator_set)
         range_separator = self.settings.value('bibles/range separator')
-        if (range_separator.strip('|') == '') or (range_separator == get_reference_separator('sep_r_default')):
+        if range_separator.strip('|') == '':
             self.range_separator_line_edit.setText(get_reference_separator('sep_r_default'))
             self.range_separator_line_edit.setPalette(self.get_grey_text_palette(True))
             self.range_separator_check_box.setChecked(False)
         else:
             self.range_separator_line_edit.setText(range_separator)
             self.range_separator_line_edit.setPalette(self.get_grey_text_palette(False))
-            self.range_separator_check_box.setChecked(True)
+            range_separator_set = self.settings.contains('bibles/range separator')
+            self.range_separator_check_box.setChecked(range_separator_set)
         list_separator = self.settings.value('bibles/list separator')
-        if (list_separator.strip('|') == '') or (list_separator == get_reference_separator('sep_l_default')):
+        if list_separator.strip('|') == '':
             self.list_separator_line_edit.setText(get_reference_separator('sep_l_default'))
             self.list_separator_line_edit.setPalette(self.get_grey_text_palette(True))
             self.list_separator_check_box.setChecked(False)
         else:
             self.list_separator_line_edit.setText(list_separator)
             self.list_separator_line_edit.setPalette(self.get_grey_text_palette(False))
-            self.list_separator_check_box.setChecked(True)
+            list_separator_set = self.settings.contains('bibles/list separator')
+            self.list_separator_check_box.setChecked(list_separator_set)
         end_separator = self.settings.value('bibles/end separator')
-        if (end_separator.strip('|') == '') or (end_separator == get_reference_separator('sep_e_default')):
+        if end_separator.strip('|') == '':
             self.end_separator_line_edit.setText(get_reference_separator('sep_e_default'))
             self.end_separator_line_edit.setPalette(self.get_grey_text_palette(True))
             self.end_separator_check_box.setChecked(False)
         else:
             self.end_separator_line_edit.setText(end_separator)
             self.end_separator_line_edit.setPalette(self.get_grey_text_palette(False))
-            self.end_separator_check_box.setChecked(True)
+            end_separator_set = self.settings.contains('bibles/end separator')
+            self.end_separator_check_box.setChecked(end_separator_set)
         self.language_selection = self.settings.value('bibles/book name language')
         self.language_selection_combo_box.setCurrentIndex(self.language_selection)
         self.reset_to_combined_quick_search = self.settings.value('bibles/reset to combined quick search')
