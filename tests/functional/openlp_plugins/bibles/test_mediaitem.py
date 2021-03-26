@@ -1580,3 +1580,82 @@ def test_set_search_option_invalid_value(media_item):
     assert result is False
     media_item.settings.setValue.assert_not_called()
     populate_bible_combo_boxes.assert_not_called()
+
+
+def test_generate_slide_data_data_string(media_item):
+    """
+    Test that the generated_slide_data provides data values for the api
+    """
+    # GIVEN: Mocked service item and some pretend bible slide data
+    mocked_service_item = MagicMock()
+    slide_data = {
+        'book': 'Matthew',
+        'chapter': '1',
+        'verse': '2',
+        'version': 'Bible version 104',
+        'copyright': 'copywrong',
+        'permissions': 'all the permissions',
+        'second_bible': 'Second bible thing',
+        'second_copyright': 'copywrite',
+        'second_permissions': 'no use allowed',
+        'second_version': 'Bible version 4567',
+        'text': 'text from matthew 1:2',
+        'second_text': 'different text from matthew 1:2'
+    }
+    mocked_items = [MagicMock(**{'data.return_value': slide_data})]
+    media_item.format_verse = MagicMock()
+    media_item.settings_tab = MagicMock()
+
+    # WHEN: Called generate_slide_data
+    media_item.generate_slide_data(mocked_service_item, item=mocked_items)
+
+    # THEN: both primary and secondary bible info should be included in the returned service item data string
+    assert mocked_service_item.data_string == {
+        'bibles': [
+            {
+                'version': 'Bible version 104',
+                'copyright': 'copywrong',
+                'permissions': 'all the permissions'
+            },
+            {
+                'version': 'Bible version 4567',
+                'copyright': 'copywrite',
+                'permissions': 'no use allowed'
+            }
+        ]
+    }
+
+
+def test_generate_slide_data_data_string_one_bible(media_item):
+    """
+    Test that the generated_slide_data provides data values for the api
+    """
+    # GIVEN: Mocked service item and some pretend bible slide data
+    mocked_service_item = MagicMock()
+    slide_data = {
+        'book': 'Matthew',
+        'chapter': '1',
+        'verse': '2',
+        'version': 'Bible version 104',
+        'copyright': 'copywrong',
+        'permissions': 'all the permissions',
+        'second_bible': '',
+        'text': 'text from matthew 1:2'
+    }
+    mocked_items = [MagicMock(**{'data.return_value': slide_data})]
+    media_item.format_verse = MagicMock()
+    media_item.settings_tab = MagicMock()
+
+    # WHEN: Called generate_slide_data
+    media_item.generate_slide_data(mocked_service_item, item=mocked_items)
+
+    # THEN: both primary and secondary bible info should be included in the returned service item data string
+    assert mocked_service_item.data_string == {
+        'bibles': [
+            {
+                'version': 'Bible version 104',
+                'copyright': 'copywrong',
+                'permissions': 'all the permissions'
+            }
+        ]
+    }
