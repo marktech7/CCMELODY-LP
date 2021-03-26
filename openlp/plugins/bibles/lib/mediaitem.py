@@ -915,7 +915,7 @@ class BibleMediaItem(MediaManagerItem):
         Generate the slide data. Needs to be implemented by the plugin.
 
         :param service_item: The service item to be built on
-        :param item: The Song item to be used
+        :param item: The Bible items to be used
         :param remote: Triggered from remote
         :param context: Why is it being generated
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
@@ -967,7 +967,7 @@ class BibleMediaItem(MediaManagerItem):
             })
         if data['second_bible']:
             bibles.append({
-                'version': data['second_bible'],
+                'version': data['second_version'],
                 'copyright': data['second_copyright'],
                 'permissions': data['second_permissions']
             })
