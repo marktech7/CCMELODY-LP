@@ -322,23 +322,26 @@ def test_populate_bible_combo_boxes(media_item):
     bible_1 = MagicMock()
     bible_2 = MagicMock()
     bible_3 = MagicMock()
-    media_item.settings.value = lambda key: {'bibles/primary bible': bible_2}[key]
+    media_item.settings.value = lambda key: {'bibles/primary bible': bible_2, 'bibles/second bible': bible_3}[key]
     media_item.version_combo_box = MagicMock()
     media_item.second_combo_box = MagicMock()
     media_item.plugin.manager.get_bibles.return_value = \
         {'Bible 2': bible_2, 'Bible 1': bible_1, 'Bible 3': bible_3}
     with patch('openlp.plugins.bibles.lib.mediaitem.get_locale_key', side_effect=lambda x: x), \
-            patch('openlp.plugins.bibles.lib.mediaitem.find_and_set_in_combo_box'), \
+            patch('openlp.plugins.bibles.lib.mediaitem.find_and_set_in_combo_box') as mocked_set_combo_box, \
             patch.object(media_item, 'on_version_combo_box_index_changed'):
 
         # WHEN: Calling populate_bible_combo_boxes
         media_item.populate_bible_combo_boxes()
 
         # THEN: The bible combo boxes should be filled with the bible names and data, in a sorted order.
+        # Also check the correct combo box has been selected according to the settings
         media_item.version_combo_box.addItem.assert_has_calls(
             [call('Bible 1', bible_1), call('Bible 2', bible_2), call('Bible 3', bible_3)])
         media_item.second_combo_box.addItem.assert_has_calls(
             [call('', None), call('Bible 1', bible_1), call('Bible 2', bible_2), call('Bible 3', bible_3)])
+        mocked_set_combo_box.assert_has_calls(
+            [call(media_item.version_combo_box, bible_2), call(media_item.second_combo_box, bible_3)])
 
 
 def test_reload_bibles(media_item):
@@ -819,6 +822,7 @@ def test_on_second_combo_box_index_changed_mode_not_changed(media_item):
         assert mocked_critical_error_message_box.called is False
         media_item.style_combo_box.setEnabled.assert_called_once_with(False)
         assert media_item.second_bible == mocked_bible_2
+        media_item.settings.setValue.assert_called_once_with('bibles/second bible', 'Bible 2')
 
 
 def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item):
@@ -846,6 +850,7 @@ def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item)
         assert media_item.second_combo_box.setCurrentIndex.called is True
         assert media_item.style_combo_box.setEnabled.called is False
         assert media_item.second_bible is None
+        media_item.settings.setValue.assert_not_called()
 
 
 def test_on_second_combo_box_index_changed_single_to_dual(media_item):
@@ -875,6 +880,7 @@ def test_on_second_combo_box_index_changed_single_to_dual(media_item):
         media_item.style_combo_box.setEnabled.assert_called_once_with(False)
         assert mocked_initialise_advanced_bible.called is True
         assert media_item.second_bible == mocked_bible_1
+        media_item.settings.setValue.assert_called_once_with('bibles/second bible', 'Bible 1')
 
 
 def test_on_second_combo_box_index_changed_dual_to_single(media_item):
@@ -903,6 +909,7 @@ def test_on_second_combo_box_index_changed_dual_to_single(media_item):
         media_item.style_combo_box.setEnabled.assert_called_once_with(True)
         assert mocked_initialise_advanced_bible.called is False
         assert media_item.second_bible is None
+        media_item.settings.setValue.assert_called_once_with('bibles/second bible', None)
 
 
 def test_on_advanced_book_combo_box(media_item):
