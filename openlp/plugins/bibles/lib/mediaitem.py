@@ -729,7 +729,7 @@ class BibleMediaItem(MediaManagerItem):
         verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text)
         self.search_results = self.plugin.manager.get_verses(self.bible.name, verse_refs, True)
         if self.second_bible and self.search_results:
-            self.search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
+            self.second_search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
         self.display_results()
 
     def on_text_search(self, text):
