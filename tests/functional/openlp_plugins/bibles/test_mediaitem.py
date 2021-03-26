@@ -1319,12 +1319,17 @@ def test_text_reference_search_dual_bible(media_item):
     with patch.object(media_item, 'display_results') as mocked_display_results:
         media_item.bible = mocked_bible_1
         media_item.second_bible = mocked_bible_2
+        media_item.search_results = ''
+        media_item.second_search_results = ''
+        media_item.plugin.manager.get_verses.side_effect = lambda x, y, z: x
 
         # WHEN: Calling text_reference_search with two bibles selected
         media_item.text_reference_search('Search Text')
 
         # THEN: reference_search should be called twice
         assert media_item.plugin.manager.get_verses.call_count == 2
+        assert media_item.search_results == 'Bible 1'
+        assert media_item.second_search_results == 'Bible 2'
         mocked_display_results.assert_called_once_with()
 
 
