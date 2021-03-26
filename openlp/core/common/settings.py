@@ -213,6 +213,7 @@ class Settings(QtCore.QSettings):
         'bibles/second bibles': True,
         'bibles/status': PluginStatus.Inactive,
         'bibles/primary bible': '',
+        'bibles/second bible': None,
         'bibles/bible theme': '',
         'bibles/verse separator': '',
         'bibles/range separator': '',

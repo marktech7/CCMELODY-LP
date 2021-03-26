@@ -329,6 +329,8 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         log.debug('Loading Bibles')
+        self.version_combo_box.blockSignals(True)
+        self.second_combo_box.blockSignals(True)
         self.version_combo_box.clear()
         self.second_combo_box.clear()
         self.second_combo_box.addItem('', None)
@@ -336,14 +338,16 @@ class BibleMediaItem(MediaManagerItem):
         bibles = self.plugin.manager.get_bibles()
         bibles = [(_f, bibles[_f]) for _f in bibles if _f]
         bibles.sort(key=lambda k: get_locale_key(k[0]))
-        self.version_combo_box.blockSignals(True)
         for bible in bibles:
             self.version_combo_box.addItem(bible[0], bible[1])
             self.second_combo_box.addItem(bible[0], bible[1])
         self.version_combo_box.blockSignals(False)
+        self.second_combo_box.blockSignals(False)
         # set the default value
         bible = self.settings.value('bibles/primary bible')
+        second_bible = self.settings.value('bibles/second bible')
         find_and_set_in_combo_box(self.version_combo_box, bible)
+        find_and_set_in_combo_box(self.second_combo_box, second_bible)
         # make sure the selected bible ripples down to other gui elements
         self.on_version_combo_box_index_changed()
 
@@ -591,8 +595,10 @@ class BibleMediaItem(MediaManagerItem):
         self.second_bible = new_selection
         if new_selection is None:
             self.style_combo_box.setEnabled(True)
+            self.settings.setValue('bibles/second bible', None)
         else:
             self.style_combo_box.setEnabled(False)
+            self.settings.setValue('bibles/second bible', self.second_bible.name)
             self.initialise_advanced_bible(self.select_book_combo_box.currentData())
 
     def on_advanced_book_combo_box(self):
