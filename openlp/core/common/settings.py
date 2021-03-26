@@ -291,6 +291,7 @@ class Settings(QtCore.QSettings):
         'presentations/thumbnail_scheme': '',
         'presentations/powerpoint slide click advance': QtCore.Qt.Unchecked,
         'presentations/powerpoint control window': QtCore.Qt.Unchecked,
+        'presentations/impress use display setting': QtCore.Qt.Unchecked,
         'presentations/last directory': None,
         'servicemanager/last directory': None,
         'servicemanager/last file': None,

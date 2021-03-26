@@ -76,6 +76,15 @@ class PresentationTab(SettingsTab):
         self.ppt_window_check_box.setObjectName('ppt_window_check_box')
         self.powerpoint_layout.addWidget(self.ppt_window_check_box)
         self.left_layout.addWidget(self.powerpoint_group_box)
+        # Impress
+        self.impress_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.impress_group_box.setObjectName('impress_group_box')
+        self.impress_layout = QtWidgets.QVBoxLayout(self.impress_group_box)
+        self.impress_layout.setObjectName('impress_layout')
+        self.odp_display_check_box = QtWidgets.QCheckBox(self.impress_group_box)
+        self.odp_display_check_box.setObjectName('odp_display_check_box')
+        self.impress_layout.addWidget(self.odp_display_check_box)
+        self.left_layout.addWidget(self.impress_group_box)
         # setup layout
         self.left_layout.addStretch()
         self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
@@ -101,6 +110,10 @@ class PresentationTab(SettingsTab):
             translate('PresentationPlugin.PresentationTab',
                       'Let PowerPoint control the size and monitor of the presentations\n'
                       '(This may fix PowerPoint scaling issues in Windows 8 and 10)'))
+        self.impress_group_box.setTitle(translate('PresentationPlugin.PresentationTab', 'Impress options'))
+        self.odp_display_check_box.setText(
+            translate('PresentationPlugin.PresentationTab',
+                      'Use Impress Slide Show Settings / Presentation Display setting'))
 
     def set_controller_text(self, checkbox, controller):
         if checkbox.isEnabled():
@@ -114,18 +127,24 @@ class PresentationTab(SettingsTab):
         Load the settings.
         """
         powerpoint_available = False
+        impress_available = False
         for key in self.controllers:
             controller = self.controllers[key]
             checkbox = self.presenter_check_boxes[controller.name]
             checkbox.setChecked(self.settings.value('presentations/' + controller.name))
             if controller.name == 'Powerpoint' and controller.is_available():
                 powerpoint_available = True
+            if controller.name == 'Impress' and controller.is_available():
+                impress_available = True
         self.override_app_check_box.setChecked(self.settings.value('presentations/override app'))
         # Load PowerPoint settings
         self.ppt_slide_click_check_box.setChecked(self.settings.value('presentations/powerpoint slide click advance'))
         self.ppt_slide_click_check_box.setEnabled(powerpoint_available)
         self.ppt_window_check_box.setChecked(self.settings.value('presentations/powerpoint control window'))
         self.ppt_window_check_box.setEnabled(powerpoint_available)
+        # Load Impress settings
+        self.odp_display_check_box.setChecked(self.settings.value('presentations/impress use display setting'))
+        self.odp_display_check_box.setEnabled(impress_available)
 
     def save(self):
         """
@@ -159,6 +178,11 @@ class PresentationTab(SettingsTab):
         setting_key = 'presentations/powerpoint control window'
         if self.settings.value(setting_key) != self.ppt_window_check_box.checkState():
             self.settings.setValue(setting_key, self.ppt_window_check_box.checkState())
+            changed = True
+        # Save impress setting
+        setting_key = 'presentations/impress use display setting'
+        if self.settings.value(setting_key) != self.odp_display_check_box.checkState():
+            self.settings.setValue(setting_key, self.odp_display_check_box.checkState())
             changed = True
         if changed:
             self.settings_form.register_post_process('mediaitem_suffix_reset')
