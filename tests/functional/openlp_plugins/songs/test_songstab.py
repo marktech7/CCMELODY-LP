@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-This module contains tests for the lib submodule of the Images plugin.
+This module contains tests for the lib submodule of the Songs plugin.
 """
 import pytest
 from unittest.mock import MagicMock, patch
