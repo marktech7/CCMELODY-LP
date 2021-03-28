@@ -38,6 +38,7 @@ from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.confirmationform import ConfirmationForm
 from openlp.plugins.songs.forms.editsongform import EditSongForm
 from openlp.plugins.songs.forms.songexportform import SongExportForm
 from openlp.plugins.songs.forms.songimportform import SongImportForm
@@ -494,12 +495,11 @@ class SongMediaItem(MediaManagerItem):
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
             items = self.list_view.selectedItems()
-            if QtWidgets.QMessageBox.question(
-                    self, UiStrings().ConfirmDelete,
+            item_strings = map(lambda i: i.text(), items)
+            delete_confirmed = ConfirmationForm(self, UiStrings().ConfirmDelete, item_strings,
                     translate('SongsPlugin.MediaItem',
-                              'Are you sure you want to delete the following songs?') +
-                    '\n\n- {songs}'.format(songs='\n- '.join([item.text() for item in items])),
-                    defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
+                              'Are you sure you want to delete these songs?')).exec()
+            if not delete_confirmed:
                 return
             self.application.set_busy_cursor()
             self.main_window.display_progress_bar(len(items))
