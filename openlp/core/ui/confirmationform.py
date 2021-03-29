@@ -19,8 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-A general-purpose confirmation form.
-This can be used for example to obtain confirmation that the user wants to delete a list of items.
+A general-purpose confirmation form. This can be used to obtain confirmation 
+that the user wants to delete a list of items, for example.
 It is implemented as a QDialog containing:
 - a QListView to display the list of items (eg the items to be deleted)
 - a message which asks the user for confirmation
@@ -42,7 +42,7 @@ class ConfirmationForm(QtWidgets.QDialog, Ui_ConfirmationDialog):
         """
         :param parent:   The parent QWidget
         :param title:    The title to be applied to the QDialog window
-        :param items:    A list of Strings for the items to be displayed
+        :param items:    A list (or other iterable) of Strings for the items 
         :param message:  The confirmation message to display
         :param width:    Width of the dialog window
         :param height:   Height of the dialog window

@@ -491,7 +491,7 @@ class SongMediaItem(MediaManagerItem):
 
     def on_delete_click(self):
         """
-        Remove a song from the list and database
+        Remove a song or songs from the list and database
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
             items = self.list_view.selectedItems()

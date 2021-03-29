@@ -34,7 +34,7 @@ class Ui_ConfirmationDialog():
         Set up the UI for the confirmation dialog.
 
         :param confirmation_dialog: The QDialog object to set up.
-        :param items:               A list containing the items
+        :param items:               A list (or other iterable) containing the items
         :param message:             The confirmation message to display
         :param width:               Width of the dialog window
         :param height:              Height of the dialog window
@@ -69,15 +69,18 @@ class Ui_ConfirmationDialog():
         self.message_and_buttons_layout = QtWidgets.QHBoxLayout(self.message_and_buttons)
         self.message_and_buttons_layout.setObjectName('message and buttons layout')
 
-        message_label = QtWidgets.QLabel(message)
-        message_label.setWordWrap(True)
-        self.message_and_buttons_layout.addWidget(message_label)
+        self.message_label = QtWidgets.QLabel(message)
+        self.message_label.setObjectName('message')
+        self.message_label.setWordWrap(True)
+        self.message_and_buttons_layout.addWidget(self.message_label)
 
         button_types = QtWidgets.QDialogButtonBox.Yes | QtWidgets.QDialogButtonBox.No
         self.buttonBox = QtWidgets.QDialogButtonBox(button_types)
+        self.buttonBox.setObjectName('buttons')
         self.message_and_buttons_layout.addWidget(self.buttonBox)
 
+        self.confirmation_layout.addWidget(self.message_and_buttons)
+
+        # slot connections
         self.buttonBox.accepted.connect(self.accept)
         self.buttonBox.rejected.connect(self.reject)
-
-        self.confirmation_layout.addWidget(self.message_and_buttons)
