@@ -607,7 +607,7 @@ class SongMediaItem(MediaManagerItem):
                     break
                 for verse in verse_list:
                     if verse[0]['type'][0].lower() == \
-                        order[0] and (verse[0]['label'].lower() == order[1:] or not order[1:]):
+                            order[0] and (verse[0]['label'].lower() == order[1:] or not order[1:]):
                         if verse_tags_translated:
                             verse_index = VerseType.from_translated_tag(verse[0]['type'])
                         else:
