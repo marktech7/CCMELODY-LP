@@ -184,18 +184,26 @@ class AdvancedTab(SettingsTab):
         :param pathlib.Path new_path: The new path
         :rtype: None
         """
-        # Make sure they want to change the data.
-        answer = QtWidgets.QMessageBox.question(self, translate('OpenLP.AdvancedTab', 'Confirm Data Directory Change'),
-                                                translate('OpenLP.AdvancedTab', 'Are you sure you want to change the '
-                                                          'location of the OpenLP data directory to:\n\n{path}'
-                                                          '\n\nThe data directory will be changed when OpenLP is '
-                                                          'closed.').format(path=new_path),
-                                                defaultButton=QtWidgets.QMessageBox.No)
-        if answer != QtWidgets.QMessageBox.Yes:
-            self.data_directory_path_edit.path = AppLocation.get_data_path()
-            return
         # Check if data already exists here.
         self.check_data_overwrite(new_path)
+        # Make sure they want to change the data.
+        if self.data_directory_copy_check_box.isChecked():
+            warning_string = translate('OpenLP.AdvancedTab', 'Are you sure you want to change the '
+                                                             'location of the OpenLP data directory to:\n\n{path}'
+                                                             '\n\nExisting files in this directory could be '
+                                                             'overwritten. The data directory will be changed when '
+                                                             'OpenLP is closed.').format(path=new_path)
+        else:
+            warning_string = translate('OpenLP.AdvancedTab', 'Are you sure you want to change the '
+                                                             'location of the OpenLP data directory to:\n\n{path}'
+                                                             '\n\nThe data directory will be changed when OpenLP is '
+                                                             'closed.').format(path=new_path)
+        answer = QtWidgets.QMessageBox.question(self, translate('OpenLP.AdvancedTab', 'Confirm Data Directory Change'),
+                                                warning_string, defaultButton=QtWidgets.QMessageBox.No)
+        if answer != QtWidgets.QMessageBox.Yes:
+            self.data_directory_path_edit.path = AppLocation.get_data_path()
+            self.new_data_directory_has_files_label.hide()
+            return
         # Save the new location.
         self.main_window.new_data_path = new_path
         self.data_directory_cancel_button.show()
@@ -226,7 +234,7 @@ class AdvancedTab(SettingsTab):
                                                              'WARNING: \n\nThe location you have selected \n\n{path}'
                                                              '\n\nappears to contain OpenLP data files. Do you wish to '
                                                              'replace these files with the current data '
-                                                             'files?'.format(path=data_path)),
+                                                             'files?').format(path=data_path),
                                                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
                                                                                          QtWidgets.QMessageBox.No),
                                                    QtWidgets.QMessageBox.No)

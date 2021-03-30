@@ -1359,7 +1359,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.show_status_message(
                     translate('OpenLP.MainWindow', 'Copying OpenLP data to new data directory location - {path} '
                               '- Please wait for copy to finish').format(path=self.new_data_path))
-                shutil.copytree(str(old_data_path), str(self.new_data_path))
+                shutil.copytree(str(old_data_path), str(self.new_data_path), dirs_exist_ok=True)
                 self.log_info('Copy successful')
             except (OSError, shutil.Error) as why:
                 self.application.set_normal_cursor()

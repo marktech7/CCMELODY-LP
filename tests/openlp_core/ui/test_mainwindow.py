@@ -25,6 +25,8 @@ import os
 import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
+from shutil import rmtree
+from tempfile import mkdtemp
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -313,3 +315,29 @@ def test_application_activate_event(mocked_is_macosx, main_window):
     # THEN:
     assert result is True, "The method should have returned True."
     assert main_window.isMinimized() is False
+
+
+@patch('openlp.core.app.QtWidgets.QMessageBox.critical')
+@patch('openlp.core.common.applocation.AppLocation.get_data_path')
+@patch('openlp.core.common.applocation.AppLocation.get_directory')
+def test_change_data_directory(mocked_get_directory, mocked_get_data_path, mocked_critical_box, main_window):
+    """
+    Test that changing the data directory works if the folder already exists
+    """
+    # GIVEN: an existing old and new data directory.
+    temp_folder = Path(mkdtemp())
+    mocked_get_data_path.return_value = temp_folder
+    main_window.copy_data = True
+    temp_new_data_folder = Path(mkdtemp())
+    main_window.new_data_path = temp_new_data_folder
+
+    # WHEN: running change_data_directory
+    result = main_window.change_data_directory()
+
+    # THEN: No error shouuld have occured
+    assert result is not False
+    mocked_critical_box.assert_not_called()
+
+    # Clean up
+    rmtree(temp_folder)
+    rmtree(temp_new_data_folder)
