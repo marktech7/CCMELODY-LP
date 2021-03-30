@@ -202,6 +202,7 @@ class AdvancedTab(SettingsTab):
                                                 warning_string, defaultButton=QtWidgets.QMessageBox.No)
         if answer != QtWidgets.QMessageBox.Yes:
             self.data_directory_path_edit.path = AppLocation.get_data_path()
+            self.new_data_directory_has_files_label.hide()
             return
         # Save the new location.
         self.main_window.new_data_path = new_path
