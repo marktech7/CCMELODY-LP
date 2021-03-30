@@ -233,7 +233,7 @@ class AdvancedTab(SettingsTab):
                                                              'WARNING: \n\nThe location you have selected \n\n{path}'
                                                              '\n\nappears to contain OpenLP data files. Do you wish to '
                                                              'replace these files with the current data '
-                                                             'files?'.format(path=data_path)),
+                                                             'files?').format(path=data_path),
                                                    QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
                                                                                          QtWidgets.QMessageBox.No),
                                                    QtWidgets.QMessageBox.No)
