@@ -48,6 +48,7 @@ from openlp.plugins.songs.lib.db import Author, AuthorType, Book, MediaFile, Son
 from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics, SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
 
+
 log = logging.getLogger(__name__)
 
 
@@ -79,7 +80,7 @@ class SongMediaItem(MediaManagerItem):
     def _update_background_audio(self, song, item):
         song.media_files = []
         for i, bga in enumerate(item.background_audio):
-            dest_path = \
+            dest_path =\
                 AppLocation.get_section_data_path(self.plugin.name) / 'audio' / str(song.id) / os.path.split(bga)[1]
             create_paths(dest_path.parent)
             copyfile(AppLocation.get_section_data_path('servicemanager') / bga, dest_path)
@@ -134,27 +135,27 @@ class SongMediaItem(MediaManagerItem):
         self.open_lyrics = OpenLyrics(self.plugin.manager)
         self.search_text_edit.set_search_types([
             (SongSearch.Entire, UiIcons().music,
-             translate('SongsPlugin.MediaItem', 'Entire Song'),
-             translate('SongsPlugin.MediaItem', 'Search Entire Song...')),
+                translate('SongsPlugin.MediaItem', 'Entire Song'),
+                translate('SongsPlugin.MediaItem', 'Search Entire Song...')),
             (SongSearch.Titles, UiIcons().search_text,
-             translate('SongsPlugin.MediaItem', 'Titles'),
-             translate('SongsPlugin.MediaItem', 'Search Titles...')),
+                translate('SongsPlugin.MediaItem', 'Titles'),
+                translate('SongsPlugin.MediaItem', 'Search Titles...')),
             (SongSearch.Lyrics, UiIcons().search_lyrics,
-             translate('SongsPlugin.MediaItem', 'Lyrics'),
-             translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
+                translate('SongsPlugin.MediaItem', 'Lyrics'),
+                translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
             (SongSearch.Authors, UiIcons().user, SongStrings.Authors,
-             translate('SongsPlugin.MediaItem', 'Search Authors...')),
+                translate('SongsPlugin.MediaItem', 'Search Authors...')),
             (SongSearch.Topics, UiIcons().theme, SongStrings.Topics,
-             translate('SongsPlugin.MediaItem', 'Search Topics...')),
+                translate('SongsPlugin.MediaItem', 'Search Topics...')),
             (SongSearch.Books, UiIcons().address, SongStrings.SongBooks,
-             translate('SongsPlugin.MediaItem', 'Search Songbooks...')),
+                translate('SongsPlugin.MediaItem', 'Search Songbooks...')),
             (SongSearch.Themes, UiIcons().theme, UiStrings().Themes, UiStrings().SearchThemes),
             (SongSearch.Copyright, UiIcons().copyright,
-             translate('SongsPlugin.MediaItem', 'Copyright'),
-             translate('SongsPlugin.MediaItem', 'Search Copyright...')),
+                translate('SongsPlugin.MediaItem', 'Copyright'),
+                translate('SongsPlugin.MediaItem', 'Search Copyright...')),
             (SongSearch.CCLInumber, UiIcons().search_ccli,
-             translate('SongsPlugin.MediaItem', 'CCLI number'),
-             translate('SongsPlugin.MediaItem', 'Search CCLI number...'))
+                translate('SongsPlugin.MediaItem', 'CCLI number'),
+                translate('SongsPlugin.MediaItem', 'Search CCLI number...'))
         ])
         self.config_update()
 
@@ -250,7 +251,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A list of db Song objects
         :return: None
         """
-
         def get_song_key(song):
             """Get the key to sort by"""
             return song.sort_key
@@ -281,7 +281,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A list of db Author objects
         :return: None
         """
-
         def get_author_key(author):
             """Get the key to sort by"""
             return get_natural_key(author.display_name)
@@ -311,7 +310,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A tuple containing (songbook entry, book name, song title, song id)
         :return: None
         """
-
         def get_songbook_key(text):
             """
             Get the key to sort by
@@ -336,7 +334,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A list of db Topic objects
         :return: None
         """
-
         def get_topic_key(topic):
             """Get the key to sort by"""
             return get_natural_key(topic.name)
@@ -366,7 +363,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A list of db Song objects
         :return: None
         """
-
         def get_theme_key(song):
             """Get the key to sort by"""
             return get_natural_key(song.theme_name), song.sort_key
@@ -390,7 +386,6 @@ class SongMediaItem(MediaManagerItem):
         :param search_results: A list of db Song objects
         :return: None
         """
-
         def get_cclinumber_key(song):
             """Get the key to sort by"""
             return get_natural_key(song.ccli_number), song.sort_key
@@ -502,8 +497,8 @@ class SongMediaItem(MediaManagerItem):
             items = self.list_view.selectedItems()
             item_strings = map(lambda i: i.text(), items)
             delete_confirmed = ConfirmationForm(self, UiStrings().ConfirmDelete, item_strings,
-                                                translate('SongsPlugin.MediaItem',
-                                                          'Are you sure you want to delete these songs?')).exec()
+                    translate('SongsPlugin.MediaItem',
+                              'Are you sure you want to delete these songs?')).exec()
             if not delete_confirmed:
                 return
             self.application.set_busy_cursor()
@@ -607,7 +602,7 @@ class SongMediaItem(MediaManagerItem):
                     break
                 for verse in verse_list:
                     if verse[0]['type'][0].lower() == \
-                        order[0] and (verse[0]['label'].lower() == order[1:] or not order[1:]):
+                            order[0] and (verse[0]['label'].lower() == order[1:] or not order[1:]):
                         if verse_tags_translated:
                             verse_index = VerseType.from_translated_tag(verse[0]['type'])
                         else:
