@@ -497,8 +497,8 @@ class SongMediaItem(MediaManagerItem):
             items = self.list_view.selectedItems()
             item_strings = map(lambda i: i.text(), items)
             delete_confirmed = ConfirmationForm(self, UiStrings().ConfirmDelete, item_strings,
-                    translate('SongsPlugin.MediaItem',
-                              'Are you sure you want to delete these songs?')).exec()
+                                                translate('SongsPlugin.MediaItem',
+                                                          'Are you sure you want to delete these songs?')).exec()
             if not delete_confirmed:
                 return
             self.application.set_busy_cursor()
