@@ -56,12 +56,20 @@ class ApiTab(SettingsTab):
         self.server_settings_layout.setObjectName('server_settings_layout')
         self.address_label = QtWidgets.QLabel(self.server_settings_group_box)
         self.address_label.setObjectName('address_label')
+        self.server_settings_layout.addRow(self.address_label)
         self.address_edit = QtWidgets.QLineEdit(self.server_settings_group_box)
         self.address_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         self.address_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'),
                                        self))
         self.address_edit.setObjectName('address_edit')
-        self.server_settings_layout.addRow(self.address_label, self.address_edit)
+        self.address_revert_button = QtWidgets.QToolButton(self.server_settings_group_box)
+        self.address_revert_button.setObjectName('address_revert_button')
+        self.address_revert_button.setIcon(UiIcons().undo)
+        self.address_button_layout = QtWidgets.QHBoxLayout()
+        self.address_button_layout.setObjectName('address_button_layout')
+        self.address_button_layout.addWidget(self.address_edit)
+        self.address_button_layout.addWidget(self.address_revert_button)
+        self.server_settings_layout.addRow(self.address_button_layout)
         self.twelve_hour_check_box = QtWidgets.QCheckBox(self.server_settings_group_box)
         self.twelve_hour_check_box.setObjectName('twelve_hour_check_box')
         self.server_settings_layout.addRow(self.twelve_hour_check_box)
@@ -161,6 +169,8 @@ class ApiTab(SettingsTab):
         self.app_qr_layout.addWidget(self.app_qr_description_label)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
+
+        self.address_revert_button.clicked.connect(self.address_revert_button_clicked)
         self.twelve_hour_check_box.stateChanged.connect(self.on_twelve_hour_check_box_changed)
         self.thumbnails_check_box.stateChanged.connect(self.on_thumbnails_check_box_changed)
         self.address_edit.textChanged.connect(self.set_urls)
@@ -170,7 +180,9 @@ class ApiTab(SettingsTab):
     def retranslate_ui(self):
         self.tab_title_visible = translate('RemotePlugin.RemoteTab', 'Remote Interface')
         self.server_settings_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Server Settings'))
-        self.address_label.setText(translate('RemotePlugin.RemoteTab', 'IP address:'))
+        self.address_label.setText(translate('RemotePlugin.RemoteTab',
+                                             'Listen IP address (0.0.0.0 matches all addresses):'))
+        self.address_revert_button.setToolTip(translate('OpenLP.ServiceTab', 'Revert to default IP address.'))
         self.port_label.setText(translate('RemotePlugin.RemoteTab', 'Port number:'))
         self.remote_url_label.setText(translate('RemotePlugin.RemoteTab', 'Remote URL:'))
         self.stage_url_label.setText(translate('RemotePlugin.RemoteTab', 'Stage view URL:'))
@@ -281,6 +293,9 @@ class ApiTab(SettingsTab):
         self.settings.setValue('api/authentication enabled', self.user_login_group_box.isChecked())
         self.settings.setValue('api/user id', self.user_id.text())
         self.settings.setValue('api/password', self.password.text())
+
+    def address_revert_button_clicked(self):
+        self.address_edit.setText(self.settings.get_default_value('api/ip address'))
 
     def on_twelve_hour_check_box_changed(self, check_state):
         """
