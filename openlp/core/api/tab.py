@@ -30,6 +30,7 @@ from openlp.core.common import get_network_interfaces
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib.settingstab import SettingsTab
+from openlp.core.threading import is_thread_finished
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.dialogs import DownloadProgressDialog
 
@@ -167,6 +168,24 @@ class ApiTab(SettingsTab):
         self.app_qr_description_label.setOpenExternalLinks(True)
         self.app_qr_description_label.setWordWrap(True)
         self.app_qr_layout.addWidget(self.app_qr_description_label)
+        self.server_state_group_box = QtWidgets.QGroupBox(self.right_column)
+        self.right_layout.addWidget(self.server_state_group_box)
+        self.server_state_layout = QtWidgets.QFormLayout(self.server_state_group_box)
+        self.server_http_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_http_state_title.setObjectName('server_http_state_title')
+        self.server_http_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_http_state.setObjectName('server_http_state')
+        self.server_state_layout.addRow(self.server_http_state_title, self.server_http_state)
+        self.server_websocket_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_websocket_state_title.setObjectName('server_websocket_state_title')
+        self.server_websocket_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_websocket_state.setObjectName('server_websocket_state')
+        self.server_state_layout.addRow(self.server_websocket_state_title, self.server_websocket_state)
+        self.server_zeroconf_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_zeroconf_state_title.setObjectName('server_zeroconf_state_title')
+        self.server_zeroconf_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_zeroconf_state.setObjectName('server_zeroconf_state')
+        self.server_state_layout.addRow(self.server_zeroconf_state_title, self.server_zeroconf_state)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
 
@@ -205,6 +224,11 @@ class ApiTab(SettingsTab):
         self.current_version_label.setText(translate('RemotePlugin.RemoteTab', 'Current version:'))
         self.master_version_label.setText(translate('RemotePlugin.RemoteTab', 'Latest version:'))
         self._unknown_version = translate('RemotePlugin.RemoteTab', '(unknown)')
+        self.server_http_state_title.setText(translate('RemotePlugin.RemoteTab', 'HTTP Server:'))
+        self.server_websocket_state_title.setText(translate('RemotePlugin.RemoteTab', 'Websocket Server:'))
+        self.server_zeroconf_state_title.setText(translate('RemotePlugin.RemoteTab', 'Zeroconf Server:'))
+        self._server_up = translate('RemotePlugin.RemoteTab', 'Up', 'Server is active')
+        self._server_down = translate('RemotePlugin.RemoteTab', 'Down', 'Server is inactive')
 
     @property
     def master_version(self):
@@ -250,6 +274,23 @@ class ApiTab(SettingsTab):
         http_url_temp = http_url + 'main'
         self.live_url.setText('<a href="{url}">{url}</a>'.format(url=http_url_temp))
 
+    def get_server_states(self):
+        """
+        Update the display with the current state of the servers
+        """
+        if is_thread_finished('http_server'):
+            self.server_http_state.setText(self._server_down)
+        else:
+            self.server_http_state.setText(self._server_up)
+        if is_thread_finished('websocket_server'):
+            self.server_websocket_state.setText(self._server_down)
+        else:
+            self.server_websocket_state.setText(self._server_up)
+        if is_thread_finished('api_zeroconf'):
+            self.server_zeroconf_state.setText(self._server_down)
+        else:
+            self.server_zeroconf_state.setText(self._server_up)
+
     def get_ip_address(self, ip_address):
         """
         returns the IP address in dependency of the passed address
@@ -280,6 +321,7 @@ class ApiTab(SettingsTab):
         self.current_version_value.setText(self.settings.value('api/download version'))
         self.set_master_version()
         self.set_urls()
+        self.get_server_states()
 
     def save(self):
         """
