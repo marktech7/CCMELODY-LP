@@ -157,11 +157,11 @@ def test_worker_start_fail(mocked_log, mocked_asyncio, mocked_serve, worker, set
     """
     Test the start function of the worker handles a error nicely
     """
-    # GIVEN: A mocked serve function and event loop
+    # GIVEN: A mocked serve function and event loop. run_until_complete returns a error
     mocked_serve.return_value = 'server_thing'
     event_loop = MagicMock()
     mocked_asyncio.new_event_loop.return_value = event_loop
-    event_loop.run_until_complete.side_effect = lambda: 1 / 0
+    event_loop.run_until_complete.side_effect = Exception()
     # WHEN: The start function is called
     worker.start()
     # THEN: An exception is logged but is handled and the event_loop is closed
