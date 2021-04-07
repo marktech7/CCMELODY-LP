@@ -25,7 +25,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from openlp.core.api.websocketspoll import WebSocketPoller
-from openlp.core.api.websockets import WebSocketServer
+from openlp.core.api.websockets import WebSocketWorker, WebSocketServer
 from openlp.core.common.registry import Registry
 
 
@@ -33,6 +33,12 @@ from openlp.core.common.registry import Registry
 def poller(settings):
     poll = WebSocketPoller()
     yield poll
+
+
+@pytest.fixture
+def worker(settings):
+    worker = WebSocketWorker()
+    yield worker
 
 
 @patch('openlp.core.api.websockets.WebSocketWorker')
@@ -120,3 +126,47 @@ def test_poller_get_state_if_changed(poller, settings):
     # THEN: The get_state_if_changed function should return None on the second call because the state has not changed
     assert poll_json is not None, 'The first get_state_if_changed function call should have not returned None'
     assert poll_json2 is None, 'The second get_state_if_changed function should return None'
+
+
+@patch('openlp.core.api.websockets.serve')
+@patch('openlp.core.api.websockets.asyncio')
+@patch('openlp.core.api.websockets.log')
+def test_worker_start(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
+    """
+    Test the start function of the worker
+    """
+    # GIVEN: A mocked serve function and event loop
+    mocked_serve.return_value = 'server_thing'
+    event_loop = MagicMock()
+    mocked_asyncio.new_event_loop.return_value = event_loop
+    # WHEN: The start function is called
+    worker.start()
+    # THEN: No error occurs
+    mocked_serve.assert_called_once()
+    event_loop.run_until_complete.assert_called_once_with('server_thing')
+    event_loop.run_forever.assert_called_once_with()
+    mocked_log.exception.assert_not_called()
+    # Because run_forever is mocked, it doesn't stall the thread so close will be called immediately
+    event_loop.close.assert_called_once_with()
+
+
+@patch('openlp.core.api.websockets.serve')
+@patch('openlp.core.api.websockets.asyncio')
+@patch('openlp.core.api.websockets.log')
+def test_worker_start_fail(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
+    """
+    Test the start function of the worker handles a error nicely
+    """
+    # GIVEN: A mocked serve function and event loop
+    mocked_serve.return_value = 'server_thing'
+    event_loop = MagicMock()
+    mocked_asyncio.new_event_loop.return_value = event_loop
+    event_loop.run_until_complete.side_effect = lambda: 1 / 0
+    # WHEN: The start function is called
+    worker.start()
+    # THEN: An exception is logged but is handled and the event_loop is closed
+    mocked_serve.assert_called_once()
+    event_loop.run_until_complete.assert_called_once_with('server_thing')
+    event_loop.run_forever.assert_not_called()
+    mocked_log.exception.assert_called_once()
+    event_loop.close.assert_called_once_with()
