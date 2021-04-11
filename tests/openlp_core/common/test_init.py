@@ -34,6 +34,7 @@ from openlp.core.common import Singleton, add_actions, clean_filename, clean_but
     trace_error_handler, verify_ip_address
 
 from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
+from tests.utils.constants import TEST_RESOURCES_PATH
 
 
 test_non_ascii_string = '이것은 한국어 시험 문자열'
@@ -317,6 +318,9 @@ def test_is_64bit_instance():
         assert is_64bit_instance() is False, 'is_64bit_instance() should return False'
 
 
+
+
+
 def test_normalize_str_leaves_newlines():
     # GIVEN: a string containing newlines
     string = 'something\nelse'
@@ -441,7 +445,7 @@ def test_sha256_file_hash():
     Test SHA256 file hash
     """
     # GIVEN: A mocked Path object
-    filename = Path('tests/resources/presentations/test.ppt')
+    filename = Path(TEST_RESOURCES_PATH +'/presentations/test.ppt')
 
     # WHEN: Given a known salt+data
     result = sha256_file_hash(filename)
