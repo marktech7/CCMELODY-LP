@@ -46,7 +46,7 @@ from openlp.plugins.songs.songsplugin import SongsPlugin
 from tests.helpers.testmixin import TestMixin
 
 TEST_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'resources', 'planningcenter'))
+    os.path.join(os.path.dirname(__file__), '..', '..', '..', 'resources', 'planningcenter'))
 
 
 class TestSelectPlanForm(TestCase, TestMixin):
