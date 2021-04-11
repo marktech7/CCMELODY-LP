@@ -318,9 +318,6 @@ def test_is_64bit_instance():
         assert is_64bit_instance() is False, 'is_64bit_instance() should return False'
 
 
-
-
-
 def test_normalize_str_leaves_newlines():
     # GIVEN: a string containing newlines
     string = 'something\nelse'
@@ -445,7 +442,7 @@ def test_sha256_file_hash():
     Test SHA256 file hash
     """
     # GIVEN: A mocked Path object
-    filename = Path(TEST_RESOURCES_PATH +'/presentations/test.ppt')
+    filename = Path(TEST_RESOURCES_PATH + '/presentations/test.ppt')
 
     # WHEN: Given a known salt+data
     result = sha256_file_hash(filename)

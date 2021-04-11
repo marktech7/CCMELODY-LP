@@ -431,7 +431,6 @@ def test_update_preview_images(registry):
     theme_manager.load_themes.assert_called_once_with()
 
 
-
 def test_theme_manager_initialise(theme_manager):
     """
     Test the thememanager initialise - basic test

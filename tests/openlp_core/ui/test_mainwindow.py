@@ -38,7 +38,7 @@ from tests.utils.constants import TEST_RESOURCES_PATH, RESOURCE_PATH
 
 
 @pytest.fixture()
-def main_window(settings, state):
+def main_window_restricted(settings, state):
     """
     Create the UI
     """
@@ -343,44 +343,44 @@ def test_application_activate_event(mocked_is_macosx, main_window):
     assert main_window.isMinimized() is False
 
 
-def test_restore_current_media_manager_item(main_window):
+def test_restore_current_media_manager_item(main_window_restricted):
     """
     Regression test for bug #1152509.
     """
     # save current plugin: True; current media plugin: 2
-    main_window.settings.setValue('advanced/save current plugin', True)
-    main_window.settings.setValue('advanced/current media plugin', 2)
+    main_window_restricted.settings.setValue('advanced/save current plugin', True)
+    main_window_restricted.settings.setValue('advanced/current media plugin', 2)
 
     # WHEN: Call the restore method.
-    main_window.restore_current_media_manager_item()
+    main_window_restricted.restore_current_media_manager_item()
 
     # THEN: The current widget should have been set.
-    main_window.media_tool_box.setCurrentIndex.assert_called_with(2)
+    main_window_restricted.media_tool_box.setCurrentIndex.assert_called_with(2)
 
 
-def test_projector_manager_dock_locked(main_window):
+def test_projector_manager_dock_locked(main_window_restricted):
     """
     Projector Manager enable UI options -  bug #1390702
     """
     # GIVEN: A mocked projector manager dock item:
-    projector_dock = main_window.projector_manager_dock
+    projector_dock = main_window_restricted.projector_manager_dock
 
     # WHEN: main_window.lock_panel action is triggered
-    main_window.lock_panel.triggered.emit(True)
+    main_window_restricted.lock_panel.triggered.emit(True)
 
     # THEN: Projector manager dock should have been called with disable UI features
     projector_dock.setFeatures.assert_called_with(0)
 
 
-def test_projector_manager_dock_unlocked(main_window):
+def test_projector_manager_dock_unlocked(main_window_restricted):
     """
     Projector Manager disable UI options -  bug #1390702
     """
     # GIVEN: A mocked projector manager dock item:
-    projector_dock = main_window.projector_manager_dock
+    projector_dock = main_window_restricted.projector_manager_dock
 
     # WHEN: main_window.lock_panel action is triggered
-    main_window.lock_panel.triggered.emit(False)
+    main_window_restricted.lock_panel.triggered.emit(False)
 
     # THEN: Projector manager dock should have been called with enable UI features
     projector_dock.setFeatures.assert_called_with(7)

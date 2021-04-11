@@ -43,7 +43,6 @@ sample_theme_data = {'file_name': 'BlueBurst.otz', 'sha256': 'sha_256_hash',
                      'thumbnail': 'BlueBurst.png', 'title': 'Blue Burst'}
 
 
-
 @pytest.fixture()
 def mocked_set_icon(mock_settings):
     move_to_thread_patcher = patch('openlp.core.ui.firsttimeform.DownloadWorker.moveToThread').start()
@@ -446,6 +445,7 @@ def test_theme_list_widget_resize(ftf_app):
 
     # THEN: Check that the correct calculations were done
     mocked_setGridSize.assert_called_once_with(QtCore.QSize(149, 140))
+
 
 def test_failed_download(mocked_set_icon):
     """

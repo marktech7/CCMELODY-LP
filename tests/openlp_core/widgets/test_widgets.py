@@ -158,6 +158,7 @@ def test_spinboxes_going_outside_screen_geometry(mocked_screenList, form):
     assert form.width_spin_box.value() == 1921
     assert form.height_spin_box.value() == 1081
 
+
 def test_radio_button_exclusivity_no_proxy(settings):
     """
     Test that only one radio button can be checked at a time, and that the line edits are only enabled when the
