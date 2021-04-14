@@ -122,7 +122,6 @@ def test_on_import_planning_center_triggered_without_auth_settings(mock_editauth
     the correct form to display.
     """
     plugin = plugin_env[0]
-    settings = plugin_env[1]
     # GIVEN: A PlanningCenterPlugin Class with mocked exec calls on both
     # PlanningCenter forms and settings set
     application_id = ''
@@ -133,7 +132,7 @@ def test_on_import_planning_center_triggered_without_auth_settings(mock_editauth
     # WHEN:  on_import_planning_center_triggered is called
     plugin.on_import_planning_center_triggered()
     # THEN:
-    assert mock_selectplan_exec.call_count ==0, "Select Plan Form was not shown"
+    assert mock_selectplan_exec.call_count == 0, "Select Plan Form was not shown"
     assert mock_editauth_exec.call_count == 1, "Edit Auth Form was shown"
 
 
