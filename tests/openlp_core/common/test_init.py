@@ -21,6 +21,7 @@
 """
 Functional tests to test the AppLocation class and related methods.
 """
+import os
 from io import BytesIO
 from pathlib import Path
 from unittest import skipUnless
@@ -34,7 +35,7 @@ from openlp.core.common import Singleton, add_actions, clean_filename, clean_but
     trace_error_handler, verify_ip_address
 
 from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
-
+from tests.utils.constants import TEST_RESOURCES_PATH
 
 test_non_ascii_string = '이것은 한국어 시험 문자열'
 test_non_ascii_hash = 'fc00c7912976f6e9c19099b514ced201'
@@ -441,7 +442,8 @@ def test_sha256_file_hash():
     Test SHA256 file hash
     """
     # GIVEN: A mocked Path object
-    filename = Path('tests/resources/presentations/test.ppt')
+    ppt_path = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.ppt')
+    filename = Path(ppt_path)
 
     # WHEN: Given a known salt+data
     result = sha256_file_hash(filename)

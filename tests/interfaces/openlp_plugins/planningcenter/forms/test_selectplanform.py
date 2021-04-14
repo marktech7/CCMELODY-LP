@@ -44,9 +44,9 @@ from openlp.plugins.planningcenter.planningcenterplugin import PlanningCenterPlu
 from openlp.plugins.songs.lib.mediaitem import SongMediaItem
 from openlp.plugins.songs.songsplugin import SongsPlugin
 from tests.helpers.testmixin import TestMixin
+from tests.utils.constants import TEST_RESOURCES_PATH
 
-TEST_PATH = os.path.abspath(
-    os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'resources', 'planningcenter'))
+TEST_PATH = os.path.abspath(os.path.join(os.path.dirname(__file__), TEST_RESOURCES_PATH, 'planningcenter'))
 
 
 class TestSelectPlanForm(TestCase, TestMixin):
