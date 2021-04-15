@@ -232,17 +232,32 @@ class ImpressController(PresentationController):
             # Get an updateable configuration view
             impress_conf_props = self.conf_provider.createInstanceWithArguments(
                 'com.sun.star.configuration.ConfigurationUpdateAccess', properties)
-            # Get the specific setting for presentation screen
-            presenter_screen_enabled = impress_conf_props.getHierarchicalPropertyValue(
-                'Misc/Start/EnablePresenterScreen')
-            # If the presentation screen is enabled we disable it
-            if presenter_screen_enabled != set_visible:
-                impress_conf_props.setHierarchicalPropertyValue('Misc/Start/EnablePresenterScreen', set_visible)
-                impress_conf_props.commitChanges()
-                # if set_visible is False this is an attempt to disable the Presenter Screen
-                # so we make a note that it has been disabled, so it can be enabled again on close.
-                if set_visible is False:
-                    self.presenter_screen_disabled_by_openlp = True
+            try:
+                # Get the specific setting for presentation screen
+                # For libre office this is 'EnablePresenterScreen' but for open office 'PresenterScreen'
+                # So we try the libre office first, and this raises an exception if it doesn't exist
+                presenter_screen_enabled = impress_conf_props.getHierarchicalPropertyValue(
+                    'Misc/Start/EnablePresenterScreen')
+                # If the presentation screen is enabled we disable it
+                if presenter_screen_enabled != set_visible:
+                    impress_conf_props.setHierarchicalPropertyValue('Misc/Start/EnablePresenterScreen', set_visible)
+                    impress_conf_props.commitChanges()
+                    # if set_visible is False this is an attempt to disable the Presenter Screen
+                    # so we make a note that it has been disabled, so it can be enabled again on close.
+                    if set_visible is False:
+                        self.presenter_screen_disabled_by_openlp = True
+            except Exception as e:
+                # same code as above, except using 'PresenterScreen' which is the open office equivalent
+                if 'UnknownPropertyException' in str(e):
+                    presenter_screen_enabled = impress_conf_props.getHierarchicalPropertyValue(
+                        'Misc/Start/PresenterScreen')
+                    if presenter_screen_enabled != set_visible:
+                        impress_conf_props.setHierarchicalPropertyValue('Misc/Start/PresenterScreen', set_visible)
+                        impress_conf_props.commitChanges()
+                        if set_visible is False:
+                            self.presenter_screen_disabled_by_openlp = True
+                else:
+                    raise
         except Exception as e:
             log.exception(e)
             trace_error_handler(log)
