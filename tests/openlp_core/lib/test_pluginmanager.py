@@ -546,6 +546,7 @@ def test_new_service_created_with_active_plugin(registry, state):
     mocked_plugin.is_active.assert_called_with()
     mocked_plugin.new_service_created.assert_called_with()
 
+
 class TestPluginManager(TestCase, TestMixin):
     """
     Test the PluginManager class
