@@ -23,8 +23,11 @@ Interface tests to test the themeManager class and related methods.
 """
 from unittest.mock import MagicMock
 
+from openlp.core.common import is_not_image_file
 from openlp.core.common.registry import Registry
 from openlp.core.common.utils import wait_for, is_uuid
+
+from tests.utils.constants import RESOURCE_PATH
 
 
 def test_wait_for(registry):
@@ -57,3 +60,45 @@ def test_uuid_not_valid():
 def test_uuid_valid():
     """Test that an valid string UUID returns True"""
     assert is_uuid('2596ac84-9735-11ea-a665-8fa61362d04a'), 'is_uuid() should return True when given a valid UUID'
+
+
+def test_is_not_image_empty():
+    """
+    Test the method handles an empty string
+    """
+    # Given and empty string
+    file_name = ""
+
+    # WHEN testing for it
+    result = is_not_image_file(file_name)
+
+    # THEN the result is false
+    assert result is True, 'The missing file test should return True'
+
+
+def test_is_not_image_with_image_file():
+    """
+    Test the method handles an image file
+    """
+    # Given and empty string
+    file_path = RESOURCE_PATH / 'church.jpg'
+
+    # WHEN testing for it
+    result = is_not_image_file(file_path)
+
+    # THEN the result is false
+    assert result is False, 'The file is present so the test should return False'
+
+
+def test_is_not_image_with_none_image_file():
+    """
+    Test the method handles a non image file
+    """
+    # Given and empty string
+    file_path = RESOURCE_PATH / 'presentations' / 'test.ppt'
+
+    # WHEN testing for it
+    result = is_not_image_file(file_path)
+
+    # THEN the result is false
+    assert result is True, 'The file is not an image file so the test should return True'
