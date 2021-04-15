@@ -370,6 +370,7 @@ def test_change_data_directory(mocked_get_directory, mocked_get_data_path, mocke
     rmtree(temp_folder)
     rmtree(temp_new_data_folder)
 
+
 def test_restore_current_media_manager_item(main_window_reduced):
     """
     Regression test for bug #1152509.
