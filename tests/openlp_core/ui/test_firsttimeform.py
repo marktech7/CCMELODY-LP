@@ -59,6 +59,7 @@ def download_env(registry):
     download_worker_patcher.stop()
     run_thread_patcher.stop()
 
+
 @pytest.fixture()
 def mocked_set_icon(mock_settings):
     move_to_thread_patcher = patch('openlp.core.ui.firsttimeform.DownloadWorker.moveToThread').start()
