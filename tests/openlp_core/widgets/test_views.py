@@ -33,6 +33,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.widgets.views import ListPreviewWidget, ListWidgetWithDnD, TreeWidgetWithDnD, handle_mime_data_urls
 from openlp.core.ui.icons import UiIcons
+from tests.utils.osdinteraction import read_service_from_file
 
 
 @pytest.fixture
