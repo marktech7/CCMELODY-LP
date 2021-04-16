@@ -36,6 +36,7 @@ ZERO_URL = '0.0.0.0'
 @pytest.fixture
 def api_tab(settings):
     Registry().set_flag('website_version', '00-00-0000')
+    Registry().set_flag('no_web_server', False)
     parent = QtWidgets.QMainWindow()
     form = ApiTab(parent)
     yield form
