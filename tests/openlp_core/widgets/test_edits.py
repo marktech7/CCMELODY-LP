@@ -24,7 +24,7 @@ This module contains tests for the openlp.core.widgets.edits module
 import os
 import pytest
 from pathlib import Path
-from unittest.mock import MagicMock, PropertyMock, patch
+from unittest.mock import MagicMock, PropertyMock, patch, call
 
 from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
 
