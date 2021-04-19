@@ -406,10 +406,22 @@ def main():
     if app.is_data_path_missing():
         server.close_server()
         sys.exit()
-    if settings.can_upgrade():
+    # Warning if OpenLP is downgrading
+    if settings.from_future():
+        close_result = QtWidgets.QMessageBox.warning(
+            None, translate('OpenLP', 'Settings Upgrade'),
+            translate('OpenLP', 'OpenLP has found a configuration file created by a newer version of OpenLP. '
+                      'OpenLP may encounter unexpected behaviour and could delete or corrupt data if you continue.\n\n'
+                      'Do you want to continue?'),
+            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
+            QtWidgets.QMessageBox.No)
+        if close_result == QtWidgets.QMessageBox.No:
+            server.close_server()
+            sys.exit()
+    if settings.version_mismatched():
         now = datetime.now()
-        # Only back up if OpenLP has previously run.
-        if settings.value('core/has run wizard'):
+        # Only back up if OpenLP has previously run, or if we are downgrading the settings.
+        if settings.value('core/has run wizard') or settings.from_future():
             back_up_path = AppLocation.get_data_path() / (now.strftime('%Y-%m-%d %H-%M') + '.conf')
             log.info('Settings about to be upgraded. Existing settings are being backed up to {back_up_path}'
                      .format(back_up_path=back_up_path))
@@ -423,6 +435,9 @@ def main():
                 QtWidgets.QMessageBox.warning(
                     None, translate('OpenLP', 'Settings Upgrade'),
                     translate('OpenLP', 'Settings back up failed.\n\nContinuing to upgrade.'))
+        # Reset all the settings if we're downgrading
+        if settings.from_future():
+            settings.clear()
         settings.upgrade_settings()
     # First time checks in settings
     if not settings.value('core/has run wizard'):

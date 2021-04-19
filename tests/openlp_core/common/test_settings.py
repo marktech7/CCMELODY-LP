@@ -243,7 +243,7 @@ def test_can_upgrade():
     local_settings = Settings()
 
     # WHEN: can_upgrade() is run
-    result = local_settings.can_upgrade()
+    result = local_settings.version_mismatched()
 
     # THEN: The result should be True
     assert result is True, 'The settings should be upgradeable'
