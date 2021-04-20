@@ -19,6 +19,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
+import pytest
+
+from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
@@ -27,8 +30,36 @@ from PyQt5 import QtCore, QtWidgets
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.app import parse_options
+from openlp.core.app import parse_options, main as app_main
 from openlp.core.common import is_win
+
+
+@pytest.fixture
+def app_main_env():
+    with patch('openlp.core.app.Settings') as mock_settings, \
+            patch('openlp.core.app.Registry') as mock_registry, \
+            patch('openlp.core.app.AppLocation') as mock_apploc, \
+            patch('openlp.core.app.LanguageManager'), \
+            patch('openlp.core.app.qInitResources'), \
+            patch('openlp.core.app.parse_options'), \
+            patch('openlp.core.app.QtWidgets.QApplication'), \
+            patch('openlp.core.app.QtWidgets.QMessageBox.warning') as mock_warn, \
+            patch('openlp.core.app.QtWidgets.QMessageBox.information'), \
+            patch('openlp.core.app.OpenLP') as mock_openlp, \
+            patch('openlp.core.app.Server') as mock_server, \
+            patch('openlp.core.app.sys'):
+        mock_registry.return_value = MagicMock()
+        mock_settings.return_value = MagicMock()
+        openlp_server = MagicMock()
+        mock_server.return_value = openlp_server
+        openlp_server.is_another_instance_running.return_value = False
+        mock_apploc.get_data_path.return_value = Path()
+        mock_apploc.get_directory.return_value = Path()
+        mock_warn.return_value = True
+        openlp_instance = MagicMock()
+        mock_openlp.return_value = openlp_instance
+        openlp_instance.is_data_path_missing.return_value = False
+        yield
 
 
 def test_parse_options_basic():
@@ -269,3 +300,43 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
     assert mocked_question.call_count == 1, 'A question should have been asked!'
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()
+
+
+@patch('openlp.core.app.OpenLP')
+@patch('openlp.core.app.sys')
+def test_main(mock_sys, mock_openlp, app_main_env):
+    """
+    Test the main method performs primary actions
+    """
+    # GIVEN: A mocked openlp instance
+    openlp_instance = MagicMock()
+    mock_openlp.return_value = openlp_instance
+    openlp_instance.is_data_path_missing.return_value = False
+
+    # WHEN: the main method is run
+    app_main()
+
+    # THEN: Check the application is run and exited
+    openlp_instance.run.assert_called_once()
+    mock_sys.exit.assert_called_once()
+
+
+@patch('openlp.core.app.QtWidgets.QMessageBox.warning')
+@patch('openlp.core.app.Settings')
+def test_main_future_settings(mock_settings, mock_warn, app_main_env):
+    """
+    Test the main method clears the settings if they come from the future and user consents
+    """
+    # GIVEN: A mocked openlp instance with mocked future settings
+    settings_instance = MagicMock()
+    mock_settings.return_value = settings_instance
+    settings_instance.from_future.return_value = True
+    settings_instance.version_mismatched.return_value = True
+    mock_warn.return_value = True
+
+    # WHEN: the main method is run
+    app_main()
+
+    # THEN: Check the settings were cleared and the prompt was shown
+    settings_instance.clear.assert_called_once_with()
+    mock_warn.assert_called_once()

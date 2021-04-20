@@ -730,3 +730,26 @@ def test_screen_changed_modal_sets_timestamp_before_blocking_on_modal(mocked_war
     # the blocking modal is shown.
     mocked_warning.assert_called_once()
     assert main_window.screen_change_timestamp is None
+    
+@patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.critical')
+@patch('openlp.core.ui.mainwindow.FileDialog')
+@patch('openlp.core.ui.mainwindow.shutil')
+@patch('openlp.core.ui.mainwindow.Settings')
+def test_on_settings_import_item_clicked(mock_settings, mock_shutil, mock_dialog, mock_crit, main_window_reduced):
+    """
+    Check we don't attempt to import incompatible settings from the future
+    """
+    # GIVEN: a
+    settings_instance = MagicMock()
+    mock_settings.return_value = settings_instance
+    mock_dialog.getOpenFileName.return_value = [MagicMock(name='bob'), '']
+    settings_instance.from_future.return_value = True
+    Registry().register('plugin_manager', MagicMock())
+    mock_crit.return_value = True
+
+    # WHEN: the function is called
+    main_window_reduced.on_settings_import_item_clicked()
+
+    # THEN: The from_future should have been checked, but code should not have started to copy values
+    settings_instance.from_future.assert_called_once_with()
+    settings_instance.value.assert_not_called()

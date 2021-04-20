@@ -237,12 +237,24 @@ def test_upgrade_multiple_one_invalid(mocked_remove, mocked_setValue, mocked_val
     assert mocked_contains.call_args_list == [call('multiple/value 1'), call('multiple/value 2')]
 
 
-def test_can_upgrade():
-    """Test the Settings.can_upgrade() method"""
+def test_from_future(settings):
+    """Test the Settings.from_future() method"""
+    # GIVEN: A Settings object
+    settings.setValue('settings/version', 100)
+
+    # WHEN: from_future() is called
+    result = settings.from_future()
+
+    # THEN: The result should be true
+    assert result is True, 'The settings should be detected as a newer version'
+
+
+def test_version_mismatched():
+    """Test the Settings.version_mismatched() method"""
     # GIVEN: A Settings object
     local_settings = Settings()
 
-    # WHEN: can_upgrade() is run
+    # WHEN: version_mismatched() is run
     result = local_settings.version_mismatched()
 
     # THEN: The result should be True
