@@ -116,7 +116,7 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     mocked_qframe.setFrameStyle.assert_called_with(1)
     mock_settings.value.assert_any_call('advanced/hide mouse')
     mock_settings.value.assert_any_call('media/vlc arguments')
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
     assert mocked_output_display.vlc_instance == mocked_instance
     mocked_instance.media_player_new.assert_called_with()
     assert mocked_output_display.vlc_media_player == mocked_media_player_new
@@ -159,7 +159,7 @@ def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mock
     vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
 
 
 @patch('openlp.core.ui.media.vlcplayer.is_win')
@@ -194,7 +194,7 @@ def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, 
     vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
 
 
 @patch('openlp.core.ui.media.vlcplayer.is_win')
