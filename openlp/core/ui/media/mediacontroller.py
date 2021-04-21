@@ -328,6 +328,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
+        self._update_seek_ui(controller)
         self.set_controls_visible(controller, True)
         self.log_debug('use {nm} controller'.
                        format(nm=self.current_media_players[controller.controller_type].display_name))
