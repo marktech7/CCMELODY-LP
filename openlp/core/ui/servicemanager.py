@@ -660,7 +660,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     self.main_window.increment_progress_bar(local_file_item.stat().st_size / total_size * 1000)
                 with suppress(FileNotFoundError):
                     file_path.unlink()
-                os.link(temp_file.name, file_path)
+                # Try to link rather than copy to prevent writing another file
+                try:
+                    os.link(temp_file.name, file_path)
+                except OSError:
+                    shutil.copyfile(temp_file.name, file_path)
             self.settings.setValue('servicemanager/last directory', file_path.parent)
         except (PermissionError, OSError) as error:
             self.log_exception('Failed to save service to disk: {name}'.format(name=file_path))
