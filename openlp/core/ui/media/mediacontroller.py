@@ -532,7 +532,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].pause(controller)
             controller.mediabar.actions['playbackPlay'].setVisible(True)
-            controller.mediabar.actions['playbackStop'].setDisabled(False)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
             # Add a tick to the timer to prevent it finishing the video before it can loop back or stop
