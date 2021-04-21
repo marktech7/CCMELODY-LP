@@ -493,7 +493,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             stopped = True
 
         if start_again:
-            controller.seek_slider.setSliderPosition(0)
+            controller.media_info.timer = 0
+            self._update_seek_ui(controller)
         return not stopped
 
     def _update_seek_ui(self, controller):
