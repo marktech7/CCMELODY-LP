@@ -122,7 +122,7 @@ def test_add_handler_failure():
     mocked_doc_controller.add_document.return_value = mocked_doc
 
     # WHEN: calling add_handler that fails
-    controller.add_handler(mocked_doc_controller, MagicMock(), True, 0)
+    controller.add_handler(mocked_doc_controller, MagicMock(), True, 0, "uuid")
 
     # THEN: slidenumber should be 0
     assert controller.doc.slidenumber == 0, 'doc.slidenumber should be 0'

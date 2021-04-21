@@ -26,7 +26,8 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch
 
-from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
+from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument, \
+    PresentationList
 
 
 FOLDER_TO_PATCH = 'openlp.plugins.presentations.lib.presentationcontroller.PresentationDocument.get_thumbnail_folder'
@@ -215,3 +216,45 @@ def test_load_presentation(get_thumbnail_folder):
 
     # THEN: load_presentation should return false
     assert result is False, "PresentationDocument.load_presentation should return false."
+
+    
+def test_presentation_list_is_singleton():
+    """
+    Test PresentationList is a singleton class
+    """
+    # GIVEN: a PresentationList
+    presentation_list = PresentationList()
+
+    # WHEN: I try to create another instance
+    presentation_list_2 = PresentationList()
+
+    # THEN: I get the same instance returned
+    assert presentation_list_2 is presentation_list
+
+
+def test_presentation_list_add_and_retrieve(document):
+    """
+    Test adding a presentation document and later retrieving it
+    """
+    # GIVEN: a fixture with a mocked document which is added to the PresentationList
+    PresentationList().add(document, "unique id")
+
+    # WHEN: I retrieve the presentation document
+    retrieved_presentation = PresentationList().get_presentation_by_id("unique id")
+
+    # THEN: I get the same instance returned
+    retrieved_presentation is document
+
+
+def test_presentation_list_remove(document):
+    """
+    Test removing a presentation document from the list
+    """
+    # GIVEN: a fixture with a mocked document which is added to the PresentationList
+    PresentationList().add(document, "unique id")
+
+    # WHEN: I remove the presentation document
+    PresentationList().remove("unique id")
+
+    # THEN: That document shouldn't be in the list
+    PresentationList().get_presentation_by_id("unique id") is None
