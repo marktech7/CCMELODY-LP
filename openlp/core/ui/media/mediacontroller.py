@@ -587,7 +587,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 if not controller.media_info.is_background:
                     display = self._define_display(controller)
                     if display.hide_mode == HideMode.Screen:
-                        controller.set_hide_mode(HideMode.Blank)
+                        Registry().execute('live_display_hide', HideMode.Blank)
                     else:
                         controller.set_hide_mode(display.hide_mode or HideMode.Blank)
             else:
