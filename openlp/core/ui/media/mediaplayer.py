@@ -76,7 +76,7 @@ class MediaPlayer(RegistryProperties):
 
     def play(self, controller, display):
         """
-        Starts playing of current Media File
+        Starts playing of current Media File, media player is expected to loop automatically
 
         :param controller: Which Controller is running the show.
         :param display: The display to be updated.
