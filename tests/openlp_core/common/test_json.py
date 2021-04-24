@@ -150,185 +150,184 @@ class TestJSONMixin(TestCase):
         assert instance.c is None
 
 
-class TestOpenLPJSONDecoder(TestCase):
+def test_object_hook_path_object():
     """
-    Test the OpenLPJsonDecoder class
+    Test the object_hook method when called with a decoded Path JSON object
     """
-    def test_object_hook_path_object(self):
-        """
-        Test the object_hook method when called with a decoded Path JSON object
-        """
-        # GIVEN: An instance of OpenLPJsonDecoder
-        instance = OpenLPJSONDecoder()
+    # GIVEN: An instance of OpenLPJsonDecoder
+    instance = OpenLPJSONDecoder()
 
-        # WHEN: Calling the object_hook method with a decoded JSON object which contains a Path
-        result = instance.object_hook({'parts': ['test', 'path'], "json_meta": {"class": "Path", "version": 1}})
+    # WHEN: Calling the object_hook method with a decoded JSON object which contains a Path
+    result = instance.object_hook({'parts': ['test', 'path'], "json_meta": {"class": "Path", "version": 1}})
 
-        # THEN: A Path object should be returned
-        assert result == Path('test', 'path')
-
-    def test_object_hook_non_path_object(self):
-        """
-        Test the object_hook method when called with a decoded JSON object
-        """
-        # GIVEN: An instance of OpenLPJsonDecoder
-        instance = OpenLPJSONDecoder()
-
-        # WHEN: Calling the object_hook method with a decoded JSON object which contains a Path
-        with patch('openlp.core.common.json.Path') as mocked_path:
-            result = instance.object_hook({'key': 'value'})
-
-            # THEN: The object should be returned unchanged and a Path object should not have been initiated
-            assert result == {'key': 'value'}
-            assert mocked_path.called is False
-
-    def test_json_decode(self):
-        """
-        Test the OpenLPJsonDecoder when decoding a JSON string
-        """
-        # GIVEN: A JSON encoded string
-        json_string = '[{"parts": ["test", "path1"], "json_meta": {"class": "Path", "version": 1}}, ' \
-                      '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}, ' \
-                      '{"key": "value", "json_meta": {"class": "Object"}}]'
-
-        # WHEN: Decoding the string using the OpenLPJsonDecoder class
-        obj = json.loads(json_string, cls=OpenLPJSONDecoder)
-
-        # THEN: The object returned should be a python version of the JSON string
-        assert obj == [Path('test', 'path1'), Path('test', 'path2'), {'key': 'value', 'json_meta': {'class': 'Object'}}]
-
-    def test_json_decode_old_style(self):
-        """
-        Test the OpenLPJsonDecoder when decoding a JSON string with an old-style Path object
-        """
-        # GIVEN: A JSON encoded string
-        json_string = '[{"__Path__": ["test", "path1"]}, ' \
-                      '{"__Path__": ["test", "path2"]}]'
-
-        # WHEN: Decoding the string using the OpenLPJsonDecoder class
-        obj = json.loads(json_string, cls=OpenLPJSONDecoder)
-
-        # THEN: The object returned should be a python version of the JSON string
-        assert obj == [Path('test', 'path1'), Path('test', 'path2')]
+    # THEN: A Path object should be returned
+    assert result == Path('test', 'path')
 
 
-class TestOpenLPJSONEncoder(TestCase):
+def test_object_hook_non_path_object():
     """
-    Test the OpenLPJSONEncoder class
+    Test the object_hook method when called with a decoded JSON object
     """
-    def test_default_path_object(self):
-        """
-        Test the default method when called with a Path object
-        """
+    # GIVEN: An instance of OpenLPJsonDecoder
+    instance = OpenLPJSONDecoder()
+
+    # WHEN: Calling the object_hook method with a decoded JSON object which contains a Path
+    with patch('openlp.core.common.json.Path') as mocked_path:
+        result = instance.object_hook({'key': 'value'})
+
+        # THEN: The object should be returned unchanged and a Path object should not have been initiated
+        assert result == {'key': 'value'}
+        assert mocked_path.called is False
+
+
+def test_json_decode():
+    """
+    Test the OpenLPJsonDecoder when decoding a JSON string
+    """
+    # GIVEN: A JSON encoded string
+    json_string = '[{"parts": ["test", "path1"], "json_meta": {"class": "Path", "version": 1}}, ' \
+                  '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}, ' \
+                  '{"key": "value", "json_meta": {"class": "Object"}}]'
+
+    # WHEN: Decoding the string using the OpenLPJsonDecoder class
+    obj = json.loads(json_string, cls=OpenLPJSONDecoder)
+
+    # THEN: The object returned should be a python version of the JSON string
+    assert obj == [Path('test', 'path1'), Path('test', 'path2'), {'key': 'value', 'json_meta': {'class': 'Object'}}]
+
+
+def test_json_decode_old_style():
+    """
+    Test the OpenLPJsonDecoder when decoding a JSON string with an old-style Path object
+    """
+    # GIVEN: A JSON encoded string
+    json_string = '[{"__Path__": ["test", "path1"]}, ' \
+                  '{"__Path__": ["test", "path2"]}]'
+
+    # WHEN: Decoding the string using the OpenLPJsonDecoder class
+    obj = json.loads(json_string, cls=OpenLPJSONDecoder)
+
+    # THEN: The object returned should be a python version of the JSON string
+    assert obj == [Path('test', 'path1'), Path('test', 'path2')]
+
+
+def test_default_path_object():
+    """
+    Test the default method when called with a Path object
+    """
+    # GIVEN: An instance of OpenLPJSONEncoder
+    instance = OpenLPJSONEncoder()
+
+    # WHEN: Calling the default method with a Path object
+    result = instance.default(Path('test', 'path'))
+
+    # THEN: A dictionary object that can be JSON encoded should be returned
+    assert result == {'parts': ('test', 'path'), "json_meta": {"class": "Path", "version": 1}}
+
+
+def test_default_non_path_object():
+    """
+    Test the default method when called with a object other than a Path object
+    """
+    with patch('openlp.core.common.json.JSONEncoder.default') as mocked_super_default:
+
         # GIVEN: An instance of OpenLPJSONEncoder
         instance = OpenLPJSONEncoder()
 
-        # WHEN: Calling the default method with a Path object
-        result = instance.default(Path('test', 'path'))
+        # WHEN: Calling the default method with a object other than a Path object
+        instance.default('invalid object')
 
-        # THEN: A dictionary object that can be JSON encoded should be returned
-        assert result == {'parts': ('test', 'path'), "json_meta": {"class": "Path", "version": 1}}
-
-    def test_default_non_path_object(self):
-        """
-        Test the default method when called with a object other than a Path object
-        """
-        with patch('openlp.core.common.json.JSONEncoder.default') as mocked_super_default:
-
-            # GIVEN: An instance of OpenLPJSONEncoder
-            instance = OpenLPJSONEncoder()
-
-            # WHEN: Calling the default method with a object other than a Path object
-            instance.default('invalid object')
-
-            # THEN: default method of the super class should have been called
-            mocked_super_default.assert_called_once_with('invalid object')
-
-    def test_json_encode(self):
-        """
-        Test the OpenLPJsonDEncoder when encoding an object conatining Path objects
-        """
-        # GIVEN: A list of Path objects
-        obj = [Path('test', 'path1'), Path('test', 'path2')]
-
-        # WHEN: Encoding the object using the OpenLPJSONEncoder class
-        json_string = json.dumps(obj, cls=OpenLPJSONEncoder)
-
-        # THEN: The JSON string return should be a representation of the object encoded
-        assert json_string == '[{"parts": ["test", "path1"], "json_meta": {"class": "Path", "version": 1}}, ' \
-                              '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}]'
+        # THEN: default method of the super class should have been called
+        mocked_super_default.assert_called_once_with('invalid object')
 
 
-class TestPathSerializer(TestCase):
+def test_json_encode():
+    """
+    Test the OpenLPJsonDEncoder when encoding an object conatining Path objects
+    """
+    # GIVEN: A list of Path objects
+    obj = [Path('test', 'path1'), Path('test', 'path2')]
 
-    def test_path_encode_json(self):
-        """
-        Test that `Path.encode_json` returns a Path object from a dictionary representation of a Path object decoded
-        from JSON
-        """
-        # GIVEN: A Path object from openlp.core.common.path
-        # WHEN: Calling encode_json, with a dictionary representation
-        path = PathSerializer.encode_json(
-            {'parts': ['path', 'to', 'fi.le'], "json_meta": {"class": "Path", "version": 1}}, extra=1, args=2)
+    # WHEN: Encoding the object using the OpenLPJSONEncoder class
+    json_string = json.dumps(obj, cls=OpenLPJSONEncoder)
 
-        # THEN: A Path object should have been returned
-        assert path == Path('path', 'to', 'fi.le')
+    # THEN: The JSON string return should be a representation of the object encoded
+    assert json_string == '[{"parts": ["test", "path1"], "json_meta": {"class": "Path", "version": 1}}, ' \
+                          '{"parts": ["test", "path2"], "json_meta": {"class": "Path", "version": 1}}]'
 
-    def test_path_encode_json_base_path(self):
-        """
-        Test that `Path.encode_json` returns a Path object from a dictionary representation of a Path object decoded
-        from JSON when the base_path arg is supplied.
-        """
-        # GIVEN: A Path object from openlp.core.common.path
-        # WHEN: Calling encode_json, with a dictionary representation
-        path = PathSerializer.encode_json(
-            {'parts': ['path', 'to', 'fi.le'], "json_meta": {"class": "Path", "version": 1}}, base_path=Path('/base'))
 
-        # THEN: A Path object should have been returned with an absolute path
-        assert path == Path('/', 'base', 'path', 'to', 'fi.le')
+def test_path_encode_json():
+    """
+    Test that `Path.encode_json` returns a Path object from a dictionary representation of a Path object decoded
+    from JSON
+    """
+    # GIVEN: A Path object from openlp.core.common.path
+    # WHEN: Calling encode_json, with a dictionary representation
+    path = PathSerializer.encode_json(
+        {'parts': ['path', 'to', 'fi.le'], "json_meta": {"class": "Path", "version": 1}}, extra=1, args=2)
 
-    def test_path_json_object(self):
-        """
-        Test that `Path.json_object` creates a JSON decode-able object from a Path object
-        """
-        # GIVEN: A Path object from openlp.core.common.path
+    # THEN: A Path object should have been returned
+    assert path == Path('path', 'to', 'fi.le')
+
+
+def test_path_encode_json_base_path():
+    """
+    Test that `Path.encode_json` returns a Path object from a dictionary representation of a Path object decoded
+    from JSON when the base_path arg is supplied.
+    """
+    # GIVEN: A Path object from openlp.core.common.path
+    # WHEN: Calling encode_json, with a dictionary representation
+    path = PathSerializer.encode_json(
+        {'parts': ['path', 'to', 'fi.le'], "json_meta": {"class": "Path", "version": 1}}, base_path=Path('/base'))
+
+    # THEN: A Path object should have been returned with an absolute path
+    assert path == Path('/', 'base', 'path', 'to', 'fi.le')
+
+
+def test_path_json_object():
+    """
+    Test that `Path.json_object` creates a JSON decode-able object from a Path object
+    """
+    # GIVEN: A Path object from openlp.core.common.path
+    path = Path('/base', 'path', 'to', 'fi.le')
+
+    # WHEN: Calling json_object
+    obj = PathSerializer().json_object(path, extra=1, args=2)
+
+    # THEN: A JSON decodeable object should have been returned.
+    assert obj == {'parts': (os.sep, 'base', 'path', 'to', 'fi.le'), "json_meta": {"class": "Path", "version": 1}}
+
+
+def test_path_json_object_is_js():
+    """
+    Test that `Path.json_object` creates a JSON decode-able object from a Path object
+    """
+    # GIVEN: A Path object from openlp.core.common.path
+    if is_win():
+        path = Path('c:\\', 'base', 'path', 'to', 'fi.le')
+    else:
         path = Path('/base', 'path', 'to', 'fi.le')
 
-        # WHEN: Calling json_object
-        obj = PathSerializer().json_object(path, extra=1, args=2)
+    # WHEN: Calling json_object
+    obj = PathSerializer().json_object(path, is_js=True, extra=1, args=2)
 
-        # THEN: A JSON decodeable object should have been returned.
-        assert obj == {'parts': (os.sep, 'base', 'path', 'to', 'fi.le'), "json_meta": {"class": "Path", "version": 1}}
+    # THEN: A URI should be returned
+    if is_win():
+        assert obj == 'file:///c:/base/path/to/fi.le'
+    else:
+        assert obj == 'file:///base/path/to/fi.le'
 
-    def test_path_json_object_is_js(self):
-        """
-        Test that `Path.json_object` creates a JSON decode-able object from a Path object
-        """
-        # GIVEN: A Path object from openlp.core.common.path
-        if is_win():
-            path = Path('c:\\', 'base', 'path', 'to', 'fi.le')
-        else:
-            path = Path('/base', 'path', 'to', 'fi.le')
 
-        # WHEN: Calling json_object
-        obj = PathSerializer().json_object(path, is_js=True, extra=1, args=2)
+def test_path_json_object_base_path():
+    """
+    Test that `Path.json_object` creates a JSON decode-able object from a Path object, that is relative to the
+    base_path
+    """
+    # GIVEN: A Path object from openlp.core.common.path
+    path = Path('/base', 'path', 'to', 'fi.le')
 
-        # THEN: A URI should be returned
-        if is_win():
-            assert obj == 'file:///c:/base/path/to/fi.le'
-        else:
-            assert obj == 'file:///base/path/to/fi.le'
+    # WHEN: Calling json_object with a base_path
+    obj = PathSerializer().json_object(path, base_path=Path('/', 'base'))
 
-    def test_path_json_object_base_path(self):
-        """
-        Test that `Path.json_object` creates a JSON decode-able object from a Path object, that is relative to the
-        base_path
-        """
-        # GIVEN: A Path object from openlp.core.common.path
-        path = Path('/base', 'path', 'to', 'fi.le')
-
-        # WHEN: Calling json_object with a base_path
-        obj = PathSerializer().json_object(path, base_path=Path('/', 'base'))
-
-        # THEN: A JSON decodable object should have been returned.
-        assert obj == {'parts': ('path', 'to', 'fi.le'), "json_meta": {"class": "Path", "version": 1}}
+    # THEN: A JSON decodable object should have been returned.
+    assert obj == {'parts': ('path', 'to', 'fi.le'), "json_meta": {"class": "Path", "version": 1}}
