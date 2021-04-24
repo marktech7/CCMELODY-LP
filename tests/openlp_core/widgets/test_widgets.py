@@ -19,9 +19,11 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.widgets.widgets package.
+Package to test the screens tab functionality (primarily ScreenSelectionWidget and ScreenButton classes)
+within openlp/core/widgets/widgets.py
 """
 import pytest
+
 from unittest.mock import MagicMock, call, patch
 
 from PyQt5 import QtCore, QtWidgets, QtTest
@@ -53,6 +55,107 @@ def mocked_screens(custom_geometry):
     screen1.custom_geometry = custom_geometry
     screen1.__str__.return_value = "Screen 2"
     return [screen0, screen1]
+
+
+@patch('openlp.core.display.screens.ScreenList')
+def test_screen_buttons_show_pixels(mocked_screenList, form):
+    '''
+    Test that the screen buttons show the screen sizes in pixels
+    '''
+    # GIVEN: A mocked extended desktop configuration
+
+    mocked_screenList.return_value = mocked_screens(None)
+    form.screens = mocked_screenList()
+
+    # WHEN: When I go into screen settings for the display screen
+    ScreenSelectionWidget.load(form)
+
+    # THEN: The screen buttons should show the correct size of that screen
+    screen_0_button = form.findChild(QtWidgets.QPushButton, 'screen_0_button')
+    screen_1_button = form.findChild(QtWidgets.QPushButton, 'screen_1_button')
+    assert '1920' in str(screen_0_button.text())
+    assert '1080' in str(screen_0_button.text())
+    assert '1366' in str(screen_1_button.text())
+    assert '768' in str(screen_1_button.text())
+
+
+@patch('openlp.core.display.screens.ScreenList')
+def test_spinboxes_no_previous_custom_geometry(mocked_screenList, form):
+    """
+    Test screen custom geometry can be changed from None
+    """
+    # GIVEN: A mocked extended desktop configuration
+
+    mocked_screenList.return_value = mocked_screens(None)
+    form.screens = mocked_screenList()
+
+    # WHEN: When I go into screen settings for the display screen and set the custom geometry
+    ScreenSelectionWidget.load(form)
+    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
+    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
+
+    # THEN: The spin boxes should show the correct values
+    assert form.left_spin_box.value() == 1
+    assert form.top_spin_box.value() == 1
+    assert form.width_spin_box.value() == 1919
+    assert form.height_spin_box.value() == 1079
+
+
+@patch('openlp.core.display.screens.ScreenList')
+def test_spinboxes_with_previous_custom_geometry(mocked_screenList, form):
+    """
+    Test screen existing custom geometry can be changed
+    """
+    # GIVEN: A mocked extended desktop configuration
+
+    testGeometry = QtCore.QRect(1, 1, 1919, 1079)
+    mocked_screenList.return_value = mocked_screens(testGeometry)
+    form.screens = mocked_screenList()
+
+    # WHEN: When I go into screen settings for the display screen and update the custom geometry
+    ScreenSelectionWidget.load(form)
+    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
+    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
+
+    # THEN: The spin boxes should show the updated values
+    assert form.left_spin_box.value() == 2
+    assert form.top_spin_box.value() == 2
+    assert form.width_spin_box.value() == 1918
+    assert form.height_spin_box.value() == 1078
+
+
+@patch('openlp.core.display.screens.ScreenList')
+def test_spinboxes_going_outside_screen_geometry(mocked_screenList, form):
+    """
+    Test screen existing custom geometry can be increased beyond the bounds of the screen
+    """
+    # GIVEN: A mocked extended desktop configuration
+
+    testGeometry = QtCore.QRect(1, 1, 1919, 1079)
+    mocked_screenList.return_value = mocked_screens(testGeometry)
+    form.screens = mocked_screenList()
+
+    # WHEN: When I go into screen settings for the display screen and
+    #       update the custom geometry to be outside the screen coordinates
+    ScreenSelectionWidget.load(form)
+    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
+    for _ in range(2):
+        QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Down)
+        QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Down)
+        QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Up)
+        QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Up)
+
+    # THEN: The spin boxes should show the updated values
+    assert form.left_spin_box.value() == -1
+    assert form.top_spin_box.value() == -1
+    assert form.width_spin_box.value() == 1921
+    assert form.height_spin_box.value() == 1081
 
 
 def test_radio_button_exclusivity_no_proxy(settings):
@@ -523,104 +626,3 @@ def test_screen_selection_save(mock_settings):
     instance._save_screen.assert_called_once_with(mocked_screen)
     mocked_screen.to_dict.assert_called_once()
     mock_settings.setValue.assert_called_once_with('core/screens', {0: {'number': 0}})
-
-
-@patch('openlp.core.display.screens.ScreenList')
-def test_screen_buttons_show_pixels(mocked_screenList, form):
-    '''
-    Test that the screen buttons show the screen sizes in pixels
-    '''
-    # GIVEN: A mocked extended desktop configuration
-
-    mocked_screenList.return_value = mocked_screens(None)
-    form.screens = mocked_screenList()
-
-    # WHEN: When I go into screen settings for the display screen
-    ScreenSelectionWidget.load(form)
-
-    # THEN: The screen buttons should show the correct size of that screen
-    screen_0_button = form.findChild(QtWidgets.QPushButton, 'screen_0_button')
-    screen_1_button = form.findChild(QtWidgets.QPushButton, 'screen_1_button')
-    assert '1920' in str(screen_0_button.text())
-    assert '1080' in str(screen_0_button.text())
-    assert '1366' in str(screen_1_button.text())
-    assert '768' in str(screen_1_button.text())
-
-
-@patch('openlp.core.display.screens.ScreenList')
-def test_spinboxes_no_previous_custom_geometry(mocked_screenList, form):
-    """
-    Test screen custom geometry can be changed from None
-    """
-    # GIVEN: A mocked extended desktop configuration
-
-    mocked_screenList.return_value = mocked_screens(None)
-    form.screens = mocked_screenList()
-
-    # WHEN: When I go into screen settings for the display screen and set the custom geometry
-    ScreenSelectionWidget.load(form)
-    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
-    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
-    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
-
-    # THEN: The spin boxes should show the correct values
-    assert form.left_spin_box.value() == 1
-    assert form.top_spin_box.value() == 1
-    assert form.width_spin_box.value() == 1919
-    assert form.height_spin_box.value() == 1079
-
-
-@patch('openlp.core.display.screens.ScreenList')
-def test_spinboxes_with_previous_custom_geometry(mocked_screenList, form):
-    """
-    Test screen existing custom geometry can be changed
-    """
-    # GIVEN: A mocked extended desktop configuration
-
-    testGeometry = QtCore.QRect(1, 1, 1919, 1079)
-    mocked_screenList.return_value = mocked_screens(testGeometry)
-    form.screens = mocked_screenList()
-
-    # WHEN: When I go into screen settings for the display screen and update the custom geometry
-    ScreenSelectionWidget.load(form)
-    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
-    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
-    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
-
-    # THEN: The spin boxes should show the updated values
-    assert form.left_spin_box.value() == 2
-    assert form.top_spin_box.value() == 2
-    assert form.width_spin_box.value() == 1918
-    assert form.height_spin_box.value() == 1078
-
-
-@patch('openlp.core.display.screens.ScreenList')
-def test_spinboxes_going_outside_screen_geometry(mocked_screenList, form):
-    """
-    Test screen existing custom geometry can be increased beyond the bounds of the screen
-    """
-    # GIVEN: A mocked extended desktop configuration
-
-    testGeometry = QtCore.QRect(1, 1, 1919, 1079)
-    mocked_screenList.return_value = mocked_screens(testGeometry)
-    form.screens = mocked_screenList()
-
-    # WHEN: When I go into screen settings for the display screen and
-    #       update the custom geometry to be outside the screen coordinates
-    ScreenSelectionWidget.load(form)
-    QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
-    for _ in range(2):
-        QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Down)
-        QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Down)
-        QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Up)
-        QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Up)
-
-    # THEN: The spin boxes should show the updated values
-    assert form.left_spin_box.value() == -1
-    assert form.top_spin_box.value() == -1
-    assert form.width_spin_box.value() == 1921
-    assert form.height_spin_box.value() == 1081
