@@ -822,7 +822,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                         plugin_usage = "{plug}{text}".format(plug=plugin_usage,
                                                              text=(translate('OpenLP.ThemeManager',
                                                                              '{count} time(s) by {plugin}'
-                                                                             ).format(name=used_count,
+                                                                             ).format(count=used_count,
                                                                                       plugin=plugin.name)))
                         plugin_usage = "{text}\n".format(text=plugin_usage)
                 if plugin_usage:
