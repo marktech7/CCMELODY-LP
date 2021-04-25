@@ -218,6 +218,33 @@ def test_media_stop(media_env):
     mocked_slide_controller.set_hide_mode.assert_called_once_with(HideMode.Blank)
 
 
+def test_media_stop_no_hide_change(media_env):
+    """
+    Test that the media_stop doesn't change the hide mode of OpenLP when screen is visible
+    """
+    # GIVEN: A live media controller and a message with two elements
+    mocked_slide_controller = MagicMock()
+    mocked_media_player = MagicMock()
+    mocked_display = MagicMock(hide_mode=HideMode.Screen)
+    mocked_slide_controller.controller_type = 'media player'
+    mocked_slide_controller.media_info = MagicMock(is_background=False)
+    mocked_slide_controller.set_hide_mode = MagicMock()
+    mocked_slide_controller.is_live = True
+    media_env.media_controller.current_media_players = {'media player': mocked_media_player}
+    media_env.media_controller.live_hide_timer = MagicMock()
+    media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
+
+    # WHEN: media_stop() is called
+    result = media_env.media_controller.media_stop(mocked_slide_controller)
+
+    # THEN: Result should be successful, media player should be stopped and the hide timer should have started
+    #       The controller's hide mode should not have been set
+    assert result is True
+    mocked_media_player.stop.assert_called_once_with(mocked_slide_controller)
+    media_env.media_controller.live_hide_timer.start.assert_called_once()
+    mocked_slide_controller.set_hide_mode.assert_not_called()
+
+
 def test_media_volume_msg(media_env):
     """
     Test that the media controller responds to the request to change the volume

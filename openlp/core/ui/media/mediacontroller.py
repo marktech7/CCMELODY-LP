@@ -328,6 +328,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
+        self._update_seek_ui(controller)
         self.set_controls_visible(controller, True)
         self.log_debug('use {nm} controller'.
                        format(nm=self.current_media_players[controller.controller_type].display_name))
@@ -493,7 +494,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             stopped = True
 
         if start_again:
-            controller.seek_slider.setSliderPosition(0)
+            controller.media_info.timer = 0
+            self._update_seek_ui(controller)
         return not stopped
 
     def _update_seek_ui(self, controller):
@@ -530,7 +532,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].pause(controller)
             controller.mediabar.actions['playbackPlay'].setVisible(True)
-            controller.mediabar.actions['playbackStop'].setDisabled(False)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
             # Add a tick to the timer to prevent it finishing the video before it can loop back or stop
@@ -586,7 +587,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 if not controller.media_info.is_background:
                     display = self._define_display(controller)
                     if display.hide_mode == HideMode.Screen:
-                        controller.set_hide_mode(HideMode.Blank)
+                        Registry().execute('live_display_hide', HideMode.Blank)
                     else:
                         controller.set_hide_mode(display.hide_mode or HideMode.Blank)
             else:
