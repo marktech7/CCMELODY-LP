@@ -36,6 +36,7 @@ ZERO_URL = '0.0.0.0'
 @pytest.fixture
 def api_tab(settings):
     Registry().set_flag('website_version', '00-00-0000')
+    Registry().set_flag('no_web_server', False)
     parent = QtWidgets.QMainWindow()
     form = ApiTab(parent)
     yield form
@@ -93,3 +94,36 @@ def test_set_urls(api_tab):
     assert api_tab.live_url.text() == \
         "<a href=\"http://192.168.1.1:4316/main\">http://192.168.1.1:4316/main</a>", \
         'The return value should be a fully formed main link'
+
+
+def test_address_revert_button_clicked(api_tab, settings):
+    """
+    Test the IP revert function works
+    """
+    # GIVEN: The ip address text set to a non default value
+    api_tab.address_edit.setText('not the default')
+    # WHEN: address_revert_button_clicked is called
+    api_tab.address_revert_button_clicked()
+    # THEN: The text should have been changed to the default value
+    assert api_tab.address_edit.text() == settings.get_default_value('api/ip address')
+
+
+def test_save(api_tab, settings):
+    """
+    Test the IP revert function works
+    """
+    # GIVEN: The ip address text set to a non default value
+    api_tab.address_edit.setText(settings.value('api/ip address'))
+    api_tab.twelve_hour = True
+    api_tab.thumbnails = True
+    api_tab.user_login_group_box.setChecked(True)
+    api_tab.user_id.setText('user id thing')
+    api_tab.password.setText('user password thing')
+    # WHEN: save is called
+    api_tab.save()
+    # THEN: The text should have been changed to the default value
+    assert settings.value('api/twelve hour') is True
+    assert settings.value('api/thumbnails') is True
+    assert settings.value('api/authentication enabled') is True
+    assert settings.value('api/user id') == 'user id thing'
+    assert settings.value('api/password') == 'user password thing'

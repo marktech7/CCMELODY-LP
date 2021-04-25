@@ -30,6 +30,7 @@ from openlp.core.common import get_network_interfaces
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib.settingstab import SettingsTab
+from openlp.core.threading import is_thread_finished
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.dialogs import DownloadProgressDialog
 
@@ -56,12 +57,20 @@ class ApiTab(SettingsTab):
         self.server_settings_layout.setObjectName('server_settings_layout')
         self.address_label = QtWidgets.QLabel(self.server_settings_group_box)
         self.address_label.setObjectName('address_label')
+        self.server_settings_layout.addRow(self.address_label)
         self.address_edit = QtWidgets.QLineEdit(self.server_settings_group_box)
         self.address_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         self.address_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'),
                                        self))
         self.address_edit.setObjectName('address_edit')
-        self.server_settings_layout.addRow(self.address_label, self.address_edit)
+        self.address_revert_button = QtWidgets.QToolButton(self.server_settings_group_box)
+        self.address_revert_button.setObjectName('address_revert_button')
+        self.address_revert_button.setIcon(UiIcons().undo)
+        self.address_button_layout = QtWidgets.QHBoxLayout()
+        self.address_button_layout.setObjectName('address_button_layout')
+        self.address_button_layout.addWidget(self.address_edit)
+        self.address_button_layout.addWidget(self.address_revert_button)
+        self.server_settings_layout.addRow(self.address_button_layout)
         self.twelve_hour_check_box = QtWidgets.QCheckBox(self.server_settings_group_box)
         self.twelve_hour_check_box.setObjectName('twelve_hour_check_box')
         self.server_settings_layout.addRow(self.twelve_hour_check_box)
@@ -159,8 +168,29 @@ class ApiTab(SettingsTab):
         self.app_qr_description_label.setOpenExternalLinks(True)
         self.app_qr_description_label.setWordWrap(True)
         self.app_qr_layout.addWidget(self.app_qr_description_label)
+        self.server_state_group_box = QtWidgets.QGroupBox(self.right_column)
+        self.server_state_group_box.setObjectName('server_state_group_box')
+        self.right_layout.addWidget(self.server_state_group_box)
+        self.server_state_layout = QtWidgets.QFormLayout(self.server_state_group_box)
+        self.server_http_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_http_state_title.setObjectName('server_http_state_title')
+        self.server_http_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_http_state.setObjectName('server_http_state')
+        self.server_state_layout.addRow(self.server_http_state_title, self.server_http_state)
+        self.server_websocket_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_websocket_state_title.setObjectName('server_websocket_state_title')
+        self.server_websocket_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_websocket_state.setObjectName('server_websocket_state')
+        self.server_state_layout.addRow(self.server_websocket_state_title, self.server_websocket_state)
+        self.server_zeroconf_state_title = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_zeroconf_state_title.setObjectName('server_zeroconf_state_title')
+        self.server_zeroconf_state = QtWidgets.QLabel(self.server_state_group_box)
+        self.server_zeroconf_state.setObjectName('server_zeroconf_state')
+        self.server_state_layout.addRow(self.server_zeroconf_state_title, self.server_zeroconf_state)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
+
+        self.address_revert_button.clicked.connect(self.address_revert_button_clicked)
         self.twelve_hour_check_box.stateChanged.connect(self.on_twelve_hour_check_box_changed)
         self.thumbnails_check_box.stateChanged.connect(self.on_thumbnails_check_box_changed)
         self.address_edit.textChanged.connect(self.set_urls)
@@ -170,7 +200,9 @@ class ApiTab(SettingsTab):
     def retranslate_ui(self):
         self.tab_title_visible = translate('RemotePlugin.RemoteTab', 'Remote Interface')
         self.server_settings_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Server Settings'))
-        self.address_label.setText(translate('RemotePlugin.RemoteTab', 'IP address:'))
+        self.address_label.setText(translate('RemotePlugin.RemoteTab',
+                                             'Listen IP address (0.0.0.0 matches all addresses):'))
+        self.address_revert_button.setToolTip(translate('OpenLP.ServiceTab', 'Revert to default IP address.'))
         self.port_label.setText(translate('RemotePlugin.RemoteTab', 'Port number:'))
         self.remote_url_label.setText(translate('RemotePlugin.RemoteTab', 'Remote URL:'))
         self.stage_url_label.setText(translate('RemotePlugin.RemoteTab', 'Stage view URL:'))
@@ -193,6 +225,13 @@ class ApiTab(SettingsTab):
         self.current_version_label.setText(translate('RemotePlugin.RemoteTab', 'Current version:'))
         self.master_version_label.setText(translate('RemotePlugin.RemoteTab', 'Latest version:'))
         self._unknown_version = translate('RemotePlugin.RemoteTab', '(unknown)')
+        self.server_state_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Server Status'))
+        self.server_http_state_title.setText(translate('RemotePlugin.RemoteTab', 'HTTP Server:'))
+        self.server_websocket_state_title.setText(translate('RemotePlugin.RemoteTab', 'Websocket Server:'))
+        self.server_zeroconf_state_title.setText(translate('RemotePlugin.RemoteTab', 'Zeroconf Server:'))
+        self._server_up = translate('RemotePlugin.RemoteTab', 'Active', 'Server is active')
+        self._server_down = translate('RemotePlugin.RemoteTab', 'Failed', 'Server failed')
+        self._server_disabled = translate('RemotePlugin.RemoteTab', 'Disabled', 'Server is disabled')
 
     @property
     def master_version(self):
@@ -238,6 +277,31 @@ class ApiTab(SettingsTab):
         http_url_temp = http_url + 'main'
         self.live_url.setText('<a href="{url}">{url}</a>'.format(url=http_url_temp))
 
+    def get_server_states(self):
+        """
+        Update the display with the current state of the servers
+        """
+        if not is_thread_finished('http_server'):
+            self.server_http_state.setText(self._server_up)
+        elif Registry().get_flag('no_web_server'):
+            self.server_http_state.setText(self._server_disabled)
+        else:
+            self.server_http_state.setText(self._server_down)
+
+        if not is_thread_finished('websocket_server'):
+            self.server_websocket_state.setText(self._server_up)
+        elif Registry().get_flag('no_web_server'):
+            self.server_websocket_state.setText(self._server_disabled)
+        else:
+            self.server_websocket_state.setText(self._server_down)
+
+        if not is_thread_finished('api_zeroconf'):
+            self.server_zeroconf_state.setText(self._server_up)
+        elif Registry().get_flag('no_web_server'):
+            self.server_zeroconf_state.setText(self._server_disabled)
+        else:
+            self.server_zeroconf_state.setText(self._server_down)
+
     def get_ip_address(self, ip_address):
         """
         returns the IP address in dependency of the passed address
@@ -268,12 +332,17 @@ class ApiTab(SettingsTab):
         self.current_version_value.setText(self.settings.value('api/download version'))
         self.set_master_version()
         self.set_urls()
+        self.get_server_states()
 
     def save(self):
         """
         Save the configuration and update the server configuration if necessary
         """
         if self.settings.value('api/ip address') != self.address_edit.text():
+            QtWidgets.QMessageBox.information(self, translate('OpenLP.RemoteTab', 'Restart Required'),
+                                              translate('OpenLP.RemoteTab',
+                                                        'This change will only take effect once OpenLP '
+                                                        'has been restarted.'))
             self.settings_form.register_post_process('remotes_config_updated')
         self.settings.setValue('api/ip address', self.address_edit.text())
         self.settings.setValue('api/twelve hour', self.twelve_hour)
@@ -281,6 +350,9 @@ class ApiTab(SettingsTab):
         self.settings.setValue('api/authentication enabled', self.user_login_group_box.isChecked())
         self.settings.setValue('api/user id', self.user_id.text())
         self.settings.setValue('api/password', self.password.text())
+
+    def address_revert_button_clicked(self):
+        self.address_edit.setText(self.settings.get_default_value('api/ip address'))
 
     def on_twelve_hour_check_box_changed(self, check_state):
         """

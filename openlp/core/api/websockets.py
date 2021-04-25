@@ -130,9 +130,11 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
                 log.error('Unable to start WebSocket server {addr}:{port}, giving up'.format(addr=address, port=port))
         if self.server:
             # If the websocket server exists, start listening
-            self.event_loop.run_until_complete(self.server)
             try:
+                self.event_loop.run_until_complete(self.server)
                 self.event_loop.run_forever()
+            except Exception:
+                log.exception('Failed to start WebSocket server')
             finally:
                 self.event_loop.close()
         self.quit.emit()
