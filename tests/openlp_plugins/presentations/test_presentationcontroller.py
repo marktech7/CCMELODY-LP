@@ -217,7 +217,7 @@ def test_load_presentation(get_thumbnail_folder):
     # THEN: load_presentation should return false
     assert result is False, "PresentationDocument.load_presentation should return false."
 
-    
+
 def test_presentation_list_is_singleton():
     """
     Test PresentationList is a singleton class
