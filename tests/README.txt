@@ -22,10 +22,3 @@ To run the tests, navigate to the root directory of the OpenLP project, and then
 
     pytest -v tests
 
-Or, to run only the functional tests, run the following command::
-
-    pytest -v tests/functional
-
-Or, to run only a particular test suite within a file, run the following command::
-
-    pytest -v tests/functional/openlp_core/test_app.py
