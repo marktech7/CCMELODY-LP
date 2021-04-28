@@ -24,7 +24,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore
 
-from openlp.core.common import md5_hash, sha256_file_hash
+from openlp.core.common import Singleton, md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
@@ -384,6 +384,37 @@ class PresentationDocument(object):
         if not self._sha256_file_hash:
             self._sha256_file_hash = sha256_file_hash(self.file_path)
         return self._sha256_file_hash
+
+
+class PresentationList(metaclass=Singleton):
+    """
+    This is a singleton class which maintains a list of instances for presentations
+    which have been started.
+    The document load_presentation() method is called several times - for example, when the
+    presentation files are being loaded into the library - but a document is included in this
+    PresentationList only when the presentation is actually displayed.
+    In this case the loading is initiated by a Registry 'presentation_start' event, the message
+    includes the service item, and the unique_identifier from the service item is used as the id
+    to differentiate the presentation document instances within this PresentationList.
+    The purpose of this is so that the 'presentation_stop' event, which also includes the service
+    item and its unique identifier, can result in the correct presentation being stopped.
+    This fixes issue #700
+    """
+
+    def __init__(self):
+        self._presentations = {}
+
+    def add(self, document, unique_id):
+        self._presentations[unique_id] = document
+
+    def remove(self, unique_id):
+        del self._presentations[unique_id]
+
+    def get_presentation_by_id(self, unique_id):
+        if unique_id in self._presentations:
+            return self._presentations[unique_id]
+        else:
+            return None
 
 
 class PresentationController(object):
