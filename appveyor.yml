@@ -30,7 +30,7 @@ install:
   # Update pip
   - python -m pip install --upgrade pip
   # Install generic dependencies from pypi
-  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   # Mac only dependencies
@@ -82,8 +82,10 @@ after_test:
             brew install enchant
           }
           # Get the packaging code
-          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          #Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/tgc-dk/packaging/-/archive/pack-debug/packaging-pack-debug.zip" -OutFile packaging-master.zip
           Expand-Archive -Path packaging-master.zip -DestinationPath .
+          mv packaging-pack-debug packaging-master
           # If this is tag/replease we should also build the manual
           If ($env:APPVEYOR_REPO_TAG -eq $True -Or $env:FORCE_PACKAGING_MANUAL -eq 1) {
             python -m pip install --no-warn-script-location sphinx sphinx_rtd_theme
