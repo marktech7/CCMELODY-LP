@@ -403,11 +403,12 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         duplicates_found = False
         files_added = False
         for file_path in file_paths:
-            if file_path in full_list:
+            file_path_string = str(file_path)
+            if file_path_string in full_list:
                 duplicates_found = True
             else:
                 files_added = True
-                full_list.append(file_path)
+                full_list.append(file_path_string)
         if full_list and files_added:
             if target_group is None:
                 self.list_view.clear()
