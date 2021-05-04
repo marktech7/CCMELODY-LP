@@ -22,6 +22,7 @@
 import logging
 
 from PyQt5 import QtCore, QtWidgets
+from pathlib import Path
 
 from .mediafilesdialog import Ui_MediaFilesDialog
 
@@ -47,6 +48,8 @@ class MediaFilesForm(QtWidgets.QDialog, Ui_MediaFilesDialog):
         """
         self.file_list_widget.clear()
         for file_path in file_paths:
+            if not isinstance(file_path, Path):
+                file_path = Path(file_path)
             item = QtWidgets.QListWidgetItem(file_path.name)
             item.setData(QtCore.Qt.UserRole, file_path)
             self.file_list_widget.addItem(item)

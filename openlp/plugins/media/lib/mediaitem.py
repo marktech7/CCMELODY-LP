@@ -347,17 +347,18 @@ class MediaMediaItem(MediaManagerItem, RegistryProperties):
         """
         Add a optical based clip to the mediamanager, called from media_clip_selector_form.
 
-        :param optical: The clip to add.
+        :param optical: The clip to add, passed as a Path instance
         """
         file_paths = self.get_file_list()
         # If the clip already is in the media list it isn't added and an error message is displayed.
-        if optical in file_paths:
+        optical_string = str(optical)
+        if optical_string in file_paths:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'Mediaclip already saved'),
                                        translate('MediaPlugin.MediaItem', 'This mediaclip has already been saved'))
             return
         # Append the optical string to the media list
-        file_paths.append(optical)
-        self.load_list([str(optical)])
+        file_paths.append(optical_string)
+        self.load_list([optical_string])
         self.settings.setValue('media/media files', file_paths)
 
     def on_open_device_stream(self):
