@@ -54,7 +54,7 @@ after_test:
           # This is where we create a package using PyInstaller
           # Install PyInstaller
           #python -m pip install --no-warn-script-location pyinstaller
-          python pip install --no-warn-script-location https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
+          python -m pip install --no-warn-script-location https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
           # Some windows only stuff...
           If ($isWindows) {
             # Disabled portable installers - can't figure out how to make them silent
