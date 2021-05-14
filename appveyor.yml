@@ -30,7 +30,7 @@ install:
   # Update pip
   - python -m pip install --upgrade pip
   # Install generic dependencies from pypi
-  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5==5.15.3 PyQtWebEngine==5.15.3 pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   # Mac only dependencies
@@ -53,8 +53,7 @@ after_test:
           $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
           # Install PyInstaller
-          #python -m pip install --no-warn-script-location pyinstaller
-          python -m pip install --no-warn-script-location https://github.com/pyinstaller/pyinstaller/archive/develop.tar.gz
+          python -m pip install --no-warn-script-location pyinstaller
           # Some windows only stuff...
           If ($isWindows) {
             # Disabled portable installers - can't figure out how to make them silent
