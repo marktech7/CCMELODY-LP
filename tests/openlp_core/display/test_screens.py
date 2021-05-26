@@ -94,6 +94,146 @@ def test_create_screen_list(mocked_screens, settings):
 
 
 @patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_create_screen_list_with_settings_matching(mocked_screens, settings):
+    """
+    Create the screen list and match with saved settings
+    """
+    # GIVEN: Mocked application and saved screen settings
+    mocked_application = MagicMock()
+    settings.setValue('core/screens', {'0': {'number': 0, 'geometry': {'x': 0, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': True, 'is_display': False,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 668}},
+                                       '1': {'number': 0, 'geometry': {'x': 1024, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': False, 'is_display': True,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 568}}})
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    # WHEN: create() is called
+    screen_list = ScreenList.create(mocked_application)
+
+    # THEN: The correct screens have been set up, matching the saved settings
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[0].custom_geometry == QtCore.QRect(50, 50, 924, 668)
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
+    assert screen_list.screens[1].custom_geometry == QtCore.QRect(50, 50, 924, 568)
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+@patch('openlp.core.display.screens.QtWidgets.QMessageBox.warning')
+def test_create_screen_list_with_screen_unplugged(screen_warning, mocked_screens, settings):
+    """
+    Create the screen list where saved screens > os screens (ie display unplugged)
+    """
+    # GIVEN: Mocked application and saved screen settings
+    mocked_application = MagicMock()
+    settings.setValue('core/screens', {'0': {'number': 0,
+                                             'geometry': {'x': -1024, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': False,
+                                             'is_display': True,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 668}},
+                                       '1': {'number': 0,
+                                             'geometry': {'x': 0, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': True,
+                                             'is_display': False,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 568}}})
+    # set up mocked_screen to match the 2nd screen in the settings
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    # WHEN: create() is called
+    screen_list = ScreenList.create(mocked_application)
+
+    # THEN: The correct screens have been set up
+    assert len(screen_list.screens) == 1
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    # find_new_display_screen() sets this screen's is_display to True
+    assert screen_list.screens[0].is_display is True
+    assert screen_list.screens[0].custom_geometry == QtCore.QRect(50, 50, 924, 568)
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_create_screen_list_with_screen_replugged_1(mocked_screens, settings):
+    """
+    Create the screen list where saved screens < os screens (ie display plugged in again)
+    with saved screen matching the first screen
+    """
+    # GIVEN: Mocked application and saved screen settings
+    mocked_application = MagicMock()
+    settings.setValue('core/screens', {'0': {'number': 0,
+                                             'geometry': {'x': 0, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': True,
+                                             'is_display': True,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 668}}})
+    # set up mocked_screen so that mocked_screen1 matches saved screen
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    # WHEN: create() is called
+    screen_list = ScreenList.create(mocked_application)
+
+    # THEN: The correct screens have been set up
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is True
+    assert screen_list.screens[0].custom_geometry == QtCore.QRect(50, 50, 924, 668)
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is False
+    assert screen_list.screens[1].custom_geometry is None
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_create_screen_list_with_screen_replugged_2(mocked_screens, settings):
+    """
+    Create the screen list where saved screens < os screens (ie display plugged in again)
+    with saved screen matching the second screen
+    """
+    # GIVEN: Mocked application and saved screen settings
+    mocked_application = MagicMock()
+    settings.setValue('core/screens', {'0': {'number': 0,
+                                             'geometry': {'x': 0, 'y': 0, 'width': 1024, 'height': 768},
+                                             'is_primary': True,
+                                             'is_display': True,
+                                             'custom_geometry': {'x': 50, 'y': 50, 'width': 924, 'height': 668}}})
+    # set up mocked_screen so that mocked_screen2 matches saved screen
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(-1024, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen2
+
+    # WHEN: create() is called
+    screen_list = ScreenList.create(mocked_application)
+
+    # THEN: The correct screens have been set up
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(-1024, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is False
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[0].custom_geometry is None
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is True
+    assert screen_list.screens[1].is_display is True
+    assert screen_list.screens[1].custom_geometry == QtCore.QRect(50, 50, 924, 668)
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
 def test_screen_list_on_primary_changed(mocked_screens, settings, registry):
     """Test that the screen is correctly updated when a primary screen is changed"""
     # GIVEN: Mocked application

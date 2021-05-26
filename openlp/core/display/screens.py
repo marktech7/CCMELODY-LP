@@ -142,7 +142,6 @@ class Screen(object):
 
         :param dict screen_dict: The dictionary which we want to apply to the screen
         """
-        self.number = int(screen_dict['number']) if 'number' in screen_dict else self.number
         self.is_display = screen_dict.get('is_display', self.is_display)
         self.is_primary = screen_dict.get('is_primary', self.is_primary)
         if 'geometry' in screen_dict:
@@ -257,13 +256,12 @@ class ScreenList(metaclass=Singleton):
         screen_settings = self.settings.value('core/screens')
         if screen_settings:
             need_new_display_screen = False
-            for number, screen_dict in screen_settings.items():
-                # Sometimes this loads as a string instead of an int
-                number = int(number)
+            for screen_dict in screen_settings.values():
                 # Compare geometry, primary of screen from settings with available screens
-                if self.has_screen(screen_dict):
+                screen_number = self.get_screen_number(screen_dict)
+                if screen_number is not None:
                     # If match was found, we're all happy, update with custom geometry, display info, if available
-                    self[number].update(screen_dict)
+                    self[screen_number].update(screen_dict)
                 else:
                     # If no match, ignore this screen, also need to find new display screen if the discarded screen was
                     # marked as such.
@@ -333,17 +331,19 @@ class ScreenList(metaclass=Singleton):
         if can_save:
             self.save_screen_settings()
 
-    def has_screen(self, screen_dict):
+    def get_screen_number(self, screen_dict):
         """
-        Confirms a screen is known.
+        Tries to match a screen with the passed-in screen_dict attributes
+        If a match is found then the number of the screen is returned.
+        If not then None is returned.
 
-        :param screen_dict: The dict descrebing the screen.
+        :param screen_dict: The dict describing the screen to match.
         """
         for screen in self.screens:
             if screen.to_dict()['geometry'] == screen_dict['geometry'] \
                     and screen.is_primary == screen_dict['is_primary']:
-                return True
-        return False
+                return screen.number
+        return None
 
     def update_screens(self):
         """
