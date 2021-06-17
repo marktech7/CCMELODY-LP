@@ -30,7 +30,9 @@ install:
   # Update pip
   - python -m pip install --upgrade pip
   # Install generic dependencies from pypi
-  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
+  # websockets are set to 8.1 and pyqt5 to 5.15.3 due to pyinstaller incompabilities with later versions.
+  # pytest-qt is set to 3.3.0 due to test failing with newwer versions.
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets==8.1 waitress six webob requests QtAwesome PyQt5==5.15.3 PyQtWebEngine==5.15.3 pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt==3.3.0 pyenchant pysword
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   # Mac only dependencies
