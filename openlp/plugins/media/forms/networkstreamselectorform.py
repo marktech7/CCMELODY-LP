@@ -20,11 +20,13 @@
 ##########################################################################
 
 import logging
+import re
 
 from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.plugins.media.forms import StreamSelectorFormBase, VLCOptionsWidget
+from openlp.core.ui.media import parse_stream_path
 
 log = logging.getLogger(__name__)
 
@@ -79,3 +81,18 @@ class NetworkStreamSelectorForm(StreamSelectorFormBase):
 
     def on_updates(self):
         self.update_mrl_options(self.net_mrl_lineedit.text(), '')
+
+    def set_mrl(self, network_stream_str):
+        """
+        Setup the stream widgets based on the saved stream string. This is best effort as the string is
+        editable for the user.
+        """
+        (name, mrl, options) = parse_stream_path(network_stream_str)
+        self.net_mrl_lineedit.setText(mrl)
+
+        cache = re.search(r'live-caching=(\d+)', options)
+        if cache:
+            self.more_options_group.caching.setValue(int(cache.group(1)))
+
+        self.more_options_group.mrl_lineedit.setText(mrl)
+        self.more_options_group.vlc_options_lineedit.setText(options)

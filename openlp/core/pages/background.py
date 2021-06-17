@@ -221,7 +221,8 @@ class BackgroundPage(GridLayoutPage):
         """
         if get_vlc():
             stream_selector_form = StreamSelectorForm(self, self.set_stream, True)
-            if self.stream_lineedit.text():
+            # prefill in the form any device stream already defined
+            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("devicestream"):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
@@ -235,7 +236,8 @@ class BackgroundPage(GridLayoutPage):
         """
         if get_vlc():
             stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
-            if self.stream_lineedit.text():
+            # prefill in the form any network stream already defined
+            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("networkstream"):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
