@@ -43,7 +43,12 @@ from openlp.core.common.settings import Settings
 @pytest.fixture
 def qapp(qtbot):
     """An instance of QApplication"""
-    qt_api.QtWidgets.QApplication.instance()
+    # Newer versions of pytest-qt have QApplication in the widgets module.
+    # Catch attribute error if the widgets module is missing and instantiate QApplication the old way.
+    try:
+        qt_api.QtWidgets.QApplication.instance()
+    except AttributeError:
+        qt_api.QApplication.instance()
     app = OpenLP()
     yield app
     del app
