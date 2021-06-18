@@ -56,6 +56,29 @@ SONG_TEST_DATA = {
     }
 }
 
+start_tags = [{"protected": False, "desc": "z", "start tag": "{z}", "end html": "</strong>", "temporary": False,
+               "end tag": "{/z}", "start html": "strong>", "hidden": False}]
+result_tags = [{"temporary": False, "protected": False, "desc": "z", "start tag": "{z}", "start html": "strong>",
+                "end html": "</strong>", "end tag": "{/z}", "hidden": False},
+               {"temporary": False, "end tag": "{/c}", "desc": "c", "start tag": "{c}",
+                "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
+                "protected": False, "hidden": False}]
+
+author_xml = '<properties>\
+                  <authors>\
+                      <author type="words">Test Author1</author>\
+                      <author type="music">Test Author1</author>\
+                      <author type="words">Test Author2</author>\
+                  </authors>\
+            </properties>'
+
+songbook_xml = '<properties>\
+                    <songbooks>\
+                        <songbook name="Collection 1" entry="48"/>\
+                        <songbook name="Collection 2" entry="445 A"/>\
+                    </songbooks>\
+                </properties>'
+
 
 class TestOpenLyricsImport(TestCase, TestMixin):
     """
