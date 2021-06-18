@@ -63,8 +63,11 @@ def test_on_new_clicked(tagform_env):
 
     # WHEN: on_new_clicked is run (i.e. the Add new button was clicked)
     with patch('openlp.core.ui.formattingtagform.QtWidgets.QTableWidgetItem') as MockedQTableWidgetItem:
+        mockedwidget = patch('openlp.core.ui.formattingtagform.QtWidgets.QWidget')
         mocked_table_widget = MagicMock()
+        mocked_widget = MagicMock()
         MockedQTableWidgetItem.return_value = mocked_table_widget
+        mockedwidget.return_value = mocked_widget
         form.on_new_clicked()
 
         # THEN: A new row should be added to the table

@@ -39,7 +39,8 @@ def test_remove_tags(mocked_get_tags):
         'start tag': '{b}',
         'start html': '<span style="-webkit-text-fill-color:black">',
         'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-        'temporary': False
+        'temporary': False,
+        'hidden': False
     }]
     string_to_pass = 'ASDF<br>foo{br}bar&nbsp;{b}black{/b}'
     expected_string = 'ASDF\nfoo\nbar black'
@@ -64,21 +65,21 @@ def test_render_tags(mocked_get_tags, settings):
             'start tag': '{b}',
             'start html': '<span style="-webkit-text-fill-color:black">',
             'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         },
         {
             'desc': 'Yellow',
             'start tag': '{y}',
             'start html': '<span style="-webkit-text-fill-color:yellow">',
             'end tag': '{/y}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         },
         {
             'desc': 'Green',
             'start tag': '{g}',
             'start html': '<span style="-webkit-text-fill-color:green">',
             'end tag': '{/g}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         }
     ]
     string_to_pass = '{b}black{/b}{y}yellow{/y}'
