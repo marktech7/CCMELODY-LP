@@ -153,8 +153,11 @@ def remove_tags(text, can_remove_chords=False):
     text = text.replace('{br}', '\n')
     text = text.replace('&nbsp;', ' ')
     for tag in FormattingTags.get_html_tags():
-        text = text.replace(tag['start tag'], '')
-        text = text.replace(tag['end tag'], '')
+        if tag['hidden']:
+            text = re.sub(r'' + tag['start tag'] + ".*?" + tag['end tag'], '', text)
+        else:
+            text = text.replace(tag['start tag'], '')
+            text = text.replace(tag['end tag'], '')
     # Remove ChordPro tags
     if can_remove_chords:
         text = remove_chords(text)

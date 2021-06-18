@@ -59,12 +59,12 @@ SONG_TEST_DATA = {
 }
 
 start_tags = [{"protected": False, "desc": "z", "start tag": "{z}", "end html": "</strong>", "temporary": False,
-               "end tag": "{/z}", "start html": "strong>"}]
+               "end tag": "{/z}", "start html": "strong>", "hidden": False}]
 result_tags = [{"temporary": False, "protected": False, "desc": "z", "start tag": "{z}", "start html": "strong>",
-                "end html": "</strong>", "end tag": "{/z}"},
+                "end html": "</strong>", "end tag": "{/z}", "hidden": False},
                {"temporary": False, "end tag": "{/c}", "desc": "c", "start tag": "{c}",
                 "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
-                "protected": False}]
+                "protected": False, "hidden": False}]
 
 author_xml = '<properties>\
                   <authors>\
