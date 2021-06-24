@@ -259,14 +259,36 @@ def test_set_mrl_win(stream_selector_form_win):
 
     # WHEN: The stream selector form is prefilled
 
-    live_stream_text = 'devicestream: &&dshow://&&:"dshow-vdev=Camera 2" :dshow-size=25 :live-caching=400'
+    live_stream_text = 'devicestream:wintest&&dshow://&&:"dshow-vdev=Camera 2" :dshow-size=25 :live-caching=400'
     stream_selector_form_win.set_mrl(live_stream_text)
 
     # THEN: The form should contain the prefilled values
+    stream_selector_form_win.stream_name_edit.text() == "wintest"
+    assert stream_selector_form_win.stacked_modes_layout.currentIndex() == 0
     assert stream_selector_form_win.stacked_modes_layout.widget(0).video_devices_combo_box.currentIndex() == 2
     assert stream_selector_form_win.stacked_modes_layout.widget(0).video_devices_combo_box.currentText() == "Camera 2"
     assert stream_selector_form_win.stacked_modes_layout.widget(0).video_size_lineedit.text() == '25'
     assert stream_selector_form_win.more_options_group.caching.text() == '400 ms'
+
+
+@pytest.mark.parametrize("stream_selector_form_linux", [False], indirect=True)
+def test_set_mrl_linux(stream_selector_form_linux):
+    '''
+    Test that the UI components are prefilled correctly on a linux computer
+    '''
+    # GIVEN: A fixture for a StreamSelectorForm on a linux computer with dummy devices
+
+    # WHEN: The stream selector form is prefilled
+
+    live_stream_text = 'devicestream:linuxtest&&v4l2://&&:v4l2-standard=PAL :v4l2-tuner-frequency=1 :live-caching=300'
+    stream_selector_form_linux.set_mrl(live_stream_text)
+
+    # THEN: The form should contain the prefilled values
+    stream_selector_form_linux.stream_name_edit.text() == "linuxtest"
+    assert stream_selector_form_linux.stacked_modes_layout.currentIndex() == 1
+    assert stream_selector_form_linux.stacked_modes_layout.widget(1).freq.text() == "1 kHz"
+    assert stream_selector_form_linux.stacked_modes_layout.widget(1).video_std_combobox.currentText() == "PAL"
+    assert stream_selector_form_linux.more_options_group.caching.text() == '300 ms'
 
 
 def test_win_set_stream_call(stream_selector_form_win):
