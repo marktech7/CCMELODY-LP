@@ -441,6 +441,18 @@ var Display = {
     return currSlide.clientHeight >= currSlide.scrollHeight;
   },
   /**
+   * Checks if the present slide content fits within the slide
+  */
+   doesLineFit: function () {
+    var currSlide = $("section.text-slides");
+    if (currSlide.length === 0) {
+      currSlide = Display._footerContainer;
+    } else {
+      currSlide = currSlide[0];
+    }
+    return currSlide.clientWidth >= currSlide.scrollWidth;
+  },
+  /**
    * Generate the OpenLP startup splashscreen
    * @param {string} bg_color - The background color
    * @param {string} image - Path to the splash image

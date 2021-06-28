@@ -103,6 +103,7 @@ body.transition .reveal .slide-background {
   display: flex !important;
   flex-direction: column;
   word-wrap: break-word;
+  white-space: nowrap;
 }
 
 .reveal .slides > section p {

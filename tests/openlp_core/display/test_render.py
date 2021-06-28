@@ -21,11 +21,26 @@
 """
 Test the :mod:`~openlp.core.display.render` package.
 """
+import pytest
 from unittest.mock import MagicMock, patch
 
 from openlp.core.display.render import compare_chord_lyric_width, find_formatting_tags, remove_tags, render_chords, \
     render_chords_for_printing, render_tags, ThemePreviewRenderer
 from openlp.core.lib.formattingtags import FormattingTags
+
+
+@pytest.fixture
+def display_window_env():
+    box_layout_patcher = patch('openlp.core.display.window.QtWidgets.QVBoxLayout')
+    web_view_patcher = patch('openlp.core.display.webengine.WebEngineView')
+    util_patcher = patch('openlp.core.display.window.wait_for')
+    box_layout_patcher.start()
+    web_view_patcher.start()
+    util_patcher.start()
+    yield
+    box_layout_patcher.stop()
+    web_view_patcher.stop()
+    util_patcher.stop()
 
 
 @patch('openlp.core.display.render.FormattingTags.get_html_tags')
@@ -225,39 +240,39 @@ def test_find_formatting_tags(settings):
     assert active_tags == ['st'], 'The list of active tags should contain only "st"'
 
 
-def test_format_slide(settings):
+def test_format_slide(settings, display_window_env):
     """
     Test that the format_slide function works as expected
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
-    with patch('openlp.core.display.render.ThemePreviewRenderer.__init__') as init_fn:
-        init_fn.return_value = None
-        preview_renderer = ThemePreviewRenderer()
-    lyrics = 'hello {st}test{/st}\nline two line after a {st}nice{/st} new line'
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'hello {st}test{/st}\nline two\n[---]\nline after optional split'
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
-    preview_renderer._text_fits_on_slide = MagicMock(side_effect=lambda a: len(a) < 80)
+    preview_renderer._text_fits_on_slide = MagicMock(side_effect=lambda a: a == '')
+    preview_renderer._line_fits_on_slide = MagicMock(return_value=True)
     preview_renderer.force_page = False
 
     # WHEN: format_slide is run
     formatted_slides = preview_renderer.format_slide(lyrics, None)
 
-    # THEN: The formatted slides should have all the text, no blank slides and formatting tags should still be there
-    assert formatted_slides == ['hello {st}test{/st}', 'line two line after a {st}nice{/st} new line']
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['hello {st}test{/st}', 'line two', 'line after optional split']
 
 
-def test_format_slide_no_split(settings):
+def test_format_slide_no_split(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
-    with patch('openlp.core.display.render.ThemePreviewRenderer.__init__') as init_fn:
-        init_fn.return_value = None
-        preview_renderer = ThemePreviewRenderer()
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
     lyrics = 'line one\n[---]\nline two'
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(return_value=True)
     preview_renderer.force_page = False
 
     # WHEN: format_slide is run
@@ -265,3 +280,113 @@ def test_format_slide_no_split(settings):
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['line one<br>line two']
+
+
+def test_format_slide_line_split(settings, display_window_env):
+    """
+    Test that the format_slide function doesn't split a slide that fits
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'super duper long line that will hopefully get split'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['super duper long line that', 'will hopefully get split']
+
+
+def test_format_slide_line_split_odd_spacing(settings, display_window_env):
+    """
+    Test that the format_slide function doesn't split a slide that fits
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'l o t s o f s p a c e tight space'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 20))
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['l o t s o f s p', 'a c e tight space']
+
+
+def test_format_slide_triple_line_split(settings, display_window_env):
+    """
+    Test that the format_slide function doesn't split a slide that fits
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'triple split line'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 4))
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['triple', 'split', 'line']
+
+
+def test_format_slide_manual_line_split(settings, display_window_env):
+    """
+    Test that the format_slide function doesn't split a slide that fits
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'an awesome[ ]uncentered line split thing, yay'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['an awesome', 'uncentered line split thing, yay']
+
+
+def test_format_slide_comma_line_split(settings, display_window_env):
+    """
+    Test that the format_slide function doesn't split a slide that fits
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'an awesome, uncentered line split thing yay'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['an awesome', 'uncentered line split thing yay']
