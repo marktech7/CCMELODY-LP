@@ -57,14 +57,14 @@ def stream_selector_form_win(settings):
     audio2 = MagicMock()
     audio2.deviceName.return_value = "Audio 2"
 
-    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=True):
-        with patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False):
-            with patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=False):
-                with patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
-                           return_value=[camera1, camera2]):
-                    with patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
-                               return_value=[audio1, audio2]):
-                        form = StreamSelectorForm(main_window, setstream)
+    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=True), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
+                  return_value=[camera1, camera2]), \
+            patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
+                  return_value=[audio1, audio2]):
+        form = StreamSelectorForm(main_window, setstream)
 
     yield form
     del form
@@ -90,12 +90,12 @@ def stream_selector_form_linux(request, settings):
                 return ['/dev/snd/pcmC0D0p', '/dev/snd/pcmC0D1p']
         return []
 
-    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False):
-        with patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=True):
-            with patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=False):
-                with patch('openlp.plugins.media.forms.streamselectordialog.glob') as patched_glob:
-                    patched_glob.glob.side_effect = return_dummy_devices
-                    form = StreamSelectorForm(main_window, setstream, request.param)
+    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=True), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.glob') as patched_glob:
+        patched_glob.glob.side_effect = return_dummy_devices
+        form = StreamSelectorForm(main_window, setstream, request.param)
 
     yield form
     del form
@@ -121,14 +121,14 @@ def stream_selector_form_mac(settings):
     audio2 = MagicMock()
     audio2.deviceName.return_value = "Audio 2"
 
-    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False):
-        with patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False):
-            with patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=True):
-                with patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
-                           return_value=[camera1, camera2]):
-                    with patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
-                               return_value=[audio1, audio2]):
-                        form = StreamSelectorForm(main_window, setstream)
+    with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
+            patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=True), \
+            patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
+                  return_value=[camera1, camera2]), \
+            patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
+                  return_value=[audio1, audio2]):
+        form = StreamSelectorForm(main_window, setstream)
 
     yield form
     del form
