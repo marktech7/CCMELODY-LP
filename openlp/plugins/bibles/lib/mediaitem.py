@@ -1024,7 +1024,7 @@ class BibleMediaItem(MediaManagerItem):
             DisplayStyle.Curly: ('{', '}'),
             DisplayStyle.Square: ('[', ']')
         }[self.settings_tab.display_style]
-        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
+        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}<span class="nbsp">&nbsp;</span>'.format(verse_text=verse_text, bracket=bracket)
 
     def search_options(self, option=None):
         """
