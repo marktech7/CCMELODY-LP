@@ -112,6 +112,7 @@ class UiIcons(metaclass=Singleton):
             'network_stream': {'icon': 'fa.link'},
             'new': {'icon': 'op.new'},
             'new_group': {'icon': 'fa.folder'},
+            'next_media': {'icon': 'fa.step-forward'},
             'notes': {'icon': 'fa.sticky-note'},
             'open': {'icon': 'fa.folder-open'},
             'optical': {'icon': 'fa.circle-thin'},
@@ -124,6 +125,7 @@ class UiIcons(metaclass=Singleton):
             'plus': {'icon': 'fa.plus'},
             'presentation': {'icon': 'fa.bar-chart'},
             'preview': {'icon': 'fa.laptop'},
+            'previous_media': {'icon': 'fa.step-backward'},
             'projector': {'icon': 'op.video'},
             'projector_connect': {'icon': 'fa.plug'},  # Projector connect
             'projector_cooldown': {'icon': 'fa.video-camera', 'attr': 'blue'},

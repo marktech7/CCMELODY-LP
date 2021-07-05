@@ -386,9 +386,17 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                          icon=UiIcons().pause,
                                          tooltip=translate('OpenLP.SlideController', 'Pause playing media.'),
                                          triggers=self.send_to_plugins)
+        self.mediabar.add_toolbar_action('playbackPrevious', text='media_playback_previous',
+                                         icon=UiIcons().previous_media,
+                                         tooltip=translate('OpenLP.SlideController', 'Go to previous media.'),
+                                         triggers=self.send_to_plugins)
         self.mediabar.add_toolbar_action('playbackStop', text='media_playback_stop',
                                          icon=UiIcons().stop,
                                          tooltip=translate('OpenLP.SlideController', 'Stop playing media.'),
+                                         triggers=self.send_to_plugins)
+        self.mediabar.add_toolbar_action('playbackNext', text='media_playback_next',
+                                         icon=UiIcons().next_media,
+                                         tooltip=translate('OpenLP.SlideController', 'Go to next media.'),
                                          triggers=self.send_to_plugins)
         self.mediabar.add_toolbar_action('playbackLoop', text='media_playback_loop',
                                          icon=UiIcons().repeat, checked=False,

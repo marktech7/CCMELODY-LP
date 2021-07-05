@@ -42,6 +42,7 @@ log = logging.getLogger(__name__)
 
 # Audio and video extensions copied from 'include/vlc_interface.h' from vlc 2.2.0 source
 
+_vlc = None
 
 def get_vlc():
     """
@@ -50,6 +51,10 @@ def get_vlc():
 
     :return: The "vlc" module, or None
     """
+    # use the global variable if it's set
+    global _vlc
+    if _vlc:
+        return _vlc
     # Import the VLC module if not already done
     if 'vlc' not in sys.modules:
         try:
@@ -63,7 +68,8 @@ def get_vlc():
     except Exception:
         pass
     if is_vlc_available:
-        return sys.modules['vlc']
+        _vlc = sys.modules['vlc']
+        return _vlc
     return None
 
 
@@ -80,6 +86,117 @@ if is_linux() and 'pytest' not in sys.argv[0] and get_vlc():
         x11.XInitThreads()
     except Exception:
         log.exception('Failed to run XInitThreads(), VLC might not work properly!')
+
+def media_item_finished_event_listener(event, controller):
+    """
+    Event listener which gets fired when VLC finishes playing a media item which is not part of a playlist
+    The function checks if the media item is looping, and if so, restarts playing it.
+    It does this synchronously to avoid race conditions with the 'tick' functionality
+
+    :param controller: The controller handling that media item
+    :return: None
+    """
+    print('in media_item_finished_event_listener')
+    if controller.media_info.is_looping_playback:
+        print('restarting media item' + controller.vlc_media_player.get_media().get_mrl())
+        controller.vlc_media_player.play()
+    else:
+        controller.media_info.is_playing = False
+        controller.vlc_media_player.stop()
+        update_ui_media_finished(controller)
+
+def media_list_finished_event_listener(event, controller):
+    """
+    Event listener which gets fired when VLC finishes playing a media playlist.
+    The function checks if the media list is looping, and if so, restarts playing it.
+    It does this synchronously to avoid race conditions with the 'tick' functionality
+
+    :param controller: The controller handling that media item
+    :return: None
+    """
+    print('in media_list_finished_event_listener')
+    if controller.media_info.is_looping_playback:
+        print('restarting media list')
+        controller.vlc_media_list_player.play()
+    else:
+        controller.media_info.is_playing = False
+        controller.vlc_media_list_player.stop()
+        controller.vlc_media_player.stop()
+        # stop the media player to ensure its get_time() gets reset to zero
+        # threading.Thread(target=controller.vlc_media_player.stop).start()
+        update_ui_media_finished(controller)
+
+def media_changed_event_listener(event, controller):
+    """
+    Event listener which gets fired when VLC changes the media item it's playing
+    The function initiates changes to the UI based on the duration of the new media item
+
+    :param controller: The controller handling that media item
+    :return: None
+    """
+    print('in media_changed_event_listener for ' + controller.vlc_media_player.get_media().get_mrl())
+    print('duration: ' + str(controller.vlc_media_player.get_media().get_duration() // 1000) + ' seconds')
+    playlist_length = controller.vlc_media_list.count()
+    this_item_index = controller.vlc_media_list.index_of_item(controller.vlc_media_player.get_media())
+    print('item number ' + str(this_item_index) + ' of ' + str(playlist_length))
+    if controller.media_info.is_playlist:
+        update_ui_new_playlist_item(controller, this_item_index == 0, this_item_index == playlist_length - 1, controller.vlc_media_player.get_media().get_duration())
+
+def update_ui_media_finished(controller):
+    """
+    Update the UI when a media item or media list has finished
+    This sets the mediabar icons and slider appropriately
+
+    :param controller: Which Controller is running the show.
+    """
+    controller.mediabar.actions['playbackPlay'].setVisible(True)
+    controller.mediabar.actions['playbackPause'].setVisible(False)
+    controller.mediabar.actions['playbackStop'].setDisabled(True)
+    if controller.media_info.is_playlist:
+        controller.mediabar.actions['playbackPrevious'].setDisabled(True)
+        controller.mediabar.actions['playbackNext'].setDisabled(True)
+    update_ui_slider(controller, 0, controller.media_info.length)
+
+def update_ui_new_playlist_item(controller, first, last, duration):
+    """
+    Update the UI when a media item of a playlist starts playing
+    This sets the mediabar icons and slider appropriately
+
+    :param controller: Which Controller is running the show.
+    :param first: if this is the first item in the playlist
+    :param last: if this is the last item in the playlist
+    :param duration: duration of this item in milliseconds
+    """
+    if first:
+        print('disabling previous')
+        controller.mediabar.actions['playbackPrevious'].setDisabled(True)
+    else:
+        controller.mediabar.actions['playbackPrevious'].setEnabled(True)
+    if last:
+        print('disabling last')
+        controller.mediabar.actions['playbackNext'].setDisabled(True)
+    else:
+        controller.mediabar.actions['playbackNext'].setEnabled(True)
+    if duration > 0:
+        update_ui_slider(controller, 0, duration)
+
+def update_ui_slider(controller, position, duration):
+    """
+    Update the UI slider with the passed-in position and duration
+    This sets the mediabar icons and slider appropriately
+
+    :param controller: Which Controller is running the show.
+    :param position: current position of the media
+    :param duration: duration of the media
+    """
+    controller.seek_slider.blockSignals(True)
+    controller.seek_slider.setMaximum(duration)
+    controller.seek_slider.setSliderPosition(position)
+    total_seconds = duration // 1000
+    total_minutes = total_seconds // 60
+    total_seconds %= 60
+    controller.position_label.setText(' %02d:%02d / %02d:%02d' % (0, 0, total_minutes, total_seconds))
+    controller.seek_slider.blockSignals(False)
 
 
 class VlcPlayer(MediaPlayer):
@@ -114,7 +231,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_widget = QtWidgets.QFrame(display)
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # creating a basic vlc instance
-        command_line_options = '--no-video-title-show --input-repeat=99999999 '
+        command_line_options = '--no-video-title-show '
         if self.settings.value('advanced/hide mouse') and controller.is_live:
             command_line_options += '--mouse-hide-timeout=0 '
         if self.settings.value('media/vlc arguments'):
@@ -135,6 +252,13 @@ class VlcPlayer(MediaPlayer):
         log.debug(f"VLC version: {vlc.libvlc_get_version()}")
         # creating an empty vlc media player
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
+        # create a new media list player and attach the media player to it
+        controller.vlc_media_list_player = controller.vlc_instance.media_list_player_new()
+        controller.vlc_media_list_player.set_playback_mode(vlc.PlaybackMode.default)
+        controller.vlc_media_list_player.set_media_player(controller.vlc_media_player)
+        # create associated event managers
+        controller.vlc_media_player_event_manager = controller.vlc_media_player.event_manager()
+        controller.vlc_media_list_player_event_manager = controller.vlc_media_list_player.event_manager()
         controller.vlc_widget.resize(controller.size())
         controller.vlc_widget.hide()
         # The media player has to be 'connected' to the QFrame.
@@ -174,10 +298,10 @@ class VlcPlayer(MediaPlayer):
         vlc = get_vlc()
         log.debug('load video in VLC Controller')
         path = None
-        if file and not controller.media_info.media_type == MediaType.Stream:
-            path = os.path.normcase(file)
         # create the media
         if controller.media_info.media_type == MediaType.CD:
+            if file:
+                path = os.path.normcase(file)
             if is_win():
                 path = '/' + path
             controller.vlc_media = controller.vlc_instance.media_new_location('cdda://' + path)
@@ -219,12 +343,34 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_media.add_options(file[1])
             controller.vlc_media_player.set_media(controller.vlc_media)
         else:
-            controller.vlc_media = controller.vlc_instance.media_new_path(path)
+            # file is either a single filename or a list of filenames
+            if controller.media_info.is_playlist:
+                controller.vlc_media_list = controller.vlc_instance.media_list_new()
+                for filename in file:
+                    path = os.path.normcase(filename)
+                    vlc_media_item = controller.vlc_instance.media_new_path(path)
+                    vlc_media_item.parse()
+                    controller.vlc_media_list.add_media(vlc_media_item)
+                controller.vlc_media_list_player.set_media_list(controller.vlc_media_list)
+                # detach any event managers first to make doubly we don't end up with multiple messages
+                #controller.vlc_media_player_event_manager.event_detach(vlc.EventType.MediaPlayerMediaChanged)
+                controller.vlc_media_player_event_manager.event_attach(vlc.EventType.MediaPlayerMediaChanged, media_changed_event_listener, controller)
+                #controller.vlc_media_list_player_event_manager.event_detach(vlc.EventType.MediaListPlayerPlayed)
+                controller.vlc_media_list_player_event_manager.event_attach(vlc.EventType.MediaListPlayerPlayed, media_list_finished_event_listener, controller)
+            else:
+                path = os.path.normcase(file)
+                controller.vlc_media = controller.vlc_instance.media_new_path(path)
+                # need to create a new blank playlist and give it to the media list player
+                # otherwise old playlists hang around and can get played in subsequent items
+                controller.vlc_media_list = controller.vlc_instance.media_list_new()
+                controller.vlc_media_list_player.set_media_list(controller.vlc_media_list)
+                #controller.vlc_media_player_event_manager.event_detach(vlc.EventType.MediaPlayerEndReached)
+                controller.vlc_media_player_event_manager.event_attach(vlc.EventType.MediaPlayerEndReached, media_item_finished_event_listener, controller)
+        if not controller.media_info.is_playlist:
+            # put the media in the media player (already done for playlist)
             controller.vlc_media_player.set_media(controller.vlc_media)
-            controller.media_info.start_time = 0
-            controller.media_info.end_time = controller.media_info.length
-        # parse the metadata of the file
-        controller.vlc_media.parse()
+            # parse the metadata of the file (already done for playlist)
+            controller.vlc_media.parse()
         controller.seek_slider.setMinimum(controller.media_info.start_time)
         controller.seek_slider.setMaximum(controller.media_info.end_time)
         self.volume(controller, controller.media_info.volume)
@@ -241,13 +387,22 @@ class VlcPlayer(MediaPlayer):
         """
         vlc = get_vlc()
         start = datetime.now()
-        while media_state != controller.vlc_media.get_state():
-            sleep(0.1)
-            if controller.vlc_media.get_state() == vlc.State.Error:
-                return False
-            self.application.process_events()
-            if (datetime.now() - start).seconds > 60:
-                return False
+        if controller.media_info.is_playlist:
+            while media_state != controller.vlc_media_list_player.get_state():
+                sleep(0.1)
+                if controller.vlc_media_list_player.get_state() == vlc.State.Error:
+                    return False
+                self.application.process_events()
+                if (datetime.now() - start).seconds > 60:
+                    return False
+        else:
+            while media_state != controller.vlc_media.get_state():
+                sleep(0.1)
+                if controller.vlc_media.get_state() == vlc.State.Error:
+                    return False
+                self.application.process_events()
+                if (datetime.now() - start).seconds > 60:
+                    return False
         return True
 
     def resize(self, controller):
@@ -271,8 +426,18 @@ class VlcPlayer(MediaPlayer):
         :return:
         """
         vlc = get_vlc()
+        start_time = 0
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
-        threading.Thread(target=controller.vlc_media_player.play).start()
+        if controller.is_live:
+            if self.get_live_state() != MediaState.Paused and controller.media_info.timer > 0:
+                start_time = controller.media_info.timer
+        else:
+            if self.get_preview_state() != MediaState.Paused and controller.media_info.timer > 0:
+                start_time = controller.media_info.timer
+        if controller.media_info.is_playlist:
+            threading.Thread(target=controller.vlc_media_list_player.play).start()
+        else:
+            threading.Thread(target=controller.vlc_media_player.play).start()
         if not self.media_state_wait(controller, vlc.State.Playing):
             return False
         self.volume(controller, controller.media_info.volume)
@@ -287,9 +452,14 @@ class VlcPlayer(MediaPlayer):
         :return:
         """
         vlc = get_vlc()
-        if controller.vlc_media.get_state() != vlc.State.Playing:
-            return
-        controller.vlc_media_player.pause()
+        if controller.media_info.is_playlist:
+            if controller.vlc_media_list_player.get_state() != vlc.State.Playing:
+                return
+            controller.vlc_media_list_player.pause()
+        else:
+            if controller.vlc_media.get_state() != vlc.State.Playing:
+                return
+            controller.vlc_media_player.pause()
         if self.media_state_wait(controller, vlc.State.Paused):
             self.set_state(MediaState.Paused, controller)
 
@@ -300,8 +470,30 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller where the media is
         :return:
         """
-        threading.Thread(target=controller.vlc_media_player.stop).start()
+        vlc = get_vlc()
+        if controller.media_info.is_playlist:
+            threading.Thread(target=controller.vlc_media_list_player.stop).start()
+        else:
+            threading.Thread(target=controller.vlc_media_player.stop).start()
         self.set_state(MediaState.Stopped, controller)
+
+    def previous(self, controller):
+        """
+        Play the previous track of a playlist
+
+        :param display: The display to be updated.
+        """
+        if controller.media_info.is_playlist:
+            threading.Thread(target=controller.vlc_media_list_player.previous).start()
+
+    def next(self, controller):
+        """
+        Play the next track of a playlist
+
+        :param display: The display to be updated.
+        """
+        if controller.media_info.is_playlist:
+            threading.Thread(target=controller.vlc_media_list_player.next).start()
 
     def volume(self, controller, vol):
         """
@@ -329,7 +521,13 @@ class VlcPlayer(MediaPlayer):
 
         :param controller: The controller where the media is
         """
+        print('in vlc reset')
+        vlc = get_vlc()
         controller.vlc_media_player.stop()
+        controller.vlc_media_list_player.stop()
+        controller.vlc_media_player_event_manager.event_detach(vlc.EventType.MediaPlayerMediaChanged)
+        controller.vlc_media_list_player_event_manager.event_detach(vlc.EventType.MediaListPlayerPlayed)
+        controller.vlc_media_player_event_manager.event_detach(vlc.EventType.MediaPlayerEndReached)
         self.set_state(MediaState.Off, controller)
 
     def set_visible(self, controller, status):

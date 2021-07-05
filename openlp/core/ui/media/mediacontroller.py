@@ -82,6 +82,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         Registry().register_function('playbackPause', self.media_pause_msg)
         Registry().register_function('playbackStop', self.media_stop_msg)
         Registry().register_function('playbackLoop', self.media_loop_msg)
+        Registry().register_function('playbackPrevious', self.media_previous_msg)
+        Registry().register_function('playbackNext', self.media_next_msg)
         Registry().register_function('seek_slider', self.media_seek_msg)
         Registry().register_function('volume_slider', self.media_volume_msg)
         Registry().register_function('media_hide', self.media_hide)
@@ -232,6 +234,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.media_reset(controller)
         controller.media_info = ItemMediaInfo()
         controller.media_info.media_type = MediaType.Video
+        controller.media_info.is_playlist = False
         if controller.is_live:
             controller.media_info.volume = self.settings.value('media/live volume')
         else:
@@ -242,6 +245,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.media_type = MediaType.Audio
             # is_background indicates we shouldn't override the normal display
             controller.media_info.is_background = True
+            controller.media_info.is_playlist = isinstance(service_item.background_audio, list) and len(service_item.background_audio) > 1
         else:
             if service_item.is_capable(ItemCapabilities.HasBackgroundStream):
                 (name, mrl, options) = parse_stream_path(service_item.stream_mrl)
@@ -326,12 +330,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         # Unblank on load set
         elif self.settings.value('core/auto unblank'):
             autoplay = True
+        # display the seek UI before starting the media, as the duration is changed for each playlist item
+        self._update_seek_ui(controller)
         if autoplay:
             if not self.media_play(controller):
                 critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
-        self._update_seek_ui(controller)
         self.set_controls_visible(controller, True)
         self.log_debug('use {nm} controller'.
                        format(nm=self.current_media_players[controller.controller_type].display_name))
@@ -401,14 +406,20 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True
             return False
-        for file in controller.media_info.file_info:
-            if not file.is_file and not self.vlc_player.can_folder:
-                return False
-            file = str(file)
+        if controller.media_info.is_playlist:
             self.resize(controller, self.vlc_player)
-            if self.vlc_player.load(controller, display, file):
+            if self.vlc_player.load(controller, display, controller.media_info.file_info):
                 self.current_media_players[controller.controller_type] = self.vlc_player
                 return True
+        else:
+            for file in controller.media_info.file_info:
+                if not file.is_file and not self.vlc_player.can_folder:
+                    return False
+                file = str(file)
+                self.resize(controller, self.vlc_player)
+                if self.vlc_player.load(controller, display, file):
+                    self.current_media_players[controller.controller_type] = self.vlc_player
+                    return True
         return False
 
     def media_play_msg(self, msg):
@@ -451,6 +462,12 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         controller.mediabar.actions['playbackLoop'].setVisible((not controller.media_info.is_background and
                                                                controller.media_info.media_type is not MediaType.Stream)
                                                                or controller.media_info.media_type is MediaType.Audio)
+        if controller.media_info.is_playlist:
+            controller.mediabar.actions['playbackPrevious'].setVisible(True)
+            controller.mediabar.actions['playbackNext'].setVisible(True)
+        else:
+            controller.mediabar.actions['playbackPrevious'].setVisible(False)
+            controller.mediabar.actions['playbackNext'].setVisible(False)
         # Start Timer for ui updates
         if controller.is_live:
             if not self.live_timer.isActive():
@@ -486,15 +503,12 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 if controller.media_info.is_looping_playback:
                     start_again = True
                 else:
-                    self.media_stop(controller)
                     stopped = True
-            self._update_seek_ui(controller)
         else:
             stopped = True
 
         if start_again:
-            controller.media_info.timer = controller.media_info.start_time
-            self._update_seek_ui(controller)
+            controller.media_info.timer = 0
         return not stopped
 
     def _update_seek_ui(self, controller):
@@ -601,6 +615,40 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.output_has_changed()
             return True
         return False
+
+    def media_previous_msg(self, msg):
+        """
+        Responds to the request to go to the previous media item
+
+        :param msg: First element is the controller which should be used
+        """
+        return self.media_previous(msg[0])
+
+    def on_media_previous(self):
+        """
+        Responds to the request to go to the previous media item
+        """
+        return self.media_previous(self.live_controller)
+
+    def media_previous(self, controller):
+        self.current_media_players[controller.controller_type].previous(controller)
+
+    def media_next_msg(self, msg):
+        """
+        Responds to the request to go to the next media item
+
+        :param msg: First element is the controller which should be used
+        """
+        return self.media_next(msg[0])
+
+    def on_media_next(self):
+        """
+        Responds to the request to go to the next media item
+        """
+        return self.media_next(self.live_controller)
+
+    def media_next(self, controller):
+        self.current_media_players[controller.controller_type].next(controller)
 
     def media_volume_msg(self, msg):
         """
