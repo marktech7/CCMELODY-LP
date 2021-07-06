@@ -495,6 +495,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param controller:  The Controller to be processed
         :return:            Is the video still running?
         """
+        print('in tick')
         start_again = False
         stopped = False
         if controller.media_info.is_playing and controller.media_info.length > 0:

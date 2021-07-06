@@ -102,7 +102,7 @@ def media_item_finished_event_listener(event, controller):
         controller.vlc_media_player.play()
     else:
         controller.media_info.is_playing = False
-        controller.vlc_media_player.stop()
+        threading.Thread(target=controller.vlc_media_player.stop).start()
         update_ui_media_finished(controller)
 
 def media_list_finished_event_listener(event, controller):
@@ -149,6 +149,7 @@ def update_ui_media_finished(controller):
 
     :param controller: Which Controller is running the show.
     """
+    print('in update_ui_media_finished')
     controller.mediabar.actions['playbackPlay'].setVisible(True)
     controller.mediabar.actions['playbackPause'].setVisible(False)
     controller.mediabar.actions['playbackStop'].setDisabled(True)
@@ -385,6 +386,7 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller where the media is
         :return:
         """
+        print('in media_state_wait')
         vlc = get_vlc()
         start = datetime.now()
         if controller.media_info.is_playlist:
@@ -425,6 +427,7 @@ class VlcPlayer(MediaPlayer):
         :param output_display: The display where the media is
         :return:
         """
+        print('in vlc play, controller.media_info.timer = ' + str(controller.media_info.timer))
         vlc = get_vlc()
         start_time = 0
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
