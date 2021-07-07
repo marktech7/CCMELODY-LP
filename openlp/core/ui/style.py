@@ -19,19 +19,20 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
+The :mod:`~openlp.core.ui.style` contains style functions.
 """
+import darkdetect
+from enum import Enum
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_win
+from openlp.core.common import is_linux, is_win
 from openlp.core.common.registry import Registry
-
 
 try:
     import qdarkstyle
-    HAS_DARK_STYLE = True
+    HAS_QDARKSTYLE = True
 except ImportError:
-    HAS_DARK_STYLE = False
+    HAS_QDARKSTYLE = False
 
 WIN_REPAIR_STYLESHEET = """
 QMainWindow::separator
@@ -75,16 +76,57 @@ QProgressBar{
 }
 """
 
+class Themes(Enum):
+    """
+    An enumeration for themes.
+    """
+    Automatic = 'automatic'
+    DefaultLight = 'light:default'
+    DefaultDark = 'dark:default'
+    QDarkTheme = 'dark:qdarktheme'
+
+def is_theme_dark():
+    theme_name = Registry().get('settings').value('advanced/theme_name')
+
+    if theme_name == Themes.Automatic:
+        return is_system_darkmode()
+    else:
+        return theme_name.value.startswith('dark:')
+
+def is_theme(theme: Themes):
+    theme_name = Registry().get('settings').value('advanced/theme_name')
+    return theme_name == theme
+
+def has_theme(theme: Themes):
+    if theme == Themes.QDarkTheme:
+        return HAS_QDARKSTYLE
+    return True
+
+IS_SYSTEM_DARKMODE = None
+def is_system_darkmode():
+    global IS_SYSTEM_DARKMODE
+
+    if IS_SYSTEM_DARKMODE is None:
+        try:
+            IS_SYSTEM_DARKMODE = darkdetect.isDark()
+        except:
+            IS_SYSTEM_DARKMODE = False
+    
+    return IS_SYSTEM_DARKMODE
 
 def set_windows_darkmode(app):
+    if is_theme(Themes.Automatic) and is_windows_darkmode():
+        set_default_darkmode(app, True)
+
+def set_default_darkmode(app, force = False):
     """
-    Setup darkmode on the application if enabled in the OS (windows) settings
+    Setup darkmode on the application if enabled in the OpenLP Settings or using a dark mode system theme.
     Source: https://github.com/worstje/manuskript/blob/develop/manuskript/main.py (GPL3)
+    Changes:
+        * Allowed palette to be set on any operating system;
+        * Split Windows Dark Mode detection to another function.
     """
-    theme_settings = QtCore.QSettings('HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes'
-                                      '\\Personalize',
-                                      QtCore.QSettings.NativeFormat)
-    if theme_settings.value('AppsUseLightTheme') == 0:
+    if is_theme(Themes.DefaultDark) or (is_theme(Themes.Automatic) and is_theme_dark()) or force:
         app.setStyle('Fusion')
         dark_palette = QtGui.QPalette()
         dark_color = QtGui.QColor(45, 45, 45)
@@ -108,6 +150,8 @@ def set_windows_darkmode(app):
         # Fixes ugly (not to mention hard to read) disabled menu items.
         # Source: https://bugreports.qt.io/browse/QTBUG-10322?focusedCommentId=371060#comment-371060
         dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Light, QtCore.Qt.transparent)
+        # Fixes ugly media manager headers.
+        dark_palette.setColor(QtGui.QPalette.Mid, QtGui.QColor(64, 64, 64))
         app.setPalette(dark_palette)
 
 
@@ -118,7 +162,7 @@ def get_application_stylesheet():
     :return str: The correct stylesheet as a string
     """
     stylesheet = ''
-    if not is_win() and HAS_DARK_STYLE and Registry().get('settings').value('advanced/use_dark_style'):
+    if is_theme(Themes.QDarkTheme):
         stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
@@ -137,7 +181,7 @@ def get_library_stylesheet():
 
     :return str: The correct stylesheet as a string
     """
-    if not HAS_DARK_STYLE or not Registry().get('settings').value('advanced/use_dark_style'):
+    if not is_theme(Themes.QDarkTheme):
         return MEDIA_MANAGER_STYLE
     else:
         return ''

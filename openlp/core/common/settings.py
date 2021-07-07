@@ -172,7 +172,7 @@ class Settings(QtCore.QSettings):
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
         'advanced/search as type': True,
-        'advanced/use_dark_style': False,
+        'advanced/theme_name': "automatic",
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',

@@ -29,7 +29,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import get_images_filter, is_win
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.settingstab import SettingsTab
-from openlp.core.ui.style import HAS_DARK_STYLE
+from openlp.core.ui.style import Themes, has_theme
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 
@@ -163,10 +163,16 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
-            self.use_dark_style_checkbox.setObjectName('use_dark_style_checkbox')
-            self.ui_layout.addRow(self.use_dark_style_checkbox)
+        self.theme_style_label = QtWidgets.QLabel(self.ui_group_box)
+        self.theme_style_label.setObjectName('theme_style_label')
+        self.theme_style_combo_box = QtWidgets.QComboBox(self.ui_group_box)
+        if has_theme(Themes.QDarkTheme):
+            self.theme_style_combo_box.addItems(['', '', '', ''])
+        else:
+            self.theme_style_combo_box.addItems(['', '', ''])
+        self.theme_style_combo_box.setObjectName('theme_style_combo_box')
+        self.ui_layout.addRow(self.theme_style_label)
+        self.ui_layout.addRow(self.theme_style_combo_box)
         self.right_layout.addWidget(self.ui_group_box)
         # Push everything in both columns to the top
         self.left_layout.addStretch()
@@ -214,8 +220,7 @@ class GeneralTab(SettingsTab):
                                                       'Max height for non-text slides\nin slide controller:'))
         self.slide_max_height_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Disabled'))
         self.slide_max_height_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Automatic'))
-        self.autoscroll_label.setText(translate('OpenLP.AdvancedTab',
-                                                'When changing slides:'))
+        self.autoscroll_label.setText(translate('OpenLP.AdvancedTab', 'When changing slides:'))
         self.autoscroll_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Do not auto-scroll'))
         self.autoscroll_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
                                                            'Auto-scroll the previous slide into view'))
@@ -242,8 +247,17 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox.setText(translate('OpenLP.AdvancedTab', 'Use dark style (needs restart)'))
+        self.theme_style_label.setText(translate('OpenLP.AdvancedTab',
+                                                'Theme (needs restart if changed):'))
+        self.theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab',
+                                                            'Automatic'))
+        self.theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
+                                                            'Default Light'))
+        self.theme_style_combo_box.setItemText(2, translate('OpenLP.AdvancedTab',
+                                                            'Default Dark'))
+        if has_theme(Themes.QDarkTheme):
+            self.theme_style_combo_box.setItemText(3, translate('OpenLP.AdvancedTab',
+                                                                'QDarkTheme'))
         self.hide_mouse_check_box.setText(translate('OpenLP.AdvancedTab', 'Hide mouse cursor when over display window'))
 
     def load(self):
@@ -280,11 +294,40 @@ class GeneralTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox.setChecked(self.settings.value('advanced/use_dark_style'))
+        self.theme_style_combo_box.setCurrentIndex(self.get_theme_index(self.settings.value('advanced/theme_name')))
+
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
+
+    def get_theme_index(self, theme):
+        if theme == Themes.Automatic:
+            return 0
+        if theme == Themes.DefaultLight:
+            return 1
+        if theme == Themes.DefaultDark:
+            return 2
+        if theme == Themes.QDarkTheme:
+            if not has_theme(Themes.QDarkTheme):
+                return 2
+            return 3
+        
+        return 0
+
+    def get_theme_name(self, index):
+        if not has_theme(Themes.QDarkTheme) and index == 3:
+            index = 2
+        
+        if index == 0:
+            return Themes.Automatic
+        if index == 1:
+            return Themes.DefaultLight
+        if index == 2:
+            return Themes.DefaultDark
+        if index == 3:
+            return Themes.QDarkTheme
+
+        return Themes.Automatic
 
     def save(self):
         """
@@ -313,8 +356,8 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
-        if not is_win() and HAS_DARK_STYLE:
-            self.settings.setValue('advanced/use_dark_style', self.use_dark_style_checkbox.isChecked())
+        theme_name = self.get_theme_name(self.theme_style_combo_box.currentIndex());
+        self.settings.setValue('advanced/theme_name', theme_name)
         self.post_set_up()
 
     def post_set_up(self):

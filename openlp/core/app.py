@@ -55,7 +55,7 @@ from openlp.core.ui.firsttimeform import FirstTimeForm
 from openlp.core.ui.firsttimelanguageform import FirstTimeLanguageForm
 from openlp.core.ui.mainwindow import MainWindow
 from openlp.core.ui.splashscreen import SplashScreen
-from openlp.core.ui.style import get_application_stylesheet, set_windows_darkmode
+from openlp.core.ui.style import get_application_stylesheet, set_default_darkmode, set_windows_darkmode
 from openlp.core.version import check_for_update, get_version
 
 
@@ -120,6 +120,8 @@ class OpenLP(QtCore.QObject, LogMixin):
         # Set the darkmode for windows is enabled
         if is_win():
             set_windows_darkmode(app)
+        else:
+            set_default_darkmode(app)
         self.main_window = MainWindow()
         self.main_window.installEventFilter(self.main_window)
         # Correct stylesheet bugs
