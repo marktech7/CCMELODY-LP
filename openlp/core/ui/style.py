@@ -104,20 +104,12 @@ def is_theme(theme: Themes):
 
     if init_theme_if_needed(theme_name):
         theme_name = Themes.Automatic
-<<<<<<< HEAD
 
-=======
-        
->>>>>>> ea4958393c33cc66e84fdf4a2487b285fdc9d983
     return theme_name == theme
 
 
 def init_theme_if_needed(theme_name):
-<<<<<<< HEAD
     will_init = not isinstance(theme_name, Themes)
-=======
-    will_init = not isinstance(theme_name, Themes);
->>>>>>> ea4958393c33cc66e84fdf4a2487b285fdc9d983
 
     if will_init:
         Registry().get('settings').setValue('advanced/ui_theme_name', Themes.Automatic)
