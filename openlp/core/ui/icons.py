@@ -28,7 +28,6 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
 from openlp.core.ui.style import is_theme_dark
 

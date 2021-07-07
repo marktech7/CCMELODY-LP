@@ -26,7 +26,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import get_images_filter, is_win
+from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.ui.style import Themes, has_theme
@@ -248,7 +248,7 @@ class GeneralTab(SettingsTab):
                                                            'Enable application exit confirmation'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
         self.theme_style_label.setText(translate('OpenLP.AdvancedTab',
-                                                'Interface Theme (needs restart if changed):'))
+                                                 'Interface Theme (needs restart if changed):'))
         self.theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab',
                                                             'Automatic'))
         self.theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
@@ -311,13 +311,13 @@ class GeneralTab(SettingsTab):
             if not has_theme(Themes.QDarkTheme):
                 return 2
             return 3
-        
+
         return 0
 
     def get_theme_name(self, index):
         if not has_theme(Themes.QDarkTheme) and index == 3:
             index = 2
-        
+
         if index == 0:
             return Themes.Automatic
         if index == 1:
@@ -356,7 +356,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
-        theme_name = self.get_theme_name(self.theme_style_combo_box.currentIndex());
+        theme_name = self.get_theme_name(self.theme_style_combo_box.currentIndex())
         self.settings.setValue('advanced/theme_name', theme_name)
         self.post_set_up()
 

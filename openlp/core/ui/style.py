@@ -25,7 +25,7 @@ import darkdetect
 from enum import Enum
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_linux, is_win
+from openlp.core.common import is_win
 from openlp.core.common.registry import Registry
 
 try:
@@ -76,6 +76,7 @@ QProgressBar{
 }
 """
 
+
 class Themes(Enum):
     """
     An enumeration for themes.
@@ -85,40 +86,46 @@ class Themes(Enum):
     DefaultDark = 'dark:default'
     QDarkTheme = 'dark:qdarktheme'
 
+
 def is_theme_dark():
     theme_name = Registry().get('settings').value('advanced/theme_name')
+
+    if not theme_name is Themes:
+        theme_name = Themes.Automatic
 
     if theme_name == Themes.Automatic:
         return is_system_darkmode()
     else:
         return theme_name.value.startswith('dark:')
 
+
 def is_theme(theme: Themes):
     theme_name = Registry().get('settings').value('advanced/theme_name')
     return theme_name == theme
+
 
 def has_theme(theme: Themes):
     if theme == Themes.QDarkTheme:
         return HAS_QDARKSTYLE
     return True
 
+
 IS_SYSTEM_DARKMODE = None
+
+
 def is_system_darkmode():
     global IS_SYSTEM_DARKMODE
 
     if IS_SYSTEM_DARKMODE is None:
         try:
             IS_SYSTEM_DARKMODE = darkdetect.isDark()
-        except:
+        except Exception:
             IS_SYSTEM_DARKMODE = False
-    
+
     return IS_SYSTEM_DARKMODE
 
-def set_windows_darkmode(app):
-    if is_theme(Themes.Automatic) and is_windows_darkmode():
-        set_default_darkmode(app, True)
 
-def set_default_darkmode(app, force = False):
+def set_default_darkmode(app):
     """
     Setup darkmode on the application if enabled in the OpenLP Settings or using a dark mode system theme.
     Source: https://github.com/worstje/manuskript/blob/develop/manuskript/main.py (GPL3)
@@ -126,7 +133,7 @@ def set_default_darkmode(app, force = False):
         * Allowed palette to be set on any operating system;
         * Split Windows Dark Mode detection to another function.
     """
-    if is_theme(Themes.DefaultDark) or (is_theme(Themes.Automatic) and is_theme_dark()) or force:
+    if is_theme(Themes.DefaultDark) or (is_theme(Themes.Automatic) and is_theme_dark()):
         app.setStyle('Fusion')
         dark_palette = QtGui.QPalette()
         dark_color = QtGui.QColor(45, 45, 45)
