@@ -294,7 +294,7 @@ class GeneralTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
-        self.theme_style_combo_box.setCurrentIndex(self.get_theme_index(self.settings.value('advanced/theme_name')))
+        self.theme_style_combo_box.setCurrentIndex(self.get_theme_index(self.settings.value('advanced/ui_theme_name')))
 
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
@@ -357,7 +357,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
         theme_name = self.get_theme_name(self.theme_style_combo_box.currentIndex())
-        self.settings.setValue('advanced/theme_name', theme_name)
+        self.settings.setValue('advanced/ui_theme_name', theme_name)
         self.post_set_up()
 
     def post_set_up(self):

@@ -78,7 +78,7 @@ def test_has_theme_qdarkstyle_false_when_unavailable(mock_settings):
 def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is_win, mock_settings):
     """Test that the alternate rows stylesheet is returned when enabled in settings"""
     def settings_values(key):
-        if key == 'advanced/theme_name':
+        if key == 'advanced/ui_theme_name':
             return Themes.DefaultLight
         else:
             return False
@@ -92,7 +92,7 @@ def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is
     result = get_application_stylesheet()
 
     # THEN: result should match non-alternate-rows
-    mock_settings.value.assert_has_calls([call('advanced/theme_name'), call('advanced/alternate rows')])
+    mock_settings.value.assert_has_calls([call('advanced/ui_theme_name'), call('advanced/alternate rows')])
     assert result == 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: color;}\n', result
 
 
@@ -101,7 +101,7 @@ def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is
 def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
     """Test that the Windows repair stylesheet is returned when on Windows"""
     def settings_values(key):
-        if key == 'advanced/theme_name':
+        if key == 'advanced/ui_theme_name':
             return Themes.DefaultLight
         else:
             return True
@@ -114,7 +114,7 @@ def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
     result = get_application_stylesheet()
 
     # THEN: result should return Windows repair stylesheet
-    mock_settings.value.assert_has_calls([call('advanced/theme_name'), call('advanced/alternate rows')])
+    mock_settings.value.assert_has_calls([call('advanced/ui_theme_name'), call('advanced/alternate rows')])
     assert result == WIN_REPAIR_STYLESHEET
 
 
@@ -123,7 +123,7 @@ def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
 def test_get_application_stylesheet_not_win_repair(mocked_is_win, mock_settings):
     """Test that the Windows repair stylesheet is not returned when not in Windows"""
     def settings_values(key):
-        if key == 'advanced/theme_name':
+        if key == 'advanced/ui_theme_name':
             return Themes.DefaultLight
         else:
             return True
@@ -136,7 +136,7 @@ def test_get_application_stylesheet_not_win_repair(mocked_is_win, mock_settings)
     result = get_application_stylesheet()
 
     # THEN: result should not return Windows repair stylesheet
-    mock_settings.value.assert_has_calls([call('advanced/theme_name'), call('advanced/alternate rows')])
+    mock_settings.value.assert_has_calls([call('advanced/ui_theme_name'), call('advanced/alternate rows')])
     assert result != WIN_REPAIR_STYLESHEET
 
 
