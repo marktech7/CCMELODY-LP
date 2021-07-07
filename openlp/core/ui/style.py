@@ -90,7 +90,7 @@ class Themes(Enum):
 def is_theme_dark():
     theme_name = Registry().get('settings').value('advanced/ui_theme_name')
 
-    if not theme_name is Themes:
+    if theme_name is not Themes:
         theme_name = Themes.Automatic
 
     if theme_name == Themes.Automatic:
