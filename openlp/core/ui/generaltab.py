@@ -248,7 +248,7 @@ class GeneralTab(SettingsTab):
                                                            'Enable application exit confirmation'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
         self.theme_style_label.setText(translate('OpenLP.AdvancedTab',
-                                                'Theme (needs restart if changed):'))
+                                                'Interface Theme (needs restart if changed):'))
         self.theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab',
                                                             'Automatic'))
         self.theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
