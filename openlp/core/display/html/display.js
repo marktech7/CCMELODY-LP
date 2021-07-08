@@ -496,7 +496,7 @@ var Display = {
     /* Either scroll the alert, or make it disappear at the end of its time */
     if (settings.scroll) {
       Display._animationState = AnimationState.ScrollingText;
-      alertText.classList.add('scrolling')
+      alertText.classList.add('scrolling');
       alertText.classList.replace("hide", "show");
       var animationSettings = "alert-scrolling-text " + settings.timeout +
                               "s linear 0.6s " + settings.repeat + " normal";
