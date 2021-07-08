@@ -147,6 +147,11 @@ body.transition .reveal .slide-background {
   z-index: 100;
 }
 
+
+#alert-text.scrolling {
+  transform: translateX(100%);
+}
+
 /*********************************************
  * Transition overrides to allow different directions
  *********************************************/
