@@ -44,13 +44,13 @@ describe("The function", function () {
   });
 
   it("_buildLinearGradient() should build the correct string", function () {
-    var gradient = _buildLinearGradient("left top", "left bottom", "#000", "#fff");
-    expect(gradient).toBe("-webkit-gradient(linear, left top, left bottom, from(#000), to(#fff)) fixed");
+    var gradient = _buildLinearGradient("to bottom", "#000", "#fff");
+    expect(gradient).toBe("linear-gradient(to bottom, #000, #fff) fixed");
   });
 
   it("_buildRadialGradient() should build the correct string", function () {
     var gradient = _buildRadialGradient(10, "#000", "#fff");
-    expect(gradient).toBe("-webkit-gradient(radial, 10 50%, 100, 10 50%, 10, from(#000), to(#fff)) fixed");
+    expect(gradient).toBe("radial-gradient(#000, #fff) fixed");
   });
 
   it("_getStyle should return the correct style on an element", function () {
