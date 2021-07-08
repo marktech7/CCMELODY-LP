@@ -481,9 +481,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         start_again = False
         stopped = False
-        print(f"Start: {controller.media_info.start_time}, Timer: {controller.media_info.timer}, Length: {controller.media_info.length}")
         if controller.media_info.is_playing and controller.media_info.length > 0:
-            if controller.media_info.timer - controller.media_info.start_time + TICK_TIME >= controller.media_info.length:
+            if controller.media_info.timer - controller.media_info.start_time + TICK_TIME >= \
+                    controller.media_info.length:
                 if controller.media_info.is_looping_playback:
                     start_again = True
                 else:

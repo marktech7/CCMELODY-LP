@@ -21,6 +21,11 @@
 
 import logging
 
+# for temporary fix in populate_files below
+from pathlib import Path
+from openlp.core.common.path import str_to_path
+# end
+
 from PyQt5 import QtCore, QtWidgets
 
 from .mediafilesdialog import Ui_MediaFilesDialog
@@ -47,6 +52,10 @@ class MediaFilesForm(QtWidgets.QDialog, Ui_MediaFilesDialog):
         """
         self.file_list_widget.clear()
         for file_path in file_paths:
+            # temporary fix for issue 582
+            if not isinstance(file_path, Path):
+                    file_path = str_to_path(file_path)
+            # end of temporary fix
             item = QtWidgets.QListWidgetItem(file_path.name)
             item.setData(QtCore.Qt.UserRole, file_path)
             self.file_list_widget.addItem(item)

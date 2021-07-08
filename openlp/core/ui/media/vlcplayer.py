@@ -286,7 +286,6 @@ class VlcPlayer(MediaPlayer):
             controller.media_info.length = controller.media_info.end_time - controller.media_info.timer
         self.volume(controller, controller.media_info.volume)
         if start_time > 0 and controller.vlc_media_player.is_seekable():
-            print(f"setting time to {start_time}")
             controller.vlc_media_player.set_time(int(start_time))
         controller.seek_slider.setMaximum(controller.media_info.start_time + controller.media_info.length)
         controller.seek_slider.setMinimum(controller.media_info.start_time)
@@ -367,12 +366,9 @@ class VlcPlayer(MediaPlayer):
         """
         if not controller.seek_slider.isSliderDown():
             controller.seek_slider.blockSignals(True)
-            if controller.media_info.media_type == MediaType.CD \
-                    or controller.media_info.media_type == MediaType.DVD:
+            if controller.media_info.media_type == MediaType.DVD:
                 controller.seek_slider.setSliderPosition(
                     controller.vlc_media_player.get_time() - int(controller.media_info.start_time))
             else:
                 controller.seek_slider.setSliderPosition(controller.vlc_media_player.get_time())
-            print(f"Min: {controller.seek_slider.minimum()}, Max: {controller.seek_slider.maximum()}, Current: {controller.vlc_media_player.get_time()}")
-            controller.seek_slider.setSliderPosition(controller.vlc_media_player.get_time())
             controller.seek_slider.blockSignals(False)
