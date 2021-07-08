@@ -21,6 +21,7 @@
 """
 Functional tests to test the Http Server Class.
 """
+from openlp.core.api.websocketspollermanager import WebSocketPollerManager
 import pytest
 from unittest.mock import MagicMock, patch
 
@@ -59,13 +60,44 @@ def test_serverstart(mocked_run_thread, MockWebSocketWorker, registry):
 
 @patch('openlp.core.api.websockets.WebSocketWorker')
 @patch('openlp.core.api.websockets.run_thread')
+def test_poller_manager(mocked_run_thread, MockWebSocketWorker, registry):
+    """
+    Test if the poller manager is registered inside Registry when web server is required
+    """
+
+    # GIVEN: A new websocketServer and mocked Registry, server is not required
+    Registry().set_flag('no_web_server', False)
+    # WHEN: I start the server
+    WebSocketServer()
+
+    # THEN: the WebSocketPollerRegister should be registered
+    assert isinstance(Registry().get('poller_manager'), WebSocketPollerManager)
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_poller_manager_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, registry):
+    """
+    Test the starting of the WebSockets Poller Manager if web server is not required
+    """
+    # GIVEN: A new httpserver and the server is not required
+    Registry().set_flag('no_web_server', True)
+    # WHEN: I start the server
+    WebSocketServer()
+
+    # THEN: the WebSocketPollerRegister should be registered
+    assert isinstance(Registry().get('poller_manager'), WebSocketPollerManager)
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
 def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, registry):
     """
     Test the starting of the WebSockets Server with the disabled flag set off
     """
     # GIVEN: A new httpserver and the server is not required
-    # WHEN: I start the server
     Registry().set_flag('no_web_server', True)
+    # WHEN: I start the server
     WebSocketServer()
 
     # THEN: the api environment should have been created
@@ -170,3 +202,110 @@ def test_worker_start_fail(mocked_log, mocked_asyncio, mocked_serve, worker, set
     event_loop.run_forever.assert_not_called()
     mocked_log.exception.assert_called_once()
     event_loop.close.assert_called_once_with()
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_poller_manager_add_sub_item(mocked_run_thread, MockWebSocketWorker, poller, settings):
+    """
+    Test if WebSocketPollerManager's add_sub_item adds item to WebSocketPoll
+    """
+    # GIVEN: A test sub key, a test dictionary and mocked program state
+    test_key = 'test'
+    test_dict = {
+        'test1': 2,
+        'test2': 'A test',
+        'test3': [4]
+    }
+    mocked_service_manager = MagicMock()
+    mocked_service_manager.service_id = 21
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.selected_row = 5
+    mocked_live_controller.service_item = MagicMock()
+    mocked_live_controller.service_item.unique_identifier = '23-34-45'
+    mocked_live_controller.blank_screen.isChecked.return_value = True
+    mocked_live_controller.theme_screen.isChecked.return_value = False
+    mocked_live_controller.desktop_screen.isChecked.return_value = False
+    Registry().register('live_controller', mocked_live_controller)
+    Registry().register('service_manager', mocked_service_manager)
+    Registry().set_flag('no_web_server', False)
+
+    # WHEN: I start the server, add a item using add_sub_item, and poll the state
+    WebSocketServer()
+    Registry().get('poller_manager').add_sub_item('test', test_dict)
+    poll_json = poller.get_state()
+
+    # THEN: the poll_json should contain inserted dictionary
+    assert poll_json['results'][test_key] == test_dict
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_poller_manager_remove_sub_item(mocked_run_thread, MockWebSocketWorker, poller, settings):
+    """
+    Test if WebSocketPollerManager's remove_sub_item removes item from WebSocketPoll
+    """
+    # GIVEN: A test sub key, a test dictionary and mocked program state
+    test_key = 'test'
+    test_dict = {
+        'test1': 2,
+        'test2': 'A test',
+        'test3': [4]
+    }
+    mocked_service_manager = MagicMock()
+    mocked_service_manager.service_id = 21
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.selected_row = 5
+    mocked_live_controller.service_item = MagicMock()
+    mocked_live_controller.service_item.unique_identifier = '23-34-45'
+    mocked_live_controller.blank_screen.isChecked.return_value = True
+    mocked_live_controller.theme_screen.isChecked.return_value = False
+    mocked_live_controller.desktop_screen.isChecked.return_value = False
+    Registry().register('live_controller', mocked_live_controller)
+    Registry().register('service_manager', mocked_service_manager)
+    Registry().set_flag('no_web_server', False)
+
+    # WHEN: I start the server, add a item using add_sub_item, remove same item
+    # using and remove_sub_item, and poll the state
+    WebSocketServer()
+    Registry().get('poller_manager').add_sub_item('test', test_dict)
+    Registry().get('poller_manager').remove_sub_item('test')
+    poll_json = poller.get_state()
+
+    # THEN: the poll_json should not contain inserted dictionary
+    assert test_key not in poll_json['results']
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_poller_manager_cannot_replace_native_item(mocked_run_thread, MockWebSocketWorker, poller, settings):
+    """
+    Test if WebSocketPollerManager's add_sub_item doesn't replace native poll items
+    """
+    # GIVEN: A test sub key, a test dictionary and mocked program state
+    test_key = 'item'
+    test_dict = {
+        'test1': 2,
+        'test2': 'A test',
+        'test3': [4]
+    }
+    mocked_service_manager = MagicMock()
+    mocked_service_manager.service_id = 21
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.selected_row = 5
+    mocked_live_controller.service_item = MagicMock()
+    mocked_live_controller.service_item.unique_identifier = '23-34-45'
+    mocked_live_controller.blank_screen.isChecked.return_value = True
+    mocked_live_controller.theme_screen.isChecked.return_value = False
+    mocked_live_controller.desktop_screen.isChecked.return_value = False
+    Registry().register('live_controller', mocked_live_controller)
+    Registry().register('service_manager', mocked_service_manager)
+    Registry().set_flag('no_web_server', False)
+
+    # WHEN: I start the server, add a item using add_sub_item
+    WebSocketServer()
+    Registry().get('poller_manager').add_sub_item(test_key, test_dict)
+    poll_json = poller.get_state()
+
+    # THEN: the poll_json should not contain inserted dictionary
+    assert poll_json['results'][test_key] != test_dict

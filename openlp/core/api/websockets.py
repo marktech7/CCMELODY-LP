@@ -25,6 +25,9 @@ changes from within OpenLP. It uses JSON to communicate with the remotes.
 import asyncio
 import json
 import logging
+
+from PyQt5 import QtCore
+from openlp.core.api.websocketspollermanager import WebSocketPollerManager
 import time
 
 from websockets import serve
@@ -36,69 +39,13 @@ from openlp.core.api.websocketspoll import WebSocketPoller
 
 USERS = set()
 poller = WebSocketPoller()
+poller_manager = WebSocketPollerManager(poller)
 
 
 log = logging.getLogger(__name__)
 # Disable DEBUG logs for the websockets lib
 ws_logger = logging.getLogger('websockets')
 ws_logger.setLevel(logging.ERROR)
-
-
-async def handle_websocket(websocket, path):
-    """
-    Handle web socket requests and return the state information
-    Check every 0.2 seconds to get the latest position and send if it changed.
-
-    :param websocket: request from client
-    :param path: determines the endpoints supported - Not needed
-    """
-    log.debug('WebSocket handle_websocket connection')
-    await register(websocket)
-    reply = poller.get_state()
-    if reply:
-        json_reply = json.dumps(reply).encode()
-        await websocket.send(json_reply)
-    while True:
-        try:
-            await notify_users()
-            await asyncio.wait_for(websocket.recv(), 0.2)
-        except asyncio.TimeoutError:
-            pass
-        except Exception:
-            await unregister(websocket)
-            break
-
-
-async def register(websocket):
-    """
-    Register Clients
-    :param websocket: The client details
-    :return:
-    """
-    log.debug('WebSocket handler register')
-    USERS.add(websocket)
-
-
-async def unregister(websocket):
-    """
-    Unregister Clients
-    :param websocket: The client details
-    :return:
-    """
-    log.debug('WebSocket handler unregister')
-    USERS.remove(websocket)
-
-
-async def notify_users():
-    """
-    Dispatch state to all registered users if we have any changes
-    :return:
-    """
-    if USERS:  # asyncio.wait doesn't accept an empty list
-        reply = poller.get_state_if_changed()
-        if reply:
-            json_reply = json.dumps(reply).encode()
-            await asyncio.wait([user.send(json_reply) for user in USERS])
 
 
 class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
@@ -118,9 +65,10 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         # Create the websocker server
         loop = 1
         self.server = None
+        self.changed_event = asyncio.Event()
         while not self.server:
             try:
-                self.server = serve(handle_websocket, address, port)
+                self.server = serve(self.handle_websocket, address, port)
                 log.debug('WebSocket server started on {addr}:{port}'.format(addr=address, port=port))
             except Exception:
                 log.exception('Failed to start WebSocket server')
@@ -129,6 +77,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
             if not self.server and loop > 3:
                 log.error('Unable to start WebSocket server {addr}:{port}, giving up'.format(addr=address, port=port))
         if self.server:
+            Registry().register_function('bootstrap_completion', self.try_poller_hook_signals)
             # If the websocket server exists, start listening
             try:
                 self.event_loop.run_until_complete(self.server)
@@ -145,8 +94,68 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         self.event_loop.call_soon_threadsafe(self.event_loop.stop)
 
+    def try_poller_hook_signals(self):
+        try:
+            poller.hook_signals()
+        except Exception:
+            log.error('Failed to hook poller signals!')
 
-class WebSocketServer(RegistryProperties, LogMixin):
+    async def handle_websocket(self, websocket, path):
+        """
+        Handle web socket requests and return the state information
+        Check every 0.2 seconds to get the latest position and send if it changed.
+
+        :param websocket: request from client
+        :param path: determines the endpoints supported - Not needed
+        """
+        log.debug('WebSocket handle_websocket connection')
+        await self.register(websocket)
+        reply = poller.get_state()
+        if reply:
+            json_reply = json.dumps(reply).encode()
+            await websocket.send(json_reply)
+        while True:
+            try:
+                print('wee')
+                await self.changed_event.wait()
+                print('send')
+                await self.notify_users()
+                print('sent')
+            except Exception:
+                await self.unregister(websocket)
+
+    async def register(self, websocket):
+        """
+        Register Clients
+        :param websocket: The client details
+        :return:
+        """
+        log.debug('WebSocket handler register')
+        USERS.add(websocket)
+
+    async def unregister(self, websocket):
+        """
+        Unregister Clients
+        :param websocket: The client details
+        :return:
+        """
+        log.debug('WebSocket handler unregister')
+        USERS.remove(websocket)
+
+
+    async def notify_users(self):
+        """
+        Dispatch state to all registered users if we have any changes
+        :return:
+        """
+        if USERS:  # asyncio.wait doesn't accept an empty list
+            reply = poller.get_state_if_changed()
+            if reply:
+                json_reply = json.dumps(reply).encode()
+                await asyncio.wait([user.send(json_reply) for user in USERS])
+
+
+class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
     """
     Wrapper round a server instance
     """
@@ -155,6 +164,14 @@ class WebSocketServer(RegistryProperties, LogMixin):
         Initialise and start the WebSockets server
         """
         super(WebSocketServer, self).__init__()
+        Registry().register('poller_manager', poller_manager)
         if not Registry().get_flag('no_web_server'):
-            worker = WebSocketWorker()
-            run_thread(worker, 'websocket_server')
+            self.worker = WebSocketWorker()
+            run_thread(self.worker, 'websocket_server')
+            poller.changed.connect(self.handle_poller_signal)
+
+    @QtCore.pyqtSlot()
+    def handle_poller_signal(self):
+        print('set')
+        self.worker.changed_event.set()
+

@@ -338,6 +338,7 @@ class ApiTab(SettingsTab):
         """
         Save the configuration and update the server configuration if necessary
         """
+        api_configuration_changed = False
         if self.settings.value('api/ip address') != self.address_edit.text():
             QtWidgets.QMessageBox.information(self, translate('OpenLP.RemoteTab', 'Restart Required'),
                                               translate('OpenLP.RemoteTab',
@@ -345,11 +346,19 @@ class ApiTab(SettingsTab):
                                                         'has been restarted.'))
             self.settings_form.register_post_process('remotes_config_updated')
         self.settings.setValue('api/ip address', self.address_edit.text())
+        if self.settings.value('api/twelve hour') != self.twelve_hour:
+            api_configuration_changed = True
         self.settings.setValue('api/twelve hour', self.twelve_hour)
+        if self.settings.value('api/thumbnails') != self.thumbnails:
+            api_configuration_changed = True
         self.settings.setValue('api/thumbnails', self.thumbnails)
+        if self.settings.value('api/authentication enabled') != self.user_login_group_box.isChecked():
+            api_configuration_changed = True
         self.settings.setValue('api/authentication enabled', self.user_login_group_box.isChecked())
         self.settings.setValue('api/user id', self.user_id.text())
         self.settings.setValue('api/password', self.password.text())
+        if api_configuration_changed:
+            self.settings_form.register_post_process('api_configuration_changed')
 
     def address_revert_button_clicked(self):
         self.address_edit.setText(self.settings.get_default_value('api/ip address'))

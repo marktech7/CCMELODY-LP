@@ -316,6 +316,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
     servicemanager_next_item = QtCore.pyqtSignal()
     servicemanager_previous_item = QtCore.pyqtSignal()
     servicemanager_new_file = QtCore.pyqtSignal()
+    servicemanager_changed = QtCore.pyqtSignal()
     theme_update_service = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
@@ -377,6 +378,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         else:
             service_file = translate('OpenLP.ServiceManager', 'Untitled Service')
         self.main_window.set_service_modified(modified, service_file)
+        self.servicemanager_changed.emit()
 
     def is_modified(self):
         """
@@ -515,6 +517,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.settings.setValue('servicemanager/last file', None)
         self.plugin_manager.new_service_created()
         self.live_controller.slide_count = 0
+        self.servicemanager_changed.emit()
 
     def create_basic_service(self):
         """
@@ -1255,6 +1258,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             self.service_items.remove(self.service_items[item])
             self.repaint_service_list(item - 1, -1)
             self.set_modified()
+            self.servicemanager_changed.emit()
 
     def repaint_service_list(self, service_item, service_item_child):
         """
@@ -1547,6 +1551,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             child = row
         self.application.set_busy_cursor()
         if self.service_items[item]['service_item'].is_valid:
+            self.servicemanager_changed.emit()
             self.live_controller.add_service_manager_item(self.service_items[item]['service_item'], child)
             if self.settings.value('core/auto preview'):
                 item += 1
