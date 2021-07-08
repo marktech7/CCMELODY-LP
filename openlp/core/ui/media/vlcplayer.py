@@ -187,7 +187,6 @@ class VlcPlayer(MediaPlayer):
             audio_cd_tracks = controller.vlc_media.subitems()
             if not audio_cd_tracks or audio_cd_tracks.count() < 1:
                 return False
-            controller.vlc_media_player.stop()
             controller.vlc_media = audio_cd_tracks.item_at_index(int(controller.media_info.title_track))
             # VLC's start and stop time options work on seconds
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
