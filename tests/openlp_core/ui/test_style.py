@@ -24,18 +24,18 @@ Package to test the :mod:`~openlp.core.ui.style` module.
 from unittest import skipIf
 from unittest.mock import MagicMock, patch, call
 
-from openlp.core.ui.style import MEDIA_MANAGER_STYLE, Themes, WIN_REPAIR_STYLESHEET, get_application_stylesheet, \
-    get_library_stylesheet, has_theme, is_theme_dark, set_default_darkmode
+from openlp.core.ui.style import MEDIA_MANAGER_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, get_application_stylesheet, \
+    get_library_stylesheet, has_ui_theme, is_ui_theme_dark, set_default_darkmode
 import openlp.core.ui.style
 
 
 @skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', True)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', True)
 @patch('openlp.core.ui.style.qdarkstyle')
 def test_get_application_stylesheet_qdarkstyle(mocked_qdarkstyle, mock_settings):
-    """Test that the qdarkstyle stylesheet is returned when available and enabled"""
-    # GIVEN: Theme is QDarkTheme
-    mock_settings.value.return_value = Themes.QDarkTheme
+    """Test that the QDarkStyle stylesheet is returned when available and enabled"""
+    # GIVEN: Theme is QDarkStyle
+    mock_settings.value.return_value = UiThemes.QDarkStyle
     mocked_qdarkstyle.load_stylesheet_pyqt5.return_value = 'dark_style'
 
     # WHEN: get_application_stylesheet() is called
@@ -46,44 +46,44 @@ def test_get_application_stylesheet_qdarkstyle(mocked_qdarkstyle, mock_settings)
 
 
 @skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', True)
-def test_has_theme_qdarkstyle_true_when_available(mock_settings):
-    """Test that the QDarkStyle theme exists when qdarkstyle is available """
-    # GIVEN: Theme is QDarkTheme
-    mock_settings.value.return_value = Themes.QDarkTheme
+@patch('openlp.core.ui.style.HAS_DARK_THEME', True)
+def test_has_ui_theme_qdarkstyle_true_when_available(mock_settings):
+    """Test that the QDarkStyle UI theme exists when qdarkstyle is available """
+    # GIVEN: Theme is QDarkStyle
+    mock_settings.value.return_value = UiThemes.QDarkStyle
 
-    # WHEN: has_theme() is called
-    result = has_theme(Themes.QDarkTheme)
+    # WHEN: has_ui_theme() is called
+    result = has_ui_theme(UiThemes.QDarkStyle)
 
     # THEN: the result should be true
     assert result is True
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_has_theme_qdarkstyle_false_when_unavailable(mock_settings):
-    """Test that the QDarkStyle theme not exists when qdarkstyle is not available """
-    # GIVEN: Theme is QDarkTheme
-    mock_settings.value.return_value = Themes.QDarkTheme
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_has_ui_theme_qdarkstyle_false_when_unavailable(mock_settings):
+    """Test that the QDarkStyle UI theme not exists when qdarkstyle is not available """
+    # GIVEN: Theme is QDarkStyle
+    mock_settings.value.return_value = UiThemes.QDarkStyle
 
-    # WHEN: has_theme() is called
-    result = has_theme(Themes.QDarkTheme)
+    # WHEN: has_ui_theme() is called
+    result = has_ui_theme(UiThemes.QDarkStyle)
 
     # THEN: the result should be false
     assert result is False
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_win')
 @patch('openlp.core.app.QtWidgets.QApplication.palette')
 def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is_win, mock_settings):
     """Test that the alternate rows stylesheet is returned when enabled in settings"""
     def settings_values(key):
         if key == 'advanced/ui_theme_name':
-            return Themes.DefaultLight
+            return UiThemes.DefaultLight
         else:
             return False
 
-    # GIVEN: We're not on Windows and theme is not QDarkStyle
+    # GIVEN: We're not on Windows and UI theme is not QDarkStyle
     mocked_is_win.return_value = False
     mock_settings.value = MagicMock(side_effect=settings_values)
     mocked_palette.return_value.color.return_value.name.return_value = 'color'
@@ -96,13 +96,13 @@ def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is
     assert result == 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: color;}\n', result
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_win')
 def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
     """Test that the Windows repair stylesheet is returned when on Windows"""
     def settings_values(key):
         if key == 'advanced/ui_theme_name':
-            return Themes.DefaultLight
+            return UiThemes.DefaultLight
         else:
             return True
 
@@ -118,13 +118,13 @@ def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
     assert result == WIN_REPAIR_STYLESHEET
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_win')
 def test_get_application_stylesheet_not_win_repair(mocked_is_win, mock_settings):
     """Test that the Windows repair stylesheet is not returned when not in Windows"""
     def settings_values(key):
         if key == 'advanced/ui_theme_name':
-            return Themes.DefaultLight
+            return UiThemes.DefaultLight
         else:
             return True
 
@@ -140,11 +140,11 @@ def test_get_application_stylesheet_not_win_repair(mocked_is_win, mock_settings)
     assert result != WIN_REPAIR_STYLESHEET
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_get_library_stylesheet_automatic_theme(mock_settings):
-    """Test that the media manager stylesheet is returned for Automatic theme"""
-    # GIVEN: Theme is Automatic
-    mock_settings.value.return_value = Themes.Automatic
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_get_library_stylesheet_automatic_ui_theme(mock_settings):
+    """Test that the media manager stylesheet is returned for Automatic UI theme"""
+    # GIVEN: UI theme is Automatic
+    mock_settings.value.return_value = UiThemes.Automatic
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()
@@ -153,11 +153,11 @@ def test_get_library_stylesheet_automatic_theme(mock_settings):
     assert result == MEDIA_MANAGER_STYLE
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_get_library_stylesheet_defaultlight_theme(mock_settings):
-    """Test that the media manager stylesheet is returned for Default Light theme"""
-    # GIVEN: Theme is DefaultLight
-    mock_settings.value.return_value = Themes.DefaultLight
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_get_library_stylesheet_defaultlight_ui_theme(mock_settings):
+    """Test that the media manager stylesheet is returned for Default Light UI theme"""
+    # GIVEN: UI theme is DefaultLight
+    mock_settings.value.return_value = UiThemes.DefaultLight
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()
@@ -166,11 +166,11 @@ def test_get_library_stylesheet_defaultlight_theme(mock_settings):
     assert result == MEDIA_MANAGER_STYLE
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_get_library_stylesheet_defaultdark_theme(mock_settings):
-    """Test that the media manager stylesheet is returned for Default Dark theme"""
-    # GIVEN: Theme is DefaultDark
-    mock_settings.value.return_value = Themes.DefaultDark
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_get_library_stylesheet_defaultdark_ui_theme(mock_settings):
+    """Test that the media manager stylesheet is returned for Default Dark UI theme"""
+    # GIVEN: UI theme is DefaultDark
+    mock_settings.value.return_value = UiThemes.DefaultDark
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()
@@ -180,11 +180,11 @@ def test_get_library_stylesheet_defaultdark_theme(mock_settings):
 
 
 @skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', True)
-def test_get_library_stylesheet_qdarktheme_theme(mock_settings):
-    """Test that the media manager stylesheet is not returned for QDarkTheme theme"""
-    # GIVEN: Theme is QDarkTheme
-    mock_settings.value.return_value = Themes.QDarkTheme
+@patch('openlp.core.ui.style.HAS_DARK_THEME', True)
+def test_get_library_stylesheet_qdarktheme_ui_theme(mock_settings):
+    """Test that the media manager stylesheet is not returned for QDarkStyle UI theme"""
+    # GIVEN: UI theme is QDarkStyle
+    mock_settings.value.return_value = UiThemes.QDarkStyle
 
     # WHEN: get_library_stylesheet() is called
     result = get_library_stylesheet()
@@ -193,83 +193,81 @@ def test_get_library_stylesheet_qdarktheme_theme(mock_settings):
     assert result == ''
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_system_darkmode')
-def test_is_theme_automatic_dark_when_system_dark(mocked_is_system_darkmode,
-                                                  mock_settings):
-    """Test that the Automatic Theme is Dark on System Dark Theme"""
-    # GIVEN: Theme is Automatic and System Theme is Dark
-    mock_settings.value.return_value = Themes.Automatic
+def test_is_ui_theme_automatic_dark_when_system_dark(mocked_is_system_darkmode, mock_settings):
+    """Test that the Automatic UI Theme is Dark on System Dark Theme"""
+    # GIVEN: UI theme is Automatic and System Theme is Dark
+    mock_settings.value.return_value = UiThemes.Automatic
     mocked_is_system_darkmode.return_value = True
 
-    # WHEN: is_theme_dark() is called
-    result = is_theme_dark()
+    # WHEN: is_ui_theme_dark() is called
+    result = is_ui_theme_dark()
 
     # THEN: the result should be true
     assert result is True
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_system_darkmode')
-def test_is_theme_automatic_light_when_system_light(mocked_is_system_darkmode,
-                                                    mock_settings):
-    """Test that the Automatic Theme is not Dark on System Light Theme"""
-    # GIVEN: Theme is Automatic and System Theme is Light
+def test_is_ui_theme_dark_automatic_light_when_system_light(mocked_is_system_darkmode, mock_settings):
+    """Test that the Automatic UI Theme is not Dark on System Light Theme"""
+    # GIVEN: UI theme is Automatic and System Theme is Light
     mocked_is_system_darkmode.return_value = False
-    mock_settings.value.return_value = Themes.Automatic
+    mock_settings.value.return_value = UiThemes.Automatic
 
-    # WHEN: is_theme_dark() is called
-    result = is_theme_dark()
-
-    # THEN: the result should be false
-    assert result is False
-
-
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_is_theme_lightdefault_not_dark(mock_settings):
-    """Test that the DefaultLight Theme is not Dark"""
-    # GIVEN: Theme is DefaultDark
-    mock_settings.value.return_value = Themes.DefaultLight
-
-    # WHEN: is_theme_dark() is called
-    result = is_theme_dark()
+    # WHEN: is_ui_theme_dark() is called
+    result = is_ui_theme_dark()
 
     # THEN: the result should be false
     assert result is False
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
-def test_is_theme_darkdefault_dark(mock_settings):
-    """Test that the DefaultDark Theme is Dark"""
-    # GIVEN: Theme is DefaultDark
-    mock_settings.value.return_value = Themes.DefaultDark
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_is_ui_theme_dark_defaultlight_not_dark(mock_settings):
+    """Test that the DefaultLight UI Theme is not Dark"""
+    # GIVEN: UI theme is DefaultLight
+    mock_settings.value.return_value = UiThemes.DefaultLight
 
-    # WHEN: is_theme_dark() is called
-    result = is_theme_dark()
+    # WHEN: is_ui_theme_dark() is called
+    result = is_ui_theme_dark()
+
+    # THEN: the result should be false
+    assert result is False
+
+
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
+def test_is_ui_theme_dark_defaultdark_dark(mock_settings):
+    """Test that the DefaultDark UI Theme is Dark"""
+    # GIVEN: UI theme is DefaultDark
+    mock_settings.value.return_value = UiThemes.DefaultDark
+
+    # WHEN: is_ui_theme_dark() is called
+    result = is_ui_theme_dark()
 
     # THEN: the result should be true
     assert result is True
 
 
 @skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', True)
-def test_is_theme_qdarkstyle_dark(mock_settings):
-    """Test that the QDarkTheme Theme is Dark"""
-    # GIVEN: Theme is DefaultDark
-    mock_settings.value.return_value = Themes.QDarkTheme
+@patch('openlp.core.ui.style.HAS_DARK_THEME', True)
+def test_is_ui_theme_dark_qdarkstyle_dark(mock_settings):
+    """Test that the QDarkStyle UI Theme is Dark"""
+    # GIVEN: UI theme is DefaultDark
+    mock_settings.value.return_value = UiThemes.QDarkStyle
 
-    # WHEN: is_theme_dark() is called
-    result = is_theme_dark()
+    # WHEN: is_ui_theme_dark() is called
+    result = is_ui_theme_dark()
 
     # THEN: the result should be true
     assert result is True
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 def test_set_default_darkmode_defaultdark_theme_sets_palette(mock_settings):
-    """Test that the set_default_darkmode sets App Palette for DefaultDark theme"""
-    # GIVEN: Theme is DefaultDark
-    mock_settings.value.return_value = Themes.DefaultDark
+    """Test that the set_default_darkmode sets App Palette for DefaultDark UI theme"""
+    # GIVEN: UI theme is DefaultDark
+    mock_settings.value.return_value = UiThemes.DefaultDark
     mock_app = MagicMock()
 
     # WHEN: set_default_darkmode() is called
@@ -279,13 +277,12 @@ def test_set_default_darkmode_defaultdark_theme_sets_palette(mock_settings):
     mock_app.setPalette.assert_called_once()
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_system_darkmode')
-def test_set_default_darkmode_automatic_theme_win_dark_sets_palette(mocked_is_system_darkmode,
-                                                                    mock_settings):
-    """Test that the set_default_darkmode sets App Palette for Automatic theme on System with Dark Theme"""
-    # GIVEN: Theme is automatic on System with Dark Theme
-    mock_settings.value.return_value = Themes.Automatic
+def test_set_default_darkmode_automatic_theme_system_dark_sets_palette(mocked_is_system_darkmode, mock_settings):
+    """Test that the set_default_darkmode sets App Palette for Automatic UI theme on System with Dark Theme"""
+    # GIVEN: UI theme is Automatic on System with Dark Theme
+    mock_settings.value.return_value = UiThemes.Automatic
     mocked_is_system_darkmode.return_value = True
     mock_app = MagicMock()
 
@@ -296,13 +293,12 @@ def test_set_default_darkmode_automatic_theme_win_dark_sets_palette(mocked_is_sy
     mock_app.setPalette.assert_called_once()
 
 
-@patch('openlp.core.ui.style.HAS_QDARKSTYLE', False)
+@patch('openlp.core.ui.style.HAS_DARK_THEME', False)
 @patch('openlp.core.ui.style.is_system_darkmode')
-def test_set_default_darkmode_automatic_theme_win_light_not_sets_palette(mocked_is_system_darkmode,
-                                                                         mock_settings):
-    """Test that the set_default_darkmode doesnt't set App Palette for Automatic theme on System Light Theme"""
-    # GIVEN: Theme is automatic with System Light Theme
-    mock_settings.value.return_value = Themes.Automatic
+def test_set_default_darkmode_automatic_theme_system_light_not_sets_palette(mocked_is_system_darkmode, mock_settings):
+    """Test that the set_default_darkmode doesnt't set App Palette for Automatic UI theme on System Light Theme"""
+    # GIVEN: UI theme is Automatic with System Light Theme
+    mock_settings.value.return_value = UiThemes.Automatic
     mocked_is_system_darkmode.return_value = False
     mock_app = MagicMock()
 

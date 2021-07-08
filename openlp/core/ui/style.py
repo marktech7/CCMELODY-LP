@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.ui.style` contains style functions.
+The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
 import darkdetect
 from enum import Enum
@@ -30,9 +30,9 @@ from openlp.core.common.registry import Registry
 
 try:
     import qdarkstyle
-    HAS_QDARKSTYLE = True
+    HAS_DARK_THEME = True
 except ImportError:
-    HAS_QDARKSTYLE = False
+    HAS_DARK_THEME = False
 
 WIN_REPAIR_STYLESHEET = """
 QMainWindow::separator
@@ -77,49 +77,49 @@ QProgressBar{
 """
 
 
-class Themes(Enum):
+class UiThemes(Enum):
     """
     An enumeration for themes.
     """
     Automatic = 'automatic'
     DefaultLight = 'light:default'
     DefaultDark = 'dark:default'
-    QDarkTheme = 'dark:qdarktheme'
+    QDarkStyle = 'dark:qdarkstyle'
 
 
-def is_theme_dark():
-    theme_name = Registry().get('settings').value('advanced/ui_theme_name')
+def is_ui_theme_dark():
+    ui_theme_name = Registry().get('settings').value('advanced/ui_theme_name')
 
-    if init_theme_if_needed(theme_name):
-        theme_name = Themes.Automatic
+    if init_ui_theme_if_needed(ui_theme_name):
+        ui_theme_name = UiThemes.Automatic
 
-    if theme_name == Themes.Automatic:
+    if ui_theme_name == UiThemes.Automatic:
         return is_system_darkmode()
     else:
-        return theme_name.value.startswith('dark:')
+        return ui_theme_name.value.startswith('dark:')
 
 
-def is_theme(theme: Themes):
-    theme_name = Registry().get('settings').value('advanced/ui_theme_name')
+def is_ui_theme(ui_theme: UiThemes):
+    ui_theme_name = Registry().get('settings').value('advanced/ui_theme_name')
 
-    if init_theme_if_needed(theme_name):
-        theme_name = Themes.Automatic
+    if init_ui_theme_if_needed(ui_theme_name):
+        ui_theme_name = UiThemes.Automatic
 
-    return theme_name == theme
+    return ui_theme_name == ui_theme
 
 
-def init_theme_if_needed(theme_name):
-    will_init = not isinstance(theme_name, Themes)
+def init_ui_theme_if_needed(ui_theme_name):
+    will_init = not isinstance(ui_theme_name, UiThemes)
 
-    if will_init:
-        Registry().get('settings').setValue('advanced/ui_theme_name', Themes.Automatic)
+    #if will_init:
+    #    Registry().get('settings').setValue('advanced/ui_theme_name', UiThemes.Automatic)
 
     return will_init
 
 
-def has_theme(theme: Themes):
-    if theme == Themes.QDarkTheme:
-        return HAS_QDARKSTYLE
+def has_ui_theme(ui_theme: UiThemes):
+    if ui_theme == UiThemes.QDarkStyle:
+        return HAS_DARK_THEME
     return True
 
 
@@ -146,7 +146,7 @@ def set_default_darkmode(app):
         * Allowed palette to be set on any operating system;
         * Split Windows Dark Mode detection to another function.
     """
-    if is_theme(Themes.DefaultDark) or (is_theme(Themes.Automatic) and is_theme_dark()):
+    if is_ui_theme(UiThemes.DefaultDark) or (is_ui_theme(UiThemes.Automatic) and is_ui_theme_dark()):
         app.setStyle('Fusion')
         dark_palette = QtGui.QPalette()
         dark_color = QtGui.QColor(45, 45, 45)
@@ -182,7 +182,7 @@ def get_application_stylesheet():
     :return str: The correct stylesheet as a string
     """
     stylesheet = ''
-    if is_theme(Themes.QDarkTheme):
+    if is_ui_theme(UiThemes.QDarkStyle):
         stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
@@ -201,7 +201,7 @@ def get_library_stylesheet():
 
     :return str: The correct stylesheet as a string
     """
-    if not is_theme(Themes.QDarkTheme):
+    if not is_ui_theme(UiThemes.QDarkStyle):
         return MEDIA_MANAGER_STYLE
     else:
         return ''

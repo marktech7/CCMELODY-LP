@@ -29,7 +29,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.settingstab import SettingsTab
-from openlp.core.ui.style import Themes, has_theme
+from openlp.core.ui.style import UiThemes, has_ui_theme
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 
@@ -163,16 +163,16 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
-        self.theme_style_label = QtWidgets.QLabel(self.ui_group_box)
-        self.theme_style_label.setObjectName('theme_style_label')
-        self.theme_style_combo_box = QtWidgets.QComboBox(self.ui_group_box)
-        if has_theme(Themes.QDarkTheme):
-            self.theme_style_combo_box.addItems(['', '', '', ''])
+        self.ui_theme_style_label = QtWidgets.QLabel(self.ui_group_box)
+        self.ui_theme_style_label.setObjectName('theme_style_label')
+        self.ui_theme_style_combo_box = QtWidgets.QComboBox(self.ui_group_box)
+        if has_ui_theme(UiThemes.QDarkStyle):
+            self.ui_theme_style_combo_box.addItems(['', '', '', ''])
         else:
-            self.theme_style_combo_box.addItems(['', '', ''])
-        self.theme_style_combo_box.setObjectName('theme_style_combo_box')
-        self.ui_layout.addRow(self.theme_style_label)
-        self.ui_layout.addRow(self.theme_style_combo_box)
+            self.ui_theme_style_combo_box.addItems(['', '', ''])
+        self.ui_theme_style_combo_box.setObjectName('theme_style_combo_box')
+        self.ui_layout.addRow(self.ui_theme_style_label)
+        self.ui_layout.addRow(self.ui_theme_style_combo_box)
         self.right_layout.addWidget(self.ui_group_box)
         # Push everything in both columns to the top
         self.left_layout.addStretch()
@@ -247,17 +247,13 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
-        self.theme_style_label.setText(translate('OpenLP.AdvancedTab',
-                                                 'Interface Theme (needs restart if changed):'))
-        self.theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab',
-                                                            'Automatic'))
-        self.theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
-                                                            'Default Light'))
-        self.theme_style_combo_box.setItemText(2, translate('OpenLP.AdvancedTab',
-                                                            'Default Dark'))
-        if has_theme(Themes.QDarkTheme):
-            self.theme_style_combo_box.setItemText(3, translate('OpenLP.AdvancedTab',
-                                                                'QDarkTheme'))
+        self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab',
+                                                    'Interface Theme (needs restart if changed):'))
+        self.ui_theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Automatic'))
+        self.ui_theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Default Light'))
+        self.ui_theme_style_combo_box.setItemText(2, translate('OpenLP.AdvancedTab', 'Default Dark'))
+        if has_ui_theme(UiThemes.QDarkStyle):
+            self.ui_theme_style_combo_box.setItemText(3, translate('OpenLP.AdvancedTab', 'QDarkStyle'))
         self.hide_mouse_check_box.setText(translate('OpenLP.AdvancedTab', 'Hide mouse cursor when over display window'))
 
     def load(self):
@@ -294,40 +290,42 @@ class GeneralTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
-        self.theme_style_combo_box.setCurrentIndex(self.get_theme_index(self.settings.value('advanced/ui_theme_name')))
-
+        ui_theme_index = GeneralTab.get_ui_theme_index(self.settings.value('advanced/ui_theme_name'))
+        self.ui_theme_style_combo_box.setCurrentIndex(ui_theme_index)
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
 
-    def get_theme_index(self, theme):
-        if theme == Themes.Automatic:
+    @staticmethod
+    def get_ui_theme_index(ui_theme):
+        if ui_theme == UiThemes.Automatic:
             return 0
-        if theme == Themes.DefaultLight:
+        if ui_theme == UiThemes.DefaultLight:
             return 1
-        if theme == Themes.DefaultDark:
+        if ui_theme == UiThemes.DefaultDark:
             return 2
-        if theme == Themes.QDarkTheme:
-            if not has_theme(Themes.QDarkTheme):
+        if ui_theme == UiThemes.QDarkStyle:
+            if not has_ui_theme(UiThemes.QDarkStyle):
                 return 2
             return 3
 
         return 0
 
-    def get_theme_name(self, index):
-        if not has_theme(Themes.QDarkTheme) and index == 3:
+    @staticmethod
+    def get_ui_theme_name(index):
+        if not has_ui_theme(UiThemes.QDarkStyle) and index == 3:
             index = 2
 
         if index == 0:
-            return Themes.Automatic
+            return UiThemes.Automatic
         if index == 1:
-            return Themes.DefaultLight
+            return UiThemes.DefaultLight
         if index == 2:
-            return Themes.DefaultDark
+            return UiThemes.DefaultDark
         if index == 3:
-            return Themes.QDarkTheme
+            return UiThemes.QDarkStyle
 
-        return Themes.Automatic
+        return UiThemes.Automatic
 
     def save(self):
         """
@@ -356,7 +354,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
-        theme_name = self.get_theme_name(self.theme_style_combo_box.currentIndex())
+        theme_name = GeneralTab.get_ui_theme_name(self.ui_theme_style_combo_box.currentIndex())
         self.settings.setValue('advanced/ui_theme_name', theme_name)
         self.post_set_up()
 
