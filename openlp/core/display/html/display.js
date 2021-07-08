@@ -156,7 +156,7 @@ function _buildLinearGradient(startDir, endDir, startColor, endColor) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildRadialGradient(width, startColor, endColor) {
-  return "-webkit-gradient(radial, " + width + " 50%, 100, " + width + " 50%, " + width + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+  return "radial-gradient(" + startColor + ", " + endColor + ")";
 }
 
 /**
