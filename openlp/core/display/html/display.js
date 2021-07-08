@@ -137,14 +137,13 @@ function $(selector) {
 /**
  * Build linear gradient CSS
  * @private
- * @param {string} startDir - Starting direction
- * @param {string} endDir - Ending direction
+ * @param {string} direction - The direction or angle of the gradient e.g. to bottom or 90deg
  * @param {string} startColor - The starting color
  * @param {string} endColor - The ending color
  * @returns {string} A string of the gradient CSS
  */
-function _buildLinearGradient(startDir, endDir, startColor, endColor) {
-  return "-webkit-gradient(linear, " + startDir + ", " + endDir + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+function _buildLinearGradient(direction, startColor, endColor) {
+  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ")";
 }
 
 /**
@@ -971,22 +970,22 @@ var Display = {
       case BackgroundType.Gradient:
         switch (Display._theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundContent = _buildLinearGradient("left top", "left bottom",
+            backgroundContent = _buildLinearGradient("to right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundContent = _buildLinearGradient("left top", "right top",
+            backgroundContent = _buildLinearGradient("to bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundContent = _buildLinearGradient("left top", "right bottom",
+            backgroundContent = _buildLinearGradient("to right bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundContent = _buildLinearGradient("left bottom", "right top",
+            backgroundContent = _buildLinearGradient("to top right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
