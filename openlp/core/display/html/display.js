@@ -143,7 +143,7 @@ function $(selector) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildLinearGradient(direction, startColor, endColor) {
-  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ")";
+  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -155,7 +155,7 @@ function _buildLinearGradient(direction, startColor, endColor) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildRadialGradient(width, startColor, endColor) {
-  return "radial-gradient(" + startColor + ", " + endColor + ")";
+  return "radial-gradient(" + startColor + ", " + endColor + ") fixed";
 }
 
 /**
