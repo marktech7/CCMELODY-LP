@@ -54,7 +54,7 @@ class MediaFilesForm(QtWidgets.QDialog, Ui_MediaFilesDialog):
         for file_path in file_paths:
             # temporary fix for issue 582
             if not isinstance(file_path, Path):
-                    file_path = str_to_path(file_path)
+                file_path = str_to_path(file_path)
             # end of temporary fix
             item = QtWidgets.QListWidgetItem(file_path.name)
             item.setData(QtCore.Qt.UserRole, file_path)

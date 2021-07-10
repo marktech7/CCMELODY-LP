@@ -410,7 +410,6 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     mocked_subitems.item_at_index.return_value = mocked_vlc_media
     mocked_vlc_media.subitems.return_value = mocked_subitems
 
-
     vlc_player = VlcPlayer(None)
 
     # WHEN: An audio CD is loaded into VLC
