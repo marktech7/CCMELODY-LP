@@ -101,7 +101,8 @@ class VlcPlayer(MediaPlayer):
         """
         Set up the media player
 
-        :param controller: The display where the media is.
+        :param controller: The controller where the media is
+        :param display: The display where the media is.
         :return:
         """
         vlc = get_vlc()
