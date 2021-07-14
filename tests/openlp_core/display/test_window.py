@@ -255,6 +255,7 @@ def test_after_loaded(display_window_env, mock_settings):
     display_window.run_javascript.assert_called_once_with('Display.init({'
                                                           'isDisplay: true,'
                                                           'doItemTransitions: true,'
+                                                          'slideNumbersInFooter: true,'
                                                           'hideMouse: true'
                                                           '});')
     display_window.set_scale.assert_called_once_with(2)
@@ -282,6 +283,7 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
     display_window.run_javascript.assert_called_once_with('Display.init({'
                                                           'isDisplay: false,'
                                                           'doItemTransitions: true,'
+                                                          'slideNumbersInFooter: true,'
                                                           'hideMouse: false'
                                                           '});')
 
