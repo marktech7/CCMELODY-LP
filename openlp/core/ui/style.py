@@ -90,9 +90,6 @@ class UiThemes(Enum):
 def is_ui_theme_dark():
     ui_theme_name = Registry().get('settings').value('advanced/ui_theme_name')
 
-    if init_ui_theme_if_needed(ui_theme_name):
-        ui_theme_name = UiThemes.Automatic
-
     if ui_theme_name == UiThemes.Automatic:
         return is_system_darkmode()
     else:
@@ -101,20 +98,11 @@ def is_ui_theme_dark():
 
 def is_ui_theme(ui_theme: UiThemes):
     ui_theme_name = Registry().get('settings').value('advanced/ui_theme_name')
-
-    if init_ui_theme_if_needed(ui_theme_name):
-        ui_theme_name = UiThemes.Automatic
-
     return ui_theme_name == ui_theme
 
 
 def init_ui_theme_if_needed(ui_theme_name):
-    will_init = not isinstance(ui_theme_name, UiThemes)
-
-    #if will_init:
-    #    Registry().get('settings').setValue('advanced/ui_theme_name', UiThemes.Automatic)
-
-    return will_init
+    return not isinstance(ui_theme_name, UiThemes)
 
 
 def has_ui_theme(ui_theme: UiThemes):

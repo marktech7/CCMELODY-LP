@@ -41,7 +41,7 @@ from openlp.core.common.path import files_to_paths, str_to_path
 
 log = logging.getLogger(__name__)
 
-__version__ = 2
+__version__ = 3
 
 
 class ProxyMode(IntEnum):
@@ -114,7 +114,7 @@ def upgrade_dark_theme_to_ui_theme(value):
     """
     print(value)
     if value is True:
-        return UiThemes.DefaultDark
+        return UiThemes.QDarkStyle
     return UiThemes.Automatic
 
 
@@ -186,7 +186,7 @@ class Settings(QtCore.QSettings):
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
         'advanced/search as type': True,
-        'advanced/ui_theme_name': "automatic",
+        'advanced/ui_theme_name': UiThemes.Automatic,
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',
@@ -448,7 +448,10 @@ class Settings(QtCore.QSettings):
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
         ('core/audio repeat list', '', []),
-        ('core/save prompt', '', []),
+        ('core/save prompt', '', [])
+    ]
+    # Settings upgrades for 3.0 in-development theme setting name change
+    __setting_upgrade_3__ = [
         ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])])
     ]
 
