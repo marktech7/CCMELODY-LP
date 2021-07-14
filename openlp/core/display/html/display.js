@@ -283,7 +283,7 @@ var Display = {
     let doItemTransitions = options.doItemTransitions || false;
     let hideMouse = options.hideMouse || false;
     if (options.slideNumbersInFooter) {
-      Display._revealConfig.slideNumber = "c/t"
+      Display._revealConfig.slideNumber = "c/t";
     }
 
     // Now continue to initialisation
