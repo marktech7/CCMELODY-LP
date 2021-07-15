@@ -108,10 +108,9 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         :param path: determines the endpoints supported - Not needed
         """
         log.debug('WebSocket handle_websocket connection')
-        await self.register(websocket)
+        queue = asyncio.Queue()
+        await self.register(websocket, queue)
         try:
-            queue = asyncio.Queue()
-            self.queues.add(queue)
             reply = poller.get_state()
             if reply:
                 json_reply = json.dumps(reply).encode()
@@ -121,19 +120,20 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
                 json_reply = json.dumps(reply).encode()
                 await websocket.send(json_reply)
         finally:
-            await self.unregister(websocket)
-            self.queues.remove(queue)
+            await self.unregister(websocket, queue)
 
-    async def register(self, websocket):
+    async def register(self, websocket, queue):
         """
         Register Clients
         :param websocket: The client details
+        :param queue: The Command Queue
         :return:
         """
         log.debug('WebSocket handler register')
         USERS.add(websocket)
+        self.queues.add(queue)
 
-    async def unregister(self, websocket):
+    async def unregister(self, websocket, queue):
         """
         Unregister Clients
         :param websocket: The client details
@@ -141,12 +141,13 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         log.debug('WebSocket handler unregister')
         USERS.remove(websocket)
+        self.queues.remove(queue)
 
     def add_state_to_queues(self, state):
         """
         Inserts the state in each connection message queue
         """
-        for queue in self.queues:
+        for queue in self.queues.copy():
             self.event_loop.call_soon_threadsafe(queue.put_nowait, state)
 
 
@@ -168,6 +169,6 @@ class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
     def handle_poller_signal(self):
         self.worker.add_state_to_queues(poller.get_state())
 
-    def stop(self):
+    def close(self):
         poller.poller_changed.disconnect(self.handle_poller_signal)
         self.worker.stop()

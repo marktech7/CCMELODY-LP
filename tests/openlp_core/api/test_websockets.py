@@ -163,7 +163,7 @@ def test_poller_event_attach(poller, settings):
     live_controller.slidecontroller_changed.connect = slidecontroller_changed_connect
     poller._live_controller = live_controller
 
-    # WHEN: The hook_signals function is called
+    # WHEN: the hook_signals function is called
     poller.hook_signals()
 
     # THEN: service_manager and live_controller changed signals should be connected
@@ -186,3 +186,17 @@ def test_poller_on_change_emit(poller, settings):
 
     # THEN: poller_changed signal should be emitted once
     poller_changed_emit.assert_called_once()
+
+
+def test_poller_get_state_is_never_none(poller):
+    """
+    Test the get_state call never returns None
+    """
+    # GIVEN: A mocked poller create_state
+    poller.create_state = MagicMock(return_value = {"key1": "2"})
+
+    # WHEN: poller.get_state is called
+    state = poller.get_state()
+
+    # THEN: state is not None
+    assert state is not None, 'get_state() return should not be None'

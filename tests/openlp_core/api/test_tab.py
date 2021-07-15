@@ -21,6 +21,7 @@
 """
 This module contains tests for the lib submodule of the Remotes plugin.
 """
+from unittest.mock import MagicMock, patch
 import pytest
 import re
 
@@ -110,9 +111,9 @@ def test_address_revert_button_clicked(api_tab, settings):
 
 def test_save(api_tab, settings):
     """
-    Test the IP revert function works
+    Test the save function works
     """
-    # GIVEN: The ip address text set to a non default value
+    # GIVEN: Some example remote data
     api_tab.address_edit.setText(settings.value('api/ip address'))
     api_tab.twelve_hour = True
     api_tab.thumbnails = True
@@ -121,9 +122,24 @@ def test_save(api_tab, settings):
     api_tab.password.setText('user password thing')
     # WHEN: save is called
     api_tab.save()
-    # THEN: The text should have been changed to the default value
+    # THEN: The text should have been changed to provided values
     assert settings.value('api/twelve hour') is True
     assert settings.value('api/thumbnails') is True
     assert settings.value('api/authentication enabled') is True
     assert settings.value('api/user id') == 'user id thing'
     assert settings.value('api/password') == 'user password thing'
+
+
+@patch('openlp.core.api.tab.QtWidgets.QMessageBox')
+def test_different_ip_save_shows_restart_message(mock_qmessagebox, api_tab, settings):
+    """
+    Test if the "change will only take effect on restart" is presented after IP change.
+    """
+    # GIVEN: The ip address text set to a non default value and a mocked QMessageBox
+    mock_qmessagebox.information = MagicMock()
+    api_tab.address_edit.setText('not the default')
+    api_tab._settings_form = MagicMock()
+    # WHEN: save is called
+    api_tab.save()
+    # THEN: The messagebox should be shown
+    mock_qmessagebox.information.assert_called_once()
