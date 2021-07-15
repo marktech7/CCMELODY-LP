@@ -18,10 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-from time import sleep
-
 from PyQt5 import QtCore
-from openlp.core.common.registry import Registry
 from openlp.core.common.mixins import RegistryProperties
 
 
@@ -30,26 +27,22 @@ class WebSocketPoller(QtCore.QObject, RegistryProperties):
     Accessed by web sockets to get status type information from the application
     """
 
-    changed = QtCore.pyqtSignal()
+    poller_changed = QtCore.pyqtSignal()
 
     def __init__(self):
         """
         Constructor for the web sockets poll builder class.
         """
         super(WebSocketPoller, self).__init__()
-        self._previous = None
-        self._sent_previous = False
+        self._state = None
 
     def get_state(self):
-        poller_manager = Registry().get('poller_manager')
+        if self._state is None:
+            self._state = self.create_state()
+        return self._state
 
-        if poller_manager is not None:
-            extra_items = poller_manager.sub_items
-        else:
-            extra_items = {}
-
+    def create_state(self):
         return {'results': {
-            **extra_items,
             'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
             'slide': self.live_controller.selected_row or 0,
@@ -63,7 +56,7 @@ class WebSocketPoller(QtCore.QObject, RegistryProperties):
             'chordNotation': self.settings.value('songs/chord notation')
         }}
 
-    def hook_signals(self, **args):
+    def hook_signals(self):
         self.live_controller.slidecontroller_changed.connect(self.on_signal_received)
         self.service_manager.servicemanager_changed.connect(self.on_signal_received)
         # Registry().register_function('api_configuration_changed', self.on_signal_received)
@@ -72,24 +65,5 @@ class WebSocketPoller(QtCore.QObject, RegistryProperties):
     @QtCore.pyqtSlot(str)
     @QtCore.pyqtSlot()
     def on_signal_received(self):
-        self._previous = self.get_state()
-        self._sent_previous = False
-        self.changed.emit()
-
-    def get_state_if_changed(self):
-        """
-        Poll OpenLP to determine current state if it has changed.
-
-        This must only be used by web sockets or else we could miss a state change.
-
-        :return: The current application state or None if unchanged since last call
-        """
-        if not self._sent_previous:
-            if self._previous is None:
-                self._previous = self.get_state()
-                self._sent_previous = False
-
-            self._sent_previous = True
-            return self._previous
-        else:
-            return None
+        self._state = self.create_state()
+        self.poller_changed.emit()

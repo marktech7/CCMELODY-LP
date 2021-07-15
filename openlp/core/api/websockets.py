@@ -27,7 +27,6 @@ import json
 import logging
 
 from PyQt5 import QtCore
-from openlp.core.api.websocketspollermanager import WebSocketPollerManager
 import time
 
 from websockets import serve
@@ -39,7 +38,6 @@ from openlp.core.api.websocketspoll import WebSocketPoller
 
 USERS = set()
 poller = WebSocketPoller()
-poller_manager = WebSocketPollerManager(poller)
 
 
 log = logging.getLogger(__name__)
@@ -65,7 +63,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         # Create the websocker server
         loop = 1
         self.server = None
-        self.changed_event = asyncio.Event()
+        self.queues = set()
         while not self.server:
             try:
                 self.server = serve(self.handle_websocket, address, port)
@@ -77,6 +75,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
             if not self.server and loop > 3:
                 log.error('Unable to start WebSocket server {addr}:{port}, giving up'.format(addr=address, port=port))
         if self.server:
+            # Only hooking poller signals after all UI is available
             Registry().register_function('bootstrap_completion', self.try_poller_hook_signals)
             # If the websocket server exists, start listening
             try:
@@ -110,19 +109,20 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         log.debug('WebSocket handle_websocket connection')
         await self.register(websocket)
-        reply = poller.get_state()
-        if reply:
-            json_reply = json.dumps(reply).encode()
-            await websocket.send(json_reply)
-        while True:
-            try:
-                print('wee')
-                await self.changed_event.wait()
-                print('send')
-                await self.notify_users()
-                print('sent')
-            except Exception:
-                await self.unregister(websocket)
+        try:
+            queue = asyncio.Queue()
+            self.queues.add(queue)
+            reply = poller.get_state()
+            if reply:
+                json_reply = json.dumps(reply).encode()
+                await websocket.send(json_reply)
+            while True:
+                reply = await queue.get()
+                json_reply = json.dumps(reply).encode()
+                await websocket.send(json_reply)
+        finally:
+            await self.unregister(websocket)
+            self.queues.remove(queue)
 
     async def register(self, websocket):
         """
@@ -142,17 +142,12 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         log.debug('WebSocket handler unregister')
         USERS.remove(websocket)
 
-
-    async def notify_users(self):
+    def add_state_to_queues(self, state):
         """
-        Dispatch state to all registered users if we have any changes
-        :return:
+        Inserts the state in each connection message queue
         """
-        if USERS:  # asyncio.wait doesn't accept an empty list
-            reply = poller.get_state_if_changed()
-            if reply:
-                json_reply = json.dumps(reply).encode()
-                await asyncio.wait([user.send(json_reply) for user in USERS])
+        for queue in self.queues:
+            self.event_loop.call_soon_threadsafe(queue.put_nowait, state)
 
 
 class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
@@ -164,14 +159,15 @@ class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
         Initialise and start the WebSockets server
         """
         super(WebSocketServer, self).__init__()
-        Registry().register('poller_manager', poller_manager)
         if not Registry().get_flag('no_web_server'):
             self.worker = WebSocketWorker()
             run_thread(self.worker, 'websocket_server')
-            poller.changed.connect(self.handle_poller_signal)
+            poller.poller_changed.connect(self.handle_poller_signal)
 
     @QtCore.pyqtSlot()
     def handle_poller_signal(self):
-        print('set')
-        self.worker.changed_event.set()
+        self.worker.add_state_to_queues(poller.get_state())
 
+    def stop(self):
+        poller.poller_changed.disconnect(self.handle_poller_signal)
+        self.worker.stop()
