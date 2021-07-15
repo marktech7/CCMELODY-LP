@@ -75,8 +75,6 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
             if not self.server and loop > 3:
                 log.error('Unable to start WebSocket server {addr}:{port}, giving up'.format(addr=address, port=port))
         if self.server:
-            # Only hooking poller signals after all UI is available
-            Registry().register_function('bootstrap_completion', self.try_poller_hook_signals)
             # If the websocket server exists, start listening
             try:
                 self.event_loop.run_until_complete(self.server)
@@ -91,18 +89,15 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         """
         Stop the websocket server
         """
-        self.event_loop.call_soon_threadsafe(self.event_loop.stop)
-
-    def try_poller_hook_signals(self):
         try:
-            poller.hook_signals()
-        except Exception:
-            log.error('Failed to hook poller signals!')
+            self.event_loop.call_soon_threadsafe(self.event_loop.stop)
+        except BaseException:
+            pass
 
     async def handle_websocket(self, websocket, path):
         """
         Handle web socket requests and return the state information
-        Check every 0.2 seconds to get the latest position and send if it changed.
+        Waits for information to come over queue
 
         :param websocket: request from client
         :param path: determines the endpoints supported - Not needed
@@ -116,7 +111,12 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
                 json_reply = json.dumps(reply).encode()
                 await websocket.send(json_reply)
             while True:
-                reply = await queue.get()
+                try:
+                    reply = await asyncio.wait_for(queue.get(), 60)
+                except asyncio.TimeoutError:
+                    # Took 1 minute without any UI event, closing if connection is closed, else continue waiting
+                    if not websocket.open:
+                        raise Exception('Disconnected')
                 json_reply = json.dumps(reply).encode()
                 await websocket.send(json_reply)
         finally:
@@ -146,6 +146,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
     def add_state_to_queues(self, state):
         """
         Inserts the state in each connection message queue
+        :param state: OpenLP State
         """
         for queue in self.queues.copy():
             self.event_loop.call_soon_threadsafe(queue.put_nowait, state)
@@ -157,18 +158,39 @@ class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
     """
     def __init__(self):
         """
-        Initialise and start the WebSockets server
+        Initialise the WebSockets server
         """
         super(WebSocketServer, self).__init__()
-        if not Registry().get_flag('no_web_server'):
+        self.worker = None
+
+    def start(self):
+        """
+        Starts the WebSockets server
+        """
+        if self.worker is None and not Registry().get_flag('no_web_server'):
             self.worker = WebSocketWorker()
             run_thread(self.worker, 'websocket_server')
             poller.poller_changed.connect(self.handle_poller_signal)
+            # Only hooking poller signals after all UI is available
+            Registry().register_function('bootstrap_completion', self.try_poller_hook_signals)
 
     @QtCore.pyqtSlot()
     def handle_poller_signal(self):
-        self.worker.add_state_to_queues(poller.get_state())
+        if self.worker is not None:
+            self.worker.add_state_to_queues(poller.get_state())
+
+    def try_poller_hook_signals(self):
+        try:
+            poller.hook_signals()
+        except Exception:
+            log.error('Failed to hook poller signals!')
 
     def close(self):
-        poller.poller_changed.disconnect(self.handle_poller_signal)
-        self.worker.stop()
+        """
+        Closes the WebSocket server and detach associated signals
+        """
+        try:
+            poller.poller_changed.disconnect(self.handle_poller_signal)
+            self.worker.stop()
+        finally:
+            self.worker = None

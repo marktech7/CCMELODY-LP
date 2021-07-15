@@ -47,10 +47,12 @@ def test_serverstart(mocked_run_thread, MockWebSocketWorker, registry):
     """
     Test the starting of the WebSockets Server with the disabled flag set off
     """
-    # GIVEN: A new httpserver
-    # WHEN: I start the server
+    # GIVEN: A new WebSocketServer
     Registry().set_flag('no_web_server', False)
-    WebSocketServer()
+    server = WebSocketServer()
+
+    # WHEN: I start the server
+    server.start()
 
     # THEN: the api environment should have been created
     assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
@@ -63,10 +65,12 @@ def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, regist
     """
     Test the starting of the WebSockets Server with the disabled flag set on
     """
-    # GIVEN: A new httpserver and the server is not required
+    # GIVEN: A new WebSocketServer and the server is not required
     Registry().set_flag('no_web_server', True)
+    server = WebSocketServer()
+
     # WHEN: I start the server
-    WebSocketServer()
+    server.start()
 
     # THEN: the api environment should have not been created
     assert mocked_run_thread.call_count == 0, 'The qthread should not have been called'
@@ -200,3 +204,44 @@ def test_poller_get_state_is_never_none(poller):
 
     # THEN: state is not None
     assert state is not None, 'get_state() return should not be None'
+
+
+@patch('openlp.core.api.websockets.poller')
+@patch('openlp.core.api.websockets.run_thread')
+def test_websocket_server_connects_to_poller(mock_run_thread, mock_poller, settings):
+    """
+    Test if the websocket_server connects to WebSocketPoller
+    """
+    # GIVEN: A mocked poller signal and a server
+    Registry().set_flag('no_web_server', False)
+    mock_poller.poller_changed = MagicMock()
+    mock_poller.poller_changed.connect = MagicMock()
+    server = WebSocketServer()
+    server.handle_poller_signal = MagicMock()
+
+    # WHEN: WebSocketServer is started
+    server.start()
+
+    # THEN: poller_changed should be connected with WebSocketServer and correct handler
+    mock_poller.poller_changed.connect.assert_called_once_with(server.handle_poller_signal)
+
+
+@patch('openlp.core.api.websockets.poller')
+@patch('openlp.core.api.websockets.WebSocketWorker.add_state_to_queues')
+@patch('openlp.core.api.websockets.run_thread')
+def test_websocket_worker_register_connections(mock_run_thread, mock_add_state_to_queues, mock_poller, settings):
+    """
+    Test if the websocket_server can receive poller signals
+    """
+    # GIVEN: A mocked poller create_state, a mocked server and a mocked worker
+    mock_state = {"key1": "2"}
+    mock_poller.get_state.return_value = mock_state
+    Registry().set_flag('no_web_server', False)
+    server = WebSocketServer()
+    server.start()
+
+    # WHEN: server.handle_poller_signal is called
+    server.handle_poller_signal()
+
+    # THEN: WebSocketWorker state notify function should be called
+    mock_add_state_to_queues.assert_called_once_with(mock_state)
