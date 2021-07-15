@@ -193,7 +193,7 @@ def test_poller_get_state_is_never_none(poller):
     Test the get_state call never returns None
     """
     # GIVEN: A mocked poller create_state
-    poller.create_state = MagicMock(return_value = {"key1": "2"})
+    poller.create_state = MagicMock(return_value={"key1": "2"})
 
     # WHEN: poller.get_state is called
     state = poller.get_state()
