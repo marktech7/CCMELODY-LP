@@ -191,6 +191,7 @@ class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
         """
         try:
             poller.poller_changed.disconnect(self.handle_poller_signal)
+            poller.unhook_signals()
             self.worker.stop()
         finally:
             self.worker = None

@@ -60,6 +60,14 @@ class WebSocketPoller(QtCore.QObject, RegistryProperties):
         self.live_controller.slidecontroller_changed.connect(self.on_signal_received)
         self.service_manager.servicemanager_changed.connect(self.on_signal_received)
         # Registry().register_function('api_configuration_changed', self.on_signal_received)
+    
+    def unhook_signals(self):
+        try:
+            self.live_controller.slidecontroller_changed.disconnect(self.on_signal_received)
+            self.service_manager.servicemanager_changed.disconnect(self.on_signal_received)
+        except Exception:
+            pass
+
 
     @QtCore.pyqtSlot(list)
     @QtCore.pyqtSlot(str)
