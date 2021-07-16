@@ -37,15 +37,7 @@ class Poller(RegistryProperties):
         super(Poller, self).__init__()
 
     def poll(self):
-        poller_manager = Registry().get('poller_manager')
-
-        if poller_manager is not None:
-            extra_items = poller_manager.sub_items
-        else:
-            extra_items = {}
-
         return {'results': {
-            **extra_items,
             'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
             'slide': self.live_controller.selected_row or 0,
