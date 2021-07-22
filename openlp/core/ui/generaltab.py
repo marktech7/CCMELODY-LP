@@ -157,6 +157,9 @@ class GeneralTab(SettingsTab):
         self.autoscroll_combo_box.setObjectName('autoscroll_combo_box')
         self.ui_layout.addRow(self.autoscroll_label)
         self.ui_layout.addRow(self.autoscroll_combo_box)
+        self.slide_no_in_footer_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
+        self.slide_no_in_footer_checkbox.setObjectName('SlideNumbersInFooter_check_box')
+        self.ui_layout.addRow(self.slide_no_in_footer_checkbox)
         self.search_as_type_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.search_as_type_check_box.setObjectName('SearchAsType_check_box')
         self.ui_layout.addRow(self.search_as_type_check_box)
@@ -241,6 +244,7 @@ class GeneralTab(SettingsTab):
                                                             'Auto-scroll the next slide to bottom'))
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
+        self.slide_no_in_footer_checkbox.setText(translate('SongsPlugin.GeneralTab', 'Include slide number in footer'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
         if not is_win() and HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setText(translate('OpenLP.AdvancedTab', 'Use dark style (needs restart)'))
@@ -280,6 +284,7 @@ class GeneralTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
+        self.slide_no_in_footer_checkbox.setChecked(self.settings.value('advanced/slide numbers in footer'))
         if not is_win() and HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setChecked(self.settings.value('advanced/use_dark_style'))
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
@@ -310,6 +315,7 @@ class GeneralTab(SettingsTab):
         slide_max_height_value = self.slide_max_height_combo_box.itemData(slide_max_height_index)
         self.settings.setValue('advanced/slide max height', slide_max_height_value)
         self.settings.setValue('advanced/autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
+        self.settings.setValue('advanced/slide numbers in footer', self.slide_no_in_footer_checkbox.isChecked())
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)

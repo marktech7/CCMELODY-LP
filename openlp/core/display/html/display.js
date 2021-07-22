@@ -281,6 +281,10 @@ var Display = {
     let isDisplay = options.isDisplay || false;
     let doItemTransitions = options.doItemTransitions || false;
     let hideMouse = options.hideMouse || false;
+    if (options.slideNumbersInFooter) {
+      Display._revealConfig.slideNumber = "c/t";
+    }
+
     // Now continue to initialisation
     if (!isDisplay) {
       document.body.classList.add('checkerboard');
@@ -565,9 +569,7 @@ var Display = {
   * Display the next alert in the queue
   */
   showNextAlert: function () {
-    console.log("showNextAlert");
     if (Display._alerts.length > 0) {
-      console.log("Showing next alert");
       var alertObject = Display._alerts.shift();
       Display._alertState = AlertState.DisplayingFromQueue;
       Display.showAlert(alertObject.text, alertObject.settings);
