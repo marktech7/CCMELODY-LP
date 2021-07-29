@@ -240,7 +240,7 @@ function _createStyle(selector, rules) {
  * @returns Fixed Font Name
  */
 function _fixFontName(fontName) {
-  if (fontName == 'Sans Serif') {
+  if (!fontName || (fontName == 'Sans Serif')) {
     return 'sans-serif';
   }
 
