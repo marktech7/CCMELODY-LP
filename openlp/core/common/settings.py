@@ -109,13 +109,10 @@ def upgrade_dark_theme_to_ui_theme(value):
     """
     Upgrade the dark theme setting to use the new UiThemes setting.
 
-    :param bool value: The old use_dark_theme setting
+    :param bool value: The old use_dark_style setting
     :returns UiThemes: New UiThemes value
     """
-    print(value)
-    if value is True:
-        return UiThemes.QDarkStyle
-    return UiThemes.Automatic
+    return UiThemes.QDarkStyle if value else UiThemes.Automatic
 
 
 class Settings(QtCore.QSettings):

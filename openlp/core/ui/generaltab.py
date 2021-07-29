@@ -247,8 +247,7 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
-        self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab',
-                                                    'Interface Theme (needs restart if changed):'))
+        self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab', 'Interface Theme (needs restart):'))
         self.ui_theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Automatic'))
         self.ui_theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Default Light'))
         self.ui_theme_style_combo_box.setItemText(2, translate('OpenLP.AdvancedTab', 'Default Dark'))
@@ -298,6 +297,12 @@ class GeneralTab(SettingsTab):
 
     @staticmethod
     def get_ui_theme_index(ui_theme):
+        """
+        Converts :class:`~openlp.core.ui.dark.UiThemes` item to Interface Theme ComboBox
+
+        :param ui_theme UIThemes enum item
+        :return ComboBox index
+        """
         if ui_theme == UiThemes.Automatic:
             return 0
         if ui_theme == UiThemes.DefaultLight:
@@ -305,14 +310,18 @@ class GeneralTab(SettingsTab):
         if ui_theme == UiThemes.DefaultDark:
             return 2
         if ui_theme == UiThemes.QDarkStyle:
-            if not has_ui_theme(UiThemes.QDarkStyle):
-                return 2
-            return 3
+            return 3 if has_ui_theme(UiThemes.QDarkStyle) else 2
 
         return 0
 
     @staticmethod
     def get_ui_theme_name(index):
+        """
+        Converts "Interface Theme" ComboBox index to :class:`~openlp.core.ui.dark.UiThemes` item
+
+        :param index "Interface Theme" ComboBox current index
+        :return UiThemes enum item
+        """
         if not has_ui_theme(UiThemes.QDarkStyle) and index == 3:
             index = 2
 

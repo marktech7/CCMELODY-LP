@@ -21,11 +21,11 @@
 """
 The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
-import darkdetect
+from subprocess import Popen, CalledProcessError, PIPE, run as subprocess_run
 from enum import Enum
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_win
+from openlp.core.common import is_macosx, is_win
 from openlp.core.common.registry import Registry
 
 try:
@@ -119,17 +119,81 @@ def is_system_darkmode():
 
     if IS_SYSTEM_DARKMODE is None:
         try:
-            IS_SYSTEM_DARKMODE = darkdetect.isDark()
+            if is_win():
+                IS_SYSTEM_DARKMODE = is_windows_darkmode()
+            elif is_macosx():
+                IS_SYSTEM_DARKMODE = is_macosx_darkmode()
+            else:
+                IS_SYSTEM_DARKMODE = is_linux_darkmode()
         except Exception:
             IS_SYSTEM_DARKMODE = False
 
     return IS_SYSTEM_DARKMODE
 
 
+def is_windows_darkmode():
+    """
+    Detects if Windows is using dark mode system theme.
+
+    Source: https://github.com/olivierkes/manuskript/blob/731e017e9e0dd7e4062f1af419705c11b2825515/manuskript/main.py
+    (GPL3)
+
+    Changes:
+        * Allowed palette to be set on any operating system;
+        * Split Windows Dark Mode detection to another function.
+    """
+    theme_settings = QtCore.QSettings('HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes'
+                                      '\\Personalize',
+                                      QtCore.QSettings.NativeFormat)
+    return theme_settings.value('AppsUseLightTheme') == 0
+
+
+def is_macosx_darkmode():
+    """
+    Detects if Mac OS X is using dark mode system theme.
+
+    Source: https://stackoverflow.com/a/65357166 (CC BY-SA 4.0)
+
+    Changes:
+        * Using OpenLP formatting rules
+        * Handling exceptions
+    """
+    try:
+        command = 'defaults read -g AppleInterfaceStyle'
+        process = Popen(command, stdout=PIPE, stderr=PIPE, shell=True)
+        stdin = process.communicate()[0]
+        return bool(stdin)
+    except Exception:
+        return False
+
+
+def is_linux_darkmode():
+    """
+    Detects if Linux or BSD is using dark mode system theme.
+
+    Source: https://stackoverflow.com/a/65360260 (CC BY-SA 4.0)
+
+    Changes:
+        * Using OpenLP formatting rules
+        * Handling exceptions
+    """
+    try:
+        command = ['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme']
+        process = subprocess_run(command, capture_output=True)
+        current_theme = process.stdout.decode('utf-8').strip().strip("'")
+        return current_theme.endswith('-dark')
+    except (Exception, CalledProcessError):
+        return False
+
+
 def set_default_darkmode(app):
     """
     Setup darkmode on the application if enabled in the OpenLP Settings or using a dark mode system theme.
-    Source: https://github.com/worstje/manuskript/blob/develop/manuskript/main.py (GPL3)
+
+    Source:
+    https://github.com/olivierkes/manuskript/blob/731e017e9e0dd7e4062f1af419705c11b2825515/manuskript/main.py
+    (GPL3)
+
     Changes:
         * Allowed palette to be set on any operating system;
         * Split Windows Dark Mode detection to another function.
@@ -141,6 +205,7 @@ def set_default_darkmode(app):
         disabled_color = QtGui.QColor(127, 127, 127)
         dark_palette.setColor(QtGui.QPalette.Window, dark_color)
         dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, disabled_color)
         dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
         dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
         dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
