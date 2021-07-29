@@ -179,6 +179,7 @@ class Settings(QtCore.QSettings):
         'advanced/save current plugin': False,
         'advanced/slide limits': SlideLimits.End,
         'advanced/slide max height': -4,
+        'advanced/slide numbers in footer': False,
         'advanced/single click preview': False,
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,

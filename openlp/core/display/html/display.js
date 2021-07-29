@@ -137,14 +137,13 @@ function $(selector) {
 /**
  * Build linear gradient CSS
  * @private
- * @param {string} startDir - Starting direction
- * @param {string} endDir - Ending direction
+ * @param {string} direction - The direction or angle of the gradient e.g. to bottom or 90deg
  * @param {string} startColor - The starting color
  * @param {string} endColor - The ending color
  * @returns {string} A string of the gradient CSS
  */
-function _buildLinearGradient(startDir, endDir, startColor, endColor) {
-  return "-webkit-gradient(linear, " + startDir + ", " + endDir + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+function _buildLinearGradient(direction, startColor, endColor) {
+  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -156,7 +155,7 @@ function _buildLinearGradient(startDir, endDir, startColor, endColor) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildRadialGradient(width, startColor, endColor) {
-  return "-webkit-gradient(radial, " + width + " 50%, 100, " + width + " 50%, " + width + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+  return "radial-gradient(" + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -282,6 +281,10 @@ var Display = {
     let isDisplay = options.isDisplay || false;
     let doItemTransitions = options.doItemTransitions || false;
     let hideMouse = options.hideMouse || false;
+    if (options.slideNumbersInFooter) {
+      Display._revealConfig.slideNumber = "c/t";
+    }
+
     // Now continue to initialisation
     if (!isDisplay) {
       document.body.classList.add('checkerboard');
@@ -566,9 +569,7 @@ var Display = {
   * Display the next alert in the queue
   */
   showNextAlert: function () {
-    console.log("showNextAlert");
     if (Display._alerts.length > 0) {
-      console.log("Showing next alert");
       var alertObject = Display._alerts.shift();
       Display._alertState = AlertState.DisplayingFromQueue;
       Display.showAlert(alertObject.text, alertObject.settings);
@@ -971,22 +972,22 @@ var Display = {
       case BackgroundType.Gradient:
         switch (Display._theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundContent = _buildLinearGradient("left top", "left bottom",
+            backgroundContent = _buildLinearGradient("to right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundContent = _buildLinearGradient("left top", "right top",
+            backgroundContent = _buildLinearGradient("to bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundContent = _buildLinearGradient("left top", "right bottom",
+            backgroundContent = _buildLinearGradient("to right bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundContent = _buildLinearGradient("left bottom", "right top",
+            backgroundContent = _buildLinearGradient("to top right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;

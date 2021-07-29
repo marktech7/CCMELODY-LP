@@ -24,6 +24,8 @@ Package to test the openlp.core.ui.generaltab package.
 from openlp.core.ui.generaltab import GeneralTab
 from openlp.core.ui.settingsform import SettingsForm
 
+from PyQt5 import QtCore, QtTest
+
 
 def test_creation(settings):
     """
@@ -54,3 +56,21 @@ def test_change_search_as_type(settings):
     assert 2 == len(settings_form.processes), 'Two post save processes should be created'
     assert "songs_config_updated" in settings_form.processes, 'The songs plugin should be called'
     assert "custom_config_updated" in settings_form.processes, 'The custom plugin should be called'
+
+
+def test_slide_numbers_in_footer(settings):
+    """
+    Test that when the slide number in footers option is changed then the settings are updated
+    """
+    # GIVEN: Settings, a settings form and a general tab
+    settings.setValue('advanced/slide numbers in footer', False)
+    settings_form = SettingsForm(None)
+    general_tab = GeneralTab(settings_form)
+    settings_form.insert_tab(general_tab, is_visible=True)
+
+    # WHEN: I click the checkbox and then save
+    QtTest.QTest.mouseClick(general_tab.slide_no_in_footer_checkbox, QtCore.Qt.LeftButton)
+    settings_form.accept()
+
+    # THEN: the settings should be updated
+    assert settings.value('advanced/slide numbers in footer') is True
