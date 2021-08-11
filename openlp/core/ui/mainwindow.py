@@ -1234,9 +1234,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.move(self.settings.value('user interface/main window position'))
         self.restoreGeometry(self.settings.value('user interface/main window geometry'))
         self.restoreState(self.settings.value('user interface/main window state'))
-        position = self.settings.value('user interface/main window position')
-        geometry = self.geometry()
-        if not self._window_position_is_valid(position, geometry):
+        if not self._window_position_is_valid(self.pos(), self.geometry()):
             self.move(0, 0)
         self.live_controller.splitter.restoreState(self.settings.value('user interface/live splitter geometry'))
         self.preview_controller.splitter.restoreState(self.settings.value('user interface/preview splitter geometry'))
@@ -1260,8 +1258,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         screens = ScreenList()
         for screen in screens:
             # window top bar y value must be between top and bottom of a screen
-            # plus the top left point must be left of the right of the screen
-            # and the top right point must be right of the left of the screen (allowing 50 pixels for control buttons)
+            # plus the left edge must be left of the right of the screen
+            # and the right edge must be right of the left of the screen (allowing 50 pixels for control buttons)
             if ((screen.geometry.y() <= position.y() <= screen.geometry.y() + screen.geometry.height()) and
                     (position.x() < screen.geometry.x() + screen.geometry.width()) and
                     (position.x() + geometry.width() > screen.geometry.x() + 50)):

@@ -174,7 +174,7 @@ def test_set_service_unmodified(main_window):
         'The main window\'s title should be set to "<the contents of UiStrings().OpenLP> - test.osz"'
 
 
-def test_load_settings_position_valid(main_window, settings, registry):
+def test_load_settings_position_valid(main_window, settings):
     """
     Test that the position of the main window is restored when it's valid
     """
@@ -205,7 +205,7 @@ def test_load_settings_position_valid(main_window, settings, registry):
     assert main_window.size() == QtCore.QSize(1000, 500)
 
 
-def test_load_settings_position_invalid(main_window, settings, registry):
+def test_load_settings_position_invalid(main_window, settings):
     """
     Test that the position of the main window is not restored when it's invalid
     """
