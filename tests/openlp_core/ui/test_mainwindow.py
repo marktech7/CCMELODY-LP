@@ -234,7 +234,7 @@ def test_load_settings_position_invalid(main_window, settings):
     main_window.load_settings()
 
     # THEN the main window's position should be (0, 0)
-    assert main_window.pos() == QtCore.QPoint(0, 0)
+    assert main_window.pos().x() == 0
 
 
 def test_mainwindow_configuration(main_window):
