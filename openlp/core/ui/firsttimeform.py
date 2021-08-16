@@ -101,7 +101,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         Create and set up the first time wizard.
         """
         super(FirstTimeForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                           QtCore.Qt.WindowCloseButtonHint)
+                                            QtCore.Qt.WindowCloseButtonHint)
         self.has_web_access = True
         self.web = ''
         self.is_index_downloaded = False
@@ -112,7 +112,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.themes_select_all_button.clicked.connect(self.themes_list_widget.selectAll)
         self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
         self.helpRequested.connect(self.provide_help)
-        
+
     def provide_help(self):
         """
         Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
