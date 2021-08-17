@@ -76,6 +76,14 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.main_area_page.shadow_size_changed.connect(self.calculate_lines)
         self.footer_area_page.font_name_changed.connect(self.update_theme)
         self.footer_area_page.font_size_changed.connect(self.update_theme)
+        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.helpRequested.connect(self.provide_help)
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/themes.html"))
 
     def set_defaults(self):
         """
