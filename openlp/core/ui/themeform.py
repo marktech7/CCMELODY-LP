@@ -53,7 +53,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         :param parent: The QWidget-derived parent of the wizard.
         """
         super(ThemeForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                           QtCore.Qt.WindowCloseButtonHint)
+                                        QtCore.Qt.WindowCloseButtonHint)
         self._setup()
 
     def _setup(self):

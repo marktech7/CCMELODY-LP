@@ -23,7 +23,7 @@ Package to test the openlp.core.ui.settingsform package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtTest
 
 from openlp.core.ui.settingsform import SettingsForm
 
@@ -167,3 +167,18 @@ def test_register_post_process(registry):
 
     # THEN: The fake function should be in the settings form's list
     assert fake_function in settings_form.processes
+
+
+@patch.object(SettingsForm, 'provide_help')
+def test_help(mocked_help, settings):
+    """
+    Test the help button
+    """
+    # GIVEN: An initialised Settings form and a patched help function
+    settings_form = SettingsForm(None)
+
+    # WHEN: The Help button is clicked
+    QtTest.QTest.mouseClick(settings_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
+
+    # THEN: The Help function should be called
+    mocked_help.assert_called_once()

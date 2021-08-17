@@ -87,6 +87,8 @@ def create_button_box(dialog, name, standard_buttons, custom_buttons=None):
         buttons |= QtWidgets.QDialogButtonBox.Cancel
     if 'close' in standard_buttons:
         buttons |= QtWidgets.QDialogButtonBox.Close
+    if 'help' in standard_buttons:
+        buttons |= QtWidgets.QDialogButtonBox.Help
     if 'defaults' in standard_buttons:
         buttons |= QtWidgets.QDialogButtonBox.RestoreDefaults
     button_box = QtWidgets.QDialogButtonBox(dialog)
@@ -99,6 +101,8 @@ def create_button_box(dialog, name, standard_buttons, custom_buttons=None):
             button_box.addButton(*button)
     button_box.accepted.connect(dialog.accept)
     button_box.rejected.connect(dialog.reject)
+    if 'help' in standard_buttons:
+        button_box.helpRequested.connect(dialog.provide_help)
     return button_box
 
 

@@ -23,7 +23,7 @@ The :mod:`settingsform` provides a user interface for the OpenLP settings
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from openlp.core.state import State
 from openlp.core.api.tab import ApiTab
@@ -210,3 +210,9 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         """
         if function not in self.processes:
             self.processes.append(function)
+
+    def provide_help(self):
+        """
+        Provide help within the form by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/configure.html"))
