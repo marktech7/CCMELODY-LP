@@ -25,7 +25,7 @@ import logging
 import urllib.error
 
 from lxml import etree
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtGui, QtCore
 
 try:
     from pysword import modules
@@ -773,3 +773,9 @@ class BibleImportForm(OpenLPWizard):
         # Don't delete the db if it wasen't created
         if hasattr(importer, 'file'):
             delete_database(self.plugin.settings_section, importer.file)
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/bibles.html"))

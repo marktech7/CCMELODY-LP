@@ -489,9 +489,8 @@ def test_help(mocked_help, settings):
     """
     Test the help button
     """
-    # GIVEN: An initialised First Time Wizard and a patched help function
+    # GIVEN: A First Time Wizard and a patched help function
     frw = FirstTimeForm(None)
-    frw.initialize(MagicMock())
 
     # WHEN: The Help button is clicked
     QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
