@@ -33,7 +33,7 @@ def test_help(mocked_help, settings):
     """
     Test the help button
     """
-    # GIVEN: An songusage detail form and a patched help function
+    # GIVEN: A songusage detail form and a patched help function
     main_window = QtWidgets.QMainWindow()
     detail_form = SongUsageDetailForm(MagicMock(), main_window)
 

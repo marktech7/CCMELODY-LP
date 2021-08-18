@@ -33,7 +33,7 @@ def test_help(mocked_help, settings):
     """
     Test the help button
     """
-    # GIVEN: An songusage delete form and a patched help function
+    # GIVEN: A songusage delete form and a patched help function
     main_window = QtWidgets.QMainWindow()
     delete_form = SongUsageDeleteForm(MagicMock(), main_window)
 

@@ -19,26 +19,25 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.plugins.songusage.forms.songusagedeleteform package.
+Package to test the openlp.plugins.alerts.forms.alertform package.
 """
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtWidgets, QtTest, QtCore
 
-from openlp.plugins.songusage.forms.songusagedeleteform import SongUsageDeleteForm
+from openlp.plugins.alerts.forms.alertform import AlertForm
 
 
-@patch.object(SongUsageDeleteForm, 'provide_help')
+@patch.object(AlertForm, 'provide_help')
 def test_help(mocked_help, settings):
     """
     Test the help button
     """
-    # GIVEN: An songusage delete form and a patched help function
-    main_window = QtWidgets.QMainWindow()
-    delete_form = SongUsageDeleteForm(MagicMock(), main_window)
+    # GIVEN: An alert form and a patched help function
+    alert_form = AlertForm(MagicMock())
 
     # WHEN: The Help button is clicked
-    QtTest.QTest.mouseClick(delete_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(alert_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()
