@@ -96,7 +96,7 @@ def test_help(mocked_help, settings):
     """
     Test the help button
     """
-    # GIVEN: A First Time Wizard and a patched help function
+    # GIVEN: A bible import wizard and a patched help function
     bible_import_form = BibleImportForm(None, MagicMock(), None)
 
     # WHEN: The Help button is clicked
