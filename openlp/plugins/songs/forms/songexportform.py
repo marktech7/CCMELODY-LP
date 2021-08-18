@@ -296,6 +296,7 @@ class SongExportForm(OpenLPWizard):
         """
         QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/export_songs.html"))
 
+
 def find_list_widget_items(list_widget, text=''):
     """
     Returns a list of *QListWidgetItem*s of the ``list_widget``. Note, that hidden items are included.

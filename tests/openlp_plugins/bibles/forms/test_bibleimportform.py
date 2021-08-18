@@ -90,17 +90,16 @@ class TestBibleImportForm(TestCase, TestMixin):
         # THEN: sword_tab_widget.setDisabled(True) should have been called
         self.form.sword_tab_widget.setDisabled.assert_called_with(True)
 
+    @patch.object(BibleImportForm, 'provide_help')
+    def test_help(self, mocked_help, settings):
+        """
+        Test the help button
+        """
+        # GIVEN: A bible import wizard and a patched help function
+        bible_import_form = BibleImportForm(None, MagicMock(), None)
 
-@patch.object(BibleImportForm, 'provide_help')
-def test_help(mocked_help, settings):
-    """
-    Test the help button
-    """
-    # GIVEN: A bible import wizard and a patched help function
-    bible_import_form = BibleImportForm(None, MagicMock(), None)
+        # WHEN: The Help button is clicked
+        QtTest.QTest.mouseClick(bible_import_form.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
 
-    # WHEN: The Help button is clicked
-    QtTest.QTest.mouseClick(bible_import_form.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
-
-    # THEN: The Help function should be called
-    mocked_help.assert_called_once()
+        # THEN: The Help function should be called
+        mocked_help.assert_called_once()

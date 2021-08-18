@@ -1104,4 +1104,5 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         Provide help within the form by opening the appropriate page of the openlp manual in the user's browser
         """
-        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/songs.html#creating-or-editing-a-song-slide"))
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/songs.html#creating-or-editing-a-song"
+                                                   "-slide"))
