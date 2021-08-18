@@ -24,7 +24,7 @@ OpenLyrics format.
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
@@ -290,6 +290,11 @@ class SongExportForm(OpenLPWizard):
             if not item.isHidden():
                 item.setCheckState(QtCore.Qt.Checked)
 
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/export_songs.html"))
 
 def find_list_widget_items(list_widget, text=''):
     """
