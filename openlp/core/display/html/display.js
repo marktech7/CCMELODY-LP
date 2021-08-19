@@ -235,6 +235,19 @@ function _createStyle(selector, rules) {
 }
 
 /**
+ * Fixes font name to match CSS names.
+ * @param {string} fontName Font Name
+ * @returns Fixed Font Name
+ */
+function _fixFontName(fontName) {
+  if (!fontName || (fontName == 'Sans Serif')) {
+    return 'sans-serif';
+  }
+
+  return "'" + fontName + "'";
+}
+
+/**
  * The Display object is what we use from OpenLP
  */
 var Display = {
@@ -468,7 +481,7 @@ var Display = {
     // create styles for the alerts from the settings
     _createStyle("#alert-background.settings", {
       backgroundColor: settings.backgroundColor,
-      fontFamily: "'" + settings.fontFace + "'",
+      fontFamily: _fixFontName(settings.fontFace),
       fontSize: settings.fontSize.toString() + "pt",
       color: settings.fontColor
     });
@@ -486,6 +499,8 @@ var Display = {
     /* Either scroll the alert, or make it disappear at the end of its time */
     if (settings.scroll) {
       Display._animationState = AnimationState.ScrollingText;
+      alertText.classList.add('scrolling');
+      alertText.classList.replace("hide", "show");
       var animationSettings = "alert-scrolling-text " + settings.timeout +
                               "s linear 0.6s " + settings.repeat + " normal";
       alertText.style.animation = animationSettings;

@@ -174,6 +174,69 @@ def test_set_service_unmodified(main_window):
         'The main window\'s title should be set to "<the contents of UiStrings().OpenLP> - test.osz"'
 
 
+def test_load_settings_position_valid(main_window, settings):
+    """
+    Test that the position of the main window is restored when it's valid
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    # set up a window position and geometry to use in the settings
+    main_window.move(QtCore.QPoint(10, 10))
+    main_window.resize(1000, 500)
+    # need to call show() to ensure the geometry works as expected
+    # unfortunately this seems to work on Windows only, not on linux
+    main_window.show()
+    main_window.hide()
+    # store the values in the settings
+    settings.setValue('user interface/main window position', main_window.pos())
+    settings.setValue('user interface/main window geometry', main_window.saveGeometry())
+    settings.setValue('user interface/main window state', main_window.saveState())
+    # change the position and size - then we can test if load_settings() sets it back correctly
+    main_window.move(QtCore.QPoint(20, 20))
+    main_window.resize(500, 300)
+
+    # WHEN the settings are loaded
+    main_window.load_settings()
+
+    # THEN the main window's position and geometry should be set to the saved setting
+    # on linux the tests works for the x position only
+    assert main_window.pos().x() == 10
+
+
+def test_load_settings_position_invalid(main_window, settings):
+    """
+    Test that the position of the main window is not restored when it's invalid, but rather set to (0, 0)
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    # set up a window position outside the parameters of the main_window fixture
+    # this can represent a monitor positioned above the primary display, but which has been unplugged
+    main_window.move(QtCore.QPoint(-100, -800))
+    main_window.resize(1000, 500)
+    # need to call show() to ensure the geometry works as expected (works on Windows, but not linux)
+    main_window.show()
+    main_window.hide()
+    # store the values in the settings
+    settings.setValue('user interface/main window position', main_window.pos())
+    settings.setValue('user interface/main window geometry', main_window.saveGeometry())
+    settings.setValue('user interface/main window state', main_window.saveState())
+    # change the position and size
+    main_window.move(QtCore.QPoint(20, 20))
+    main_window.resize(500, 300)
+
+    # WHEN the settings are loaded
+    main_window.load_settings()
+
+    # THEN the main window's position should be (0, 0)
+    assert main_window.pos().x() == 0
+
+
 def test_mainwindow_configuration(main_window):
     """
     Check that the Main Window initialises the Registry Correctly

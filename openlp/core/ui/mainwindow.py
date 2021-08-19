@@ -1234,12 +1234,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.move(self.settings.value('user interface/main window position'))
         self.restoreGeometry(self.settings.value('user interface/main window geometry'))
         self.restoreState(self.settings.value('user interface/main window state'))
+        if not self._window_position_is_valid(self.pos(), self.geometry()):
+            self.move(0, 0)
         self.live_controller.splitter.restoreState(self.settings.value('user interface/live splitter geometry'))
         self.preview_controller.splitter.restoreState(self.settings.value('user interface/preview splitter geometry'))
         self.control_splitter.restoreState(self.settings.value('user interface/main window splitter geometry'))
         # This needs to be called after restoreState(), because saveState() also saves the "Collapsible" property
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
+
+    def _window_position_is_valid(self, position, geometry):
+        """
+        Checks if the saved window position is still valid by checking if the bar at the top of the window
+        (which allows the user to move the window) appears on one of the screens.
+        This may not be the case if the user has unplugged the monitor where openlp was previously shown,
+        or if the displays have been reconfigured.
+
+        :param position: QtCore.QtPoint for the top left position of the window
+        :param geometry: QtCore.QRect for the geometry of the window
+
+        :return:    True or False
+        """
+        screens = ScreenList()
+        for screen in screens:
+            # window top bar y value must be between top and bottom of a screen
+            # plus the left edge must be left of the right of the screen
+            # and the right edge must be right of the left of the screen (allowing 50 pixels for control buttons)
+            if ((screen.geometry.y() <= position.y() <= screen.geometry.y() + screen.geometry.height()) and
+                    (position.x() < screen.geometry.x() + screen.geometry.width()) and
+                    (position.x() + geometry.width() > screen.geometry.x() + 50)):
+                return True
+        return False
 
     def save_settings(self):
         """

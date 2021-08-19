@@ -253,6 +253,39 @@ def test_screen_list_on_primary_changed(mocked_screens, settings, registry):
     assert screen_list.screens[1].is_primary is True
 
 
+def test_screen_list_get_screen_number():
+    """Test ScreenList().get_screen_number() method works with a given dictionary"""
+    # GIVEN: A screen list with an incomplete screen
+    screen_list = ScreenList()
+    screen_list.screens = [
+        Screen(1, QtCore.QRect(0, 0, 1024, 768), is_primary=True),
+        Screen(2, QtCore.QRect(0, 1024, 1024, 768), is_primary=False)
+    ]
+
+    # When searching for a screen number
+    result = screen_list.get_screen_number({"geometry": {"x": 0, "y": 1024, "width": 1024, "height": 768},
+                                            "is_primary": False})
+
+    # THEN: The result should be None
+    assert result == 2, 'ScreenList.get_screen_number() should return 2'
+
+
+def test_screen_list_get_screen_number_incomplete():
+    """Test that when the settings are incomplete (don't have a geometry) that the has_number method still works"""
+    # GIVEN: A screen list with an incomplete screen
+    screen_list = ScreenList()
+    screen_list.screens = [
+        Screen(1, QtCore.QRect(0, 0, 1024, 768), is_primary=True),
+        Screen(2, QtCore.QRect(0, 1024, 1024, 768), is_primary=False)
+    ]
+
+    # When searching for a screen number
+    result = screen_list.get_screen_number({"is_primary": True})
+
+    # THEN: The result should be None
+    assert result is None, 'ScreenList.get_screen_number() should return None'
+
+
 def test_screen_from_dict():
     """Test that all the correct attributes are set when creating a screen from a dictionary"""
     # GIVEN: A dictionary of values

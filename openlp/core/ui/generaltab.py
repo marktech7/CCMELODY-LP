@@ -33,7 +33,6 @@ from openlp.core.ui.style import UiThemes, has_ui_theme
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 
-
 log = logging.getLogger(__name__)
 
 
@@ -41,6 +40,7 @@ class GeneralTab(SettingsTab):
     """
     GeneralTab is the general settings tab in the settings dialog.
     """
+
     def __init__(self, parent):
         """
         Initialise the general settings tab
@@ -166,6 +166,9 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
+        self.new_service_message_check_box = QtWidgets.QCheckBox(self.ui_group_box)
+        self.new_service_message_check_box.setObjectName('new_service_message_check_box')
+        self.ui_layout.addRow(self.new_service_message_check_box)
         self.ui_theme_style_label = QtWidgets.QLabel(self.ui_group_box)
         self.ui_theme_style_label.setObjectName('theme_style_label')
         self.ui_theme_style_combo_box = QtWidgets.QComboBox(self.ui_group_box)
@@ -250,6 +253,8 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
         self.slide_no_in_footer_checkbox.setText(translate('SongsPlugin.GeneralTab', 'Include slide number in footer'))
+        self.new_service_message_check_box.setText(translate('OpenLP.AdvancedTab',
+                                                             'Alert if New clicked on blank service'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
         self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab', 'Interface Theme (needs restart):'))
         self.ui_theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Use system theme'))
@@ -296,6 +301,7 @@ class GeneralTab(SettingsTab):
         ui_theme_index = GeneralTab.get_ui_theme_index(self.settings.value('advanced/ui_theme_name'))
         self.ui_theme_style_combo_box.setCurrentIndex(ui_theme_index)
         self.slide_no_in_footer_checkbox.setChecked(self.settings.value('advanced/slide numbers in footer'))
+        self.new_service_message_check_box.setChecked(self.settings.value('advanced/new service message'))
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
@@ -367,6 +373,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
         self.settings.setValue('advanced/slide numbers in footer', self.slide_no_in_footer_checkbox.isChecked())
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
+        self.settings.setValue('advanced/new service message', self.new_service_message_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
         theme_name = GeneralTab.get_ui_theme_name(self.ui_theme_style_combo_box.currentIndex())

@@ -340,8 +340,8 @@ class ScreenList(metaclass=Singleton):
         :param screen_dict: The dict describing the screen to match.
         """
         for screen in self.screens:
-            if screen.to_dict()['geometry'] == screen_dict['geometry'] \
-                    and screen.is_primary == screen_dict['is_primary']:
+            if screen.to_dict().get('geometry') == screen_dict.get('geometry') \
+                    and screen.is_primary == screen_dict.get('is_primary'):
                 return screen.number
         return None
 

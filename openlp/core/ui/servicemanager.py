@@ -442,6 +442,18 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             elif result == QtWidgets.QMessageBox.Save:
                 if not self.decide_save_method():
                     return False
+        if not self.service_items and self.settings.value('advanced/new service message'):
+            do_not_show_again = QtWidgets.QCheckBox(translate('OpenLP.Ui', 'Do not show this message again'), None)
+            message_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information,
+                                                translate('OpenLP.Ui', 'Create a new service.'),
+                                                translate('OpenLP.Ui', 'You already have a blank new service.\n'
+                                                                       'Add some items to it then press Save'),
+                                                QtWidgets.QMessageBox.Ok,
+                                                self)
+            message_box.setCheckBox(do_not_show_again)
+            message_box.exec()
+            if message_box.checkBox().isChecked():
+                self.settings.setValue('advanced/new service message', False)
         self.new_file()
 
     def on_load_service_clicked(self, checked):

@@ -325,6 +325,48 @@ describe("Display.showAlert", function () {
     });
   });
 
+  it("should change fontFace to 'sans-serif' if no font face is provided", function () {
+    spyOn(window, "_createStyle");
+    Display.showAlert("Test Display.showAlert - fontFace fix", {
+      "location": 1,
+      "fontFace": "",
+      "fontSize": 40,
+      "fontColor": "#ffffff",
+      "backgroundColor": "#660000",
+      "timeout": 5,
+      "repeat": 1,
+      "scroll": true
+    });
+
+    expect(_createStyle).toHaveBeenCalledWith("#alert-background.settings", {
+      backgroundColor: settings["backgroundColor"],
+      fontFamily: "sans-serif",
+      fontSize: settings["fontSize"] + 'pt',
+      color: settings["fontColor"]
+    });
+  });
+
+  it("should change fontFace to 'sans-serif' if 'Sans Serif' is provided", function () {
+    spyOn(window, "_createStyle");
+    Display.showAlert("Test Display.showAlert - fontFace fix", {
+      "location": 1,
+      "fontFace": "Sans Serif",
+      "fontSize": 40,
+      "fontColor": "#ffffff",
+      "backgroundColor": "#660000",
+      "timeout": 5,
+      "repeat": 1,
+      "scroll": true
+    });
+
+    expect(_createStyle).toHaveBeenCalledWith("#alert-background.settings", {
+      backgroundColor: settings["backgroundColor"],
+      fontFamily: "sans-serif",
+      fontSize: settings["fontSize"] + 'pt',
+      color: settings["fontColor"]
+    });
+  });
+
   it("should set the alert state to AlertState.Displaying", function () {
     Display.showAlert("Test Display.showAlert - state", settings);
 
@@ -336,8 +378,8 @@ describe("Display.showAlert", function () {
 
     expect($("#alert-background")[0].classList.contains("hide")).toEqual(false);
     expect($("#alert-background")[0].classList.contains("show")).toEqual(true);
-    //expect($("#alert-text")[0].classList.contains("hide")).toEqual(false);
-    //expect($("#alert-text")[0].classList.contains("show")).toEqual(true);
+    expect($("#alert-text")[0].classList.contains("hide")).toEqual(false);
+    expect($("#alert-text")[0].classList.contains("show")).toEqual(true);
   });
 });
 
