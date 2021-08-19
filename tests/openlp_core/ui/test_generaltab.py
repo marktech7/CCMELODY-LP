@@ -74,3 +74,21 @@ def test_slide_numbers_in_footer(settings):
 
     # THEN: the settings should be updated
     assert settings.value('advanced/slide numbers in footer') is True
+
+
+def test_new_service_message(settings):
+    """
+    Test that when the new service message option is changed then the settings are updated
+    """
+    # GIVEN: Settings, a settings form and a general tab
+    settings.setValue('advanced/new service message', True)
+    settings_form = SettingsForm(None)
+    general_tab = GeneralTab(settings_form)
+    settings_form.insert_tab(general_tab, is_visible=True)
+
+    # WHEN: I click the checkbox and then save
+    QtTest.QTest.mouseClick(general_tab.new_service_message_check_box, QtCore.Qt.LeftButton)
+    settings_form.accept()
+
+    # THEN: the settings should be updated
+    assert settings.value('advanced/new service message') is False

@@ -33,7 +33,6 @@ from openlp.core.ui.style import HAS_DARK_STYLE
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 
-
 log = logging.getLogger(__name__)
 
 
@@ -41,6 +40,7 @@ class GeneralTab(SettingsTab):
     """
     GeneralTab is the general settings tab in the settings dialog.
     """
+
     def __init__(self, parent):
         """
         Initialise the general settings tab
@@ -166,6 +166,9 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
+        self.new_service_message_check_box = QtWidgets.QCheckBox(self.ui_group_box)
+        self.new_service_message_check_box.setObjectName('new_service_message_check_box')
+        self.ui_layout.addRow(self.new_service_message_check_box)
         if not is_win() and HAS_DARK_STYLE:
             self.use_dark_style_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
             self.use_dark_style_checkbox.setObjectName('use_dark_style_checkbox')
@@ -245,6 +248,8 @@ class GeneralTab(SettingsTab):
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
         self.slide_no_in_footer_checkbox.setText(translate('SongsPlugin.GeneralTab', 'Include slide number in footer'))
+        self.new_service_message_check_box.setText(translate('OpenLP.AdvancedTab',
+                                                             'Alert if New clicked on blank service'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
         if not is_win() and HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setText(translate('OpenLP.AdvancedTab', 'Use dark style (needs restart)'))
@@ -285,6 +290,7 @@ class GeneralTab(SettingsTab):
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
         self.slide_no_in_footer_checkbox.setChecked(self.settings.value('advanced/slide numbers in footer'))
+        self.new_service_message_check_box.setChecked(self.settings.value('advanced/new service message'))
         if not is_win() and HAS_DARK_STYLE:
             self.use_dark_style_checkbox.setChecked(self.settings.value('advanced/use_dark_style'))
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
@@ -317,6 +323,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
         self.settings.setValue('advanced/slide numbers in footer', self.slide_no_in_footer_checkbox.isChecked())
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
+        self.settings.setValue('advanced/new service message', self.new_service_message_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
         if not is_win() and HAS_DARK_STYLE:

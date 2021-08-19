@@ -156,6 +156,7 @@ class Settings(QtCore.QSettings):
         'advanced/ignore aspect ratio': False,
         'advanced/is portable': False,
         'advanced/max recent files': 20,
+        'advanced/new service message': True,
         'advanced/print file meta data': False,
         'advanced/print notes': False,
         'advanced/print slide text': False,
