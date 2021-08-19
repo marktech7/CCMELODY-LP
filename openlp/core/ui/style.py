@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
-from subprocess import Popen, CalledProcessError, PIPE, run as subprocess_run
+from subprocess import Popen, PIPE
 from enum import Enum
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -124,7 +124,7 @@ def is_system_darkmode():
             elif is_macosx():
                 IS_SYSTEM_DARKMODE = is_macosx_darkmode()
             else:
-                IS_SYSTEM_DARKMODE = is_linux_darkmode()
+                IS_SYSTEM_DARKMODE = False
         except Exception:
             IS_SYSTEM_DARKMODE = False
 
@@ -167,23 +167,22 @@ def is_macosx_darkmode():
         return False
 
 
-def is_linux_darkmode():
+def set_default_theme(app):
     """
-    Detects if Linux or BSD is using dark mode system theme.
-
-    Source: https://stackoverflow.com/a/65360260 (CC BY-SA 4.0)
-
-    Changes:
-        * Using OpenLP formatting rules
-        * Handling exceptions
+    Setup theme
     """
-    try:
-        command = ['gsettings', 'get', 'org.gnome.desktop.interface', 'gtk-theme']
-        process = subprocess_run(command, capture_output=True)
-        current_theme = process.stdout.decode('utf-8').strip().strip("'")
-        return current_theme.endswith('-dark')
-    except (Exception, CalledProcessError):
-        return False
+    if is_ui_theme(UiThemes.DefaultDark) or (is_ui_theme(UiThemes.Automatic) and is_ui_theme_dark()):
+        set_default_darkmode(app)
+    elif is_ui_theme(UiThemes.DefaultLight):
+        set_default_lightmode(app)
+
+
+def set_default_lightmode(app):
+    """
+    Setup lightmode on the application if Default Lightt theme is enabled in the OpenLP Settings.
+    """
+    app.setStyle('Fusion')
+    app.setPalette(app.style().standardPalette())
 
 
 def set_default_darkmode(app):
@@ -198,34 +197,33 @@ def set_default_darkmode(app):
         * Allowed palette to be set on any operating system;
         * Split Windows Dark Mode detection to another function.
     """
-    if is_ui_theme(UiThemes.DefaultDark) or (is_ui_theme(UiThemes.Automatic) and is_ui_theme_dark()):
-        app.setStyle('Fusion')
-        dark_palette = QtGui.QPalette()
-        dark_color = QtGui.QColor(45, 45, 45)
-        disabled_color = QtGui.QColor(127, 127, 127)
-        dark_palette.setColor(QtGui.QPalette.Window, dark_color)
-        dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, disabled_color)
-        dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
-        dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
-        dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
-        dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
-        dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color)
-        dark_palette.setColor(QtGui.QPalette.Button, dark_color)
-        dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
-        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabled_color)
-        dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-        dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-        dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-        dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
-        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabled_color)
-        # Fixes ugly (not to mention hard to read) disabled menu items.
-        # Source: https://bugreports.qt.io/browse/QTBUG-10322?focusedCommentId=371060#comment-371060
-        dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Light, QtCore.Qt.transparent)
-        # Fixes ugly media manager headers.
-        dark_palette.setColor(QtGui.QPalette.Mid, QtGui.QColor(64, 64, 64))
-        app.setPalette(dark_palette)
+    app.setStyle('Fusion')
+    dark_palette = QtGui.QPalette()
+    dark_color = QtGui.QColor(45, 45, 45)
+    disabled_color = QtGui.QColor(127, 127, 127)
+    dark_palette.setColor(QtGui.QPalette.Window, dark_color)
+    dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
+    dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
+    dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.Button, dark_color)
+    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
+    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabled_color)
+    # Fixes ugly (not to mention hard to read) disabled menu items.
+    # Source: https://bugreports.qt.io/browse/QTBUG-10322?focusedCommentId=371060#comment-371060
+    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Light, QtCore.Qt.transparent)
+    # Fixes ugly media manager headers.
+    dark_palette.setColor(QtGui.QPalette.Mid, QtGui.QColor(64, 64, 64))
+    app.setPalette(dark_palette)
 
 
 def get_application_stylesheet():
