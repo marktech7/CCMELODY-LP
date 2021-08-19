@@ -1,7 +1,7 @@
 @keyframes alert-scrolling-text {
   0% {
     opacity: 1;
-    transform: translateX(100%);
+    transform: translateX(101%);
   }
   99% {
     opacity: 1;
@@ -145,7 +145,20 @@ body.transition .reveal .slide-background {
   padding: 0;
   transition: opacity 0.5s linear;
   z-index: 100;
+  will-change: transform;
 }
+
+
+#alert-text.scrolling {
+  box-sizing: border-box;
+  transform: translateX(101%);
+  display: inline-block;
+  min-width: 100%;
+  padding-left: 2%;
+  padding-right: 2%;
+  text-align: center;
+}
+
 
 /*********************************************
  * Transition overrides to allow different directions
