@@ -26,28 +26,7 @@ from openlp.core.common.applocation import AppLocation
 
 main_views = Blueprint('main', __name__)
 
-
-@main_views.route('/', defaults={'path': ''})
-@main_views.route('/<path>')
-def index(path):
-    if os.path.isfile(AppLocation.get_section_data_path('remotes') / path):
-        return send_from_directory(str(AppLocation.get_section_data_path('remotes')), path)
-    else:
-        return send_from_directory(str(AppLocation.get_section_data_path('remotes')), 'index.html')
-
-
-@main_views.route('/assets/<path>')
-def assets(path):
-    return send_from_directory(str(AppLocation.get_section_data_path('remotes') / 'assets'), path)
-
-
-@main_views.route('/stage/<path>/')
-def stages(path):
-    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), 'stage.html')
-
-
-@main_views.route('/stage/<path:path>/<file>')
-def stage_assets(path, file):
+def set_mime_type(file):
     if file.lower().endswith('.aac'):
         mime_type = 'audio/aac'
     elif file.lower().endswith('.abw'):
@@ -200,4 +179,27 @@ def stage_assets(path, file):
         mime_type = 'application/x-7z-compressed'
     else:
         mime_type = 'text/plain'
-    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), file, mimetype=mime_type)
+    return mime_type
+
+@main_views.route('/', defaults={'path': ''})
+@main_views.route('/<path>')
+def index(path):
+    if os.path.isfile(AppLocation.get_section_data_path('remotes') / path):
+        return send_from_directory(str(AppLocation.get_section_data_path('remotes')), path, mimetype=set_mime_type(path))
+    else:
+        return send_from_directory(str(AppLocation.get_section_data_path('remotes')), 'index.html', mimetype='text/html')
+
+
+@main_views.route('/assets/<path>')
+def assets(path):
+    return send_from_directory(str(AppLocation.get_section_data_path('remotes') / 'assets'), path, mimetype=set_mime_type(path))
+
+
+@main_views.route('/stage/<path>/')
+def stages(path):
+    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), 'stage.html', mimetype='text/html')
+
+
+@main_views.route('/stage/<path:path>/<file>')
+def stage_assets(path, file):
+    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), file, mimetype=set_mime_type(file))
