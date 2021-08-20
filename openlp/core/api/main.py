@@ -135,7 +135,7 @@ def stage_assets(path, file):
     elif file.lower().endswith('.opus'):
         mime_type = 'audio/opus'
     elif file.lower().endswith('.otf'):
-        mime_type = 'font/otf'
+        mime_type = 'application/x-font-opentype'
     elif file.lower().endswith('.png'):
         mime_type = 'image/png'
     elif file.lower().endswith('.pdf'):
@@ -150,6 +150,8 @@ def stage_assets(path, file):
         mime_type = 'application/vnd.rar'
     elif file.lower().endswith('.rtf'):
         mime_type = 'application/rtf'
+    elif file.lower().endswith('.sfnt'):
+        mime_type = 'application/font-sfnt'
     elif file.lower().endswith('.sh'):
         mime_type = 'application/x-sh'
     elif file.lower().endswith('.svg'):
@@ -165,7 +167,7 @@ def stage_assets(path, file):
     elif file.lower().endswith('.ts'):
         mime_type = 'video/mp2t'
     elif file.lower().endswith('.ttf'):
-        mime_type = 'font/ttf'
+        mime_type = 'application/x-font-ttf'
     elif file.lower().endswith('.txt'):
         mime_type = 'text/plain'
     elif file.lower().endswith('.vsd'):
@@ -179,9 +181,9 @@ def stage_assets(path, file):
     elif file.lower().endswith('.webp'):
         mime_type = 'image/webp'
     elif file.lower().endswith('.woff'):
-        mime_type = 'font/woff'
+        mime_type = 'application/font-woff'
     elif file.lower().endswith('.woff2'):
-        mime_type = 'font/woff2'
+        mime_type = 'application/font-woff2'
     elif file.lower().endswith('.xhtml'):
         mime_type = 'application/xhtml+xml'
     elif file.lower().endswith('.xls'):
