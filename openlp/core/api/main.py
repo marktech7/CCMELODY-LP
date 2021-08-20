@@ -49,153 +49,153 @@ def stages(path):
 @main_views.route('/stage/<path:path>/<file>')
 def stage_assets(path, file):
     if file.lower().endswith('.aac'):
-        mimetype = 'audio/aac'
+        mime_type = 'audio/aac'
     elif file.lower().endswith('.abw'):
-        mimetype = 'application/x-abiword'
+        mime_type = 'application/x-abiword'
     elif file.lower().endswith('.arc'):
-        mimetype = 'application/x-freearc'
+        mime_type = 'application/x-freearc'
     elif file.lower().endswith('.avi'):
-        mimetype = 'video/x-msvideo'
+        mime_type = 'video/x-msvideo'
     elif file.lower().endswith('.azw'):
-        mimetype = 'application/vnd.amazon.ebook'
+        mime_type = 'application/vnd.amazon.ebook'
     elif file.lower().endswith('.bin'):
-        mimetype = 'application/octet-stream'
+        mime_type = 'application/octet-stream'
     elif file.lower().endswith('.bmp'):
-        mimetype = 'image/bmp'
+        mime_type = 'image/bmp'
     elif file.lower().endswith('.bz'):
-        mimetype = 'application/x-bzip'
+        mime_type = 'application/x-bzip'
     elif file.lower().endswith('.bz2'):
-        mimetype = 'application/x-bzip2'
+        mime_type = 'application/x-bzip2'
     elif file.lower().endswith('.cda'):
-        mimetype = 'application/x-cdf'
+        mime_type = 'application/x-cdf'
     elif file.lower().endswith('.csh'):
-        mimetype = 'application/x-csh'
+        mime_type = 'application/x-csh'
     elif file.lower().endswith('.css'):
-        mimetype = 'text/css'
+        mime_type = 'text/css'
     elif file.lower().endswith('.csv'):
-        mimetype = 'text/csv'
+        mime_type = 'text/csv'
     elif file.lower().endswith('.doc'):
-        mimetype = 'application/msword'
+        mime_type = 'application/msword'
     elif file.lower().endswith('.docx'):
-        mimetype = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        mime_type = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
     elif file.lower().endswith('.eot'):
-        mimetype = 'application/vnd.ms-fontobject'
+        mime_type = 'application/vnd.ms-fontobject'
     elif file.lower().endswith('.epub'):
-        mimetype = 'application/epub+zip'
+        mime_type = 'application/epub+zip'
     elif file.lower().endswith('.gz'):
-        mimetype = 'application/gzip'
+        mime_type = 'application/gzip'
     elif file.lower().endswith('.gif'):
-        mimetype = 'image/gif'
+        mime_type = 'image/gif'
     elif file.lower().endswith('.htm'):
-        mimetype = 'text/html'
+        mime_type = 'text/html'
     elif file.lower().endswith('.html'):
-        mimetype = 'text/html'
+        mime_type = 'text/html'
     elif file.lower().endswith('.ico'):
-        mimetype = 'image/vnd.microsoft.icon'
+        mime_type = 'image/vnd.microsoft.icon'
     elif file.lower().endswith('.ics'):
-        mimetype = 'text/calendar'
+        mime_type = 'text/calendar'
     elif file.lower().endswith('.jar'):
-        mimetype = 'application/java-archive'
+        mime_type = 'application/java-archive'
     elif file.lower().endswith('.jpeg'):
-        mimetype = 'image/jpeg'
+        mime_type = 'image/jpeg'
     elif file.lower().endswith('.jpg'):
-        mimetype = 'image/jpeg'
+        mime_type = 'image/jpeg'
     elif file.lower().endswith('.js'):
-        mimetype = 'text/javascript'
+        mime_type = 'text/javascript'
     elif file.lower().endswith('.json'):
-        mimetype = 'application/json'
+        mime_type = 'application/json'
     elif file.lower().endswith('.jsonld'):
-        mimetype = 'application/ld+json'
+        mime_type = 'application/ld+json'
     elif file.lower().endswith('.mid'):
-        mimetype = 'audio/midi'
+        mime_type = 'audio/midi'
     elif file.lower().endswith('.midi'):
-        mimetype = 'audio/x-midi'
+        mime_type = 'audio/x-midi'
     elif file.lower().endswith('.mjs'):
-        mimetype = 'text/javascript'
+        mime_type = 'text/javascript'
     elif file.lower().endswith('.mp3'):
-        mimetype = 'audio/mpeg'
+        mime_type = 'audio/mpeg'
     elif file.lower().endswith('.mp4'):
-        mimetype = 'video/mp4'
+        mime_type = 'video/mp4'
     elif file.lower().endswith('.mpeg'):
-        mimetype = 'video/mpeg'
+        mime_type = 'video/mpeg'
     elif file.lower().endswith('.mpkg'):
-        mimetype = 'application/vnd.apple.installer+xml'
+        mime_type = 'application/vnd.apple.installer+xml'
     elif file.lower().endswith('.odp'):
-        mimetype = 'application/vnd.oasis.opendocument.presentation'
+        mime_type = 'application/vnd.oasis.opendocument.presentation'
     elif file.lower().endswith('.ods'):
-        mimetype = 'application/vnd.oasis.opendocument.spreadsheet'
+        mime_type = 'application/vnd.oasis.opendocument.spreadsheet'
     elif file.lower().endswith('.odt'):
-        mimetype = 'application/vnd.oasis.opendocument.text'
+        mime_type = 'application/vnd.oasis.opendocument.text'
     elif file.lower().endswith('.oga'):
-        mimetype = 'audio/ogg'
+        mime_type = 'audio/ogg'
     elif file.lower().endswith('.ogv'):
-        mimetype = 'video/ogg'
+        mime_type = 'video/ogg'
     elif file.lower().endswith('.ogx'):
-        mimetype = 'application/ogg'
+        mime_type = 'application/ogg'
     elif file.lower().endswith('.opus'):
-        mimetype = 'audio/opus'
+        mime_type = 'audio/opus'
     elif file.lower().endswith('.otf'):
-        mimetype = 'font/otf'
+        mime_type = 'font/otf'
     elif file.lower().endswith('.png'):
-        mimetype = 'image/png'
+        mime_type = 'image/png'
     elif file.lower().endswith('.pdf'):
-        mimetype = 'application/pdf'
+        mime_type = 'application/pdf'
     elif file.lower().endswith('.php'):
-        mimetype = 'application/x-httpd-php'
+        mime_type = 'application/x-httpd-php'
     elif file.lower().endswith('.ppt'):
-        mimetype = 'application/vnd.ms-powerpoint'
+        mime_type = 'application/vnd.ms-powerpoint'
     elif file.lower().endswith('.pptx'):
-        mimetype = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        mime_type = 'application/vnd.openxmlformats-officedocument.presentationml.presentation'
     elif file.lower().endswith('.rar'):
-        mimetype = 'application/vnd.rar'
+        mime_type = 'application/vnd.rar'
     elif file.lower().endswith('.rtf'):
-        mimetype = 'application/rtf'
+        mime_type = 'application/rtf'
     elif file.lower().endswith('.sh'):
-        mimetype = 'application/x-sh'
+        mime_type = 'application/x-sh'
     elif file.lower().endswith('.svg'):
-        mimetype = 'image/svg+xml'
+        mime_type = 'image/svg+xml'
     elif file.lower().endswith('.swf'):
-        mimetype = 'application/x-shockwave-flash'
+        mime_type = 'application/x-shockwave-flash'
     elif file.lower().endswith('.tar'):
-        mimetype = 'application/x-tar'
+        mime_type = 'application/x-tar'
     elif file.lower().endswith('.tif'):
-        mimetype = 'image/tiff'
+        mime_type = 'image/tiff'
     elif file.lower().endswith('.tiff'):
-        mimetype = 'image/tiff'
+        mime_type = 'image/tiff'
     elif file.lower().endswith('.ts'):
-        mimetype = 'video/mp2t'
+        mime_type = 'video/mp2t'
     elif file.lower().endswith('.ttf'):
-        mimetype = 'font/ttf'
+        mime_type = 'font/ttf'
     elif file.lower().endswith('.txt'):
-        mimetype = 'text/plain'
+        mime_type = 'text/plain'
     elif file.lower().endswith('.vsd'):
-        mimetype = 'application/vnd.visio'
+        mime_type = 'application/vnd.visio'
     elif file.lower().endswith('.wav'):
-        mimetype = 'audio/wav'
+        mime_type = 'audio/wav'
     elif file.lower().endswith('.weba'):
-        mimetype = 'audio/webm'
+        mime_type = 'audio/webm'
     elif file.lower().endswith('.webm'):
-        mimetype = 'video/webm'
+        mime_type = 'video/webm'
     elif file.lower().endswith('.webp'):
-        mimetype = 'image/webp'
+        mime_type = 'image/webp'
     elif file.lower().endswith('.woff'):
-        mimetype = 'font/woff'
+        mime_type = 'font/woff'
     elif file.lower().endswith('.woff2'):
-        mimetype = 'font/woff2'
+        mime_type = 'font/woff2'
     elif file.lower().endswith('.xhtml'):
-        mimetype = 'application/xhtml+xml'
+        mime_type = 'application/xhtml+xml'
     elif file.lower().endswith('.xls'):
-        mimetype = 'application/vnd.ms-excel'
+        mime_type = 'application/vnd.ms-excel'
     elif file.lower().endswith('.xlsx'):
-        mimetype = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        mime_type = 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
     elif file.lower().endswith('.xml'):
-        mimetype = 'application/xml'
+        mime_type = 'application/xml'
     elif file.lower().endswith('.xul'):
-        mimetype = 'application/vnd.mozilla.xul+xml'
+        mime_type = 'application/vnd.mozilla.xul+xml'
     elif file.lower().endswith('.zip'):
-        mimetype = 'application/zip'
+        mime_type = 'application/zip'
     elif file.lower().endswith('.7z'):
-        mimetype = 'application/x-7z-compressed'
+        mime_type = 'application/x-7z-compressed'
     else:
-        mimetype = 'text/plain'
-    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), file, mimetype=mimetype)
+        mime_type = 'text/plain'
+    return send_from_directory(str(AppLocation.get_section_data_path('stages') / path), file, mimetype=mime_type)
