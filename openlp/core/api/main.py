@@ -29,6 +29,7 @@ main_views = Blueprint('main', __name__)
 
 
 def get_mime_type(file):
+    print(file + " = " + mimetypes.guess_type(file)[0])
     return mimetypes.guess_type(file)[0]
 
 
@@ -37,7 +38,7 @@ def get_mime_type(file):
 def index(path):
     if os.path.isfile(AppLocation.get_section_data_path('remotes') / path):
         return send_from_directory(str(AppLocation.get_section_data_path('remotes')),
-                                   path, mimetype=set_mime_type(path))
+                                   path, mimetype=get_mime_type(path))
     else:
         return send_from_directory(str(AppLocation.get_section_data_path('remotes')),
                                    'index.html', mimetype='text/html')
@@ -46,7 +47,7 @@ def index(path):
 @main_views.route('/assets/<path>')
 def assets(path):
     return send_from_directory(str(AppLocation.get_section_data_path('remotes') / 'assets'),
-                               path, mimetype=set_mime_type(path))
+                               path, mimetype=get_mime_type(path))
 
 
 @main_views.route('/stage/<path>/')
@@ -58,4 +59,4 @@ def stages(path):
 @main_views.route('/stage/<path:path>/<file>')
 def stage_assets(path, file):
     return send_from_directory(str(AppLocation.get_section_data_path('stages') / path),
-                               file, mimetype=set_mime_type(file))
+                               file, mimetype=get_mime_type(str(AppLocation.get_section_data_path('stages') / path / file)))
