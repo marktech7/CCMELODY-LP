@@ -28,9 +28,8 @@ from openlp.core.common.applocation import AppLocation
 main_views = Blueprint('main', __name__)
 
 
-def set_mime_type(file):
-    mime_type = mimetypes.guess_type(file)[0]
-    return mime_type
+def get_mime_type(file):
+    return mimetypes.guess_type(file)[0]
 
 
 @main_views.route('/', defaults={'path': ''})
