@@ -59,4 +59,5 @@ def stages(path):
 @main_views.route('/stage/<path:path>/<file>')
 def stage_assets(path, file):
     return send_from_directory(str(AppLocation.get_section_data_path('stages') / path),
-                               file, mimetype=get_mime_type(str(AppLocation.get_section_data_path('stages') / path / file)))
+                               file, mimetype=get_mime_type(str(AppLocation.get_section_data_path('stages') / 
+                                                                path / file)))
