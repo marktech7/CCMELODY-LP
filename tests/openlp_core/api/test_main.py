@@ -21,6 +21,7 @@
 
 from openlp.core.api.main import get_mime_type
 
+
 def test_get_mime_type():
     assert get_mime_type('index.html') == 'text/html'
     assert get_mime_type('stage.js') == 'application/javascript'
