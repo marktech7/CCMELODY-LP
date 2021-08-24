@@ -20,7 +20,6 @@
 ##########################################################################
 
 import os
-import mimetypes
 
 from flask import Blueprint, send_from_directory
 from openlp.core.common.applocation import AppLocation
@@ -82,7 +81,7 @@ def get_mime_type(file):
     elif file.lower().endswith('.jpg'):
         mime_type = 'image/jpeg'
     elif file.lower().endswith('.js'):
-        mime_type = 'text/javascript'
+        mime_type = 'application/javascript'
     elif file.lower().endswith('.json'):
         mime_type = 'application/json'
     elif file.lower().endswith('.jsonld'):
@@ -180,7 +179,7 @@ def get_mime_type(file):
     elif file.lower().endswith('.7z'):
         mime_type = 'application/x-7z-compressed'
     else:
-        mime_type = mimetypes.guess_type(file)[0]
+        mime_type = 'application/octet-stream'
     return mime_type
 
 
