@@ -51,7 +51,7 @@ class Ui_SettingsDialog(object):
         self.stacked_layout = QtWidgets.QStackedLayout()
         self.stacked_layout.setObjectName('stacked_layout')
         self.dialog_layout.addLayout(self.stacked_layout, 0, 1, 1, 1)
-        self.button_box = create_button_box(settings_dialog, 'button_box', ['cancel', 'ok'])
+        self.button_box = create_button_box(settings_dialog, 'button_box', ['cancel', 'ok', 'help'])
         self.dialog_layout.addWidget(self.button_box, 1, 1, 1, 1)
         self.retranslate_ui(settings_dialog)
 
