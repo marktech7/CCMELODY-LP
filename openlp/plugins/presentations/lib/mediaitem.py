@@ -26,14 +26,15 @@ from PyQt5 import QtCore, QtWidgets
 from pathlib import Path
 
 from openlp.core.common import sha256_file_hash
-from openlp.core.common.i18n import UiStrings, get_natural_key, translate
-from openlp.core.common.path import path_to_str
+from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
-from openlp.core.lib import ServiceItemContext, build_icon, check_item_selected, create_thumb, validate_thumb
-from openlp.core.lib.mediamanageritem import MediaManagerItem
+from openlp.core.lib import ServiceItemContext, build_icon, create_thumb, validate_thumb
+from openlp.core.ui.library import FolderLibraryItem
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, critical_error_message_box
 from openlp.core.ui.icons import UiIcons
+
+from openlp.plugins.presentations.lib.db import Folder, Item
 from openlp.plugins.presentations.lib.messagelistener import MessageListener
 from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETYPES
 
@@ -41,7 +42,7 @@ from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETY
 log = logging.getLogger(__name__)
 
 
-class PresentationMediaItem(MediaManagerItem):
+class PresentationMediaItem(FolderLibraryItem):
     """
     This is the Presentation media manager item for Presentation Items. It can present files using Openoffice and
     Powerpoint
@@ -56,12 +57,13 @@ class PresentationMediaItem(MediaManagerItem):
         """
         self.icon_path = 'presentations/presentation'
         self.controllers = controllers
-        super(PresentationMediaItem, self).__init__(parent, plugin)
+        super(PresentationMediaItem, self).__init__(parent, plugin, Folder, Item)
 
     def retranslate_ui(self):
         """
         The name of the plugin media displayed in UI
         """
+        super().retranslate_ui()
         self.on_new_prompt = translate('PresentationPlugin.MediaItem', 'Select Presentation(s)')
         self.automatic = translate('PresentationPlugin.MediaItem', 'Automatic')
         self.display_type_label.setText(translate('PresentationPlugin.MediaItem', 'Present using:'))
@@ -80,35 +82,31 @@ class PresentationMediaItem(MediaManagerItem):
         # Allow DnD from the desktop
         self.list_view.activateDnD()
 
-    def build_file_mask_string(self):
-        """
-        Build the list of file extensions to be used in the Open file dialog.
-        """
-        file_type_string = ''
-        for controller in self.controllers:
-            if self.controllers[controller].enabled():
-                file_types = self.controllers[controller].supports + self.controllers[controller].also_supports
-                for file_type in file_types:
-                    if file_type not in file_type_string:
-                        file_type_string += '*.{text} '.format(text=file_type)
-        file_type_string = file_type_string.strip()
-        self.service_manager.supported_suffixes(file_type_string.split(' '))
-        self.on_new_file_masks = translate('PresentationPlugin.MediaItem',
-                                           'Presentations ({text})').format(text=file_type_string)
-
     def required_icons(self):
         """
         Set which icons the media manager tab should show.
         """
-        MediaManagerItem.required_icons(self)
+        super().required_icons()
         self.has_file_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False
+
+    def initialise(self):
+        """
+        Populate the media manager tab
+        """
+        self.list_view.clear()
+        self.list_view.setIndentation(self.list_view.default_indentation)
+        self.list_view.allow_internal_dnd = True
+        self.list_view.setIconSize(QtCore.QSize(88, 50))
+        self.load_list(self.manager.get_all_objects(Item, order_by_ref=Item.file_path), is_initial_load=True)
+        self.populate_display_types()
 
     def add_middle_header_bar(self):
         """
         Display custom media manager items for presentations.
         """
+        super().add_middle_header_bar()
         self.presentation_widget = QtWidgets.QWidget(self)
         self.presentation_widget.setObjectName('presentation_widget')
         self.display_layout = QtWidgets.QFormLayout(self.presentation_widget)
@@ -124,14 +122,21 @@ class PresentationMediaItem(MediaManagerItem):
         # Add the Presentation widget to the page layout.
         self.page_layout.addWidget(self.presentation_widget)
 
-    def initialise(self):
+    def build_file_mask_string(self):
         """
-        Populate the media manager tab
+        Build the list of file extensions to be used in the Open file dialog.
         """
-        self.list_view.setIconSize(QtCore.QSize(88, 50))
-        file_paths = self.settings.value('presentations/presentations files')
-        self.load_list(file_paths, initial_load=True)
-        self.populate_display_types()
+        file_type_string = ''
+        for controller in self.controllers:
+            if self.controllers[controller].enabled():
+                file_types = self.controllers[controller].supports + self.controllers[controller].also_supports
+                for file_type in file_types:
+                    if file_type not in file_type_string:
+                        file_type_string += '*.{text} '.format(text=file_type)
+        file_type_string = file_type_string.strip()
+        self.service_manager.supported_suffixes(file_type_string.split(' '))
+        self.on_new_file_masks = translate('PresentationPlugin.MediaItem',
+                                           'Presentations ({text})').format(text=file_type_string)
 
     def populate_display_types(self):
         """
@@ -154,96 +159,57 @@ class PresentationMediaItem(MediaManagerItem):
         else:
             self.presentation_widget.hide()
 
-    def load_list(self, file_paths, target_group=None, initial_load=False):
+    def load_item(self, item, is_initial_load=False):
         """
-        Add presentations into the media manager. This is called both on initial load of the plugin to populate with
-        existing files, and when the user adds new files via the media manager.
-
-        :param list[pathlib.Path] file_paths: List of file paths to add to the media manager.
-        :param list[pathlib.Path] target_group: Group to load.
-        :param boolean initial_load: Is this the initial load of the list at start up
+        Given an item object, return a QTreeWidgetItem
         """
-        current_paths = self.get_file_list()
-        titles = [file_path.name for file_path in current_paths]
-        self.application.set_busy_cursor()
-        if not initial_load:
-            self.main_window.display_progress_bar(len(file_paths))
-        # Sort the presentations by its filename considering language specific characters.
-        file_paths.sort(key=lambda file_path: get_natural_key(file_path.name))
-        for file_path in file_paths:
-            if not initial_load:
-                self.main_window.increment_progress_bar()
-            if current_paths.count(file_path) > 0:
-                continue
-            file_name = file_path.name
-            if not file_path.exists():
-                item_name = QtWidgets.QListWidgetItem(file_name)
-                item_name.setIcon(UiIcons().delete)
-                item_name.setData(QtCore.Qt.UserRole, file_path)
-                item_name.setToolTip(str(file_path))
-                self.list_view.addItem(item_name)
-            else:
-                if titles.count(file_name) > 0:
-                    if not initial_load:
-                        critical_error_message_box(translate('PresentationPlugin.MediaItem', 'File Exists'),
-                                                   translate('PresentationPlugin.MediaItem',
-                                                             'A presentation with that filename already exists.'))
-                    continue
-                controller_name = self.find_controller_by_type(file_path)
-                if controller_name:
-                    controller = self.controllers[controller_name]
-                    doc = controller.add_document(file_path)
-                    thumbnail_path = doc.get_thumbnail_folder() / 'icon.png'
+        tree_item = None
+        file_path = Path(item.file_path)
+        file_name = file_path.name
+        if not file_path.exists():
+            tree_item = QtWidgets.QTreeWidgetItem([file_name])
+            tree_item.setIcon(0, UiIcons().delete)
+            tree_item.setData(0, QtCore.Qt.UserRole, item)
+            tree_item.setToolTip(0, str(file_path))
+        else:
+            controller_name = self.find_controller_by_type(file_path)
+            if controller_name:
+                controller = self.controllers[controller_name]
+                doc = controller.add_document(file_path)
+                thumbnail_path = doc.get_thumbnail_folder() / 'icon.png'
+                preview_path = doc.get_thumbnail_path(1, True)
+                if not preview_path and not is_initial_load:
+                    doc.load_presentation()
                     preview_path = doc.get_thumbnail_path(1, True)
-                    if not preview_path and not initial_load:
-                        doc.load_presentation()
-                        preview_path = doc.get_thumbnail_path(1, True)
-                    doc.close_presentation()
-                    if not (preview_path and preview_path.exists()):
-                        icon = UiIcons().delete
-                    else:
-                        if validate_thumb(preview_path, thumbnail_path):
-                            icon = build_icon(thumbnail_path)
-                        else:
-                            icon = create_thumb(preview_path, thumbnail_path)
+                doc.close_presentation()
+                if not (preview_path and preview_path.exists()):
+                    icon = UiIcons().delete
                 else:
-                    if initial_load:
-                        icon = UiIcons().delete
+                    if validate_thumb(preview_path, thumbnail_path):
+                        icon = build_icon(thumbnail_path)
                     else:
-                        critical_error_message_box(UiStrings().UnsupportedFile,
-                                                   translate('PresentationPlugin.MediaItem',
-                                                             'This type of presentation is not supported.'))
-                        continue
-                item_name = QtWidgets.QListWidgetItem(file_name)
-                item_name.setData(QtCore.Qt.UserRole, file_path)
-                item_name.setIcon(icon)
-                item_name.setToolTip(str(file_path))
-                self.list_view.addItem(item_name)
-        if not initial_load:
-            self.main_window.finished_progress_bar()
-        self.application.set_normal_cursor()
+                        icon = create_thumb(preview_path, thumbnail_path)
+            else:
+                if is_initial_load:
+                    icon = UiIcons().delete
+                else:
+                    critical_error_message_box(UiStrings().UnsupportedFile,
+                                               translate('PresentationPlugin.MediaItem',
+                                                         'This type of presentation is not supported.'))
+                    return None
+            tree_item = QtWidgets.QTreeWidgetItem([file_name])
+            tree_item.setData(0, QtCore.Qt.UserRole, item)
+            tree_item.setIcon(0, icon)
+            tree_item.setToolTip(0, str(file_path))
+        return tree_item
 
-    def on_delete_click(self):
+    def delete_item(self, item):
         """
         Remove a presentation item from the list.
         """
-        if check_item_selected(self.list_view, UiStrings().SelectDelete):
-            items = self.list_view.selectedIndexes()
-            row_list = [item.row() for item in items]
-            row_list.sort(reverse=True)
-            self.application.set_busy_cursor()
-            self.main_window.display_progress_bar(len(row_list))
-            for item in items:
-                file_path = item.data(QtCore.Qt.UserRole)
-                # cleaning thumbnails depends on being able to calculate sha256 hash of the actual file
-                if file_path.exists():
-                    self.clean_up_thumbnails(file_path)
-                self.main_window.increment_progress_bar()
-            self.main_window.finished_progress_bar()
-            for row in row_list:
-                self.list_view.takeItem(row)
-            self.settings.setValue('presentations/presentations files', self.get_file_list())
-            self.application.set_normal_cursor()
+        file_path = Path(item.file_path)
+        if file_path.exists():
+            self.clean_up_thumbnails(file_path)
 
     def clean_up_thumbnails(self, file_path, clean_for_update=False):
         """
@@ -318,8 +284,10 @@ class PresentationMediaItem(MediaManagerItem):
             items = self.list_view.selectedItems()
             if len(items) > 1:
                 return False
+        items = [self.list_view.itemFromIndex(item) if isinstance(item, QtCore.QModelIndex) else item
+                 for item in items]
         if file_path is None:
-            file_path = Path(items[0].data(QtCore.Qt.UserRole))
+            file_path = Path(items[0].data(0, QtCore.Qt.UserRole).file_path)
         file_type = file_path.suffix.lower()[1:]
         if not self.display_type_combo_box.currentText():
             return False
@@ -335,7 +303,7 @@ class PresentationMediaItem(MediaManagerItem):
             service_item.theme = -1
             for bitem in items:
                 if file_path is None:
-                    file_path = bitem.data(QtCore.Qt.UserRole)
+                    file_path = Path(bitem.data(0, QtCore.Qt.UserRole).file_path)
                 path, file_name = file_path.parent, file_path.name
                 service_item.title = file_name
                 if file_path.exists():
@@ -372,7 +340,7 @@ class PresentationMediaItem(MediaManagerItem):
             service_item.processor = self.display_type_combo_box.currentText()
             service_item.add_capability(ItemCapabilities.ProvidesOwnDisplay)
             for bitem in items:
-                file_path = Path(bitem.data(QtCore.Qt.UserRole))
+                file_path = Path(bitem.data(0, QtCore.Qt.UserRole).file_path)
                 path, file_name = file_path.parent, file_path.name
                 service_item.title = file_name
                 if file_path.exists():
@@ -448,20 +416,3 @@ class PresentationMediaItem(MediaManagerItem):
                 if file_type in self.controllers[controller].also_supports:
                     return controller
         return None
-
-    def search(self, string, show_error):
-        """
-        Search in files
-
-        :param string: name to be found
-        :param show_error: not used
-        :return:
-        """
-        file_paths = self.settings.value('presentations/presentations files')
-        results = []
-        string = string.lower()
-        for file_path in file_paths:
-            file_name = file_path.name
-            if file_name.lower().find(string) > -1:
-                results.append([path_to_str(file_path), file_name])
-        return results

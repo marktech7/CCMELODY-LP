@@ -24,7 +24,6 @@ This module contains tests for the lib submodule of the Presentations plugin.
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, call, patch
 
-from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
@@ -146,24 +145,37 @@ def test_pdf_generate_slide_data(media_item):
     mocked_service_item.add_capability.assert_any_call(ItemCapabilities.ProvidesOwnTheme)
 
 
-@patch('openlp.plugins.presentations.lib.mediaitem.MediaManagerItem._setup')
+@patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup')
 @patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item')
-def test_search(mock_setup, mock_item, registry):
+def test_search_found(mock_setup, mock_item, registry):
     """
-    Test that the search method finds the correct results
+    Test that the search method works correctly
     """
-    # GIVEN: A mocked Settings class which returns a list of Path objects,
-    #        and an instance of the PresentationMediaItem
-    path_1 = Path('some_dir', 'Impress_file_1')
-    path_2 = Path('some_other_dir', 'impress_file_2')
-    path_3 = Path('another_dir', 'ppt_file')
-    mocked_returned_settings = MagicMock()
-    mocked_returned_settings.value.return_value = [path_1, path_2, path_3]
-    Registry().register('settings', mocked_returned_settings)
+    # GIVEN: The Mediaitem set up a list of presentations
     media_item = PresentationMediaItem(None, MagicMock(), None)
+    media_item.manager = MagicMock()
+    media_item.manager.get_all_objects.return_value = [MagicMock(file_path='test.odp')]
 
-    # WHEN: Calling search
-    results = media_item.search('IMPRE', False)
+    # WHEN: Retrieving the test file
+    result = media_item.search('test.odp', False)
 
-    # THEN: The first two results should have been returned
-    assert results == [[str(path_1), 'Impress_file_1'], [str(path_2), 'impress_file_2']]
+    # THEN: a file should be found
+    assert result == [['test.odp', 'test.odp']], 'The result file contain the file name'
+
+
+@patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup')
+@patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item')
+def test_search_not_found(mock_setup, mock_item, registry):
+    """
+    Test that the search doesn't find anything
+    """
+    # GIVEN: The Mediaitem set up a list of media
+    media_item = PresentationMediaItem(None, MagicMock(), None)
+    media_item.manager = MagicMock()
+    media_item.manager.get_all_objects.return_value = []
+
+    # WHEN: Retrieving the test file
+    result = media_item.search('test.pptx', False)
+
+    # THEN: a file should be found
+    assert result == [], 'The result file should be empty'

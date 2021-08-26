@@ -97,7 +97,7 @@ class ImageMediaItem(MediaManagerItem):
         """
         Set which icons the media manager tab should show.
         """
-        MediaManagerItem.required_icons(self)
+        super().required_icons()
         self.has_file_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False
