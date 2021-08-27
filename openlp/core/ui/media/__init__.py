@@ -22,10 +22,6 @@
 The :mod:`~openlp.core.ui.media` module contains classes and objects for media player integration.
 """
 import logging
-# for temporary fix in parse_optical_path below
-from pathlib import Path
-from openlp.core.common.path import path_to_str
-# end
 
 log = logging.getLogger(__name__ + '.__init__')
 
@@ -93,10 +89,6 @@ def parse_optical_path(input_string):
     :param input_string: The string to parse
     :return: The elements extracted from the string:  filename, title, audio_track, subtitle_track, start, end
     """
-    # temporary fix for issue 838
-    if isinstance(input_string, Path):
-        input_string = path_to_str(input_string)
-    # end of temporary fix
     log.debug('parse_optical_path, about to parse: "{text}"'.format(text=input_string))
     clip_info = input_string.split(sep=':')
     title = str(clip_info[1])
