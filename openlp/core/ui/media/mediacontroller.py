@@ -260,8 +260,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             # if this is an optical device use special handling
             if service_item.is_capable(ItemCapabilities.IsOptical):
                 self.log_debug('video is optical and live')
-                path = service_item.get_frame_path()
-                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
+                path_string = path_to_str(service_item.get_frame_path())
+                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path_string)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
@@ -281,8 +281,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         elif controller.preview_display:
             if service_item.is_capable(ItemCapabilities.IsOptical):
                 self.log_debug('video is optical and preview')
-                path = service_item.get_frame_path()
-                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
+                path_string = path_to_str(service_item.get_frame_path())
+                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path_string)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
