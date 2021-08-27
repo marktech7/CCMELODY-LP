@@ -260,8 +260,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             # if this is an optical device use special handling
             if service_item.is_capable(ItemCapabilities.IsOptical):
                 self.log_debug('video is optical and live')
-                path = service_item.get_frame_path()
-                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
+                path_string = path_to_str(service_item.get_frame_path())
+                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path_string)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
@@ -281,8 +281,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         elif controller.preview_display:
             if service_item.is_capable(ItemCapabilities.IsOptical):
                 self.log_debug('video is optical and preview')
-                path = service_item.get_frame_path()
-                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path)
+                path_string = path_to_str(service_item.get_frame_path())
+                (name, title, audio_track, subtitle_track, start, end, clip_name) = parse_optical_path(path_string)
                 is_valid = self.media_setup_optical(name, title, audio_track, subtitle_track, start, end, display,
                                                     controller)
             elif service_item.is_capable(ItemCapabilities.CanStream):
@@ -482,7 +482,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         start_again = False
         stopped = False
         if controller.media_info.is_playing and controller.media_info.length > 0:
-            if controller.media_info.timer + TICK_TIME >= controller.media_info.length:
+            if controller.media_info.timer - controller.media_info.start_time + TICK_TIME >= \
+                    controller.media_info.length:
                 if controller.media_info.is_looping_playback:
                     start_again = True
                 else:
@@ -494,12 +495,12 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             stopped = True
 
         if start_again:
-            controller.media_info.timer = 0
+            controller.media_info.timer = controller.media_info.start_time
             self._update_seek_ui(controller)
         return not stopped
 
     def _update_seek_ui(self, controller):
-        seconds = controller.media_info.timer // 1000
+        seconds = (controller.media_info.timer - controller.media_info.start_time) // 1000
         minutes = seconds // 60
         seconds %= 60
         total_seconds = controller.media_info.length // 1000
@@ -592,7 +593,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                         controller.set_hide_mode(display.hide_mode or HideMode.Blank)
             else:
                 self._media_set_visibility(controller, False)
-            controller.seek_slider.setSliderPosition(0)
+            controller.seek_slider.setSliderPosition(controller.media_info.start_time)
             total_seconds = controller.media_info.length // 1000
             total_minutes = total_seconds // 60
             total_seconds %= 60
@@ -601,7 +602,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.mediabar.actions['playbackStop'].setDisabled(True)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
-            controller.media_info.timer = 0
+            controller.media_info.timer = controller.media_info.start_time
             controller.output_has_changed()
             return True
         return False
