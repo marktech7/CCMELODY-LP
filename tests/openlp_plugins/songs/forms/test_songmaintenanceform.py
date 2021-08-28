@@ -40,6 +40,7 @@ from tempfile import mkdtemp
 
 from sqlalchemy.sql import and_
 
+
 @pytest.fixture()
 def form_env(settings):
     main_window = QtWidgets.QMainWindow()
