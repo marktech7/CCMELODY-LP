@@ -473,6 +473,8 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
                 Book.id != old_song_book.id
             )
         )
+        if existing_book is None:
+            return False
         # Find the songs which have the old_song_book as book, via matching entries in the songs_songbooks table
         songbook_entries = self.manager.get_all_objects(SongBookEntry, SongBookEntry.songbook_id == old_song_book.id)
         affected_songs = []
