@@ -279,6 +279,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.slide_changed_time = datetime.datetime.now()
             self.fetching_screenshot = False
             self.screen_capture = None
+            self._current_hide_mode = None
             # Hide Menu
             self.hide_menu = QtWidgets.QToolButton(self.toolbar)
             self.hide_menu.setObjectName('hide_menu')
@@ -296,17 +297,17 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                               text=translate('OpenLP.SlideController', 'Show Theme'),
                                               icon=UiIcons().live_theme,
                                               checked=False, can_shortcuts=True, category=self.category,
-                                              triggers=self.on_theme_display)
+                                              triggers=self.on_toggle_theme)
             self.blank_screen = create_action(self, 'blankScreen',
                                               text=translate('OpenLP.SlideController', 'Show Black'),
                                               icon=UiIcons().live_black,
                                               checked=False, can_shortcuts=True, category=self.category,
-                                              triggers=self.on_blank_display)
+                                              triggers=self.on_toggle_blank)
             self.desktop_screen = create_action(self, 'desktopScreen',
                                                 text=translate('OpenLP.SlideController', 'Show Desktop'),
                                                 icon=UiIcons().live_desktop,
                                                 checked=False, can_shortcuts=True, category=self.category,
-                                                triggers=self.on_hide_display)
+                                                triggers=self.on_toggle_desktop)
             self.hide_menu.setDefaultAction(self.show_screen)
             self.hide_menu.menu().addAction(self.show_screen)
             self.hide_menu.menu().addAction(self.theme_screen)
@@ -941,7 +942,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if self.service_item.is_command() and not self.service_item.is_media():
             Registry().execute(
                 '{text}_start'.format(text=self.service_item.name.lower()),
-                [self.service_item, self.is_live, self.get_hide_mode(), slide_no])
+                [self.service_item, self.is_live, self._current_hide_mode, slide_no])
         else:
             self._set_theme(self.service_item)
         # Reset blanking if needed
@@ -1074,11 +1075,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         self.set_hide_mode(None)
 
-    def on_toggle_blank(self):
+    def on_toggle_blank(self, checked=None):
         """
         Toggle the blank screen
         """
-        if self.get_hide_mode() == HideMode.Blank:
+        if self._current_hide_mode == HideMode.Blank:
             self.set_hide_mode(None)
         else:
             self.set_hide_mode(HideMode.Blank)
@@ -1091,11 +1092,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         self.set_hide_mode(HideMode.Blank)
 
-    def on_toggle_theme(self):
+    def on_toggle_theme(self, checked=None):
         """
         Toggle the Theme screen
         """
-        if self.get_hide_mode() == HideMode.Theme:
+        if self._current_hide_mode == HideMode.Theme:
             self.set_hide_mode(None)
         else:
             self.set_hide_mode(HideMode.Theme)
@@ -1108,11 +1109,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         self.set_hide_mode(HideMode.Theme)
 
-    def on_toggle_desktop(self):
+    def on_toggle_desktop(self, checked=None):
         """
         Toggle the desktop
         """
-        if self.get_hide_mode() == HideMode.Screen:
+        if self._current_hide_mode == HideMode.Screen:
             self.set_hide_mode(None)
         else:
             self.set_hide_mode(HideMode.Screen)
@@ -1131,6 +1132,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Blank/Hide the display screen (within a plugin if required).
         """
         self.log_debug('set_hide_mode {text}'.format(text=hide_mode))
+        self._current_hide_mode = hide_mode
         # Update ui buttons
         if hide_mode is None:
             self.hide_menu.setDefaultAction(self.blank_screen)
@@ -1378,8 +1380,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         Toggles the loop state.
         """
-        hide_mode = self.get_hide_mode()
-        if hide_mode is None and (self.play_slides_loop.isChecked() or self.play_slides_once.isChecked()):
+        if self._current_hide_mode is None and (self.play_slides_loop.isChecked() or self.play_slides_once.isChecked()):
             self.on_start_loop()
         else:
             self.on_stop_loop()
@@ -1528,13 +1529,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         if State().check_preconditions('media'):
             if self.is_live and not item.is_media() and item.requires_media():
-                self.media_controller.load_video(self.controller_type, item, self.get_hide_mode())
-            elif self.is_live and self.get_hide_mode() == HideMode.Theme:
+                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
+            elif self.is_live and self._current_hide_mode == HideMode.Theme:
                 self.media_controller.load_video(self.controller_type, item, HideMode.Blank)
                 self.set_hide_mode(HideMode.Blank)
             elif self.is_live or item.is_media():
                 # avoid loading the video if this is preview and the media is background
-                self.media_controller.load_video(self.controller_type, item, self.get_hide_mode())
+                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
             if not self.is_live:
                 self.preview_display.show()
 
@@ -1551,12 +1552,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
 
         :param no_theme: Does the new item support theme-blanking.
         """
-        hide_mode = self.get_hide_mode()
-        if hide_mode == HideMode.Theme and no_theme:
+        if self._current_hide_mode == HideMode.Theme and no_theme:
             # The new item-type doesn't support theme-blanking, so 'switch' to normal blanking.
             self.set_hide_mode(HideMode.Blank)
         else:
-            self.set_hide_mode(hide_mode)
+            self.set_hide_mode(self._current_hide_mode)
 
     def get_hide_mode(self):
         """
@@ -1564,14 +1564,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         if not self.is_live:
             return None
-        elif self.blank_screen.isChecked():
-            return HideMode.Blank
-        elif self.theme_screen.isChecked():
-            return HideMode.Theme
-        elif self.desktop_screen.isChecked():
-            return HideMode.Screen
         else:
-            return None
+            return self._current_hide_mode
 
 
 class PreviewController(RegistryBase, SlideController):
