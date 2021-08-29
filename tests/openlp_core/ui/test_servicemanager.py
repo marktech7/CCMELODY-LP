@@ -851,6 +851,90 @@ def test_theme_change_song(mocked_regenerate_service_items, settings):
         'The visibility should be True'
 
 
+@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+def test_regenerate_service_items(mocked_tree, settings):
+    """
+    test that an unmodified service item that is regenerated is still unmodified
+    """
+    # GIVEN: A service manager and a service item
+    mocked_main_window = MagicMock()
+    Registry().register('main_window', mocked_main_window)
+    service_manager = ServiceManager(None)
+    service_item = ServiceItem(None)
+    service_item.service_item_type = ServiceItemType.Command
+    service_item.edit_id = 1
+    service_item.icon = MagicMock(pixmap=MagicMock())
+    service_item.slides.append(MagicMock())
+    service_manager.service_items.insert(1, {'service_item': service_item, 'expanded': False})
+    service_manager._modified = False
+    service_manager.service_manager_list = MagicMock()
+    service_manager.repaint_service_list = MagicMock()
+    mocked_tree.return_value = MagicMock(value=MagicMock(return_value=None))
+
+    # WHEN: regenerate_service_items is called
+    service_manager.regenerate_service_items()
+
+    # THEN: The the service should be repainted and not be marked as modified
+    assert service_manager.is_modified() is False
+    service_manager.repaint_service_list.assert_called_once()
+
+
+@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+def test_regenerate_service_items_modified(mocked_tree, settings):
+    """
+    test that an unmodified service item that is regenerated is still unmodified
+    """
+    # GIVEN: A service manager and a service item
+    mocked_main_window = MagicMock()
+    Registry().register('main_window', mocked_main_window)
+    service_manager = ServiceManager(None)
+    service_item = ServiceItem(None)
+    service_item.service_item_type = ServiceItemType.Command
+    service_item.edit_id = 1
+    service_item.icon = MagicMock(pixmap=MagicMock())
+    service_item.slides.append(MagicMock())
+    service_manager.service_items.insert(1, {'service_item': service_item, 'expanded': False})
+    service_manager._modified = True
+    service_manager.service_manager_list = MagicMock()
+    service_manager.repaint_service_list = MagicMock()
+    mocked_tree.return_value = MagicMock(value=MagicMock(return_value=None))
+
+    # WHEN: regenerate_service_items is called
+    service_manager.regenerate_service_items()
+
+    # THEN: The the service should be repainted and still be marked as modified
+    assert service_manager.is_modified() is True
+    service_manager.repaint_service_list.assert_called_once()
+
+
+@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+def test_regenerate_service_items_set_modified(mocked_tree, settings):
+    """
+    test that a service item that is regenerated with the modified argument becomes modified
+    """
+    # GIVEN: A service manager and a service item
+    mocked_main_window = MagicMock()
+    Registry().register('main_window', mocked_main_window)
+    service_manager = ServiceManager(None)
+    service_item = ServiceItem(None)
+    service_item.service_item_type = ServiceItemType.Command
+    service_item.edit_id = 1
+    service_item.icon = MagicMock(pixmap=MagicMock())
+    service_item.slides.append(MagicMock())
+    service_manager.service_items.insert(1, {'service_item': service_item, 'expanded': False})
+    service_manager._modified = False
+    service_manager.service_manager_list = MagicMock()
+    service_manager.repaint_service_list = MagicMock()
+    mocked_tree.return_value = MagicMock(value=MagicMock(return_value=None))
+
+    # WHEN: regenerate_service_items is called
+    service_manager.regenerate_service_items(True)
+
+    # THEN: The the service should be repainted and now be marked as modified
+    assert service_manager.is_modified() is True
+    service_manager.repaint_service_list.assert_called_once()
+
+
 def test_service_manager_list_drag_enter_event():
     """
     Test that the ServiceManagerList.dragEnterEvent slot accepts the event
