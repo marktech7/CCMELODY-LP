@@ -492,6 +492,8 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     """
     # GIVEN:
     theme_manager.theme_path = MagicMock()
+    theme_manager.load_themes = MagicMock()
+    theme_manager.upgrade_themes = MagicMock()
 
     # WHEN:
     with patch('openlp.core.ui.thememanager.ThemeProgressForm'):
@@ -501,19 +503,5 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     assert theme_manager.progress_form is not None
     assert theme_manager.theme_form is not None
     assert theme_manager.file_rename_form is not None
-
-
-def test_bootstrap_completion(theme_manager):
-    """
-    Test the functions of bootstrap_post_setup are called.
-    """
-    # GIVEN:
-    theme_manager.load_themes = MagicMock()
-    theme_manager.upgrade_themes = MagicMock()
-
-    # WHEN:
-    theme_manager.bootstrap_completion()
-
-    # THEN:
     theme_manager.upgrade_themes.assert_called_once()
     theme_manager.load_themes.assert_called_once()
