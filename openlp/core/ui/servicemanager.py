@@ -1398,6 +1398,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param changed: True if the list has changed for new / removed items. False for a theme change.
         """
         self.application.set_busy_cursor()
+        was_modified = self.is_modified()
         # force reset of renderer as theme data has changed
         self.service_has_all_original_files = True
         if self.service_items:
@@ -1423,8 +1424,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.add_service_item(item['service_item'], False, expand=item['expanded'], repaint=False,
                                       selected=item['selected'])
             # Set to False as items may have changed rendering does not impact the saved song so True may also be valid
-            if changed:
-                self.set_modified()
+            self.set_modified(changed or was_modified)
             # Repaint it once only at the end
             self.repaint_service_list(-1, -1)
         self.application.set_normal_cursor()
