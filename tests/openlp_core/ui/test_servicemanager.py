@@ -38,7 +38,7 @@ from openlp.core.widgets.toolbar import OpenLPToolbar
 from tests.helpers.testmixin import TestMixin
 
 
-def test_initial_service_manager(registry):
+def test_initial_service_manager(settings):
     """
     Test the initial of service manager.
     """
@@ -81,7 +81,7 @@ def test_new_file(registry):
     assert mocked_slide_controller.slide_count == 0, 'Slide count should be zero'
 
 
-def test_create_basic_service(registry):
+def test_create_basic_service(settings):
     """
     Test the create basic service array
     """
@@ -97,7 +97,7 @@ def test_create_basic_service(registry):
     assert service['openlp_core']['lite-service'] is False, 'The lite service should be saved'
 
 
-def test_is_modified(registry):
+def test_is_modified(settings):
     """
     Test the is_modified() method
     """
@@ -112,7 +112,7 @@ def test_is_modified(registry):
     assert result is True, 'is_modified should return True'
 
 
-def test_supported_suffixes(registry):
+def test_supported_suffixes(settings):
     """
     Test the create basic service array
     """
@@ -127,7 +127,7 @@ def test_supported_suffixes(registry):
     assert 'pptx' in service_manager.suffixes, 'The suffix pptx should be in the list'
 
 
-def test_reset_supported_suffixes(registry):
+def test_reset_supported_suffixes(settings):
     """
     Test the create basic service array
     """
@@ -142,7 +142,7 @@ def test_reset_supported_suffixes(registry):
     assert service_manager.suffixes == [], 'There should not be any suffixes'
 
 
-def test_build_context_menu(registry):
+def test_build_context_menu(settings):
     """
     Test the creation of a context menu from a null service item.
     """
@@ -187,7 +187,7 @@ def test_build_context_menu(registry):
         'Should have been called once'
 
 
-def test_build_song_context_menu(registry, state):
+def test_build_song_context_menu(settings, state):
     """
     Test the creation of a context menu from service item of type text from Songs.
     """
@@ -253,7 +253,7 @@ def test_build_song_context_menu(registry, state):
     assert service_manager.timed_slide_interval.setChecked.call_count == 1, 'Should have be called once'
 
 
-def test_build_bible_context_menu(registry, state):
+def test_build_bible_context_menu(settings, state):
     """
     Test the creation of a context menu from service item of type text from Bibles.
     """
@@ -319,7 +319,7 @@ def test_build_bible_context_menu(registry, state):
     assert service_manager.timed_slide_interval.setChecked.call_count == 1, 'Should have be called once'
 
 
-def test_build_custom_context_menu(registry, state):
+def test_build_custom_context_menu(settings, state):
     """
     Test the creation of a context menu from service item of type text from Custom.
     """
@@ -386,7 +386,7 @@ def test_build_custom_context_menu(registry, state):
     assert service_manager.timed_slide_interval.setChecked.call_count == 1, 'Should have be called once'
 
 
-def test_build_image_context_menu(registry):
+def test_build_image_context_menu(settings):
     """
     Test the creation of a context menu from service item of type Image from Image.
     """
@@ -450,7 +450,7 @@ def test_build_image_context_menu(registry):
     assert service_manager.timed_slide_interval.setChecked.call_count == 1, 'Should have be called once'
 
 
-def test_build_media_context_menu(registry):
+def test_build_media_context_menu(settings):
     """
     Test the creation of a context menu from service item of type Command from Media.
     """
@@ -508,7 +508,7 @@ def test_build_media_context_menu(registry):
     assert service_manager.time_action.setVisible.call_count == 3, 'Should have be called three times'
 
 
-def test_build_presentation_pdf_context_menu(registry):
+def test_build_presentation_pdf_context_menu(settings):
     """
     Test the creation of a context menu from service item of type Command with PDF from Presentation.
     """
@@ -562,7 +562,7 @@ def test_build_presentation_pdf_context_menu(registry):
         'Should have be called once'
 
 
-def test_build_presentation_non_pdf_context_menu(registry):
+def test_build_presentation_non_pdf_context_menu(settings):
     """
     Test the creation of a context menu from service item of type Command with Impress from Presentation.
     """
@@ -614,14 +614,12 @@ def test_build_presentation_non_pdf_context_menu(registry):
 
 
 @patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
-def test_single_click_preview_true(mocked_singleShot, registry):
+def test_single_click_preview_true(mocked_singleShot, settings):
     """
     Test that when "Preview items when clicked in Service Manager" enabled the preview timer starts
     """
     # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = True
-    Registry().register('settings', mocked_settings)
+    settings.setValue('advanced/single click service preview', True)
     service_manager = ServiceManager(None)
     # WHEN: on_single_click_preview() is called
     service_manager.on_single_click_preview()
@@ -631,14 +629,12 @@ def test_single_click_preview_true(mocked_singleShot, registry):
 
 
 @patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
-def test_single_click_preview_false(mocked_singleShot, registry):
+def test_single_click_preview_false(mocked_singleShot, settings):
     """
     Test that when "Preview items when clicked in Service Manager" disabled the preview timer doesn't start
     """
     # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = False
-    Registry().register('settings', mocked_settings)
+    settings.setValue('advanced/single click service preview', False)
     service_manager = ServiceManager(None)
     # WHEN: on_single_click_preview() is called
     service_manager.on_single_click_preview()
@@ -648,14 +644,12 @@ def test_single_click_preview_false(mocked_singleShot, registry):
 
 @patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
 @patch('openlp.core.ui.servicemanager.ServiceManager.make_live')
-def test_single_click_preview_double(mocked_make_live, mocked_singleShot, registry):
+def test_single_click_preview_double(mocked_make_live, mocked_singleShot, settings):
     """
     Test that when a double click has registered the preview timer doesn't start
     """
     # GIVEN: A setting to enable "Preview items when clicked in Service Manager" and a service manager.
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = True
-    Registry().register('settings', mocked_settings)
+    settings.setValue('advanced/single click service preview', True)
     service_manager = ServiceManager(None)
     # WHEN: on_single_click_preview() is called following a double click
     service_manager.on_double_click_live()
@@ -666,7 +660,7 @@ def test_single_click_preview_double(mocked_make_live, mocked_singleShot, regist
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.make_preview')
-def test_single_click_timeout_single(mocked_make_preview, registry):
+def test_single_click_timeout_single(mocked_make_preview, settings):
     """
     Test that when a single click has been registered, the item is sent to preview
     """
@@ -680,7 +674,7 @@ def test_single_click_timeout_single(mocked_make_preview, registry):
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.make_preview')
 @patch('openlp.core.ui.servicemanager.ServiceManager.make_live')
-def test_single_click_timeout_double(mocked_make_live, mocked_make_preview, registry):
+def test_single_click_timeout_double(mocked_make_live, mocked_make_preview, settings):
     """
     Test that when a double click has been registered, the item does not goes to preview
     """
@@ -699,15 +693,13 @@ def test_single_click_timeout_double(mocked_make_live, mocked_make_preview, regi
 @patch('openlp.core.ui.servicemanager.shutil')
 @patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
 def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mocked_os, mocked_save_file_as,
-                                           mocked_zipfile, registry):
+                                           mocked_zipfile, settings):
     """
     Test that when a PermissionError is raised when trying to save a file, it is handled correctly
     """
     # GIVEN: A service manager, a service to save
     mocked_main_window = MagicMock()
     Registry().register('main_window', mocked_main_window)
-    Registry().register('application', MagicMock())
-    Registry().register('settings', MagicMock())
     service_manager = ServiceManager(None)
     service_manager._service_path = MagicMock()
     service_manager._save_lite = False
@@ -800,7 +792,7 @@ def test_save_file_falls_back_to_shutil(mocked_temp_file, mocked_shutil, mocked_
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
-def test_theme_change_global(mocked_regenerate_service_items, registry):
+def test_theme_change_global(mocked_regenerate_service_items, settings):
     """
     Test that when a Toolbar theme combobox displays correctly when the theme is set to Global
     """
@@ -809,9 +801,7 @@ def test_theme_change_global(mocked_regenerate_service_items, registry):
     service_manager.toolbar = OpenLPToolbar(None)
     service_manager.toolbar.add_toolbar_action('theme_combo_box', triggers=MagicMock())
     service_manager.toolbar.add_toolbar_action('theme_label', triggers=MagicMock())
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = ThemeLevel.Global
-    Registry().register('settings', mocked_settings)
+    settings.setValue('themes/theme level', ThemeLevel.Global)
 
     # WHEN: theme_change is called
     service_manager.theme_change()
@@ -822,7 +812,7 @@ def test_theme_change_global(mocked_regenerate_service_items, registry):
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
-def test_theme_change_service(mocked_regenerate_service_items, registry):
+def test_theme_change_service(mocked_regenerate_service_items, settings):
     """
     Test that when a Toolbar theme combobox displays correctly when the theme is set to Theme
     """
@@ -831,9 +821,7 @@ def test_theme_change_service(mocked_regenerate_service_items, registry):
     service_manager.toolbar = OpenLPToolbar(None)
     service_manager.toolbar.add_toolbar_action('theme_combo_box', triggers=MagicMock())
     service_manager.toolbar.add_toolbar_action('theme_label', triggers=MagicMock())
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = ThemeLevel.Service
-    Registry().register('settings', mocked_settings)
+    settings.setValue('themes/theme level', ThemeLevel.Service)
 
     # WHEN: theme_change is called
     service_manager.theme_change()
@@ -844,7 +832,7 @@ def test_theme_change_service(mocked_regenerate_service_items, registry):
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
-def test_theme_change_song(mocked_regenerate_service_items, registry):
+def test_theme_change_song(mocked_regenerate_service_items, settings):
     """
     Test that when a Toolbar theme combobox displays correctly when the theme is set to Song
     """
@@ -853,9 +841,7 @@ def test_theme_change_song(mocked_regenerate_service_items, registry):
     service_manager.toolbar = OpenLPToolbar(None)
     service_manager.toolbar.add_toolbar_action('theme_combo_box', triggers=MagicMock())
     service_manager.toolbar.add_toolbar_action('theme_label', triggers=MagicMock())
-    mocked_settings = MagicMock()
-    mocked_settings.value.return_value = ThemeLevel.Song
-    Registry().register('settings', mocked_settings)
+    settings.setValue('themes/theme level', ThemeLevel.Song)
 
     # WHEN: theme_change is called
     service_manager.theme_change()
