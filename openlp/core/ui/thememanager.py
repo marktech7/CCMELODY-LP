@@ -179,13 +179,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
+        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
+        self.load_themes()
 
     def bootstrap_completion(self):
         """
         process the bootstrap completion request
         """
-        self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
-        self.load_themes()
         Registry().register_function('theme_update_global', self.change_global_from_tab)
 
     def screen_changed(self):

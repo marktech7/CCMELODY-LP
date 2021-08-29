@@ -645,8 +645,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.log_info(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
-        elif self.settings.value('core/auto open'):
-            self.service_manager_contents.load_last_file()
         # This will store currently used layout preset so it remains enabled on next startup.
         # If any panel is enabled/disabled after preset is set, this setting is not saved.
         view_mode = self.settings.value('core/view mode')
