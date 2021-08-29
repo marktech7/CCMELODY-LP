@@ -105,6 +105,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         """
         Overloaded method from QTableWidget. Will recalculate the layout.
         """
+        super().resizeEvent(event)
         self.__recalculate_layout()
         self.resize_event.emit()
 
