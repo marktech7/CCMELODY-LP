@@ -301,7 +301,6 @@ class Ui_ServiceManager(object):
                                               self.collapse_action])
         Registry().register_function('theme_update_list', self.update_theme_list)
         Registry().register_function('config_screen_changed', self.regenerate_service_items)
-        Registry().register_function('theme_update_global', self.theme_change)
         Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
 
