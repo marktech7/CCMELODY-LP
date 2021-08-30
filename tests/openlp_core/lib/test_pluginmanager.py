@@ -53,7 +53,6 @@ def plugin_manager_env(registry, state):
     Registry().register('settings', MagicMock())
 
 
-@skip
 def test_bootstrap_initialise(settings, state):
     """
     Test the PluginManager.bootstrap_initialise() method
