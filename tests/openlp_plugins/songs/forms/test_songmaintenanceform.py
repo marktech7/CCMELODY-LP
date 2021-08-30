@@ -23,10 +23,11 @@ Package to test the openlp.plugins.songs.forms.songmaintenanceform package.
 """
 import pytest
 import os
-import shutil
+import shutil, errno
 
 from unittest.mock import MagicMock, call, patch, ANY
 
+import sqlalchemy.orm
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
@@ -459,16 +460,12 @@ def test_check_object_exists(form_env):
     # THEN: The result should be False
     assert result is True
 
-
-def test_merge_song_books(registry, settings):
+def test_merge_song_books(registry, settings, temp_folder):
     """
     Test the functionality of merging 2 song books.
     """
-    # GIVEN a test database with test songs and songbooks, and a song maintenance form
-    tmp_folder = mkdtemp()
-    db_path = os.path.join(TEST_RESOURCES_PATH, 'songs', 'songs-2.9.2.sqlite')
-    db_tmp_path = os.path.join(tmp_folder, 'songs-2.9.2.sqlite')
-    shutil.copyfile(db_path, db_tmp_path)
+    # GIVEN a test database populated with test data, and a song maintenance form
+    db_tmp_path = os.path.join(temp_folder, 'test-songs-2.9.2.sqlite')
     manager = Manager('songs', init_schema, db_file_path=db_tmp_path)
 
     # create 2 song books, both with the same name
