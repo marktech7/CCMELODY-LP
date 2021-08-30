@@ -23,11 +23,9 @@ Package to test the openlp.plugins.songs.forms.songmaintenanceform package.
 """
 import pytest
 import os
-import shutil, errno
 
 from unittest.mock import MagicMock, call, patch, ANY
 
-import sqlalchemy.orm
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
@@ -35,9 +33,6 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.db import Manager
 from openlp.plugins.songs.lib.db import init_schema, Book, Song, SongBookEntry
 from openlp.plugins.songs.forms.songmaintenanceform import SongMaintenanceForm
-
-from tests.utils.constants import TEST_RESOURCES_PATH
-from tempfile import mkdtemp
 
 from sqlalchemy.sql import and_
 
@@ -459,6 +454,7 @@ def test_check_object_exists(form_env):
 
     # THEN: The result should be False
     assert result is True
+
 
 def test_merge_song_books(registry, settings, temp_folder):
     """
