@@ -41,7 +41,7 @@ from openlp.core.common.path import files_to_paths, str_to_path
 
 log = logging.getLogger(__name__)
 
-__version__ = 3
+__version__ = 2
 
 
 class ProxyMode(IntEnum):
@@ -447,10 +447,7 @@ class Settings(QtCore.QSettings):
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
         ('core/audio repeat list', '', []),
-        ('core/save prompt', '', [])
-    ]
-    # Settings upgrades for 3.0 in-development theme setting name change
-    __setting_upgrade_3__ = [
+        ('core/save prompt', '', []),
         ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])])
     ]
 
