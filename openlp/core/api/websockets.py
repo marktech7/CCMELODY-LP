@@ -25,6 +25,7 @@ changes from within OpenLP. It uses JSON to communicate with the remotes.
 import asyncio
 import json
 import logging
+import uuid
 
 from PyQt5 import QtCore
 import time
@@ -102,46 +103,58 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
         :param websocket: request from client
         :param path: determines the endpoints supported - Not needed
         """
-        log.debug('WebSocket handle_websocket connection')
+        client_id = uuid.uuid4() if log.getEffectiveLevel() == logging.DEBUG else 0
+        log.debug(f'(client_id={client_id}) WebSocket handle_websocket connection')
         queue = asyncio.Queue()
-        await self.register(websocket, queue)
+        await self.register(websocket, client_id, queue)
         try:
             reply = poller.get_state()
             if reply:
-                json_reply = json.dumps(reply).encode()
-                await websocket.send(json_reply)
+                await self.send_reply(websocket, client_id, reply)
             while True:
-                try:
-                    reply = await asyncio.wait_for(queue.get(), 60)
-                except asyncio.TimeoutError:
-                    # Took 1 minute without any UI event, closing if connection is closed, else continue waiting
-                    if not websocket.open:
-                        raise Exception('Disconnected')
-                json_reply = json.dumps(reply).encode()
-                await websocket.send(json_reply)
+                done, pending = await asyncio.wait(
+                    [queue.get(), websocket.wait_closed()],
+                    return_when=asyncio.FIRST_COMPLETED
+                )
+                for task in pending:
+                    task.cancel()
+                # If there is a new item in client's queue, await_result will contain an item, if the connection is
+                # closed, it will be None.
+                await_result = done.pop().result()
+                if await_result is not None:
+                    await self.send_reply(websocket, client_id, await_result)
+                else:
+                    break
         finally:
-            await self.unregister(websocket, queue)
+            await self.unregister(websocket, client_id, queue)
 
-    async def register(self, websocket, queue):
+    async def register(self, websocket, client_id, queue):
         """
         Register Clients
         :param websocket: The client details
         :param queue: The Command Queue
         :return:
         """
-        log.debug('WebSocket handler register')
+        log.debug(f'(client_id={client_id}) WebSocket handler register')
         USERS.add(websocket)
         self.queues.add(queue)
+        log.debug('WebSocket clients count: {client_count}'.format(client_count=len(USERS)))
 
-    async def unregister(self, websocket, queue):
+    async def unregister(self, websocket, client_id, queue):
         """
         Unregister Clients
         :param websocket: The client details
         :return:
         """
-        log.debug('WebSocket handler unregister')
         USERS.remove(websocket)
         self.queues.remove(queue)
+        log.debug(f'(client_id={client_id}) WebSocket handler unregister')
+        log.debug('WebSocket clients count: {client_count}'.format(client_count=len(USERS)))
+
+    async def send_reply(self, websocket, client_id, reply):
+        json_reply = json.dumps(reply).encode()
+        await websocket.send(json_reply)
+        log.debug(f'(client_id={client_id}) WebSocket send reply: {json_reply}')
 
     def add_state_to_queues(self, state):
         """
