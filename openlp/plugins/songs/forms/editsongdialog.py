@@ -289,7 +289,7 @@ class Ui_EditSongDialog(object):
         self.warning_label = QtWidgets.QLabel(edit_song_dialog)
         self.warning_label.setObjectName('warning_label')
         self.bottom_layout.addWidget(self.warning_label)
-        self.button_box = create_button_box(edit_song_dialog, 'button_box', ['cancel', 'save'])
+        self.button_box = create_button_box(edit_song_dialog, 'button_box', ['cancel', 'save', 'help'])
         self.bottom_layout.addWidget(self.button_box)
         self.dialog_layout.addLayout(self.bottom_layout)
         self.retranslate_ui(edit_song_dialog)

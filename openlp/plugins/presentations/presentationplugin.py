@@ -26,12 +26,15 @@ import logging
 import os
 
 
-from openlp.core.common import extension_loader
+from openlp.core.common import extension_loader, sha256_file_hash
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
+from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
+
+from openlp.plugins.presentations.lib.db import Item, init_schema
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController
 from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
 from openlp.plugins.presentations.lib.presentationtab import PresentationTab
@@ -51,12 +54,13 @@ class PresentationPlugin(Plugin):
         """
         PluginPresentation constructor.
         """
-        log.debug('Initialised')
-        self.controllers = {}
-        Plugin.__init__(self, 'presentations', None)
+        super().__init__('presentations', PresentationMediaItem)
+        self.manager = Manager(plugin_name='media', init_schema=init_schema)
         self.weight = -8
         self.icon_path = UiIcons().presentation
         self.icon = build_icon(self.icon_path)
+        self.controllers = {}
+        self.dnd_id = 'Presentations'
         State().add_service('presentation', self.weight, is_plugin=True)
         State().update_pre_conditions('presentation', self.check_pre_conditions())
 
@@ -73,7 +77,25 @@ class PresentationPlugin(Plugin):
         Initialise the plugin. Determine which controllers are enabled are start their processes.
         """
         log.info('Presentations Initialising')
-        super(PresentationPlugin, self).initialise()
+        # Check if the thumbnail scheme needs to be updated
+        has_old_scheme = False
+        if self.settings.value('presentations/thumbnail_scheme') != 'sha256file':
+            self.settings.setValue('presentations/thumbnail_scheme', 'sha256file')
+            has_old_scheme = True
+        # Migrate each file
+        presentation_paths = self.settings.value('presentations/presentations files') or []
+        for path in presentation_paths:
+            # check to see if the file exists before trying to process it.
+            if not path.exists():
+                continue
+            item = Item(name=path.name, file_path=str(path))
+            self.media_item.clean_up_thumbnails(path, clean_for_update=True)
+            item.file_hash = sha256_file_hash(path)
+            if has_old_scheme:
+                self.media_item.update_thumbnail_scheme(path)
+            self.manager.save_object(item)
+        self.settings.remove('presentations/presentations files')
+        super().initialise()
         for controller in self.controllers:
             if self.controllers[controller].enabled():
                 try:
@@ -127,26 +149,6 @@ class PresentationPlugin(Plugin):
             controller = controller_class(self)
             self.register_controllers(controller)
         return bool(self.controllers)
-
-    def app_startup(self):
-        """
-        Perform tasks on application startup.
-        """
-        # TODO: Can be removed when the upgrade path to OpenLP 3.0 is no longer needed, also ensure code in
-        #       PresentationDocument.get_thumbnail_folder and PresentationDocument.get_temp_folder is removed
-        super().app_startup()
-        presentation_paths = self.settings.value('presentations/presentations files')
-        for path in presentation_paths:
-            # check to see if the file exists before trying to process it.
-            if path.exists():
-                self.media_item.clean_up_thumbnails(path, clean_for_update=True)
-        self.media_item.list_view.clear()
-        # Update the thumbnail scheme if needed
-        if self.settings.value('presentations/thumbnail_scheme') != 'sha256file':
-            for path in presentation_paths:
-                self.media_item.update_thumbnail_scheme(path)
-            self.settings.setValue('presentations/thumbnail_scheme', 'sha256file')
-        self.media_item.validate_and_load(presentation_paths)
 
     @staticmethod
     def about():

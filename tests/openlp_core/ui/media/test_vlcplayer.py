@@ -26,7 +26,7 @@ import sys
 import pytest
 from datetime import timedelta
 from unittest import skipIf
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, call, patch, ANY
 
 from openlp.core.common import is_macosx
 from openlp.core.common.registry import Registry
@@ -367,7 +367,7 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
 
     # WHEN: An audio CD is loaded into VLC
     with patch.object(vlc_player, 'volume') as mocked_volume, \
-            patch.object(vlc_player, 'media_state_wait'):
+            patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -377,6 +377,7 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
     mocked_volume.assert_called_with(mocked_controller, 100)
+    mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
     assert result is True
 
 
@@ -408,11 +409,12 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     mocked_subitems.count.return_value = 1
     mocked_subitems.item_at_index.return_value = mocked_vlc_media
     mocked_vlc_media.subitems.return_value = mocked_subitems
+
     vlc_player = VlcPlayer(None)
 
     # WHEN: An audio CD is loaded into VLC
     with patch.object(vlc_player, 'volume') as mocked_volume, \
-            patch.object(vlc_player, 'media_state_wait'):
+            patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -422,6 +424,7 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
     mocked_volume.assert_called_with(mocked_controller, 100)
+    mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
     assert result is True
 
 
@@ -482,15 +485,15 @@ def test_media_state_wait(mocked_get_vlc):
     mocked_vlc = MagicMock()
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 2
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 2
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_display, 2)
+    result = vlc_player.media_state_wait(mocked_controller, 2)
 
     # THEN: The results should be True
     assert result is True
@@ -506,15 +509,15 @@ def test_media_state_wait_error(mocked_get_vlc, vlc_env):
     mocked_vlc = MagicMock()
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 1
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 1
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_display, 2)
+    result = vlc_player.media_state_wait(mocked_controller, 2)
 
     # THEN: The results should be True
     assert result is False
@@ -532,15 +535,15 @@ def test_media_state_wait_times_out(mocked_get_vlc, vlc_env):
     mocked_vlc = MagicMock()
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 2
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 2
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_display, 3)
+    result = vlc_player.media_state_wait(mocked_controller, 3)
 
     # THEN: The results should be True
     assert result is False
@@ -582,6 +585,8 @@ def test_play(mocked_get_vlc, mocked_threading):
     mocked_controller.media_info.start_time = 0
     mocked_controller.media_info.media_type = MediaType.Video
     mocked_controller.media_info.volume = 100
+    mocked_controller.media_info.start_time = 20000
+    mocked_controller.media_info.length = 10000
     mocked_controller.vlc_media_player.get_media.return_value = mocked_media
     vlc_player = VlcPlayer(None)
     vlc_player.set_state(MediaState.Paused, mocked_controller)
@@ -595,6 +600,9 @@ def test_play(mocked_get_vlc, mocked_threading):
     # THEN: A bunch of things should happen to play the media
     mocked_thread.start.assert_called_with()
     mocked_volume.assert_called_with(mocked_controller, 100)
+    mocked_controller.seek_slider.setMaximum.assert_called_with(30000)
+    mocked_controller.seek_slider.setMinimum.assert_called_with(20000)
+
     assert MediaState.Playing == vlc_player.get_live_state()
     assert result is True, 'The value returned from play() should be True'
 

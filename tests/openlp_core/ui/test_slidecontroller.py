@@ -301,6 +301,7 @@ def test_on_toggle_blank(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_blank() is called
     slide_controller.on_toggle_blank()
@@ -318,6 +319,7 @@ def test_on_toggle_blank_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Blank)
+    slide_controller._current_hide_mode = HideMode.Blank
 
     # WHEN: on_toggle_blank() is called
     slide_controller.on_toggle_blank()
@@ -335,6 +337,7 @@ def test_on_toggle_theme(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_theme() is called
     slide_controller.on_toggle_theme()
@@ -352,6 +355,7 @@ def test_on_toggle_theme_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Theme)
+    slide_controller._current_hide_mode = HideMode.Theme
 
     # WHEN: on_toggle_theme() is called
     slide_controller.on_toggle_theme()
@@ -369,6 +373,7 @@ def test_on_toggle_desktop(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_desktop() is called
     slide_controller.on_toggle_desktop()
@@ -386,6 +391,7 @@ def test_on_toggle_desktop_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Screen)
+    slide_controller._current_hide_mode = HideMode.Screen
 
     # WHEN: on_toggle_desktop() is called
     slide_controller.on_toggle_desktop()
@@ -1069,6 +1075,7 @@ def test_process_item_song_vlc(mocked_execute, registry, state_media):
     slide_controller.displays = [MagicMock()]
     slide_controller.split = 0
     slide_controller.type_prefix = 'test'
+    slide_controller._current_hide_mode = None
 
     # WHEN: _process_item is called
     slide_controller._process_item(mocked_media_item, 0)

@@ -94,7 +94,7 @@ class Ui_CustomEditDialog(object):
         self.bottom_form_layout.addRow(self.credit_label, self.credit_edit)
         self.dialog_layout.addLayout(self.bottom_form_layout)
         self.preview_button = QtWidgets.QPushButton()
-        self.button_box = create_button_box(custom_edit_dialog, 'button_box', ['cancel', 'save'],
+        self.button_box = create_button_box(custom_edit_dialog, 'button_box', ['cancel', 'save', 'help'],
                                             [self.preview_button])
         self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
         self.dialog_layout.addWidget(self.button_box)

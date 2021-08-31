@@ -24,7 +24,7 @@ Package to test the openlp.plugins.bibles.forms.bibleimportform package.
 from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtTest, QtCore
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.forms.bibleimportform import BibleImportForm
@@ -89,3 +89,17 @@ class TestBibleImportForm(TestCase, TestMixin):
 
         # THEN: sword_tab_widget.setDisabled(True) should have been called
         self.form.sword_tab_widget.setDisabled.assert_called_with(True)
+
+    @patch.object(BibleImportForm, 'provide_help')
+    def test_help(self, mocked_help, settings):
+        """
+        Test the help button
+        """
+        # GIVEN: A bible import wizard and a patched help function
+        bible_import_form = BibleImportForm(None, MagicMock(), None)
+
+        # WHEN: The Help button is clicked
+        QtTest.QTest.mouseClick(bible_import_form.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
+
+        # THEN: The Help function should be called
+        mocked_help.assert_called_once()

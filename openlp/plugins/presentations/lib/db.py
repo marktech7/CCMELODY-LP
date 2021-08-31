@@ -19,30 +19,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-For the Presentation tests
+The :mod:`~openlp.plugins.presentations.lib.db` module contains the database layer for the presentations plugin
 """
-import pytest
-from unittest.mock import MagicMock, patch
+from sqlalchemy import MetaData
+from sqlalchemy.ext.declarative import declarative_base
 
-from openlp.core.common.registry import Registry
-from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
+from openlp.core.lib.db import FolderMixin, ItemMixin, init_db, init_url
 
-
-@pytest.fixture
-def media_item(settings, mock_plugin):
-    """Local test setup"""
-    Registry().register('service_manager', MagicMock())
-    Registry().register('main_window', MagicMock())
-    with patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup'), \
-            patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item'):
-        m_item = PresentationMediaItem(None, mock_plugin, MagicMock())
-        m_item.settings_section = 'media'
-    return m_item
+Base = declarative_base(MetaData())
 
 
-@pytest.fixture()
-def mock_plugin(temp_folder):
-    m_plugin = MagicMock()
-    m_plugin.settings_section = temp_folder
-    m_plugin.manager = MagicMock()
-    yield m_plugin
+class Folder(Base, FolderMixin):
+    """A folder holds items or other folders"""
+
+
+class Item(Base, ItemMixin):
+    """An item is something that can be contained within a folder"""
+
+
+def init_schema(*args, **kwargs):
+    """
+    Set up the media database and initialise the schema
+    """
+    session, metadata = init_db(init_url('presentations'), base=Base)
+    metadata.create_all(checkfirst=True)
+    return session

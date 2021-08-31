@@ -30,7 +30,7 @@ import urllib.request
 from pathlib import Path
 from tempfile import gettempdir
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from openlp.core.api.deploy import get_latest_size, download_and_check
 from openlp.core.common import trace_error_handler
@@ -100,7 +100,8 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Create and set up the first time wizard.
         """
-        super(FirstTimeForm, self).__init__(parent)
+        super(FirstTimeForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                            QtCore.Qt.WindowCloseButtonHint)
         self.has_web_access = True
         self.web = ''
         self.is_index_downloaded = False
@@ -109,6 +110,14 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.themes_list_widget.itemSelectionChanged.connect(self.on_themes_list_widget_selection_changed)
         self.themes_deselect_all_button.clicked.connect(self.themes_list_widget.clearSelection)
         self.themes_select_all_button.clicked.connect(self.themes_list_widget.selectAll)
+        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.helpRequested.connect(self.provide_help)
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/wizard.html"))
 
     def get_next_page_id(self):
         """

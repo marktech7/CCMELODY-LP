@@ -19,30 +19,26 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-For the Presentation tests
+Package to test the openlp.plugins.songusage.forms.songusagedetailform package.
 """
-import pytest
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common.registry import Registry
-from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
+from PyQt5 import QtWidgets, QtTest, QtCore
+
+from openlp.plugins.songusage.forms.songusagedetailform import SongUsageDetailForm
 
 
-@pytest.fixture
-def media_item(settings, mock_plugin):
-    """Local test setup"""
-    Registry().register('service_manager', MagicMock())
-    Registry().register('main_window', MagicMock())
-    with patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup'), \
-            patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item'):
-        m_item = PresentationMediaItem(None, mock_plugin, MagicMock())
-        m_item.settings_section = 'media'
-    return m_item
+@patch.object(SongUsageDetailForm, 'provide_help')
+def test_help(mocked_help, settings):
+    """
+    Test the help button
+    """
+    # GIVEN: A songusage detail form and a patched help function
+    main_window = QtWidgets.QMainWindow()
+    detail_form = SongUsageDetailForm(MagicMock(), main_window)
 
+    # WHEN: The Help button is clicked
+    QtTest.QTest.mouseClick(detail_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
 
-@pytest.fixture()
-def mock_plugin(temp_folder):
-    m_plugin = MagicMock()
-    m_plugin.settings_section = temp_folder
-    m_plugin.manager = MagicMock()
-    yield m_plugin
+    # THEN: The Help function should be called
+    mocked_help.assert_called_once()

@@ -1691,6 +1691,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     else:
                         self.drop_position = get_parent_item_data(item) - 1
                 Registry().execute('{plugin}_add_service_item'.format(plugin=plugin), replace)
+        else:
+            self.log_warning('Unrecognised item')
 
     def update_theme_list(self, theme_list):
         """

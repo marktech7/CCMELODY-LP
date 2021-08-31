@@ -71,7 +71,7 @@ class Ui_SongUsageDetailDialog(object):
         self.report_path_edit = PathEdit(self.file_group_box, path_type=PathEditType.Directories, show_revert=False)
         self.file_horizontal_layout.addWidget(self.report_path_edit)
         self.vertical_layout.addWidget(self.file_group_box)
-        self.button_box = create_button_box(song_usage_detail_dialog, 'button_box', ['cancel', 'ok'])
+        self.button_box = create_button_box(song_usage_detail_dialog, 'button_box', ['cancel', 'ok', 'help'])
         self.vertical_layout.addWidget(self.button_box)
         self.retranslate_ui(song_usage_detail_dialog)
         self.report_path_edit.pathChanged.connect(song_usage_detail_dialog.on_report_path_edit_path_changed)

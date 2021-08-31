@@ -336,6 +336,8 @@ class UiStrings(metaclass=Singleton):
         """
         self.About = translate('OpenLP.Ui', 'About')
         self.Add = translate('OpenLP.Ui', '&Add')
+        self.AddFolder = translate('OpenLP.Ui', 'Add folder')
+        self.AddFolderDot = translate('OpenLP.Ui', 'Add folder.')
         self.AddGroup = translate('OpenLP.Ui', 'Add group')
         self.AddGroupDot = translate('OpenLP.Ui', 'Add group.')
         self.Advanced = translate('OpenLP.Ui', 'Advanced')

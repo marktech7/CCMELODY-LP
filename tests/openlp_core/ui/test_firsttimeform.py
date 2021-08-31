@@ -25,7 +25,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, call, patch, DEFAULT
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtTest
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui.firsttimeform import FirstTimeForm, ThemeListWidgetItem
@@ -482,3 +482,18 @@ def test_successful_download(mocked_build_icon, mocked_set_icon):
     # THEN: An icon should have been built from the downloaded file and used to replace the loading icon
     mocked_build_icon.assert_called_once_with(test_path)
     mocked_set_icon.assert_has_calls([call(UiIcons().picture), call(mocked_build_icon())])
+
+
+@patch.object(FirstTimeForm, 'provide_help')
+def test_help(mocked_help, settings):
+    """
+    Test the help button
+    """
+    # GIVEN: A First Time Wizard and a patched help function
+    frw = FirstTimeForm(None)
+
+    # WHEN: The Help button is clicked
+    QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
+
+    # THEN: The Help function should be called
+    mocked_help.assert_called_once()

@@ -89,6 +89,7 @@ class UiIcons(metaclass=Singleton):
             'error': {'icon': 'fa.exclamation', 'attr': 'red'},
             'exception': {'icon': 'fa.times-circle'},
             'exit': {'icon': 'fa.sign-out'},
+            'folder': {'icon': 'fa.folder'},
             'group': {'icon': 'fa.object-group'},
             'inactive': {'icon': 'fa.child', 'attr': 'lightGray'},
             'info': {'icon': 'fa.info'},

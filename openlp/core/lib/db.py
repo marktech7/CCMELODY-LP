@@ -30,10 +30,11 @@ from urllib.parse import quote_plus as urlquote
 
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
-from sqlalchemy import Column, MetaData, Table, UnicodeText, create_engine, types
-from sqlalchemy.engine.url import make_url, URL
+from sqlalchemy import Column, ForeignKey, Integer, MetaData, Table, Unicode, UnicodeText, create_engine, types
+from sqlalchemy.engine.url import URL, make_url
 from sqlalchemy.exc import DBAPIError, InvalidRequestError, OperationalError, ProgrammingError, SQLAlchemyError
-from sqlalchemy.orm import mapper, scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import backref, mapper, relationship, scoped_session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 from openlp.core.common import delete_file
@@ -42,7 +43,6 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
-
 
 log = logging.getLogger(__name__)
 
@@ -222,6 +222,49 @@ def get_upgrade_op(session):
     """
     context = MigrationContext.configure(session.bind.connect())
     return Operations(context)
+
+
+class CommonMixin(object):
+    """
+    Base class to automate table name and ID column.
+    """
+    @declared_attr
+    def __tablename__(self):
+        return self.__name__.lower()
+
+    id = Column(Integer, primary_key=True)
+
+
+class FolderMixin(CommonMixin):
+    """
+    A mixin to provide most of the fields needed for folder support
+    """
+    name = Column(Unicode(255), nullable=False, index=True)
+
+    @declared_attr
+    def parent_id(self):
+        return Column(Integer(), ForeignKey('folder.id'))
+
+    @declared_attr
+    def folders(self):
+        return relationship('Folder', backref=backref('parent', remote_side='Folder.id'), order_by='Folder.name')
+
+    @declared_attr
+    def items(self):
+        return relationship('Item', backref='folder', order_by='Item.name')
+
+
+class ItemMixin(CommonMixin):
+    """
+    A mixin to provide most of the fields needed for folder support
+    """
+    name = Column(Unicode(255), nullable=False, index=True)
+    file_path = Column(Unicode(255))
+    file_hash = Column(Unicode(255))
+
+    @declared_attr
+    def folder_id(self):
+        return Column(Integer(), ForeignKey('folder.id'))
 
 
 class BaseModel(object):
@@ -494,16 +537,19 @@ class Manager(object):
                     if try_count >= 2:
                         raise
 
-    def get_object_filtered(self, object_class, filter_clause):
+    def get_object_filtered(self, object_class, *filter_clauses):
         """
         Returns an object matching specified criteria
 
         :param object_class: The type of object to return
         :param filter_clause: The criteria to select the object by
         """
+        query = self.session.query(object_class)
+        for filter_clause in filter_clauses:
+            query = query.filter(filter_clause)
         for try_count in range(3):
             try:
-                return self.session.query(object_class).filter(filter_clause).first()
+                return query.first()
             except OperationalError as oe:
                 # This exception clause is for users running MySQL which likes to terminate connections on its own
                 # without telling anyone. See bug #927473. However, other dbms can raise it, usually in a

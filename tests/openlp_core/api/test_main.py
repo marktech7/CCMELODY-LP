@@ -18,31 +18,11 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-"""
-For the Presentation tests
-"""
-import pytest
-from unittest.mock import MagicMock, patch
 
-from openlp.core.common.registry import Registry
-from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
+from openlp.core.api.main import get_mime_type
 
 
-@pytest.fixture
-def media_item(settings, mock_plugin):
-    """Local test setup"""
-    Registry().register('service_manager', MagicMock())
-    Registry().register('main_window', MagicMock())
-    with patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup'), \
-            patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item'):
-        m_item = PresentationMediaItem(None, mock_plugin, MagicMock())
-        m_item.settings_section = 'media'
-    return m_item
-
-
-@pytest.fixture()
-def mock_plugin(temp_folder):
-    m_plugin = MagicMock()
-    m_plugin.settings_section = temp_folder
-    m_plugin.manager = MagicMock()
-    yield m_plugin
+def test_get_mime_type():
+    assert get_mime_type('index.html') == 'text/html'
+    assert get_mime_type('stage.js') == 'application/javascript'
+    assert get_mime_type('stage.css') == 'text/css'
