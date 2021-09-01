@@ -28,9 +28,8 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
-from openlp.core.ui.style import HAS_DARK_STYLE
+from openlp.core.ui.style import is_ui_theme_dark
 
 
 log = logging.getLogger(__name__)
@@ -180,7 +179,7 @@ class UiIcons(metaclass=Singleton):
         """
         Load the list of icons to be processed
         """
-        is_dark = (HAS_DARK_STYLE and Registry().get('settings').value('advanced/use_dark_style'))
+        is_dark = is_ui_theme_dark()
         for key in icon_list:
             try:
                 icon = icon_list[key]['icon']

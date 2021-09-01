@@ -24,6 +24,7 @@ This class contains the core default settings.
 import datetime
 import json
 import logging
+from openlp.core.ui.style import UiThemes
 import os
 from enum import IntEnum
 from pathlib import Path
@@ -104,6 +105,16 @@ def upgrade_screens(number, x_position, y_position, height, width, can_override,
     }
 
 
+def upgrade_dark_theme_to_ui_theme(value):
+    """
+    Upgrade the dark theme setting to use the new UiThemes setting.
+
+    :param bool value: The old use_dark_style setting
+    :returns UiThemes: New UiThemes value
+    """
+    return UiThemes.QDarkStyle if value else UiThemes.Automatic
+
+
 class Settings(QtCore.QSettings):
     """
     Class to wrap QSettings.
@@ -174,7 +185,7 @@ class Settings(QtCore.QSettings):
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
         'advanced/search as type': True,
-        'advanced/use_dark_style': False,
+        'advanced/ui_theme_name': UiThemes.Automatic,
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',
@@ -446,7 +457,8 @@ class Settings(QtCore.QSettings):
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
         ('core/audio repeat list', '', []),
-        ('core/save prompt', '', [])
+        ('core/save prompt', '', []),
+        ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])])
     ]
 
     @staticmethod
