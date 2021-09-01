@@ -189,6 +189,8 @@ class VlcPlayer(MediaPlayer):
             if not audio_cd_tracks or audio_cd_tracks.count() < 1:
                 return False
             controller.vlc_media = audio_cd_tracks.item_at_index(int(controller.media_info.title_track))
+            if not controller.vlc_media:
+                return False
             # VLC's start and stop time options work on seconds
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
             controller.vlc_media.add_option(f"stop-time={int(controller.media_info.end_time // 1000)}")
@@ -218,8 +220,12 @@ class VlcPlayer(MediaPlayer):
         else:
             controller.vlc_media = controller.vlc_instance.media_new_path(path)
             controller.vlc_media_player.set_media(controller.vlc_media)
+            controller.media_info.start_time = 0
+            controller.media_info.end_time = controller.media_info.length
         # parse the metadata of the file
         controller.vlc_media.parse()
+        controller.seek_slider.setMinimum(controller.media_info.start_time)
+        controller.seek_slider.setMaximum(controller.media_info.end_time)
         self.volume(controller, controller.media_info.volume)
         return True
 
@@ -285,10 +291,9 @@ class VlcPlayer(MediaPlayer):
                 start_time = controller.media_info.timer
         log.debug('mediatype: ' + str(controller.media_info.media_type))
         self.volume(controller, controller.media_info.volume)
-        if start_time > 0 and controller.vlc_media_player.is_seekable():
-            controller.vlc_media_player.set_time(int(start_time))
-        controller.seek_slider.setMaximum(controller.media_info.start_time + controller.media_info.length)
-        controller.seek_slider.setMinimum(controller.media_info.start_time)
+        #if start_time > 0 and controller.vlc_media_player.is_seekable():
+        #    controller.vlc_media_player.set_time(int(start_time))
+
         self.set_state(MediaState.Playing, controller)
         return True
 
@@ -333,9 +338,6 @@ class VlcPlayer(MediaPlayer):
         :param seek_value: The position of where a seek goes to
         :param controller: The controller where the media is
         """
-        if controller.media_info.media_type == MediaType.CD \
-                or controller.media_info.media_type == MediaType.DVD:
-            seek_value += int(controller.media_info.start_time)
         if controller.vlc_media_player.is_seekable():
             controller.vlc_media_player.set_time(seek_value)
 
