@@ -383,10 +383,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.vlc_player.load(controller, display, filename)
         self.resize(controller, self.vlc_player)
         self.current_media_players[controller.controller_type] = self.vlc_player
-        if audio_track == -1 and subtitle_track == -1:
-            controller.media_info.media_type = MediaType.CD
-        else:
-            controller.media_info.media_type = MediaType.DVD
         return True
 
     def _check_file_type(self, controller, display):

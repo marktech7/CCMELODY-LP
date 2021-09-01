@@ -254,9 +254,10 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.blockSignals(True)
             # Get titles, insert in combobox
             titles = self.vlc_media_player.video_get_title_description()
+            titles = get_vlc().track_description_list(titles)
             self.titles_combo_box.clear()
             for title in titles:
-                self.titles_combo_box.addItem(title.name.decode(), title.id)
+                self.titles_combo_box.addItem(title[1].decode(), title[0])
             # Re-enable signals
             self.blockSignals(False)
             # Main title is usually title #1
