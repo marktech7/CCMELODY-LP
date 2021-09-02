@@ -270,30 +270,11 @@ class VlcPlayer(MediaPlayer):
         :return:
         """
         vlc = get_vlc()
-        start_time = controller.media_info.start_time
-        log.debug('vlc play')
-        if controller.is_live:
-            if self.get_live_state() != MediaState.Paused and controller.media_info.timer > 0:
-                start_time = controller.media_info.timer
-        else:
-            if self.get_preview_state() != MediaState.Paused and controller.media_info.timer > 0:
-                start_time = controller.media_info.timer
+        log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
         threading.Thread(target=controller.vlc_media_player.play).start()
         if not self.media_state_wait(controller, vlc.State.Playing):
             return False
-        if controller.is_live:
-            if self.get_live_state() != MediaState.Paused and controller.media_info.timer > 0:
-                log.debug('vlc play, start time set')
-                start_time = controller.media_info.timer
-        else:
-            if self.get_preview_state() != MediaState.Paused and controller.media_info.timer > 0:
-                log.debug('vlc play, start time set')
-                start_time = controller.media_info.timer
-        log.debug('mediatype: ' + str(controller.media_info.media_type))
         self.volume(controller, controller.media_info.volume)
-        #if start_time > 0 and controller.vlc_media_player.is_seekable():
-        #    controller.vlc_media_player.set_time(int(start_time))
-
         self.set_state(MediaState.Playing, controller)
         return True
 

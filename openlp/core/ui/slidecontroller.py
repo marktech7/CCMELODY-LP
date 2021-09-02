@@ -1001,6 +1001,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             # Try to get display back on top of media window asap. If the media window
             # is not loaded by the time _raise_displays is run, lyrics (web display)
             # will be under the media window (not good).
+            self._raise_displays()
             QtCore.QTimer.singleShot(100, self._raise_displays)
             QtCore.QTimer.singleShot(500, self._raise_displays)
             QtCore.QTimer.singleShot(1000, self._raise_displays)
