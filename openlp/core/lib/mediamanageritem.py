@@ -611,7 +611,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         self.add_to_service(message[0], remote=message[1])
 
-    def add_to_service(self, item=None, replace=None, remote=False, position=-1):
+    def add_to_service(self, item=None, replace=-1, remote=False, position=-1):
         """
         Add this item to the current service.
 
@@ -635,6 +635,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
                                                         'You must select one or more items.'))
         else:
             self.log_debug('{plugin} Add requested'.format(plugin=self.plugin.name))
+            item = self.service_manager.find_service_item()[0]
             service_item = self.service_manager.get_service_item()
             if not service_item:
                 QtWidgets.QMessageBox.information(self, UiStrings().NISs,
@@ -642,7 +643,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
                                                             'You must select an existing service item to add to.'))
             elif self.plugin.name == service_item.name:
                 self.generate_slide_data(service_item)
-                self.service_manager.add_service_item(service_item, replace=True)
+                self.service_manager.add_service_item(service_item, replace=item)
             else:
                 # Turn off the remote edit update message indicator
                 QtWidgets.QMessageBox.information(self, translate('OpenLP.MediaManagerItem', 'Invalid Service Item'),

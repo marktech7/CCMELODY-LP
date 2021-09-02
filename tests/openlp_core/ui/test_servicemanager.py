@@ -21,8 +21,7 @@
 """
 Package to test the openlp.core.ui.slidecontroller package.
 """
-import PyQt5
-
+from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
@@ -33,7 +32,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
-from openlp.core.ui.servicemanager import ServiceManager
+from openlp.core.ui.servicemanager import ServiceManager, ServiceManagerList
 from openlp.core.widgets.toolbar import OpenLPToolbar
 
 from tests.helpers.testmixin import TestMixin
@@ -552,7 +551,7 @@ def test_build_presentation_non_pdf_context_menu(registry):
         'Should have be called once'
 
 
-@patch('PyQt5.QtCore.QTimer.singleShot')
+@patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
 def test_single_click_preview_true(mocked_singleShot, registry):
     """
     Test that when "Preview items when clicked in Service Manager" enabled the preview timer starts
@@ -565,11 +564,11 @@ def test_single_click_preview_true(mocked_singleShot, registry):
     # WHEN: on_single_click_preview() is called
     service_manager.on_single_click_preview()
     # THEN: timer should have been started
-    mocked_singleShot.assert_called_with(PyQt5.QtWidgets.QApplication.instance().doubleClickInterval(),
+    mocked_singleShot.assert_called_with(QtWidgets.QApplication.instance().doubleClickInterval(),
                                          service_manager.on_single_click_preview_timeout)
 
 
-@patch('PyQt5.QtCore.QTimer.singleShot')
+@patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
 def test_single_click_preview_false(mocked_singleShot, registry):
     """
     Test that when "Preview items when clicked in Service Manager" disabled the preview timer doesn't start
@@ -585,7 +584,7 @@ def test_single_click_preview_false(mocked_singleShot, registry):
     assert mocked_singleShot.call_count == 0, 'Should not be called'
 
 
-@patch('PyQt5.QtCore.QTimer.singleShot')
+@patch('openlp.core.ui.servicemanager.QtCore.QTimer.singleShot')
 @patch('openlp.core.ui.servicemanager.ServiceManager.make_live')
 def test_single_click_preview_double(mocked_make_live, mocked_singleShot, registry):
     """
@@ -804,6 +803,113 @@ def test_theme_change_song(mocked_regenerate_service_items, registry):
         'The visibility should be True'
 
 
+def test_service_manager_list_drag_enter_event():
+    """
+    Test that the ServiceManagerList.dragEnterEvent slot accepts the event
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    mocked_event = MagicMock()
+
+    # WHEN: The dragEnterEvent method is called
+    service_manager_list.dragEnterEvent(mocked_event)
+
+    # THEN: The accept() method on the event is called
+    mocked_event.accept.assert_called_once_with()
+
+
+def test_service_manager_list_drag_move_event():
+    """
+    Test that the ServiceManagerList.dragMoveEvent slot accepts the event
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    mocked_event = MagicMock()
+
+    # WHEN: The dragMoveEvent method is called
+    service_manager_list.dragMoveEvent(mocked_event)
+
+    # THEN: The accept() method on the event is called
+    mocked_event.accept.assert_called_once_with()
+
+
+def test_service_manager_list_key_press_event():
+    """
+    Test that the ServiceManagerList.keyPressEvent slot ignores the event
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    mocked_event = MagicMock()
+
+    # WHEN: The keyPressEvent method is called
+    service_manager_list.keyPressEvent(mocked_event)
+
+    # THEN: The ignore() method on the event is called
+    mocked_event.ignore.assert_called_once_with()
+
+
+def test_service_manager_list_mouse_move_event_not_left_button():
+    """
+    Test that the ServiceManagerList.mouseMoveEvent slot ignores the event if it's not a left-click
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    mocked_event = MagicMock()
+    mocked_event.buttons.return_value = QtCore.Qt.RightButton
+
+    # WHEN: The mouseMoveEvent method is called
+    service_manager_list.mouseMoveEvent(mocked_event)
+
+    # THEN: The ignore() method on the event is called
+    mocked_event.ignore.assert_called_once_with()
+
+
+@patch('openlp.core.ui.servicemanager.QtGui.QCursor')
+def test_service_manager_list_mouse_move_event_no_item(MockQCursor):
+    """
+    Test that the ServiceManagerList.mouseMoveEvent slot ignores the event if it's not over an item
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    service_manager_list.itemAt = MagicMock(return_value=None)
+    service_manager_list.mapFromGlobal = MagicMock()
+    mocked_event = MagicMock()
+    mocked_event.buttons.return_value = QtCore.Qt.LeftButton
+
+    # WHEN: The mouseMoveEvent method is called
+    service_manager_list.mouseMoveEvent(mocked_event)
+
+    # THEN: The ignore() method on the event is called
+    mocked_event.ignore.assert_called_once_with()
+
+
+@patch('openlp.core.ui.servicemanager.QtGui.QCursor')
+@patch('openlp.core.ui.servicemanager.QtGui.QDrag')
+@patch('openlp.core.ui.servicemanager.QtCore.QMimeData')
+def test_service_manager_list_mouse_move_event(MockQMimeData, MockQDrag, MockQCursor):
+    """
+    Test that the ServiceManagerList.mouseMoveEvent slot ignores the event if it's not over an item
+    """
+    # GIVEN: A service manager and a mocked event
+    service_manager_list = ServiceManagerList(None)
+    service_manager_list.itemAt = MagicMock(return_value=True)
+    service_manager_list.mapFromGlobal = MagicMock()
+    mocked_event = MagicMock()
+    mocked_event.buttons.return_value = QtCore.Qt.LeftButton
+    mocked_drag = MagicMock()
+    MockQDrag.return_value = mocked_drag
+    mocked_mime_data = MagicMock()
+    MockQMimeData.return_value = mocked_mime_data
+
+    # WHEN: The mouseMoveEvent method is called
+    service_manager_list.mouseMoveEvent(mocked_event)
+
+    # THEN: The ignore() method on the event is called
+    mocked_drag.setMimeData.assert_called_once_with(mocked_mime_data)
+    mocked_mime_data.setText.assert_called_once_with('ServiceManager')
+    mocked_drag.exec.assert_called_once_with(QtCore.Qt.CopyAction)
+
+
 class TestServiceManager(TestCase, TestMixin):
     """
     Test the service manager
@@ -840,6 +946,122 @@ class TestServiceManager(TestCase, TestMixin):
         """
         self.add_toolbar_action_patcher.stop()
         del self.service_manager
+
+    def test_bootstrap_initialise(self):
+        """
+        Test the bootstrap_initialise method
+        """
+        # GIVEN: Mocked out stuff
+        self.service_manager.setup_ui = MagicMock()
+        self.service_manager.servicemanager_set_item = MagicMock()
+        self.service_manager.servicemanager_set_item_by_uuid = MagicMock()
+        self.service_manager.servicemanager_next_item = MagicMock()
+        self.service_manager.servicemanager_previous_item = MagicMock()
+        self.service_manager.servicemanager_new_file = MagicMock()
+        self.service_manager.theme_update_service = MagicMock()
+
+        # WHEN: bootstrap_initialise is called
+        self.service_manager.bootstrap_initialise()
+
+        # THEN: The correct calls should have been made
+        self.service_manager.setup_ui.assert_called_once_with(self.service_manager)
+        self.service_manager.servicemanager_set_item.connect.assert_called_once_with(
+            self.service_manager.on_set_item)
+        self.service_manager.servicemanager_set_item_by_uuid.connect.assert_called_once_with(
+            self.service_manager.set_item_by_uuid)
+        self.service_manager.servicemanager_next_item.connect.assert_called_once_with(
+            self.service_manager.next_item)
+        self.service_manager.servicemanager_previous_item.connect.assert_called_once_with(
+            self.service_manager.previous_item)
+        self.service_manager.servicemanager_new_file.connect.assert_called_once_with(
+            self.service_manager.new_file)
+        self.service_manager.theme_update_service.connect.assert_called_once_with(
+            self.service_manager.service_theme_change)
+
+    @patch('openlp.core.ui.servicemanager.ServiceNoteForm')
+    @patch('openlp.core.ui.servicemanager.ServiceItemEditForm')
+    @patch('openlp.core.ui.servicemanager.StartTimeForm')
+    def test_bootstrap_post_set_up(self, MockStartTimeForm, MockServiceItemEditForm, MockServiceNoteForm):
+        """
+        Test the post bootstrap setup
+        """
+        # GIVEN: Mocked forms and a ServiceManager object
+        mocked_service_note_form = MagicMock()
+        MockServiceNoteForm.return_value = mocked_service_note_form
+        mocked_service_item_edit_form = MagicMock()
+        MockServiceItemEditForm.return_value = mocked_service_item_edit_form
+        mocked_start_time_form = MagicMock()
+        MockStartTimeForm.return_value = mocked_start_time_form
+
+        # WHEN: bootstrap_post_set_up is run
+        self.service_manager.bootstrap_post_set_up()
+
+        # THEN: The forms should have been created
+        assert self.service_manager.service_note_form == mocked_service_note_form
+        assert self.service_manager.service_item_edit_form == mocked_service_item_edit_form
+        assert self.service_manager.start_time_form == mocked_start_time_form
+
+    def test_is_modified(self):
+        """
+        Test the is_modified() method
+        """
+        # GIVEN: A service manager with the self._modified set
+        self.service_manager._modified = True
+
+        # WHEN: is_modified is called
+        result = self.service_manager.is_modified()
+
+        # THEN: The result should be True
+        assert result is True, 'is_modified should return True'
+
+    def test_set_file_name_osz(self):
+        """
+        Test setting the file name
+        """
+        # GIVEN: A service manager, some mocks and a file name
+        self.service_manager.set_modified = MagicMock()
+        self.service_manager.settings.setValue = MagicMock()
+        file_path = Path('servicefile.osz')
+
+        # WHEN: The filename is set
+        self.service_manager.set_file_name(file_path)
+
+        # THEN: Various things should have been called and set
+        assert self.service_manager._service_path == file_path
+        self.service_manager.set_modified.assert_called_once_with(False)
+        self.service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
+        assert self.service_manager._save_lite is False
+
+    def test_set_file_name_oszl(self):
+        """
+        Test setting the file name
+        """
+        # GIVEN: A service manager, some mocks and a file name
+        self.service_manager.set_modified = MagicMock()
+        self.service_manager.settings.setValue = MagicMock()
+        file_path = Path('servicefile.oszl')
+
+        # WHEN: The filename is set
+        self.service_manager.set_file_name(file_path)
+
+        # THEN: Various things should have been called and set
+        assert self.service_manager._service_path == file_path
+        self.service_manager.set_modified.assert_called_once_with(False)
+        self.service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
+        assert self.service_manager._save_lite is True
+
+    def test_short_file_name(self):
+        """
+        Test the short_file_name method
+        """
+        # GIVEN: A service manager and a file name
+        self.service_manager._service_path = Path('/home/user/service.osz')
+
+        # WHEN: short_file_name is called
+        result = self.service_manager.short_file_name()
+
+        # THEN: The result should be correct
+        assert result == 'service.osz'
 
     def test_basic_service_manager(self):
         """
@@ -900,9 +1122,9 @@ class TestServiceManager(TestCase, TestMixin):
         """
         # GIVEN: A service item added
         self.service_manager.setup_ui(self.service_manager)
-        with patch('PyQt5.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('PyQt5.QtWidgets.QWidget.mapToGlobal'), \
-                patch('PyQt5.QtWidgets.QMenu.exec'):
+        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
             mocked_item = MagicMock()
             mocked_item.parent.return_value = None
             mocked_item_at_method.return_value = mocked_item
@@ -944,9 +1166,9 @@ class TestServiceManager(TestCase, TestMixin):
         """
         # GIVEN: A service item added
         self.service_manager.setup_ui(self.service_manager)
-        with patch('PyQt5.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('PyQt5.QtWidgets.QWidget.mapToGlobal'), \
-                patch('PyQt5.QtWidgets.QMenu.exec'):
+        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
             mocked_item = MagicMock()
             mocked_item.parent.return_value = None
             mocked_item_at_method.return_value = mocked_item
@@ -987,9 +1209,9 @@ class TestServiceManager(TestCase, TestMixin):
         """
         # GIVEN: A service item added
         self.service_manager.setup_ui(self.service_manager)
-        with patch('PyQt5.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('PyQt5.QtWidgets.QWidget.mapToGlobal'), \
-                patch('PyQt5.QtWidgets.QMenu.exec'):
+        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
             mocked_item = MagicMock()
             mocked_item.parent.return_value = None
             mocked_item_at_method.return_value = mocked_item
@@ -1032,9 +1254,9 @@ class TestServiceManager(TestCase, TestMixin):
         """
         # GIVEN: A service item added
         self.service_manager.setup_ui(self.service_manager)
-        with patch('PyQt5.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('PyQt5.QtWidgets.QWidget.mapToGlobal'), \
-                patch('PyQt5.QtWidgets.QMenu.exec'):
+        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
             mocked_item = MagicMock()
             mocked_item.parent.return_value = None
             mocked_item_at_method.return_value = mocked_item
@@ -1075,9 +1297,9 @@ class TestServiceManager(TestCase, TestMixin):
         """
         # GIVEN: A service item added
         self.service_manager.setup_ui(self.service_manager)
-        with patch('PyQt5.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('PyQt5.QtWidgets.QWidget.mapToGlobal'), \
-                patch('PyQt5.QtWidgets.QMenu.exec'):
+        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
             mocked_item = MagicMock()
             mocked_item.parent.return_value = None
             mocked_item_at_method.return_value = mocked_item
