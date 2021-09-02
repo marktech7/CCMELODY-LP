@@ -41,11 +41,14 @@ install:
 build: off
 
 test_script:
-  - ps: cd $env:APPVEYOR_BUILD_FOLDER
-  # Run the tests
-  - python -m pytest tests
-  # Go back to the user root folder
-  - cd ..
+  - ps: >-
+      If (($env:APPVEYOR_REPO_TAG -eq $False)) {
+        cd $env:APPVEYOR_BUILD_FOLDER
+        # Run the tests
+        python -m pytest tests
+        # Go back to the user root folder
+        cd ..
+      }
 
 after_test:
   # Only package on the master repo
