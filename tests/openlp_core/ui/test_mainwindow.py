@@ -24,12 +24,14 @@ Package to test openlp.core.ui.mainwindow package.
 import os
 import pytest
 from pathlib import Path
+from unittest import skipIf
 from unittest.mock import MagicMock, patch
 from shutil import rmtree
 from tempfile import mkdtemp
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
+from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
@@ -206,6 +208,7 @@ def test_load_settings_position_valid(main_window, settings):
     assert main_window.pos().x() == 10
 
 
+@skipIf(is_macosx(), 'Test does not work on macOS')
 def test_load_settings_position_invalid(main_window, settings):
     """
     Test that the position of the main window is not restored when it's invalid, but rather set to (0, 0)
