@@ -1018,7 +1018,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.service_item_edit_form.set_service_item(self.service_items[item]['service_item'])
         if self.service_item_edit_form.exec():
             self.add_service_item(self.service_item_edit_form.get_service_item(),
-                                  replace=True, expand=self.service_items[item]['expanded'])
+                                  replace=item, expand=self.service_items[item]['expanded'])
 
     def preview_live(self, unique_identifier, row):
         """
@@ -1441,7 +1441,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.live_controller.replace_service_manager_item(new_item)
                 self.set_modified()
 
-    def add_service_item(self, item, rebuild=False, expand=None, replace=False, repaint=True, selected=False,
+    def add_service_item(self, item, rebuild=False, expand=None, replace=-1, repaint=True, selected=False,
                          position=-1):
         """
         Add a Service item to the list
@@ -1449,7 +1449,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param item: Service Item to be added
         :param rebuild: Do we need to rebuild the live display (Default False)
         :param expand: Override the default expand settings. (Tristate)
-        :param replace: Is the service item a replacement (Default False)
+        :param replace: The service item to be replaced
         :param repaint: Do we need to repaint the service item list (Default True)
         :param selected: Has the item been selected (Default False)
         :param position: The position where the item is dropped (Default -1)
@@ -1460,11 +1460,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         item.from_service = True
         if position != -1:
             self.drop_position = position
-        if replace:
-            s_item, child = self.find_service_item()
-            item.merge(self.service_items[s_item]['service_item'])
-            self.service_items[s_item]['service_item'] = item
-            self.repaint_service_list(s_item, child)
+        if replace > -1:
+            item.merge(self.service_items[replace]['service_item'])
+            self.service_items[replace]['service_item'] = item
+            self.repaint_service_list(replace, -1)
             self.live_controller.replace_service_manager_item(item)
         else:
             item.render_text_items()
@@ -1582,7 +1581,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             new_item = Registry().get(self.service_items[item]['service_item'].name). \
                 on_remote_edit(self.service_items[item]['service_item'].edit_id)
             if new_item:
-                self.add_service_item(new_item, replace=True)
+                self.add_service_item(new_item, replace=item)
 
     def on_service_item_rename(self):
         """
