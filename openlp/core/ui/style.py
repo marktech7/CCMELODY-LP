@@ -207,7 +207,7 @@ def set_default_darkmode(app):
     dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
     dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
     dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.black)
     dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
     dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color)
     dark_palette.setColor(QtGui.QPalette.Button, dark_color)
