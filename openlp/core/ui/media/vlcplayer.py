@@ -204,15 +204,15 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
             controller.vlc_media.add_option(f"stop-time={int(controller.media_info.end_time // 1000)}")
             controller.vlc_media_player.set_media(controller.vlc_media)
-            controller.vlc_media_player.play()
-            # Wait for media to start playing. In this case VLC returns an error.
-            self.media_state_wait(controller, vlc.State.Playing)
             if controller.media_info.audio_track > 0:
                 controller.vlc_media_player.audio_set_track(controller.media_info.audio_track)
                 log.debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track))
             if controller.media_info.subtitle_track > 0:
                 controller.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
                 log.debug('vlc play, subtitle_track set: ' + str(controller.media_info.subtitle_track))
+            controller.vlc_media_player.play()
+            # Wait for media to start playing. In this case VLC returns an error.
+            self.media_state_wait(controller, vlc.State.Playing)
         elif controller.media_info.media_type == MediaType.Stream:
             controller.vlc_media = controller.vlc_instance.media_new_location(file[0])
             controller.vlc_media.add_options(file[1])
@@ -271,6 +271,14 @@ class VlcPlayer(MediaPlayer):
         """
         vlc = get_vlc()
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
+        # The DVD code below shouldn't be necessary, but sometimes subtitles tracks don't appear, so try to force them
+        if controller.media_info.media_type == MediaType.DVD:
+            if controller.media_info.audio_track > 0:
+                controller.vlc_media_player.audio_set_track(controller.media_info.audio_track)
+                log.debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track))
+            if controller.media_info.subtitle_track > 0:
+                controller.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
+                log.debug('vlc play, subtitle_track set: ' + str(controller.media_info.subtitle_track))
         threading.Thread(target=controller.vlc_media_player.play).start()
         if not self.media_state_wait(controller, vlc.State.Playing):
             return False
