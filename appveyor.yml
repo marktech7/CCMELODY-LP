@@ -85,8 +85,10 @@ after_test:
             brew install enchant
           }
           # Get the packaging code
-          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          #Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/tgc-dk/packaging/-/archive/update-qt-appveyor-path/packaging-update-qt-appveyor-path.zip" -OutFile packaging-master.zip
           Expand-Archive -Path packaging-master.zip -DestinationPath .
+          mv packaging-update-qt-appveyor-path packaging-master
           # If this is tag/replease we should also build the manual
           If ($env:APPVEYOR_REPO_TAG -eq $True -Or $env:FORCE_PACKAGING_MANUAL -eq 1) {
             python -m pip install --no-warn-script-location sphinx sphinx_rtd_theme
@@ -103,7 +105,7 @@ after_test:
                 iex $cmd
             } else {
                 # Install qt to get the lrelease tool
-                brew install qt
+                #brew install qt@5
                 $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
                 iex $cmd
             }
