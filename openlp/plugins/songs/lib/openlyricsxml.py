@@ -676,8 +676,10 @@ class OpenLyrics(object):
         text = ''
         # Convert lxml.objectify to lxml.etree representation.
         string_lines = etree.tostring(lines)
-        # lxml 4.6.x or some recent version of libxml2 seems to add the left-over tags in
-        string_lines = string_lines.replace('</verse>', '').replace('</lyrics>', '').replace('</song>')
+        # lxml 4.6.x or some recent version of libxml2 seems to add the rest of the song to the string, so split on the
+        # closing verse tag, and then add it back in
+        string_lines, _ = string_lines.split(b'</lines>', 1)
+        string_lines += b'</lines>'
         element = etree.XML(string_lines)
 
         # OpenLyrics 0.8 uses <br/> for new lines. Append text from "lines" element to verse text.
