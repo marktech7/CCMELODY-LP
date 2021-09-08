@@ -29,7 +29,7 @@ from PyQt5 import QtCore, QtTest
 from openlp.core.ui.servicenoteform import ServiceNoteForm
 
 
-@pytest.fixture()
+@pytest.fixture
 def form(settings):
     frm = ServiceNoteForm()
     return frm
@@ -43,7 +43,7 @@ def test_basic_display(form):
     form.text_edit.setPlainText('')
 
     # WHEN displaying the UI and pressing enter
-    with patch('PyQt5.QtWidgets.QDialog.exec'):
+    with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
@@ -54,7 +54,7 @@ def test_basic_display(form):
     # WHEN displaying the UI, having set the text and pressing enter
     text = 'OpenLP is the best worship software'
     form.text_edit.setPlainText(text)
-    with patch('PyQt5.QtWidgets.QDialog.exec'):
+    with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Save)
     QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
@@ -64,7 +64,7 @@ def test_basic_display(form):
 
     # WHEN displaying the UI, having set the text and pressing enter
     form.text_edit.setPlainText('')
-    with patch('PyQt5.QtWidgets.QDialog.exec'):
+    with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
         form.text_edit.setPlainText(text)
     ok_widget = form.button_box.button(form.button_box.Save)

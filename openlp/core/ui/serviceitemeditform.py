@@ -59,11 +59,10 @@ class ServiceItemEditForm(QtWidgets.QDialog, Ui_ServiceItemEditDialog, RegistryP
         Get the modified service item.
         """
         if self.data:
+            # self.data is only true for images
             self.item.slides = []
-            if self.item.is_image():
-                for item in self.item_list:
-                    self.item.add_from_image(item['path'], item['title'])
-            self.item.render()
+            for item in self.item_list:
+                self.item.add_from_image(item['path'], item['title'])
         return self.item
 
     def load_data(self):
