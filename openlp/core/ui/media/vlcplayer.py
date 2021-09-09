@@ -132,6 +132,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_instance = vlc.Instance(command_line_options)
             if not controller.vlc_instance:
                 return
+        log.debug(f"VLC version: {vlc.libvlc_get_version()}")
         # creating an empty vlc media player
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
         controller.vlc_widget.resize(controller.size())
@@ -198,7 +199,7 @@ class VlcPlayer(MediaPlayer):
         elif controller.media_info.media_type == MediaType.DVD:
             if is_win():
                 path = '/' + path
-            dvd_location = 'dvd://' + path + '#' + controller.media_info.title_track
+            dvd_location = 'dvd://' + path + '@' + controller.media_info.title_track
             controller.vlc_media = controller.vlc_instance.media_new_location(dvd_location)
             log.debug(f"vlc dvd load: {dvd_location}")
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
