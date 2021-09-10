@@ -960,6 +960,7 @@ def test_process_item_transition(mocked_execute, registry, state_media):
     slide_controller.song_menu = MagicMock()
     slide_controller.displays = [MagicMock()]
     slide_controller.toolbar = MagicMock()
+    slide_controller._current_hide_mode = None
     slide_controller.split = 0
     slide_controller.type_prefix = 'test'
     slide_controller.screen_capture = 'old_capture'

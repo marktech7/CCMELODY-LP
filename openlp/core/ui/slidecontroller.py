@@ -952,11 +952,16 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
         if old_item:
-            # Close the old item if it's not to be used by the new sevice item
+            # Close the old item if it's not to be used by the new service item
             if not self.service_item.is_media() and not self.service_item.requires_media():
                 self.on_media_close()
             if old_item.is_command() and not old_item.is_media():
                 Registry().execute('{name}_stop'.format(name=old_item.name.lower()), [old_item, self.is_live])
+            # if the old item was media which hid the main display then need to reset it if new service item uses it
+            if self.is_live and self._current_hide_mode is None and old_item.is_media() and not \
+                    old_item.requires_media() and not self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
+                for display in self.displays:
+                    display.show_display()
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():

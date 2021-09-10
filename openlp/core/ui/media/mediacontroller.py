@@ -664,12 +664,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.log_debug('media_reset')
         self.set_controls_visible(controller, False)
         if controller.controller_type in self.current_media_players:
-            display = self._define_display(controller)
-            hide_mode = controller.get_hide_mode()
-            if hide_mode is None:
-                display.show_display()
-            else:
-                display.hide_display(hide_mode)
             self.current_media_players[controller.controller_type].reset(controller)
             if controller.is_live and delayed:
                 self.live_kill_timer.start(HIDE_DELAY_TIME)
