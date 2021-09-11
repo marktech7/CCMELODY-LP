@@ -199,7 +199,7 @@ class VlcPlayer(MediaPlayer):
         elif controller.media_info.media_type == MediaType.DVD:
             if is_win():
                 path = '/' + path
-            dvd_location = 'dvd://' + path + '@' + controller.media_info.title_track
+            dvd_location = 'dvd://' + path + '#' + controller.media_info.title_track
             controller.vlc_media = controller.vlc_instance.media_new_location(dvd_location)
             log.debug(f"vlc dvd load: {dvd_location}")
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
