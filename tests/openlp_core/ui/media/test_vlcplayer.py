@@ -517,7 +517,7 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
 
     # THEN: The video should be loaded
     mocked_normcase.assert_called_with(media_path)
-    mocked_controller.vlc_instance.media_new_location.assert_called_with('dvd://' + media_path + '@2')
+    mocked_controller.vlc_instance.media_new_location.assert_called_with('dvd://' + media_path + '#2')
     assert mocked_vlc_media == mocked_controller.vlc_media
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_controller.vlc_media_player.audio_set_track.assert_called_with(2)
