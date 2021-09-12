@@ -1006,6 +1006,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             # Try to get display back on top of media window asap. If the media window
             # is not loaded by the time _raise_displays is run, lyrics (web display)
             # will be under the media window (not good).
+            self._raise_displays()
             QtCore.QTimer.singleShot(100, self._raise_displays)
             QtCore.QTimer.singleShot(500, self._raise_displays)
             QtCore.QTimer.singleShot(1000, self._raise_displays)
@@ -1535,12 +1536,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         if State().check_preconditions('media'):
             if self.is_live and not item.is_media() and item.requires_media():
                 self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
-            elif self.is_live and self._current_hide_mode == HideMode.Theme:
-                self.media_controller.load_video(self.controller_type, item, HideMode.Blank)
-                self.set_hide_mode(HideMode.Blank)
-            elif self.is_live or item.is_media():
-                # avoid loading the video if this is preview and the media is background
+            elif self.is_live:
+                if self._current_hide_mode == HideMode.Theme:
+                    self.set_hide_mode(HideMode.Blank)
                 self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
+            elif item.is_media():
+                # avoid loading the video if this is preview and the media is background
+                self.media_controller.load_video(self.controller_type, item)
             if not self.is_live:
                 self.preview_display.show()
 
