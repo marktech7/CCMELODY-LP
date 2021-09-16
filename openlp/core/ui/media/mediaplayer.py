@@ -115,7 +115,7 @@ class MediaPlayer(RegistryProperties):
         """
         pass
 
-    def volume(self, display, volume):
+    def volume(self, controller, volume):
         """
         Change volume of current Media File
 
