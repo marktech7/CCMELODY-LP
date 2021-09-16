@@ -78,6 +78,7 @@ See https://stackoverflow.com/a/68491297
 
 _vlc = None
 
+
 def get_vlc():
     """
     In order to make this module more testable, we have to wrap the VLC import inside a method. We do this so that we
@@ -376,15 +377,8 @@ class VlcPlayer(MediaPlayer):
         """
         print('in vlc play, controller.media_info.timer = ' + str(controller.media_info.timer))
         vlc = get_vlc()
-        start_time = 0
         print('vlc state: ' + str(controller.vlc_media_list_player.get_state()))
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
-        if controller.is_live:
-            if self.get_live_state() != MediaState.Paused and controller.media_info.timer > 0:
-                start_time = controller.media_info.timer
-        else:
-            if self.get_preview_state() != MediaState.Paused and controller.media_info.timer > 0:
-                start_time = controller.media_info.timer
         if controller.media_info.is_playlist:
             threading.Thread(target=controller.vlc_media_list_player.play).start()
         else:
@@ -421,7 +415,6 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller where the media is
         :return:
         """
-        vlc = get_vlc()
         print('in media stop')
         if controller.media_info.is_playlist:
             threading.Thread(target=controller.vlc_media_list_player.stop).start()
@@ -503,7 +496,6 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller handling that media item
         :return: None
         """
-        vlc = get_vlc()
         print('in media_item_finished_event_listener')
         if not controller.media_info.is_playlist:
             threading.Thread(target=controller.vlc_media_player.stop).start()
