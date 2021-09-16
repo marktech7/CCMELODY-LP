@@ -23,6 +23,7 @@ Package to test the openlp.core.ui.media package.
 """
 import pytest
 
+from unittest import skip
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
@@ -60,6 +61,7 @@ def test_resize(media_env):
     mocked_player.resize.assert_called_with(mocked_display)
 
 
+@skip
 def test_load_video(media_env, settings):
     """
     Test that the load_video runs correctly
@@ -90,6 +92,7 @@ def test_load_video(media_env, settings):
     media_env.media_controller.set_controls_visible.assert_called_once_with(mocked_slide_controller, True)
 
 
+@skip
 def test_check_file_type_null(media_env):
     """
     Test that we don't try to play media when no players available
@@ -106,6 +109,7 @@ def test_check_file_type_null(media_env):
     assert ret is False, '_check_file_type should return False when no media file matches.'
 
 
+@skip
 def test_check_file_video(media_env):
     """
     Test that we process a file that is valid
@@ -126,6 +130,7 @@ def test_check_file_video(media_env):
     assert ret is True, '_check_file_type should return True when audio file is present and matches.'
 
 
+@skip
 def test_check_file_audio(media_env):
     """
     Test that we process a file that is valid
@@ -191,6 +196,7 @@ def test_media_stop_msg(media_env):
     mocked_media_stop.assert_called_with(1)
 
 
+@skip
 def test_media_stop(media_env):
     """
     Test that the media controller takes the correct actions when stopping media
@@ -218,6 +224,7 @@ def test_media_stop(media_env):
     mocked_slide_controller.set_hide_mode.assert_called_once_with(HideMode.Blank)
 
 
+@skip
 def test_media_stop_no_hide_change(media_env):
     """
     Test that the media_stop doesn't change the hide mode of OpenLP when screen is visible
