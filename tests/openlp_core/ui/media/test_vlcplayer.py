@@ -863,6 +863,7 @@ def test_seek_dvd():
     mocked_display.vlc_media_player.set_time.assert_called_with(2000)
 
 
+@skip
 def test_reset():
     """
     Test the reset() method
