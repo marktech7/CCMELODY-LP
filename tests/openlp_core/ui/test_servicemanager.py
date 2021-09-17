@@ -49,6 +49,38 @@ def test_initial_service_manager(registry):
     assert Registry().get('service_manager') is not None, 'The base service manager should be registered'
 
 
+def test_new_file(registry):
+    """Test the new_file() method"""
+    # GIVEN: A service manager
+    mocked_settings = MagicMock()
+    mocked_plugin_manager = MagicMock()
+    mocked_main_window = MagicMock()
+    mocked_slide_controller = MagicMock()
+    registry.register('settings', mocked_settings)
+    registry.register('plugin_manager', mocked_plugin_manager)
+    registry.register('main_window', mocked_main_window)
+    registry.register('live_controller', mocked_slide_controller)
+    service_manager = ServiceManager(None)
+    service_manager.service_items = [MagicMock(), MagicMock()]
+    service_manager.service_id = 5
+    service_manager._service_path = 'service.osz'
+    service_manager._modified = True
+    service_manager.service_manager_list = MagicMock()
+    service_manager.plugin_manager.new_service_created = MagicMock()
+
+    # WHEN: new_file() is called
+    service_manager.new_file()
+
+    # THEN: Everything should be correct
+    service_manager.service_manager_list.clear.assert_called_once_with()
+    assert service_manager.service_items == [], 'The list of service items should be blank'
+    assert service_manager._service_path is None, 'The file_name should be None'
+    assert service_manager.service_id == 7, 'The service id should be 6'
+    mocked_settings.setValue.assert_called_with('servicemanager/last file', None)
+    mocked_plugin_manager.new_service_created.assert_called_once_with()
+    assert mocked_slide_controller.slide_count == 0, 'Slide count should be zero'
+
+
 def test_create_basic_service(registry):
     """
     Test the create basic service array
@@ -65,6 +97,21 @@ def test_create_basic_service(registry):
     assert service['openlp_core']['lite-service'] is False, 'The lite service should be saved'
 
 
+def test_is_modified(registry):
+    """
+    Test the is_modified() method
+    """
+    # GIVEN: A service manager with the self._modified set
+    service_manager = ServiceManager(None)
+    service_manager._modified = True
+
+    # WHEN: is_modified is called
+    result = service_manager.is_modified()
+
+    # THEN: The result should be True
+    assert result is True, 'is_modified should return True'
+
+
 def test_supported_suffixes(registry):
     """
     Test the create basic service array
@@ -78,6 +125,21 @@ def test_supported_suffixes(registry):
     assert 'txt' in service_manager.suffixes, 'The suffix txt should be in the list'
     assert 'ppt' in service_manager.suffixes, 'The suffix ppt should be in the list'
     assert 'pptx' in service_manager.suffixes, 'The suffix pptx should be in the list'
+
+
+def test_reset_supported_suffixes(registry):
+    """
+    Test the create basic service array
+    """
+    # GIVEN: A new service manager instance with some supported suffixes
+    service_manager = ServiceManager(None)
+    service_manager.suffixes = ['mp3', 'aac', 'wav', 'flac']
+
+    # WHEN: reset_supported_suffixes() is called
+    service_manager.reset_supported_suffixes()
+
+    # THEN: The suffixes should be cleared out
+    assert service_manager.suffixes == [], 'There should not be any suffixes'
 
 
 def test_build_context_menu(registry):
@@ -910,6 +972,130 @@ def test_service_manager_list_mouse_move_event(MockQMimeData, MockQDrag, MockQCu
     mocked_drag.exec.assert_called_once_with(QtCore.Qt.CopyAction)
 
 
+def test_on_new_service_clicked_not_saved_cancel(registry):
+    """Test that when you click on the new service button, you're asked to save any modified documents"""
+    # GIVEN: A Service manager and some mocks
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Cancel)
+
+    # WHEN: on_new_service_clicked() is called
+    result = service_manager.on_new_service_clicked()
+
+    # THEN: The method should have exited early (hence the False return)
+    assert result is False, 'The method should have returned early'
+
+
+def test_on_new_service_clicked_not_saved_false_save(registry):
+    """Test that when you click on the new service button, you're asked to save any modified documents"""
+    # GIVEN: A Service manager and some mocks
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Save)
+    service_manager.decide_save_method = MagicMock(return_value=False)
+
+    # WHEN: on_new_service_clicked() is called
+    result = service_manager.on_new_service_clicked()
+
+    # THEN: The method should have exited early (hence the False return)
+    assert result is False, 'The method should have returned early'
+
+
+@patch('openlp.core.ui.servicemanager.QtWidgets.QMessageBox')
+def test_on_new_service_clicked_unmodified_blank_service(MockQMessageBox, registry):
+    """Test that when the click the new button with an unmodified service, it shows you a message"""
+    # GIVEN: A service manager with no service items and a bunch of mocks
+    mocked_message_box = MagicMock()
+    mocked_message_box.checkbox.return_value.isChecked.return_value = True
+    MockQMessageBox.return_value = mocked_message_box
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = True
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=False)
+    service_manager.service_items = []
+    service_manager.new_file = MagicMock()
+
+    # WHEN: on_new_service_clicked() is called
+    service_manager.on_new_service_clicked()
+
+    # THEN: The message box should have been shown, and the message supressed
+    mocked_settings.value.assert_called_once_with('advanced/new service message')
+    assert mocked_message_box.setCheckBox.call_count == 1, 'setCheckBox was called to place the checkbox'
+    mocked_message_box.exec.assert_called_once_with()
+    mocked_settings.setValue.assert_called_once_with('advanced/new service message', False)
+    service_manager.new_file.assert_called_once_with()
+
+
+def test_on_load_service_clicked(registry):
+    """Test that a service is loaded when you click the button"""
+    # GIVEN: A service manager
+    service_manager = ServiceManager(None)
+
+    # THEN: Check that we have a load_service method first, before mocking it
+    assert hasattr(service_manager, 'load_service'), 'ServiceManager.load_service() should exist'
+
+    # GIVEN: A mocked out load_service() method
+    service_manager.load_service = MagicMock()
+
+    # WHEN: The load button is clicked
+    service_manager.on_load_service_clicked(False)
+
+    # THEN: load_service() should have been called
+    service_manager.load_service.assert_called_once_with()
+
+
+def test_load_service_modified_cancel_save(registry):
+    """Test that the load_service() method exits early when the service is modified, but the save is canceled"""
+    # GIVEN: A modified ServiceManager
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Cancel)
+
+    # WHEN: A service is loaded
+    result = service_manager.load_service()
+
+    # THEN: The result should be False because of an early exit
+    assert result is False, 'The method did not exit early'
+
+
+def test_load_service_modified_saved_with_file_path(registry):
+    """Test that the load_service() method saves the file and loads the specified file"""
+    # GIVEN: A modified ServiceManager
+    mocked_settings = MagicMock()
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Save)
+    service_manager.decide_save_method = MagicMock()
+    service_manager.load_file = MagicMock()
+
+    # WHEN: A service is loaded
+    service_manager.load_service(Path.home() / 'service.osz')
+
+    # THEN: The service should be loaded
+    service_manager.decide_save_method.assert_called_once_with()
+    mocked_settings.setValue.assert_called_once_with('servicemanager/last directory', Path.home())
+    service_manager.load_file.assert_called_once_with(Path.home() / 'service.osz')
+
+
+@patch('openlp.core.ui.servicemanager.Path', autospec=True)
+def test_service_manager_load_file_str(MockPath, registry):
+    """Test the service manager's load_file method when it is given a str"""
+    # GIVEN: A service manager and a mocked path object
+    service_manager = ServiceManager(None)
+    MockPath.__class__ = Path.__class__
+    MockPath.return_value.exists.return_value = False
+
+    # WHEN: A str filename is passed to load_file
+    result = service_manager.load_file('service.osz')
+
+    # THEN: False should be returned, but a valid Path object created
+    assert result is False, 'ServiceManager.load_file should return false for a non-existant file'
+    MockPath.assert_called_once_with('service.osz')
+    MockPath.return_value.exists.assert_called_once()
+
+
 class TestServiceManager(TestCase, TestMixin):
     """
     Test the service manager
@@ -1000,19 +1186,6 @@ class TestServiceManager(TestCase, TestMixin):
         assert self.service_manager.service_note_form == mocked_service_note_form
         assert self.service_manager.service_item_edit_form == mocked_service_item_edit_form
         assert self.service_manager.start_time_form == mocked_start_time_form
-
-    def test_is_modified(self):
-        """
-        Test the is_modified() method
-        """
-        # GIVEN: A service manager with the self._modified set
-        self.service_manager._modified = True
-
-        # WHEN: is_modified is called
-        result = self.service_manager.is_modified()
-
-        # THEN: The result should be True
-        assert result is True, 'is_modified should return True'
 
     def test_set_file_name_osz(self):
         """

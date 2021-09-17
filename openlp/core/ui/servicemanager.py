@@ -757,6 +757,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param Path file_path: The service file to load.
         """
+        # If the file_path is a string, this method will fail. Typecase to Path
+        file_path = Path(file_path)
         if not file_path.exists():
             return False
         service_data = None
