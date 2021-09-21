@@ -372,7 +372,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
     def _check_file_type(self, controller, display):
         """
-        Select the correct media Player type from the prioritized Player list
+        Load media streams / files
 
         :param controller: First element is the controller which should be used
         :param display: Which display to use

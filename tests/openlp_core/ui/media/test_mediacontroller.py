@@ -23,7 +23,6 @@ Package to test the openlp.core.ui.media package.
 """
 import pytest
 
-from unittest import skip
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
@@ -61,7 +60,6 @@ def test_resize(media_env):
     mocked_player.resize.assert_called_with(mocked_display)
 
 
-@skip
 def test_load_video(media_env, settings):
     """
     Test that the load_video runs correctly
@@ -70,6 +68,8 @@ def test_load_video(media_env, settings):
     mocked_slide_controller = MagicMock()
     mocked_service_item = MagicMock()
     mocked_service_item.is_capable.return_value = False
+    mocked_service_item.start_time = 0
+    mocked_service_item.media_length = 4000
     settings.setValue('media/live volume', 1)
     media_env.media_controller.current_media_players = MagicMock()
     media_env.media_controller._check_file_type = MagicMock(return_value=True)
@@ -78,6 +78,7 @@ def test_load_video(media_env, settings):
     media_env.media_controller.media_reset = MagicMock()
     media_env.media_controller.media_play = MagicMock()
     media_env.media_controller.set_controls_visible = MagicMock()
+    media_env.media_controller.update_ui_slider = MagicMock()
 
     # WHEN: load_video() is called
     media_env.media_controller.load_video(DisplayControllerType.Live, mocked_service_item)
@@ -90,17 +91,18 @@ def test_load_video(media_env, settings):
     assert mocked_slide_controller.media_info.volume == 1
     media_env.media_controller.media_play.assert_called_once_with(mocked_slide_controller)
     media_env.media_controller.set_controls_visible.assert_called_once_with(mocked_slide_controller, True)
+    media_env.media_controller.update_ui_slider.assert_called_once_with(mocked_slide_controller, 0, 4000)
 
 
-@skip
 def test_check_file_type_null(media_env):
     """
-    Test that we don't try to play media when no players available
+    Test that we don't try to play media when no media set
     """
     # GIVEN: A mocked UiStrings, get_used_players, controller, display and service_item
     mocked_controller = MagicMock()
     mocked_display = MagicMock()
     media_env.media_controller.media_players = MagicMock()
+    mocked_controller.media_info.is_playlist = False
 
     # WHEN: calling _check_file_type when no players exists
     ret = media_env.media_controller._check_file_type(mocked_controller, mocked_display)
@@ -109,7 +111,6 @@ def test_check_file_type_null(media_env):
     assert ret is False, '_check_file_type should return False when no media file matches.'
 
 
-@skip
 def test_check_file_video(media_env):
     """
     Test that we process a file that is valid
@@ -120,6 +121,7 @@ def test_check_file_video(media_env):
     media_env.media_controller.media_players = MagicMock()
     mocked_controller.media_info = ItemMediaInfo()
     mocked_controller.media_info.file_info = [TEST_PATH / 'mp3_file.mp3']
+    mocked_controller.media_info.is_playlist = False
     media_env.media_controller.current_media_players = {}
     media_env.media_controller.vlc_player = MagicMock()
 
@@ -130,7 +132,6 @@ def test_check_file_video(media_env):
     assert ret is True, '_check_file_type should return True when audio file is present and matches.'
 
 
-@skip
 def test_check_file_audio(media_env):
     """
     Test that we process a file that is valid
@@ -141,6 +142,7 @@ def test_check_file_audio(media_env):
     media_env.media_controller.media_players = MagicMock()
     mocked_controller.media_info = ItemMediaInfo()
     mocked_controller.media_info.file_info = [TEST_PATH / 'mp4_file.mp4']
+    mocked_controller.media_info.is_playlist = False
     media_env.media_controller.current_media_players = {}
     media_env.media_controller.vlc_player = MagicMock()
 
@@ -196,7 +198,6 @@ def test_media_stop_msg(media_env):
     mocked_media_stop.assert_called_with(1)
 
 
-@skip
 def test_media_stop(media_env):
     """
     Test that the media controller takes the correct actions when stopping media
@@ -212,6 +213,7 @@ def test_media_stop(media_env):
     media_env.media_controller.current_media_players = {'media player': mocked_media_player}
     media_env.media_controller.live_hide_timer = MagicMock()
     media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
+    media_env.media_controller.update_ui_slider = MagicMock()
 
     # WHEN: media_stop() is called
     result = media_env.media_controller.media_stop(mocked_slide_controller)
@@ -222,9 +224,9 @@ def test_media_stop(media_env):
     mocked_media_player.stop.assert_called_once_with(mocked_slide_controller)
     media_env.media_controller.live_hide_timer.start.assert_called_once()
     mocked_slide_controller.set_hide_mode.assert_called_once_with(HideMode.Blank)
+    media_env.media_controller.update_ui_slider.assert_called_once()
 
 
-@skip
 def test_media_stop_no_hide_change(media_env):
     """
     Test that the media_stop doesn't change the hide mode of OpenLP when screen is visible
@@ -240,6 +242,7 @@ def test_media_stop_no_hide_change(media_env):
     media_env.media_controller.current_media_players = {'media player': mocked_media_player}
     media_env.media_controller.live_hide_timer = MagicMock()
     media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
+    media_env.media_controller.update_ui_slider = MagicMock()
 
     # WHEN: media_stop() is called
     result = media_env.media_controller.media_stop(mocked_slide_controller)
@@ -250,6 +253,7 @@ def test_media_stop_no_hide_change(media_env):
     mocked_media_player.stop.assert_called_once_with(mocked_slide_controller)
     media_env.media_controller.live_hide_timer.start.assert_called_once()
     mocked_slide_controller.set_hide_mode.assert_not_called()
+    media_env.media_controller.update_ui_slider.assert_called_once()
 
 
 def test_media_volume_msg(media_env):
