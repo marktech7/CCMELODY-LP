@@ -26,11 +26,11 @@ import sys
 import pytest
 from datetime import timedelta
 from unittest import skipIf
-from unittest.mock import MagicMock, call, patch, ANY
+from unittest.mock import MagicMock, patch, ANY
 
 from openlp.core.common import is_macosx
 from openlp.core.common.registry import Registry
-from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
+from openlp.core.ui.media import MediaState, MediaType
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 from tests.helpers import MockDateTime
 
@@ -99,6 +99,8 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()
     mocked_instance.media_player_new.return_value = mocked_media_player_new
+    mocked_media_list_player_new = MagicMock()
+    mocked_instance.media_list_player_new.return_value = mocked_media_list_player_new
     mocked_vlc = MagicMock()
     mocked_vlc.Instance.return_value = mocked_instance
     mocked_get_vlc.return_value = mocked_vlc
@@ -116,10 +118,12 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     mocked_qframe.setFrameStyle.assert_called_with(1)
     mock_settings.value.assert_any_call('advanced/hide mouse')
     mock_settings.value.assert_any_call('media/vlc arguments')
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
     assert mocked_output_display.vlc_instance == mocked_instance
     mocked_instance.media_player_new.assert_called_with()
     assert mocked_output_display.vlc_media_player == mocked_media_player_new
+    mocked_instance.media_list_player_new.assert_called_with()
+    assert mocked_output_display.vlc_media_list_player == mocked_media_list_player_new
     mocked_output_display.size.assert_called_with()
     mocked_qframe.resize.assert_called_with((10, 10))
     mocked_qframe.hide.assert_called_with()
@@ -159,7 +163,7 @@ def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mock
     vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
 
 
 @patch('openlp.core.ui.media.vlcplayer.is_win')
@@ -194,7 +198,7 @@ def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, 
     vlc_player.setup(mocked_output_display, mocked_controller)
 
     # THEN: The VLC instance should be created with the correct options
-    mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
+    mocked_vlc.Instance.assert_called_with('--no-video-title-show ')
 
 
 @patch('openlp.core.ui.media.vlcplayer.is_win')
@@ -315,6 +319,7 @@ def test_load(mocked_normcase, mocked_get_vlc):
     mocked_controller.media_info.volume = 100
     mocked_controller.media_info.media_type = MediaType.Video
     mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
+    mocked_controller.media_info.is_playlist = False
     mocked_vlc_media = MagicMock()
     mocked_media = MagicMock()
     mocked_media.get_duration.return_value = 10000
@@ -360,6 +365,7 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_controller.media_info.start_time = 20000
     mocked_controller.media_info.end_time = 30000
     mocked_controller.media_info.length = 10000
+    mocked_controller.media_info.is_playlist = False
     mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
     mocked_controller.vlc_media_player.get_media.return_value = mocked_media
     mocked_subitems = MagicMock()
@@ -405,6 +411,7 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     mocked_controller.media_info.media_type = MediaType.CD
     mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
     mocked_controller.media_info.title_track = 1
+    mocked_controller.media_info.is_playlist = False
     mocked_vlc_media = MagicMock()
     mocked_media = MagicMock()
     mocked_media.get_duration.return_value = 10000
@@ -506,6 +513,7 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_controller.media_info.start_time = 20000
     mocked_controller.media_info.end_time = 30000
     mocked_controller.media_info.length = 10000
+    mocked_controller.media_info.is_playlist = False
     mocked_controller.vlc_instance.media_new_location.return_value = mocked_vlc_media
     mocked_controller.vlc_media_player.get_media.return_value = mocked_media
     vlc_player = VlcPlayer(None)
@@ -541,7 +549,8 @@ def test_media_state_wait(mocked_get_vlc):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 2
+    mocked_controller.media_info.is_playlist = False
+    mocked_controller.vlc_media_player.get_state.return_value = 2
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
@@ -565,7 +574,8 @@ def test_media_state_wait_error(mocked_get_vlc, vlc_env):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.vlc_media_player.get_state.return_value = 1
+    mocked_controller.media_info.is_playlist = False
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
@@ -591,7 +601,8 @@ def test_media_state_wait_times_out(mocked_get_vlc, vlc_env):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 2
+    mocked_controller.vlc_media_player.get_state.return_value = 2
+    mocked_controller.media_info.is_playlist = False
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
@@ -693,19 +704,20 @@ def test_pause(mocked_get_vlc):
     mocked_vlc.State.Playing = 1
     mocked_vlc.State.Paused = 2
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 1
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.media_info.is_playlist = False
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
     with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         mocked_media_state_wait.return_value = True
-        vlc_player.pause(mocked_display)
+        vlc_player.pause(mocked_controller)
 
     # THEN: The pause method should exit early
-    mocked_display.vlc_media.get_state.assert_called_with()
-    mocked_display.vlc_media_player.pause.assert_called_with()
-    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    mocked_controller.vlc_media.get_state.assert_called_with()
+    mocked_controller.vlc_media_player.pause.assert_called_with()
+    mocked_media_state_wait.assert_called_with(mocked_controller, 2)
     assert MediaState.Paused == vlc_player.get_live_state()
 
 
@@ -718,16 +730,17 @@ def test_pause_not_playing(mocked_get_vlc):
     mocked_vlc = MagicMock()
     mocked_vlc.State.Playing = 1
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 2
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 2
+    mocked_controller.media_info.is_playlist = False
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
-    vlc_player.pause(mocked_display)
+    vlc_player.pause(mocked_controller)
 
     # THEN: The pause method should exit early
-    mocked_display.vlc_media.get_state.assert_called_with()
-    assert 0 == mocked_display.vlc_media_player.pause.call_count
+    mocked_controller.vlc_media.get_state.assert_called_with()
+    assert 0 == mocked_controller.vlc_media_player.pause.call_count
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
@@ -740,19 +753,20 @@ def test_pause_fail(mocked_get_vlc):
     mocked_vlc.State.Playing = 1
     mocked_vlc.State.Paused = 2
     mocked_get_vlc.return_value = mocked_vlc
-    mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 1
+    mocked_controller = MagicMock()
+    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.media_info.is_playlist = False
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
     with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         mocked_media_state_wait.return_value = False
-        vlc_player.pause(mocked_display)
+        vlc_player.pause(mocked_controller)
 
     # THEN: The pause method should exit early
-    mocked_display.vlc_media.get_state.assert_called_with()
-    mocked_display.vlc_media_player.pause.assert_called_with()
-    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    mocked_controller.vlc_media.get_state.assert_called_with()
+    mocked_controller.vlc_media_player.pause.assert_called_with()
+    mocked_media_state_wait.assert_called_with(mocked_controller, 2)
     assert MediaState.Paused is not vlc_player.state
 
 
@@ -765,12 +779,13 @@ def test_stop(mocked_threading):
     mocked_thread = MagicMock()
     mocked_threading.Thread.return_value = mocked_thread
     mocked_stop = MagicMock()
-    mocked_display = MagicMock()
-    mocked_display.vlc_media_player.stop = mocked_stop
+    mocked_controller = MagicMock()
+    mocked_controller.media_info.is_playlist = False
+    mocked_controller.vlc_media_player.stop = mocked_stop
     vlc_player = VlcPlayer(None)
 
     # WHEN: stop is called
-    vlc_player.stop(mocked_display)
+    vlc_player.stop(mocked_controller)
 
     # THEN: A thread should have been started to stop VLC
     mocked_threading.Thread.assert_called_with(target=mocked_stop)
@@ -862,6 +877,7 @@ def test_reset():
 
     # THEN: The media should be stopped and invisible
     mocked_display.vlc_media_player.stop.assert_called_with()
+    mocked_display.vlc_media_list_player.stop.assert_called_with()
     mocked_display.vlc_widget.setVisible.assert_not_called()
     assert MediaState.Off == vlc_player.get_live_state()
 
@@ -880,60 +896,3 @@ def test_set_visible_has_own_widget():
 
     # THEN: The media should be stopped and invsibile
     mocked_display.vlc_widget.setVisible.assert_called_with(True)
-
-
-@patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_update_ui(mocked_get_vlc):
-    """
-    Test updating the UI
-    """
-    # GIVEN: A whole bunch of mocks
-    mocked_vlc = MagicMock()
-    mocked_vlc.State.Ended = 1
-    mocked_get_vlc.return_value = mocked_vlc
-    mocked_controller = MagicMock()
-    mocked_controller.media_info.end_time = 300
-    mocked_controller.seek_slider.isSliderDown.return_value = False
-    mocked_display = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 1
-    mocked_controller.vlc_media_player.get_time.return_value = 400000
-    vlc_player = VlcPlayer(None)
-
-    # WHEN: update_ui() is called
-    vlc_player.update_ui(mocked_controller, mocked_display)
-
-    # THEN: Certain methods should be called
-    mocked_controller.vlc_media_player.get_time.assert_called_with()
-    mocked_controller.seek_slider.setSliderPosition.assert_called_with(400000)
-    expected_calls = [call(True), call(False)]
-    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
-
-
-@patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_update_ui_dvd(mocked_get_vlc):
-    """
-    Test updating the UI for a CD or DVD
-    """
-    # GIVEN: A whole bunch of mocks
-    mocked_vlc = MagicMock()
-    mocked_vlc.State.Ended = 1
-    mocked_get_vlc.return_value = mocked_vlc
-    mocked_controller = MagicMock()
-    mocked_controller.media_info = ItemMediaInfo()
-    mocked_controller.media_info.start_time = 100
-    mocked_controller.media_info.end_time = 300
-    mocked_controller.seek_slider.isSliderDown.return_value = False
-    mocked_display = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 1
-    mocked_controller.vlc_media_player.get_time.return_value = 200
-    mocked_controller.media_info.media_type = MediaType.DVD
-    vlc_player = VlcPlayer(None)
-
-    # WHEN: update_ui() is called
-    vlc_player.update_ui(mocked_controller, mocked_display)
-
-    # THEN: Certain methods should be called
-    mocked_controller.vlc_media_player.get_time.assert_called_with()
-    mocked_controller.seek_slider.setSliderPosition.assert_called_with(200)
-    expected_calls = [call(True), call(False)]
-    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list

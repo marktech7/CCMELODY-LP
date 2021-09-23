@@ -99,6 +99,22 @@ class MediaPlayer(RegistryProperties):
         """
         pass
 
+    def previous(self, controller):
+        """
+        Play the previous track of a playlist
+
+        :param controller: Which Controller is running the show.
+        """
+        pass
+
+    def next(self, controller):
+        """
+        Play the next track of a playlist
+
+        :param controller: Which Controller is running the show.
+        """
+        pass
+
     def volume(self, controller, volume):
         """
         Change volume of current Media File
