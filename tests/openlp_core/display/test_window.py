@@ -622,3 +622,18 @@ def test_display_watcher_set_initialised():
 
         # THEN: initialised should have been emitted
         mocked_initialised.emit.assert_called_once_with(True)
+
+
+def test_display_watcher_please_repaint(display_window_env, mock_settings):
+    """
+    Test that the repaint is initiated
+    """
+    # GIVEN: A DisplayWindow instance with mocked out webview
+    display_window = DisplayWindow()
+    display_window.webview = MagicMock()
+
+    # WHEN: pleaseRepaint is called on the DisplayWatcher
+    display_window.display_watcher.pleaseRepaint()
+
+    # THEN: Qt update for the webview should have been triggered
+    assert display_window.webview.update.call_count == 1
