@@ -327,6 +327,7 @@ def main():
     else:
         log.setLevel(logging.INFO)
     # Throw the rest of the arguments at Qt, just in case.
+    args.rargs = ['--' + a for a in args.rargs]
     qt_args.extend(args.rargs)
     # Bug #1018855: Set the WM_CLASS property in X11
     if not is_win() and not is_macosx():
