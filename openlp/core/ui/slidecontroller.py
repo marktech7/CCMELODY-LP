@@ -947,13 +947,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self._set_theme(self.service_item)
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
-        # if the old item was text or images and the new item provides its own display
-        # then clear out the old item so that it doesn't flash momentarily when next showing a song/image
-        # A media-related item provides its own display if item.is_media()
-        # For other items the test is if item.is_capable(ItemCapabilities.ProvidesOwnDisplay)
-        if self.is_live and old_item and \
-                not (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or old_item.is_media()) and \
-                (self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or self.service_item.is_media()):
+        # if the old item was text or images (ie doesn't provide its own display) and the new item provides its own
+        # display then clear out the old item so that it doesn't flash momentarily when next showing text/image
+        if self.is_live and old_item and not old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) and \
+                self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
             for display in self.displays:
                 display.finish_with_current_item()
         # Prepare the new slides for text / image items

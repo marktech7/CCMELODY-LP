@@ -295,6 +295,7 @@ class MediaMediaItem(FolderLibraryItem):
         service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         service_item.add_capability(ItemCapabilities.RequiresMedia)
+        service_item.add_capability(ItemCapabilities.ProvidesOwnDisplay)
         if self.settings.value('media/media auto start') == QtCore.Qt.Checked:
             service_item.will_auto_start = True
         # force a non-existent theme
