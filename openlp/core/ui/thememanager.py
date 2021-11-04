@@ -136,6 +136,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
     """
     Manages the orders of Theme.
     """
+    # These signals are used by the web api to update the theme on the ui thread
     theme_update_global = QtCore.pyqtSignal()
     theme_level_updated = QtCore.pyqtSignal()
 
@@ -170,9 +171,10 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.setup_ui(self)
         self.global_theme = self.settings.value('themes/global theme')
         self.build_theme_path()
-        self.theme_update_global.connect(self.on_update_global_theme)
-        self.theme_level_updated.connect(self.on_theme_level_updated)
         Registry().register_function('reload_global_theme', self.on_update_global_theme)
+        # These signals are used by the web api to update the theme on the ui thread
+        self.theme_level_updated.connect(self.on_theme_level_updated)
+        self.theme_update_global.connect(self.on_update_global_theme)
 
     def bootstrap_post_set_up(self):
         """

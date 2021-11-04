@@ -342,6 +342,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.servicemanager_next_item.connect(self.next_item)
         self.servicemanager_previous_item.connect(self.previous_item)
         self.servicemanager_new_file.connect(self.new_file)
+        # This signal is used to update the theme on the ui thread from the web api thread
         self.theme_update_service.connect(self.on_service_theme_change)
         Registry().register_function('theme_update_list', self.update_theme_list)
         Registry().register_function('theme_level_changed', self.on_theme_level_changed)
