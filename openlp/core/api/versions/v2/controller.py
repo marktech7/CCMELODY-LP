@@ -115,16 +115,14 @@ def set_theme_level():
         abort(400)
     if theme_level == 'global':
         Registry().get('settings').setValue('themes/theme level', 1)
-        Registry().execute('theme_update_global')
     elif theme_level == 'service':
         Registry().get('settings').setValue('themes/theme level', 2)
-        Registry().execute('theme_update_service')
     elif theme_level == 'song':
         Registry().get('settings').setValue('themes/theme level', 3)
-        Registry().execute('theme_update_global')
     else:
         log.error('Unsupported data passed ' + theme_level)
         abort(400)
+    Registry().get('theme_manager').theme_level_updated.emit()
     return '', 204
 
 

@@ -299,9 +299,6 @@ class Ui_ServiceManager(object):
         self.service_manager_list.addActions([self.move_down_action, self.move_up_action, self.make_live_action,
                                               self.move_top_action, self.move_bottom_action, self.expand_action,
                                               self.collapse_action])
-        Registry().register_function('theme_update_list', self.update_theme_list)
-        Registry().register_function('config_screen_changed', self.regenerate_service_items)
-        Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
 
 class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixin, RegistryProperties):
@@ -345,7 +342,13 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.servicemanager_next_item.connect(self.next_item)
         self.servicemanager_previous_item.connect(self.previous_item)
         self.servicemanager_new_file.connect(self.new_file)
-        self.theme_update_service.connect(self.service_theme_change)
+        self.theme_update_service.connect(self.on_service_theme_change)
+        Registry().register_function('theme_update_list', self.update_theme_list)
+        Registry().register_function('theme_level_changed', self.on_theme_level_changed)
+        Registry().register_function('config_screen_changed', self.regenerate_service_items)
+        Registry().register_function('theme_change_global', self.regenerate_service_items)
+        Registry().register_function('theme_change_service', self.regenerate_changed_service_items)
+        Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
     def bootstrap_post_set_up(self):
         """
@@ -1377,11 +1380,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param current_index: The combo box index for the selected item
         """
-        self.service_theme = self.theme_combo_box.currentText()
-        self.settings.setValue('servicemanager/service theme', self.service_theme)
-        self.service_theme_change()
+        new_service_theme = self.theme_combo_box.currentText()
+        self.settings.setValue('servicemanager/service theme', new_service_theme)
+        Registry().execute('theme_change_service')
 
-    def theme_change(self):
+    def on_theme_level_changed(self):
         """
         The theme may have changed in the settings dialog so make sure the theme combo box is in the correct state.
         """
@@ -1390,13 +1393,19 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.toolbar.actions['theme_label'].setVisible(visible)
         self.regenerate_service_items()
 
-    def service_theme_change(self):
+    def on_service_theme_change(self):
         """
-        Set the theme for the current service remotely
+        Set the theme for the current service from the settings
         """
         self.service_theme = self.settings.value('servicemanager/service theme')
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
-        self.regenerate_service_items(True)
+        Registry().execute('theme_change_service')
+
+    def regenerate_changed_service_items(self):
+        """
+        Regenerate the changed service items, marking the service as unsaved.
+        """
+        self.regenerate_service_items(changed=True)
 
     def regenerate_service_items(self, changed=False):
         """
@@ -1726,7 +1735,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             theme_group.addAction(create_widget_action(self.theme_menu, theme, text=theme, checked=False,
                                   triggers=self.on_theme_change_action))
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
-        self.regenerate_service_items()
 
     def on_theme_change_action(self, field=None):
         """

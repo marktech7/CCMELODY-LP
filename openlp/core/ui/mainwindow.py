@@ -522,7 +522,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Timestamp for latest screen-change-popup. Used to prevent spamming the user with popups
         self.screen_change_timestamp = None
         # Simple message boxes
-        Registry().register_function('theme_update_global', self.default_theme_changed)
+        Registry().register_function('theme_change_global', self.default_theme_changed)
         Registry().register_function('config_screen_changed', self.screen_changed)
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
         # Reset the cursor
@@ -576,7 +576,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.load_settings()
         self.restore_current_media_manager_item()
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
 
     def restore_current_media_manager_item(self):
         """
@@ -714,7 +714,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 else:
                     self.active_plugin.toggle_status(PluginStatus.Inactive)
         # Set global theme and
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
         # Check if any Bibles downloaded.  If there are, they will be processed.
         Registry().execute('bibles_load_list')
         self.application.set_normal_cursor()

@@ -153,13 +153,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Registry().set_flag('has doubleclick added item to service', True)
         Registry().set_flag('replace service manager item', False)
 
-    def post_set_up(self):
+    def initialise(self):
         """
         Call by bootstrap functions
         """
-        self.initialise()
+        self.setup_ui()
         self.setup_displays()
         self.screen_size_changed()
+
+    def post_set_up(self):
+        # Update the theme whenever the theme is changed (hot reload)
+        Registry().register_function('theme_update_list', self.on_theme_changed)
+        Registry().register_function('theme_level_changed', self.on_theme_changed)
+        Registry().register_function('theme_change_global', self.on_theme_changed)
+        Registry().register_function('theme_change_service', self.on_theme_changed)
 
     def setup_displays(self):
         """
@@ -186,7 +193,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
     def display(self):
         return self.displays[0] if self.displays else None
 
-    def initialise(self):
+    def setup_ui(self):
         """
         Initialise the UI elements of the controller
         """
@@ -510,10 +517,6 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.mediacontroller_live_stop.connect(self.media_controller.on_media_stop)
         else:
             getattr(self, 'slidecontroller_preview_clear').connect(self.on_clear)
-        # Update the theme whenever global or service theme updated
-        # theme_update_list catches changes to themes AND if the global theme changes
-        Registry().register_function('theme_update_list', self.theme_updated)
-        Registry().register_function('theme_update_service', self.theme_updated)
 
     def new_song_menu(self):
         """
@@ -883,7 +886,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         for display in self.displays:
             display.set_background_image(image_path)
 
-    def theme_updated(self, var=None):
+    def on_theme_changed(self, var=None):
         """
         Reloads the service item
 
@@ -1608,6 +1611,12 @@ class PreviewController(RegistryBase, SlideController):
 
     def bootstrap_initialise(self):
         """
+        process the bootstrap initialise request
+        """
+        self.initialise()
+
+    def bootstrap_post_set_up(self):
+        """
         process the bootstrap post setup request
         """
         self.post_set_up()
@@ -1640,6 +1649,12 @@ class LiveController(RegistryBase, SlideController):
         ActionList.get_instance().add_category(str(self.category), CategoryOrder.standard_toolbar)
 
     def bootstrap_initialise(self):
+        """
+        process the bootstrap initialise request
+        """
+        self.initialise()
+
+    def bootstrap_post_set_up(self):
         """
         process the bootstrap post setup request
         """
