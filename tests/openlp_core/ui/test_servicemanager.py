@@ -804,7 +804,7 @@ def test_theme_change_global(mocked_regenerate_service_items, settings):
     settings.setValue('themes/theme level', ThemeLevel.Global)
 
     # WHEN: theme_change is called
-    service_manager.theme_change()
+    service_manager.on_theme_level_changed()
 
     # THEN: The the theme toolbar should not be visible
     assert service_manager.toolbar.actions['theme_combo_box'].isVisible() is False, \
@@ -824,7 +824,7 @@ def test_theme_change_service(mocked_regenerate_service_items, settings):
     settings.setValue('themes/theme level', ThemeLevel.Service)
 
     # WHEN: theme_change is called
-    service_manager.theme_change()
+    service_manager.on_theme_level_changed()
 
     # THEN: The the theme toolbar should be visible
     assert service_manager.toolbar.actions['theme_combo_box'].isVisible() is True, \
@@ -844,7 +844,7 @@ def test_theme_change_song(mocked_regenerate_service_items, settings):
     settings.setValue('themes/theme level', ThemeLevel.Song)
 
     # WHEN: theme_change is called
-    service_manager.theme_change()
+    service_manager.on_theme_level_changed()
 
     # THEN: The the theme toolbar should be visible
     assert service_manager.toolbar.actions['theme_combo_box'].isVisible() is True, \
@@ -1232,7 +1232,7 @@ class TestServiceManager(TestCase, TestMixin):
         self.service_manager.servicemanager_new_file.connect.assert_called_once_with(
             self.service_manager.new_file)
         self.service_manager.theme_update_service.connect.assert_called_once_with(
-            self.service_manager.service_theme_change)
+            self.service_manager.on_service_theme_change)
 
     @patch('openlp.core.ui.servicemanager.ServiceNoteForm')
     @patch('openlp.core.ui.servicemanager.ServiceItemEditForm')
