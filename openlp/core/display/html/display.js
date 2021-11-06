@@ -262,6 +262,7 @@ var Display = {
   _animationState: AnimationState.NoAnimation,
   _doTransitions: false,
   _doItemTransitions: false,
+  _skipNextTransition: false,
   _themeApplied: true,
   _revealConfig: {
     margin: 0.0,
@@ -365,7 +366,7 @@ var Display = {
     Display.applyTheme(new_slides, is_text);
     Display._slidesContainer.prepend(new_slides);
     var currentSlide = Reveal.getIndices();
-    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2) {
+    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2 && !Display._skipNextTransition) {
       // Set the slide one section ahead so we'll stay on the old slide after reinit
       Reveal.slide(1, currentSlide.v);
       Display.reinit();
@@ -375,6 +376,7 @@ var Display = {
       Reveal.slide(0, currentSlide.v);
       Reveal.sync();
       Display._removeLastSection();
+	  Display._skipNextTransition = false;
     }
   },
   /**
@@ -1120,6 +1122,18 @@ var Display = {
         Display._footerContainer.style.setProperty(footerKey, footerStyle[footerKey]);
       }
     }
+  },
+  /**
+   * Called whenever openlp wants to finish completely with the current text/image slides
+   * because a different window (eg presentation or vlc) is going to be displaying the next item
+   * and we don't want any flashbacks to the current slide contents
+   */
+  finishWithCurrentItem: function () {
+	Display.setTextSlide('');
+	var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
+	Display._skipNextTransition = true;
+	displayWatcher.pleaseRepaint();
   },
   /**
    * Return the video types supported by the video tag

@@ -51,6 +51,10 @@ class DisplayWatcher(QtCore.QObject):
     """
     initialised = QtCore.pyqtSignal(bool)
 
+    def __init__(self, parent):
+        super().__init__()
+        self._display_window = parent
+
     @QtCore.pyqtSlot(bool)
     def setInitialised(self, is_initialised):
         """
@@ -58,6 +62,13 @@ class DisplayWatcher(QtCore.QObject):
         """
         log.info('Display is initialised: {init}'.format(init=is_initialised))
         self.initialised.emit(is_initialised)
+
+    @QtCore.pyqtSlot()
+    def pleaseRepaint(self):
+        """
+        Called from the js in the webengine view when it's requesting a repaint by Qt
+        """
+        self._display_window.webview.update()
 
 
 class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
@@ -450,6 +461,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         if self.is_display and self.hide_mode == HideMode.Screen:
             self.setVisible(False)
+
+    def finish_with_current_item(self):
+        """
+        This is called whenever the song/image display is followed by eg a presentation or video which
+        has its own display.
+        This function ensures that the current item won't flash momentarily when the webengineview
+        is displayed for a subsequent song or image.
+        """
+        self.run_javascript('Display.finishWithCurrentItem();', True)
+        self.webview.update()
 
     def set_scale(self, scale):
         """

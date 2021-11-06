@@ -945,23 +945,19 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 [self.service_item, self.is_live, self._current_hide_mode, slide_no])
         else:
             self._set_theme(self.service_item)
-        # Reset blanking if needed
-        if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
-                                          self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
-            self._reset_blank(self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay))
         self.info_label.setText(self.service_item.title)
         self.slide_list = {}
-        if old_item:
-            # Close the old item if it's not to be used by the new service item
-            if not self.service_item.is_media() and not self.service_item.requires_media():
-                self.on_media_close()
-            if old_item.is_command() and not old_item.is_media():
-                Registry().execute('{name}_stop'.format(name=old_item.name.lower()), [old_item, self.is_live])
-            # if the old item was media which hid the main display then need to reset it if new service item uses it
-            if self.is_live and self._current_hide_mode is None and old_item.is_media() and not \
-                    old_item.requires_media() and not self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
-                for display in self.displays:
-                    display.show_display()
+        # if the old item was text or images (ie doesn't provide its own display) and the new item provides its own
+        # display then clear out the old item so that it doesn't flash momentarily when next showing text/image
+        # An item provides its own display if the capability ProvidesOwnDisplay is set or if it's a media item
+        old_item_provides_own_display = old_item and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
+                                                      old_item.is_media())
+        new_item_provides_own_display = (self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
+                                         self.service_item.is_media())
+        if self.is_live and not old_item_provides_own_display and new_item_provides_own_display:
+            for display in self.displays:
+                display.finish_with_current_item()
+        # Prepare the new slides for text / image items
         row = 0
         width = self.main_window.control_splitter.sizes()[self.split]
         if self.service_item.is_text():
@@ -997,7 +993,23 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 row += 1
                 self.slide_list[str(row)] = row - 1
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
+        # Tidy up aspects associated with the old item
+        if old_item:
+            # Close the old item if it's not to be used by the new service item
+            if not self.service_item.is_media() and not self.service_item.requires_media():
+                self.on_media_close()
+            if old_item.is_command() and not old_item.is_media():
+                Registry().execute('{name}_stop'.format(name=old_item.name.lower()), [old_item, self.is_live])
+            # if the old item was media which hid the main display then need to reset it if new service item uses it
+            if self.is_live and self._current_hide_mode is None and old_item.is_media() and not \
+                    old_item.requires_media() and not self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay):
+                for display in self.displays:
+                    display.show_display()
         self.enable_tool_bar(self.service_item)
+        # Reset blanking if needed
+        if old_item and self.is_live and (old_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or
+                                          self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay)):
+            self._reset_blank(self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay))
         if self.service_item.is_media() or self.service_item.requires_media():
             self._set_theme(self.service_item)
             if self.service_item.is_command():
