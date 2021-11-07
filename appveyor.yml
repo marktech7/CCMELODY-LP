@@ -102,8 +102,6 @@ after_test:
                 $cmd = "python builders/windows-builder.py $releaseArg --skip-update -c windows/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master --portable"
                 iex $cmd
             } else {
-                # Install qt to get the lrelease tool
-                #brew install qt@5
                 $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
                 iex $cmd
             }
