@@ -80,6 +80,7 @@ after_test:
             # install dmgbuild tool
             python -m pip install --no-warn-script-location dmgbuild
             # use brew to build enchant, needed for pyenchant
+            $env:HOMEBREW_FORCE_BREWED_CURL=1
             git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
             brew update --quiet
             brew install enchant
