@@ -82,8 +82,6 @@ after_test:
             # use brew to build enchant, needed for pyenchant
             # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
             $env:HOMEBREW_FORCE_BREWED_CURL=1
-            #git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch
-            #brew update --quiet
             brew install enchant
           }
           # Get the packaging code
@@ -113,6 +111,7 @@ after_test:
                 python builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
             } else {
                 python builders/macosx-builder.py --skip-update --skip-translations -c osx/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER"
+                ls "$env:APPVEYOR_BUILD_FOLDER"/dist
             }
           }
       }
