@@ -106,7 +106,7 @@ after_test:
             } else {
                 $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
                 iex $cmd
-                ls "$env:APPVEYOR_BUILD_FOLDER"/
+                ls "$env:APPVEYOR_BUILD_FOLDER"
                 ls "$env:APPVEYOR_BUILD_FOLDER/dist"
                 ls "$env:APPVEYOR_BUILD_FOLDER/dist/*.dmg"
             }
