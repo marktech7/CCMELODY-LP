@@ -43,7 +43,7 @@ test_script:
       If (($env:APPVEYOR_REPO_TAG -eq $False)) {
         cd $env:APPVEYOR_BUILD_FOLDER
         # Run the tests
-        python -m pytest tests
+        #python -m pytest tests
         # Go back to the user root folder
         cd ..
       }
@@ -82,6 +82,8 @@ after_test:
             # use brew to build enchant, needed for pyenchant
             # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
             $env:HOMEBREW_FORCE_BREWED_CURL=1
+            # Skip auto updating
+            $env:HOMEBREW_NO_AUTO_UPDATE=1
             brew install enchant
           }
           # Get the packaging code
