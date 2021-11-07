@@ -483,7 +483,6 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, display_window
     # THEN: Should show the display and set the hide mode to none
     display_window.setVisible.assert_called_once_with(True)
     display_window.run_javascript.assert_called_once_with('Display.show();')
-    mocked_registry_execute.assert_called_once_with('live_display_active')
 
 
 @patch('openlp.core.display.window.ScreenList')

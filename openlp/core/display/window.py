@@ -424,9 +424,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if self.isHidden():
             self.setVisible(True)
         self.hide_mode = None
-        # Trigger actions when display is active again.
-        if self.is_display:
-            Registry().execute('live_display_active')
 
     def hide_display(self, mode=HideMode.Screen):
         """
