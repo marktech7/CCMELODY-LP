@@ -78,7 +78,7 @@ after_test:
           {
             # Install Mac only stuff
             # install dmgbuild tool
-            python -m pip install --no-warn-script-location dmgbuild==1.3.3 biplist
+            python -m pip install --no-warn-script-location dmgbuild
             # use brew to build enchant, needed for pyenchant
             # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
             $env:HOMEBREW_FORCE_BREWED_CURL=1
@@ -87,8 +87,10 @@ after_test:
             brew install enchant
           }
           # Get the packaging code
-          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          #Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/tgc-dk/packaging/-/archive/dmgbuild-fix/packaging-dmgbuild-fix.zip" -OutFile packaging-master.zip
           Expand-Archive -Path packaging-master.zip -DestinationPath .
+          mv packaging-dmgbuild-fix packaging-master
           # If this is tag/replease we should also build the manual
           If ($env:APPVEYOR_REPO_TAG -eq $True -Or $env:FORCE_PACKAGING_MANUAL -eq 1) {
             python -m pip install --no-warn-script-location sphinx sphinx_rtd_theme
