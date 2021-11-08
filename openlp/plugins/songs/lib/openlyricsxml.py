@@ -355,8 +355,12 @@ class OpenLyrics(object):
                 {st}{r}Text text text
         """
         tags = []
+        endless_tags = []
+        for formatting_tag in FormattingTags.get_html_tags():
+            if not formatting_tag['end html']:
+                endless_tags.append(formatting_tag['start tag'])
         for tag in FormattingTags.get_html_tags():
-            if tag['start tag'] == '{br}':
+            if tag['start tag'] in endless_tags:
                 continue
             if text.count(tag['start tag']) != text.count(tag['end tag']):
                 tags.append((text.find(tag['start tag']), tag['start tag'], tag['end tag']))
@@ -450,7 +454,7 @@ class OpenLyrics(object):
                 # Check if formatting tag contains end tag. Some formatting
                 # tags e.g. {br} has only start tag. If no end tag is present
                 # <close> element has not to be in OpenLyrics xml.
-                if tag['end tag']:
+                if tag['end html']:
                     element_close = self._add_text_to_element('close', element)
                     element_close.text = etree.CDATA(tag['end html'])
 

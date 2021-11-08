@@ -328,7 +328,7 @@ def find_formatting_tags(text, active_formatting_tags):
             # See if the found tag has an end tag
             for formatting_tag in FormattingTags.get_html_tags():
                 if formatting_tag['start tag'] == '{' + tag + '}':
-                    if formatting_tag['end tag']:
+                    if formatting_tag['end html']:
                         if start_tag:
                             # prepend the new tag to the list of active formatting tags
                             active_formatting_tags[:0] = [tag]
@@ -486,8 +486,12 @@ def get_start_tags(raw_text):
     """
     raw_tags = []
     html_tags = []
+    endless_tags = []
+    for formatting_tag in FormattingTags.get_html_tags():
+        if not formatting_tag['end html']:
+            endless_tags.append(formatting_tag['start tag'])
     for tag in FormattingTags.get_html_tags():
-        if tag['start tag'] == '{br}':
+        if tag['start tag'] in endless_tags:
             continue
         if raw_text.count(tag['start tag']) != raw_text.count(tag['end tag']):
             raw_tags.append((raw_text.find(tag['start tag']), tag['start tag'], tag['end tag']))

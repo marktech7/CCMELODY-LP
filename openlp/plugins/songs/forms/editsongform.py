@@ -45,6 +45,7 @@ from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, MediaFile, Song, SongBookEntry, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
+from openlp.core.lib.formattingtags import FormattingTags
 
 
 log = logging.getLogger(__name__)
@@ -285,8 +286,12 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         """
         if first_time:
             fixed_tags = []
+            endless_tags = []
+            for formatting_tag in FormattingTags.get_html_tags():
+                if not formatting_tag['end html']:
+                    endless_tags.append(formatting_tag['start tag'])
             for i in range(len(tags)):
-                if tags[i] != '{br}':
+                if tags[i] not in endless_tags:
                     fixed_tags.append(tags[i])
             tags = fixed_tags
         if len(tags) == 0:
