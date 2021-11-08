@@ -110,9 +110,6 @@ after_test:
                 iex $cmd
                 cd ..
                 Get-Childitem -Path . -Include *.dmg -Recurse -ErrorAction SilentlyContinue
-                #ls -l "$env:APPVEYOR_BUILD_FOLDER"
-                #ls -l "$env:APPVEYOR_BUILD_FOLDER/dist/"
-                #ls -l "$env:APPVEYOR_BUILD_FOLDER/dist/*.dmg"
             }
           } else {
             cd packaging-master
