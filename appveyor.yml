@@ -20,8 +20,8 @@ environment:
       FORCE_PACKAGING_MANUAL: 0
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
       QT_QPA_PLATFORM: offscreen
-      FORCE_PACKAGING: 1
-      FORCE_PACKAGING_MANUAL: 1
+      FORCE_PACKAGING: 0
+      FORCE_PACKAGING_MANUAL: 0
 
 init:
   - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
@@ -43,7 +43,7 @@ test_script:
       If (($env:APPVEYOR_REPO_TAG -eq $False)) {
         cd $env:APPVEYOR_BUILD_FOLDER
         # Run the tests
-        #python -m pytest tests
+        python -m pytest tests
         # Go back to the user root folder
         cd ..
       }
@@ -87,10 +87,8 @@ after_test:
             brew install enchant
           }
           # Get the packaging code
-          #Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
-          Invoke-WebRequest -Uri "https://gitlab.com/tgc-dk/packaging/-/archive/dmgbuild-fix/packaging-dmgbuild-fix.zip" -OutFile packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
           Expand-Archive -Path packaging-master.zip -DestinationPath .
-          mv packaging-dmgbuild-fix packaging-master
           # If this is tag/replease we should also build the manual
           If ($env:APPVEYOR_REPO_TAG -eq $True -Or $env:FORCE_PACKAGING_MANUAL -eq 1) {
             python -m pip install --no-warn-script-location sphinx sphinx_rtd_theme
@@ -108,8 +106,6 @@ after_test:
             } else {
                 $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master -v"
                 iex $cmd
-                cd ..
-                Get-Childitem -Path . -Include *.dmg -Recurse -ErrorAction SilentlyContinue
             }
           } else {
             cd packaging-master
