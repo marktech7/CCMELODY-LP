@@ -30,9 +30,7 @@ install:
   # Update pip
   - python -m pip install --upgrade pip
   # Install generic dependencies from pypi
-  # websockets are set to 8.1 and pyqt5 to 5.15.3 due to pyinstaller incompabilities with later versions.
-  # pytest-qt is set to 3.3.0 due to test failing with newwer versions.
-  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets==8.1 waitress six webob requests QtAwesome PyQt5==5.15.3 PyQtWebEngine==5.15.3 pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt==3.3.0 pyenchant pysword
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   # Mac only dependencies
@@ -82,8 +80,10 @@ after_test:
             # install dmgbuild tool
             python -m pip install --no-warn-script-location dmgbuild
             # use brew to build enchant, needed for pyenchant
-            git -C /usr/local/Homebrew/Library/Taps/homebrew/homebrew-core fetch --unshallow
-            brew update --quiet
+            # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
+            $env:HOMEBREW_FORCE_BREWED_CURL=1
+            # Skip auto updating
+            $env:HOMEBREW_NO_AUTO_UPDATE=1
             brew install enchant
           }
           # Get the packaging code
@@ -104,8 +104,6 @@ after_test:
                 $cmd = "python builders/windows-builder.py $releaseArg --skip-update -c windows/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master --portable"
                 iex $cmd
             } else {
-                # Install qt to get the lrelease tool
-                brew install qt
                 $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
                 iex $cmd
             }
