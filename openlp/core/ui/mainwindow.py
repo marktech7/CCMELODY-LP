@@ -642,6 +642,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
         # If not we need to see if we want to use the previous file.so count of 1
+        self.log_debug(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
         elif self.settings.value('core/auto open'):

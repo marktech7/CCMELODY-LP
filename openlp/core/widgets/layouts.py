@@ -158,7 +158,7 @@ class AspectRatioLayout(QtWidgets.QLayout):
                     y = rect.height() - self.margin - height
                 else:
                     y = self.margin + (available_height - height) / 2
-                widget.setGeometry(rect.x() + self.margin, rect.y() + y, width, height)
+                widget.setGeometry(int(rect.x() + self.margin), int(rect.y() + y), int(width), int(height))
             else:
                 if self._item.alignment() & QtCore.Qt.AlignLeft:
                     x = self.margin
@@ -166,8 +166,8 @@ class AspectRatioLayout(QtWidgets.QLayout):
                     x = rect.width() - self.margin - width
                 else:
                     x = self.margin + (available_width - width) / 2
-                widget.setGeometry(rect.x() + int(x), rect.y() + self.margin, width, height)
-            self.resize.emit(QtCore.QSize(width, height))
+                widget.setGeometry(int(rect.x()) + int(x), int(rect.y() + self.margin), int(width), int(height))
+            self.resize.emit(QtCore.QSize(int(width), int(height)))
 
     def sizeHint(self):
         """
