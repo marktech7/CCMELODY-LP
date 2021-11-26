@@ -274,12 +274,12 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.toolbar.addAction(self.next_item)
         self.toolbar.addSeparator()
         self.controller_type = DisplayControllerType.Preview
+        self._current_hide_mode = None
         if self.is_live:
             self.controller_type = DisplayControllerType.Live
             self.slide_changed_time = datetime.datetime.now()
             self.fetching_screenshot = False
             self.screen_capture = None
-            self._current_hide_mode = None
             # Hide Menu
             self.hide_menu = QtWidgets.QToolButton(self.toolbar)
             self.hide_menu.setObjectName('hide_menu')
