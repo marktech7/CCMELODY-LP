@@ -296,7 +296,7 @@ var Display = {
     let doItemTransitions = options.doItemTransitions || false;
     let hideMouse = options.hideMouse || false;
     if (options.slideNumbersInFooter) {
-      Display._revealConfig.slideNumber = "c/t";
+      Display._revealConfig.slideNumber = Display.setFooterSlideNumbers;
     }
 
     // Now continue to initialisation
@@ -1177,6 +1177,22 @@ var Display = {
       "left: -999999px"
     ].join(" !important;");
     document.body.appendChild(Display._fontContainer);
+  },
+  /**
+   * Prepare the slide number (slide x/y) for insertion into the Reveal footer
+   * This is a callback function which Reveal calls to get the values
+   * Fixes https://gitlab.com/openlp/openlp/-/issues/942
+   */
+  setFooterSlideNumbers: function (slide) {
+    let value = ['', '', ''];
+	// Reveal does call this function passing undefined
+    if (typeof slide === 'undefined') {
+      return value;
+    }
+    value[0] = Reveal.getSlidePastCount(slide) + 1;
+    value[1] = '/';
+    value[2] = Object.keys(Display._slides).length;
+    return value;
   }
 };
 new QWebChannel(qt.webChannelTransport, function (channel) {
