@@ -330,7 +330,6 @@ class BibleDB(Manager):
                     if not book_list:
                         book_list = books
             return [value['id'] for value in book_list if self.get_book_by_book_ref_id(value['id'])]
-        return []
 
     def get_verses(self, reference_list, show_error=True):
         """

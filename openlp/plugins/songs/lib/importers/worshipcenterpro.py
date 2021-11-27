@@ -64,10 +64,10 @@ class WorshipCenterProImport(SongImport):
         records = cursor.fetchall()
         songs = {}
         for record in records:
-            id = record.ID
-            if id not in songs:
-                songs[id] = {}
-            songs[id][record.Field] = record.Value
+            record_id = record.ID
+            if record_id not in songs:
+                songs[record_id] = {}
+            songs[record_id][record.Field] = record.Value
         self.import_wizard.progress_bar.setMaximum(len(songs))
         for song in songs:
             if self.stop_import_flag:

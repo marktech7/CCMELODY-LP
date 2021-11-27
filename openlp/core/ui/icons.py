@@ -192,10 +192,10 @@ class UiIcons(metaclass=Singleton):
                     else:
                         setattr(self, key, qta.icon(icon))
                 except Exception:
-                    log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                    log.exception(f'Unexpected error for icon: {icon}')
                     setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
             except Exception:
-                log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                log.exception(f'Unexpected error for icon with key: {key}')
                 setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
 
     @staticmethod
