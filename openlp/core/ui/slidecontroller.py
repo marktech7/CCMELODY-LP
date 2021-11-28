@@ -432,7 +432,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.toolbar.set_widget_visible('song_menu', False)
         # Screen preview area
         self.preview_frame = QtWidgets.QFrame(self.splitter)
-        self.preview_frame.setGeometry(QtCore.QRect(0, 0, 300, 300 * self.ratio))
+        self.preview_frame.setGeometry(QtCore.QRect(0, 0, 300, int(300 * self.ratio)))
         self.preview_frame.setMinimumHeight(100)
         self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored,
                                                                QtWidgets.QSizePolicy.Ignored,

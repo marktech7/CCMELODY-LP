@@ -309,16 +309,16 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         # Main Area
         self.area_position_page.use_main_default_location = not self.theme.font_main_override
-        self.area_position_page.main_x = self.theme.font_main_x
-        self.area_position_page.main_y = self.theme.font_main_y
-        self.area_position_page.main_height = self.theme.font_main_height
-        self.area_position_page.main_width = self.theme.font_main_width
+        self.area_position_page.main_x = int(self.theme.font_main_x)
+        self.area_position_page.main_y = int(self.theme.font_main_y)
+        self.area_position_page.main_height = int(self.theme.font_main_height)
+        self.area_position_page.main_width = int(self.theme.font_main_width)
         # Footer
         self.area_position_page.use_footer_default_location = not self.theme.font_footer_override
-        self.area_position_page.footer_x = self.theme.font_footer_x
-        self.area_position_page.footer_y = self.theme.font_footer_y
-        self.area_position_page.footer_height = self.theme.font_footer_height
-        self.area_position_page.footer_width = self.theme.font_footer_width
+        self.area_position_page.footer_x = int(self.theme.font_footer_x)
+        self.area_position_page.footer_y = int(self.theme.font_footer_y)
+        self.area_position_page.footer_height = int(self.theme.font_footer_height)
+        self.area_position_page.footer_width = int(self.theme.font_footer_width)
 
     def set_alignment_page_values(self):
         """
