@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -245,12 +245,12 @@ def test_main_window_title(main_window):
 
     # WHEN no changes are made to the service
 
-    # THEN the main window's title should be the same as the OpenLP string in the UiStrings class
+    # THEN the main window's title shoud be the same as the OpenLP string in the UiStrings class
     assert main_window.windowTitle() == UiStrings().OpenLP, \
         'The main window\'s title should be the same as the OpenLP string in UiStrings class'
 
 
-def test_set_service_modified(main_window):
+def test_set_service_modifed(main_window):
     """
     Test that when setting the service's title the main window's title is set correctly
     """
@@ -355,7 +355,7 @@ def test_mainwindow_configuration(main_window):
                              'authentication_token', 'settings_form', 'service_manager', 'theme_manager',
                              'projector_manager']
     expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
-                               'config_screen_changed', 'theme_change_global']
+                               'config_screen_changed', 'theme_update_global']
     assert list(Registry().service_list.keys()) == expected_service_list, \
         'The service list should have been {}'.format(Registry().service_list.keys())
     assert list(Registry().functions_list.keys()) == expected_functions_list, \

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -820,7 +820,7 @@ def test_theme_updated(mock_settings):
     mock_settings.value.return_value = True
 
     # WHEN: theme_updated is called
-    slide_controller.on_theme_changed()
+    slide_controller.theme_updated()
 
     # THEN: process_item is called with the current service_item and slide number
     slide_controller._process_item.assert_called_once_with(sentinel.service_item, 14)
@@ -838,7 +838,7 @@ def test_theme_updated_no_reload(mock_settings):
     mock_settings.value.return_value = False
 
     # WHEN: theme_updated is called
-    slide_controller.on_theme_changed()
+    slide_controller.theme_updated()
 
     # THEN: process_item is not called
     assert slide_controller._process_item.call_count == 0

@@ -62,9 +62,7 @@ class ServiceItemEditForm(QtWidgets.QDialog, Ui_ServiceItemEditDialog, RegistryP
             # self.data is only true for images
             self.item.slides = []
             for item in self.item_list:
-                thumb = item.get('thumbnail', None)
-                file_hash = item.get('file_hash', None)
-                self.item.add_from_image(item['path'], item['title'], thumb, file_hash)
+                self.item.add_from_image(item['path'], item['title'])
         return self.item
 
     def load_data(self):

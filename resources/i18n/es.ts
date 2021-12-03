@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.0" language="es">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="es" version="2.0">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -1929,22 +1929,22 @@ Do you want to add the other images anyway?</source>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="69"/>
         <source>Image Background</source>
-        <translation>Imagen de Fondo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="70"/>
         <source>Use blank theme</source>
-        <translation>Usar tema en blanco</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="71"/>
         <source>Custom theme</source>
-        <translation>Tema personalizado</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="72"/>
         <source>Theme:</source>
-        <translation>Tema:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -1952,7 +1952,7 @@ Do you want to add the other images anyway?</source>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="192"/>
         <source>Add new media</source>
-        <translation>Agregar un medio nuevo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="101"/>
@@ -2247,12 +2247,12 @@ Do you want to add the other images anyway?</source>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="84"/>
         <source>VLC (requires restart)</source>
-        <translation>VLC (requiere reinicio)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="85"/>
         <source>Extra arguments:</source>
-        <translation>Argumentos extra:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="86"/>
@@ -2600,32 +2600,32 @@ porque sin costo Él nos hizo libres.</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="91"/>
         <source>Add folder</source>
-        <translation>Agregar carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="92"/>
         <source>Parent folder:</source>
-        <translation>Carpeta principal:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="93"/>
         <source>Folder name:</source>
-        <translation>Nombre de carpeta:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="109"/>
         <source>-- Top-level folder --</source>
-        <translation>-- Carpeta de nivel principal --</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="122"/>
         <source>You need to type in a folder name.</source>
-        <translation>Debe escribir un nombre para la carpeta.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="127"/>
         <source>This folder already exists, please use a different name.</source>
-        <translation>Esta carpeta ya existe, utilize un nombre diferente.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2702,11 +2702,7 @@ porque sin costo Él nos hizo libres.</translation>
 {path}
 
 Existing files in this directory could be overwritten. The data directory will be changed when OpenLP is closed.</source>
-        <translation>Desea cambiar la ubicación del directorio de datos de OpenLP a:
-
-{path}
-
-Los datos del directorio pueden ser sobrescritos. El directorio se cambiará una vez que OpenLP se cierre.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="197"/>
@@ -2888,7 +2884,7 @@ en el Control de Diapositivas:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="251"/>
         <source>Alert if New clicked on blank service</source>
-        <translation>Alertar si se presiona Nuevo en un servicio en blanco</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="255"/>
@@ -2906,32 +2902,32 @@ en el Control de Diapositivas:</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="227"/>
         <source>Select Folder</source>
-        <translation>Seleccionar Carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="228"/>
         <source>Add items to folder:</source>
-        <translation>Agregar elementos a la carpeta:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="229"/>
         <source>No folder</source>
-        <translation>Ninguna carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="230"/>
         <source>Existing folder</source>
-        <translation>Carpeta existente</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="231"/>
         <source>New folder</source>
-        <translation>Nueva carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="256"/>
         <source>You need to type in a folder name.</source>
-        <translation>Debe escribir un nombre para la carpeta.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -3585,17 +3581,17 @@ Si presiona el botón &apos;{finish_button}&apos; puede descargar los datos post
     <message>
         <location filename="../../openlp/core/ui/library.py" line="88"/>
         <source>Could not add the new folder.</source>
-        <translation>No se pudo agregar la carpeta nueva.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="100"/>
         <source>You must select an item or folder to delete.</source>
-        <translation>Debe seleccionar un elemento o carpeta para eliminar.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="118"/>
         <source>Remove folder</source>
-        <translation>Quitar carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="118"/>
@@ -3610,7 +3606,7 @@ Si presiona el botón &apos;{finish_button}&apos; puede descargar los datos post
     <message>
         <location filename="../../openlp/core/ui/library.py" line="326"/>
         <source>An item with that filename already exists.</source>
-        <translation>Ya existe un elemento con este nombre.</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -5851,7 +5847,7 @@ Extensión de archivo no admitida</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="194"/>
         <source>({screen.geometry.width()} x {screen.geometry.height()} pixels)</source>
-        <translation>({geometría.pantalla.ancho()} x {geometría.pantalla.alto()} pixeles)</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -6290,7 +6286,7 @@ Estos archivos serán removidos si continua.</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="205"/>
         <source>Revert to default IP address.</source>
-        <translation>Revertir a la IP por defecto.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="156"/>
@@ -6355,7 +6351,7 @@ Estos archivos serán removidos si continua.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="169"/>
         <source>Time service usually starts.</source>
-        <translation>Hora usual de inicio del servicio.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="170"/>
@@ -6410,7 +6406,7 @@ Estos archivos serán removidos si continua.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="187"/>
         <source>Service Item Wrapping</source>
-        <translation>Ajuste de Elementos de Servicio</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="188"/>
@@ -7508,12 +7504,12 @@ Está corrupto, inaccesible o no es un tema válido.</translation>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="339"/>
         <source>Add folder</source>
-        <translation>Agregar carpeta</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="340"/>
         <source>Add folder.</source>
-        <translation>Agregar carpeta.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="341"/>
@@ -8143,14 +8139,13 @@ Cerrando esta instancia</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="446"/>
         <source>Do not show this message again</source>
-        <translation>No mostrar este mensaje de nuevo</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="447"/>
         <source>You already have a blank new service.
 Add some items to it then press Save</source>
-        <translation>Ya tiene un servicio nuevo en blanco.
-Agregue algunos elementos y presione Guardar</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="53"/>
@@ -8616,12 +8611,12 @@ Agregue algunos elementos y presione Guardar</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="113"/>
         <source>Impress options</source>
-        <translation>Opciones de Impress</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="114"/>
         <source>Use Impress Slide Show Settings / Presentation Display setting</source>
-        <translation>Usar Preferencias de Presentación de Impress / Preferencias de Pantalla</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="122"/>
@@ -8644,7 +8639,7 @@ Agregue algunos elementos y presione Guardar</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="203"/>
         <source>Listen IP address (0.0.0.0 matches all addresses):</source>
-        <translation>IP a escuchar (0.0.0.0 para todas las direcciones):</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="206"/>
@@ -8739,22 +8734,22 @@ Agregue algunos elementos y presione Guardar</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="228"/>
         <source>Server Status</source>
-        <translation>Estado del Servidor</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="229"/>
         <source>HTTP Server:</source>
-        <translation>Servidor HTTP:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="230"/>
         <source>Websocket Server:</source>
-        <translation>Servidor Websocket:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="231"/>
         <source>Zeroconf Server:</source>
-        <translation>Servidor Zeroconf:</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="232"/>
@@ -8766,7 +8761,7 @@ Agregue algunos elementos y presione Guardar</translation>
         <location filename="../../openlp/core/api/tab.py" line="233"/>
         <source>Failed</source>
         <comment>Server failed</comment>
-        <translation>Fallido</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="234"/>
@@ -9819,7 +9814,7 @@ Por favor corríjalas antes de continuar.</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="250"/>
         <source>Include slide number in footer</source>
-        <translation>Incluir número de diapositiva en pie de página</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="253"/>
@@ -10224,7 +10219,7 @@ Por favor corríjalas antes de continuar.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="499"/>
         <source>Are you sure you want to delete these songs?</source>
-        <translation>¿Desea borrar estas canciones?</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="525"/>
@@ -10624,7 +10619,7 @@ Ver el registro para detalles</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="107"/>
         <source>This song cannot be read. Perhaps your CCLI account does not give you access to this song.</source>
-        <translation>No se puede leer la canción. Puede que su cuenta en CCLI no le de acceso a esta canción.</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="135"/>

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -867,17 +867,11 @@ class Renderer(RegistryBase, ThemePreviewRenderer):
         """
         super().__init__(*args, **kwargs)
         self.force_page = False
-        screen_list = ScreenList()
-        for screen in screen_list:
+        for screen in ScreenList():
             if screen.is_display:
                 self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
                                  screen.display_geometry.width(), screen.display_geometry.height())
                 break
-        else:
-            # If there is no display screen, use the first screen as a fallback
-            screen = screen_list[0]
-            self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
-                             screen.display_geometry.width(), screen.display_geometry.height())
         # If the display is not show'ed and hidden like this webegine will not render
         self.show()
         self.hide()

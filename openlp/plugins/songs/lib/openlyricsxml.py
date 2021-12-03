@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -129,13 +129,12 @@ class SongXML(object):
             self.song_xml = objectify.fromstring(xml)
         except etree.XMLSyntaxError:
             log.exception('Invalid xml {text}'.format(text=xml))
-        if self.song_xml is not None:
-            xml_iter = self.song_xml.getiterator()
-            for element in xml_iter:
-                if element.tag == 'verse':
-                    if element.text is None:
-                        element.text = ''
-                    verse_list.append([element.attrib, str(element.text)])
+        xml_iter = self.song_xml.getiterator()
+        for element in xml_iter:
+            if element.tag == 'verse':
+                if element.text is None:
+                    element.text = ''
+                verse_list.append([element.attrib, str(element.text)])
         return verse_list
 
     def dump_xml(self):

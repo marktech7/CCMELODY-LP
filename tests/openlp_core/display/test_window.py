@@ -93,36 +93,6 @@ def test_x11_override_off(display_window_env, mock_settings):
     assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
 
 
-@patch('openlp.core.display.window.is_macosx')
-def test_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
-    """
-    Test that on macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is set
-    """
-    # GIVEN: We're on macOS
-    mocked_is_macosx.return_value = True
-
-    # WHEN: A DisplayWindow is created
-    display_window = DisplayWindow()
-
-    # THEN: The attribute is set
-    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is True
-
-
-@patch('openlp.core.display.window.is_macosx')
-def test_not_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
-    """
-    Test that on systems other than macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is NOT set
-    """
-    # GIVEN: We're on macOS
-    mocked_is_macosx.return_value = False
-
-    # WHEN: A DisplayWindow is created
-    display_window = DisplayWindow()
-
-    # THEN: The attribute is set
-    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is False
-
-
 def test_set_scale_not_initialised(display_window_env, mock_settings):
     """
     Test that the scale js is not run if the page is not initialised

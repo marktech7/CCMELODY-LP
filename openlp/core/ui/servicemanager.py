@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -299,6 +299,10 @@ class Ui_ServiceManager(object):
         self.service_manager_list.addActions([self.move_down_action, self.move_up_action, self.make_live_action,
                                               self.move_top_action, self.move_bottom_action, self.expand_action,
                                               self.collapse_action])
+        Registry().register_function('theme_update_list', self.update_theme_list)
+        Registry().register_function('config_screen_changed', self.regenerate_service_items)
+        Registry().register_function('theme_update_global', self.theme_change)
+        Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
 
 
 class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixin, RegistryProperties):
@@ -342,14 +346,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.servicemanager_next_item.connect(self.next_item)
         self.servicemanager_previous_item.connect(self.previous_item)
         self.servicemanager_new_file.connect(self.new_file)
-        # This signal is used to update the theme on the ui thread from the web api thread
-        self.theme_update_service.connect(self.on_service_theme_change)
-        Registry().register_function('theme_update_list', self.update_theme_list)
-        Registry().register_function('theme_level_changed', self.on_theme_level_changed)
-        Registry().register_function('config_screen_changed', self.regenerate_service_items)
-        Registry().register_function('theme_change_global', self.regenerate_service_items)
-        Registry().register_function('theme_change_service', self.regenerate_changed_service_items)
-        Registry().register_function('mediaitem_suffix_reset', self.reset_supported_suffixes)
+        self.theme_update_service.connect(self.service_theme_change)
 
     def bootstrap_post_set_up(self):
         """
@@ -591,8 +588,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                             if os.path.splitext(filename)[1] not in ['.png', '.jpg']:
                                 continue
                             filename_path = Path(thumbnail_path) / Path(filename)
-                            if not filename_path.exists():
-                                continue
                             # Create a thumbnail path in the zip/service file
                             service_path = filename_path.relative_to(thumbnail_path_parent)
                             write_list.append((filename_path, service_path))
@@ -602,8 +597,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         for frame in item['service_item'].get_frames():
                             if 'thumbnail' in frame:
                                 filename_path = Path(thumbnail_path) / Path(frame['thumbnail'])
-                                if not filename_path.exists():
-                                    continue
                                 # Create a thumbnail path in the zip/service file
                                 service_path = filename_path.relative_to(thumbnail_path_parent)
                                 path_from_tuple = (filename_path, service_path)
@@ -669,7 +662,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.main_window.display_progress_bar(1000)
         try:
             with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
-                    zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+                    zipfile.ZipFile(temp_file, 'w') as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
@@ -766,11 +759,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         # If the file_path is a string, this method will fail. Typecase to Path
         file_path = Path(file_path)
-        try:
-            if not file_path.exists():
-                return False
-        except OSError:
-            # if the filename, directory name, or volume label syntax is incorrect it can cause an exception
+        if not file_path.exists():
             return False
         service_data = None
         self.application.set_busy_cursor()
@@ -1271,15 +1260,29 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             self.repaint_service_list(len(self.service_items) - 1, child)
             self.set_modified()
 
+    def _delete_confirmation_dialog(self):
+        msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
+                                        translate('OpenLP.ServiceManager', 'Delete item from service'),
+                                        translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
+                                                  'this item from the service?'),
+                                        QtWidgets.QMessageBox.StandardButtons(
+                                            QtWidgets.QMessageBox.Close | QtWidgets.QMessageBox.Cancel), self)
+        del_button = msg_box.button(QtWidgets.QMessageBox.Close)
+        del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
+        msg_box.setDefaultButton(QtWidgets.QMessageBox.Close)
+        return msg_box.exec()
+
     def on_delete_from_service(self):
         """
         Remove the current ServiceItem from the list.
         """
         item = self.find_service_item()[0]
         if item != -1:
-            self.service_items.remove(self.service_items[item])
-            self.repaint_service_list(item - 1, -1)
-            self.set_modified()
+            if not self.settings.value('advanced/delete service item confirmation') or \
+                    self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close:
+                self.service_items.remove(self.service_items[item])
+                self.repaint_service_list(item - 1, -1)
+                self.set_modified()
 
     def repaint_service_list(self, service_item, service_item_child):
         """
@@ -1381,11 +1384,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param current_index: The combo box index for the selected item
         """
-        new_service_theme = self.theme_combo_box.currentText()
-        self.settings.setValue('servicemanager/service theme', new_service_theme)
-        Registry().execute('theme_change_service')
+        self.service_theme = self.theme_combo_box.currentText()
+        self.settings.setValue('servicemanager/service theme', self.service_theme)
+        self.service_theme_change()
 
-    def on_theme_level_changed(self):
+    def theme_change(self):
         """
         The theme may have changed in the settings dialog so make sure the theme combo box is in the correct state.
         """
@@ -1394,19 +1397,13 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.toolbar.actions['theme_label'].setVisible(visible)
         self.regenerate_service_items()
 
-    def on_service_theme_change(self):
+    def service_theme_change(self):
         """
-        Set the theme for the current service from the settings
+        Set the theme for the current service remotely
         """
         self.service_theme = self.settings.value('servicemanager/service theme')
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
-        Registry().execute('theme_change_service')
-
-    def regenerate_changed_service_items(self):
-        """
-        Regenerate the changed service items, marking the service as unsaved.
-        """
-        self.regenerate_service_items(changed=True)
+        self.regenerate_service_items(True)
 
     def regenerate_service_items(self, changed=False):
         """
@@ -1415,7 +1412,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param changed: True if the list has changed for new / removed items. False for a theme change.
         """
         self.application.set_busy_cursor()
-        was_modified = self.is_modified()
         # force reset of renderer as theme data has changed
         self.service_has_all_original_files = True
         if self.service_items:
@@ -1441,7 +1437,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.add_service_item(item['service_item'], False, expand=item['expanded'], repaint=False,
                                       selected=item['selected'])
             # Set to False as items may have changed rendering does not impact the saved song so True may also be valid
-            self.set_modified(changed or was_modified)
+            if changed:
+                self.set_modified()
             # Repaint it once only at the end
             self.repaint_service_list(-1, -1)
         self.application.set_normal_cursor()
@@ -1740,6 +1737,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             theme_group.addAction(create_widget_action(self.theme_menu, theme, text=theme, checked=False,
                                   triggers=self.on_theme_change_action))
         find_and_set_in_combo_box(self.theme_combo_box, self.service_theme)
+        self.regenerate_service_items()
 
     def on_theme_change_action(self, field=None):
         """
