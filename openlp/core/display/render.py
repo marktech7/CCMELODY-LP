@@ -855,11 +855,17 @@ class Renderer(RegistryBase, ThemePreviewRenderer):
         """
         super().__init__(*args, **kwargs)
         self.force_page = False
-        for screen in ScreenList():
+        screen_list = ScreenList()
+        for screen in screen_list:
             if screen.is_display:
                 self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
                                  screen.display_geometry.width(), screen.display_geometry.height())
                 break
+        else:
+            # If there is no display screen, use the first screen as a fallback
+            screen = screen_list[0]
+            self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
+                             screen.display_geometry.width(), screen.display_geometry.height())
         # If the display is not show'ed and hidden like this webegine will not render
         self.show()
         self.hide()
