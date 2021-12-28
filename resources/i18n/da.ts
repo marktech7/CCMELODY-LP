@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="da" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.0" language="da">
 <context>
     <name>AlertsPlugin</name>
     <message>

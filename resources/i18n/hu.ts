@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS language="hu" version="2.0">
+<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.0" language="hu">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -1928,22 +1928,22 @@ Más képekkel kellene helyettesíteni ezeket?</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="69"/>
         <source>Image Background</source>
-        <translation type="unfinished"/>
+        <translation>Képháttér</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="70"/>
         <source>Use blank theme</source>
-        <translation type="unfinished"/>
+        <translation>Üres téma alkalmazása</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="71"/>
         <source>Custom theme</source>
-        <translation type="unfinished"/>
+        <translation>Speciális téma</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="72"/>
         <source>Theme:</source>
-        <translation type="unfinished"/>
+        <translation>Téma</translation>
     </message>
 </context>
 <context>
@@ -1951,7 +1951,7 @@ Más képekkel kellene helyettesíteni ezeket?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="192"/>
         <source>Add new media</source>
-        <translation type="unfinished"/>
+        <translation>Új médiafájl hozzáadása</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="101"/>
@@ -2246,12 +2246,12 @@ Más képekkel kellene helyettesíteni ezeket?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="84"/>
         <source>VLC (requires restart)</source>
-        <translation type="unfinished"/>
+        <translation>VLC (újraindítást igényel)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="85"/>
         <source>Extra arguments:</source>
-        <translation type="unfinished"/>
+        <translation>További argumentumok:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="86"/>
@@ -2585,32 +2585,32 @@ Folytatódik a frissítés.</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="91"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Mappa hozzáadása</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="92"/>
         <source>Parent folder:</source>
-        <translation type="unfinished"/>
+        <translation>Szülő mappa:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="93"/>
         <source>Folder name:</source>
-        <translation type="unfinished"/>
+        <translation>Mappa neve:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="109"/>
         <source>-- Top-level folder --</source>
-        <translation type="unfinished"/>
+        <translation>‒ Legfelsőbb szintű mappa ‒</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="122"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Meg kell adni egy mappanevet.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="127"/>
         <source>This folder already exists, please use a different name.</source>
-        <translation type="unfinished"/>
+        <translation>Ez a mappa már létezik, egy másik nevet kell megadni.</translation>
     </message>
 </context>
 <context>
@@ -2687,7 +2687,11 @@ Folytatódik a frissítés.</translation>
 {path}
 
 Existing files in this directory could be overwritten. The data directory will be changed when OpenLP is closed.</source>
-        <translation type="unfinished"/>
+        <translation>Valóban megváltoztatható az OpenLP adatmappájának helye erre?
+
+{path}
+
+A meglévő fájlok ebben a mappában felül lesznek írva. Az adatmappa az OpenLP bezárása után fog megváltozni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="197"/>
@@ -2869,7 +2873,7 @@ magassága a diakezelőben:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="251"/>
         <source>Alert if New clicked on blank service</source>
-        <translation type="unfinished"/>
+        <translation>Figyelmeztetés az Új gombra való kattintáskor egy üres sorrendben</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="255"/>
@@ -2887,32 +2891,32 @@ magassága a diakezelőben:</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="227"/>
         <source>Select Folder</source>
-        <translation type="unfinished"/>
+        <translation>Mappa kijelölése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="228"/>
         <source>Add items to folder:</source>
-        <translation type="unfinished"/>
+        <translation>Elemek hozzáadása a mappához:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="229"/>
         <source>No folder</source>
-        <translation type="unfinished"/>
+        <translation>Nincs mappa</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="230"/>
         <source>Existing folder</source>
-        <translation type="unfinished"/>
+        <translation>Létező mappa</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="231"/>
         <source>New folder</source>
-        <translation type="unfinished"/>
+        <translation>Új mappa</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="256"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Meg kell adni egy mappanevet.</translation>
     </message>
 </context>
 <context>
@@ -3566,17 +3570,17 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
     <message>
         <location filename="../../openlp/core/ui/library.py" line="88"/>
         <source>Could not add the new folder.</source>
-        <translation type="unfinished"/>
+        <translation>A mappát nem lehet hozzáadni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="100"/>
         <source>You must select an item or folder to delete.</source>
-        <translation type="unfinished"/>
+        <translation>Ki kell jelölni egy törlendő elemet vagy mappát.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="118"/>
         <source>Remove folder</source>
-        <translation type="unfinished"/>
+        <translation>Mappa eltávolítása</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="118"/>
@@ -3591,7 +3595,7 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
     <message>
         <location filename="../../openlp/core/ui/library.py" line="326"/>
         <source>An item with that filename already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Már létezik egy elem ezzel a fájlnévvel.</translation>
     </message>
 </context>
 <context>
@@ -5832,7 +5836,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="194"/>
         <source>({screen.geometry.width()} x {screen.geometry.height()} pixels)</source>
-        <translation type="unfinished"/>
+        <translation>({screen.geometry.width()} × {screen.geometry.height()} pixel)</translation>
     </message>
 </context>
 <context>
@@ -6271,7 +6275,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="205"/>
         <source>Revert to default IP address.</source>
-        <translation type="unfinished"/>
+        <translation>Alapértelmezett IP-cím visszaállítása.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="156"/>
@@ -6336,7 +6340,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="169"/>
         <source>Time service usually starts.</source>
-        <translation type="unfinished"/>
+        <translation>Az időszolgáltatás általában elindul.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="170"/>
@@ -6391,7 +6395,7 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="187"/>
         <source>Service Item Wrapping</source>
-        <translation type="unfinished"/>
+        <translation>Sorrendelemek tördelése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="188"/>
@@ -7488,12 +7492,12 @@ Sérült, elérhetetlen vagy nem érvényes témafájl.</translation>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="339"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Mappa hozzáadása</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="340"/>
         <source>Add folder.</source>
-        <translation type="unfinished"/>
+        <translation>Mappa hozzáadása.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="341"/>
@@ -8123,13 +8127,14 @@ Ez a példány bezáródik.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="446"/>
         <source>Do not show this message again</source>
-        <translation type="unfinished"/>
+        <translation>Ne jelenjen meg ismét ez az üzenet</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="447"/>
         <source>You already have a blank new service.
 Add some items to it then press Save</source>
-        <translation type="unfinished"/>
+        <translation>Létrejött egy üres sorrend.
+Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="53"/>
@@ -8594,12 +8599,12 @@ Add some items to it then press Save</source>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="113"/>
         <source>Impress options</source>
-        <translation type="unfinished"/>
+        <translation>Impress beállítások</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="114"/>
         <source>Use Impress Slide Show Settings / Presentation Display setting</source>
-        <translation type="unfinished"/>
+        <translation>Az Impress diavetítési-, ill. bemutatónézet beállításainak alkalmazása</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="122"/>
@@ -8622,7 +8627,7 @@ Add some items to it then press Save</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="203"/>
         <source>Listen IP address (0.0.0.0 matches all addresses):</source>
-        <translation type="unfinished"/>
+        <translation>Figyelő IP-cím (a 0.0.0.0 minden címet lefed):</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="206"/>
@@ -8717,22 +8722,22 @@ Add some items to it then press Save</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="228"/>
         <source>Server Status</source>
-        <translation type="unfinished"/>
+        <translation>Szerver állapota</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="229"/>
         <source>HTTP Server:</source>
-        <translation type="unfinished"/>
+        <translation>HTTP szerver:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="230"/>
         <source>Websocket Server:</source>
-        <translation type="unfinished"/>
+        <translation>Websocket szerver:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="231"/>
         <source>Zeroconf Server:</source>
-        <translation type="unfinished"/>
+        <translation>Zeroconf szerver:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="232"/>
@@ -8744,7 +8749,7 @@ Add some items to it then press Save</source>
         <location filename="../../openlp/core/api/tab.py" line="233"/>
         <source>Failed</source>
         <comment>Server failed</comment>
-        <translation type="unfinished"/>
+        <translation>Mehiúsult</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="234"/>
@@ -9795,7 +9800,7 @@ Javítani kell a címkéket a továbblépéshez.</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="250"/>
         <source>Include slide number in footer</source>
-        <translation type="unfinished"/>
+        <translation>Diaszám elhelyezése a láblécben</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="253"/>
@@ -10200,7 +10205,7 @@ Javítani kell a címkéket a továbblépéshez.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="499"/>
         <source>Are you sure you want to delete these songs?</source>
-        <translation type="unfinished"/>
+        <translation>Valóban törölhetőek ezek a dalok?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="525"/>
@@ -10599,7 +10604,7 @@ See log for details</source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="107"/>
         <source>This song cannot be read. Perhaps your CCLI account does not give you access to this song.</source>
-        <translation type="unfinished"/>
+        <translation>Ez a dal nem olvasható. Valószínű, hogy a CCLLI fiókodnak nincs hozzáférése ehhez a dalhoz.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="135"/>
