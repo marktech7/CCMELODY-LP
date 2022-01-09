@@ -133,10 +133,14 @@ def _get_path(path):
     if is_macosx():
         name = os.path.splitext(path)[0]
         ext = os.path.splitext(path)[1]
-        res_path = NSBundle.mainBundle().pathForResource_ofType_(name, ext)
-        if (res_path):
-            return Path(res_path)
+        try:
+            res_path = NSBundle.mainBundle().pathForResource_ofType_(name, ext)
+            if res_path:
+                return Path(res_path)
+        except ValueError:
+            pass
     return path
+
 
 def _get_os_dir_path(dir_type):
     """
