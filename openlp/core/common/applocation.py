@@ -134,9 +134,9 @@ def _get_path(path):
         name = os.path.splitext(path)[0]
         ext = os.path.splitext(path)[1]
         res_path = NSBundle.mainBundle().pathForResource_ofType_(name, ext)
-        return Path(res_path) or path
-    else:
-        return path
+        if (res_path):
+            return Path(res_path)
+    return path
 
 def _get_os_dir_path(dir_type):
     """
