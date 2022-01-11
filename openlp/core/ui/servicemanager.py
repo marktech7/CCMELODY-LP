@@ -359,14 +359,6 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.service_item_edit_form = ServiceItemEditForm()
         self.start_time_form = StartTimeForm()
 
-    def bootstrap_completion(self):
-        """
-        process the bootstrap completion request
-        """
-        # Load in the last file if there wasn't a cmd arg file loaded already
-        if not self._service_path and self.settings.value('core/auto open'):
-            self.load_last_file()
-
     def add_media_suffixes(self):
         """
         Add the suffixes supported by :mod:`openlp.core.ui.media.vlcplayer`
