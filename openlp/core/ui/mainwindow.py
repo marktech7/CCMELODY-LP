@@ -1345,7 +1345,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         :param int increment: The value you to increase the progress bar by.
         """
-        self.load_progress_bar.setValue(self.load_progress_bar.value() + increment)
+        self.load_progress_bar.setValue(int(self.load_progress_bar.value() + increment))
         self.application.process_events()
 
     def finished_progress_bar(self):
