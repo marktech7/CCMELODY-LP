@@ -154,13 +154,19 @@ class ThemesTab(SettingsTab):
         """
         Save the settings
         """
+        theme_level = self.settings.value('themes/theme level')
+        global_theme = self.settings.value('themes/global theme')
         self.settings.setValue('themes/theme level', self.theme_level)
         self.settings.setValue('themes/global theme', self.global_theme)
         self.settings.setValue('themes/item transitions', self.item_transitions_check_box.isChecked())
         self.settings.setValue('themes/hot reload', self.theme_hot_reload.isChecked())
         self.renderer.set_theme_level(self.theme_level)
+        if theme_level != self.theme_level:
+            self.settings_form.register_post_process('theme_level_changed')
+        if global_theme != self.global_theme:
+            self.settings_form.register_post_process('reload_global_theme')
         if self.tab_visited:
-            self.settings_form.register_post_process('theme_update_global')
+            self.settings_form.register_post_process('theme_update_list')
         self.tab_visited = False
 
     def on_song_level_button_clicked(self):

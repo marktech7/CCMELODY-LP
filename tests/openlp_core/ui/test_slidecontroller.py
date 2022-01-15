@@ -820,7 +820,7 @@ def test_theme_updated(mock_settings):
     mock_settings.value.return_value = True
 
     # WHEN: theme_updated is called
-    slide_controller.theme_updated()
+    slide_controller.on_theme_changed()
 
     # THEN: process_item is called with the current service_item and slide number
     slide_controller._process_item.assert_called_once_with(sentinel.service_item, 14)
@@ -838,7 +838,7 @@ def test_theme_updated_no_reload(mock_settings):
     mock_settings.value.return_value = False
 
     # WHEN: theme_updated is called
-    slide_controller.theme_updated()
+    slide_controller.on_theme_changed()
 
     # THEN: process_item is not called
     assert slide_controller._process_item.call_count == 0

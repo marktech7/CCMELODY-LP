@@ -88,4 +88,6 @@ class ScreensTab(SettingsTab):
         self.screen_selection_widget.save()
         self.settings.setValue('core/display on monitor', self.display_on_monitor_check.isChecked())
         # On save update the screens as well
-        self.settings_form.register_post_process('config_screen_changed')
+        if self.tab_visited:
+            self.settings_form.register_post_process('config_screen_changed')
+        self.tab_visited = False
