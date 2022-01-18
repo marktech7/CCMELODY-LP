@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,9 +28,8 @@ from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
-from openlp.core.ui.style import HAS_DARK_STYLE
+from openlp.core.ui.style import is_ui_theme_dark
 
 
 log = logging.getLogger(__name__)
@@ -49,9 +48,9 @@ class UiIcons(metaclass=Singleton):
         qta.load_font('op', font_path, charmap_path)
         palette = QtWidgets.QApplication.palette()
         qta.set_defaults(color=palette.color(QtGui.QPalette.Active,
-                                             QtGui.QPalette.ButtonText),
+                                             QtGui.QPalette.WindowText),
                          color_disabled=palette.color(QtGui.QPalette.Disabled,
-                                                      QtGui.QPalette.ButtonText))
+                                                      QtGui.QPalette.WindowText))
         icon_list = {
             'active': {'icon': 'fa.child'},
             'add': {'icon': 'fa.plus-circle'},
@@ -90,6 +89,7 @@ class UiIcons(metaclass=Singleton):
             'error': {'icon': 'fa.exclamation', 'attr': 'red'},
             'exception': {'icon': 'fa.times-circle'},
             'exit': {'icon': 'fa.sign-out'},
+            'folder': {'icon': 'fa.folder'},
             'group': {'icon': 'fa.object-group'},
             'inactive': {'icon': 'fa.child', 'attr': 'lightGray'},
             'info': {'icon': 'fa.info'},
@@ -179,7 +179,7 @@ class UiIcons(metaclass=Singleton):
         """
         Load the list of icons to be processed
         """
-        is_dark = (HAS_DARK_STYLE and Registry().get('settings').value('advanced/use_dark_style'))
+        is_dark = is_ui_theme_dark()
         for key in icon_list:
             try:
                 icon = icon_list[key]['icon']
@@ -192,10 +192,10 @@ class UiIcons(metaclass=Singleton):
                     else:
                         setattr(self, key, qta.icon(icon))
                 except Exception:
-                    log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                    log.exception(f'Unexpected error for icon: {icon}')
                     setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
             except Exception:
-                log.exception('Unexpected error for icon: {icon}'.format(icon=icon))
+                log.exception(f'Unexpected error for icon with key: {key}')
                 setattr(self, key, qta.icon('fa.exclamation-circle', color='red'))
 
     @staticmethod

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,12 +26,11 @@ import platform
 import sys
 from collections import OrderedDict
 from datetime import date
-from distutils.version import LooseVersion
 
-import requests
 from PyQt5 import QtCore
 
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.httputils import get_web_page
 from openlp.core.common.registry import Registry
 from openlp.core.threading import ThreadWorker, run_thread
 
@@ -64,7 +63,7 @@ class VersionWorker(ThreadWorker):
     A worker class to fetch the version of OpenLP from the website. This is run from within a thread so that it
     doesn't affect the loading time of OpenLP.
     """
-    new_version = QtCore.pyqtSignal(dict)
+    new_version = QtCore.pyqtSignal(str)
     no_internet = QtCore.pyqtSignal()
 
     def __init__(self, last_check_date, current_version):
@@ -105,9 +104,9 @@ class VersionWorker(ThreadWorker):
         retries = 0
         while retries < 3:
             try:
-                response = requests.get(download_url, headers=headers)
-                if response.status_code == 200:
-                    remote_version = response.text.strip()
+                response = get_web_page(download_url, headers=headers)
+                if response:
+                    remote_version = response.strip()
                 log.debug('New version found: %s', remote_version)
                 break
             except OSError:
@@ -115,7 +114,8 @@ class VersionWorker(ThreadWorker):
                 retries += 1
         else:
             self.no_internet.emit()
-        if remote_version and LooseVersion(remote_version) > LooseVersion(self.current_version['full']):
+        if remote_version and (QtCore.QVersionNumber.fromString(remote_version) >
+                               QtCore.QVersionNumber.fromString(self.current_version['full'])):
             self.new_version.emit(remote_version)
         self.quit.emit()
 

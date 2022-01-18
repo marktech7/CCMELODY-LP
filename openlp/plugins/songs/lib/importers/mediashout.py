@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -67,7 +67,6 @@ class MediaShoutImport(SongImport):
         songs = cursor.fetchall()
         self.import_wizard.progress_bar.setMaximum(len(songs))
         for song in songs:
-            topics = []
             if self.stop_import_flag:
                 break
             cursor.execute('SELECT Type, Number, Text FROM Verses WHERE Record = ? ORDER BY Type, Number',
@@ -76,13 +75,15 @@ class MediaShoutImport(SongImport):
             cursor.execute('SELECT Type, Number, POrder FROM PlayOrder WHERE Record = ? ORDER BY POrder',
                            float(song.Record))
             verse_order = cursor.fetchall()
-            if cursor.tables(table='TableName', tableType='TABLE').fetchone():
+            topics = []
+            if cursor.tables(table='Themes', tableType='TABLE').fetchone():
                 cursor.execute('SELECT Name FROM Themes INNER JOIN SongThemes ON SongThemes.ThemeId = Themes.ThemeId '
                                'WHERE SongThemes.Record = ?', float(song.Record))
-                topics = cursor.fetchall()
-            cursor.execute('SELECT Name FROM Groups INNER JOIN SongGroups ON SongGroups.GroupId = Groups.GroupId '
-                           'WHERE SongGroups.Record = ?', float(song.Record))
-            topics += cursor.fetchall()
+                topics += cursor.fetchall()
+            if cursor.tables(table='Groups', tableType='TABLE').fetchone():
+                cursor.execute('SELECT Name FROM Groups INNER JOIN SongGroups ON SongGroups.GroupId = Groups.GroupId '
+                               'WHERE SongGroups.Record = ?', float(song.Record))
+                topics += cursor.fetchall()
             self.process_song(song, verses, verse_order, topics)
 
     def process_song(self, song, verses, verse_order, topics):

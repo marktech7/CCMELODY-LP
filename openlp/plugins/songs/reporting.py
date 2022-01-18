@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -47,7 +47,8 @@ def report_song_list():
         translate('SongPlugin.ReportSongList', 'Save File'),
         Path(translate('SongPlugin.ReportSongList', 'song_extract.csv')),
         translate('SongPlugin.ReportSongList', 'CSV format (*.csv)'))
-
+    if report_file_path is None:
+        return
     report_file_path.with_suffix('.csv')
     Registry().get('application').set_busy_cursor()
     try:

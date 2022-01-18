@@ -13,6 +13,7 @@
 *.ropeproject
 *.~\?~
 *eric[1-9]project
+*.coverage
 .cache
 .coverage
 .directory

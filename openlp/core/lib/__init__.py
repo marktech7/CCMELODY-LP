@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +24,7 @@ OpenLP work.
 """
 import logging
 import os
+import base64
 from enum import IntEnum
 from pathlib import Path
 
@@ -166,6 +167,9 @@ class ItemCapabilities(object):
 
     ``HasBackgroundStream``
             That a video stream is present with the text
+
+    ``ProvidesOwnTheme``
+            The capability to tell the SlideController to force the use of the service item theme.
     """
     CanPreview = 1
     CanEdit = 2
@@ -192,6 +196,7 @@ class ItemCapabilities(object):
     CanStream = 23
     HasBackgroundVideo = 24
     HasBackgroundStream = 25
+    ProvidesOwnTheme = 26
 
 
 def get_text_file_string(text_file_path):
@@ -270,12 +275,23 @@ def image_to_byte(image, base_64=True):
     # use buffer to store pixmap into byteArray
     buffer = QtCore.QBuffer(byte_array)
     buffer.open(QtCore.QIODevice.WriteOnly)
-    image.save(buffer, "PNG")
+    image.save(buffer, "JPEG")
     log.debug('image_to_byte - end')
     if not base_64:
         return byte_array
     # convert to base64 encoding so does not get missed!
-    return bytes(byte_array.toBase64()).decode('utf-8')
+    return base64.b64encode(byte_array).decode('utf-8')
+
+
+def image_to_data_uri(image_path):
+    """
+    Converts a image into a base64 data uri
+    """
+    extension = image_path.suffix.replace('.', '')
+    with open(image_path, 'rb') as image_file:
+        image_bytes = image_file.read()
+    image_base64 = base64.b64encode(image_bytes).decode('utf-8')
+    return 'data:image/{extension};base64,{data}'.format(extension=extension, data=image_base64)
 
 
 def create_thumb(image_path, thumb_path, return_icon=True, size=None):
@@ -363,10 +379,10 @@ def resize_image(image_path, width, height, background='#000000', ignore_aspect_
         size = QtCore.QSize(width, height)
     elif image_ratio < resize_ratio:
         # Use the image's height as reference for the new size.
-        size = QtCore.QSize(image_ratio * height, height)
+        size = QtCore.QSize(int(image_ratio * height), height)
     else:
         # Use the image's width as reference for the new size.
-        size = QtCore.QSize(width, 1 / (image_ratio / width))
+        size = QtCore.QSize(width, int(1 / (image_ratio / width)))
     reader.setScaledSize(size)
     preview = reader.read()
     if image_ratio == resize_ratio:

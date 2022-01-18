@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -158,22 +158,22 @@ class ProjectorTab(SettingsTab):
         Add new UDP listener to list
         """
         if port in self.udp_listeners:
-            log.warning('Port {port} already in list - not adding'.format(port=port))
+            log.warning(f'Port {port} already in list - not adding')
             return
         self.udp_listeners[port] = callback
-        log.debug('PJLinkSettings: new callback list: {port}'.format(port=self.udp_listeners.keys()))
+        log.debug(f'PJLinkSettings: new callback list: {self.udp_listeners.keys()}')
 
     def remove_udp_listener(self, port):
         """
         Remove UDP listener from list
         """
         if port not in self.udp_listeners:
-            log.warning('Port {port} not in list - ignoring'.format(port=port))
+            log.warning(f'Port {port} not in list - ignoring')
             return
         # Turn off listener before deleting
         self.udp_listeners[port](checked=False)
         del self.udp_listeners[port]
-        log.debug('PJLinkSettings: new callback list: {port}'.format(port=self.udp_listeners.keys()))
+        log.debug(f'PJLinkSettings: new callback list: {self.udp_listeners.keys()}')
 
     def call_udp_listener(self):
         """

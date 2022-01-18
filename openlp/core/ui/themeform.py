@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,7 +52,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
 
         :param parent: The QWidget-derived parent of the wizard.
         """
-        super(ThemeForm, self).__init__(parent)
+        super(ThemeForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                        QtCore.Qt.WindowCloseButtonHint)
         self._setup()
 
     def _setup(self):
@@ -75,6 +76,14 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.main_area_page.shadow_size_changed.connect(self.calculate_lines)
         self.footer_area_page.font_name_changed.connect(self.update_theme)
         self.footer_area_page.font_size_changed.connect(self.update_theme)
+        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.helpRequested.connect(self.provide_help)
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/themes.html"))
 
     def set_defaults(self):
         """
@@ -119,6 +128,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         # Make sure we don't resize before the widgets are actually created
         if hasattr(self, 'preview_area_layout'):
             self.preview_area_layout.set_aspect_ratio(self.display_aspect_ratio)
+            self.application.process_events()
             self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
 
     def validateCurrentPage(self):
@@ -160,15 +170,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.setOption(QtWidgets.QWizard.HaveCustomButton1, enabled)
         if self.page(page_id) == self.preview_page:
             self.update_theme()
-            self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
-            self.preview_box.clear_slides()
-            self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
-            try:
-                self.display_aspect_ratio = self.renderer.width() / self.renderer.height()
-            except ZeroDivisionError:
-                self.display_aspect_ratio = 1
-            self.preview_area_layout.set_aspect_ratio(self.display_aspect_ratio)
             self.resizeEvent()
+            self.preview_box.clear_slides()
             self.preview_box.show()
             self.preview_box.generate_preview(self.theme, False, False)
 
@@ -183,12 +186,12 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         pixmap.fill(QtCore.Qt.white)
         paint = QtGui.QPainter(pixmap)
         paint.setPen(QtGui.QPen(QtCore.Qt.blue, 2))
-        main_rect = QtCore.QRect(self.theme.font_main_x, self.theme.font_main_y,
-                                 self.theme.font_main_width - 1, self.theme.font_main_height - 1)
+        main_rect = QtCore.QRect(int(self.theme.font_main_x), int(self.theme.font_main_y),
+                                 int(self.theme.font_main_width - 1), int(self.theme.font_main_height - 1))
         paint.drawRect(main_rect)
         paint.setPen(QtGui.QPen(QtCore.Qt.red, 2))
-        footer_rect = QtCore.QRect(self.theme.font_footer_x, self.theme.font_footer_y,
-                                   self.theme.font_footer_width - 1, self.theme.font_footer_height - 1)
+        footer_rect = QtCore.QRect(int(self.theme.font_footer_x), int(self.theme.font_footer_y),
+                                   int(self.theme.font_footer_width - 1), int(self.theme.font_footer_height - 1))
         paint.drawRect(footer_rect)
         paint.end()
         self.theme_layout_form.exec(pixmap)
@@ -306,16 +309,16 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         # Main Area
         self.area_position_page.use_main_default_location = not self.theme.font_main_override
-        self.area_position_page.main_x = self.theme.font_main_x
-        self.area_position_page.main_y = self.theme.font_main_y
-        self.area_position_page.main_height = self.theme.font_main_height
-        self.area_position_page.main_width = self.theme.font_main_width
+        self.area_position_page.main_x = int(self.theme.font_main_x)
+        self.area_position_page.main_y = int(self.theme.font_main_y)
+        self.area_position_page.main_height = int(self.theme.font_main_height)
+        self.area_position_page.main_width = int(self.theme.font_main_width)
         # Footer
         self.area_position_page.use_footer_default_location = not self.theme.font_footer_override
-        self.area_position_page.footer_x = self.theme.font_footer_x
-        self.area_position_page.footer_y = self.theme.font_footer_y
-        self.area_position_page.footer_height = self.theme.font_footer_height
-        self.area_position_page.footer_width = self.theme.font_footer_width
+        self.area_position_page.footer_x = int(self.theme.font_footer_x)
+        self.area_position_page.footer_y = int(self.theme.font_footer_y)
+        self.area_position_page.footer_height = int(self.theme.font_footer_height)
+        self.area_position_page.footer_width = int(self.theme.font_footer_width)
 
     def set_alignment_page_values(self):
         """
@@ -369,8 +372,12 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_main_color = self.main_area_page.font_color
         self.theme.font_main_size = self.main_area_page.font_size
         self.theme.font_main_line_adjustment = self.main_area_page.line_spacing
+        self.theme.font_main_outline = self.main_area_page.is_outline_enabled
+        self.theme.font_main_outline_color = self.main_area_page.outline_color
         self.theme.font_main_outline_size = self.main_area_page.outline_size
+        self.theme.font_main_shadow = self.main_area_page.is_shadow_enabled
         self.theme.font_main_shadow_size = self.main_area_page.shadow_size
+        self.theme.font_main_shadow_color = self.main_area_page.shadow_color
         self.theme.font_main_bold = self.main_area_page.is_bold
         self.theme.font_main_italics = self.main_area_page.is_italic
         # footer page

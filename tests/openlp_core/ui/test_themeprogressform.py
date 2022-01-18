@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -36,7 +36,9 @@ def _get_theme_progress_form():
 
 
 def test_init(qapp):
-    """Test that the ThemeProgressForm is created without problems"""
+    """
+    Test that the ThemeProgressForm is created without problems
+    """
     # GIVEN: ThemeProgressForm class
     # WHEN: An object is instatiated
     # THEN: There is no problem
@@ -46,7 +48,9 @@ def test_init(qapp):
 @patch('openlp.core.ui.themeprogressform.ScreenList')
 @patch('openlp.core.ui.themeprogressform.QtWidgets.QDialog.show')
 def test_show(mocked_show, MockScreenList, settings):
-    """Test that the ThemeProgressForm is created without problems"""
+    """
+    Test that the ThemeProgressForm is created without problems
+    """
     # GIVEN: ThemeProgressForm object
     form = _get_theme_progress_form()
     mocked_screen_list = MagicMock()
@@ -70,7 +74,9 @@ def test_show(mocked_show, MockScreenList, settings):
 @patch('openlp.core.ui.themeprogressform.ScreenList')
 @patch('openlp.core.ui.themeprogressform.QtWidgets.QDialog.show')
 def test_show_divide_by_zero(mocked_show, MockScreenList, settings):
-    """Test that the ThemeProgressForm is created without problems even if there's a divide by zero exception"""
+    """
+    Test that the ThemeProgressForm is created without problems even if there's a divide by zero exception
+    """
     # GIVEN: ThemeProgressForm object
     form = _get_theme_progress_form()
     mocked_screen_list = MagicMock()
@@ -92,7 +98,9 @@ def test_show_divide_by_zero(mocked_show, MockScreenList, settings):
 
 
 def test_get_preview(settings):
-    """Test that the get_preview() method returns a preview image"""
+    """
+    Test that the get_preview() method returns a preview image
+    """
     # GIVEN: ThemeProgressForm object
     Registry.create()
     mocked_renderer = MagicMock()
@@ -100,6 +108,7 @@ def test_get_preview(settings):
     test_theme_name = 'Test Theme'
     test_theme_data = {'name': test_theme_name}
     form = _get_theme_progress_form()
+    form.isVisible = MagicMock(return_value=True)
     form.progress_bar = MagicMock(**{'value.return_value': 0})
     form.label = MagicMock()
     form.theme_display = MagicMock(**{'width.return_value': 192, 'generate_preview.return_value': 'preview'})
@@ -117,6 +126,30 @@ def test_get_preview(settings):
     form.theme_display.set_scale.assert_called_once_with(0.1)
     form.theme_display.generate_preview.assert_called_once_with(test_theme_data, generate_screenshot=True)
     assert preview == 'preview'
+
+
+def test_get_preview_not_visible(settings):
+    """
+    Test that the get_preview() method does not return a preview image when display is not visible
+    """
+    # GIVEN: ThemeProgressForm object
+    Registry.create()
+    mocked_renderer = MagicMock()
+    Registry().register('renderer', mocked_renderer)
+    test_theme_name = 'Test Theme'
+    test_theme_data = {'name': test_theme_name}
+    form = _get_theme_progress_form()
+    form.isVisible = MagicMock(return_value=False)
+    form.progress_bar = MagicMock(**{'value.return_value': 0})
+    form.label = MagicMock()
+    form.theme_display = MagicMock(**{'width.return_value': 192, 'generate_preview.return_value': 'preview'})
+    form.renderer.width = MagicMock(return_value=1920)
+
+    # WHEN: get_preview() is called
+    preview = form.get_preview(test_theme_name, test_theme_data)
+
+    # THEN: Result should be None
+    assert preview is None
 
 
 def test_theme_list(qapp):

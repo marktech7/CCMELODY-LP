@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,31 +21,30 @@
 """
 This is the main window, where all the action happens.
 """
-import os
 import shutil
-from datetime import datetime
-from distutils import dir_util
-from distutils.errors import DistutilsFileError
+from datetime import datetime, date
 from pathlib import Path
 from tempfile import gettempdir
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.state import State
-from openlp.core.api.websockets import WebSocketServer
 from openlp.core.api.http.server import HttpServer
+from openlp.core.api.websockets import WebSocketServer
 from openlp.core.api.zeroconf import start_zeroconf
-from openlp.core.common import add_actions, is_macosx, is_win
+from openlp.core.common import add_actions
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
-from openlp.core.common.path import create_paths
+from openlp.core.common.path import create_paths, resolve
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import create_action
 from openlp.core.projectors.manager import ProjectorManager
+from openlp.core.state import State
 from openlp.core.ui.aboutform import AboutForm
 from openlp.core.ui.firsttimeform import FirstTimeForm
 from openlp.core.ui.formattingtagform import FormattingTagForm
@@ -483,6 +482,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.set_up_default_values()
         self.about_form = AboutForm(self)
         self.ws_server = WebSocketServer()
+        self.ws_server.start()
         self.http_server = HttpServer(self)
         start_zeroconf()
         SettingsForm(self)
@@ -520,8 +520,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Media Manager
         self.media_tool_box.currentChanged.connect(self.on_media_tool_box_changed)
         self.application.set_busy_cursor()
+        # Timestamp for latest screen-change-popup. Used to prevent spamming the user with popups
+        self.screen_change_timestamp = None
         # Simple message boxes
-        Registry().register_function('theme_update_global', self.default_theme_changed)
+        Registry().register_function('theme_change_global', self.default_theme_changed)
         Registry().register_function('config_screen_changed', self.screen_changed)
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
         # Reset the cursor
@@ -575,7 +577,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.load_settings()
         self.restore_current_media_manager_item()
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
 
     def restore_current_media_manager_item(self):
         """
@@ -625,6 +627,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         :param version: The Version to be displayed.
         """
+        Registry().get('settings').setValue('api/last version test', date.today().strftime('%Y-%m-%d'))
+        Registry().get('settings_form').api_tab.master_version = version
         version_text = translate('OpenLP.MainWindow', 'Version {version} of the web remote is now available for '
                                  'download.\nTo download this version, go to the Remote settings and click the Upgrade '
                                  'button.').format(version=version)
@@ -639,6 +643,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
         # If not we need to see if we want to use the previous file.so count of 1
+        self.log_info(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
         elif self.settings.value('core/auto open'):
@@ -646,14 +651,22 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # This will store currently used layout preset so it remains enabled on next startup.
         # If any panel is enabled/disabled after preset is set, this setting is not saved.
         view_mode = self.settings.value('core/view mode')
-        if view_mode == 'default' and self.settings.value('user interface/is preset layout'):
-            self.mode_default_item.setChecked(True)
-        elif view_mode == 'setup' and self.settings.value('user interface/is preset layout'):
-            self.set_view_mode(True, True, False, True, False, True)
-            self.mode_setup_item.setChecked(True)
-        elif view_mode == 'live' and self.settings.value('user interface/is preset layout'):
-            self.set_view_mode(False, True, False, False, True, True)
-            self.mode_live_item.setChecked(True)
+        # If we are using a default mode set accordingly
+        if self.settings.value('user interface/is preset layout'):
+            if view_mode == 'default':
+                self.set_view_mode(True, True, True, True, True, True)
+                self.mode_default_item.setChecked(True)
+            elif view_mode == 'setup':
+                self.set_view_mode(True, True, False, True, False, True)
+                self.mode_setup_item.setChecked(True)
+            elif view_mode == 'live':
+                self.set_view_mode(False, True, False, False, True, True)
+                self.mode_live_item.setChecked(True)
+        else:
+            self.set_view_mode(True, True, True,
+                               self.settings.value('user interface/preview panel'),
+                               self.settings.value('user interface/live panel'),
+                               True)
 
     def first_time(self):
         """
@@ -712,7 +725,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 else:
                     self.active_plugin.toggle_status(PluginStatus.Inactive)
         # Set global theme and
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
         # Check if any Bibles downloaded.  If there are, they will be processed.
         Registry().execute('bibles_load_list')
         self.application.set_normal_cursor()
@@ -868,12 +881,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         create_paths(temp_dir_path)
         temp_config_path = temp_dir_path / import_file_path.name
         shutil.copyfile(import_file_path, temp_config_path)
-        import_settings = QtCore.QSettings(str(temp_config_path), QtCore.QSettings.IniFormat)
+        import_settings = Settings(str(temp_config_path), QtCore.QSettings.IniFormat)
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
+        # If settings are from the future, we can't import.
+        if import_settings.from_future():
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.MainWindow', 'Import settings'),
+                                           translate('OpenLP.MainWindow', 'OpenLP cannot import settings '
+                                                                          'from a newer version of OpenLP.\n\n'
+                                                                          'Processing has terminated and '
+                                                                          'no changes have been made.'),
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+            return
         # Upgrade settings to prepare the import.
-        if import_settings.can_upgrade():
+        if import_settings.version_mismatched():
             import_settings.upgrade_settings()
         # Lets do a basic sanity check. If it contains this string we can assume it was created by OpenLP and so we'll
         # load what we can from it, and just silently ignore anything we don't recognise.
@@ -973,7 +995,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.setValue('user interface/is preset layout', True)
         self.settings.setValue('projector/show after wizard', True)
 
-    def set_view_mode(self, media=True, service=True, theme=True, preview=True, live=True, projector=True, mode=''):
+    def set_view_mode(self, media=True, service=True, theme=True, preview=True,
+                      live=True, projector=True, mode='') -> None:
         """
         Set OpenLP to a different view mode.
         """
@@ -998,6 +1021,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.setFocus()
         self.activateWindow()
         self.application.set_normal_cursor()
+        # if a warning has been shown within the last 5 seconds, skip showing again to avoid spamming user,
+        # also do not show if the settings window is visible
+        if not self.settings_form.isVisible() and not self.screen_change_timestamp or \
+                self.screen_change_timestamp and (datetime.now() - self.screen_change_timestamp).seconds > 5:
+            self.screen_change_timestamp = datetime.now()
+            QtWidgets.QMessageBox.warning(self, translate('OpenLP.MainWindow', 'Screen setup has changed'),
+                                          translate('OpenLP.MainWindow',
+                                                    'The screen setup has changed. '
+                                                    'OpenLP will try to automatically select a display screen, but '
+                                                    'you should consider updating the screen settings.'),
+                                          QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
 
     def closeEvent(self, event):
         """
@@ -1081,10 +1115,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Check if we need to change the data directory
         if self.new_data_path:
             self.change_data_directory()
+        # Close down WebSocketServer
+        self.ws_server.close()
         # Close down the display
-        if self.live_controller.display:
-            self.live_controller.display.close()
-            # self.live_controller.display = None
+        self.live_controller.close_displays()
         # Clean temporary files used by services
         self.service_manager_contents.clean_up()
         if is_win():
@@ -1220,12 +1254,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.move(self.settings.value('user interface/main window position'))
         self.restoreGeometry(self.settings.value('user interface/main window geometry'))
         self.restoreState(self.settings.value('user interface/main window state'))
+        if not self._window_position_is_valid(self.pos(), self.geometry()):
+            self.move(0, 0)
         self.live_controller.splitter.restoreState(self.settings.value('user interface/live splitter geometry'))
         self.preview_controller.splitter.restoreState(self.settings.value('user interface/preview splitter geometry'))
         self.control_splitter.restoreState(self.settings.value('user interface/main window splitter geometry'))
         # This needs to be called after restoreState(), because saveState() also saves the "Collapsible" property
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
+
+    def _window_position_is_valid(self, position, geometry):
+        """
+        Checks if the saved window position is still valid by checking if the bar at the top of the window
+        (which allows the user to move the window) appears on one of the screens.
+        This may not be the case if the user has unplugged the monitor where openlp was previously shown,
+        or if the displays have been reconfigured.
+
+        :param position: QtCore.QtPoint for the top left position of the window
+        :param geometry: QtCore.QRect for the geometry of the window
+
+        :return:    True or False
+        """
+        screens = ScreenList()
+        for screen in screens:
+            # window top bar y value must be between top and bottom of a screen
+            # plus the left edge must be left of the right of the screen
+            # and the right edge must be right of the left of the screen (allowing 50 pixels for control buttons)
+            if ((screen.geometry.y() <= position.y() <= screen.geometry.y() + screen.geometry.height()) and
+                    (position.x() < screen.geometry.x() + screen.geometry.width()) and
+                    (position.x() + geometry.width() > screen.geometry.x() + 50)):
+                return True
+        return False
 
     def save_settings(self):
         """
@@ -1250,6 +1309,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.recent_files_menu.clear()
         count = 0
         for recent_path in self.recent_files:
+            if not recent_path:
+                continue
+            recent_path = Path(recent_path)
             if not recent_path.is_file():
                 continue
             count += 1
@@ -1278,7 +1340,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         max_recent_files = self.settings.value('advanced/max recent files')
         file_path = Path(filename)
         # Some cleanup to reduce duplication in the recent file list
-        file_path = file_path.resolve()
+        file_path = resolve(file_path)
         if file_path in self.recent_files:
             self.recent_files.remove(file_path)
         self.recent_files.insert(0, file_path)
@@ -1305,7 +1367,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         :param int increment: The value you to increase the progress bar by.
         """
-        self.load_progress_bar.setValue(self.load_progress_bar.value() + increment)
+        self.load_progress_bar.setValue(int(self.load_progress_bar.value() + increment))
         self.application.process_events()
 
     def finished_progress_bar(self):
@@ -1345,9 +1407,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.show_status_message(
                     translate('OpenLP.MainWindow', 'Copying OpenLP data to new data directory location - {path} '
                               '- Please wait for copy to finish').format(path=self.new_data_path))
-                dir_util.copy_tree(str(old_data_path), str(self.new_data_path))
+                shutil.copytree(str(old_data_path), str(self.new_data_path), dirs_exist_ok=True)
                 self.log_info('Copy successful')
-            except (OSError, DistutilsFileError) as why:
+            except (OSError, shutil.Error) as why:
                 self.application.set_normal_cursor()
                 self.log_exception('Data copy failed {err}'.format(err=str(why)))
                 err_text = translate('OpenLP.MainWindow',
@@ -1365,13 +1427,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
-    def open_cmd_line_files(self, args):
+    def open_cmd_line_files(self, args: list):
         """
         Open files passed in through command line arguments
 
-        :param list[str] args: List of remaining positionall arguments
+        :param list[str] args: List of remaining positional arguments
         """
+        self.log_info(args)
+        # Drop this argument, it's obvs not a filename
+        if '--disable-web-security' in args:
+            args.remove('--disable-web-security')
+        # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
+        # Remove these to get the correct path.
+        args = list(map(lambda x: x.replace('&quot;', ''), args))
+        # Loop through the parameters, and see if we can pull a file out
+        file_path = None
         for arg in args:
-            file_name = os.path.expanduser(arg)
-            if os.path.isfile(file_name):
-                self.service_manager_contents.load_file(Path(file_name))
+            try:
+                # Resolve the file, and use strict mode to throw an exception if the file does not exist
+                file_path = resolve(Path(arg), is_strict=True)
+                # Check if this is actually a file
+                if file_path.is_file():
+                    break
+                else:
+                    file_path = None
+            except FileNotFoundError:
+                file_path = None
+        # If none of the individual components are files, let's try pulling them together
+        if not file_path:
+            path_so_far = []
+            for arg in args:
+                path_so_far.append(arg)
+                try:
+                    file_path = resolve(Path(' '.join(path_so_far)), is_strict=True)
+                    if file_path.is_file():
+                        break
+                    else:
+                        file_path = None
+                except FileNotFoundError:
+                    file_path = None
+            else:
+                file_path = None
+        if file_path and file_path.suffix in ['.osz', '.oszl']:
+            self.log_info("File name found")
+            self.service_manager_contents.load_file(file_path)
+        else:
+            self.log_error(f"File {file_path} not found for arg {args}")

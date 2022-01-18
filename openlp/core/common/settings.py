@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +24,7 @@ This class contains the core default settings.
 import datetime
 import json
 import logging
+from openlp.core.ui.style import UiThemes
 import os
 from enum import IntEnum
 from pathlib import Path
@@ -31,11 +32,12 @@ from tempfile import gettempdir
 
 from PyQt5 import QtCore, QtGui
 
-from openlp.core.common import SlideLimits, ThemeLevel, is_linux, is_win
-from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, LayoutStyle, DisplayStyle, \
-    LanguageSelection, SongSearch, PluginStatus
+from openlp.core.common import SlideLimits, ThemeLevel
+from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, ImageThemeMode, LayoutStyle, \
+    DisplayStyle, LanguageSelection, SongSearch, PluginStatus
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
+from openlp.core.common.platform import is_linux, is_win
 
 
 log = logging.getLogger(__name__)
@@ -104,6 +106,16 @@ def upgrade_screens(number, x_position, y_position, height, width, can_override,
     }
 
 
+def upgrade_dark_theme_to_ui_theme(value):
+    """
+    Upgrade the dark theme setting to use the new UiThemes setting.
+
+    :param bool value: The old use_dark_style setting
+    :returns UiThemes: New UiThemes value
+    """
+    return UiThemes.QDarkStyle if value else UiThemes.Automatic
+
+
 class Settings(QtCore.QSettings):
     """
     Class to wrap QSettings.
@@ -156,6 +168,7 @@ class Settings(QtCore.QSettings):
         'advanced/ignore aspect ratio': False,
         'advanced/is portable': False,
         'advanced/max recent files': 20,
+        'advanced/new service message': True,
         'advanced/print file meta data': False,
         'advanced/print notes': False,
         'advanced/print slide text': False,
@@ -168,11 +181,13 @@ class Settings(QtCore.QSettings):
         'advanced/save current plugin': False,
         'advanced/slide limits': SlideLimits.End,
         'advanced/slide max height': -4,
+        'advanced/slide numbers in footer': False,
         'advanced/single click preview': False,
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
         'advanced/search as type': True,
-        'advanced/use_dark_style': False,
+        'advanced/ui_theme_name': UiThemes.Automatic,
+        'advanced/delete service item confirmation': False,
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',
@@ -195,7 +210,7 @@ class Settings(QtCore.QSettings):
         'api/authentication enabled': False,
         'api/ip address': '0.0.0.0',
         'api/thumbnails': True,
-        'api/download version': '0.0',
+        'api/download version': None,
         'api/last version test': '',
         'api/update check': True,
         'bibles/db type': 'sqlite',
@@ -213,6 +228,7 @@ class Settings(QtCore.QSettings):
         'bibles/second bibles': True,
         'bibles/status': PluginStatus.Inactive,
         'bibles/primary bible': '',
+        'bibles/second bible': None,
         'bibles/bible theme': '',
         'bibles/verse separator': '',
         'bibles/range separator': '',
@@ -259,7 +275,8 @@ class Settings(QtCore.QSettings):
         'core/override position': False,
         'core/monitor': {},
         'core/application version': '0.0',
-        'images/background color': '#000000',
+        'images/background mode': ImageThemeMode.Black,
+        'images/theme': None,
         'images/db type': 'sqlite',
         'images/db username': '',
         'images/db password': '',
@@ -274,23 +291,34 @@ class Settings(QtCore.QSettings):
         'media/vlc arguments': '',
         'media/live volume': 50,
         'media/preview volume': 0,
+        'media/db type': 'sqlite',
+        'media/db username': '',
+        'media/db password': '',
+        'media/db hostname': '',
+        'media/db database': '',
         'players/background color': '#000000',
         'planningcenter/status': PluginStatus.Inactive,
         'planningcenter/application_id': '',
         'planningcenter/secret': '',
         'presentations/status': PluginStatus.Inactive,
         'presentations/override app': QtCore.Qt.Unchecked,
-        'presentations/enable_pdf_program': QtCore.Qt.Unchecked,
-        'presentations/pdf_program': None,
         'presentations/maclo': QtCore.Qt.Checked,
         'presentations/Impress': QtCore.Qt.Checked,
         'presentations/Powerpoint': QtCore.Qt.Checked,
         'presentations/Pdf': QtCore.Qt.Checked,
+        'presentations/Keynote': QtCore.Qt.Checked,
+        'presentations/PowerPointMac': QtCore.Qt.Checked,
         'presentations/presentations files': [],
         'presentations/thumbnail_scheme': '',
         'presentations/powerpoint slide click advance': QtCore.Qt.Unchecked,
         'presentations/powerpoint control window': QtCore.Qt.Unchecked,
+        'presentations/impress use display setting': QtCore.Qt.Unchecked,
         'presentations/last directory': None,
+        'presentations/db type': 'sqlite',
+        'presentations/db username': '',
+        'presentations/db password': '',
+        'presentations/db hostname': '',
+        'presentations/db database': '',
         'servicemanager/last directory': None,
         'servicemanager/last file': None,
         'servicemanager/service theme': None,
@@ -316,8 +344,10 @@ class Settings(QtCore.QSettings):
         'songs/songselect password': '',
         'songs/songselect searches': '',
         'songs/enable chords': True,
+        'songs/warn about missing song key': True,
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
         'songs/disable chords import': False,
+        'songs/auto play audio': False,
         'songusage/status': PluginStatus.Inactive,
         'songusage/db type': 'sqlite',
         'songusage/db username': '',
@@ -334,6 +364,7 @@ class Settings(QtCore.QSettings):
         'themes/last directory import': None,
         'themes/theme level': ThemeLevel.Global,
         'themes/item transitions': False,
+        'themes/hot reload': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),
         'user interface/lock panel': True,
@@ -403,7 +434,8 @@ class Settings(QtCore.QSettings):
         ('projector/last directory import', 'projector/last directory import', [(str_to_path, None)]),
         ('projector/last directory export', 'projector/last directory export', [(str_to_path, None)]),
         ('bibles/last directory import', 'bibles/last directory import', [(str_to_path, None)]),
-        ('presentations/pdf_program', 'presentations/pdf_program', [(str_to_path, None)]),
+        ('presentations/enable_pdf_program', '', []),
+        ('presentations/pdf_program', '', []),
         ('songs/last directory import', 'songs/last directory import', [(str_to_path, None)]),
         ('songs/last directory export', 'songs/last directory export', [(str_to_path, None)]),
         ('songusage/last directory export', 'songusage/last directory export', [(str_to_path, None)]),
@@ -412,6 +444,7 @@ class Settings(QtCore.QSettings):
         ('presentations/presentations files', 'presentations/presentations files', [(files_to_paths, None)]),
         ('core/logo file', 'core/logo file', [(str_to_path, None)]),
         ('presentations/last directory', 'presentations/last directory', [(str_to_path, None)]),
+        ('images/background color', '', []),
         ('images/last directory', 'images/last directory', [(str_to_path, None)]),
         ('media/last directory', 'media/last directory', [(str_to_path, None)]),
         ('songuasge/db password', 'songusage/db password', []),
@@ -428,7 +461,8 @@ class Settings(QtCore.QSettings):
         ('media/override player', '', []),
         ('core/audio start paused', '', []),
         ('core/audio repeat list', '', []),
-        ('core/save prompt', '', [])
+        ('core/save prompt', '', []),
+        ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])])
     ]
 
     @staticmethod
@@ -620,9 +654,17 @@ class Settings(QtCore.QSettings):
             key = self.group() + '/' + key
         return Settings.__default_settings__[key]
 
-    def can_upgrade(self):
+    def from_future(self):
         """
-        Can / should the settings be upgraded
+        Is the settings version higher then the version required by OpenLP
+
+        :rtype: bool
+        """
+        return __version__ < self.value('settings/version')
+
+    def version_mismatched(self):
+        """
+        Are the settings a different version as required by OpenLP
 
         :rtype: bool
         """

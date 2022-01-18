@@ -2,7 +2,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,16 +32,17 @@ from shutil import copytree, copy, move
 
 from PyQt5 import QtGui
 
-from openlp.core.state import State
 from openlp.core.common import ThemeLevel, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
+from openlp.core.common.utils import wait_for
 from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
-from openlp.core.lib import ItemCapabilities
-from openlp.core.lib.theme import BackgroundType
+from openlp.core.lib import create_thumb, image_to_data_uri, ItemCapabilities
+from openlp.core.lib.theme import BackgroundType, TransitionSpeed
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import parse_stream_path
 
@@ -68,6 +69,7 @@ class ServiceItem(RegistryProperties):
         self._rendered_slides = None
         self._display_slides = None
         self._print_slides = None
+        self._creating_slides = False
         self.title = ''
         self.slides = []
         self.processor = None
@@ -127,8 +129,8 @@ class ServiceItem(RegistryProperties):
             # but use song theme if level is song (and it exists)
             if service_theme and self.from_service:
                 theme = service_theme
-            if theme_level == ThemeLevel.Song and self.theme:
-                theme = self.theme
+        if self.is_capable(ItemCapabilities.ProvidesOwnTheme) or theme_level == ThemeLevel.Song and self.theme:
+            theme = self.theme
         theme = theme_manager.get_theme_data(theme)
         # Clean up capabilities and reload from the theme.
         if self.is_text():
@@ -200,6 +202,8 @@ class ServiceItem(RegistryProperties):
         """
         Create frames for rendering and display
         """
+        wait_for(lambda: not self._creating_slides)
+        self._creating_slides = True
         self._rendered_slides = []
         self._display_slides = []
 
@@ -232,12 +236,14 @@ class ServiceItem(RegistryProperties):
                 }
                 self._display_slides.append(display_slide)
                 index += 1
+        self._creating_slides = False
 
     @property
     def rendered_slides(self):
         """
         Render the frames and return them
         """
+        wait_for(lambda: not self._creating_slides)
         if not self._rendered_slides:
             self._create_slides()
         return self._rendered_slides
@@ -247,6 +253,7 @@ class ServiceItem(RegistryProperties):
         """
         Render the frames and return them
         """
+        wait_for(lambda: not self._creating_slides)
         if not self._display_slides:
             self._create_slides()
         return self._display_slides
@@ -307,7 +314,7 @@ class ServiceItem(RegistryProperties):
             verse_tag = verse_tag.upper()
         else:
             # For items that don't have a verse tag, autoincrement the slide numbers
-            verse_tag = str(len(self.slides))
+            verse_tag = str(len(self.slides) + 1)
         self.service_item_type = ServiceItemType.Text
         title = text[:30].split('\n')[0]
         self.slides.append({'title': title, 'text': text, 'verse': verse_tag})
@@ -493,28 +500,31 @@ class ServiceItem(RegistryProperties):
             if path:
                 self.has_original_file_path = False
                 for text_image in service_item['serviceitem']['data']:
+                    text = None
                     file_hash = None
                     thumbnail = None
                     if version >= 3:
                         text = text_image['title']
                         file_hash = text_image['file_hash']
                         file_path = path / '{base}{ext}'.format(base=file_hash, ext=os.path.splitext(text)[1])
-                        thumbnail = AppLocation.get_data_path() / text_image['image']
-                        # copy thumbnail from servicemanager path
-                        copy(path / 'thumbnails' / os.path.basename(text_image['image']),
-                             AppLocation.get_section_data_path(self.name) / 'thumbnails')
+                        if text_image['image']:
+                            thumbnail = AppLocation.get_data_path() / text_image['image']
+                            # copy thumbnail from servicemanager path
+                            copy(path / 'thumbnails' / os.path.basename(text_image['image']),
+                                 AppLocation.get_section_data_path(self.name) / 'thumbnails')
                     else:
-                        org_file_path = path / text_image
+                        text = text_image
+                        org_file_path = path / text
                         # rename the extracted file so that it follows the sha256 based approach of openlp 3
                         self.sha256_file_hash = sha256_file_hash(org_file_path)
-                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(text_image)[1])
+                        new_file = '{hash}{ext}'.format(hash=self.sha256_file_hash, ext=os.path.splitext(text)[1])
                         file_path = path / new_file
                         move(org_file_path, file_path)
                         # Check if (by chance) the thumbnails for this image is available on this machine
                         test_thumb = AppLocation.get_section_data_path(self.name) / 'thumbnails' / new_file
                         if test_thumb.exists():
                             thumbnail = test_thumb
-                    self.add_from_image(file_path, text_image, thumbnail=thumbnail, file_hash=file_hash)
+                    self.add_from_image(file_path, text, thumbnail=thumbnail, file_hash=file_hash)
             else:
                 for text_image in service_item['serviceitem']['data']:
                     file_hash = None
@@ -523,7 +533,8 @@ class ServiceItem(RegistryProperties):
                     if version >= 3:
                         file_path = text_image['path']
                         file_hash = text_image['file_hash']
-                        thumbnail = AppLocation.get_data_path() / text_image['image']
+                        if text_image['image']:
+                            thumbnail = AppLocation.get_data_path() / text_image['image']
                     else:
                         file_path = Path(text_image['path'])
                         # Check if (by chance) the thumbnails for this image is available on this machine
@@ -601,6 +612,24 @@ class ServiceItem(RegistryProperties):
                 return self.title
             else:
                 return self.slides[0]['title']
+
+    def get_transition_delay(self):
+        """
+        Returns a approximate time in seconds for how long it will take to switch slides
+        """
+        delay = 1
+        if self.is_capable(ItemCapabilities.ProvidesOwnDisplay):
+            delay = 0.5
+        else:
+            theme = self.get_theme_data()
+            transition_speed = theme.display_slide_transition_speed
+            if theme.display_slide_transition is False or transition_speed == TransitionSpeed.Fast:
+                delay = 0.5
+            elif transition_speed == TransitionSpeed.Normal:
+                delay = 1
+            elif transition_speed == TransitionSpeed.Slow:
+                delay = 2
+        return delay
 
     def merge(self, other):
         """
@@ -726,16 +755,12 @@ class ServiceItem(RegistryProperties):
             except IndexError:
                 return ''
         if self.is_image() or self.is_capable(ItemCapabilities.IsOptical):
-            path_from = frame['path']
+            frame_path = Path(frame['path'])
         elif self.is_command() and not self.has_original_file_path and self.sha256_file_hash:
-            path_from = os.path.join(frame['path'], self.stored_filename)
+            frame_path = Path(frame['path']) / self.stored_filename
         else:
-            path_from = os.path.join(frame['path'], frame['title'])
-        if isinstance(path_from, str):
-            # Handle service files prior to OpenLP 3.0
-            # Windows can handle both forward and backward slashes, so we use ntpath to get the basename
-            path_from = Path(path_from)
-        return path_from
+            frame_path = Path(frame['path']) / frame['title']
+        return frame_path
 
     def remove_frame(self, frame):
         """
@@ -842,3 +867,73 @@ class ServiceItem(RegistryProperties):
             elif self.is_image() and self.slides and 'thumbnail' in self.slides[0]:
                 return os.path.dirname(self.slides[0]['thumbnail'])
         return None
+
+    def to_dict(self, active=False, item_no=0):
+        """
+        Convert the service item into a dictionary
+        Images and thumbnails are put in dict as data uri strings.
+
+        :param boolean active: Do I filter list for only the active item
+        :param int item_no: the index of the active item
+        """
+        data_dict = {
+            'title': self.title,
+            'name': self.name,
+            'type': str(self.service_item_type),
+            'theme': self.theme,
+            'footer': self.raw_footer,
+            'audit': self.audit,
+            'notes': self.notes,
+            'data': self.data_string or {},
+            'fromPlugin': self.from_plugin,
+            'capabilities': self.capabilities,
+            'backgroundAudio': [str(file_path) for file_path in self.background_audio],
+            'isThemeOverwritten': self.theme_overwritten,
+            'slides': []
+        }
+        for index, frame in enumerate(self.get_frames()):
+            if active and index is not item_no:
+                continue
+            else:
+                item = {
+                    'tag': index + 1,
+                    'title': self.title,
+                    'selected': False
+                }
+                if self.is_text():
+                    if frame['verse']:
+                        item['tag'] = str(frame['verse'])
+                    item['text'] = frame['text']
+                    item['html'] = self.rendered_slides[index]['text']
+                    item['chords'] = self.rendered_slides[index]['chords']
+                    item['footer'] = self.rendered_slides[index]['footer']
+                elif self.is_image() and not frame.get('image', '') and \
+                        Registry().get('settings_thread').value('api/thumbnails') and \
+                        self.is_capable(ItemCapabilities.HasThumbnails):
+                    thumbnail_path = frame['thumbnail']
+                    if not thumbnail_path.exists():
+                        create_thumb(Path(self.get_frame_path(index)), thumbnail_path, False)
+                    item['img'] = image_to_data_uri(thumbnail_path)
+                    item['text'] = str(frame['title'])
+                    item['html'] = str(frame['title'])
+                else:
+                    # presentations and other things
+                    if self.is_capable(ItemCapabilities.HasDisplayTitle):
+                        item['title'] = str(frame['display_title'])
+                    if self.is_capable(ItemCapabilities.HasNotes):
+                        item['slide_notes'] = str(frame['notes'])
+                    if self.is_capable(ItemCapabilities.HasThumbnails) and \
+                            Registry().get('settings_thread').value('api/thumbnails'):
+                        # If the file is under our app directory tree send the portion after the match
+                        data_path = str(AppLocation.get_data_path())
+                        try:
+                            relative_file = frame['image'].relative_to(data_path)
+                        except ValueError:
+                            log.warning('Service item "{title}" is missing a thumbnail or has an invalid thumbnail path'
+                                        .format(title=self.title))
+                        else:
+                            item['img'] = image_to_data_uri(AppLocation.get_data_path() / relative_file)
+                    item['text'] = str(frame['title'])
+                    item['html'] = str(frame['title'])
+                data_dict['slides'].append(item)
+        return data_dict

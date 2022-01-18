@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,54 +22,17 @@
 The :mod:`~openlp.plugins.songs.forms.songselectform` module contains the GUI for the SongSelect importer
 """
 import logging
-from time import sleep
 
 from PyQt5 import QtCore, QtWidgets
+from sqlalchemy.sql import and_
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.threading import ThreadWorker, run_thread
 from openlp.plugins.songs.forms.songselectdialog import Ui_SongSelectDialog
-from openlp.plugins.songs.lib.songselect import SongSelectImport
-
+from openlp.plugins.songs.lib.db import Song
+from openlp.plugins.songs.lib.songselect import SongSelectImport, Pages
 
 log = logging.getLogger(__name__)
-
-
-class SearchWorker(ThreadWorker):
-    """
-    Run the actual SongSelect search, and notify the GUI when we find each song.
-    """
-    show_info = QtCore.pyqtSignal(str, str)
-    found_song = QtCore.pyqtSignal(dict)
-    finished = QtCore.pyqtSignal()
-
-    def __init__(self, importer, search_text):
-        super().__init__()
-        self.importer = importer
-        self.search_text = search_text
-
-    def start(self):
-        """
-        Run a search and then parse the results page of the search.
-        """
-        songs = self.importer.search(self.search_text, 1000, self._found_song_callback)
-        if len(songs) >= 1000:
-            self.show_info.emit(
-                translate('SongsPlugin.SongSelectForm', 'More than 1000 results'),
-                translate('SongsPlugin.SongSelectForm', 'Your search has returned more than 1000 results, it has '
-                                                        'been stopped. Please refine your search to fetch better '
-                                                        'results.'))
-        self.finished.emit()
-        self.quit.emit()
-
-    def _found_song_callback(self, song):
-        """
-        A callback used by the paginate function to notify watching processes when it finds a song.
-
-        :param song: The song that was found
-        """
-        self.found_song.emit(song)
 
 
 class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties):
@@ -88,43 +51,26 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         """
         Initialise the SongSelectForm
         """
-        self.song_count = 0
         self.song = None
-        self.set_progress_visible(False)
-        self.song_select_importer = SongSelectImport(self.db_manager)
-        self.save_password_checkbox.toggled.connect(self.on_save_password_checkbox_toggled)
-        self.login_button.clicked.connect(self.on_login_button_clicked)
-        self.search_button.clicked.connect(self.on_search_button_clicked)
-        self.search_combobox.returnPressed.connect(self.on_search_button_clicked)
-        self.stop_button.clicked.connect(self.on_stop_button_clicked)
-        self.logout_button.clicked.connect(self.done)
-        self.search_results_widget.itemDoubleClicked.connect(self.on_search_results_widget_double_clicked)
-        self.search_results_widget.itemSelectionChanged.connect(self.on_search_results_widget_selection_changed)
+        self.song_select_importer = SongSelectImport(self.db_manager, self.webview)
+        self.url_bar.returnPressed.connect(self.on_url_bar_return_pressed)
         self.view_button.clicked.connect(self.on_view_button_clicked)
         self.back_button.clicked.connect(self.on_back_button_clicked)
+        self.close_button.clicked.connect(self.done)
         self.import_button.clicked.connect(self.on_import_button_clicked)
+        self.webview.page().loadStarted.connect(self.page_load_started)
+        self.webview.page().loadFinished.connect(self.page_loaded)
 
     def exec(self):
         """
         Execute the dialog. This method sets everything back to its initial
         values.
         """
-        self.stacked_widget.setCurrentIndex(0)
-        self.username_edit.setEnabled(True)
-        self.password_edit.setEnabled(True)
-        self.save_password_checkbox.setEnabled(True)
-        self.search_combobox.clearEditText()
-        self.search_combobox.clear()
-        self.search_results_widget.clear()
+        self.song_select_importer.reset_webview()
         self.view_button.setEnabled(False)
-        if self.settings.contains('songs/songselect password'):
-            self.username_edit.setText(self.settings.value('songs/songselect username'))
-            self.password_edit.setText(self.settings.value('songs/songselect password'))
-            self.save_password_checkbox.setChecked(True)
-        if self.settings.contains('songs/songselect searches'):
-            self.search_combobox.addItems(
-                self.settings.value('songs/songselect searches').split('|'))
-        self.username_edit.setFocus()
+        self.back_button.setEnabled(False)
+        self.import_button.setEnabled(False)
+        self.stacked_widget.setCurrentIndex(0)
         return QtWidgets.QDialog.exec(self)
 
     def done(self, result_code):
@@ -133,279 +79,133 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
 
         :param result_code: The result of the dialog.
         """
-        log.debug('Closing SongSelectForm')
-        if self.stacked_widget.currentIndex() > 0:
-            progress_dialog = QtWidgets.QProgressDialog(
-                translate('SongsPlugin.SongSelectForm', 'Logging out...'), '', 0, 2, self)
-            progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
-            progress_dialog.setCancelButton(None)
-            progress_dialog.setValue(1)
-            progress_dialog.show()
-            progress_dialog.setFocus()
-            self.application.process_events()
-            sleep(0.5)
-            self.application.process_events()
-            self.song_select_importer.logout()
-            self.application.process_events()
-            progress_dialog.setValue(2)
         return QtWidgets.QDialog.done(self, result_code)
 
-    def _update_login_progress(self):
-        """
-        Update the progress bar as the user logs in.
-        """
-        self.login_progress_bar.setValue(self.login_progress_bar.value() + 1)
-        self.application.process_events()
+    def page_load_started(self):
+        self.song_progress_bar.setMaximum(0)
+        self.song_progress_bar.setValue(0)
+        self.song_progress_bar.setVisible(True)
+        self.url_bar.setVisible(False)
+        self.import_button.setEnabled(False)
+        self.view_button.setEnabled(False)
+        self.back_button.setEnabled(False)
+        self.message_area.setText('')
+
+    def page_loaded(self, successful):
+        self.song = None
+        page_type = self.song_select_importer.get_page_type()
+        if page_type == Pages.Login:
+            self.signin_page_loaded()
+        elif page_type == Pages.Song:
+            self.song_progress_bar.setMaximum(3)
+            self.song_progress_bar.setValue(0)
+            self.song = self.song_select_importer.get_song(self._update_song_progress)
+            if self.song:
+                self.import_button.setEnabled(True)
+                self.view_button.setEnabled(True)
+            else:
+                message = translate('SongsPlugin.SongSelectForm', 'This song cannot be read. Perhaps your CCLI account '
+                                                                  'does not give you access to this song.')
+                self.message_area.setText(message)
+            self.back_button.setEnabled(True)
+        if page_type == Pages.Other:
+            self.back_button.setEnabled(True)
+        self.song_progress_bar.setVisible(False)
+        self.url_bar.setText(self.webview.url().toString())
+        self.url_bar.setCursorPosition(0)
+        self.url_bar.setVisible(True)
+
+    def signin_page_loaded(self):
+        username = self.settings.value('songs/songselect username')
+        password = self.settings.value('songs/songselect password')
+        self.song_select_importer.set_login_fields(username, password)
 
     def _update_song_progress(self):
         """
-        Update the progress bar as the song is being downloaded.
+        Update the progress bar.
         """
         self.song_progress_bar.setValue(self.song_progress_bar.value() + 1)
         self.application.process_events()
 
-    def _view_song(self, current_item):
+    def _view_song(self):
         """
         Load a song into the song view.
         """
-        if not current_item:
-            return
-        else:
-            current_item = current_item.data(QtCore.Qt.UserRole)
-        # Stop the current search, if it's running
-        self.song_select_importer.stop()
-        # Clear up the UI
-        self.song_progress_bar.setVisible(True)
-        self.import_button.setEnabled(False)
-        self.back_button.setEnabled(False)
-        self.title_edit.setText('')
-        self.title_edit.setEnabled(False)
-        self.copyright_edit.setText('')
-        self.copyright_edit.setEnabled(False)
-        self.ccli_edit.setText('')
-        self.ccli_edit.setEnabled(False)
-        self.author_list_widget.clear()
-        self.author_list_widget.setEnabled(False)
-        self.lyrics_table_widget.clear()
-        self.lyrics_table_widget.setRowCount(0)
-        self.lyrics_table_widget.setEnabled(False)
-        self.stacked_widget.setCurrentIndex(2)
-        song = {}
-        for key, value in current_item.items():
-            song[key] = value
-        self.song_progress_bar.setValue(0)
-        self.application.process_events()
-        # Get the full song
-        song = self.song_select_importer.get_song(song, self._update_song_progress)
-        if not song:
+        if not self.song:
             QtWidgets.QMessageBox.critical(
                 self, translate('SongsPlugin.SongSelectForm', 'Incomplete song'),
                 translate('SongsPlugin.SongSelectForm', 'This song is missing some information, like the lyrics, '
                                                         'and cannot be imported.'),
                 QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
-            self.stacked_widget.setCurrentIndex(1)
             return
+        # Clear up the UI
+        self.author_list_widget.clear()
+        self.lyrics_table_widget.clear()
+        self.lyrics_table_widget.setRowCount(0)
         # Update the UI
-        self.title_edit.setText(song['title'])
-        self.copyright_edit.setText(song['copyright'])
-        self.ccli_edit.setText(song['ccli_number'])
-        for author in song['authors']:
-            QtWidgets.QListWidgetItem(author, self.author_list_widget)
-        for counter, verse in enumerate(song['verses']):
+        self.title_edit.setText(self.song['title'])
+        self.copyright_edit.setText(self.song['copyright'])
+        self.ccli_edit.setText(self.song['ccli_number'])
+        for author in self.song['authors']:
+            self.author_list_widget.addItem(QtWidgets.QListWidgetItem(author, self.author_list_widget))
+        for counter, verse in enumerate(self.song['verses']):
             self.lyrics_table_widget.setRowCount(self.lyrics_table_widget.rowCount() + 1)
             item = QtWidgets.QTableWidgetItem(verse['lyrics'])
             item.setData(QtCore.Qt.UserRole, verse['label'])
             item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
             self.lyrics_table_widget.setItem(counter, 0, item)
-        self.lyrics_table_widget.setVerticalHeaderLabels([verse['label'] for verse in song['verses']])
+        self.lyrics_table_widget.setVerticalHeaderLabels([verse['label'] for verse in self.song['verses']])
         self.lyrics_table_widget.resizeRowsToContents()
-        self.title_edit.setEnabled(True)
-        self.copyright_edit.setEnabled(True)
-        self.ccli_edit.setEnabled(True)
-        self.author_list_widget.setEnabled(True)
-        self.lyrics_table_widget.setEnabled(True)
-        self.lyrics_table_widget.repaint()
-        self.import_button.setEnabled(True)
-        self.back_button.setEnabled(True)
-        self.song_progress_bar.setVisible(False)
-        self.song_progress_bar.setValue(0)
-        self.song = song
-        self.application.process_events()
+        self.lyrics_table_widget.scrollToTop()
+        self.stacked_widget.setCurrentIndex(1)
 
-    def on_save_password_checkbox_toggled(self, checked):
+    def on_url_bar_return_pressed(self):
         """
-        Show a warning dialog when the user toggles the save checkbox on or off.
-
-        :param checked: If the combobox is checked or not
+        Go to the url in the url bar
         """
-        if checked and self.login_page.isVisible():
-            answer = QtWidgets.QMessageBox.question(
-                self, translate('SongsPlugin.SongSelectForm', 'Save Username and Password'),
-                translate('SongsPlugin.SongSelectForm', 'WARNING: Saving your username and password is INSECURE, your '
-                                                        'password is stored in PLAIN TEXT. Click Yes to save your '
-                                                        'password or No to cancel this.'),
-                defaultButton=QtWidgets.QMessageBox.No)
-            if answer == QtWidgets.QMessageBox.No:
-                self.save_password_checkbox.setChecked(False)
-
-    def on_login_button_clicked(self):
-        """
-        Log the user in to SongSelect.
-        """
-        self.username_edit.setEnabled(False)
-        self.password_edit.setEnabled(False)
-        self.save_password_checkbox.setEnabled(False)
-        self.login_button.setEnabled(False)
-        self.login_spacer.setVisible(False)
-        self.login_progress_bar.setValue(0)
-        self.login_progress_bar.setVisible(True)
-        self.application.process_events()
-        # Log the user in
-        subscription_level = self.song_select_importer.login(
-            self.username_edit.text(), self.password_edit.text(), self._update_login_progress)
-        if not subscription_level:
-            QtWidgets.QMessageBox.critical(
-                self,
-                translate('SongsPlugin.SongSelectForm', 'Error Logging In'),
-                translate('SongsPlugin.SongSelectForm',
-                          'There was a problem logging in, perhaps your username or password is incorrect?')
-            )
-        else:
-            if subscription_level == 'Free':
-                QtWidgets.QMessageBox.information(
-                    self,
-                    translate('SongsPlugin.SongSelectForm', 'Free user'),
-                    translate('SongsPlugin.SongSelectForm', 'You logged in with a free account, '
-                                                            'the search will be limited to songs '
-                                                            'in the public domain.')
-                )
-            if self.save_password_checkbox.isChecked():
-                self.settings.setValue('songs/songselect username', self.username_edit.text())
-                self.settings.setValue('songs/songselect password', self.password_edit.text())
-            else:
-                self.settings.remove('songs/songselect username')
-                self.settings.remove('songs/songselect password')
-            self.stacked_widget.setCurrentIndex(1)
-        self.login_progress_bar.setVisible(False)
-        self.login_progress_bar.setValue(0)
-        self.login_spacer.setVisible(True)
-        self.login_button.setEnabled(True)
-        self.username_edit.setEnabled(True)
-        self.password_edit.setEnabled(True)
-        self.save_password_checkbox.setEnabled(True)
-        self.search_combobox.setFocus()
-        self.application.process_events()
-
-    def on_search_button_clicked(self):
-        """
-        Run a search on SongSelect.
-        """
-        # Set up UI components
-        self.view_button.setEnabled(False)
-        self.search_button.setEnabled(False)
-        self.search_combobox.setEnabled(False)
-        self.search_progress_bar.setMinimum(0)
-        self.search_progress_bar.setMaximum(0)
-        self.search_progress_bar.setValue(0)
-        self.set_progress_visible(True)
-        self.search_results_widget.clear()
-        self.result_count_label.setText(translate('SongsPlugin.SongSelectForm',
-                                                  'Found {count:d} song(s)').format(count=self.song_count))
-        self.application.process_events()
-        self.song_count = 0
-        search_history = self.search_combobox.getItems()
-        self.settings.setValue('songs/songselect searches', '|'.join(search_history))
-        # Create thread and run search
-        worker = SearchWorker(self.song_select_importer, self.search_combobox.currentText())
-        worker.show_info.connect(self.on_search_show_info)
-        worker.found_song.connect(self.on_search_found_song)
-        worker.finished.connect(self.on_search_finished)
-        run_thread(worker, 'songselect')
-
-    def on_stop_button_clicked(self):
-        """
-        Stop the search when the stop button is clicked.
-        """
-        self.song_select_importer.stop()
-
-    def on_search_show_info(self, title, message):
-        """
-        Show an informational message from the search thread
-        :param title:
-        :param message:
-        """
-        QtWidgets.QMessageBox.information(self, title, message)
-
-    def on_search_found_song(self, song):
-        """
-        Add a song to the list when one is found.
-        :param song:
-        """
-        self.song_count += 1
-        self.result_count_label.setText(translate('SongsPlugin.SongSelectForm',
-                                                  'Found {count:d} song(s)').format(count=self.song_count))
-        item_title = song['title']
-        if song['authors']:
-            item_title += ' (' + ', '.join(song['authors']) + ')'
-        song_item = QtWidgets.QListWidgetItem(item_title, self.search_results_widget)
-        song_item.setData(QtCore.Qt.UserRole, song)
-
-    def on_search_finished(self):
-        """
-        Slot which is called when the search is completed.
-        """
-        self.application.process_events()
-        self.set_progress_visible(False)
-        self.search_button.setEnabled(True)
-        self.search_combobox.setEnabled(True)
-        self.application.process_events()
-
-    def on_search_results_widget_selection_changed(self):
-        """
-        Enable or disable the view button when the selection changes.
-        """
-        self.view_button.setEnabled(len(self.search_results_widget.selectedItems()) > 0)
+        url = self.url_bar.text()
+        self.song_select_importer.set_page(url)
 
     def on_view_button_clicked(self):
         """
-        View a song from SongSelect.
+        Import a song from SongSelect.
         """
-        self._view_song(self.search_results_widget.currentItem())
+        self.view_button.setEnabled(False)
+        self.url_bar.setEnabled(False)
+        self._view_song()
 
-    def on_search_results_widget_double_clicked(self, current_item):
+    def on_back_button_clicked(self, force_return_to_home=False):
         """
-        View a song from SongSelect
-
-        :param current_item:
+        Go back to the search page or just to the webview if on the preview screen
         """
-        self._view_song(current_item)
-
-    def on_back_button_clicked(self):
-        """
-        Go back to the search page.
-        """
-        self.stacked_widget.setCurrentIndex(1)
-        self.search_combobox.setFocus()
+        if (self.stacked_widget.currentIndex() == 0 or force_return_to_home):
+            self.song_select_importer.set_home_page()
+        else:
+            self.view_button.setEnabled(True)
+            self.url_bar.setEnabled(True)
+        self.stacked_widget.setCurrentIndex(0)
 
     def on_import_button_clicked(self):
         """
         Import a song from SongSelect.
         """
+        # Warn user if a song exists in the database with the same ccli_number
+        songs_with_same_ccli_number = self.plugin.manager.get_all_objects(
+            Song, and_(Song.ccli_number.like(self.song['ccli_number']), Song.ccli_number != ''))
+        if len(songs_with_same_ccli_number) > 0:
+            continue_import = QtWidgets.QMessageBox.question(self,
+                                                             translate('SongsPlugin.SongSelectForm',
+                                                                       'Song Duplicate Warning'),
+                                                             translate('SongsPlugin.SongSelectForm',
+                                                                       'A song with the same CCLI number is already in '
+                                                                       'your database.\n\n'
+                                                                       'Are you sure you want to import this song?'),
+                                                             defaultButton=QtWidgets.QMessageBox.No)
+            if continue_import == QtWidgets.QMessageBox.No:
+                return
         self.song_select_importer.save_song(self.song)
         self.song = None
-        if QtWidgets.QMessageBox.question(self, translate('SongsPlugin.SongSelectForm', 'Song Imported'),
+        QtWidgets.QMessageBox.information(self, translate('SongsPlugin.SongSelectForm', 'Song Imported'),
                                           translate('SongsPlugin.SongSelectForm',
-                                                    'Your song has been imported, would you '
-                                                    'like to import more songs?'),
-                                          defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.Yes:
-            self.on_back_button_clicked()
-        else:
-            self.application.process_events()
-            self.done(QtWidgets.QDialog.Accepted)
-
-    def set_progress_visible(self, is_visible):
-        """
-        Show or hide the search progress, including the stop button.
-        """
-        self.search_progress_bar.setVisible(is_visible)
-        self.stop_button.setVisible(is_visible)
+                                                    'Your song has been imported'))
+        self.on_back_button_clicked(True)

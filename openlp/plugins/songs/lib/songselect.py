@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,29 +22,18 @@
 The :mod:`~openlp.plugins.songs.lib.songselect` module contains the SongSelect importer itself.
 """
 import logging
-import random
 import re
 from html import unescape
-from html.parser import HTMLParser
-from http.cookiejar import CookieJar
-from urllib.parse import urlencode
-from urllib.request import HTTPCookieProcessor, URLError, build_opener
-
+from urllib.request import URLError
+from PyQt5 import QtCore
 from bs4 import BeautifulSoup, NavigableString
 
 from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Song, Author, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
+from openlp.core.common.utils import wait_for
 
 
-USER_AGENTS = [
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_6) AppleWebKit/537.36 (KHTML, like Gecko) '
-    'Chrome/52.0.2743.116 Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.82 Safari/537.36',
-    'Mozilla/5.0 (X11; Linux x86_64; rv:47.0) Gecko/20100101 Firefox/47.0',
-    'Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:46.0) Gecko/20100101 Firefox/46.0',
-    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.11; rv:47.0) Gecko/20100101 Firefox/47.0'
-]
 BASE_URL = 'https://songselect.ccli.com'
 LOGIN_PAGE = 'https://profile.ccli.com/account/signin?appContext=SongSelect&returnUrl='\
     'https%3a%2f%2fsongselect.ccli.com%2f'
@@ -56,199 +45,167 @@ SONG_PAGE = BASE_URL + '/Songs/'
 log = logging.getLogger(__name__)
 
 
+class Pages(object):
+    """
+    Songselect web page types.
+    """
+    Login = 0
+    Home = 1
+    Search = 2
+    Song = 3
+    Other = 4
+
+
 class SongSelectImport(object):
     """
     The :class:`~openlp.plugins.songs.lib.songselect.SongSelectImport` class contains all the code which interfaces
     with CCLI's SongSelect service and downloads the songs.
     """
-    def __init__(self, db_manager):
+    def __init__(self, db_manager, webview):
         """
         Set up the song select importer
 
         :param db_manager: The song database manager
         """
         self.db_manager = db_manager
-        self.html_parser = HTMLParser()
-        self.opener = build_opener(HTTPCookieProcessor(CookieJar()))
-        self.opener.addheaders = [('User-Agent', random.choice(USER_AGENTS))]
-        self.run_search = True
+        self.webview = webview
 
-    def login(self, username, password, callback=None):
+    def get_page_type(self):
         """
-        Log the user into SongSelect. This method takes a username and password, and runs ``callback()`` at various
-        points which can be used to give the user some form of feedback.
+        Get the type of page the user is currently ono
 
-        :param username: SongSelect username
-        :param password: SongSelect password
-        :param callback: Method to notify of progress.
-        :return: subscription level on success, None on failure.
+        :return: The page the user is on
         """
-        if callback:
-            callback()
-        try:
-            login_page = BeautifulSoup(self.opener.open(LOGIN_PAGE).read(), 'lxml')
-        except (TypeError, URLError) as error:
-            log.exception('Could not login to SongSelect, {error}'.format(error=error))
-            return False
-        if callback:
-            callback()
-        token_input = login_page.find('input', attrs={'name': '__RequestVerificationToken'})
-        data = urlencode({
-            '__RequestVerificationToken': token_input['value'],
-            'emailAddress': username,
-            'password': password,
-            'RememberMe': 'false'
-        })
-        login_form = login_page.find('form')
-        if login_form:
-            login_url = login_form.attrs['action']
-        else:
-            login_url = '/Account/SignIn'
-        if not login_url.startswith('http'):
-            if login_url[0] != '/':
-                login_url = '/' + login_url
-            login_url = LOGIN_URL + login_url
-        try:
-            posted_page = BeautifulSoup(self.opener.open(login_url, data.encode('utf-8')).read(), 'lxml')
-        except (TypeError, URLError) as error:
-            log.exception('Could not login to SongSelect, {error}'.format(error=error))
-            return False
-        if callback:
-            callback()
-        # Page if user is in an organization
-        if posted_page.find('input', id='SearchText') is not None:
-            self.subscription_level = self.find_subscription_level(posted_page)
-            return self.subscription_level
-        # Page if user is not in an organization
-        elif posted_page.find('div', id="select-organization") is not None:
-            try:
-                home_page = BeautifulSoup(self.opener.open(BASE_URL).read(), 'lxml')
-                self.subscription_level = self.find_subscription_level(home_page)
-            except (TypeError, URLError) as error:
-                log.exception('Could not reach SongSelect, {error}'.format(error=error))
-                self.subscription_level = None
-            return self.subscription_level
-        else:
-            log.debug(posted_page)
-            return None
+        current_url_host = self.webview.page().url().host()
+        current_url_path = self.webview.page().url().path()
+        if (current_url_host == QtCore.QUrl(LOGIN_URL).host() and current_url_path == QtCore.QUrl(LOGIN_PAGE).path()):
+            return Pages.Login
+        elif (current_url_host == QtCore.QUrl(BASE_URL).host()):
+            if (current_url_path == '/' or current_url_path == ''):
+                return Pages.Home
+            elif (current_url_path == QtCore.QUrl(SEARCH_URL).path()):
+                return Pages.Search
+            elif (self.get_song_number_from_url(current_url_path) is not None):
+                return Pages.Song
+        return Pages.Other
 
-    def find_subscription_level(self, page):
-        scripts = page.find_all('script')
-        for tag in scripts:
-            if tag.string:
-                match = re.search("'Subscription': '(?P<subscription_level>[^']+)", tag.string)
-                if match:
-                    return match.group('subscription_level')
-        log.error('Could not determine SongSelect subscription level')
+    def _run_javascript(self, script):
+        """
+        Run a script and returns the result
+
+        :param script: The javascript to be run
+        :return: The evaluated result
+        """
+        self.web_stuff = ""
+        self.got_web_stuff = False
+
+        def handle_result(result):
+            """
+            Handle the result from the asynchronous call
+            """
+            self.got_web_stuff = True
+            self.web_stuff = result
+        self.webview.page().runJavaScript(script, handle_result)
+        wait_for(lambda: self.got_web_stuff)
+        return self.web_stuff
+
+    def reset_webview(self):
+        """
+        Sets the webview back to the login page using the Qt setUrl method
+        """
+        url = QtCore.QUrl(LOGIN_PAGE)
+        self.webview.setUrl(url)
+
+    def set_home_page(self):
+        """
+        Sets the webview to the search page
+        """
+        self.set_page(BASE_URL)
+
+    def set_page(self, url):
+        """
+        Sets the active page in the webview
+
+        :param url: The new page location
+        """
+        script = 'document.location = "{}"'.format(url)
+        self._run_javascript(script)
+
+    def set_login_fields(self, username, password):
+        script_set_login_fields = ('document.getElementById("EmailAddress").value = "{email}";'
+                                   'document.getElementById("Password").value = "{password}";'
+                                   ).format(email=username, password=password)
+        self._run_javascript(script_set_login_fields)
+
+    def get_page(self, url):
+        """
+        Gets the html for the url through the active webview
+
+        :return: String containing a html document
+        """
+        script_get_page = ('var openlp_page_data = null;'
+                           'fetch("{}").then(data => {{return data.text()}})'
+                           '           .then(data => {{openlp_page_data = data}})').format(url)
+        self._run_javascript(script_get_page)
+        wait_for(lambda: self._run_javascript('openlp_page_data != null'))
+        return self._run_javascript('openlp_page_data')
+
+    def get_song_number_from_url(self, url):
+        """
+        Gets the ccli song number for a song from the url
+
+        :return: String containg ccli song number, None is returned if not found
+        """
+        ccli_number_regex = re.compile(r'.*?Songs\/([0-9]+).*', re.IGNORECASE)
+        regex_matches = ccli_number_regex.match(url)
+        if regex_matches:
+            return regex_matches.group(1)
         return None
 
-    def logout(self):
-        """
-        Log the user out of SongSelect
-        """
-        try:
-            self.opener.open(LOGOUT_URL)
-        except (TypeError, URLError) as error:
-            log.exception('Could not log out of SongSelect, {error}'.format(error=error))
-
-    def search(self, search_text, max_results, callback=None):
-        """
-        Set up a search.
-
-        :param search_text: The text to search for.
-        :param max_results: Maximum number of results to fetch.
-        :param callback: A method which is called when each song is found, with the song as a parameter.
-        :return: List of songs
-        """
-        self.run_search = True
-        search_text = search_text.strip()
-        params = {
-            'SongContent': '',
-            'PrimaryLanguage': '',
-            'Keys': '',
-            'Themes': '',
-            'List': 'publicdomain' if self.subscription_level == 'Free' else '',
-            'Sort': '',
-            'SearchText': search_text
-        }
-        current_page = 1
-        songs = []
-        while self.run_search:
-            if current_page > 1:
-                params['CurrentPage'] = current_page
-            try:
-                results_page = BeautifulSoup(self.opener.open(SEARCH_URL + '?' + urlencode(params)).read(), 'lxml')
-                search_results = results_page.find_all('div', 'song-result')
-            except (TypeError, URLError) as error:
-                log.exception('Could not search SongSelect, {error}'.format(error=error))
-                results_page = None
-                search_results = None
-            if not search_results:
-                if results_page and re.compile('^[0-9]+$').match(search_text):
-                    author_elements = results_page.find('ul', class_='authors').find_all('li')
-                    song = {
-                        'link': SONG_PAGE + search_text,
-                        'authors': [unescape(li.find('a').string).strip() for li in author_elements],
-                        'title': unescape(results_page.find('div', 'content-title').find('h1').string).strip()
-                    }
-                    if callback:
-                        callback(song)
-                    songs.append(song)
-                break
-            for result in search_results:
-                authors = result.find('p', 'song-result-subtitle').string
-                if authors:
-                    authors = unescape(authors).strip().split(', ')
-                else:
-                    authors = ""
-                song = {
-                    'title': unescape(result.find('p', 'song-result-title').find('a').string).strip(),
-                    'authors': authors,
-                    'link': BASE_URL + result.find('p', 'song-result-title').find('a')['href']
-                }
-                if callback:
-                    callback(song)
-                songs.append(song)
-                if len(songs) >= max_results:
-                    self.run_search = False
-                    break
-            current_page += 1
-        return songs
-
-    def get_song(self, song, callback=None):
+    def get_song(self, callback=None):
         """
         Get the full song from SongSelect
 
-        :param song: The song dictionary to update
+        :param song: The song page url
         :param callback: A callback which can be used to indicate progress
-        :return: The updated song dictionary
+        :return: Dictionary containing the song info
         """
+        song = {}
+        # Get current song
+        current_url = self.webview.url().path()
+        ccli_number = self.get_song_number_from_url(current_url)
+
         if callback:
             callback()
         try:
-            song_page = BeautifulSoup(self.opener.open(song['link']).read(), 'lxml')
+            song_page = BeautifulSoup(self.get_page(SONG_PAGE + ccli_number), 'lxml')
         except (TypeError, URLError) as error:
             log.exception('Could not get song from SongSelect, {error}'.format(error=error))
             return None
-        lyrics_link = song_page.find('a', title='View song lyrics')['href']
+        try:
+            lyrics_link = song_page.find('section', 'page-section').find('a')['href']
+        except KeyError:
+            # can't find a link to the song - most likely the user account has no access to it
+            return None
         if callback:
             callback()
         try:
-            lyrics_page = BeautifulSoup(self.opener.open(BASE_URL + lyrics_link).read(), 'lxml')
+            lyrics_page = BeautifulSoup(self.get_page(BASE_URL + lyrics_link), 'lxml')
         except (TypeError, URLError):
             log.exception('Could not get lyrics from SongSelect')
             return None
         if callback:
             callback()
-        copyright_elements = []
         theme_elements = []
-        copyrights_regex = re.compile(r'\bCopyrights\b')
+        # Themes regex only works if the ccli site is in english.
         themes_regex = re.compile(r'\bThemes\b')
         for ul in song_page.find_all('ul', 'song-meta-list'):
-            if ul.find('li', string=copyrights_regex):
-                copyright_elements.extend(ul.find_all('li')[1:])
             if ul.find('li', string=themes_regex):
                 theme_elements.extend(ul.find_all('li')[1:])
+        copyright_elements = lyrics_page.find('ul', 'copyright').find_all('li')
+        author_elements = song_page.find('div', 'content-title').find('ul', 'authors').find_all('li')
+        song['title'] = unescape(song_page.find('div', 'content-title').find('h1').string.strip())
+        song['authors'] = [unescape(li.find('a').string).strip() for li in author_elements]
         song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
         song['topics'] = [unescape(li.string).strip() for li in theme_elements]
         song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
@@ -273,7 +230,7 @@ class SongSelectImport(object):
         """
         Save a song to the database, using the db_manager
 
-        :param song:
+        :param song: Dictionary of the song to save
         :return:
         """
         db_song = Song.populate(title=song['title'], copyright=song['copyright'], ccli_number=song['ccli_number'])
@@ -286,7 +243,12 @@ class SongSelectImport(object):
                 verse_type = verse['label']
                 verse_number = 1
             verse_type = VerseType.from_loose_input(verse_type)
-            verse_number = int(verse_number)
+            try:
+                verse_number = int(verse_number)
+            except ValueError:
+                # Some custom verse types contain multiple words, and this messes with the verse number,
+                # so just default to 1 on ValueError. See https://gitlab.com/openlp/openlp/-/issues/937
+                verse_number = 1
             song_xml.add_verse_to_lyrics(VerseType.tags[verse_type], verse_number, verse['lyrics'])
             verse_order.append('{tag}{number}'.format(tag=VerseType.tags[verse_type], number=verse_number))
         db_song.verse_order = ' '.join(verse_order)
@@ -312,9 +274,3 @@ class SongSelectImport(object):
             db_song.topics.append(topic)
         self.db_manager.save_object(db_song)
         return db_song
-
-    def stop(self):
-        """
-        Stop the search.
-        """
-        self.run_search = False

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -60,9 +60,8 @@ def upgrade_2(session, metadata):
         data_path = AppLocation.get_data_path()
         for row in results.fetchall():
             file_path_json = json.dumps(Path(row.filename), cls=OpenLPJSONEncoder, base_path=data_path)
-            sql = 'UPDATE image_filenames SET file_path = \'{file_path_json}\' WHERE id = {id}'.format(
-                file_path_json=file_path_json, id=row.id)
-            conn.execute(sql)
+            sql = 'UPDATE image_filenames SET file_path = :file_path_json WHERE id = :id'
+            conn.execute(sql, {'file_path_json': file_path_json, 'id': row.id})
         # Drop old columns
         if metadata.bind.url.get_dialect().name == 'sqlite':
             drop_columns(op, 'image_filenames', ['filename', ])
@@ -85,9 +84,14 @@ def upgrade_3(session, metadata):
         thumb_path = AppLocation.get_data_path() / 'images' / 'thumbnails'
         for row in results.fetchall():
             file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
-            hash = sha256_file_hash(file_path)
-            sql = 'UPDATE image_filenames SET file_hash = \'{hash}\' WHERE id = {id}'.format(hash=hash, id=row.id)
-            conn.execute(sql)
+            if file_path.exists():
+                hash = sha256_file_hash(file_path)
+            else:
+                log.warning('{image} does not exists, so no sha256 hash added.'.format(image=str(file_path)))
+                # set a fake "hash" to allow for the upgrade to go through. The image will be marked as invalid
+                hash = 'NONE'
+            sql = 'UPDATE image_filenames SET file_hash = :hash WHERE id = :id'
+            conn.execute(sql, {'hash': hash, 'id': row.id})
             # rename thumbnail to use file hash
             ext = file_path.suffix.lower()
             old_thumb = thumb_path / '{name:d}{ext}'.format(name=row.id, ext=ext)

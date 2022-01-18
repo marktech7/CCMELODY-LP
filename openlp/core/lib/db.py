@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,10 +30,11 @@ from urllib.parse import quote_plus as urlquote
 
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
-from sqlalchemy import Column, MetaData, Table, UnicodeText, create_engine, types
-from sqlalchemy.engine.url import make_url
+from sqlalchemy import Column, ForeignKey, Integer, MetaData, Table, Unicode, UnicodeText, create_engine, types
+from sqlalchemy.engine.url import URL, make_url
 from sqlalchemy.exc import DBAPIError, InvalidRequestError, OperationalError, ProgrammingError, SQLAlchemyError
-from sqlalchemy.orm import mapper, scoped_session, sessionmaker
+from sqlalchemy.ext.declarative import declared_attr
+from sqlalchemy.orm import backref, mapper, relationship, scoped_session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 from openlp.core.common import delete_file
@@ -43,66 +44,97 @@ from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
 
-
 log = logging.getLogger(__name__)
+
+
+def _set_url_database(url, database):
+    try:
+        ret = URL.create(
+            drivername=url.drivername,
+            username=url.username,
+            password=url.password,
+            host=url.host,
+            port=url.port,
+            database=database,
+            query=url.query
+        )
+    except AttributeError:  # SQLAlchemy <1.4
+        url.database = database
+        ret = url
+    assert ret.database == database, ret
+    return ret
+
+
+def _get_scalar_result(engine, sql):
+    with engine.connect() as conn:
+        return conn.scalar(sql)
+
+
+def _sqlite_file_exists(database):
+    if not os.path.isfile(database) or os.path.getsize(database) < 100:
+        return False
+
+    with open(database, 'rb') as f:
+        header = f.read(100)
+
+    return header[:16] == b'SQLite format 3\x00'
 
 
 def database_exists(url):
     """Check if a database exists.
-
     :param url: A SQLAlchemy engine URL.
-
     Performs backend-specific testing to quickly determine if a database
     exists on the server. ::
-
-        database_exists('postgres://postgres@localhost/name')  #=> False
-        create_database('postgres://postgres@localhost/name')
-        database_exists('postgres://postgres@localhost/name')  #=> True
-
+        database_exists('postgresql://postgres@localhost/name')  #=> False
+        create_database('postgresql://postgres@localhost/name')
+        database_exists('postgresql://postgres@localhost/name')  #=> True
     Supports checking against a constructed URL as well. ::
-
-        engine = create_engine('postgres://postgres@localhost/name')
+        engine = create_engine('postgresql://postgres@localhost/name')
         database_exists(engine.url)  #=> False
         create_database(engine.url)
         database_exists(engine.url)  #=> True
 
-    Borrowed from SQLAlchemy_Utils (v0.32.14) since we only need this one function.
+    Borrowed from SQLAlchemy_Utils since we only need this one function.
+    Copied from a fork/pull request since SQLAlchemy_Utils didn't supprt SQLAlchemy 1.4 when it was released:
+ https://github.com/nsoranzo/sqlalchemy-utils/blob/4f52578/sqlalchemy_utils/functions/database.py
     """
 
     url = copy(make_url(url))
     database = url.database
-    if url.drivername.startswith('postgresql'):
-        url.database = 'template1'
-    else:
-        url.database = None
+    dialect_name = url.get_dialect().name
 
-    engine = create_engine(url)
+    if dialect_name == 'postgresql':
+        text = "SELECT 1 FROM pg_database WHERE datname='%s'" % database
+        for db in (database, 'postgres', 'template1', 'template0', None):
+            url = _set_url_database(url, database=db)
+            engine = create_engine(url, poolclass=NullPool)
+            try:
+                return bool(_get_scalar_result(engine, text))
+            except (ProgrammingError, OperationalError):
+                pass
+        return False
 
-    if engine.dialect.name == 'postgresql':
-        text = "SELECT 1 FROM pg_database WHERE datname='{db}'".format(db=database)
-        return bool(engine.execute(text).scalar())
-
-    elif engine.dialect.name == 'mysql':
+    elif dialect_name == 'mysql':
+        url = _set_url_database(url, database=None)
+        engine = create_engine(url, poolclass=NullPool)
         text = ("SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA "
-                "WHERE SCHEMA_NAME = '{db}'".format(db=database))
-        return bool(engine.execute(text).scalar())
+                "WHERE SCHEMA_NAME = '%s'" % database)
+        return bool(_get_scalar_result(engine, text))
 
-    elif engine.dialect.name == 'sqlite':
+    elif dialect_name == 'sqlite':
+        url = _set_url_database(url, database=None)
+        engine = create_engine(url, poolclass=NullPool)
         if database:
-            return database == ':memory:' or os.path.exists(database)
+            return database == ':memory:' or _sqlite_file_exists(database)
         else:
             # The default SQLAlchemy database is in memory,
             # and :memory is not required, thus we should support that use-case
             return True
-
     else:
         text = 'SELECT 1'
         try:
-            url.database = database
-            engine = create_engine(url)
-            engine.execute(text)
-            return True
-
+            engine = create_engine(url, poolclass=NullPool)
+            return bool(_get_scalar_result(engine, text))
         except (ProgrammingError, OperationalError):
             return False
 
@@ -192,6 +224,49 @@ def get_upgrade_op(session):
     return Operations(context)
 
 
+class CommonMixin(object):
+    """
+    Base class to automate table name and ID column.
+    """
+    @declared_attr
+    def __tablename__(self):
+        return self.__name__.lower()
+
+    id = Column(Integer, primary_key=True)
+
+
+class FolderMixin(CommonMixin):
+    """
+    A mixin to provide most of the fields needed for folder support
+    """
+    name = Column(Unicode(255), nullable=False, index=True)
+
+    @declared_attr
+    def parent_id(self):
+        return Column(Integer(), ForeignKey('folder.id'))
+
+    @declared_attr
+    def folders(self):
+        return relationship('Folder', backref=backref('parent', remote_side='Folder.id'), order_by='Folder.name')
+
+    @declared_attr
+    def items(self):
+        return relationship('Item', backref='folder', order_by='Item.name')
+
+
+class ItemMixin(CommonMixin):
+    """
+    A mixin to provide most of the fields needed for folder support
+    """
+    name = Column(Unicode(255), nullable=False, index=True)
+    file_path = Column(Unicode(255))
+    file_hash = Column(Unicode(255))
+
+    @declared_attr
+    def folder_id(self):
+        return Column(Integer(), ForeignKey('folder.id'))
+
+
 class BaseModel(object):
     """
     BaseModel provides a base object with a set of generic functions
@@ -213,6 +288,7 @@ class PathType(types.TypeDecorator):
     representation and store it as a Unicode type
     """
     impl = types.Unicode
+    cache_ok = True
 
     def coerce_compared_value(self, op, value):
         """
@@ -358,6 +434,13 @@ class Manager(object):
             self.db_url = init_url(plugin_name, str(db_file_path))  # TOdO :PATHLIB
         else:
             self.db_url = init_url(plugin_name)
+        if not session:
+            try:
+                self.session = init_schema(self.db_url)
+            except (SQLAlchemyError, DBAPIError):
+                handle_db_error(plugin_name, db_file_path)
+        else:
+            self.session = session
         if upgrade_mod:
             try:
                 db_ver, up_ver = upgrade_db(self.db_url, upgrade_mod)
@@ -373,13 +456,6 @@ class Manager(object):
                                                                                                 db_up=up_ver,
                                                                                                 db_name=self.db_url))
                 return
-        if not session:
-            try:
-                self.session = init_schema(self.db_url)
-            except (SQLAlchemyError, DBAPIError):
-                handle_db_error(plugin_name, db_file_path)
-        else:
-            self.session = session
 
     def save_object(self, object_instance, commit=True):
         """
@@ -462,16 +538,19 @@ class Manager(object):
                     if try_count >= 2:
                         raise
 
-    def get_object_filtered(self, object_class, filter_clause):
+    def get_object_filtered(self, object_class, *filter_clauses):
         """
         Returns an object matching specified criteria
 
         :param object_class: The type of object to return
         :param filter_clause: The criteria to select the object by
         """
+        query = self.session.query(object_class)
+        for filter_clause in filter_clauses:
+            query = query.filter(filter_clause)
         for try_count in range(3):
             try:
-                return self.session.query(object_class).filter(filter_clause).first()
+                return query.first()
             except OperationalError as oe:
                 # This exception clause is for users running MySQL which likes to terminate connections on its own
                 # without telling anyone. See bug #927473. However, other dbms can raise it, usually in a
@@ -489,12 +568,20 @@ class Manager(object):
         :param order_by_ref: Any parameters to order the returned objects by. Defaults to None.
         """
         query = self.session.query(object_class)
+        # Check filter_clause
         if filter_clause is not None:
-            query = query.filter(filter_clause)
-        if isinstance(order_by_ref, list):
-            query = query.order_by(*order_by_ref)
-        elif order_by_ref is not None:
-            query = query.order_by(order_by_ref)
+            if isinstance(filter_clause, list):
+                for dbfilter in filter_clause:
+                    query = query.filter(dbfilter)
+            else:
+                query = query.filter(filter_clause)
+        # Check order_by_ref
+        if order_by_ref is not None:
+            if isinstance(order_by_ref, list):
+                query = query.order_by(*order_by_ref)
+            else:
+                query = query.order_by(order_by_ref)
+
         for try_count in range(3):
             try:
                 return query.all()

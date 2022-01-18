@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -129,12 +129,13 @@ class SongXML(object):
             self.song_xml = objectify.fromstring(xml)
         except etree.XMLSyntaxError:
             log.exception('Invalid xml {text}'.format(text=xml))
-        xml_iter = self.song_xml.getiterator()
-        for element in xml_iter:
-            if element.tag == 'verse':
-                if element.text is None:
-                    element.text = ''
-                verse_list.append([element.attrib, str(element.text)])
+        if self.song_xml is not None:
+            xml_iter = self.song_xml.getiterator()
+            for element in xml_iter:
+                if element.tag == 'verse':
+                    if element.text is None:
+                        element.text = ''
+                    verse_list.append([element.attrib, str(element.text)])
         return verse_list
 
     def dump_xml(self):
@@ -221,6 +222,7 @@ class OpenLyrics(object):
     IMPLEMENTED_VERSION = '0.8'
     START_TAGS_REGEX = re.compile(r'\{(\w+)\}')
     END_TAGS_REGEX = re.compile(r'\{/(\w+)\}')
+    CHORD_TAGS_REGEX = re.compile(r'\[(\w.*?)\]')
     VERSE_TAG_SPLITTER = re.compile('([a-zA-Z]+)([0-9]*)([a-zA-Z]?)')
 
     def __init__(self, manager):
@@ -322,13 +324,15 @@ class OpenLyrics(object):
                 optional_verse = start_tags + optional_verse
                 start_tags, end_tags = self._get_missing_tags(optional_verse)
                 optional_verse += end_tags
+                # convert chords
+                optional_verse = self._chordpro_to_openlyrics(optional_verse)
                 # Add formatting tags to text
                 lines_element = self._add_text_with_tags_to_lines(verse_element, optional_verse, tags_element)
                 # Do not add the break attribute to the last lines element.
                 if index < len(optional_verses) - 1:
                     lines_element.set('break', 'optional')
         xml_text = self._extract_xml(song_xml).decode()
-        return self._chordpro_to_openlyrics(xml_text)
+        return xml_text
 
     def _chordpro_to_openlyrics(self, text):
         """
@@ -338,7 +342,7 @@ class OpenLyrics(object):
         :return: the lyrics with the converted chords
         """
         # Process chords.
-        new_text = re.sub(r'\[(\w.*?)\]', r'<chord name="\1"/>', text)
+        new_text = re.sub(OpenLyrics.CHORD_TAGS_REGEX, r'<chord name="\1"/>', text)
         return new_text
 
     def _get_missing_tags(self, text):
@@ -355,8 +359,12 @@ class OpenLyrics(object):
                 {st}{r}Text text text
         """
         tags = []
+        endless_tags = []
+        for formatting_tag in FormattingTags.get_html_tags():
+            if not formatting_tag['end html']:
+                endless_tags.append(formatting_tag['start tag'])
         for tag in FormattingTags.get_html_tags():
-            if tag['start tag'] == '{br}':
+            if tag['start tag'] in endless_tags:
                 continue
             if text.count(tag['start tag']) != text.count(tag['end tag']):
                 tags.append((text.find(tag['start tag']), tag['start tag'], tag['end tag']))
@@ -453,9 +461,11 @@ class OpenLyrics(object):
                 # Check if formatting tag contains end tag. Some formatting
                 # tags e.g. {br} has only start tag. If no end tag is present
                 # <close> element has not to be in OpenLyrics xml.
-                if tag['end tag']:
+                if tag['end html']:
                     element_close = self._add_text_to_element('close', element)
                     element_close.text = etree.CDATA(tag['end html'])
+                element_hidden = self._add_text_to_element('hidden', element)
+                element_hidden.text = etree.CDATA(str(tag['hidden']))
 
     def _add_text_with_tags_to_lines(self, verse_element, text, tags_element):
         """
@@ -600,7 +610,8 @@ class OpenLyrics(object):
                 'protected': False,
                 # Add 'temporary' key in case the formatting tag should not be saved otherwise it is supposed that
                 # formatting tag is permanent.
-                'temporary': temporary
+                'temporary': temporary,
+                'hidden': True if hasattr(tag, 'hidden') and tag.hidden.text == 'True' else False
             }
             found_tags.append(openlp_tag)
         existing_tag_ids = [tag['start tag'] for tag in FormattingTags.get_html_tags()]
@@ -652,7 +663,7 @@ class OpenLyrics(object):
             text += '{{{name}}}'.format(name=element.get('name'))
             # Some formattings may have only start tag.
             # Handle this case if element has no children and contains no text.
-            if not element and not element.text:
+            if element is None and element.text is None:
                 use_endtag = False
         # Append text from element.
         if element.text:
@@ -678,8 +689,11 @@ class OpenLyrics(object):
         """
         text = ''
         # Convert lxml.objectify to lxml.etree representation.
-        lines = etree.tostring(lines)
-        element = etree.XML(lines)
+        string_lines = etree.tostring(lines)
+        # lxml 4.6.x or some recent version of libxml2 seems to add the rest of the song to the string, so split on the
+        # closing verse tag, and then add it back in
+        string_lines = string_lines.split(b'</lines>', 1)[0] + b'</lines>'
+        element = etree.XML(string_lines)
 
         # OpenLyrics 0.8 uses <br/> for new lines. Append text from "lines" element to verse text.
         if version > '0.7':

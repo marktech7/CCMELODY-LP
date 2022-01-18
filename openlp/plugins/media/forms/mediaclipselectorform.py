@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,9 +27,9 @@ from time import sleep
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media.vlcplayer import get_vlc
@@ -254,9 +254,10 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
             self.blockSignals(True)
             # Get titles, insert in combobox
             titles = self.vlc_media_player.video_get_title_description()
+            titles = get_vlc().track_description_list(titles)
             self.titles_combo_box.clear()
             for title in titles:
-                self.titles_combo_box.addItem(title.name.decode(), title.id)
+                self.titles_combo_box.addItem(title[1].decode(), title[0])
             # Re-enable signals
             self.blockSignals(False)
             # Main title is usually title #1

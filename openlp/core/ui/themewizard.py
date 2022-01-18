@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,8 +23,8 @@ The Create/Edit theme wizard
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_macosx
 from openlp.core.display.render import ThemePreviewRenderer
 from openlp.core.lib.ui import add_welcome_page
 from openlp.core.pages.alignment import AlignmentTransitionsPage

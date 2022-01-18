@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,8 +23,9 @@ import time
 
 from PyQt5 import QtCore
 
-from openlp.core.common import get_uno_command, get_uno_instance, is_win, normalize_str
+from openlp.core.common import get_uno_command, get_uno_instance, normalize_str
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_win
 
 from .songimport import SongImport
 

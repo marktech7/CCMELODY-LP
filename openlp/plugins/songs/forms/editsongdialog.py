@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -289,7 +289,7 @@ class Ui_EditSongDialog(object):
         self.warning_label = QtWidgets.QLabel(edit_song_dialog)
         self.warning_label.setObjectName('warning_label')
         self.bottom_layout.addWidget(self.warning_label)
-        self.button_box = create_button_box(edit_song_dialog, 'button_box', ['cancel', 'save'])
+        self.button_box = create_button_box(edit_song_dialog, 'button_box', ['cancel', 'save', 'help'])
         self.bottom_layout.addWidget(self.button_box)
         self.dialog_layout.addLayout(self.bottom_layout)
         self.retranslate_ui(edit_song_dialog)

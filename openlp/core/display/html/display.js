@@ -137,14 +137,13 @@ function $(selector) {
 /**
  * Build linear gradient CSS
  * @private
- * @param {string} startDir - Starting direction
- * @param {string} endDir - Ending direction
+ * @param {string} direction - The direction or angle of the gradient e.g. to bottom or 90deg
  * @param {string} startColor - The starting color
  * @param {string} endColor - The ending color
  * @returns {string} A string of the gradient CSS
  */
-function _buildLinearGradient(startDir, endDir, startColor, endColor) {
-  return "-webkit-gradient(linear, " + startDir + ", " + endDir + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+function _buildLinearGradient(direction, startColor, endColor) {
+  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -156,7 +155,46 @@ function _buildLinearGradient(startDir, endDir, startColor, endColor) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildRadialGradient(width, startColor, endColor) {
-  return "-webkit-gradient(radial, " + width + " 50%, 100, " + width + " 50%, " + width + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+  return "radial-gradient(" + startColor + ", " + endColor + ") fixed";
+}
+
+/**
+ * Build a set of text shadows to form an outline
+ * @private
+ * @param {Number} size - The desired width of the outline
+ * @param {string} color - The color of the outline
+ * @returns {array} A list of shadows to be given to "text-shadow"
+ */
+function _buildTextOutline(size, color) {
+  let shadows = [];
+  // Outlines work from -(size) to +(size)
+  let from = size * -1;
+  // Loop through all the possible size iterations and add them to the array
+  for (let i = from; i <= size; i++) {
+    for (let j = from; j <= size; j++) {
+      shadows.push(color + " " + i + "pt " + j + "pt 0pt");
+    }
+  }
+  return shadows;
+}
+
+/**
+ * Build a text shadow
+ * @private
+ * @param {Number} offset - The offset of the shadow
+ * @param {string} color - The color that the shadow should be
+ * @returns {string} The text-shadow rule
+ */
+function _buildTextShadow(offset, size, color) {
+  let shadows = [];
+  let from = (size * -1) + offset;
+  let to = size + offset;
+  for (let i = from; i <= to; i++) {
+    for (let j = from; j <= to; j++) {
+      shadows.push(color + " " + i + "pt " + j + "pt 0pt");
+    }
+  }
+  return shadows.join(", ");
 }
 
 /**
@@ -236,117 +274,17 @@ function _createStyle(selector, rules) {
 }
 
 /**
- * An audio player with a play list
+ * Fixes font name to match CSS names.
+ * @param {string} fontName Font Name
+ * @returns Fixed Font Name
  */
-var AudioPlayer = function (audioElement) {
-  this._audioElement = null;
-  this._eventListeners = {};
-  this._playlist = [];
-  this._currentTrack = null;
-  this._canRepeat = false;
-  this._state = AudioState.Stopped;
-  this.createAudioElement();
-};
+function _fixFontName(fontName) {
+  if (!fontName || (fontName == 'Sans Serif')) {
+    return 'sans-serif';
+  }
 
-/**
- * Call all listeners associated with this event
- * @private
- * @param {object} event - The event that was emitted
- */
-AudioPlayer.prototype._callListener = function (event) {
-  if (this._eventListeners.hasOwnProperty(event.type)) {
-    this._eventListeners[event.type].forEach(function (listener) {
-      listener(event);
-    });
-  }
-  else {
-    console.warn("Received unknown event \"" + event.type + "\", doing nothing.");
-  }
-};
-
-/**
- * Create the <audio> element that is used to play the audio
- */
-AudioPlayer.prototype.createAudioElement = function () {
-  this._audioElement = document.createElement("audio");
-  this._audioElement.addEventListener("ended", this.onEnded);
-  this._audioElement.addEventListener("ended", this._callListener);
-  this._audioElement.addEventListener("timeupdate", this._callListener);
-  this._audioElement.addEventListener("volumechange", this._callListener);
-  this._audioElement.addEventListener("durationchange", this._callListener);
-  this._audioElement.addEventListener("loadeddata", this._callListener);
-  document.addEventListener("complete", function(event) {
-    document.body.appendChild(this._audioElement);
-  });
-};
-AudioPlayer.prototype.addEventListener = function (eventType, listener) {
-  this._eventListeners[eventType] = this._eventListeners[eventType] || [];
-  this._eventListeners[eventType].push(listener);
-};
-AudioPlayer.prototype.onEnded = function (event) {
-  this.nextTrack();
-};
-AudioPlayer.prototype.setCanRepeat = function (canRepeat) {
-  this._canRepeat = canRepeat;
-};
-AudioPlayer.prototype.clearTracks = function () {
-  this._playlist = [];
-};
-AudioPlayer.prototype.addTrack = function (track) {
-  this._playlist.push(track);
-};
-AudioPlayer.prototype.nextTrack = function () {
-  if (!!this._currentTrack) {
-    var trackIndex = this._playlist.indexOf(this._currentTrack);
-    if ((trackIndex + 1 >= this._playlist.length) && this._canRepeat) {
-      this.play(this._playlist[0]);
-    }
-    else if (trackIndex + 1 < this._playlist.length) {
-      this.play(this._playlist[trackIndex + 1]);
-    }
-    else {
-      this.stop();
-    }
-  }
-  else if (this._playlist.length > 0) {
-    this.play(this._playlist[0]);
-  }
-  else {
-    console.warn("No tracks in playlist, doing nothing.");
-  }
-};
-AudioPlayer.prototype.play = function () {
-  if (arguments.length > 0) {
-    this._currentTrack = arguments[0];
-    this._audioElement.src = this._currentTrack;
-    this._audioElement.play();
-    this._state = AudioState.Playing;
-  }
-  else if (this._state == AudioState.Paused) {
-    this._audioElement.play();
-    this._state = AudioState.Playing;
-  }
-  else {
-    console.warn("No track currently paused and no track specified, doing nothing.");
-  }
-};
-
-/**
- * Pause
- */
-AudioPlayer.prototype.pause = function () {
-  this._audioElement.pause();
-  this._state = AudioState.Paused;
-};
-
-/**
- * Stop playing
- */
-AudioPlayer.prototype.stop = function () {
-  this._audioElement.pause();
-  this._audioElement.src = "";
-  this._state = AudioState.Stopped;
-};
+  return "'" + fontName + "'";
+}
 
 /**
  * The Display object is what we use from OpenLP
@@ -363,6 +301,7 @@ var Display = {
   _animationState: AnimationState.NoAnimation,
   _doTransitions: false,
   _doItemTransitions: false,
+  _skipNextTransition: false,
   _themeApplied: true,
   _revealConfig: {
     margin: 0.0,
@@ -382,6 +321,8 @@ var Display = {
     width: "100%",
     height: "100%"
   },
+  _lastRequestAnimationFrameHandle: null,
+
   /**
    * Start up reveal and do any other initialisation
    * @param {object} options - The initialisation options:
@@ -392,9 +333,13 @@ var Display = {
   init: function (options) {
     // Set defaults for undefined values
     options = options || {};
-    var isDisplay = options.isDisplay || false;
-    var doItemTransitions = options.doItemTransitions || false;
-    var hideMouse = options.hideMouse || false;
+    let isDisplay = options.isDisplay || false;
+    let doItemTransitions = options.doItemTransitions || false;
+    let hideMouse = options.hideMouse || false;
+    if (options.slideNumbersInFooter) {
+      Display._revealConfig.slideNumber = Display.setFooterSlideNumbers;
+    }
+
     // Now continue to initialisation
     if (!isDisplay) {
       document.body.classList.add('checkerboard');
@@ -462,7 +407,7 @@ var Display = {
     Display.applyTheme(new_slides, is_text);
     Display._slidesContainer.prepend(new_slides);
     var currentSlide = Reveal.getIndices();
-    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2) {
+    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2 && !Display._skipNextTransition) {
       // Set the slide one section ahead so we'll stay on the old slide after reinit
       Reveal.slide(1, currentSlide.v);
       Display.reinit();
@@ -472,6 +417,7 @@ var Display = {
       Reveal.slide(0, currentSlide.v);
       Reveal.sync();
       Display._removeLastSection();
+      Display._skipNextTransition = false;
     }
   },
   /**
@@ -542,7 +488,7 @@ var Display = {
     section.setAttribute("data-background", bg_color);
     section.setAttribute("style", "height: 100%; width: 100%;");
     var img = document.createElement('img');
-    img.src = 'data:image/png;base64,' + image_data;
+    img.src = 'data:image/jpeg;base64,' + image_data;
     img.setAttribute("style", "height: 100%; width: 100%");
     section.appendChild(img);
     Display._slidesContainer.appendChild(section);
@@ -559,11 +505,9 @@ var Display = {
       return null;
     }
     if (Display._alertState === AlertState.Displaying) {
-      console.debug("Adding to queue");
       Display.addAlertToQueue(text, settings);
     }
     else {
-      console.debug("Displaying immediately");
       Display.showAlert(text, settings);
     }
   },
@@ -578,7 +522,7 @@ var Display = {
     // create styles for the alerts from the settings
     _createStyle("#alert-background.settings", {
       backgroundColor: settings.backgroundColor,
-      fontFamily: "'" + settings.fontFace + "'",
+      fontFamily: _fixFontName(settings.fontFace),
       fontSize: settings.fontSize.toString() + "pt",
       color: settings.fontColor
     });
@@ -596,6 +540,8 @@ var Display = {
     /* Either scroll the alert, or make it disappear at the end of its time */
     if (settings.scroll) {
       Display._animationState = AnimationState.ScrollingText;
+      alertText.classList.add('scrolling');
+      alertText.classList.replace("hide", "show");
       var animationSettings = "alert-scrolling-text " + settings.timeout +
                               "s linear 0.6s " + settings.repeat + " normal";
       alertText.style.animation = animationSettings;
@@ -634,7 +580,6 @@ var Display = {
    */
   alertTransitionEndEvent: function (e) {
     e.stopPropagation();
-    console.debug("Transition end event reached: " + Display._transitionState);
     if (Display._transitionState === TransitionState.EntranceTransition) {
       Display._transitionState = TransitionState.NoTransition;
     }
@@ -679,9 +624,7 @@ var Display = {
   * Display the next alert in the queue
   */
   showNextAlert: function () {
-    console.log("showNextAlert");
     if (Display._alerts.length > 0) {
-      console.log("Showing next alert");
       var alertObject = Display._alerts.shift();
       Display._alertState = AlertState.DisplayingFromQueue;
       Display.showAlert(alertObject.text, alertObject.settings);
@@ -701,6 +644,8 @@ var Display = {
     var html = _prepareText(text);
     slide = document.createElement("section");
     slide.setAttribute("id", verse);
+    // The "future" class is used internally by reveal, it's used here to hide newly added slides
+    slide.classList.add("future");
     slide.innerHTML = html;
     return slide;
   },
@@ -756,17 +701,16 @@ var Display = {
    * Set image slides
    * @param {Object[]} slides - A list of images to add as JS objects [{"path": "url/to/file"}]
    */
-  setImageSlides: function (slides, background) {
+  setImageSlides: function (slides) {
     Display._clearSlidesList();
     var parentSection = document.createElement("section");
     slides.forEach(function (slide, index) {
       var section = document.createElement("section");
       section.setAttribute("id", index);
-      section.setAttribute("data-background", background);
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
       img.src = slide.path;
-      img.setAttribute("style", "max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);");
+      img.setAttribute("style", "width: 100%; height: 100%; margin: 0; object-fit: contain;");
       section.appendChild(img);
       parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
@@ -915,17 +859,37 @@ var Display = {
   /**
    * Blank the screen
   */
-  toBlack: function () {
-    var documentBody = $("body")[0];
-    documentBody.style.opacity = 1;
-    if (!Reveal.isPaused()) {
-      Reveal.togglePause();
-    }
+  toBlack: function (onFinishedEventName) {
+    /* Avoid race conditions where display goes to transparent and quickly goes to black */
+    Display._abortLastTransitionOperation();
+    /*
+      Reveal's black overlay should be shown before the transitions are
+      restored, to avoid screen flashes
+    */
+    Display._restorePauseBehavior();
+    Display._requestAnimationFrameExclusive(function() {
+      if (!Reveal.isPaused()) {
+        Reveal.togglePause();
+      }
+      Display._reenableGlobalTransitions(function() {
+        var documentBody = $("body")[0];
+        documentBody.style.opacity = 1;
+        if (onFinishedEventName) {
+          displayWatcher.dispatchEvent(onFinishedEventName, {});
+        }
+      });
+    });
   },
   /**
    * Hide all but theme background
   */
-  toTheme: function () {
+  toTheme: function (onFinishedEventName) {
+    Display._abortLastTransitionOperation();
+    /*
+      Reveal's black overlay should be shown before the transitions are
+      restored, to avoid screen flashes
+    */
+    Display._restorePauseBehavior();
     var documentBody = $("body")[0];
     documentBody.style.opacity = 1;
     Display._slidesContainer.style.opacity = 0;
@@ -933,31 +897,140 @@ var Display = {
     if (Reveal.isPaused()) {
       Reveal.togglePause();
     }
+    Display._reenableGlobalTransitions(function() {
+      if (onFinishedEventName) {
+        displayWatcher.dispatchEvent(onFinishedEventName, {});
+      }
+    });
   },
   /**
    * Hide everything (CAUTION: Causes a invisible mouse barrier)
   */
-  toTransparent: function () {
-    Display._slidesContainer.style.opacity = 0;
-    Display._footerContainer.style.opacity = 0;
+  toTransparent: function (onFinishedEventName) {
+    Display._abortLastTransitionOperation();
     var documentBody = $("body")[0];
     documentBody.style.opacity = 0;
     if (!Reveal.isPaused()) {
+      /*
+        Removing previously the overlay if it's not paused, to avoid a
+        content flash while going from black screen to transparent
+      */
+      document.body.classList.add('is-desktop');
       Reveal.togglePause();
+    }
+    /*
+      Waiting for body transition to happen, now it would be safe to
+      hide the Webview (as other transitions were suppressed)
+    */
+    Display._abortLastTransitionOperation();
+    Display._addTransitionEndEventToBody(transitionEndEvent);
+    function transitionEndEvent(e) {
+      // Targeting only body
+      if (e.target != documentBody) {
+        return;
+      }
+      /*
+        Disabling all transitions (except body) to allow the Webview to attain the
+        transparent state before it gets hidden by Qt.
+      */    
+      document.body.classList.add('disable-transitions');
+      document.body.classList.add('is-desktop');
+      Display._slidesContainer.style.opacity = 0;
+      Display._footerContainer.style.opacity = 0;
+      /*
+        Repainting before hiding the Webview to avoid flashes when
+        showing it again.
+      */
+      displayWatcher.pleaseRepaint();
+      /* Waiting for repaint to happen before saying that it's done. */
+      Display._requestAnimationFrameExclusive(function() {
+        /* We're transparent now, aborting any transition event between */
+        Display._abortLastTransitionOperation();
+        if (onFinishedEventName) {
+          displayWatcher.dispatchEvent(onFinishedEventName, {});
+        }
+      });
     }
   },
   /**
    * Show the screen
   */
-  show: function () {
+  show: function (onFinishedEventName) {
     var documentBody = $("body")[0];
-    documentBody.style.opacity = 1;
+    /*
+      Removing transitionend event, avoids the content being hidden if the user
+      tries to show content again before toTransparent() transitionend event
+      happens
+    */
+    Display._abortLastTransitionOperation();
+
     Display._slidesContainer.style.opacity = 1;
     Display._footerContainer.style.opacity = 1;
     if (Reveal.isPaused()) {
       Reveal.togglePause();
     }
+    Display._restorePauseBehavior();
+    Display._reenableGlobalTransitions(function() {
+      documentBody.style.opacity = 1;
+      if (onFinishedEventName) {
+        displayWatcher.dispatchEvent(onFinishedEventName, {});
+      }
+    });
   },
+
+  _reenableGlobalTransitions: function(afterCallback) {
+    Display._requestAnimationFrameExclusive(function() {
+      /*
+        Waiting for the previous opacity + unpause operations to complete
+        to restore the transitions behavior
+      */
+      document.body.classList.remove('disable-transitions');
+      if (typeof afterCallback === 'function') {
+        afterCallback();
+      }
+    });
+  },
+
+  /**
+   * Shows again the Reveal's black pause overlay that was
+   * hidden before Webview was hidden
+   */
+  _restorePauseBehavior: function() {
+    document.body.classList.remove('is-desktop');
+  },
+
+  /**
+   * Cancels previous requested animationFrame.
+   * Last animationFrame should be aborted to avoid race condition bugs when
+   * the user changes the view modes too quickly, for example.
+   */
+  _requestAnimationFrameExclusive: function(callback) {
+    cancelAnimationFrame(Display._lastRequestAnimationFrameHandle);
+    Display._lastRequestAnimationFrameHandle = requestAnimationFrame(callback);
+  },
+
+  /**
+   * Aborts last body's transitionend and requestAnimationFrame's events, to avoid
+   * race condition bugs.
+   */
+  _abortLastTransitionOperation: function() {
+    Display._removeTransitionEndEventToBody();
+    cancelAnimationFrame(Display._lastRequestAnimationFrameHandle);
+  },
+
+  /**
+   * Intercepts the addEventListener call and stores it, so that it acts
+   * like the ontransitionend GlobalEventHandler.
+   */
+  _addTransitionEndEventToBody: function(listener) {
+    Display._lastTransitionEndBodyEvent = listener;
+    document.body.addEventListener('transitionend', listener);
+  },
+
+  _removeTransitionEndEventToBody: function() {
+    document.body.removeEventListener('transitionend', Display._lastTransitionEndBodyEvent);
+  },
+
   /**
    * Figure out how many lines can fit on a slide given the font size
    * @param fontSize The font size in pts
@@ -987,10 +1060,9 @@ var Display = {
   },
   /**
    * Set background image, replaced when theme is updated/applied
-   * @param bg_color Colour behind the image
    * @param image_path Image path
    */
-  setBackgroundImage: function (bg_color, image_path) {
+  setBackgroundImage: function (image_path) {
     var targetElement = $(".slides > section")[0];
     targetElement.setAttribute("data-background", "url('" + image_path + "')");
     targetElement.setAttribute("data-background-size", "cover");
@@ -1084,22 +1156,22 @@ var Display = {
       case BackgroundType.Gradient:
         switch (Display._theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundContent = _buildLinearGradient("left top", "left bottom",
+            backgroundContent = _buildLinearGradient("to right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundContent = _buildLinearGradient("left top", "right top",
+            backgroundContent = _buildLinearGradient("to bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundContent = _buildLinearGradient("left top", "right bottom",
+            backgroundContent = _buildLinearGradient("to right bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundContent = _buildLinearGradient("left bottom", "right top",
+            backgroundContent = _buildLinearGradient("to top right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
@@ -1113,13 +1185,11 @@ var Display = {
         break;
       case BackgroundType.Image:
         backgroundContent = "url('" + Display._theme.background_filename + "')";
-        console.warn(backgroundContent);
         break;
       case BackgroundType.Video:
         // never actually used since background type is overridden from video to transparent in window.py
         backgroundContent = Display._theme.background_border_color;
         backgroundHtml = "<video loop autoplay muted><source src='" + Display._theme.background_filename + "'></video>";
-        console.warn(backgroundHtml);
         break;
       default:
         backgroundContent = "#000";
@@ -1127,9 +1197,6 @@ var Display = {
     targetElement.style.cssText = "";
     targetElement.setAttribute("data-background", backgroundContent);
     targetElement.setAttribute("data-background-size", "cover");
-    if (!!backgroundHtml) {
-      background.innerHTML = backgroundHtml;
-    }
 
     // set up the main area
     if (!is_text) {
@@ -1137,11 +1204,6 @@ var Display = {
       return;
     }
     mainStyle = {};
-    if (!!Display._theme.font_main_outline) {
-      mainStyle["-webkit-text-stroke"] = "" + Display._theme.font_main_outline_size + "pt " +
-                                         Display._theme.font_main_outline_color;
-      mainStyle["-webkit-text-fill-color"] = Display._theme.font_main_color;
-    }
     // These need to be fixed, in the Python they use a width passed in as a parameter
     mainStyle.width = Display._theme.font_main_width + "px";
     mainStyle.height = Display._theme.font_main_height + "px";
@@ -1190,9 +1252,22 @@ var Display = {
       default:
         mainStyle["justify-content"] = "center";
     }
-    if (Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
-      mainStyle["text-shadow"] = Display._theme.font_main_shadow_color + " " + Display._theme.font_main_shadow_size + "pt " +
-                                 Display._theme.font_main_shadow_size + "pt";
+    /**
+     * This section draws the font outline. Previously we used the proprietary -webkit-text-stroke property
+     * but it draws the outline INSIDE the text, instead of OUTSIDE, so we had to go back to the old way
+     * of using multiple text-shadow rules to fake an outline.
+     */
+    if (!!Display._theme.font_main_outline && Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
+      let outlineShadows = _buildTextOutline(Display._theme.font_main_outline_size, Display._theme.font_main_outline_color);
+      let textShadow = _buildTextShadow(Display._theme.font_main_shadow_size, Display._theme.font_main_outline_size, Display._theme.font_main_shadow_color);
+      mainStyle["text-shadow"] = outlineShadows.join(", ") + ", " + textShadow;
+    }
+    else if (!!Display._theme.font_main_outline) {
+      let outlineShadows = _buildTextOutline(Display._theme.font_main_outline_size, Display._theme.font_main_outline_color);
+      mainStyle["text-shadow"] = outlineShadows.join(", ");
+    }
+    else if (Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
+      mainStyle["text-shadow"] = _buildTextShadow(Display._theme.font_main_shadow_size, 0, Display._theme.font_main_shadow_color);
     }
     targetElement.style.cssText = "";
     for (var mainKey in mainStyle) {
@@ -1215,12 +1290,23 @@ var Display = {
     footerStyle["font-style"] = !!Display._theme.font_footer_italics ? "italic" : "";
     footerStyle["font-weight"] = !!Display._theme.font_footer_bold ? "bold" : "";
     footerStyle["white-space"] = Display._theme.font_footer_wrap ? "normal" : "nowrap";
-    Display._footerContainer.style.cssText = "";
     for (var footerKey in footerStyle) {
       if (footerStyle.hasOwnProperty(footerKey)) {
         Display._footerContainer.style.setProperty(footerKey, footerStyle[footerKey]);
       }
     }
+  },
+  /**
+   * Called whenever openlp wants to finish completely with the current text/image slides
+   * because a different window (eg presentation or vlc) is going to be displaying the next item
+   * and we don't want any flashbacks to the current slide contents
+   */
+  finishWithCurrentItem: function () {
+    Display.setTextSlide('');
+    var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
+    Display._skipNextTransition = true;
+    displayWatcher.pleaseRepaint();
   },
   /**
    * Return the video types supported by the video tag
@@ -1246,9 +1332,42 @@ var Display = {
    */
   setScale: function(scale) {
     document.body.style.zoom = scale+"%";
+  },
+  /**
+   * In order to check if a font exists, we need a container to do
+   * calculations on. This method creates that container and caches
+   * some width values so that we don't have to do this step every
+   * time we check if a font exists.
+   */
+  _prepareFontContainer: function() {
+    Display._fontContainer = document.createElement("span");
+    Display._fontContainer.id = "does-font-exist";
+    Display._fontContainer.innerHTML = Array(100).join("wi");
+    Display._fontContainer.style.cssText = [
+      "position: absolute",
+      "width: auto",
+      "font-size: 128px",
+      "left: -999999px"
+    ].join(" !important;");
+    document.body.appendChild(Display._fontContainer);
+  },
+  /**
+   * Prepare the slide number (slide x/y) for insertion into the Reveal footer
+   * This is a callback function which Reveal calls to get the values
+   * Fixes https://gitlab.com/openlp/openlp/-/issues/942
+   */
+  setFooterSlideNumbers: function (slide) {
+    let value = ['', '', ''];
+    // Reveal does call this function passing undefined
+    if (typeof slide === 'undefined') {
+      return value;
+    }
+    value[0] = Reveal.getSlidePastCount(slide) + 1;
+    value[1] = '/';
+    value[2] = Object.keys(Display._slides).length;
+    return value;
   }
 };
 new QWebChannel(qt.webChannelTransport, function (channel) {
-  window.mediaWatcher = channel.objects.mediaWatcher;
   window.displayWatcher = channel.objects.displayWatcher;
 });

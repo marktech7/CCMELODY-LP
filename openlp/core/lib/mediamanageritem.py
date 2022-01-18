@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,13 +21,12 @@
 """
 Provides the generic functions for interfacing plugins with the Media Manager.
 """
-import logging
 import re
 
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.plugin import StringContent
@@ -39,10 +38,8 @@ from openlp.core.widgets.edits import SearchEdit
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListWidgetWithDnD
 
-log = logging.getLogger(__name__)
 
-
-class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
+class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
     """
     MediaManagerItem is a helper widget for plugins.
 
@@ -75,7 +72,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         that is performed automatically by OpenLP when necessary. If this method is not defined, a default will be used
         (treat the filename as an image).
     """
-    log.info('Media Item loaded')
 
     def __init__(self, parent=None, plugin=None):
         """
@@ -129,6 +125,12 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         self.can_preview = True
         self.can_make_live = True
         self.can_add_to_service = True
+
+    def config_update(self):
+        """
+        Is triggered when the config is updated
+        """
+        pass
 
     def retranslate_ui(self):
         """
@@ -206,12 +208,16 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         self.add_actionlist_to_toolbar(toolbar_actions)
 
     def add_actionlist_to_toolbar(self, toolbar_actions):
-        for action in toolbar_actions:
-            self.toolbar.add_toolbar_action('{name}{action}Action'.format(name=self.plugin.name, action=action[0]),
-                                            text=self.plugin.get_string(action[1])['title'],
-                                            icon=action[2],
-                                            tooltip=self.plugin.get_string(action[1])['tooltip'],
-                                            triggers=action[3])
+        added_actions = []
+        for action, plugin, icon, triggers in toolbar_actions:
+            added_actions.append(self.toolbar.add_toolbar_action(
+                '{name}{action}Action'.format(name=self.plugin.name, action=action),
+                text=self.plugin.get_string(plugin)['title'],
+                icon=icon,
+                tooltip=self.plugin.get_string(plugin)['tooltip'],
+                triggers=triggers
+            ))
+        return added_actions
 
     def add_list_view_to_toolbar(self):
         """
@@ -344,7 +350,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             self, self.on_new_prompt,
             self.settings.value(self.settings_section + '/last directory'),
             self.on_new_file_masks)
-        log.info('New file(s) {file_paths}'.format(file_paths=file_paths))
+        self.log_info('New file(s) {file_paths}'.format(file_paths=file_paths))
         if file_paths:
             self.application.set_busy_cursor()
             self.validate_and_load(file_paths)
@@ -372,7 +378,8 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         if new_file_paths:
             if 'target' in data:
                 self.validate_and_load(new_file_paths, data['target'])
-            self.validate_and_load(new_file_paths)
+            else:
+                self.validate_and_load(new_file_paths)
 
     def dnd_move_internal(self, target):
         """
@@ -434,7 +441,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         file_paths = []
         for index in range(self.list_view.count()):
             list_item = self.list_view.item(index)
-            file_path = list_item.data(QtCore.Qt.UserRole)
+            file_path = list_item.data(0, QtCore.Qt.UserRole)
             file_paths.append(file_path)
         return file_paths
 
@@ -516,7 +523,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
                                               translate('OpenLP.MediaManagerItem',
                                                         'You must select one or more items to preview.'))
         else:
-            log.debug('{plug} Preview requested'.format(plug=self.plugin.name))
+            self.log_debug('{plug} Preview requested'.format(plug=self.plugin.name))
             Registry().set_flag('has doubleclick added item to service', False)
             service_item = self.build_service_item()
             if service_item:
@@ -551,7 +558,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         :param item_id: item to make live
         :param remote: From Remote
         """
-        log.debug('%s Live requested', self.plugin.name)
+        self.log_debug('{plugin} Live requested'.format(plugin=self.plugin.name))
         item = None
         if item_id:
             item = self.create_item_from_id(item_id)
@@ -586,8 +593,8 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             # Is it possible to process multiple list items to generate
             # multiple service items?
             if self.single_service_item:
-                log.debug('{plugin} Add requested'.format(plugin=self.plugin.name))
-                self.add_to_service(replace=self.remote_triggered)
+                self.log_debug('{plugin} Add requested'.format(plugin=self.plugin.name))
+                self.add_to_service(remote=self.remote_triggered)
             else:
                 items = self.list_view.selectedIndexes()
                 drop_position = self.service_manager.get_drop_position()
@@ -604,7 +611,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
         """
         self.add_to_service(message[0], remote=message[1])
 
-    def add_to_service(self, item=None, replace=None, remote=False, position=-1):
+    def add_to_service(self, item=None, replace=-1, remote=False, position=-1):
         """
         Add this item to the current service.
 
@@ -627,7 +634,8 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
                                               translate('OpenLP.MediaManagerItem',
                                                         'You must select one or more items.'))
         else:
-            log.debug('{plugin} Add requested'.format(plugin=self.plugin.name))
+            self.log_debug('{plugin} Add requested'.format(plugin=self.plugin.name))
+            item = self.service_manager.find_service_item()[0]
             service_item = self.service_manager.get_service_item()
             if not service_item:
                 QtWidgets.QMessageBox.information(self, UiStrings().NISs,
@@ -635,7 +643,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
                                                             'You must select an existing service item to add to.'))
             elif self.plugin.name == service_item.name:
                 self.generate_slide_data(service_item)
-                self.service_manager.add_service_item(service_item, replace=True)
+                self.service_manager.add_service_item(service_item, replace=item)
             else:
                 # Turn off the remote edit update message indicator
                 QtWidgets.QMessageBox.information(self, translate('OpenLP.MediaManagerItem', 'Invalid Service Item'),
@@ -693,6 +701,27 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties):
             item = self.list_view.currentItem()
             if item:
                 self.auto_select_id = item.data(QtCore.Qt.UserRole)
+
+    def search_options(self, option=None):
+        """
+        Returns a list of search options and values for bibles
+        Must return in this format:
+        [{name:'<option_name>',list:[<possible values...>],selected:<selected_value>}]
+
+        :param option: Can be set to an option to only return that option
+        """
+        # By default plugins have no search options
+        return []
+
+    def set_search_option(self, search_option, value):
+        """
+        Sets a search option
+
+        :param search_option: The option to be set
+        :param value: The new value for the search option
+        :return: True if the search_option was successfully set
+        """
+        return False
 
     def search(self, string, show_error=True):
         """

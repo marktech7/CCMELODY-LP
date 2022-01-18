@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -31,7 +31,7 @@ import logging
 import time
 
 
-if sys.platform.startswith('darwin'):
+if sys.platform.startswith('darwin') and 'pytest' not in sys.argv[0]:
     # Only make the log file on OS X when running as a server
     logfile = os.path.join(str(os.getenv('HOME')), 'Library', 'Application Support', 'openlp', 'libreofficeserver.log')
     print('Setting up log file: {logfile}'.format(logfile=logfile))

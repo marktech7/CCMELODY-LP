@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,10 +21,7 @@
 """
 This module contains some helpers for serializing Path objects in Pyro4
 """
-try:
-    from openlp.core.common.path import Path
-except ImportError:
-    from pathlib import Path
+from pathlib import Path
 
 from Pyro4.util import SerializerBase
 
@@ -40,7 +37,7 @@ def path_class_to_dict(obj):
 
 
 def path_dict_to_class(classname, d):
-    return Path(d['parts'])
+    return Path(*d['parts'])
 
 
 def register_classes():

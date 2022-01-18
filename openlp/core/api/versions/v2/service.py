@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -33,6 +33,7 @@ log = logging.getLogger(__name__)
 
 @service_views.route('/items')
 def service_items():
+    log.debug('service/v2/items')
     live_controller = Registry().get('live_controller')
     service_items = []
     if live_controller.service_item:
@@ -61,6 +62,7 @@ def service_items():
 @service_views.route('/show/<item_id>', methods=['POST'])
 @login_required
 def service_set(item_id=None):
+    log.debug('service/v2/show')
     data = request.json
     item_id = item_id or data.get('id') or data.get('uid')
     if not item_id:
@@ -81,6 +83,7 @@ def service_set(item_id=None):
 @service_views.route('/progress', methods=['POST'])
 @login_required
 def service_direction():
+    log.debug('service/v2/progress')
     ALLOWED_ACTIONS = ['next', 'previous']
     data = request.json
     if not data:
@@ -97,5 +100,6 @@ def service_direction():
 @service_views.route('/new', methods=['GET'])
 @login_required
 def new_service():
+    log.debug('service/v2/new')
     getattr(Registry().get('service_manager'), 'servicemanager_new_file').emit()
     return '', 204

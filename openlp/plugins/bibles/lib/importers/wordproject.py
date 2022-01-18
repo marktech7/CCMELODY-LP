@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -83,12 +83,17 @@ class WordProjectBible(BibleImport):
             log.debug(li_book)
             if self.stop_import_flag:
                 break
-            # Sometimes the structure is "[1] <a>Genesis</a>", and sometimes it's "<a>[1] Genesis</a>"
             if isinstance(li_book.contents[0], NavigableString) and str(li_book.contents[0]).strip():
+                # Sometimes the structure is "[1] <a>Genesis</a>", and sometimes it's "<a>[1] Genesis</a>"
                 book_string = str(li_book.contents[0])
                 book_name = str(li_book.a.contents[0])
-            elif li_book.a:
+            elif li_book.a and ']' in li_book.a.contents[0]:
+                # Sometimes there is a [1] in the link text
                 book_string, book_name = str(li_book.a.contents[0]).split(' ', 1)
+            elif li_book.a and 'title' in li_book.a.attrs:
+                # And sometimes there's a title on the a with the number in it
+                book_string = li_book.a['title'].split(' ')[0]
+                book_name = li_book.a.contents[0].strip()
             book_link = li_book.a['href']
             book_id = int(BOOK_NUMBER_PATTERN.search(book_string).group(1))
             book_name = book_name.strip()

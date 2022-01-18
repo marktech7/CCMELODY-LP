@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -47,10 +47,10 @@ setup(
     name='OpenLP',
     version=version_string,
     description="Open source Church presentation and lyrics projection application.",
-    long_description="""\
+    long_description="""
 OpenLP (previously openlp.org) is free church presentation software, or lyrics projection software, used to display
 slides of songs, Bible verses, videos, images, and even presentations (if PowerPoint is installed) for church worship
-using a computer and a data projector.""",
+using a computer and a display/projector.""",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: MacOS X',
@@ -106,6 +106,7 @@ using a computer and a data projector.""",
         'flask-cors',
         'lxml',
         'Mako',
+        "pillow",
         'pymediainfo >= 2.2',
         'pyobjc; platform_system=="Darwin"',
         'pyobjc-framework-Cocoa; platform_system=="Darwin"',
@@ -115,6 +116,7 @@ using a computer and a data projector.""",
         'python-vlc',
         'pywin32; platform_system=="Windows"',
         'QtAwesome',
+        "qrcode",
         'requests',
         'SQLAlchemy >= 0.5',
         'waitress',
@@ -130,15 +132,12 @@ using a computer and a data projector.""",
         'postgresql': ['psycopg2'],
         'spellcheck': ['pyenchant >= 1.6'],
         'sword-bibles': ['pysword'],
-        # Required for scripts/*.py:
-        'jenkins': ['python-jenkins'],
         'test': [
             'PyMuPDF',
             'pyodbc',
             'pysword',
             'pytest',
             'pytest-qt',
-            'python-xlib; platform_system=="Linux"',
             'flake8',
         ]
     },

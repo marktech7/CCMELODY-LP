@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,6 +38,7 @@ from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.confirmationform import ConfirmationForm
 from openlp.plugins.songs.forms.editsongform import EditSongForm
 from openlp.plugins.songs.forms.songexportform import SongExportForm
 from openlp.plugins.songs.forms.songimportform import SongImportForm
@@ -490,16 +491,15 @@ class SongMediaItem(MediaManagerItem):
 
     def on_delete_click(self):
         """
-        Remove a song from the list and database
+        Remove a song or songs from the list and database
         """
         if check_item_selected(self.list_view, UiStrings().SelectDelete):
             items = self.list_view.selectedItems()
-            if QtWidgets.QMessageBox.question(
-                    self, UiStrings().ConfirmDelete,
-                    translate('SongsPlugin.MediaItem',
-                              'Are you sure you want to delete the following songs?') +
-                    '\n\n- {songs}'.format(songs='\n- '.join([item.text() for item in items])),
-                    defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
+            item_strings = map(lambda i: i.text(), items)
+            delete_confirmed = ConfirmationForm(self, UiStrings().ConfirmDelete, item_strings,
+                                                translate('SongsPlugin.MediaItem',
+                                                          'Are you sure you want to delete these songs?')).exec()
+            if not delete_confirmed:
                 return
             self.application.set_busy_cursor()
             self.main_window.display_progress_bar(len(items))
@@ -617,8 +617,10 @@ class SongMediaItem(MediaManagerItem):
         author_list = self.generate_footer(service_item, song)
         service_item.data_string = {
             'title': song.search_title,
+            'alternate_title': song.alternate_title,
             'authors': ', '.join(author_list),
-            'ccli_number': song.ccli_number
+            'ccli_number': song.ccli_number,
+            'copyright': song.copyright
         }
         service_item.xml_version = self.open_lyrics.song_to_xml(song)
         # Add the audio file to the service item.
@@ -633,6 +635,7 @@ class SongMediaItem(MediaManagerItem):
                 service_item.metadata.append('<em>{label}:</em> {media}'.
                                              format(label=translate('SongsPlugin.MediaItem', 'Media'),
                                                     media=service_item.background_audio))
+                service_item.will_auto_start = self.settings.value('songs/auto play audio') == QtCore.Qt.Checked
         return True
 
     def generate_footer(self, item, song):

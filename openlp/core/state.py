@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -147,11 +147,15 @@ class State(LogMixin, metaclass=Singleton):
         :return: Have the preconditions been met.
         :rtype: bool
         """
-        if self.modules[name].requires is None:
-            return self.modules[name].pass_preconditions
-        else:
-            mod = self.modules[name].requires
-            return self.modules[mod].pass_preconditions
+        try:
+            if self.modules[name].requires is None:
+                return self.modules[name].pass_preconditions
+            else:
+                mod = self.modules[name].requires
+                return self.modules[mod].pass_preconditions
+        except KeyError:
+            # Module is missing so therefore not found.
+            return False
 
     def list_plugins(self):
         """

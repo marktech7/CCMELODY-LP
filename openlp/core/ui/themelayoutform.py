@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -45,5 +45,5 @@ class ThemeLayoutForm(QtWidgets.QDialog, Ui_ThemeLayoutDialog):
         pixmap.setDevicePixelRatio(self.theme_display_label.devicePixelRatio())
         self.theme_display_label.setPixmap(pixmap)
         display_aspect_ratio = float(image.width()) / image.height()
-        self.theme_display_label.setFixedSize(400, 400 / display_aspect_ratio)
+        self.theme_display_label.setFixedSize(400, int(400 / display_aspect_ratio))
         return QtWidgets.QDialog.exec(self)

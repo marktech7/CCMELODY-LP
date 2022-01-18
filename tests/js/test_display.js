@@ -44,13 +44,75 @@ describe("The function", function () {
   });
 
   it("_buildLinearGradient() should build the correct string", function () {
-    var gradient = _buildLinearGradient("left top", "left bottom", "#000", "#fff");
-    expect(gradient).toBe("-webkit-gradient(linear, left top, left bottom, from(#000), to(#fff)) fixed");
+    var gradient = _buildLinearGradient("to bottom", "#000", "#fff");
+    expect(gradient).toBe("linear-gradient(to bottom, #000, #fff) fixed");
   });
 
   it("_buildRadialGradient() should build the correct string", function () {
     var gradient = _buildRadialGradient(10, "#000", "#fff");
-    expect(gradient).toBe("-webkit-gradient(radial, 10 50%, 100, 10 50%, 10, from(#000), to(#fff)) fixed");
+    expect(gradient).toBe("radial-gradient(#000, #fff) fixed");
+  });
+
+  it("_buildTextOutline should return an array of text-shadow values", function () {
+    let shadows = _buildTextOutline(2, "#fff");
+    expect(shadows).toEqual([
+      "#fff -2pt -2pt 0pt",
+      "#fff -2pt -1pt 0pt",
+      "#fff -2pt 0pt 0pt",
+      "#fff -2pt 1pt 0pt",
+      "#fff -2pt 2pt 0pt",
+      "#fff -1pt -2pt 0pt",
+      "#fff -1pt -1pt 0pt",
+      "#fff -1pt 0pt 0pt",
+      "#fff -1pt 1pt 0pt",
+      "#fff -1pt 2pt 0pt",
+      "#fff 0pt -2pt 0pt",
+      "#fff 0pt -1pt 0pt",
+      "#fff 0pt 0pt 0pt",
+      "#fff 0pt 1pt 0pt",
+      "#fff 0pt 2pt 0pt",
+      "#fff 1pt -2pt 0pt",
+      "#fff 1pt -1pt 0pt",
+      "#fff 1pt 0pt 0pt",
+      "#fff 1pt 1pt 0pt",
+      "#fff 1pt 2pt 0pt",
+      "#fff 2pt -2pt 0pt",
+      "#fff 2pt -1pt 0pt",
+      "#fff 2pt 0pt 0pt",
+      "#fff 2pt 1pt 0pt",
+      "#fff 2pt 2pt 0pt"
+    ]);
+  });
+
+  it("_buildTextShadow should return a string of text-shadow", function () {
+    let shadow = _buildTextShadow(2, 2, "#acf");
+    expect(shadow).toEqual([
+      "#acf 0pt 0pt 0pt",
+      "#acf 0pt 1pt 0pt",
+      "#acf 0pt 2pt 0pt",
+      "#acf 0pt 3pt 0pt",
+      "#acf 0pt 4pt 0pt",
+      "#acf 1pt 0pt 0pt",
+      "#acf 1pt 1pt 0pt",
+      "#acf 1pt 2pt 0pt",
+      "#acf 1pt 3pt 0pt",
+      "#acf 1pt 4pt 0pt",
+      "#acf 2pt 0pt 0pt",
+      "#acf 2pt 1pt 0pt",
+      "#acf 2pt 2pt 0pt",
+      "#acf 2pt 3pt 0pt",
+      "#acf 2pt 4pt 0pt",
+      "#acf 3pt 0pt 0pt",
+      "#acf 3pt 1pt 0pt",
+      "#acf 3pt 2pt 0pt",
+      "#acf 3pt 3pt 0pt",
+      "#acf 3pt 4pt 0pt",
+      "#acf 4pt 0pt 0pt",
+      "#acf 4pt 1pt 0pt",
+      "#acf 4pt 2pt 0pt",
+      "#acf 4pt 3pt 0pt",
+      "#acf 4pt 4pt 0pt"
+    ].join(", "));
   });
 
   it("_getStyle should return the correct style on an element", function () {
@@ -246,7 +308,92 @@ describe("Transitions", function () {
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition")).toEqual("convex-vertical-reverse");
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition-speed")).toEqual("slow");
   });
+});
 
+
+describe("Screen Visibility", function () {
+  var TRANSITION_TIMEOUT = 2000;
+
+  beforeEach(function() {
+    window.displayWatcher = jasmine.createSpyObj('DisplayWatcher', ['dispatchEvent', 'setInitialised', 'pleaseRepaint']);
+    document.body.innerHTML = "";
+    var revealDiv = _createDiv({"class": "reveal"});
+    var slidesDiv = _createDiv({"class": "slides"});
+    var footerDiv = _createDiv({"class": "footer"});
+    slidesDiv.innerHTML = "<section><section><p></p></section></section>";
+    revealDiv.append(slidesDiv);
+    revealDiv.append(footerDiv);
+    document.body.style.transition = "opacity 75ms ease-in-out";
+    Display.init({isDisplay: true, doItemTransition: false});
+  });
+  afterEach(function() {
+    // Reset theme
+    Display._theme = null;
+  });
+
+  it("should trigger dispatchEvent when toTransparent(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_32';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toTransparent(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+  
+  it("should trigger dispatchEvent when toBlack(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_33';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toBlack(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+
+  it("should trigger dispatchEvent when toTheme(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_34';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toTheme(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+
+  it("should trigger dispatchEvent when show(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_35';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.show(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
 });
 
 describe("Display.alert", function () {
@@ -325,6 +472,48 @@ describe("Display.showAlert", function () {
     });
   });
 
+  it("should change fontFace to 'sans-serif' if no font face is provided", function () {
+    spyOn(window, "_createStyle");
+    Display.showAlert("Test Display.showAlert - fontFace fix", {
+      "location": 1,
+      "fontFace": "",
+      "fontSize": 40,
+      "fontColor": "#ffffff",
+      "backgroundColor": "#660000",
+      "timeout": 5,
+      "repeat": 1,
+      "scroll": true
+    });
+
+    expect(_createStyle).toHaveBeenCalledWith("#alert-background.settings", {
+      backgroundColor: settings["backgroundColor"],
+      fontFamily: "sans-serif",
+      fontSize: settings["fontSize"] + 'pt',
+      color: settings["fontColor"]
+    });
+  });
+
+  it("should change fontFace to 'sans-serif' if 'Sans Serif' is provided", function () {
+    spyOn(window, "_createStyle");
+    Display.showAlert("Test Display.showAlert - fontFace fix", {
+      "location": 1,
+      "fontFace": "Sans Serif",
+      "fontSize": 40,
+      "fontColor": "#ffffff",
+      "backgroundColor": "#660000",
+      "timeout": 5,
+      "repeat": 1,
+      "scroll": true
+    });
+
+    expect(_createStyle).toHaveBeenCalledWith("#alert-background.settings", {
+      backgroundColor: settings["backgroundColor"],
+      fontFamily: "sans-serif",
+      fontSize: settings["fontSize"] + 'pt',
+      color: settings["fontColor"]
+    });
+  });
+
   it("should set the alert state to AlertState.Displaying", function () {
     Display.showAlert("Test Display.showAlert - state", settings);
 
@@ -336,8 +525,8 @@ describe("Display.showAlert", function () {
 
     expect($("#alert-background")[0].classList.contains("hide")).toEqual(false);
     expect($("#alert-background")[0].classList.contains("show")).toEqual(true);
-    //expect($("#alert-text")[0].classList.contains("hide")).toEqual(false);
-    //expect($("#alert-text")[0].classList.contains("show")).toEqual(true);
+    expect($("#alert-text")[0].classList.contains("hide")).toEqual(false);
+    expect($("#alert-text")[0].classList.contains("show")).toEqual(true);
   });
 });
 
@@ -568,6 +757,16 @@ describe("Display.setTextSlide", function () {
     expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
     expect(Display.reinit).toHaveBeenCalledTimes(1); // only called once for the first setTextSlide
   });
+
+  it("should give the new slide the future class", function () {
+    var text = "That saved a wretch\nlike me";
+    spyOn(Display, "reinit");
+    Display.setTextSlide("Amazing grace,\nhow sweet the sound");
+
+    Display.setTextSlide(text);
+
+    expect($(".slides > section > section")[0].classList.contains("future")).toEqual(true);
+  });
 });
 
 describe("Display.setTextSlides", function () {
@@ -630,8 +829,7 @@ describe("Display.setTextSlides", function () {
     Display.setTextSlides(slides);
 
     const slidesDiv = $(".text-slides")[0];
-    expect(slidesDiv.style['-webkit-text-stroke']).toEqual('42pt red');
-    expect(slidesDiv.style['-webkit-text-fill-color']).toEqual('yellow');
+    expect(slidesDiv.style['text-shadow']).toEqual(_buildTextOutline(42, 'red').join(', '));
   })
 
   it("should correctly set text alignment,\
@@ -762,9 +960,9 @@ describe("Display.setImageSlides", function () {
     expect($(".slides > section > section").length).toEqual(2);
     expect($(".slides > section > section > img").length).toEqual(2);
     expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
-    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
     expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
-    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("max-width: 100%; max-height: 100%; margin: 0; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);")
+    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
   });
 });
@@ -782,7 +980,7 @@ describe("Display.setBackgroundImage and Display.resetTheme", function () {
     spyOn(Reveal, "sync");
     spyOn(Reveal, "slide");
 
-    Display.setBackgroundImage("#fff", "/file/path");
+    Display.setBackgroundImage("/file/path");
 
     expect($(".slides > section")[0].getAttribute("data-background")).toEqual("url('/file/path')");
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
@@ -948,193 +1146,5 @@ describe("Display.toggleVideoMute", function () {
     mockVideo.muted = true;
     Display.toggleVideoMute();
     expect(mockVideo.muted).toEqual(false);
-  });
-});
-
-describe("AudioPlayer", function () {
-  var audioPlayer, audioElement;
-
-  beforeEach(function () {
-    audioElement = {
-      _eventListeners: {},
-      _playing: false,
-      _paused: false,
-      _stopped: false,
-      src: "",
-      addEventListener: function (eventType, listener) {
-        this._eventListeners[eventType] = this._eventListeners[eventType] || [];
-        this._eventListeners[eventType].push(listener);
-      },
-      play: function () {
-        this._playing = true;
-        this._paused = false;
-        this._stopped = false;
-      },
-      pause: function () {
-        this._playing = false;
-        this._paused = true;
-        this._stopped = false;
-      }
-    };
-    spyOn(document, "createElement").and.returnValue(audioElement);
-    audioPlayer = new AudioPlayer();
-  });
-
-  it("should create an object", function () {
-    expect(audioPlayer).toBeDefined();
-    expect(audioPlayer._audioElement).not.toBeNull();
-    expect(audioPlayer._eventListeners).toEqual({});
-    expect(audioPlayer._playlist).toEqual([]);
-    expect(audioPlayer._currentTrack).toEqual(null);
-    expect(audioPlayer._canRepeat).toEqual(false);
-    expect(audioPlayer._state).toEqual(AudioState.Stopped);
-  });
-
-  it("should call the correct method when _callListener is called", function () {
-    var testCalled = false;
-    function test(event) {
-      testCalled = true;
-    }
-    audioPlayer._eventListeners["test"] = [test];
-    audioPlayer._callListener({"type": "test"});
-    expect(testCalled).toEqual(true);
-  });
-
-  it("should log a warning when _callListener is called for an unknown event", function () {
-    spyOn(console, "warn");
-    audioPlayer._callListener({"type": "test"});
-    expect(console.warn).toHaveBeenCalledWith("Received unknown event \"test\", doing nothing.");
-  });
-
-  it("should add all the correct event listeners", function () {
-    expectedListeners = {
-      "ended": [audioPlayer.onEnded, audioPlayer._callListener],
-      "timeupdate": [audioPlayer._callListener],
-      "volumechange": [audioPlayer._callListener],
-      "durationchange": [audioPlayer._callListener],
-      "loadeddata": [audioPlayer._callListener]
-    };
-    expect(audioElement._eventListeners).toEqual(expectedListeners);
-  });
-
-  it("should add the correct event listener when calling addEventListener", function () {
-    function dummy () {};
-    var expectedListeners = {
-      "test": [dummy]
-    };
-    audioPlayer.addEventListener("test", dummy);
-    expect(audioPlayer._eventListeners).toEqual(expectedListeners);
-  });
-
-  it("should set call nextTrack when the onEnded listener is called", function () {
-    spyOn(audioPlayer, "nextTrack");
-    audioPlayer.onEnded({});
-    expect(audioPlayer.nextTrack).toHaveBeenCalled();
-  });
-
-  it("should set the _canRepeat property when calling setCanRepeat", function () {
-    audioPlayer.setCanRepeat(true);
-    expect(audioPlayer._canRepeat).toEqual(true);
-  });
-
-  it("should clear the playlist when clearTracks is called", function () {
-    audioPlayer._playlist = ["one", "two", "three"];
-    audioPlayer.clearTracks();
-    expect(audioPlayer._playlist).toEqual([]);
-  });
-
-  it("should add a track to the playlist when addTrack is called", function () {
-    audioPlayer._playlist = [];
-    audioPlayer.addTrack("one");
-    expect(audioPlayer._playlist).toEqual(["one"]);
-  });
-
-  it("should move to the first track when canRepeat is true and nextTrack is called", function () {
-    spyOn(audioPlayer, "play");
-    audioPlayer.addTrack("one");
-    audioPlayer.addTrack("two");
-    audioPlayer.setCanRepeat(true);
-    audioPlayer._currentTrack = "two";
-
-    audioPlayer.nextTrack();
-
-    expect(audioPlayer.play).toHaveBeenCalledWith("one");
-  });
-
-  it("should move to the next track when nextTrack is called", function () {
-    spyOn(audioPlayer, "play");
-    audioPlayer.addTrack("one");
-    audioPlayer.addTrack("two");
-    audioPlayer._currentTrack = "one";
-
-    audioPlayer.nextTrack();
-
-    expect(audioPlayer.play).toHaveBeenCalledWith("two");
-  });
-
-  it("should stop when canRepeat is false and nextTrack is called on the last track in the list", function () {
-    spyOn(audioPlayer, "play");
-    spyOn(audioPlayer, "stop");
-    audioPlayer.addTrack("one");
-    audioPlayer.addTrack("two");
-    audioPlayer.setCanRepeat(false);
-    audioPlayer._currentTrack = "two";
-
-    audioPlayer.nextTrack();
-
-    expect(audioPlayer.play).not.toHaveBeenCalled();
-    expect(audioPlayer.stop).toHaveBeenCalled();
-  });
-
-  it("should play the first track when nextTrack is called when no songs are playing", function () {
-    spyOn(audioPlayer, "play");
-    audioPlayer.addTrack("one");
-    audioPlayer.nextTrack();
-    expect(audioPlayer.play).toHaveBeenCalledWith("one");
-  });
-
-  it("should log a warning when nextTrack is called when no songs are in the playlist", function () {
-    spyOn(console, "warn");
-    audioPlayer.nextTrack();
-    expect(console.warn).toHaveBeenCalledWith("No tracks in playlist, doing nothing.");
-  });
-
-  it("should play the track specified when play is called with a filename", function () {
-    audioPlayer.addTrack("one");
-    audioPlayer.play("one");
-
-    expect(audioPlayer._currentTrack).toEqual("one");
-    expect(audioElement._playing).toEqual(true);
-    expect(audioElement.src).toEqual("one");
-    expect(audioPlayer._state).toEqual(AudioState.Playing);
-  });
-
-  it("should continue playing when play is called without a filename and the player is paused", function () {
-    audioPlayer._state = AudioState.Paused;
-    audioPlayer.play();
-
-    expect(audioElement._playing).toEqual(true);
-    expect(audioPlayer._state).toEqual(AudioState.Playing);
-  });
-
-  it("should do nothing when play is called without a filename and the player is not paused", function () {
-    spyOn(console, "warn");
-    audioPlayer._state = AudioState.Playing;
-    audioPlayer.play();
-
-    expect(console.warn).toHaveBeenCalledWith("No track currently paused and no track specified, doing nothing.");
-  });
-
-  it("should pause the current track when pause is called", function () {
-    audioPlayer.pause();
-    expect(audioPlayer._state).toEqual(AudioState.Paused);
-    expect(audioElement._paused).toEqual(true);
-  });
-
-  it("should stop the current track when stop is called", function () {
-    audioPlayer.stop();
-    expect(audioPlayer._state).toEqual(AudioState.Stopped);
-    expect(audioElement._paused).toEqual(true);
-    expect(audioElement.src).toEqual("");
   });
 });

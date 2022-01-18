@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,9 +25,9 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import add_welcome_page
 from openlp.core.ui.icons import UiIcons
@@ -125,6 +125,10 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         self.setModal(True)
         self.setOptions(QtWidgets.QWizard.IndependentPages |
                         QtWidgets.QWizard.NoBackButtonOnStartPage | QtWidgets.QWizard.NoBackButtonOnLastPage)
+        # Set up a help button if the class of this instance has overridden the provide_help method
+        if (self.provide_help.__module__ != __name__):
+            self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+            self.helpRequested.connect(self.provide_help)
         if is_macosx():
             self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
         else:
@@ -277,3 +281,9 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         self.finish_button.setVisible(True)
         self.cancel_button.setVisible(False)
         self.application.process_events()
+
+    def provide_help(self):
+        """
+        Provide help - usually by opening the appropriate page of the openlp manual in the user's browser
+        """
+        pass

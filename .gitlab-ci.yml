@@ -83,8 +83,9 @@ pages:
   stage: deploy
   image: openlp/debian
   script:
+    - fixpaths linux.coverage
+    - fixpaths macos.coverage
     - python3-coverage combine linux.coverage macos.coverage
-    - fixpaths .coverage
     - python3-coverage html
     - mv htmlcov public
     - python3-coverage report

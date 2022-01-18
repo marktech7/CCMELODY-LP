@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -80,8 +80,8 @@ class PlanningCenterTab(SettingsTab):
         )
         self.instructions_label.setText(
             translate('PlanningCenterPlugin.PlanningCenterTab',
-                      """Enter your <b>Planning Center Online</b> <i>Personal Access Token</i> details in the text boxes \
-below.  Personal Access Tokens are created by doing the following:
+                      """Enter your <b>Planning Center Online</b> <i>Personal Access Token</i> details in the text \
+boxes below. Personal Access Tokens are created by doing the following:
 <ol>
   <li>Login to your Planning Center Online account at<br>
       <a href=https://api.planningcenteronline.com/oauth/applications>

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,9 +26,9 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_win
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.widgets.layouts import AspectRatioLayout
@@ -70,6 +70,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
     :param parent:
     :param screen_ratio:
     """
+    resize_event = QtCore.pyqtSignal()
 
     def __init__(self, parent, screen_ratio):
         """
@@ -104,7 +105,9 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         """
         Overloaded method from QTableWidget. Will recalculate the layout.
         """
+        super().resizeEvent(event)
         self.__recalculate_layout()
+        self.resize_event.emit()
 
     def __recalculate_layout(self):
         """
@@ -131,7 +134,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
                         height = min(height, self.auto_row_height)
                 # Apply new height to slides
                 for slide_index in range(len(self.service_item.slides)):
-                    self.setRowHeight(slide_index, height)
+                    self.setRowHeight(slide_index, int(height))
 
     def row_resized(self, row, old_height, new_height):
         """
@@ -236,7 +239,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
                 # First set the height to 1 and then to the right height. This makes the item display correctly.
                 # If this is not done, sometimes the image item is displayed as blank.
                 self.setRowHeight(slide_index, 1)
-                self.setRowHeight(slide_index, slide_height)
+                self.setRowHeight(slide_index, int(slide_height))
         self.setVerticalHeaderLabels(text)
         if self.service_item.is_text():
             self.resizeRowsToContents()

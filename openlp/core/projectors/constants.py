@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -37,8 +37,10 @@ PJLINK_MAX_PACKET = 136
 PJLINK_PREFIX = '%'
 PJLINK_PORT = 4352
 PJLINK_SUFFIX = CR
+PJLINK_SVER_MAX_LEN = 32
 PJLINK_TIMEOUT = 30.0
 PJLINK_TOKEN_SIZE = 8  # PJLINK 1 <token> : where <token> is 8 characters
+PJLINK_VALID_PORTS = range(1000, 32768)
 
 # Error and status codes
 S_OK = E_OK = 0  # E_OK included since I sometimes forget

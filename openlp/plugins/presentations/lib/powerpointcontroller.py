@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,8 +26,9 @@ This module is for controlling powerpoint. PPT API documentation:
 """
 import logging
 
-from openlp.core.common import is_win, trace_error_handler
+from openlp.core.common import trace_error_handler
 from openlp.core.common.i18n import UiStrings
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box, translate
@@ -156,6 +157,16 @@ class PowerpointDocument(PresentationDocument):
             trace_error_handler(log)
             return False
 
+    def check_thumbnails(self):
+        """
+        This is an overwritten method of the method in the PresentationDocument class. It adds a check for content
+        in self.index_map.
+
+        :return: If the thumbnail is valid
+        :rtype: bool
+        """
+        return super().check_thumbnails() and bool(self.index_map)
+
     def create_thumbnails(self):
         """
         Create the thumbnail images for the current presentation.
@@ -169,7 +180,7 @@ class PowerpointDocument(PresentationDocument):
         """
         log.debug('create_thumbnails')
         generate_thumbs = True
-        if self.check_thumbnails():
+        if super().check_thumbnails():
             # No need for thumbnails but we still need the index
             generate_thumbs = False
         key = 1
@@ -206,7 +217,7 @@ class PowerpointDocument(PresentationDocument):
         """
         log.debug('is_loaded')
         try:
-            if self.controller.process.Presentations.Count == 0:
+            if self.presentation is None or self.presentation.FullName != str(self.file_path):
                 return False
         except (AttributeError, pywintypes.com_error):
             log.exception('Caught exception while in is_loaded')
@@ -395,7 +406,7 @@ class PowerpointDocument(PresentationDocument):
             # SlideShowWindow.View.CurrentShowPosition returns 0 when called when a transition is executing (in 2013)
             # So we use SlideShowWindow.View.Slide.SlideIndex unless the state is done (ppSlideShowDone = 5)
             if self.presentation.SlideShowWindow.View.State != 5:
-                ret = self.presentation.SlideShowWindow.View.Slide.SlideNumber
+                ret = self.presentation.SlideShowWindow.View.Slide.SlideIndex
                 # Do reverse lookup in the index_map to find the slide number to return
                 ret = next((key for key, slidenum in self.index_map.items() if slidenum == ret), None)
             else:

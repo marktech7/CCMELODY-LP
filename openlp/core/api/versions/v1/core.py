@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -20,7 +20,6 @@
 ##########################################################################
 from openlp.core.api.lib import old_auth, old_success_response
 from openlp.core.common.registry import Registry
-from openlp.core.lib import image_to_byte
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
 
@@ -55,5 +54,5 @@ def plugin_list():
 
 @core_views.route('/main/image')
 def main_image():
-    img = 'data:image/png;base64,{}'.format(image_to_byte(Registry().get('live_controller').grab_maindisplay()))
+    img = 'data:image/jpeg;base64,{}'.format(Registry().get('live_controller').grab_maindisplay())
     return jsonify({'slide_image': img})

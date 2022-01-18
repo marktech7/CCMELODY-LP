@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,6 +28,7 @@ modules, simply run this script::
     $ ./check_dependencies.py
 
 """
+import importlib
 import os
 import sys
 from distutils.version import LooseVersion
@@ -57,7 +58,6 @@ LINUX_MODULES = [
     # Optical drive detection.
     'dbus',
     'distro',
-    'Xlib',
 ]
 
 MACOSX_MODULES = [
@@ -76,7 +76,7 @@ MODULES = [
     'PyQt5.QtOpenGL',
     'PyQt5.QtSvg',
     'PyQt5.QtTest',
-    'PyQt5.QtWebEngineWidgets',
+    ('PyQt5.QtWebEngineWidgets', '(PyQtWebEngine on PyPI)'),
     'PyQt5.QtMultimedia',
     'appdirs',
     'sqlalchemy',
@@ -94,7 +94,9 @@ MODULES = [
     'qtawesome',
     'pymediainfo',
     'vlc',
-    'zeroconf'
+    'zeroconf',
+    'qrcode',
+    'PIL.ImageQt'
 ]
 
 
@@ -104,13 +106,12 @@ OPTIONAL_MODULES = [
     ('pyodbc', '(ODBC support)'),
     ('psycopg2', '(PostgreSQL support)'),
     ('enchant', '(spell checker)'),
-    ('fitz', '(executable-independent PDF support)'),
+    ('fitz', '(PyMuPDF - PDF support)'),
     ('pysword', '(import SWORD bibles)'),
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
-    ('jenkins', '(access jenkins api)'),
     ('pytest', '(testing framework)'),
-    ('pytest-qt', '(testing framework)'),
+    ('pytestqt', '(PyQt testing framework - pytest-qt on PyPI)'),
     ('flake8', '(linter)')
 ]
 
@@ -160,7 +161,7 @@ def check_module(mod, text='', indent='  '):
     space = (31 - len(mod) - len(text)) * ' '
     w(indent + '%s %s...  ' % (mod, text) + space)
     try:
-        __import__(mod)
+        importlib.import_module(mod)
         w('OK')
     except ImportError:
         w('FAIL')
@@ -239,7 +240,10 @@ def main():
     verify_python()
     print('Checking for modules...')
     for m in MODULES:
-        check_module(m)
+        if isinstance(m, (tuple, list)):
+            check_module(m[0], text=m[1])
+        else:
+            check_module(m)
     print('Checking for optional modules...')
     for m in OPTIONAL_MODULES:
         check_module(m[0], text=m[1])

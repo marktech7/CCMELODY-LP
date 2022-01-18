@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -60,6 +60,7 @@ class StreamSelectorForm(StreamSelectorFormBase, Ui_StreamSelector):
         for i in range(self.stacked_modes_layout.count()):
             if self.stacked_modes_layout.widget(i).has_support_for_mrl(mrl, options):
                 self.stacked_modes_layout.setCurrentIndex(i)
+                self.capture_mode_combo_box.setCurrentIndex(i)
                 self.stacked_modes_layout.widget(i).set_mrl(mrl, options)
                 break
         cache = re.search(r'live-caching=(\d+)', options)

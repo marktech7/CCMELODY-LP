@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,7 +35,8 @@ TEST_HASH = '5d8409bc1c3fa39749434aa3a5c38682'
 
 TEST_CONNECT_AUTHENTICATE = 'PJLink 1 {salt}'.format(salt=TEST_SALT)
 
-TEST1_DATA = dict(ip='111.111.111.111',
+TEST1_DATA = dict(id=1,
+                  ip='111.111.111.111',
                   port='1111',
                   pin='1111',
                   name='___TEST_ONE___',
@@ -47,7 +48,8 @@ TEST1_DATA = dict(ip='111.111.111.111',
                   model_lamp='Lamp type 1',
                   mac_adx='11:11:11:11:11:11')
 
-TEST2_DATA = dict(ip='222.222.222.222',
+TEST2_DATA = dict(id=2,
+                  ip='222.222.222.222',
                   port='2222',
                   pin='2222',
                   name='___TEST_TWO___',
@@ -59,7 +61,8 @@ TEST2_DATA = dict(ip='222.222.222.222',
                   model_lamp='Lamp type 2',
                   mac_adx='22:22:22:22:22:22')
 
-TEST3_DATA = dict(ip='333.333.333.333',
+TEST3_DATA = dict(id=3,
+                  ip='333.333.333.333',
                   port='3333',
                   pin='3333',
                   name='___TEST_THREE___',

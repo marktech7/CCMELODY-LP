@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -19,66 +19,39 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import logging
-import os
-import urllib.request
-from pathlib import Path
 
 from openlp.core.api.lib import login_required
 from openlp.core.common import ThemeLevel
 from openlp.core.common.registry import Registry
-from openlp.core.common.applocation import AppLocation
-from openlp.core.lib import create_thumb
-from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.lib import image_to_data_uri
 
-from flask import jsonify, request, abort, Blueprint
+from flask import jsonify, request, abort, Blueprint, Response
 
 controller_views = Blueprint('controller', __name__)
 log = logging.getLogger(__name__)
 
 
+@controller_views.route('/live-items')
+def controller_live_items():
+    log.debug('controller-v2-live-items')
+    live_controller = Registry().get('live_controller')
+    current_item = live_controller.service_item
+    live_item = {}
+    if current_item:
+        live_item = current_item.to_dict()
+        live_item['slides'][live_controller.selected_row]['selected'] = True
+    return jsonify(live_item)
+
+
 @controller_views.route('/live-item')
-def controller_text_api():
+def controller_live_item():
     log.debug('controller-v2-live-item')
     live_controller = Registry().get('live_controller')
     current_item = live_controller.service_item
-    data = []
+    live_item = {}
     if current_item:
-        for index, frame in enumerate(current_item.get_frames()):
-            item = {}
-            item['tag'] = index + 1
-            item['selected'] = live_controller.selected_row == index
-            item['title'] = current_item.title
-            if current_item.is_text():
-                if frame['verse']:
-                    item['tag'] = str(frame['verse'])
-                item['text'] = frame['text']
-                item['html'] = current_item.rendered_slides[index]['text']
-                item['chords'] = current_item.rendered_slides[index]['chords']
-            elif current_item.is_image() and not frame.get('image', '') and \
-                    Registry().get('settings_thread').value('api/thumbnails'):
-                thumbnail_path = os.path.join('images', 'thumbnails', frame['title'])
-                full_thumbnail_path = AppLocation.get_data_path() / thumbnail_path
-                if not full_thumbnail_path.exists():
-                    create_thumb(Path(current_item.get_frame_path(index)), full_thumbnail_path, False)
-                item['img'] = urllib.request.pathname2url(os.path.sep + str(thumbnail_path))
-                item['text'] = str(frame['title'])
-                item['html'] = str(frame['title'])
-            else:
-                # presentations and other things
-                if current_item.is_capable(ItemCapabilities.HasDisplayTitle):
-                    item['title'] = str(frame['display_title'])
-                if current_item.is_capable(ItemCapabilities.HasNotes):
-                    item['slide_notes'] = str(frame['notes'])
-                if current_item.is_capable(ItemCapabilities.HasThumbnails) and \
-                        Registry().get('settings_thread').value('api/thumbnails'):
-                    # If the file is under our app directory tree send the portion after the match
-                    data_path = str(AppLocation.get_data_path())
-                    if frame['image'][0:len(data_path)] == data_path:
-                        item['img'] = urllib.request.pathname2url(frame['image'][len(data_path):])
-                item['text'] = str(frame['title'])
-                item['html'] = str(frame['title'])
-            data.append(item)
-    return jsonify(data)
+        live_item = current_item.to_dict(True, live_controller.selected_row)
+    return jsonify(live_item)
 
 
 @controller_views.route('/show', methods=['POST'])
@@ -142,22 +115,22 @@ def set_theme_level():
         abort(400)
     if theme_level == 'global':
         Registry().get('settings').setValue('themes/theme level', 1)
-        Registry().execute('theme_update_global')
     elif theme_level == 'service':
         Registry().get('settings').setValue('themes/theme level', 2)
-        Registry().execute('theme_update_service')
     elif theme_level == 'song':
         Registry().get('settings').setValue('themes/theme level', 3)
-        Registry().execute('theme_update_global')
     else:
         log.error('Unsupported data passed ' + theme_level)
         abort(400)
+    Registry().get('theme_manager').theme_level_updated.emit()
     return '', 204
 
 
 @controller_views.route('/themes', methods=['GET'])
-@login_required
 def get_themes():
+    """
+    Gets a list of all existing themes
+    """
     log.debug('controller-v2-themes-get')
     theme_level = Registry().get('settings').value('themes/theme level')
     theme_list = []
@@ -170,9 +143,14 @@ def get_themes():
     themes = Registry().execute('get_theme_names')
     try:
         for theme in themes[0]:
+            # Gets the background path, get the thumbnail from it, and encode it to a base64 data uri
+            theme_path = Registry().get('theme_manager').theme_path
+            encoded_thumb = image_to_data_uri(theme_path / 'thumbnails' / '{file_name}.png'.format(file_name=theme))
+            # Append the theme to the list
             theme_list.append({
                 'name': theme,
-                'selected': False
+                'selected': False,
+                'thumbnail': encoded_thumb
             })
         for i in theme_list:
             if i["name"] == current_theme:
@@ -183,11 +161,39 @@ def get_themes():
     return jsonify(theme_list)
 
 
+@controller_views.route('/themes/<theme_name>', methods=['GET'])
+def get_theme_data(theme_name):
+    """
+    Get a theme's data
+    """
+    log.debug(f'controller-v2-theme-data-get {theme_name}')
+    themes = Registry().execute('get_theme_names')[0]
+    if theme_name not in themes:
+        log.error('Requested non-existent theme')
+        abort(404)
+    theme_data = Registry().get('theme_manager').get_theme_data(theme_name).export_theme_self_contained(True)
+    return Response(theme_data, mimetype='application/json')
+
+
+@controller_views.route('/live-theme', methods=['GET'])
+def get_live_theme_data():
+    """
+    Get the live theme's data
+    """
+    log.debug('controller-v2-live-theme-data-get')
+    live_service_item = Registry().get('live_controller').service_item
+    if live_service_item:
+        theme_data = live_service_item.get_theme_data()
+    else:
+        theme_data = Registry().get('theme_manager').get_theme_data(None)
+    self_contained_theme = theme_data.export_theme_self_contained(True)
+    return Response(self_contained_theme, mimetype='application/json')
+
+
 @controller_views.route('/theme', methods=['GET'])
-@login_required
 def get_theme():
     """
-    Get the current theme
+    Get the current theme name
     """
     log.debug('controller-v2-theme-get')
     theme_level = Registry().get('settings').value('themes/theme level')
@@ -215,10 +221,10 @@ def set_theme():
         abort(400)
     if theme_level == ThemeLevel.Global:
         Registry().get('settings').setValue('themes/global theme', theme)
-        Registry().execute('theme_update_global')
+        Registry().get('theme_manager').theme_update_global.emit()
     elif theme_level == ThemeLevel.Service:
         Registry().get('settings').setValue('servicemanager/service theme', theme)
-        Registry().execute('theme_update_service')
+        Registry().get('service_manager').theme_update_service.emit()
     elif theme_level == ThemeLevel.Song:
         log.error('Unimplemented method')
         return '', 501

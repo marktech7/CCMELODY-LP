@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,7 +38,7 @@ class Ui_SettingsDialog(object):
         """
         settings_dialog.setObjectName('settings_dialog')
         settings_dialog.setWindowIcon(UiIcons().main_icon)
-        settings_dialog.resize(920, 625)
+        settings_dialog.resize(900, 500)
         self.dialog_layout = QtWidgets.QGridLayout(settings_dialog)
         self.dialog_layout.setObjectName('dialog_layout')
         self.dialog_layout.setContentsMargins(8, 8, 8, 8)
@@ -51,7 +51,7 @@ class Ui_SettingsDialog(object):
         self.stacked_layout = QtWidgets.QStackedLayout()
         self.stacked_layout.setObjectName('stacked_layout')
         self.dialog_layout.addLayout(self.stacked_layout, 0, 1, 1, 1)
-        self.button_box = create_button_box(settings_dialog, 'button_box', ['cancel', 'ok'])
+        self.button_box = create_button_box(settings_dialog, 'button_box', ['cancel', 'ok', 'help'])
         self.dialog_layout.addWidget(self.button_box, 1, 1, 1, 1)
         self.retranslate_ui(settings_dialog)
 

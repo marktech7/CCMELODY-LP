@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,13 +22,14 @@
 import logging
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import delete_file, get_images_filter, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
+from openlp.core.common.enum import ImageThemeMode
 from openlp.core.lib import ServiceItemContext, build_icon, check_item_selected, create_thumb, validate_thumb
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.plugin import StringContent
@@ -96,7 +97,7 @@ class ImageMediaItem(MediaManagerItem):
         """
         Set which icons the media manager tab should show.
         """
-        MediaManagerItem.required_icons(self)
+        super().required_icons()
         self.has_file_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False
@@ -187,7 +188,7 @@ class ImageMediaItem(MediaManagerItem):
         create_widget_action(self.list_view, separator=True)
         create_widget_action(
             self.list_view,
-            text=UiStrings().AddGroup, icon=UiIcons().group, triggers=self.on_add_group_click)
+            text=UiStrings().AddGroup, icon=UiIcons().folder, triggers=self.on_add_group_click)
         create_widget_action(
             self.list_view,
             text=translate('ImagePlugin', 'Add new image(s)'),
@@ -204,7 +205,7 @@ class ImageMediaItem(MediaManagerItem):
         Add custom buttons to the start of the toolbar.
         """
         self.add_group_action = self.toolbar.add_toolbar_action('add_group_action',
-                                                                icon=UiIcons().group,
+                                                                icon=UiIcons().folder,
                                                                 triggers=self.on_add_group_click)
 
     def add_end_header_bar(self):
@@ -286,7 +287,7 @@ class ImageMediaItem(MediaManagerItem):
         """
         image_groups = self.manager.get_all_objects(ImageGroups, ImageGroups.parent_id == parent_group_id)
         image_groups.sort(key=lambda group_object: get_natural_key(group_object.group_name))
-        folder_icon = UiIcons().group
+        folder_icon = UiIcons().folder
         for image_group in image_groups:
             group = QtWidgets.QTreeWidgetItem()
             group.setText(0, image_group.group_name)
@@ -571,10 +572,15 @@ class ImageMediaItem(MediaManagerItem):
         service_item.add_capability(ItemCapabilities.CanAppend)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         service_item.add_capability(ItemCapabilities.HasThumbnails)
-        # force a nonexistent theme
-        service_item.theme = -1
+        service_item.add_capability(ItemCapabilities.ProvidesOwnTheme)
+        if self.settings.value('images/background mode') == ImageThemeMode.CustomTheme:
+            service_item.theme = self.settings.value('images/theme')
+        else:
+            # force a nonexistent theme
+            service_item.theme = -1
         missing_items_file_names = []
         images = []
+        existing_images = []
         # Expand groups to images
         for bitem in items:
             if isinstance(bitem.data(0, QtCore.Qt.UserRole), ImageGroups) or bitem.data(0, QtCore.Qt.UserRole) is None:
@@ -590,8 +596,10 @@ class ImageMediaItem(MediaManagerItem):
         for image in images:
             if not image.file_path.exists():
                 missing_items_file_names.append(str(image.file_path))
+            else:
+                existing_images.append(image)
         # We cannot continue, as all images do not exist.
-        if not images:
+        if not existing_images:
             if not remote:
                 critical_error_message_box(
                     translate('ImagePlugin.MediaItem', 'Missing Image(s)'),
@@ -607,7 +615,7 @@ class ImageMediaItem(MediaManagerItem):
                 QtWidgets.QMessageBox.No:
             return False
         # Continue with the existing images.
-        for image in images:
+        for image in existing_images:
             name = image.file_path.name
             thumbnail_path = self.generate_thumbnail_path(image)
             service_item.add_from_image(image.file_path, name, thumbnail_path)
@@ -679,14 +687,13 @@ class ImageMediaItem(MediaManagerItem):
         if check_item_selected(
                 self.list_view,
                 translate('ImagePlugin.MediaItem', 'You must select an image to replace the background with.')):
-            background = QtGui.QColor(self.settings.value('images/background color'))
             bitem = self.list_view.selectedItems()[0]
             if not isinstance(bitem.data(0, QtCore.Qt.UserRole), ImageFilenames):
                 # Only continue when an image is selected.
                 return
             file_path = bitem.data(0, QtCore.Qt.UserRole).file_path
             if file_path.exists():
-                self.live_controller.set_background_image(background, file_path)
+                self.live_controller.set_background_image(file_path)
                 self.reset_action.setVisible(True)
                 self.reset_action_context.setVisible(True)
             else:

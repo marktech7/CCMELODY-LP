@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,9 +30,9 @@ import urllib.request
 from pathlib import Path
 from tempfile import gettempdir
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
-from openlp.core.api.deploy import get_latest_size, download_and_check
+from openlp.core.api.deploy import get_latest_size, download_and_install
 from openlp.core.common import trace_error_handler
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import DownloadWorker, download_file, get_url_file_size, get_web_page
@@ -100,7 +100,8 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Create and set up the first time wizard.
         """
-        super(FirstTimeForm, self).__init__(parent)
+        super(FirstTimeForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                                            QtCore.Qt.WindowCloseButtonHint)
         self.has_web_access = True
         self.web = ''
         self.is_index_downloaded = False
@@ -109,6 +110,14 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.themes_list_widget.itemSelectionChanged.connect(self.on_themes_list_widget_selection_changed)
         self.themes_deselect_all_button.clicked.connect(self.themes_list_widget.clearSelection)
         self.themes_select_all_button.clicked.connect(self.themes_list_widget.selectAll)
+        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.helpRequested.connect(self.provide_help)
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/wizard.html"))
 
     def get_next_page_id(self):
         """
@@ -186,7 +195,6 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.has_web_access = True
         self.application.process_events()
         self.downloading = translate('OpenLP.FirstTimeWizard', 'Downloading {name}...')
-        self.application.set_normal_cursor()
         self.is_index_downloaded = True
 
     def _parse_config(self, web_config):
@@ -246,7 +254,11 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             self.presentation_check_box.setChecked(
                 self.plugin_manager.get_plugin_by_name('presentations').is_active())
             self.image_check_box.setChecked(self.plugin_manager.get_plugin_by_name('images').is_active())
-            self.media_check_box.setChecked(self.plugin_manager.get_plugin_by_name('media').is_active())
+            # temp fix for #677 when we have an error
+            try:
+                self.media_check_box.setChecked(self.plugin_manager.get_plugin_by_name('media').is_active())
+            except Exception:
+                self.media_check_box.setEnabled(False)
             self.custom_check_box.setChecked(self.plugin_manager.get_plugin_by_name('custom').is_active())
             self.song_usage_check_box.setChecked(self.plugin_manager.get_plugin_by_name('songusage').is_active())
             self.alert_check_box.setChecked(self.plugin_manager.get_plugin_by_name('alerts').is_active())
@@ -326,6 +338,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         # Was the thread created.
         if self.thumbnail_download_threads:
             while any([not is_thread_finished(thread_name) for thread_name in self.thumbnail_download_threads]):
+                self.application.process_events()
                 time.sleep(0.1)
         self.application.set_normal_cursor()
         Registry().remove_function('config_screen_changed', self.screen_selection_widget.load)
@@ -526,7 +539,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         if self.remote_page.can_download_remote:
             self._increment_progress_bar(self.downloading.format(name='Web Remote'), 0)
             self.previous_size = 0
-            remote_version = download_and_check(self, can_update_range=False)
+            remote_version = download_and_install(self, can_update_range=False)
             if remote_version:
                 self.settings.setValue('api/download version', remote_version)
             else:

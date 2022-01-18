@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -31,7 +31,7 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
-from openlp.core.lib import get_text_file_string, image_to_byte
+from openlp.core.lib import get_text_file_string
 from openlp.core.ui.printservicedialog import Ui_PrintServiceDialog, ZoomSize
 
 
@@ -207,8 +207,6 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         div = self._add_element('div', class_id='item', parent=body)
         # Add the title of the service item.
         item_title = self._add_element('h2', parent=div, class_id='itemTitle')
-        img = image_to_byte(item.icon.pixmap(20, 20).toImage())
-        self._add_element('img', parent=item_title, attribute=('src', 'data:image/png;base64, ' + img))
         self._add_element('span', '&nbsp;' + html.escape(item.get_display_title()), item_title)
         if self.slide_text_check_box.isChecked():
             # Add the text of the service item.

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,16 +24,20 @@ from openlp.core.common.mixins import RegistryProperties
 class Poller(RegistryProperties):
     """
     Accessed by the web layer to get status type information from the application
+
+    WARNING:
+    This class is DEPRECATED, if you need the state of the program, use the registry to access variables.
+    Used only for the deprecated V1 HTTP API.
     """
     def __init__(self):
         """
         Constructor for the poll builder class.
         """
         super(Poller, self).__init__()
-        self.previous = {}
 
-    def raw_poll(self):
-        return {
+    def poll(self):
+        return {'results': {
+            'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
             'slide': self.live_controller.selected_row or 0,
             'item': self.live_controller.service_item.unique_identifier if self.live_controller.service_item else '',
@@ -44,21 +48,4 @@ class Poller(RegistryProperties):
             'version': 3,
             'isSecure': self.settings.value('api/authentication enabled'),
             'chordNotation': self.settings.value('songs/chord notation')
-        }
-
-    def poll(self):
-        """
-        Poll OpenLP to determine current state if it has changed.
-        """
-        current = self.raw_poll()
-        if self.previous != current:
-            self.previous = current
-            return {'results': current}
-        else:
-            return None
-
-    def poll_first_time(self):
-        """
-        Poll OpenLP to determine the current state.
-        """
-        return {'results': self.raw_poll()}
+        }}

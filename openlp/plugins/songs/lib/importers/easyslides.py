@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -51,18 +51,18 @@ class EasySlidesImport(SongImport):
         parser = etree.XMLParser(remove_blank_text=True, recover=True)
         try:
             with self.import_source.open('r') as xml_file:
-                parsed_file = etree.parse(str(self.import_source), parser)
+                parsed_file = etree.parse(xml_file, parser)
         except etree.XMLSyntaxError:
-            log.exception('XML syntax error in file {name}'.format(name=xml_file))
+            log.exception('XML syntax error in file {name}'.format(name=self.import_source))
             self.log_error(self.import_source, SongStrings.XMLSyntaxError)
             return
         except UnicodeDecodeError:
-            log.exception('Unreadable characters in {name}'.format(name=xml_file))
+            log.exception('Unreadable characters in {name}'.format(name=self.import_source))
             self.log_error(self.import_source, SongStrings.XMLSyntaxError)
             return
         file_str = etree.tostring(parsed_file)
         if not file_str:
-            log.exception('Could not find XML in file {name}'.format(name=xml_file))
+            log.exception('Could not find XML in file {name}'.format(name=self.import_source))
             self.log_error(self.import_source, SongStrings.XMLSyntaxError)
             return
         xml = file_str.decode()

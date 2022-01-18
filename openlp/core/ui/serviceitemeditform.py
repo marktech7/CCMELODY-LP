@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -59,11 +59,12 @@ class ServiceItemEditForm(QtWidgets.QDialog, Ui_ServiceItemEditDialog, RegistryP
         Get the modified service item.
         """
         if self.data:
+            # self.data is only true for images
             self.item.slides = []
-            if self.item.is_image():
-                for item in self.item_list:
-                    self.item.add_from_image(item['path'], item['title'])
-            self.item.render()
+            for item in self.item_list:
+                thumb = item.get('thumbnail', None)
+                file_hash = item.get('file_hash', None)
+                self.item.add_from_image(item['path'], item['title'], thumb, file_hash)
         return self.item
 
     def load_data(self):

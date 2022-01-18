@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -62,6 +62,12 @@ class ImagePlugin(Plugin):
                                'selected image as a background instead of the background '
                                'provided by the theme.')
         return about_text
+
+    def check_pre_conditions(self):
+        """
+        Check the plugin can run.
+        """
+        return self.manager.session is not None
 
     def set_plugin_text_strings(self):
         """

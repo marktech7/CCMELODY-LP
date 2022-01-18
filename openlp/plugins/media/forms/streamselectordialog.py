@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,8 +32,8 @@ import re
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
-from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.plugins.media.forms import VLCOptionsWidget
 
 # Copied from VLC source code: modules/access/v4l2/v4l2.c
@@ -386,7 +386,7 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
                     break
         freq = re.search(r'frequency=(\d+)000', main)
         if freq:
-            self.freq.setValue(int(freq.group(1)))
+            self.dvb_freq.setValue(int(freq.group(1)))
         modulation = re.search(r'modulation=([\w-]+)', main)
         if modulation and system:
             if system.group(1) in ['dvb-c', 'cqam']:
@@ -529,7 +529,7 @@ class JackAudioKitWidget(CaptureModeWidget):
             options += ' :jack-input-auto-connect'
         self.callback(main_file, options)
 
-    def has_support_for_mrl(self, mrl):
+    def has_support_for_mrl(self, mrl, options):
         return mrl.startswith('jack')
 
     def set_mrl(self, main, options):
@@ -584,7 +584,7 @@ https://github.com/videolan/vlc/blob/13e18f3182e2a7b425411ce70ed83161108c3d1f/mo
         # options = 'input-slave=qtsound://{adev}'.format(adev=adev)
         self.callback(main_file, '')
 
-    def has_support_for_mrl(self, mrl):
+    def has_support_for_mrl(self, mrl, options):
         return mrl.startswith('avcapture')
 
     def set_mrl(self, main, options):
@@ -632,17 +632,20 @@ class CaptureVideoDirectShowWidget(CaptureVideoQtDetectWidget):
             options += ':dshow-size={vsize}'.format(vsize=vsize)
         self.callback(main_file, options)
 
-    def has_support_for_mrl(self, mrl):
+    def has_support_for_mrl(self, mrl, options):
         return mrl.startswith('dshow')
 
     def set_mrl(self, main, options):
-        vdev = re.search(r'"dshow-vdev=(.+)"', main)
+        vsize = re.search(r'dshow-size=(\d+)', options)
+        vdev = re.search(r'"dshow-vdev=(.+)"', options)
         if vdev:
             for i in range(self.video_devices_combo_box.count()):
                 if self.video_devices_combo_box.itemText(i) == vdev.group(1):
                     self.video_devices_combo_box.setCurrentIndex(i)
+                    if vsize:
+                        self.video_size_lineedit.setText(vsize.group(1))
                     break
-        adev = re.search(r'"dshow-adev=(.+)"', main)
+        adev = re.search(r'"dshow-adev=(.+)"', options)
         if adev:
             for i in range(self.audio_devices_combo_box.count()):
                 if self.audio_devices_combo_box.itemText(i) == adev.group(1):

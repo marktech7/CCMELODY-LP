@@ -2,67 +2,125 @@ version: OpenLP-win-ci-b{build}
 
 cache:
   - '%LOCALAPPDATA%\pip\Cache'
+  -  /Users/appveyor/Libraries/Caches/pip
 
-image:
-  - Visual Studio 2017
+stack: python 3.8
 
 environment:
   matrix:
-    - PYTHON: C:\\Python37-x64
-      CHOCO_VLC: vlc
-    - PYTHON: C:\\Python37
-      CHOCO_VLC: vlc --forcex86
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      PY_DIR: C:\\Python38-x64
+      CHOCO_VLC_ARG:
+      FORCE_PACKAGING: 0
+      FORCE_PACKAGING_MANUAL: 0
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
+      PY_DIR: C:\\Python38
+      CHOCO_VLC_ARG: --forcex86
+      FORCE_PACKAGING: 0
+      FORCE_PACKAGING_MANUAL: 0
+    - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
+      QT_QPA_PLATFORM: offscreen
+      FORCE_PACKAGING: 0
+      FORCE_PACKAGING_MANUAL: 0
+
+init:
+  - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
 
 install:
-  # Install dependencies from pypi
-  - "%PYTHON%\\python.exe -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock pyodbc psycopg2 pypiwin32 websockets asyncio waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF==1.16.7 QDarkStyle python-vlc Pyro4 zeroconf flask-cors pytest-qt pyenchant"
+  # Update pip
+  - python -m pip install --upgrade pip
+  # Install generic dependencies from pypi
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword qrcode pillow
+  # Install Windows only dependencies
+  - cmd: python -m pip install pyodbc pypiwin32
+  # Mac only dependencies
+  - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
 
 build: off
 
 test_script:
-  - cd %APPVEYOR_BUILD_FOLDER%
-  # Run the tests
-  - "%PYTHON%\\python.exe -m pytest tests"
-  # Go back to the user root folder
-  - cd..
+  - ps: >-
+      If (($env:APPVEYOR_REPO_TAG -eq $False)) {
+        cd $env:APPVEYOR_BUILD_FOLDER
+        # Run the tests
+        python -m pytest tests
+        # Go back to the user root folder
+        cd ..
+      }
 
 after_test:
   # Only package on the master repo
   - ps: >-
-      If ($env:APPVEYOR_PULL_REQUEST_HEAD_REPO_NAME -eq "") {
+      If (($env:APPVEYOR_REPO_TAG -eq $True) -Or ($env:APPVEYOR_SCHEDULED_BUILD -eq $True) -Or ($env:FORCE_PACKAGING -eq 1)) {
+          # Continue on error
+          $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
-          # Install PyInstaller 
-          &"$env:PYTHON\python.exe" -m pip install pyinstaller
-          # Disabled portable installers - can't figure out how to make them silent
-          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
-          # - PortableApps.comInstaller_3.4.4.paf.exe /S
-          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Launcher/PortableApps.comLauncher_2.2.1.paf.exe
-          # - PortableApps.comLauncher_2.2.1.paf.exe /S
-          # - curl -L -O http://downloads.sourceforge.net/project/portableapps/NSIS%20Portable/NSISPortable_3.0_English.paf.exe
-          # - NSISPortable_3.0_English.paf.exe /S
-          # Download and unpack portable-bundle
-          appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
-          7z x portable-setup.7z
-          # Install VLC
-          choco install %CHOCO_VLC%
+          # Install PyInstaller
+          python -m pip install --no-warn-script-location pyinstaller
+          # Some windows only stuff...
+          If ($isWindows) {
+            # Disabled portable installers - can't figure out how to make them silent
+            # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Installer/PortableApps.comInstaller_3.4.4.paf.exe
+            # - PortableApps.comInstaller_3.4.4.paf.exe /S
+            # - curl -L -O http://downloads.sourceforge.net/project/portableapps/PortableApps.com%20Launcher/PortableApps.comLauncher_2.2.1.paf.exe
+            # - PortableApps.comLauncher_2.2.1.paf.exe /S
+            # - curl -L -O http://downloads.sourceforge.net/project/portableapps/NSIS%20Portable/NSISPortable_3.0_English.paf.exe
+            # - NSISPortable_3.0_English.paf.exe /S
+            # Download and unpack portable-bundle
+            appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
+            7z x portable-setup.7z
+            # Install VLC - Windows only
+            choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
+            # Install HTML Help Workshop - Windows only
+            choco install html-help-workshop --no-progress --limit-output
+          }
+          else
+          {
+            # Install Mac only stuff
+            # install dmgbuild tool
+            python -m pip install --no-warn-script-location dmgbuild
+            # use brew to build enchant, needed for pyenchant
+            # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
+            $env:HOMEBREW_FORCE_BREWED_CURL=1
+            # Skip auto updating
+            $env:HOMEBREW_NO_AUTO_UPDATE=1
+            brew install enchant
+          }
           # Get the packaging code
-          appveyor DownloadFile https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip -FileName packaging-master.zip
-          7z x packaging-master.zip
+          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          Expand-Archive -Path packaging-master.zip -DestinationPath .
           # If this is tag/replease we should also build the manual
-          If ($env:APPVEYOR_REPO_TAG -eq $True) {
-            &"$env:PYTHON\python.exe" -m pip install sphinx
+          If ($env:APPVEYOR_REPO_TAG -eq $True -Or $env:FORCE_PACKAGING_MANUAL -eq 1) {
+            python -m pip install --no-warn-script-location sphinx sphinx_rtd_theme
             Invoke-WebRequest -Uri "https://gitlab.com/openlp/documentation/-/archive/master/documentation-master.zip" -OutFile documentation-master.zip
-            7z x documentation-master.zip
+            Expand-Archive -Path documentation-master.zip -DestinationPath .
+            # If this is a release build, set release argument
+            $releaseArg = ""
+            If ($env:APPVEYOR_REPO_TAG -eq $True) {
+                $releaseArg = "--release ""$env:APPVEYOR_REPO_TAG_NAME"""
+            }
             cd packaging-master
-            &"$env:PYTHON\python.exe" builders/windows-builder.py --release --skip-update -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" -d ../documentation-master --portable
+            If ($isWindows) {
+                $cmd = "python builders/windows-builder.py $releaseArg --skip-update -c windows/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master --portable"
+                iex $cmd
+            } else {
+                $cmd = "python builders/macosx-builder.py $releaseArg --skip-update -c osx/config-appveyor.ini -b ""$env:APPVEYOR_BUILD_FOLDER"" -d ../documentation-master"
+                iex $cmd
+            }
           } else {
             cd packaging-master
-            &"$env:PYTHON\python.exe" builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+            If ($isWindows) {
+                python builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+            } else {
+                python builders/macosx-builder.py --skip-update --skip-translations -c osx/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER"
+            }
           }
       }
 
 artifacts:
   - path: dist\*.exe
-    name: Portable-installer
+    name: Windows Portable-installer
   - path: dist\*.msi
-    name: Installer
+    name: Windows Installer
+  - path: dist\*.dmg
+    name: MacOSX Installer

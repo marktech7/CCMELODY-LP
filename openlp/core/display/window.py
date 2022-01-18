@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,6 +25,7 @@ import json
 import logging
 import os
 import copy
+import re
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
@@ -33,74 +34,16 @@ from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
+from openlp.core.common.platform import is_win, is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.ui import HideMode
 
 
+FONT_FOUNDRY = re.compile(r'(.*?) \[(.*?)\]')
+TRANSITION_END_EVENT_NAME = 'transparent_transition_end'
 log = logging.getLogger(__name__)
-
-
-class MediaWatcher(QtCore.QObject):
-    """
-    A class to watch media events in the display and emit signals for OpenLP
-    """
-    progress = QtCore.pyqtSignal(float)
-    duration = QtCore.pyqtSignal(float)
-    volume = QtCore.pyqtSignal(float)
-    playback_rate = QtCore.pyqtSignal(float)
-    ended = QtCore.pyqtSignal(bool)
-    muted = QtCore.pyqtSignal(bool)
-
-    @QtCore.pyqtSlot(float)
-    def update_progress(self, time):
-        """
-        Notify about the current position of the media
-        """
-        log.warning(time)
-        self.progress.emit(time)
-
-    @QtCore.pyqtSlot(float)
-    def update_duration(self, time):
-        """
-        Notify about the duration of the media
-        """
-        log.warning(time)
-        self.duration.emit(time)
-
-    @QtCore.pyqtSlot(float)
-    def update_volume(self, level):
-        """
-        Notify about the volume of the media
-        """
-        log.warning(level)
-        level = level * 100
-        self.volume.emit(level)
-
-    @QtCore.pyqtSlot(float)
-    def update_playback_rate(self, rate):
-        """
-        Notify about the playback rate of the media
-        """
-        log.warning(rate)
-        self.playback_rate.emit(rate)
-
-    @QtCore.pyqtSlot(bool)
-    def has_ended(self, is_ended):
-        """
-        Notify that the media has ended playing
-        """
-        log.warning(is_ended)
-        self.ended.emit(is_ended)
-
-    @QtCore.pyqtSlot(bool)
-    def has_muted(self, is_muted):
-        """
-        Notify that the media has been muted
-        """
-        log.warning(is_muted)
-        self.muted.emit(is_muted)
 
 
 class DisplayWatcher(QtCore.QObject):
@@ -109,6 +52,13 @@ class DisplayWatcher(QtCore.QObject):
     """
     initialised = QtCore.pyqtSignal(bool)
 
+    def __init__(self, parent):
+        super().__init__()
+        self._display_window = parent
+        self._transient_dispatch_events = {}
+        self._permanent_dispatch_events = {}
+        self._event_counter = 0
+
     @QtCore.pyqtSlot(bool)
     def setInitialised(self, is_initialised):
         """
@@ -116,6 +66,64 @@ class DisplayWatcher(QtCore.QObject):
         """
         log.info('Display is initialised: {init}'.format(init=is_initialised))
         self.initialised.emit(is_initialised)
+
+    @QtCore.pyqtSlot()
+    def pleaseRepaint(self):
+        """
+        Called from the js in the webengine view when it's requesting a repaint by Qt
+        """
+        self._display_window.webview.update()
+
+    @QtCore.pyqtSlot(str, 'QJsonObject')
+    def dispatchEvent(self, event_name, event_data):
+        """
+        Called from the js in the webengine view for event dispatches
+        """
+        transient_dispatch_events = self._transient_dispatch_events
+        permanent_dispatch_events = self._permanent_dispatch_events
+        if event_name in transient_dispatch_events:
+            event = transient_dispatch_events[event_name]
+            del transient_dispatch_events[event_name]
+            event(event_data)
+        if event_name in permanent_dispatch_events:
+            permanent_dispatch_events[event_name](event_data)
+
+    def register_event_listener(self, event_name, callback, transient=True):
+        """
+        Register an event listener from webengine view
+        :param event_name: Event name
+        :param callback: Callback listener when event happens
+        :param transient: If the event listener should be unregistered after being run
+        """
+        if transient:
+            events = self._transient_dispatch_events
+        else:
+            events = self._permanent_dispatch_events
+
+        events[event_name] = callback
+
+    def unregister_event_listener(self, event_name, transient=True):
+        """
+        Unregisters an event listener from webengine view
+        :param event_name: Event name
+        :param transient: If the event listener was registered as transient
+        """
+        if transient:
+            events = self._transient_dispatch_events
+        else:
+            events = self._permanent_dispatch_events
+
+        if event_name in events:
+            del events[event_name]
+
+    def get_unique_event_name(self):
+        """
+        Generates an unique event name
+        :returns: Unique event name
+        """
+        event_count = self._event_counter
+        self._event_counter += 1
+        return 'event_' + str(event_count)
 
 
 class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
@@ -131,9 +139,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
+        if is_macosx():
+            self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False
+        self._is_manual_close = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
@@ -153,20 +164,20 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.display_path = display_base_path / 'display.html'
         self.checkerboard_path = display_base_path / 'checkerboard.png'
         self.openlp_splash_screen_path = display_base_path / 'openlp-splash-screen.png'
-        self.set_url(QtCore.QUrl.fromLocalFile(path_to_str(self.display_path)))
         self.channel = QtWebChannel.QWebChannel(self)
-        self.media_watcher = MediaWatcher(self)
-        self.channel.registerObject('mediaWatcher', self.media_watcher)
         self.display_watcher = DisplayWatcher(self)
         self.channel.registerObject('displayWatcher', self.display_watcher)
         self.webview.page().setWebChannel(self.channel)
         self.display_watcher.initialised.connect(self.on_initialised)
+        self.set_url(QtCore.QUrl.fromLocalFile(path_to_str(self.display_path)))
         self.is_display = False
         self.scale = 1
         self.hide_mode = None
         self.__script_done = True
         self.__script_result = None
         if screen and screen.is_display:
+            # use log_debug to set up function wrapping before registering functions
+            self.log_debug('registering live display show/hide functions')
             Registry().register_function('live_display_hide', self.hide_display)
             Registry().register_function('live_display_show', self.show_display)
             self.update_from_screen(screen)
@@ -175,6 +186,26 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             if len(ScreenList()) > 1 or self.settings.value('core/display on monitor'):
                 self.show()
 
+    def closeEvent(self, event):
+        """
+        Override the closeEvent method to prevent the window from being closed by the user
+        """
+        if not self._is_manual_close:
+            event.ignore()
+
+    def _fix_font_name(self, font_name):
+        """
+        Do some font machinations to see if we can fix the font name
+        """
+        # Some fonts on Windows that end in "Bold" are made into a base font that is bold
+        if is_win() and font_name.endswith(' Bold'):
+            font_name = font_name.split(' Bold')[0]
+        # Some fonts may have the Foundry name in their name. Remove the foundry name
+        match = FONT_FOUNDRY.match(font_name)
+        if match:
+            font_name = match.group(1)
+        return font_name
+
     def deregister_display(self):
         """
         De-register this displays callbacks in the registry to be able to remove it
@@ -182,6 +213,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if self.is_display:
             Registry().remove_function('live_display_hide', self.hide_display)
             Registry().remove_function('live_display_show', self.show_display)
+        self._is_manual_close = True
 
     @property
     def is_initialised(self):
@@ -202,10 +234,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.setGeometry(screen.display_geometry)
         self.screen_number = screen.number
 
-    def set_background_image(self, bg_color, image_path):
+    def set_background_image(self, image_path):
         image_uri = image_path.as_uri()
-        self.run_javascript('Display.setBackgroundImage("{bg_color}", "{image}");'.format(bg_color=bg_color,
-                                                                                          image=image_uri))
+        self.run_javascript('Display.setBackgroundImage("{image}");'.format(image=image_uri))
 
     def set_single_image(self, bg_color, image_path):
         """
@@ -225,7 +256,10 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         image = self.settings.value('core/logo file')
         if path_to_str(image).startswith(':'):
             image = self.openlp_splash_screen_path
-        image_uri = image.as_uri()
+        try:
+            image_uri = image.as_uri()
+        except Exception:
+            image_uri = ''
         # if set to hide logo on startup, do not send the logo
         if self.settings.value('core/logo hide on startup'):
             image_uri = ''
@@ -255,13 +289,15 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         js_is_display = str(self.is_display).lower()
         item_transitions = str(self.settings.value('themes/item transitions')).lower()
         hide_mouse = str(self.settings.value('advanced/hide mouse') and self.is_display).lower()
+        slide_numbers_in_footer = str(self.settings.value('advanced/slide numbers in footer')).lower()
         self.run_javascript('Display.init({{'
                             'isDisplay: {is_display},'
                             'doItemTransitions: {do_item_transitions},'
+                            'slideNumbersInFooter: {slide_numbers_in_footer},'
                             'hideMouse: {hide_mouse}'
                             '}});'
                             .format(is_display=js_is_display, do_item_transitions=item_transitions,
-                                    hide_mouse=hide_mouse))
+                                    slide_numbers_in_footer=slide_numbers_in_footer, hide_mouse=hide_mouse))
         wait_for(lambda: self._is_initialised)
         if self.scale != 1:
             self.set_scale(self.scale)
@@ -275,7 +311,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         :param script: The script to run, a string
         :param is_sync: Run the script synchronously. Defaults to False
         """
-        log.debug(script)
+        log.debug((script[:80] + '..') if len(script) > 80 else script)
         # Wait for previous scripts to finish
         wait_for(lambda: self.__script_done)
         if is_sync:
@@ -296,6 +332,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             return self.__script_result
         else:
             self.webview.page().runJavaScript(script)
+        self.raise_()
 
     def go_to_slide(self, verse):
         """
@@ -326,9 +363,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             else:
                 image['thumbnail'] = image['path']
         json_images = json.dumps(imagesr)
-        background = self.settings.value('images/background color')
-        self.run_javascript('Display.setImageSlides({images}, "{background}");'.format(images=json_images,
-                                                                                       background=background))
+        self.run_javascript('Display.setImageSlides({images});'.format(images=json_images))
 
     def load_video(self, video):
         """
@@ -423,6 +458,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
                 theme_copy.background_end_color = '#590909'
                 theme_copy.background_main_color = '#090909'
                 theme_copy.background_footer_color = '#090909'
+        # Do some font-checking, see https://gitlab.com/openlp/openlp/-/issues/39
+        theme_copy.font_main_name = self._fix_font_name(theme.font_main_name)
+        theme_copy.font_footer_name = self._fix_font_name(theme.font_footer_name)
         exported_theme = theme_copy.export_theme(is_js=True)
         self.run_javascript('Display.setTheme({theme});'.format(theme=exported_theme), is_sync=is_sync)
 
@@ -448,13 +486,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
-        self.run_javascript('Display.show();')
+        # Aborting setVisible(False) call in case the display modes are changed quickly
+        self.display_watcher.unregister_event_listener(TRANSITION_END_EVENT_NAME)
         if self.isHidden():
             self.setVisible(True)
+        self.run_javascript('Display.show();')
         self.hide_mode = None
-        # Trigger actions when display is active again.
-        if self.is_display:
-            Registry().execute('live_display_active')
 
     def hide_display(self, mode=HideMode.Screen):
         """
@@ -467,19 +504,24 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
+        # Aborting setVisible(False) call in case the display modes are changed quickly
+        self.display_watcher.unregister_event_listener(TRANSITION_END_EVENT_NAME)
         # Update display to the selected mode
+        if mode != HideMode.Screen:
+            if self.isHidden():
+                self.setVisible(True)
         if mode == HideMode.Screen:
             if self.settings.value('advanced/disable transparent display'):
-                self.setVisible(False)
+                # Hide window only after all webview CSS ransitions are done
+                self.display_watcher.register_event_listener(TRANSITION_END_EVENT_NAME,
+                                                             lambda _: self.setVisible(False))
+                self.run_javascript("Display.toTransparent('{}');".format(TRANSITION_END_EVENT_NAME))
             else:
                 self.run_javascript('Display.toTransparent();')
         elif mode == HideMode.Blank:
             self.run_javascript('Display.toBlack();')
         elif mode == HideMode.Theme:
             self.run_javascript('Display.toTheme();')
-        if mode != HideMode.Screen:
-            if self.isHidden():
-                self.setVisible(True)
         self.hide_mode = mode
 
     def disable_display(self):
@@ -489,6 +531,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         if self.is_display and self.hide_mode == HideMode.Screen:
             self.setVisible(False)
+
+    def finish_with_current_item(self):
+        """
+        This is called whenever the song/image display is followed by eg a presentation or video which
+        has its own display.
+        This function ensures that the current item won't flash momentarily when the webengineview
+        is displayed for a subsequent song or image.
+        """
+        self.run_javascript('Display.finishWithCurrentItem();', True)
+        self.webview.update()
 
     def set_scale(self, scale):
         """

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -63,92 +63,173 @@ class FormattingTags(object):
                 'desc': translate('OpenLP.FormattingTags', 'Red'),
                 'start tag': '{r}',
                 'start html': '<span style="-webkit-text-fill-color:red">',
-                'end tag': '{/r}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/r}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Black'),
                 'start tag': '{b}',
                 'start html': '<span style="-webkit-text-fill-color:black">',
-                'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/b}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Blue'),
                 'start tag': '{bl}',
                 'start html': '<span style="-webkit-text-fill-color:blue">',
-                'end tag': '{/bl}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/bl}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Yellow'),
                 'start tag': '{y}',
                 'start html': '<span style="-webkit-text-fill-color:yellow">',
-                'end tag': '{/y}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/y}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Green'),
                 'start tag': '{g}',
                 'start html': '<span style="-webkit-text-fill-color:green">',
-                'end tag': '{/g}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/g}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Pink'),
                 'start tag': '{pk}',
                 'start html': '<span style="-webkit-text-fill-color:#FFC0CB">',
-                'end tag': '{/pk}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/pk}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Orange'),
                 'start tag': '{o}',
                 'start html': '<span style="-webkit-text-fill-color:#FFA500">',
-                'end tag': '{/o}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/o}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Purple'),
                 'start tag': '{pp}',
                 'start html': '<span style="-webkit-text-fill-color:#800080">',
-                'end tag': '{/pp}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/pp}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'White'),
                 'start tag': '{w}',
                 'start html': '<span style="-webkit-text-fill-color:white">',
-                'end tag': '{/w}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/w}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Superscript'),
-                'start tag': '{su}', 'start html': '<sup>',
-                'end tag': '{/su}', 'end html': '</sup>', 'protected': True,
-                'temporary': False
-            }, {
+                'start tag': '{su}',
+                'start html': '<sup>',
+                'end tag': '{/su}',
+                'end html': '</sup>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Subscript'),
-                'start tag': '{sb}', 'start html': '<sub>',
-                'end tag': '{/sb}', 'end html': '</sub>', 'protected': True,
-                'temporary': False
-            }, {
+                'start tag': '{sb}',
+                'start html': '<sub>',
+                'end tag': '{/sb}',
+                'end html': '</sub>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Paragraph'),
-                'start tag': '{p}', 'start html': '<p>', 'end tag': '{/p}',
-                'end html': '</p>', 'protected': True,
-                'temporary': False
-            }, {
+                'start tag': '{p}',
+                'start html': '<p>',
+                'end tag': '{/p}',
+                'end html': '</p>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Bold'),
-                'start tag': '{st}', 'start html': '<strong>',
-                'end tag': '{/st}', 'end html': '</strong>',
-                'protected': True, 'temporary': False
-            }, {
+                'start tag': '{st}',
+                'start html': '<strong>',
+                'end tag': '{/st}',
+                'end html': '</strong>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Italics'),
-                'start tag': '{it}', 'start html': '<em>', 'end tag': '{/it}',
-                'end html': '</em>', 'protected': True, 'temporary': False
-            }, {
+                'start tag': '{it}',
+                'start html': '<em>',
+                'end tag': '{/it}',
+                'end html': '</em>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Underline'),
                 'start tag': '{u}',
                 'start html': '<span style="text-decoration: underline;">',
-                'end tag': '{/u}', 'end html': '</span>', 'protected': True,
-                'temporary': False
-            }, {
+                'end tag': '{/u}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
+                'desc': translate('OpenLP.FormattingTags', 'UpperCase'),
+                'start tag': '{uc}',
+                'start html': '<span style="text-transform: uppercase;">',
+                'end tag': '{/uc}',
+                'end html': '</span>',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            },
+            {
                 'desc': translate('OpenLP.FormattingTags', 'Break'),
-                'start tag': '{br}', 'start html': '<br>', 'end tag': '',
-                'end html': '', 'protected': True,
-                'temporary': False
-            }]
+                'start tag': '{br}',
+                'start html': '<br>',
+                'end tag': '',
+                'end html': '',
+                'protected': True,
+                'temporary': False,
+                'hidden': False
+            }
+        ]
         # Append the base tags.
         FormattingTags.add_html_tags(base_tags)
         FormattingTags.add_html_tags(temporary_tags)
@@ -156,6 +237,9 @@ class FormattingTags(object):
         # If we have some user ones added them as well
         if user_expands_string:
             user_tags = json.loads(user_expands_string)
+            for tag in user_tags:
+                if 'hidden' not in tag.keys():
+                    tag['hidden'] = False
             FormattingTags.add_html_tags(user_tags)
 
     @staticmethod

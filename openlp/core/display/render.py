@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -27,7 +27,6 @@ import mako
 import math
 import os
 import re
-import time
 
 from PyQt5 import QtWidgets, QtGui
 
@@ -45,13 +44,15 @@ from openlp.core.lib.formattingtags import FormattingTags
 
 log = logging.getLogger(__name__)
 
-ENGLISH_NOTES = '[CDEFGAB]'
-GERMAN_NOTES = '[CDEFGAH]'
-NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si)'
-CHORD_SUFFIXES = '(b|bb)?(#)?(m|maj7|maj|min7|min|sus)?(1|2|3|4|5|6|7|8|9)?'
+ENGLISH_NOTES = '(C|D|E|F|G|A|B|N\\.C\\.)?'
+GERMAN_NOTES = '(C|D|E|F|G|A|B|H|N\\.C\\.)?'
+NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si|N\\.C\\.)?'
+CHORD_PREFIXES = '(=|\\(|\\|)*?'
+CHORD_SUFFIXES = '(b|#|x|\\+|-|M|m|Maj|maj|min|sus|dim|add|aug|dom|0|1|2|3|4|5|6|7|8|9|\\(|\\)|no|omit)*?'
 SLIM_CHARS = 'fiíIÍjlĺľrtť.,;/ ()|"\'!:\\'
 CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
-FIRST_CHORD_TEMPLATE = '<span class="chordline firstchordline">{chord}</span>'
+FIRST_CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
+NO_CHORD_TEMPLATE = '<span class="nochordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
 VERSE = 'The Lord said to {r}Noah{/r}: \n' \
@@ -79,8 +80,8 @@ def _construct_chord_regex(notes):
     :param notes: The regular expression for a set of valid notes
     :return: An expanded regular expression for valid chords
     """
-    chord = notes + CHORD_SUFFIXES
-    return '(' + chord + '(/' + chord + ')?)'
+    # chord = CHORD_PREFIXES + notes + CHORD_SUFFIXES
+    return '(' + CHORD_PREFIXES + notes + CHORD_SUFFIXES + '(/' + notes + CHORD_SUFFIXES + ')?)'
 
 
 def _construct_chord_match(notes):
@@ -153,9 +154,16 @@ def remove_tags(text, can_remove_chords=False):
     text = text.replace('<br>', '\n')
     text = text.replace('{br}', '\n')
     text = text.replace('&nbsp;', ' ')
+    text = text.replace('<sup>', '')
+    text = text.replace('</sup>', '')
+    text = text.replace('<em>', '')
+    text = text.replace('</em>', '')
     for tag in FormattingTags.get_html_tags():
-        text = text.replace(tag['start tag'], '')
-        text = text.replace(tag['end tag'], '')
+        if tag.get('hidden'):
+            text = re.sub(r'' + tag['start tag'] + ".*?" + tag['end tag'], '', text)
+        else:
+            text = text.replace(tag['start tag'], '')
+            text = text.replace(tag['end tag'], '')
     # Remove ChordPro tags
     if can_remove_chords:
         text = remove_chords(text)
@@ -187,11 +195,11 @@ def render_chords_in_line(match):
     # The actual chord, would be "G" in match "[G]sweet the "
     chord = match.group(1)
     # The tailing word of the chord, would be "sweet" in match "[G]sweet the "
-    tail = match.group(11)
+    tail = match.group(8)
     # The remainder of the line, until line end or next chord. Would be " the " in match "[G]sweet the "
-    remainder = match.group(12)
+    remainder = match.group(9)
     # Line end if found, else None
-    end = match.group(13)
+    end = match.group(10)
     # Based on char width calculate width of chord
     for chord_char in chord:
         if chord_char not in SLIM_CHARS:
@@ -269,7 +277,10 @@ def render_chords(text):
             rendered_lines.append(new_line)
         else:
             chords_on_prev_line = False
-            rendered_lines.append(html.escape(line))
+            # rendered_lines.append(html.escape(line))
+            chord_template = NO_CHORD_TEMPLATE
+            new_line = chord_template.format(chord=line)
+            rendered_lines.append(new_line)
     return '{br}'.join(rendered_lines)
 
 
@@ -329,7 +340,7 @@ def find_formatting_tags(text, active_formatting_tags):
             # See if the found tag has an end tag
             for formatting_tag in FormattingTags.get_html_tags():
                 if formatting_tag['start tag'] == '{' + tag + '}':
-                    if formatting_tag['end tag']:
+                    if formatting_tag['end html']:
                         if start_tag:
                             # prepend the new tag to the list of active formatting tags
                             active_formatting_tags[:0] = [tag]
@@ -487,8 +498,12 @@ def get_start_tags(raw_text):
     """
     raw_tags = []
     html_tags = []
+    endless_tags = []
+    for formatting_tag in FormattingTags.get_html_tags():
+        if not formatting_tag['end html']:
+            endless_tags.append(formatting_tag['start tag'])
     for tag in FormattingTags.get_html_tags():
-        if tag['start tag'] == '{br}':
+        if tag['start tag'] in endless_tags:
             continue
         if raw_text.count(tag['start tag']) != raw_text.count(tag['end tag']):
             raw_tags.append((raw_text.find(tag['start tag']), tag['start tag'], tag['end tag']))
@@ -602,7 +617,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             line_end = ' '
         # Bibles
         if item and item.name == 'bibles':
-            pages = self._paginate_slide_words(text.split('\n'), line_end)
+            if item.is_capable(ItemCapabilities.CanWordSplit):
+                pages = self._paginate_slide_words(text.split('\n'), line_end)
+            else:
+                if item.is_capable(ItemCapabilities.NoLineBreaks):
+                    pages = self._paginate_slide(text.split('\n'), "")
+                else:
+                    pages = self._paginate_slide(text.split('\n'), line_end)
         # Songs and Custom
         elif item is None or (item and item.is_capable(ItemCapabilities.CanSoftBreak)):
             pages = []
@@ -617,8 +638,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                     text = text.replace(' [---]', '[---]')
                 while '[---] ' in text:
                     text = text.replace('[---] ', '[---]')
-                # Grab the number of occurrences of "[---]" in the text to use as a max number of loops
-                count = text.count('[---]')
+                # Grab the number of lines in the text to use as a max number of loops
+                count = text.count('\n') + 1
                 for _ in range(count):
                     slides = text.split('\n[---]\n', 2)
                     # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
@@ -665,7 +686,6 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                         lines = text.strip('\n').split('\n')
                         pages.extend(self._paginate_slide(lines, line_end))
                         break
-                    count += 1
             else:
                 # Clean up line endings.
                 pages = self._paginate_slide(text.split('\n'), line_end)
@@ -691,15 +711,18 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         formatted = []
         previous_html = ''
         previous_raw = ''
-        separator = '<br>'
+        # separator = '<br>'
+        separator = line_end
         html_lines = list(map(render_tags, lines))
         # Text too long so go to next page.
         if not self._text_fits_on_slide(separator.join(html_lines)):
-            html_text, previous_raw = self._binary_chop(
+            previous_html, previous_raw = self._binary_chop(
                 formatted, previous_html, previous_raw, html_lines, lines, separator, '')
         else:
             previous_raw = separator.join(lines)
-        formatted.append(previous_raw)
+            previous_html = True
+        if previous_html:
+            formatted.append(previous_raw)
         return formatted
 
     def _paginate_slide_words(self, lines, line_end):
@@ -740,7 +763,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 previous_html += html_line + line_end
                 previous_raw += line + line_end
-        formatted.append(previous_raw)
+        if previous_html:
+            formatted.append(previous_raw)
         return formatted
 
     def _binary_chop(self, formatted, previous_html, previous_raw, html_list, raw_list, separator, line_end):
@@ -752,7 +776,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         :param formatted: The list to append any slides.
         :param previous_html: The html text which is know to fit on a slide, but is not yet added to the list of
         slides. (unicode string)
-        :param previous_raw: The raw text (with formatting tags) which is know to fit on a slide, but is not yet added
+        :param previous_raw: The raw text (with formatting tags) which is known to fit on a slide, but is not yet added
         to the list of slides. (unicode string)
         :param html_list: The elements which do not fit on a slide and needs to be processed using the binary chop.
         The text contains html.
@@ -773,7 +797,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 smallest_index = index
                 index = index + (highest_index - index) // 2
-            # We found the number of words which will fit.
+            # We found the number of elements which will fit.
             if smallest_index == index or highest_index == index:
                 index = smallest_index
                 text = previous_raw.rstrip('<br>') + separator.join(raw_list[:index + 1])
@@ -788,9 +812,10 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             else:
                 continue
             # Check if the remaining elements fit on the slide.
-            if self._text_fits_on_slide(html_tags + separator.join(html_list[index + 1:]).strip()):
-                previous_html = html_tags + separator.join(html_list[index + 1:]).strip() + line_end
-                previous_raw = raw_tags + separator.join(raw_list[index + 1:]).strip() + line_end
+            check_string = separator.join(html_list[index + 1:]).strip()
+            if self._text_fits_on_slide(html_tags + check_string):
+                previous_html = html_tags + check_string + line_end
+                previous_raw = raw_tags + check_string + line_end
                 break
             else:
                 # The remaining elements do not fit, thus reset the indexes, create a new list and continue.
@@ -807,28 +832,28 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
     def _text_fits_on_slide(self, text):
         """
         Checks if the given ``text`` fits on a slide. If it does ``True`` is returned, otherwise ``False``.
+        Text should always "fit" for empty strings
 
         :param text:  The text to check. It may contain HTML tags.
         """
+        if text == '':
+            return True
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
         self.run_javascript('Display.setTextSlide("{text}");'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
-        does_text_fits = self.run_javascript('Display.doesContentFit();', is_sync=True)
-        return does_text_fits
+        does_text_fit = self.run_javascript('Display.doesContentFit();', is_sync=True)
+        return does_text_fit
 
     def save_screenshot(self, fname=None):
         """
         Save a screenshot, either returning it or saving it to file. Do some extra work to actually get a picture.
         """
         self.setVisible(True)
+        QtWidgets.QApplication.instance().processEvents()
+        wait_for(lambda: False, timeout=1)
         pixmap = self.grab()
-        for i in range(0, 4):
-            QtWidgets.QApplication.instance().processEvents()
-            time.sleep(0.05)
-            QtWidgets.QApplication.instance().processEvents()
-            pixmap = self.grab()
         self.setVisible(False)
         pixmap = QtGui.QPixmap(self.webview.size())
         self.webview.render(pixmap)
@@ -849,11 +874,17 @@ class Renderer(RegistryBase, ThemePreviewRenderer):
         """
         super().__init__(*args, **kwargs)
         self.force_page = False
-        for screen in ScreenList():
+        screen_list = ScreenList()
+        for screen in screen_list:
             if screen.is_display:
                 self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
                                  screen.display_geometry.width(), screen.display_geometry.height())
                 break
+        else:
+            # If there is no display screen, use the first screen as a fallback
+            screen = screen_list[0]
+            self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
+                             screen.display_geometry.width(), screen.display_geometry.height())
         # If the display is not show'ed and hidden like this webegine will not render
         self.show()
         self.hide()

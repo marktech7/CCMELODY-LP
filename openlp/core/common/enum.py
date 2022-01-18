@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -74,6 +74,15 @@ class DisplayStyle(IntEnum):
 
 
 @unique
+class ImageThemeMode(IntEnum):
+    """
+    An enumeration for image background settings.
+    """
+    Black = 1
+    CustomTheme = 2
+
+
+@unique
 class LayoutStyle(IntEnum):
     """
     An enumeration for bible screen layout styles.
@@ -81,6 +90,7 @@ class LayoutStyle(IntEnum):
     VersePerSlide = 0
     VersePerLine = 1
     Continuous = 2
+    WholeVerseContinuous = 3
 
 
 @unique

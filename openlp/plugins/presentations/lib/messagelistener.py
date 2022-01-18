@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,6 +28,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext
 from openlp.core.ui import HideMode
 from openlp.plugins.presentations.lib.pdfcontroller import PDF_CONTROLLER_FILETYPES
+from openlp.plugins.presentations.lib.presentationcontroller import PresentationList
 
 
 log = logging.getLogger(__name__)
@@ -49,21 +50,20 @@ class Controller(object):
         self.hide_mode = None
         log.info('{name} controller loaded'.format(name=live))
 
-    def add_handler(self, controller, file, hide_mode, slide_no):
+    def add_handler(self, controller, file, hide_mode, slide_no, unique_id):
         """
         Add a handler, which is an instance of a presentation and slidecontroller combination. If the slidecontroller
         has a display then load the presentation.
         """
         log.debug('Live = {live}, add_handler {handler}'.format(live=self.is_live, handler=file))
         self.controller = controller
-        if self.doc is not None:
-            self.shutdown()
         self.doc = self.controller.add_document(file)
         if not self.doc.load_presentation():
             # Display error message to user
             # Inform slidecontroller that the action failed?
             self.doc.slidenumber = 0
             return
+        PresentationList().add(self.doc, unique_id)
         self.doc.slidenumber = slide_no
         self.hide_mode = hide_mode
         log.debug('add_handler, slide_number: {slide:d}'.format(slide=slide_no))
@@ -205,15 +205,15 @@ class Controller(object):
         self.poll()
         return ret
 
-    def shutdown(self):
+    def shutdown(self, unique_id):
         """
         Based on the handler passed at startup triggers slide show to shut down.
         """
         log.debug('Live = {live}, shutdown'.format(live=self.is_live))
-        if not self.doc:
-            return
-        self.doc.close_presentation()
-        self.doc = None
+        presentation_to_close = PresentationList().get_presentation_by_id(unique_id)
+        if presentation_to_close:
+            presentation_to_close.close_presentation()
+            PresentationList().remove(unique_id)
 
     def blank(self, hide_mode):
         """
@@ -340,9 +340,9 @@ class MessageListener(object):
             item.footer = item_cpy.footer
             item.from_service = item_cpy.from_service
             item.iconic_representation = item_cpy.icon
-            item.image_border = item_cpy.image_border
             item.main = item_cpy.main
             item.theme = item_cpy.theme
+            item.unique_identifier = item_cpy.unique_identifier
             # When presenting PDF/XPS/OXPS, we are using the image presentation code,
             # so handler & processor is set to None, and we skip adding the handler.
             self.handler = None
@@ -366,7 +366,8 @@ class MessageListener(object):
         if self.handler is None:
             self.controller = controller
         else:
-            controller.add_handler(self.controllers[self.handler], file_path, hide_mode, message[3])
+            controller.add_handler(self.controllers[self.handler], file_path, hide_mode, message[3],
+                                   message[0].unique_identifier)
             self.timer.start()
 
     def slide(self, message):
@@ -444,10 +445,10 @@ class MessageListener(object):
         """
         is_live = message[1]
         if is_live:
-            self.live_handler.shutdown()
+            self.live_handler.shutdown(message[0].unique_identifier)
             self.timer.stop()
         else:
-            self.preview_handler.shutdown()
+            self.preview_handler.shutdown(message[0].unique_identifier)
 
     def hide(self, message):
         """

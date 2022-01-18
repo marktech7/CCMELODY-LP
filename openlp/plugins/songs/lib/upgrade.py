@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -182,9 +182,8 @@ def upgrade_7(session, metadata):
         data_path = AppLocation.get_data_path()
         for row in results.fetchall():
             file_path_json = json.dumps(Path(row.file_name), cls=OpenLPJSONEncoder, base_path=data_path)
-            sql = 'UPDATE media_files SET file_path = \'{file_path_json}\' WHERE id = {id}'.format(
-                file_path_json=file_path_json, id=row.id)
-            conn.execute(sql)
+            sql = 'UPDATE media_files SET file_path = :file_path WHERE id = :id'
+            conn.execute(sql, {'file_path': file_path_json, 'id': row.id})
         # Drop old columns
         if metadata.bind.url.get_dialect().name == 'sqlite':
             drop_columns(op, 'media_files', ['file_name', ])

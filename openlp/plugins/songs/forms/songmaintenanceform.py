@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,7 +30,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.forms.authorsform import AuthorsForm
 from openlp.plugins.songs.forms.songbookform import SongBookForm
 from openlp.plugins.songs.forms.topicsform import TopicsForm
-from openlp.plugins.songs.lib.db import Author, Book, Song, Topic
+from openlp.plugins.songs.lib.db import Author, Book, Song, Topic, SongBookEntry
 
 from .songmaintenancedialog import Ui_SongMaintenanceDialog
 
@@ -473,11 +473,41 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
                 Book.id != old_song_book.id
             )
         )
-        # Find the songs, which have the old_song_book as book.
-        songs = self.manager.get_all_objects(Song, Song.song_book_id == old_song_book.id)
-        for song in songs:
-            song.song_book_id = existing_book.id
+        if existing_book is None:
+            return False
+        # Find the songs which have the old_song_book as book, via matching entries in the songs_songbooks table
+        songbook_entries = self.manager.get_all_objects(SongBookEntry, SongBookEntry.songbook_id == old_song_book.id)
+        affected_songs = []
+        for songbook_entry in songbook_entries:
+            affected_songs.append(songbook_entry.song_id)
+        for song_id in affected_songs:
+            song = self.manager.get_object(Song, song_id)
+            # Go through the song's song/songbook link records to look for the link to the old songbook.
+            # Store the song number in that book so we can apply it in the link record to the existing songbook.
+            old_book_song_number = ''
+            for index, record in enumerate(song.songbook_entries):
+                if record.songbook_id == old_song_book.id:
+                    old_book_song_number = record.entry
+                    break
+            # Look through the same link records to see if there's a link to the duplicate (existing) songbook
+            # If so, transfer the song number in 'entry' field (if appropriate) ...
+            found = False
+            for record in song.songbook_entries:
+                if record.songbook_id == existing_book.id:
+                    if not record.entry and old_book_song_number:
+                        record.entry = old_book_song_number
+                    found = True
+                    break
+            # ... otherwise create a new link record
+            if not found:
+                new_songbook_entry = SongBookEntry()
+                new_songbook_entry.songbook_id = existing_book.id
+                new_songbook_entry.song_id = song.id
+                new_songbook_entry.entry = old_book_song_number
+                song.songbook_entries.append(new_songbook_entry)
             self.manager.save_object(song)
+            self.manager.delete_object(SongBookEntry, (old_song_book.id, song_id, old_book_song_number))
+
         self.manager.delete_object(Book, old_song_book.id)
 
     def on_delete_author_button_clicked(self):

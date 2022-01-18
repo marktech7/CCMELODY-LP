@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,6 +23,7 @@ The :mod:`screen` module provides management functionality for a machines'
 displays.
 """
 import logging
+import copy
 from functools import cmp_to_key
 
 from PyQt5 import QtCore, QtWidgets
@@ -45,7 +46,11 @@ class Screen(object):
 
         :param int number: The Qt number of this screen
         :param QRect geometry: The geometry of this screen as a QRect object
+            In this geometry the top and left values are the coordinates of the extended desktop scheme
+            for example, where the left value increases as a mouse moves right from one screen to the next
         :param QRect custom_geometry: The custom geometry of this screen as a QRect object
+            The custom geometry left and top values are relative to that particular screen,
+            so left = 0, top = 0 refers to the top left of that screen.
         :param bool is_primary: Whether or not this screen is the primary screen
         :param bool is_display: Whether or not this screen should be used to display lyrics
         """
@@ -77,7 +82,14 @@ class Screen(object):
         """
         Returns the geometry to use when displaying. This property decides between the native and custom geometries
         """
-        return self.custom_geometry or self.geometry
+        # If custom geometry is used, convert to absolute position
+        if self.custom_geometry:
+            adjusted_custom_geometry = copy.deepcopy(self.custom_geometry)
+            adjusted_custom_geometry.moveTo(self.geometry.x() + adjusted_custom_geometry.x(),
+                                            self.geometry.y() + adjusted_custom_geometry.y())
+            return adjusted_custom_geometry
+        else:
+            return self.geometry
 
     @classmethod
     def from_dict(cls, screen_dict):
@@ -130,7 +142,6 @@ class Screen(object):
 
         :param dict screen_dict: The dictionary which we want to apply to the screen
         """
-        self.number = int(screen_dict['number']) if 'number' in screen_dict else self.number
         self.is_display = screen_dict.get('is_display', self.is_display)
         self.is_primary = screen_dict.get('is_primary', self.is_primary)
         if 'geometry' in screen_dict:
@@ -146,6 +157,13 @@ class Screen(object):
                                                 screen_dict['custom_geometry']['y'],
                                                 screen_dict['custom_geometry']['width'],
                                                 screen_dict['custom_geometry']['height'])
+
+    def on_geometry_changed(self, geometry):
+        """
+        Callback function for when the screens geometry changes
+        """
+        self.geometry = geometry
+        Registry().execute('config_screen_changed')
 
 
 class ScreenList(metaclass=Singleton):
@@ -202,21 +220,34 @@ class ScreenList(metaclass=Singleton):
             return None
 
     @classmethod
-    def create(cls, desktop):
+    def create(cls, application):
         """
         Initialise the screen list.
 
-        :param desktop:  A QDesktopWidget object.
+        :param desktop:  A QApplication object.
         """
         screen_list = cls()
-        screen_list.desktop = desktop
-        screen_list.desktop.resized.connect(screen_list.on_screen_resolution_changed)
-        screen_list.desktop.screenCountChanged.connect(screen_list.on_screen_count_changed)
-        screen_list.desktop.primaryScreenChanged.connect(screen_list.on_primary_screen_changed)
+        screen_list.application = application
+        screen_list.application.primaryScreenChanged.connect(screen_list.on_primary_screen_changed)
+        screen_list.application.screenAdded.connect(screen_list.on_screen_added)
+        screen_list.application.screenRemoved.connect(screen_list.on_screen_removed)
         screen_list.update_screens()
         cls.settings = Registry().get('settings')
         screen_list.load_screen_settings()
         return screen_list
+
+    def find_new_display_screen(self):
+        """
+        If more than 1 screen, set first non-primary screen to display, otherwise just set the available screen as
+        display.
+        """
+        if len(self) > 1:
+            for screen in self:
+                if not screen.is_primary:
+                    screen.is_display = True
+                    break
+        else:
+            self[0].is_display = True
 
     def load_screen_settings(self):
         """
@@ -224,15 +255,30 @@ class ScreenList(metaclass=Singleton):
         """
         screen_settings = self.settings.value('core/screens')
         if screen_settings:
-            for number, screen_dict in screen_settings.items():
-                # Sometimes this loads as a string instead of an int
-                number = int(number)
-                if self.has_screen(number):
-                    self[number].update(screen_dict)
+            need_new_display_screen = False
+            for screen_dict in screen_settings.values():
+                # Compare geometry, primary of screen from settings with available screens
+                screen_number = self.get_screen_number(screen_dict)
+                if screen_number is not None:
+                    # If match was found, we're all happy, update with custom geometry, display info, if available
+                    self[screen_number].update(screen_dict)
                 else:
-                    self.screens.append(Screen.from_dict(screen_dict))
+                    # If no match, ignore this screen, also need to find new display screen if the discarded screen was
+                    # marked as such.
+                    if screen_dict['is_display']:
+                        need_new_display_screen = True
+            if need_new_display_screen:
+                QtWidgets.QMessageBox.warning(None, translate('OpenLP.Screen',
+                                                              'Screen settings and screen setup is not the same'),
+                                              translate('OpenLP.Screen',
+                                                        'There is a mismatch between screens and screen settings. '
+                                                        'OpenLP will try to automatically select a display screen, but '
+                                                        'you should consider updating the screen settings.'),
+                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                self.find_new_display_screen()
         else:
-            self[len(self) - 1].is_display = True
+            # if no settings we need to set a display
+            self.find_new_display_screen()
 
     def save_screen_settings(self):
         """
@@ -285,16 +331,19 @@ class ScreenList(metaclass=Singleton):
         if can_save:
             self.save_screen_settings()
 
-    def has_screen(self, number):
+    def get_screen_number(self, screen_dict):
         """
-        Confirms a screen is known.
+        Tries to match a screen with the passed-in screen_dict attributes
+        If a match is found then the number of the screen is returned.
+        If not then None is returned.
 
-        :param number: The screen number (int).
+        :param screen_dict: The dict describing the screen to match.
         """
         for screen in self.screens:
-            if screen.number == number:
-                return True
-        return False
+            if screen.to_dict().get('geometry') == screen_dict.get('geometry') \
+                    and screen.is_primary == screen_dict.get('is_primary'):
+                return screen.number
+        return None
 
     def update_screens(self):
         """
@@ -316,39 +365,44 @@ class ScreenList(metaclass=Singleton):
                 else:
                     return 0
         self.screens = []
-        os_screens = QtWidgets.QApplication.screens()
+        os_screens = self.application.screens()
         os_screens.sort(key=cmp_to_key(_screen_compare))
         for number, screen in enumerate(os_screens):
             self.screens.append(
-                Screen(number, screen.geometry(), is_primary=self.desktop.primaryScreen() == number))
+                Screen(number, screen.geometry(), is_primary=self.application.primaryScreen() == screen))
+            screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
 
-    def on_screen_resolution_changed(self, number):
+    def on_screen_added(self, changed_screen):
         """
-        Called when the resolution of a screen has changed.
+        Called when a screen has been added
 
-        ``number``
-            The number of the screen, which size has changed.
+        :param changed_screen: The screen which has been plugged.
         """
-        log.info('screen_resolution_changed {number:d}'.format(number=number))
+        number = len(self.screens)
+        self.screens.append(Screen(number, changed_screen.geometry(),
+                                   is_primary=self.application.primaryScreen() == changed_screen))
+        changed_screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
+        Registry().execute('config_screen_changed')
+
+    def on_screen_removed(self, removed_screen):
+        """
+        Called when a screen has been removed.
+
+        :param changed_screen: The screen which has been unplugged.
+        """
+        # Remove screens
+        removed_screen_number = -1
         for screen in self.screens:
-            if number == screen.number:
-                screen.geometry = self.desktop.screenGeometry(number)
-                screen.is_primary = self.desktop.primaryScreen() == number
-                Registry().execute('config_screen_changed')
-                break
-
-    def on_screen_count_changed(self, changed_screen=None):
-        """
-        Called when a screen has been added or removed.
-
-        ``changed_screen``
-            The screen's number which has been (un)plugged.
-        """
-        screen_count = self.desktop.screenCount()
-        log.info('screen_count_changed {count:d}'.format(count=screen_count))
-        # Update the list of screens
-        self.update_screens()
-        # Reload setting tabs to apply possible changes.
+            # once the screen that must be removed has been found, update numbering
+            if removed_screen_number >= 0:
+                screen.number -= 1
+            # find the screen that is removed
+            if removed_screen.geometry() == screen.geometry:
+                removed_screen_number = screen.number
+        removed_screen_is_display = self.screens[removed_screen_number].is_display
+        self.screens.pop(removed_screen_number)
+        if removed_screen_is_display:
+            self.find_new_display_screen()
         Registry().execute('config_screen_changed')
 
     def on_primary_screen_changed(self):
@@ -356,5 +410,5 @@ class ScreenList(metaclass=Singleton):
         The primary screen has changed, let's sort it out and then notify everyone
         """
         for screen in self.screens:
-            screen.is_primary = self.desktop.primaryScreen() == screen.number
+            screen.is_primary = self.application.primaryScreen().geometry() == screen.geometry
         Registry().execute('config_screen_changed')

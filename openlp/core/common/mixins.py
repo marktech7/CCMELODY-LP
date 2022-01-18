@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,12 +24,13 @@ Provide Error Handling and login Services
 import inspect
 import logging
 
-from openlp.core.common import is_win, trace_error_handler
+from openlp.core.common import trace_error_handler
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 
 
 DO_NOT_TRACE_EVENTS = ['timerEvent', 'paintEvent', 'drag_enter_event', 'drop_event', 'on_controller_size_changed',
-                       'preview_size_changed', 'resizeEvent', 'eventFilter']
+                       'preview_size_changed', 'resizeEvent', 'eventFilter', 'tick']
 
 
 class LogMixin(object):

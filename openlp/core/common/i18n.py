@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,8 +28,9 @@ from collections import namedtuple
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Singleton, is_macosx, is_win
+from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)
@@ -336,6 +337,8 @@ class UiStrings(metaclass=Singleton):
         """
         self.About = translate('OpenLP.Ui', 'About')
         self.Add = translate('OpenLP.Ui', '&Add')
+        self.AddFolder = translate('OpenLP.Ui', 'Add folder')
+        self.AddFolderDot = translate('OpenLP.Ui', 'Add folder.')
         self.AddGroup = translate('OpenLP.Ui', 'Add group')
         self.AddGroupDot = translate('OpenLP.Ui', 'Add group.')
         self.Advanced = translate('OpenLP.Ui', 'Advanced')
@@ -404,7 +407,7 @@ class UiStrings(metaclass=Singleton):
         self.NISp = translate('OpenLP.Ui', 'No Items Selected', 'Plural')
         self.NoResults = translate('OpenLP.Ui', 'No Search Results')
         self.OpenLP = translate('OpenLP.Ui', 'OpenLP')
-        self.OpenLPv2AndUp = translate('OpenLP.Ui', 'OpenLP 2.0 and up')
+        self.OpenLPv2AndUp = translate('OpenLP.Ui', 'OpenLP Song Database')
         self.OpenLPStart = translate('OpenLP.Ui', 'OpenLP is already running on this machine. \nClosing this instance')
         self.OpenService = translate('OpenLP.Ui', 'Open service.')
         self.OptionalShowInFooter = translate('OpenLP.Ui', 'Optional, this will be displayed in footer.')
@@ -452,6 +455,7 @@ class UiStrings(metaclass=Singleton):
         self.ViewMode = translate('OpenLP.Ui', 'View Mode')
         self.Video = translate('OpenLP.Ui', 'Video')
         self.WebDownloadText = translate('OpenLP.Ui', 'Web Interface, Download and Install Latest Version')
+        self.WholeVerseContinuous = translate('OpenLP.Ui', 'Continuous (whole verses)')
         self.ZeroconfErrorIntro = translate('OpenLP.Ui', 'There was a problem advertising OpenLP\'s remote '
                                                          'interface on the network:')
         self.ZeroconfGenericError = translate('OpenLP.Ui', 'An unknown error occurred')

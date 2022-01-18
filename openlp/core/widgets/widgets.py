@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -190,7 +190,12 @@ class ScreenButton(QtWidgets.QPushButton):
         super().__init__(parent)
         self.setObjectName('screen_{number}_button'.format(number=screen.number))
         self.setCheckable(True)
-        self.setText(str(screen))
+        if isinstance(screen.geometry, QtCore.QRect):
+            screen_size_text = translate('OpenLP.ScreenButton',
+                                         f'({screen.geometry.width()} x {screen.geometry.height()} pixels)')
+            self.setText(str(screen) + '\n' + screen_size_text)
+        else:
+            self.setText(str(screen))
         self.screen = screen
 
 
@@ -291,10 +296,11 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.custom_geometry_button.toggled.connect(self.width_spin_box.setEnabled)
         self.identify_button.clicked.connect(self.on_identify_button_clicked)
 
-        self._setup_spin_box(self.left_spin_box, 0, 9999, 0)
-        self._setup_spin_box(self.top_spin_box, 0, 9999, 0)
-        self._setup_spin_box(self.width_spin_box, 0, 9999, 0)
-        self._setup_spin_box(self.height_spin_box, 0, 9999, 0)
+        self._setup_spin_box(self.left_spin_box, -99999, 99999, 0)
+        self._setup_spin_box(self.top_spin_box, -99999, 99999, 0)
+        self._setup_spin_box(self.width_spin_box, -99999, 99999, 0)
+        self._setup_spin_box(self.height_spin_box, -99999, 99999, 0)
+
         self.retranslate_ui()
 
     def retranslate_ui(self):
@@ -432,11 +438,15 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.display_group_box.setChecked(screen.is_display)
         self.full_screen_radio_button.setChecked(screen.custom_geometry is None)
         self.custom_geometry_button.setChecked(screen.custom_geometry is not None)
-        self._setup_spin_box(self.left_spin_box, screen.display_geometry.y(), screen.display_geometry.right(),
-                             screen.display_geometry.x())
-        self._setup_spin_box(self.top_spin_box, screen.display_geometry.y(), screen.display_geometry.bottom(),
-                             screen.display_geometry.y())
-        self._setup_spin_box(self.width_spin_box, 0, screen.display_geometry.width(), screen.display_geometry.width())
-        self._setup_spin_box(self.height_spin_box, 0, screen.display_geometry.height(),
-                             screen.display_geometry.height())
+        if isinstance(screen.custom_geometry, QtCore.QRect):
+            self.left_spin_box.setValue(screen.custom_geometry.x())
+            self.top_spin_box.setValue(screen.custom_geometry.y())
+            self.width_spin_box.setValue(screen.custom_geometry.width())
+            self.height_spin_box.setValue(screen.custom_geometry.height())
+        else:
+            self.left_spin_box.setValue(0)
+            self.top_spin_box.setValue(0)
+            self.width_spin_box.setValue(screen.geometry.width())
+            self.height_spin_box.setValue(screen.geometry.height())
+
         self.current_screen = screen

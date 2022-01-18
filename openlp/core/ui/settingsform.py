@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,7 +23,7 @@ The :mod:`settingsform` provides a user interface for the OpenLP settings
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from openlp.core.state import State
 from openlp.core.api.tab import ApiTab
@@ -33,6 +33,7 @@ from openlp.core.lib import build_icon
 from openlp.core.projectors.tab import ProjectorTab
 from openlp.core.ui.advancedtab import AdvancedTab
 from openlp.core.ui.generaltab import GeneralTab
+from openlp.core.ui.servicetab import ServiceTab
 from openlp.core.ui.screenstab import ScreensTab
 from openlp.core.ui.themestab import ThemesTab
 from openlp.core.ui.media.mediatab import MediaTab
@@ -58,6 +59,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         self.setup_ui(self)
         self.setting_list_widget.currentRowChanged.connect(self.list_item_changed)
         self.general_tab = None
+        self.service_tab = None
         self.themes_tab = None
         self.player_tab = None
         self.projector_tab = None
@@ -75,6 +77,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
             # take at 0 and the rest shuffle up.
             self.stacked_layout.takeAt(0)
         self.insert_tab(self.general_tab)
+        self.insert_tab(self.service_tab)
         self.insert_tab(self.advanced_tab)
         self.insert_tab(self.screens_tab)
         self.insert_tab(self.themes_tab)
@@ -129,9 +132,6 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
                 tab_widget = self.stacked_layout.widget(tab_index)
                 if tab_widget.tab_title == plugin_name:
                     tab_widget.save()
-        # if the image background has been changed we need to regenerate the image cache
-        if 'images_config_updated' in self.processes or 'config_screen_changed' in self.processes:
-            self.register_post_process('images_regenerate')
         # Now lets process all the post save handlers
         while self.processes:
             Registry().execute(self.processes.pop(0))
@@ -162,6 +162,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         """
         try:
             self.general_tab = GeneralTab(self)
+            self.service_tab = ServiceTab(self)
             self.themes_tab = ThemesTab(self)
             self.projector_tab = ProjectorTab(self)
             self.advanced_tab = AdvancedTab(self)
@@ -209,3 +210,9 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         """
         if function not in self.processes:
             self.processes.append(function)
+
+    def provide_help(self):
+        """
+        Provide help within the form by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/configure.html"))

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -63,6 +63,12 @@ class CustomPlugin(Plugin):
                                'provides the ability to set up custom text slides that can be displayed on the screen '
                                'the same way songs are. This plugin provides greater freedom over the songs plugin.')
         return about_text
+
+    def check_pre_conditions(self):
+        """
+        Check the plugin can run.
+        """
+        return self.db_manager.session is not None
 
     def uses_theme(self, theme):
         """

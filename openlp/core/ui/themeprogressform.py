@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -49,11 +49,20 @@ class ThemeProgressForm(QtWidgets.QDialog, UiThemeProgressDialog, RegistryProper
         return super().show()
 
     def get_preview(self, theme_name, theme_data):
+        """
+        Fetch a screenshot of the webengine preview
+
+        :return: Image of the webengine, can be None
+        """
         self.label.setText(theme_name)
         self.progress_bar.setValue(self.progress_bar.value() + 1)
         wait_for(lambda: self.theme_display.is_initialised)
         self.theme_display.set_scale(float(self.theme_display.width()) / self.renderer.width())
-        return self.theme_display.generate_preview(theme_data, generate_screenshot=True)
+        screenshot = self.theme_display.generate_preview(theme_data, generate_screenshot=True)
+        if self.isVisible():
+            return screenshot
+        else:
+            return None
 
     def _get_theme_list(self):
         """Property getter"""

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -64,10 +64,10 @@ class WorshipCenterProImport(SongImport):
         records = cursor.fetchall()
         songs = {}
         for record in records:
-            id = record.ID
-            if id not in songs:
-                songs[id] = {}
-            songs[id][record.Field] = record.Value
+            record_id = record.ID
+            if record_id not in songs:
+                songs[record_id] = {}
+            songs[record_id][record.Field] = record.Value
         self.import_wizard.progress_bar.setMaximum(len(songs))
         for song in songs:
             if self.stop_import_flag:

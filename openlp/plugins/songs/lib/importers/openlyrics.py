@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,7 +52,7 @@ class OpenLyricsImport(SongImport):
         Imports the songs.
         """
         self.import_wizard.progress_bar.setMaximum(len(self.import_source))
-        parser = etree.XMLParser(remove_blank_text=True)
+        parser = etree.XMLParser(remove_blank_text=True, remove_pis=True)
         for file_path in self.import_source:
             if self.stop_import_flag:
                 return
@@ -61,7 +61,15 @@ class OpenLyricsImport(SongImport):
                 # Pass a file object, because lxml does not cope with some
                 # special characters in the path (see lp:757673 and lp:744337).
                 parsed_file = etree.parse(file_path.open('rb'), parser)
-                xml = etree.tostring(parsed_file).decode()
+
+                # Remove whitespaces from <lines> tags and its descendants
+                root = parsed_file.getroot()
+                for elem in root.iter('{*}lines'):
+                    self._strip_whitespace(elem)
+                    for subelem in elem.iter('{*}br'):
+                        self._strip_whitespace(subelem)
+
+                xml = etree.tostring(root).decode()
                 self.open_lyrics.xml_to_song(xml)
             except etree.XMLSyntaxError:
                 log.exception('XML syntax error in file {path}'.format(path=file_path))
@@ -71,3 +79,12 @@ class OpenLyricsImport(SongImport):
                                                                                             name=file_path,
                                                                                             text=exception.log_message))
                 self.log_error(file_path, exception.display_message)
+
+    def _strip_whitespace(self, elem):
+        """
+        Remove leading and trailing whitespace from the 'text' and 'tail' attributes of an etree._Element object
+        """
+        if elem.text is not None:
+            elem.text = elem.text.strip()
+        if elem.tail is not None:
+            elem.tail = elem.tail.strip()

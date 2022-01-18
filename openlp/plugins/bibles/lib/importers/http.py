@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,6 +21,7 @@
 """
 The :mod:`http` module enables OpenLP to retrieve scripture from bible websites.
 """
+import json
 import logging
 import re
 import socket
@@ -516,14 +517,14 @@ class CWExtract(RegistryProperties):
         url_book_name = book_name.replace(' ', '-')
         url_book_name = url_book_name.lower()
         url_book_name = urllib.parse.quote(url_book_name.encode("utf-8"))
-        chapter_url = 'http://www.biblestudytools.com/{version}/{book}/{chapter}.html'.format(version=version,
-                                                                                              book=url_book_name,
-                                                                                              chapter=chapter)
+        chapter_url = 'https://www.biblestudytools.com/{version}/{book}/{chapter}.html'.format(version=version,
+                                                                                               book=url_book_name,
+                                                                                               chapter=chapter)
         soup = get_soup_for_bible_ref(chapter_url)
         if not soup:
             return None
         self.application.process_events()
-        verses_div = soup.find_all('div', 'verse')
+        verses_div = soup.find_all('div', {'data-verse-id': True})
         if not verses_div:
             log.error('No verses found in the CrossWalk response.')
             send_error_message('parse')
@@ -531,12 +532,11 @@ class CWExtract(RegistryProperties):
         verses = {}
         for verse in verses_div:
             self.application.process_events()
-            verse_number = int(verse.find('strong').contents[0])
-            verse_span = verse.find('span', class_='verse-%d' % verse_number)
-            tags_to_remove = verse_span.find_all(['a', 'sup'])
+            verse_number = int(verse['data-verse-id'])
+            tags_to_remove = verse.find_all(['a', 'sup', 'h3'])
             for tag in tags_to_remove:
                 tag.decompose()
-            verse_text = verse_span.get_text()
+            verse_text = verse.get_text()
             self.application.process_events()
             # Fix up leading and trailing spaces, multiple spaces, and spaces between text and , and .
             verse_text = verse_text.strip('\n\r\t ')
@@ -552,18 +552,25 @@ class CWExtract(RegistryProperties):
         :param version: The version of the bible like NIV for New International Version
         """
         log.debug('CWExtract.get_books_from_http("{version}")'.format(version=version))
-        chapter_url = 'http://www.biblestudytools.com/{version}/'.format(version=version)
-        soup = get_soup_for_bible_ref(chapter_url)
-        if not soup:
-            return None
-        content = soup.find_all('h4', {'class': 'small-header'})
-        if not content:
-            log.error('No books found in the Crosswalk response.')
-            send_error_message('parse')
-            return None
+        books_url = 'https://www.biblestudytools.com/api/bible/books-selection/?translationCode={version}'
+        books_url = books_url.format(version=version)
         books = []
-        for book in content:
-            books.append(book.contents[0])
+        books_page = get_web_page(books_url)
+        if not books_page:
+            log.error('No books found in the CrossWalk response.')
+            send_error_message('parse')
+            return books
+        books_json = json.loads(books_page)
+        for book in books_json:
+            # the link looks like this: https://www.biblestudytools.com/bla/2-corintios/
+            link = book['link']
+            # remove trailing forward slash
+            link = link.strip('/')
+            # remove everything before the book name/code
+            book_name = link[link.rfind('/') + 1:]
+            # replace dash with space
+            book_name = book_name.replace('-', ' ')
+            books.append(book_name)
         return books
 
     def get_bibles_from_http(self):
@@ -572,26 +579,16 @@ class CWExtract(RegistryProperties):
         returns a list in the form [(biblename, biblekey, language_code)]
         """
         log.debug('CWExtract.get_bibles_from_http')
-        bible_url = 'http://www.biblestudytools.com/bible-versions/'
+        bible_url = 'https://www.biblestudytools.com/'
         soup = get_soup_for_bible_ref(bible_url)
         if not soup:
             return None
-        h4_tags = soup.find_all('h4', {'class': 'small-header'})
-        if not h4_tags:
-            log.debug('No h4 tags found - did site change?')
-            return None
+        # Get all <option class="log-translation" ...> on the page
+        options = soup.find_all('option', {'class': 'log-translation'})
         bibles = []
-        for h4t in h4_tags:
-            short_name = None
-            if h4t.span:
-                short_name = h4t.span.get_text().strip().lower()
-            else:
-                log.error('No span tag found - did site change?')
-                return None
-            if not short_name:
-                continue
-            h4t.span.extract()
-            tag_text = h4t.get_text().strip()
+        for option in options:
+            short_name = option['value']
+            tag_text = str(option.contents[0]).strip()
             # The names of non-english bibles has their language in parentheses at the end
             if tag_text.endswith(')'):
                 language = tag_text[tag_text.rfind('(') + 1:-1]

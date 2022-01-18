@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,7 +24,7 @@ from pathlib import Path
 
 from PyQt5 import QtCore
 
-from openlp.core.common import md5_hash, sha256_file_hash
+from openlp.core.common import Singleton, md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
@@ -368,11 +368,11 @@ class PresentationDocument(object):
         """
         if titles:
             titles_path = self.get_thumbnail_folder() / 'titles.txt'
-            titles_path.write_text('\n'.join(titles))
+            titles_path.write_text('\n'.join(titles), encoding='utf-8')
         if notes:
             for slide_no, note in enumerate(notes, 1):
                 notes_path = self.get_thumbnail_folder() / 'slideNotes{number:d}.txt'.format(number=slide_no)
-                notes_path.write_text(note)
+                notes_path.write_text(note, encoding='utf-8')
 
     def get_sha256_file_hash(self):
         """
@@ -384,6 +384,37 @@ class PresentationDocument(object):
         if not self._sha256_file_hash:
             self._sha256_file_hash = sha256_file_hash(self.file_path)
         return self._sha256_file_hash
+
+
+class PresentationList(metaclass=Singleton):
+    """
+    This is a singleton class which maintains a list of instances for presentations
+    which have been started.
+    The document load_presentation() method is called several times - for example, when the
+    presentation files are being loaded into the library - but a document is included in this
+    PresentationList only when the presentation is actually displayed.
+    In this case the loading is initiated by a Registry 'presentation_start' event, the message
+    includes the service item, and the unique_identifier from the service item is used as the id
+    to differentiate the presentation document instances within this PresentationList.
+    The purpose of this is so that the 'presentation_stop' event, which also includes the service
+    item and its unique identifier, can result in the correct presentation being stopped.
+    This fixes issue #700
+    """
+
+    def __init__(self):
+        self._presentations = {}
+
+    def add(self, document, unique_id):
+        self._presentations[unique_id] = document
+
+    def remove(self, unique_id):
+        del self._presentations[unique_id]
+
+    def get_presentation_by_id(self, unique_id):
+        if unique_id in self._presentations:
+            return self._presentations[unique_id]
+        else:
+            return None
 
 
 class PresentationController(object):

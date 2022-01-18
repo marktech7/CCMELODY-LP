@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -40,16 +40,21 @@ from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def qapp(qtbot):
     """An instance of QApplication"""
-    qt_api.QApplication.instance()
+    # Newer versions of pytest-qt have QApplication in the widgets module.
+    # Catch attribute error if the widgets module is missing and instantiate QApplication the old way.
+    try:
+        qt_api.QtWidgets.QApplication.instance()
+    except AttributeError:
+        qt_api.QApplication.instance()
     app = OpenLP()
     yield app
     del app
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def mocked_qapp():
     """A mocked instance of QApplication"""
     app = MagicMock()
@@ -57,14 +62,14 @@ def mocked_qapp():
     del app
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def registry():
     """An instance of the Registry"""
     yield Registry.create()
     Registry._instances = {}
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def settings(qapp, registry):
     """A Settings() instance"""
     fd, ini_file = mkstemp('.ini')
@@ -85,7 +90,7 @@ def settings(qapp, registry):
     os.unlink(Settings().fileName())
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def mock_settings(qapp, registry):
     """A Mock Settings() instance"""
     # Create and register a mock settings object to work with
@@ -99,7 +104,7 @@ def mock_settings(qapp, registry):
     del mk_settings
 
 
-@pytest.yield_fixture
+@pytest.fixture
 def state():
     yield State().load_settings()
     State._instances = {}
@@ -112,7 +117,7 @@ def state_media(state):
     State().flush_preconditions()
 
 
-@pytest.yield_fixture()
+@pytest.fixture()
 def temp_folder():
     t_folder = mkdtemp(prefix='openlp_')
     yield t_folder

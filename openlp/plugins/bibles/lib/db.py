@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -330,7 +330,6 @@ class BibleDB(Manager):
                     if not book_list:
                         book_list = books
             return [value['id'] for value in book_list if self.get_book_by_book_ref_id(value['id'])]
-        return []
 
     def get_verses(self, reference_list, show_error=True):
         """
@@ -761,7 +760,7 @@ class AlternativeBookNamesDB(Manager):
         If necessary loads up the database and creates the tables if the database doesn't exist.
         """
         if AlternativeBookNamesDB.cursor is None:
-            file_path = AppLocation.get_directory(AppLocation.DataDir) / 'bibles' / 'alternative_book_names.sqlite'
+            file_path = AppLocation.get_section_data_path('bibles') / 'alternative_book_names.sqlite'
             exists = file_path.exists()
             AlternativeBookNamesDB.conn = sqlite3.connect(str(file_path))
             if not exists:

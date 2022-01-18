@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,8 +23,9 @@ The song import functions for OpenLP.
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
+from openlp.core.common.handlers import handle_permission_error
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.lib.ui import critical_error_message_box
@@ -463,6 +464,12 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         self.format_widgets[this_format]['import_widget'] = import_widget
         return import_widget
 
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/songs.html#song-importer"))
+
 
 class SongImportSourcePage(QtWidgets.QWizardPage):
     """
@@ -490,9 +497,10 @@ class SongImportSourcePage(QtWidgets.QWizardPage):
                     return True
             else:
                 file_path = wizard.format_widgets[this_format]['path_edit'].path
-                if file_path:
-                    if select_mode == SongFormatSelect.SingleFile and file_path.is_file():
-                        return True
-                    elif select_mode == SongFormatSelect.SingleFolder and file_path.is_dir():
-                        return True
+                if file_path and file_path.exists():
+                    with handle_permission_error(file_path):
+                        if select_mode == SongFormatSelect.SingleFile and file_path.is_file():
+                            return True
+                        elif select_mode == SongFormatSelect.SingleFolder and file_path.is_dir():
+                            return True
         return False

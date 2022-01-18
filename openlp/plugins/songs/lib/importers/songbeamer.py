@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,8 +28,9 @@ import os
 import re
 from pathlib import Path
 
-from openlp.core.common import get_file_encoding, is_macosx, is_win
+from openlp.core.common import get_file_encoding
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 

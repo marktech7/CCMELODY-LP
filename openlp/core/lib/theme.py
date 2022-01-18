@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,6 +23,7 @@ Provide the theme XML and handling functions for OpenLP v2 themes.
 """
 import json
 import logging
+import copy
 
 from lxml import etree, objectify
 
@@ -30,7 +31,7 @@ from openlp.core.common import de_hump
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.display.screens import ScreenList
-from openlp.core.lib import get_text_file_string, str_to_bool
+from openlp.core.lib import get_text_file_string, str_to_bool, image_to_data_uri
 
 
 log = logging.getLogger(__name__)
@@ -301,6 +302,7 @@ class Theme(object):
         json_path = AppLocation.get_directory(AppLocation.AppDir) / 'core' / 'lib' / 'json' / 'theme.json'
         jsn = get_text_file_string(json_path)
         self.load_theme(jsn)
+        self.set_default_header_footer()
         self.background_filename = None
         self.background_source = None
         self.version = 2
@@ -334,13 +336,18 @@ class Theme(object):
 
     def set_default_header_footer(self):
         """
-        Set the header and footer size into the current primary screen.
-        10 px on each side is removed to allow for a border.
+        Set the default header and footer size to match the current primary screen.
+        Obeys theme override variables.
         """
-        self.set_default_header()
-        self.set_default_footer()
+        if not self.font_main_override:
+            self.set_default_header()
+        if not self.font_footer_override:
+            self.set_default_footer()
 
     def set_default_header(self):
+        """
+        Sets the default header position and size, ignores font_main_override
+        """
         current_screen_geometry = ScreenList().current.display_geometry
         self.font_main_x = 10
         self.font_main_y = 0
@@ -348,6 +355,9 @@ class Theme(object):
         self.font_main_height = current_screen_geometry.height() * 9 / 10
 
     def set_default_footer(self):
+        """
+        Sets the default footer position and size, ignores font_footer_override
+        """
         current_screen_geometry = ScreenList().current.display_geometry
         self.font_footer_x = 10
         self.font_footer_y = current_screen_geometry.height() * 9 / 10
@@ -380,6 +390,25 @@ class Theme(object):
         for attr, value in self.__dict__.items():
             theme_data["{attr}".format(attr=attr)] = value
         return json.dumps(theme_data, cls=OpenLPJSONEncoder, base_path=theme_path, is_js=is_js)
+
+    def export_theme_self_contained(self, is_js=True):
+        """
+        Get a self contained theme dictionary
+        Same as export theme, but images is turned into a data uri
+
+        :param is_js: For internal use, for example with the theme js code.
+        :return str: The json encoded theme object
+        """
+        theme_copy = copy.deepcopy(self)
+        if self.background_type == 'image':
+            image = image_to_data_uri(self.background_filename)
+            theme_copy.background_filename = image
+        current_screen_geometry = ScreenList().current.display_geometry
+        theme_copy.display_size_width = current_screen_geometry.width()
+        theme_copy.display_size_height = current_screen_geometry.height()
+        theme_copy.background_source = ''
+        exported_theme = theme_copy.export_theme(is_js=is_js)
+        return exported_theme
 
     def parse(self, xml):
         """

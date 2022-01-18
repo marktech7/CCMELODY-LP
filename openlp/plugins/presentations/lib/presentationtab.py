@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,9 +23,6 @@ from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.settingstab import SettingsTab
-from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.widgets.edits import PathEdit
-from openlp.plugins.presentations.lib.pdfcontroller import PdfController
 
 
 class PresentationTab(SettingsTab):
@@ -79,23 +76,19 @@ class PresentationTab(SettingsTab):
         self.ppt_window_check_box.setObjectName('ppt_window_check_box')
         self.powerpoint_layout.addWidget(self.ppt_window_check_box)
         self.left_layout.addWidget(self.powerpoint_group_box)
-        # Pdf options
-        self.pdf_group_box = QtWidgets.QGroupBox(self.left_column)
-        self.pdf_group_box.setObjectName('pdf_group_box')
-        self.pdf_layout = QtWidgets.QFormLayout(self.pdf_group_box)
-        self.pdf_layout.setObjectName('pdf_layout')
-        self.pdf_program_check_box = QtWidgets.QCheckBox(self.pdf_group_box)
-        self.pdf_program_check_box.setObjectName('pdf_program_check_box')
-        self.pdf_layout.addRow(self.pdf_program_check_box)
-        self.program_path_edit = PathEdit(self.pdf_group_box)
-        self.pdf_layout.addRow(self.program_path_edit)
-        self.left_layout.addWidget(self.pdf_group_box)
+        # Impress
+        self.impress_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.impress_group_box.setObjectName('impress_group_box')
+        self.impress_layout = QtWidgets.QVBoxLayout(self.impress_group_box)
+        self.impress_layout.setObjectName('impress_layout')
+        self.odp_display_check_box = QtWidgets.QCheckBox(self.impress_group_box)
+        self.odp_display_check_box.setObjectName('odp_display_check_box')
+        self.impress_layout.addWidget(self.odp_display_check_box)
+        self.left_layout.addWidget(self.impress_group_box)
+        # setup layout
         self.left_layout.addStretch()
         self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         self.right_layout.addStretch()
-        # Signals and slots
-        self.program_path_edit.pathChanged.connect(self.on_program_path_edit_path_changed)
-        self.pdf_program_check_box.clicked.connect(self.program_path_edit.setEnabled)
 
     def retranslate_ui(self):
         """
@@ -107,7 +100,6 @@ class PresentationTab(SettingsTab):
             checkbox = self.presenter_check_boxes[controller.name]
             self.set_controller_text(checkbox, controller)
         self.advanced_group_box.setTitle(UiStrings().Advanced)
-        self.pdf_group_box.setTitle(translate('PresentationPlugin.PresentationTab', 'PDF options'))
         self.powerpoint_group_box.setTitle(translate('PresentationPlugin.PresentationTab', 'PowerPoint options'))
         self.override_app_check_box.setText(
             translate('PresentationPlugin.PresentationTab', 'Allow presentation application to be overridden'))
@@ -118,10 +110,10 @@ class PresentationTab(SettingsTab):
             translate('PresentationPlugin.PresentationTab',
                       'Let PowerPoint control the size and monitor of the presentations\n'
                       '(This may fix PowerPoint scaling issues in Windows 8 and 10)'))
-        self.pdf_program_check_box.setText(
-            translate('PresentationPlugin.PresentationTab', 'Use given full path for mudraw or ghostscript binary:'))
-        self.program_path_edit.dialog_caption = translate('PresentationPlugin.PresentationTab',
-                                                          'Select mudraw or ghostscript binary')
+        self.impress_group_box.setTitle(translate('PresentationPlugin.PresentationTab', 'Impress options'))
+        self.odp_display_check_box.setText(
+            translate('PresentationPlugin.PresentationTab',
+                      'Use Impress Slide Show Settings / Presentation Display setting'))
 
     def set_controller_text(self, checkbox, controller):
         if checkbox.isEnabled():
@@ -135,23 +127,24 @@ class PresentationTab(SettingsTab):
         Load the settings.
         """
         powerpoint_available = False
+        impress_available = False
         for key in self.controllers:
             controller = self.controllers[key]
             checkbox = self.presenter_check_boxes[controller.name]
             checkbox.setChecked(self.settings.value('presentations/' + controller.name))
             if controller.name == 'Powerpoint' and controller.is_available():
                 powerpoint_available = True
+            if controller.name == 'Impress' and controller.is_available():
+                impress_available = True
         self.override_app_check_box.setChecked(self.settings.value('presentations/override app'))
         # Load PowerPoint settings
         self.ppt_slide_click_check_box.setChecked(self.settings.value('presentations/powerpoint slide click advance'))
         self.ppt_slide_click_check_box.setEnabled(powerpoint_available)
         self.ppt_window_check_box.setChecked(self.settings.value('presentations/powerpoint control window'))
         self.ppt_window_check_box.setEnabled(powerpoint_available)
-        # load pdf-program settings
-        enable_pdf_program = self.settings.value('presentations/enable_pdf_program')
-        self.pdf_program_check_box.setChecked(enable_pdf_program)
-        self.program_path_edit.setEnabled(enable_pdf_program)
-        self.program_path_edit.path = self.settings.value('presentations/pdf_program')
+        # Load Impress settings
+        self.odp_display_check_box.setChecked(self.settings.value('presentations/impress use display setting'))
+        self.odp_display_check_box.setEnabled(impress_available)
 
     def save(self):
         """
@@ -186,17 +179,10 @@ class PresentationTab(SettingsTab):
         if self.settings.value(setting_key) != self.ppt_window_check_box.checkState():
             self.settings.setValue(setting_key, self.ppt_window_check_box.checkState())
             changed = True
-        # Save pdf-settings
-        pdf_program_path = self.program_path_edit.path
-        enable_pdf_program = self.pdf_program_check_box.checkState()
-        # If the given program is blank disable using the program
-        if pdf_program_path is None:
-            enable_pdf_program = 0
-        if pdf_program_path != self.settings.value('presentations/pdf_program'):
-            self.settings.setValue('presentations/pdf_program', pdf_program_path)
-            changed = True
-        if enable_pdf_program != self.settings.value('presentations/enable_pdf_program'):
-            self.settings.setValue('presentations/enable_pdf_program', enable_pdf_program)
+        # Save impress setting
+        setting_key = 'presentations/impress use display setting'
+        if self.settings.value(setting_key) != self.odp_display_check_box.checkState():
+            self.settings.setValue(setting_key, self.odp_display_check_box.checkState())
             changed = True
         if changed:
             self.settings_form.register_post_process('mediaitem_suffix_reset')
@@ -213,16 +199,3 @@ class PresentationTab(SettingsTab):
             checkbox = self.presenter_check_boxes[controller.name]
             checkbox.setEnabled(controller.is_available())
             self.set_controller_text(checkbox, controller)
-
-    def on_program_path_edit_path_changed(self, new_path):
-        """
-        Handle the `pathEditChanged` signal from program_path_edit
-
-        :param pathlib.Path new_path: File path to the new program
-        :rtype: None
-        """
-        if new_path:
-            if not PdfController.process_check_binary(new_path):
-                critical_error_message_box(UiStrings().Error,
-                                           translate('PresentationPlugin.PresentationTab',
-                                                     'The program is not ghostscript or mudraw which is required.'))

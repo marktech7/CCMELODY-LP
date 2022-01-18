@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,6 +52,9 @@ class SongsTab(SettingsTab):
         self.songbook_slide_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.songbook_slide_check_box.setObjectName('songbook_slide_check_box')
         self.mode_layout.addWidget(self.songbook_slide_check_box)
+        self.auto_play_check_box = QtWidgets.QCheckBox(self.mode_group_box)
+        self.auto_play_check_box.setObjectName('auto_play_check_box')
+        self.mode_layout.addWidget(self.auto_play_check_box)
         self.left_layout.addWidget(self.mode_group_box)
         # Chords group box
         self.chords_group_box = QtWidgets.QGroupBox(self.left_column)
@@ -64,7 +67,11 @@ class SongsTab(SettingsTab):
         self.chords_layout.addWidget(self.chords_info_label)
         self.disable_chords_import_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.disable_chords_import_check_box.setObjectName('disable_chords_import_check_box')
+        self.song_key_warning_check_box = QtWidgets.QCheckBox(self.mode_group_box)
+        self.song_key_warning_check_box.setObjectName('song_key_warning_checkbox')
         self.chords_layout.addWidget(self.disable_chords_import_check_box)
+        self.chords_layout.addWidget(self.song_key_warning_check_box)
+
         # Chords notation group box
         self.chord_notation_label = QtWidgets.QLabel(self.chords_group_box)
         self.chord_notation_label.setWordWrap(True)
@@ -79,6 +86,25 @@ class SongsTab(SettingsTab):
         self.neolatin_notation_radio_button.setObjectName('neolatin_notation_radio_button')
         self.chords_layout.addWidget(self.neolatin_notation_radio_button)
         self.left_layout.addWidget(self.chords_group_box)
+
+        # CCLI SongSelect login group box
+        self.ccli_login_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.ccli_login_group_box.setObjectName('ccli_login_group_box')
+        self.ccli_login_layout = QtWidgets.QFormLayout(self.ccli_login_group_box)
+        self.ccli_login_layout.setObjectName('ccli_login_layout')
+        self.ccli_username_label = QtWidgets.QLabel(self.ccli_login_group_box)
+        self.ccli_username_label.setObjectName('ccli_username_label')
+        self.ccli_username = QtWidgets.QLineEdit(self.ccli_login_group_box)
+        self.ccli_username.setObjectName('ccli_username')
+        self.ccli_login_layout.addRow(self.ccli_username_label, self.ccli_username)
+        self.ccli_password_label = QtWidgets.QLabel(self.ccli_login_group_box)
+        self.ccli_password_label.setObjectName('ccli_password_label')
+        self.ccli_password = QtWidgets.QLineEdit(self.ccli_login_group_box)
+        self.ccli_password.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ccli_password.setObjectName('ccli_password')
+        self.ccli_login_layout.addRow(self.ccli_password_label, self.ccli_password)
+        self.left_layout.addWidget(self.ccli_login_group_box)
+
         # Footer group box
         self.footer_group_box = QtWidgets.QGroupBox(self.left_column)
         self.footer_group_box.setObjectName('footer_group_box')
@@ -95,13 +121,17 @@ class SongsTab(SettingsTab):
         self.footer_reset_button = QtWidgets.QPushButton(self.footer_group_box)
         self.footer_layout.addWidget(self.footer_reset_button, alignment=QtCore.Qt.AlignRight)
         self.right_layout.addWidget(self.footer_group_box)
+
         self.left_layout.addStretch()
         self.right_layout.addStretch()
+
         self.tool_bar_active_check_box.stateChanged.connect(self.on_tool_bar_active_check_box_changed)
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
         self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
+        self.auto_play_check_box.stateChanged.connect(self.on_auto_play_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
+        self.song_key_warning_check_box.stateChanged.connect(self.on_song_key_warning_check_box_changed)
         self.english_notation_radio_button.clicked.connect(self.on_english_notation_button_clicked)
         self.german_notation_radio_button.clicked.connect(self.on_german_notation_button_clicked)
         self.neolatin_notation_radio_button.clicked.connect(self.on_neolatin_notation_button_clicked)
@@ -116,16 +146,21 @@ class SongsTab(SettingsTab):
                                                           'Import missing songs from Service files'))
         self.songbook_slide_check_box.setText(translate('SongsPlugin.SongsTab',
                                                         'Add Songbooks as first slide'))
+        self.auto_play_check_box.setText(translate('SongsPlugin.SongsTab', 'Auto-play background audio'))
         self.chords_info_label.setText(translate('SongsPlugin.SongsTab', 'If enabled all text between "[" and "]" will '
                                                                          'be regarded as chords.'))
         self.chords_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Chords'))
         self.disable_chords_import_check_box.setText(translate('SongsPlugin.SongsTab',
                                                                'Ignore chords when importing songs'))
+        self.ccli_login_group_box.setTitle(translate('SongsPlugin.SongsTab', 'SongSelect Login'))
+        self.ccli_username_label.setText(translate('SongsPlugin.SongsTab', 'Username:'))
+        self.ccli_password_label.setText(translate('SongsPlugin.SongsTab', 'Password:'))
         self.chord_notation_label.setText(translate('SongsPlugin.SongsTab', 'Chord notation to use:'))
         self.english_notation_radio_button.setText(translate('SongsPlugin.SongsTab', 'English') + ' (C-D-E-F-G-A-B)')
         self.german_notation_radio_button.setText(translate('SongsPlugin.SongsTab', 'German') + ' (C-D-E-F-G-A-H)')
         self.neolatin_notation_radio_button.setText(
             translate('SongsPlugin.SongsTab', 'Neo-Latin') + ' (Do-Re-Mi-Fa-Sol-La-Si)')
+        self.song_key_warning_check_box.setText(translate('SongsPlugin.SongsTab', 'Warn about missing song key'))
         self.footer_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Footer'))
         # Keep this in sync with the list in mediaitem.py
         const = '<code>"{}"</code>'
@@ -188,8 +223,14 @@ class SongsTab(SettingsTab):
     def on_songbook_slide_check_box_changed(self, check_state):
         self.songbook_slide = (check_state == QtCore.Qt.Checked)
 
+    def on_auto_play_check_box_changed(self, check_state):
+        self.auto_play = (check_state == QtCore.Qt.Checked)
+
     def on_disable_chords_import_check_box_changed(self, check_state):
         self.disable_chords_import = (check_state == QtCore.Qt.Checked)
+
+    def on_song_key_warning_check_box_changed(self, check_state):
+        self.song_key_warning = (check_state == QtCore.Qt.Checked)
 
     def on_english_notation_button_clicked(self):
         self.chord_notation = 'english'
@@ -208,31 +249,51 @@ class SongsTab(SettingsTab):
         self.update_edit = self.settings.value('songs/update service on edit')
         self.update_load = self.settings.value('songs/add song from service')
         self.songbook_slide = self.settings.value('songs/add songbook slide')
+        self.auto_play = self.settings.value('songs/auto play audio')
         self.enable_chords = self.settings.value('songs/enable chords')
         self.chord_notation = self.settings.value('songs/chord notation')
         self.disable_chords_import = self.settings.value('songs/disable chords import')
+        self.song_key_warning = self.settings.value('songs/warn about missing song key')
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
         self.chords_group_box.setChecked(self.enable_chords)
         self.disable_chords_import_check_box.setChecked(self.disable_chords_import)
+        self.song_key_warning_check_box.setChecked(self.song_key_warning)
         if self.chord_notation == 'german':
             self.german_notation_radio_button.setChecked(True)
         elif self.chord_notation == 'neo-latin':
             self.neolatin_notation_radio_button.setChecked(True)
         else:
             self.english_notation_radio_button.setChecked(True)
+        self.ccli_username.setText(self.settings.value('songs/songselect username'))
+        self.ccli_password.setText(self.settings.value('songs/songselect password'))
         self.footer_edit_box.setPlainText(self.settings.value('songs/footer template'))
 
     def save(self):
         self.settings.setValue('songs/display songbar', self.tool_bar)
         self.settings.setValue('songs/update service on edit', self.update_edit)
         self.settings.setValue('songs/add song from service', self.update_load)
+        self.settings.setValue('songs/auto play audio', self.auto_play)
         self.settings.setValue('songs/enable chords', self.chords_group_box.isChecked())
         self.settings.setValue('songs/disable chords import', self.disable_chords_import)
+        self.settings.setValue('songs/warn about missing song key', self.song_key_warning)
         self.settings.setValue('songs/chord notation', self.chord_notation)
+        self.settings.setValue('songs/songselect username', self.ccli_username.text())
+        # Only save password if it's blank or the user acknowleges the warning
+        if (self.ccli_password.text() == ''):
+            self.settings.setValue('songs/songselect password', '')
+        elif (self.ccli_password.text() != self.settings.value('songs/songselect password')):
+            answer = QtWidgets.QMessageBox.question(
+                self, translate('SongsPlugin.SongsTab', 'Save Username and Password'),
+                translate('SongsPlugin.SongsTab', 'WARNING: Saving your SongSelect password is INSECURE, '
+                                                  'your password is stored in PLAIN TEXT. Click Yes to save '
+                                                  'your password or No to cancel this.'),
+                defaultButton=QtWidgets.QMessageBox.No)
+            if answer == QtWidgets.QMessageBox.Yes:
+                self.settings.setValue('songs/songselect password', self.ccli_password.text())
         # Only save footer template if it has been changed. This allows future updates
-        if self.footer_edit_box.toPlainText() != self.settings.get_default_value('songs/footer template'):
+        if self.footer_edit_box.toPlainText() != self.settings.value('songs/footer template'):
             self.settings.setValue('songs/footer template', self.footer_edit_box.toPlainText())
         self.settings.setValue('songs/add songbook slide', self.songbook_slide)
         if self.tab_visited:

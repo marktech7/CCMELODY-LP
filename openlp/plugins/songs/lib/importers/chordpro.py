@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -50,7 +50,7 @@ class ChordProImport(SongImport):
         for file_path in self.import_source:
             if self.stop_import_flag:
                 return
-            with file_path.open('rt') as song_file:
+            with file_path.open('rt', encoding='utf8') as song_file:
                 self.do_import_file(song_file)
 
     def do_import_file(self, song_file):

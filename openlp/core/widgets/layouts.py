@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -60,8 +60,10 @@ class AspectRatioLayout(QtWidgets.QLayout):
 
         :param float aspect_ratio: The aspect ratio to set
         """
-        # TODO: Update the layout/widget if this changes
         self._aspect_ratio = aspect_ratio
+        # Update the layout/widget
+        geo = self.geometry()
+        self.setGeometry(geo)
 
     aspect_ratio = property(get_aspect_ratio, set_aspect_ratio)
 
@@ -156,7 +158,7 @@ class AspectRatioLayout(QtWidgets.QLayout):
                     y = rect.height() - self.margin - height
                 else:
                     y = self.margin + (available_height - height) / 2
-                widget.setGeometry(rect.x() + self.margin, rect.y() + y, width, height)
+                widget.setGeometry(int(rect.x() + self.margin), int(rect.y() + y), int(width), int(height))
             else:
                 if self._item.alignment() & QtCore.Qt.AlignLeft:
                     x = self.margin
@@ -164,8 +166,8 @@ class AspectRatioLayout(QtWidgets.QLayout):
                     x = rect.width() - self.margin - width
                 else:
                     x = self.margin + (available_width - width) / 2
-                widget.setGeometry(rect.x() + x, rect.y() + self.margin, width, height)
-            self.resize.emit(QtCore.QSize(width, height))
+                widget.setGeometry(int(rect.x()) + int(x), int(rect.y() + self.margin), int(width), int(height))
+            self.resize.emit(QtCore.QSize(int(width), int(height)))
 
     def sizeHint(self):
         """

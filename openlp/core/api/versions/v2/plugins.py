@@ -1,24 +1,24 @@
 # -*- coding: utf-8 -*-
 # vim: autoindent shiftwidth=4 expandtab textwidth=120 tabstop=4 softtabstop=4
 
-###############################################################################
-# OpenLP - Open Source Lyrics Projection                                      #
-# --------------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                                   #
-# --------------------------------------------------------------------------- #
-# This program is free software; you can redistribute it and/or modify it     #
-# under the terms of the GNU General Public License as published by the Free  #
-# Software Foundation; version 2 of the License.                              #
-#                                                                             #
-# This program is distributed in the hope that it will be useful, but WITHOUT #
-# ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or       #
-# FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for    #
-# more details.                                                               #
-#                                                                             #
-# You should have received a copy of the GNU General Public License along     #
-# with this program; if not, write to the Free Software Foundation, Inc., 59  #
-# Temple Place, Suite 330, Boston, MA 02111-1307 USA                          #
-###############################################################################
+##########################################################################
+# OpenLP - Open Source Lyrics Projection                                 #
+# ---------------------------------------------------------------------- #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
+# ---------------------------------------------------------------------- #
+# This program is free software: you can redistribute it and/or modify   #
+# it under the terms of the GNU General Public License as published by   #
+# the Free Software Foundation, either version 3 of the License, or      #
+# (at your option) any later version.                                    #
+#                                                                        #
+# This program is distributed in the hope that it will be useful,        #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of         #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the          #
+# GNU General Public License for more details.                           #
+#                                                                        #
+# You should have received a copy of the GNU General Public License      #
+# along with this program.  If not, see <https://www.gnu.org/licenses/>. #
+##########################################################################
 import logging
 
 from flask import abort, request, Blueprint, jsonify
@@ -54,6 +54,22 @@ def add(plugin_name, id):
         getattr(plugin.media_item, '{action}_add_to_service'.format(action=plugin_name)).emit([item_id, True])
 
 
+def get_options(plugin_name):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
+    if plugin.status == PluginStatus.Active and plugin.media_item:
+        options = plugin.media_item.search_options()
+        return options
+    return []
+
+
+def set_option(plugin_name, search_option, value):
+    plugin = Registry().get('plugin_manager').get_plugin_by_name(plugin_name)
+    success = False
+    if plugin.status == PluginStatus.Active and plugin.media_item:
+        success = plugin.media_item.set_search_option(search_option, value)
+    return success
+
+
 @plugins.route('/<plugin>/search')
 @login_required
 def search_view(plugin):
@@ -85,3 +101,36 @@ def live_view(plugin):
     id = data.get('id', -1)
     live(plugin, id)
     return '', 204
+
+
+@plugins.route('/<plugin>/search-options', methods=['GET'])
+def search_options(plugin):
+    """
+    Get the plugin's search options
+    """
+    log.debug(f'{plugin}/search-options called')
+    return jsonify(get_options(plugin))
+
+
+@plugins.route('/<plugin>/search-options', methods=['POST'])
+@login_required
+def set_search_option(plugin):
+    """
+    Sets the plugin's search options
+    """
+    log.debug(f'{plugin}/search-options-set called')
+    data = request.json
+    if not data:
+        log.error('Missing request data')
+        abort(400)
+    option = data.get('option', None)
+    value = data.get('value', None)
+    if value is None:
+        log.error('Invalid data passed in value')
+        abort(400)
+
+    if set_option(plugin, option, value):
+        return '', 204
+    else:
+        log.error('Invalid option or value')
+        return '', 400

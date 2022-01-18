@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -19,8 +19,12 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import logging
+import os
 import shutil
 from pathlib import Path
+
+from openlp.core.common.platform import is_win
+
 
 log = logging.getLogger(__name__)
 
@@ -135,3 +139,20 @@ def files_to_paths(file_names):
     """
     if file_names:
         return [str_to_path(file_name) for file_name in file_names]
+
+
+def resolve(path_obj, is_strict=False):
+    """
+    Resolve a Path object, bypassing symlink resolving on Windows
+
+    :param Path path_obj: The path object to resolve
+    :return: The resolved Path object
+    :rtype: Path
+    """
+    if is_win():
+        resolved_path = Path(os.path.abspath(path_obj))
+        if is_strict:
+            # Mirror the behaviour of Path.resolve(strict=True)
+            resolved_path.lstat()
+        return resolved_path
+    return path_obj.resolve(strict=is_strict)

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,8 +23,10 @@ The :mod:`db` module provides the database and schema that is the backend for
 the Songs plugin
 """
 from sqlalchemy import Column, ForeignKey, Table, types
-from sqlalchemy.orm import mapper, reconstructor, relation
+from sqlalchemy.orm import class_mapper, mapper, reconstructor, relation
 from sqlalchemy.sql.expression import func, text
+from sqlalchemy.orm.exc import UnmappedClassError
+
 
 from openlp.core.common.i18n import get_natural_key, translate
 from openlp.core.lib.db import BaseModel, PathType, init_db
@@ -367,30 +369,50 @@ def init_schema(url):
         Column('topic_id', types.Integer(), ForeignKey('topics.id'), primary_key=True)
     )
 
-    mapper(Author, authors_table, properties={
-        'songs': relation(Song, secondary=authors_songs_table, viewonly=True)
-    })
-    mapper(AuthorSong, authors_songs_table, properties={
-        'author': relation(Author)
-    })
-    mapper(SongBookEntry, songs_songbooks_table, properties={
-        'songbook': relation(Book)
-    })
-    mapper(Book, song_books_table, properties={
-        'songs': relation(Song, secondary=songs_songbooks_table)
-    })
-    mapper(MediaFile, media_files_table)
-    mapper(Song, songs_table, properties={
-        # Use the authors_songs relation when you need access to the 'author_type' attribute
-        # or when creating new relations
-        'authors_songs': relation(AuthorSong, cascade="all, delete-orphan"),
-        # Use lazy='joined' to always load authors when the song is fetched from the database (bug 1366198)
-        'authors': relation(Author, secondary=authors_songs_table, viewonly=True, lazy='joined'),
-        'media_files': relation(MediaFile, backref='songs', order_by=media_files_table.c.weight),
-        'songbook_entries': relation(SongBookEntry, backref='song', cascade='all, delete-orphan'),
-        'topics': relation(Topic, backref='songs', secondary=songs_topics_table)
-    })
-    mapper(Topic, topics_table)
+    # try/except blocks are for the purposes of tests - the mappers could have been defined in a previous test
+    try:
+        class_mapper(Author)
+    except UnmappedClassError:
+        mapper(Author, authors_table, properties={
+            'songs': relation(Song, secondary=authors_songs_table, viewonly=True)
+        })
+    try:
+        class_mapper(AuthorSong)
+    except UnmappedClassError:
+        mapper(AuthorSong, authors_songs_table, properties={
+            'author': relation(Author)
+        })
+    try:
+        class_mapper(SongBookEntry)
+    except UnmappedClassError:
+        mapper(SongBookEntry, songs_songbooks_table, properties={
+            'songbook': relation(Book)
+        })
+    try:
+        class_mapper(Book)
+    except UnmappedClassError:
+        mapper(Book, song_books_table)
+    try:
+        class_mapper(MediaFile)
+    except UnmappedClassError:
+        mapper(MediaFile, media_files_table)
+    try:
+        class_mapper(Song)
+    except UnmappedClassError:
+        mapper(Song, songs_table, properties={
+            # Use the authors_songs relation when you need access to the 'author_type' attribute
+            # or when creating new relations
+            'authors_songs': relation(AuthorSong, cascade="all, delete-orphan"),
+            # Use lazy='joined' to always load authors when the song is fetched from the database (bug 1366198)
+            'authors': relation(Author, secondary=authors_songs_table, viewonly=True, lazy='joined'),
+            'media_files': relation(MediaFile, backref='songs', order_by=media_files_table.c.weight),
+            'songbook_entries': relation(SongBookEntry, backref='song', cascade='all, delete-orphan'),
+            'topics': relation(Topic, backref='songs', secondary=songs_topics_table)
+        })
+    try:
+        class_mapper(Topic)
+    except UnmappedClassError:
+        mapper(Topic, topics_table)
 
     metadata.create_all(checkfirst=True)
     return session

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,7 +21,6 @@
 import logging
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
-from openlp.core.lib import image_to_byte
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
 
@@ -29,11 +28,6 @@ from flask import jsonify, request, abort, Blueprint
 
 core = Blueprint('core', __name__)
 log = logging.getLogger(__name__)
-
-
-@core.route('/poll')
-def poll():
-    return jsonify(Registry().get('poller').poll())
 
 
 @core.route('/display', methods=['POST'])
@@ -87,5 +81,5 @@ def login():
 @core.route('/live-image')
 def main_image():
     controller = Registry().get('live_controller')
-    img = 'data:image/png;base64,{}'.format(image_to_byte(controller.grab_maindisplay()))
+    img = 'data:image/jpeg;base64,{}'.format(controller.grab_maindisplay())
     return jsonify({'binary_image': img})

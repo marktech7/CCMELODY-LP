@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -110,6 +110,7 @@ class BibleMediaItem(MediaManagerItem):
         self.search_timer.setSingleShot(True)
         self.search_timer.timeout.connect(self.on_search_timer_timeout)
         super().__init__(*args, **kwargs)
+        Registry().register_function('populate_bible_combo_boxes', self.populate_bible_combo_boxes)
 
     def setup_item(self):
         """
@@ -197,7 +198,7 @@ class BibleMediaItem(MediaManagerItem):
         self.second_combo_box = create_horizontal_adjusting_combo_box(self, 'second_combo_box')
         self.general_bible_layout.addRow(translate('BiblesPlugin.MediaItem', 'Second:'), self.second_combo_box)
         self.style_combo_box = create_horizontal_adjusting_combo_box(self, 'style_combo_box')
-        self.style_combo_box.addItems(['', '', ''])
+        self.style_combo_box.addItems(['', '', '', ''])
         self.general_bible_layout.addRow(UiStrings().LayoutStyle, self.style_combo_box)
         self.options_tab.setVisible(False)
         self.page_layout.addWidget(self.options_tab)
@@ -264,6 +265,7 @@ class BibleMediaItem(MediaManagerItem):
         self.style_combo_box.setItemText(LayoutStyle.VersePerSlide, UiStrings().VersePerSlide)
         self.style_combo_box.setItemText(LayoutStyle.VersePerLine, UiStrings().VersePerLine)
         self.style_combo_box.setItemText(LayoutStyle.Continuous, UiStrings().Continuous)
+        self.style_combo_box.setItemText(LayoutStyle.WholeVerseContinuous, UiStrings().WholeVerseContinuous)
         self.clear_button.setToolTip(translate('BiblesPlugin.MediaItem', 'Clear the results on the current tab.'))
         self.save_results_button.setToolTip(
             translate('BiblesPlugin.MediaItem', 'Add the search results to the saved list.'))
@@ -295,6 +297,9 @@ class BibleMediaItem(MediaManagerItem):
         visible = self.settings.value('bibles/second bibles')
         self.general_bible_layout.labelForField(self.second_combo_box).setVisible(visible)
         self.second_combo_box.setVisible(visible)
+        layout_style = self.settings.value('bibles/verse layout style')
+        if layout_style is not None:
+            self.style_combo_box.setCurrentIndex(layout_style)
 
     def initialise(self):
         """
@@ -328,6 +333,8 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         log.debug('Loading Bibles')
+        self.version_combo_box.blockSignals(True)
+        self.second_combo_box.blockSignals(True)
         self.version_combo_box.clear()
         self.second_combo_box.clear()
         self.second_combo_box.addItem('', None)
@@ -338,9 +345,15 @@ class BibleMediaItem(MediaManagerItem):
         for bible in bibles:
             self.version_combo_box.addItem(bible[0], bible[1])
             self.second_combo_box.addItem(bible[0], bible[1])
+        self.version_combo_box.blockSignals(False)
+        self.second_combo_box.blockSignals(False)
         # set the default value
         bible = self.settings.value('bibles/primary bible')
+        second_bible = self.settings.value('bibles/second bible')
         find_and_set_in_combo_box(self.version_combo_box, bible)
+        find_and_set_in_combo_box(self.second_combo_box, second_bible)
+        # make sure the selected bible ripples down to other gui elements
+        self.on_version_combo_box_index_changed()
 
     def reload_bibles(self):
         """
@@ -547,7 +560,7 @@ class BibleMediaItem(MediaManagerItem):
         # TODO: Change layout_style to a property
         self.settings_tab.layout_style = index
         self.settings_tab.layout_style_combo_box.setCurrentIndex(index)
-        self.settings.setValue('bibles/verse layout style')
+        self.settings.setValue('bibles/verse layout style', self.settings_tab.layout_style)
 
     def on_version_combo_box_index_changed(self):
         """
@@ -586,8 +599,10 @@ class BibleMediaItem(MediaManagerItem):
         self.second_bible = new_selection
         if new_selection is None:
             self.style_combo_box.setEnabled(True)
+            self.settings.setValue('bibles/second bible', None)
         else:
             self.style_combo_box.setEnabled(False)
+            self.settings.setValue('bibles/second bible', self.second_bible.name)
             self.initialise_advanced_bible(self.select_book_combo_box.currentData())
 
     def on_advanced_book_combo_box(self):
@@ -597,6 +612,9 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         book_ref_id = self.select_book_combo_box.currentData()
+        if not book_ref_id:
+            # If there is no book selected, just exit early
+            return
         book = self.plugin.manager.get_book_by_id(self.bible.name, book_ref_id)
         self.chapter_count = self.plugin.manager.get_chapter_count(self.bible.name, book)
         verse_count = self.plugin.manager.get_verse_count_by_book_ref_id(self.bible.name, book_ref_id, 1)
@@ -724,7 +742,7 @@ class BibleMediaItem(MediaManagerItem):
         verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text)
         self.search_results = self.plugin.manager.get_verses(self.bible.name, verse_refs, True)
         if self.second_bible and self.search_results:
-            self.search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
+            self.second_search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
         self.display_results()
 
     def on_text_search(self, text):
@@ -904,7 +922,7 @@ class BibleMediaItem(MediaManagerItem):
         Generate the slide data. Needs to be implemented by the plugin.
 
         :param service_item: The service item to be built on
-        :param item: The Song item to be used
+        :param item: The Bible items to be used
         :param remote: Triggered from remote
         :param context: Why is it being generated
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
@@ -940,11 +958,31 @@ class BibleMediaItem(MediaManagerItem):
             # If we are 'Verse Per Line' then force a new line.
             elif self.settings_tab.layout_style == LayoutStyle.VersePerLine:
                 bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
+            elif self.settings_tab.layout_style == LayoutStyle.WholeVerseContinuous:
+                bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
             # We have to be 'Continuous'.
             else:
                 bible_text = '{bible} {verse}{data[text]}'.format(bible=bible_text, verse=verse_text, data=data)
             bible_text = bible_text.strip(' ')
             old_chapter = data['chapter']
+        # Add service item data (handy things for http api)
+        # Bibles in array to make api compatible with any number of bibles.
+        bibles = []
+        if data['version']:
+            bibles.append({
+                'version': data['version'],
+                'copyright': data['copyright'],
+                'permissions': data['permissions']
+            })
+        if data['second_bible']:
+            bibles.append({
+                'version': data['second_version'],
+                'copyright': data['second_copyright'],
+                'permissions': data['second_permissions']
+            })
+        service_item.data_string = {
+            'bibles': bibles
+        }
         # Add footer
         service_item.raw_footer.append(verses.format_verses())
         if data['second_bible']:
@@ -957,9 +995,13 @@ class BibleMediaItem(MediaManagerItem):
         if self.settings_tab.layout_style == LayoutStyle.Continuous and not data['second_bible']:
             # Split the line but do not replace line breaks in renderer.
             service_item.add_capability(ItemCapabilities.NoLineBreaks)
+        if self.settings_tab.layout_style == LayoutStyle.WholeVerseContinuous:
+            if not data['second_bible']:
+                service_item.add_capability(ItemCapabilities.NoLineBreaks)
+        else:
+            service_item.add_capability(ItemCapabilities.CanWordSplit)
         service_item.add_capability(ItemCapabilities.CanPreview)
         service_item.add_capability(ItemCapabilities.CanLoop)
-        service_item.add_capability(ItemCapabilities.CanWordSplit)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         # Service Item: Title
         service_item.title = '{verse} {version}'.format(verse=verses.format_verses(), version=verses.format_versions())
@@ -995,7 +1037,40 @@ class BibleMediaItem(MediaManagerItem):
             DisplayStyle.Curly: ('{', '}'),
             DisplayStyle.Square: ('[', ']')
         }[self.settings_tab.display_style]
-        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
+        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}&nbsp;{{/su}}'.format(verse_text=verse_text, bracket=bracket)
+
+    def search_options(self, option=None):
+        """
+        Returns a list of search options and values for bibles
+
+        :param option: Can be set to an option to only return that option
+        """
+        if (option is not None and option != 'primary bible'):
+            return []
+        bibles = list(self.plugin.manager.get_bibles().keys())
+        primary = Registry().get('settings').value('bibles/primary bible')
+        return [
+            {
+                'name': 'primary bible',
+                'list': bibles,
+                'selected': primary
+            }
+        ]
+
+    def set_search_option(self, search_option, value):
+        """
+        Sets a search option
+
+        :param search_option: The option to be set
+        :param value: The new value for the search option
+        :return: True if the search_option was successfully set
+        """
+        if search_option == 'primary bible' and value in self.search_options('primary bible')[0]['list']:
+            Registry().get('settings').setValue('bibles/primary bible', value)
+            Registry().execute('populate_bible_combo_boxes')
+            return True
+        else:
+            return False
 
     def search(self, string, show_error=True):
         """

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,6 +23,7 @@ The :mod:`openlp` module provides the functionality for importing OpenLP
 song databases into the current installation database.
 """
 import logging
+from pathlib import Path
 
 from sqlalchemy import MetaData, Table, create_engine
 from sqlalchemy.orm import class_mapper, mapper, relation, scoped_session, sessionmaker
@@ -271,12 +272,18 @@ class OpenLPSongImport(SongImport):
             # Find or create all the media files and add them to the new song object
             if has_media_files and song.media_files:
                 for media_file in song.media_files:
+                    # Database now uses paths rather than strings for media files, and the key name has
+                    # changed appropriately. This catches any databases using the old key name.
+                    try:
+                        media_path = media_file.file_path
+                    except Exception:
+                        media_path = Path(media_file.file_name)
                     existing_media_file = self.manager.get_object_filtered(
-                        MediaFile, MediaFile.file_path == media_file.file_path)
+                        MediaFile, MediaFile.file_path == media_path)
                     if existing_media_file:
                         new_song.media_files.append(existing_media_file)
                     else:
-                        new_song.media_files.append(MediaFile.populate(file_name=media_file.file_name))
+                        new_song.media_files.append(MediaFile.populate(file_path=media_path))
             clean_song(self.manager, new_song)
             self.manager.save_object(new_song)
             if progress_dialog:
