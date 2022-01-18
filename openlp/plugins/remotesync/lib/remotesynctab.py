@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,19 +28,17 @@ from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
-from openlp.core.lib import SettingsTab, build_icon
+from openlp.core.lib import build_icon
+from openlp.core.lib.settingstab import SettingsTab
 
 
 class RemoteSyncTab(SettingsTab):
     """
     RemoteSyncTab is the RemoteSync settings tab in the settings dialog.
     """
-    def __init__(self, parent, title, visible_title, icon_path):
-        super(RemoteSyncTab, self).__init__(parent, title, visible_title, icon_path)
-
-    def setupUi(self):
+    def setup_ui(self):
         self.setObjectName('RemoteSyncTab')
-        super(RemoteSyncTab, self).setupUi()
+        super(RemoteSyncTab, self).setup_ui()
         self.server_settings_group_box = QtWidgets.QGroupBox(self.left_column)
         self.server_settings_group_box.setObjectName('server_settings_group_box')
         self.server_settings_layout = QtWidgets.QFormLayout(self.server_settings_group_box)
@@ -49,7 +47,7 @@ class RemoteSyncTab(SettingsTab):
         self.address_label.setObjectName('address_label')
         self.address_edit = QtWidgets.QLineEdit(self.server_settings_group_box)
         self.address_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        self.address_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp('\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'),
+        self.address_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'),
                                        self))
         self.address_edit.setObjectName('address_edit')
         self.server_settings_layout.addRow(self.address_label, self.address_edit)
@@ -102,7 +100,7 @@ class RemoteSyncTab(SettingsTab):
         self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         self.right_layout.addStretch()
 
-    def retranslateUi(self):
+    def retranslate_ui(self):
         self.server_settings_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Server Settings'))
         self.actions_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Actions'))
         self.remote_statistics_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Remote Statistics'))

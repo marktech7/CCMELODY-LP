@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2020 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,10 +34,14 @@ from PyQt5 import QtWidgets, QtCore
 
 from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
-from openlp.core.lib import Plugin, StringContent, translate, build_icon
+from openlp.core.common.i18n import translate
+from openlp.core.lib import build_icon
+from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.ui.icons import UiIcons
 from openlp.core.lib.db import Manager
 from openlp.plugins.remotesync.lib.backends.synchronizer import SyncItemType, SyncItemAction, ConflictException, \
     LockException
+from openlp.core.state import State
 from openlp.plugins.songs.lib.db import Song
 
 from openlp.plugins.remotesync.lib import RemoteSyncTab
@@ -45,22 +49,6 @@ from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSync
 from openlp.plugins.remotesync.lib.db import init_schema, SyncQueueItem, RemoteSyncItem
 
 log = logging.getLogger(__name__)
-
-__default_settings__ = {
-    'remotesync/db type': 'sqlite',
-    'remotesync/db username': '',
-    'remotesync/db password': '',
-    'remotesync/db hostname': '',
-    'remotesync/db database': '',
-    'remotesync/type': 'folder',  # folder or ftp
-    'remotesync/folder path': '/tmp/openlp_remote_sync',
-    'remotesync/folder pc id': 'firstpc',
-    'remotesync/ftp host': 'ftp.openlp.io',
-    'remotesync/ftp port': '21',
-    'remotesync/ftp ssl': False,
-    'remotesync/ftp username': 'username',
-    'remotesync/ftp password': 'password',
-}
 
 
 class RemoteSyncPlugin(Plugin):
@@ -70,12 +58,20 @@ class RemoteSyncPlugin(Plugin):
         """
         remotes constructor
         """
-        super(RemoteSyncPlugin, self).__init__('remotesync', __default_settings__, settings_tab_class=RemoteSyncTab)
-        self.manager = Manager('remotesync', init_schema)
-        self.icon_path = ':/plugins/plugin_remote.png'
-        self.icon = build_icon(self.icon_path)
+        super(RemoteSyncPlugin, self).__init__('remotesync', None, RemoteSyncTab)
         self.weight = -1
+        self.manager = Manager('remotesync', init_schema)
+        self.icon = UiIcons().network_stream
+        self.icon_path = self.icon
         self.synchronizer = None
+        State().add_service('remote_sync', self.weight, is_plugin=True)
+        State().update_pre_conditions('remote_sync', self.check_pre_conditions())
+
+    def check_pre_conditions(self):
+        """
+        Check the plugin can run.
+        """
+        return self.manager.session is not None
 
     def initialise(self):
         """

@@ -389,7 +389,21 @@ class Settings(QtCore.QSettings):
         'projector/poll time': 20,  # PJLink  timeout is 30 seconds
         'projector/socket timeout': 5,  # 5 second socket timeout
         'projector/source dialog type': 0,  # Source select dialog box type
-        'projector/udp broadcast listen': False  # Enable/disable listening for PJLink 2 UDP broadcast packets
+        'projector/udp broadcast listen': False,  # Enable/disable listening for PJLink 2 UDP broadcast packets
+        'remotesync/status': PluginStatus.Active,
+        'remotesync/db type': 'sqlite',
+        'remotesync/db username': '',
+        'remotesync/db password': '',
+        'remotesync/db hostname': '',
+        'remotesync/db database': '',
+        'remotesync/type': 'folder',  # folder or ftp
+        'remotesync/folder path': '/tmp/openlp_remote_sync',
+        'remotesync/folder pc id': 'firstpc',
+        'remotesync/ftp host': 'ftp.openlp.io',
+        'remotesync/ftp port': '21',
+        'remotesync/ftp ssl': False,
+        'remotesync/ftp username': 'username',
+        'remotesync/ftp password': 'password',
     }
     __file_path__ = ''
     # Settings upgrades prior to 3.0
