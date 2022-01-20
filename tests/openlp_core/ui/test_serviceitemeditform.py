@@ -84,8 +84,8 @@ def test_get_service_item(form):
     assert item is form.item, 'The returned item should be form.item'
     # FYI: list should be empty because it was cleared but never filled again due to the mock
     assert item.slides == [], 'The list of slides should have been cleared'
-    assert item.add_from_image.call_args_list == [call('../slide1.jpg', 'slide1.jpg'),
-                                                  call('../slide2.jpg', 'slide2.jpg')]
+    assert item.add_from_image.call_args_list == [call('../slide1.jpg', 'slide1.jpg', None, None),
+                                                  call('../slide2.jpg', 'slide2.jpg', None, None)]
 
 
 @patch('openlp.core.ui.serviceitemeditform.QtWidgets.QListWidgetItem')
