@@ -20,18 +20,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
+from enum import Enum
 import fnmatch
-from ftplib import FTP
+from ftplib import FTP, FTP_TLS
 from io import TextIOBase
 
 from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSynchronizer
 
 
+class FtpType(Enum):
+    Ftp = 1
+    FtpTls = 2
+
+
 class FtpSynchronizer(FolderSynchronizer):
 
-    def __init__(self, manager, base_folder_path, pc_id):
+    def __init__(self, manager, base_folder_path, pc_id, ftp_type, ftp_server, ftp_user, ftp_pwd):
         super(FtpSynchronizer, self).__init__(manager, base_folder_path, pc_id)
         self.ftp = None
+        self.ftp_type = ftp_type
+        self.ftp_server = ftp_server
+        self.ftp_user = ftp_user
+        self.ftp_pwd = ftp_pwd
 
     def check_configuration(self):
         return True
@@ -49,8 +59,10 @@ class FtpSynchronizer(FolderSynchronizer):
         self.disconnect()
 
     def connect(self):
-        # TODO: Also support FTP_TLS
-        self.ftp = FTP('123.server.ip', 'username', 'password')
+        if self.ftp_type == FtpType.Ftp:
+            self.ftp = FTP(self.ftp_server, self.ftp_user, self.ftp_pwd)
+        else:
+            self.ftp = FTP_TLS(self.ftp_server, self.ftp_user, self.ftp_pwd)
 
     def disconnect(self):
         self.ftp.close()
