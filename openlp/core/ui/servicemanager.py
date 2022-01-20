@@ -762,7 +762,11 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         # If the file_path is a string, this method will fail. Typecase to Path
         file_path = Path(file_path)
-        if not file_path.exists():
+        try:
+            if not file_path.exists():
+                return False
+        except OSError:
+            # if the filename, directory name, or volume label syntax is incorrect it can cause an exception
             return False
         service_data = None
         self.application.set_busy_cursor()
