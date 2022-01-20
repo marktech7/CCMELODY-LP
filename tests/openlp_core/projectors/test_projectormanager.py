@@ -24,7 +24,7 @@ Interface tests to test the themeManager class and related methods.
 import pytest
 import logging
 
-from unittest.mock import MagicMock, call, patch
+from unittest.mock import MagicMock, patch
 
 from openlp.core.projectors.db import ProjectorDB
 from openlp.core.projectors.editform import ProjectorEditForm
