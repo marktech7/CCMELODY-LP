@@ -22,6 +22,8 @@
 Interface tests to test the themeManager class and related methods.
 """
 import pytest
+import logging
+
 from unittest.mock import MagicMock, patch
 
 from openlp.core.projectors.db import ProjectorDB
@@ -41,6 +43,13 @@ def projector_manager(settings):
         del proj_manager
 
 
+@pytest.fixture()
+def projector_manager_nodb(settings):
+    proj_manager = ProjectorManager(projectordb=None)
+    yield proj_manager
+    del proj_manager
+
+
 def test_bootstrap_initialise(projector_manager):
     """
     Test initialize calls correct startup functions
@@ -50,6 +59,20 @@ def test_bootstrap_initialise(projector_manager):
     # THEN: ProjectorDB is setup
     assert type(projector_manager.projectordb) == ProjectorDB, \
         'Initialization should have created a ProjectorDB() instance'
+
+
+def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
+    """
+    Test log entry creating new projector DB
+    """
+    caplog.set_level(logging.DEBUG)
+
+    # WHEN: ProjectorManager created with no DB set
+    caplog.clear()
+    projector_manager_nodb.bootstrap_initialise()
+    # THEN: Log should indicate new DB being created
+    assert caplog.record_tuples[3] == ('openlp.core.projectors.manager', 10, 'Creating new ProjectorDB() instance'), \
+        "ProjectorManager should have indicated a new DB being created"
 
 
 def test_bootstrap_post_set_up(projector_manager):
