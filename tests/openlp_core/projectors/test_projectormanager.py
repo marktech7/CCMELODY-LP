@@ -26,6 +26,7 @@ import logging
 
 from unittest.mock import MagicMock, patch
 
+from openlp.core.projectors.constants import PJLINK_PORT
 from openlp.core.projectors.db import ProjectorDB
 from openlp.core.projectors.editform import ProjectorEditForm
 from openlp.core.projectors.manager import ProjectorManager
@@ -112,3 +113,38 @@ def test_bootstrap_post_set_up_autostart_projector(projector_manager_nodb, caplo
         assert caplog.record_tuples[-1] == ('openlp.core.projectors.manager', 10,
                                             'Delaying 1.5 seconds before loading all projectors'), \
             "Last log entry should be autoloading entry"
+
+
+def test_udp_listen_add_duplicate_port(projector_manager_nodb, caplog):
+    """
+    Test adding UDP port listener to port already registered
+    """
+    # GIVEN: Initial setup
+    caplog.set_level(logging.DEBUG)
+    projector_manager_nodb.pjlink_udp[PJLINK_PORT] = "Something to set index item"
+
+    # WHEN: udp_listen_add is called with duplicate port number
+    caplog.clear()
+    projector_manager_nodb.udp_listen_add(port=PJLINK_PORT)
+
+    # THEN: Verify log entry and registry entry not called
+    assert caplog.record_tuples[0] == ('openlp.core.projectors.manager', 30,
+                                       'UDP Listener for port 4352 already added - skipping')
+
+
+@patch('openlp.core.projectors.manager.Registry')
+def test_udp_listen_add_new(mock_registry, projector_manager_nodb, caplog):
+    """
+    Test adding new UDP port listener
+    """
+    # GIVEN: Initial setup
+    caplog.set_level(logging.DEBUG)
+    log_entries = [('openlp.core.projectors.manager', 10, 'Adding UDP listener on port 4352'),
+                   ('openlp.core.projectors.pjlink', 10, '(UDP:4352) PJLinkUDP() Initialized')]
+    # WHEN: Adding new listener
+    caplog.clear()
+    projector_manager_nodb.udp_listen_add(port=PJLINK_PORT)
+
+    # THEN: Appropriate listener and log entries
+    mock_registry.execute.called_with('udp_broadcast_add', port=PJLINK_PORT)
+    assert caplog.record_tuples == log_entries, 'Invalid log entries'
