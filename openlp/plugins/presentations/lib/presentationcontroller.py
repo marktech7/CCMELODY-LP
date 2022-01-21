@@ -368,11 +368,11 @@ class PresentationDocument(object):
         """
         if titles:
             titles_path = self.get_thumbnail_folder() / 'titles.txt'
-            titles_path.write_text('\n'.join(titles))
+            titles_path.write_text('\n'.join(titles), encoding='utf-8')
         if notes:
             for slide_no, note in enumerate(notes, 1):
                 notes_path = self.get_thumbnail_folder() / 'slideNotes{number:d}.txt'.format(number=slide_no)
-                notes_path.write_text(note)
+                notes_path.write_text(note, encoding='utf-8')
 
     def get_sha256_file_hash(self):
         """

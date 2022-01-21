@@ -80,8 +80,8 @@ class PlanningCenterTab(SettingsTab):
         )
         self.instructions_label.setText(
             translate('PlanningCenterPlugin.PlanningCenterTab',
-                      """Enter your <b>Planning Center Online</b> <i>Personal Access Token</i> details in the text boxes \
-below.  Personal Access Tokens are created by doing the following:
+                      """Enter your <b>Planning Center Online</b> <i>Personal Access Token</i> details in the text \
+boxes below. Personal Access Tokens are created by doing the following:
 <ol>
   <li>Login to your Planning Center Online account at<br>
       <a href=https://api.planningcenteronline.com/oauth/applications>
