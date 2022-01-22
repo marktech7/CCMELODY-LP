@@ -52,6 +52,9 @@ class SongsTab(SettingsTab):
         self.songbook_slide_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.songbook_slide_check_box.setObjectName('songbook_slide_check_box')
         self.mode_layout.addWidget(self.songbook_slide_check_box)
+        self.auto_play_check_box = QtWidgets.QCheckBox(self.mode_group_box)
+        self.auto_play_check_box.setObjectName('auto_play_check_box')
+        self.mode_layout.addWidget(self.auto_play_check_box)
         self.left_layout.addWidget(self.mode_group_box)
         # Chords group box
         self.chords_group_box = QtWidgets.QGroupBox(self.left_column)
@@ -65,6 +68,7 @@ class SongsTab(SettingsTab):
         self.disable_chords_import_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.disable_chords_import_check_box.setObjectName('disable_chords_import_check_box')
         self.chords_layout.addWidget(self.disable_chords_import_check_box)
+
         # Chords notation group box
         self.chord_notation_label = QtWidgets.QLabel(self.chords_group_box)
         self.chord_notation_label.setWordWrap(True)
@@ -79,8 +83,8 @@ class SongsTab(SettingsTab):
         self.neolatin_notation_radio_button.setObjectName('neolatin_notation_radio_button')
         self.chords_layout.addWidget(self.neolatin_notation_radio_button)
         self.left_layout.addWidget(self.chords_group_box)
-        # CCLI SongSelect login group box
 
+        # CCLI SongSelect login group box
         self.ccli_login_group_box = QtWidgets.QGroupBox(self.left_column)
         self.ccli_login_group_box.setObjectName('ccli_login_group_box')
         self.ccli_login_layout = QtWidgets.QFormLayout(self.ccli_login_group_box)
@@ -114,12 +118,15 @@ class SongsTab(SettingsTab):
         self.footer_reset_button = QtWidgets.QPushButton(self.footer_group_box)
         self.footer_layout.addWidget(self.footer_reset_button, alignment=QtCore.Qt.AlignRight)
         self.right_layout.addWidget(self.footer_group_box)
+
         self.left_layout.addStretch()
         self.right_layout.addStretch()
+
         self.tool_bar_active_check_box.stateChanged.connect(self.on_tool_bar_active_check_box_changed)
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
         self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
+        self.auto_play_check_box.stateChanged.connect(self.on_auto_play_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
         self.english_notation_radio_button.clicked.connect(self.on_english_notation_button_clicked)
         self.german_notation_radio_button.clicked.connect(self.on_german_notation_button_clicked)
@@ -135,6 +142,7 @@ class SongsTab(SettingsTab):
                                                           'Import missing songs from Service files'))
         self.songbook_slide_check_box.setText(translate('SongsPlugin.SongsTab',
                                                         'Add Songbooks as first slide'))
+        self.auto_play_check_box.setText(translate('SongsPlugin.SongsTab', 'Auto-play background audio'))
         self.chords_info_label.setText(translate('SongsPlugin.SongsTab', 'If enabled all text between "[" and "]" will '
                                                                          'be regarded as chords.'))
         self.chords_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Chords'))
@@ -210,6 +218,9 @@ class SongsTab(SettingsTab):
     def on_songbook_slide_check_box_changed(self, check_state):
         self.songbook_slide = (check_state == QtCore.Qt.Checked)
 
+    def on_auto_play_check_box_changed(self, check_state):
+        self.auto_play = (check_state == QtCore.Qt.Checked)
+
     def on_disable_chords_import_check_box_changed(self, check_state):
         self.disable_chords_import = (check_state == QtCore.Qt.Checked)
 
@@ -230,6 +241,7 @@ class SongsTab(SettingsTab):
         self.update_edit = self.settings.value('songs/update service on edit')
         self.update_load = self.settings.value('songs/add song from service')
         self.songbook_slide = self.settings.value('songs/add songbook slide')
+        self.auto_play = self.settings.value('songs/auto play audio')
         self.enable_chords = self.settings.value('songs/enable chords')
         self.chord_notation = self.settings.value('songs/chord notation')
         self.disable_chords_import = self.settings.value('songs/disable chords import')
@@ -252,6 +264,7 @@ class SongsTab(SettingsTab):
         self.settings.setValue('songs/display songbar', self.tool_bar)
         self.settings.setValue('songs/update service on edit', self.update_edit)
         self.settings.setValue('songs/add song from service', self.update_load)
+        self.settings.setValue('songs/auto play audio', self.auto_play)
         self.settings.setValue('songs/enable chords', self.chords_group_box.isChecked())
         self.settings.setValue('songs/disable chords import', self.disable_chords_import)
         self.settings.setValue('songs/chord notation', self.chord_notation)

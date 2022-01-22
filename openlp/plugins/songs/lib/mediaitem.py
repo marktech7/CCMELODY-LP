@@ -634,6 +634,7 @@ class SongMediaItem(MediaManagerItem):
                 service_item.metadata.append('<em>{label}:</em> {media}'.
                                              format(label=translate('SongsPlugin.MediaItem', 'Media'),
                                                     media=service_item.background_audio))
+                service_item.will_auto_start = self.settings.value('songs/auto play audio') == QtCore.Qt.Checked
         return True
 
     def generate_footer(self, item, song):

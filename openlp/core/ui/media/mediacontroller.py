@@ -321,7 +321,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         elif not controller.is_live:
             autoplay = True
         # Visible or background requested or Service Item wants to autostart
-        elif not hidden or service_item.will_auto_start:
+        elif not hidden and service_item.will_auto_start:
             autoplay = True
         # Unblank on load set
         elif self.settings.value('core/auto unblank'):
