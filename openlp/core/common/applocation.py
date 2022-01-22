@@ -33,6 +33,8 @@ from openlp.core.common import get_frozen_path, is_macosx, is_win
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 
+if is_macosx():
+    from AppKit import NSBundle
 
 log = logging.getLogger(__name__)
 
@@ -72,7 +74,7 @@ class AppLocation(object):
         if is_win():
             return Path.cwd() / path
         else:
-            return path.resolve()
+            return _get_path(path.resolve())
 
     @staticmethod
     def get_data_path():
@@ -88,7 +90,7 @@ class AppLocation(object):
         else:
             path = AppLocation.get_directory(AppLocation.DataDir)
             create_paths(path)
-        return path
+        return _get_path(path)
 
     @staticmethod
     def get_files(section=None, extension=''):
@@ -122,6 +124,22 @@ class AppLocation(object):
         path = AppLocation.get_data_path() / section
         create_paths(path)
         return path
+
+
+def _get_path(path):
+    """
+    If on macOS we need special folder lookup handling
+    """
+    if is_macosx():
+        name = os.path.splitext(path)[0]
+        ext = os.path.splitext(path)[1]
+        try:
+            res_path = NSBundle.mainBundle().pathForResource_ofType_(name, ext)
+            if res_path:
+                return Path(res_path)
+        except ValueError:
+            pass
+    return path
 
 
 def _get_os_dir_path(dir_type):
