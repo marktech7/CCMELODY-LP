@@ -20,7 +20,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-from enum import Enum
+from enum import IntEnum
 import fnmatch
 from ftplib import FTP, FTP_TLS
 from io import TextIOBase
@@ -28,7 +28,7 @@ from io import TextIOBase
 from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSynchronizer
 
 
-class FtpType(Enum):
+class FtpType(IntEnum):
     Ftp = 1
     FtpTls = 2
 

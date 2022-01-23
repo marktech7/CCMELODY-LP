@@ -22,6 +22,7 @@
 
 import os.path
 
+from enum import IntEnum
 from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
 
 from openlp.core.common.settings import Settings
@@ -30,6 +31,17 @@ from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.settingstab import SettingsTab
+from openlp.core.widgets.edits import PathEdit
+from openlp.core.widgets.enums import PathEditType
+from openlp.plugins.remotesync.lib.backends.ftpsynchronizer import FtpType
+
+class SyncType(IntEnum):
+    """
+    The synchronization types available
+    """
+    Disabled = 0
+    Folder = 1
+    Ftp = 2
 
 
 class RemoteSyncTab(SettingsTab):
@@ -46,27 +58,45 @@ class RemoteSyncTab(SettingsTab):
         self.sync_type_group_box_layout.setObjectName('sync_type_group_box_layout')
         self.sync_type_label = QtWidgets.QLabel(self.sync_type_group_box)
         self.sync_type_label.setObjectName('sync_type_label')
-        self.sync_type_combo_box = QtWidgets.QComboBox(self.sync_type_group_box)
-        self.sync_type_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-        self.sync_type_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.sync_type_combo_box.setObjectName('sync_type_combo_box')
-        self.sync_type_group_box_layout.addRow(self.sync_type_label, self.sync_type_combo_box)
+        self.sync_type_radio_group = QtWidgets.QButtonGroup(self)
+        self.disabled_sync_radio = QtWidgets.QRadioButton('', self)
+        self.sync_type_radio_group.addButton(self.disabled_sync_radio, SyncType.Disabled)
+        self.sync_type_group_box_layout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.disabled_sync_radio)
+        self.folder_sync_radio = QtWidgets.QRadioButton('', self)
+        self.sync_type_radio_group.addButton(self.folder_sync_radio, SyncType.Folder)
+        self.sync_type_group_box_layout.setWidget(1, QtWidgets.QFormLayout.SpanningRole, self.folder_sync_radio)
+        self.ftp_sync_radio = QtWidgets.QRadioButton('', self)
+        self.sync_type_radio_group.addButton(self.ftp_sync_radio, SyncType.Ftp)
+        self.sync_type_group_box_layout.setWidget(2, QtWidgets.QFormLayout.SpanningRole, self.ftp_sync_radio)
         self.left_layout.addWidget(self.sync_type_group_box)
-
+        # Folder sync settings
+        self.folder_settings_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.folder_settings_group_box.setObjectName('folder_settings_group_box')
+        self.folder_settings_layout = QtWidgets.QFormLayout(self.folder_settings_group_box)
+        self.folder_settings_layout.setObjectName('folder_settings_layout')
+        # Sync folder path
+        self.folder_label = QtWidgets.QLabel(self.folder_settings_group_box)
+        self.folder_label.setObjectName('folder_label')
+        self.folder_path_edit = PathEdit(self.folder_settings_group_box, path_type=PathEditType.Directories,
+                                         show_revert=False)
+        self.folder_settings_layout.addRow(self.folder_label, self.folder_path_edit)
+        self.left_layout.addWidget(self.folder_settings_group_box)
         # FTP server settings
         self.ftp_settings_group_box = QtWidgets.QGroupBox(self.left_column)
         self.ftp_settings_group_box.setObjectName('ftp_settings_group_box')
         self.ftp_settings_layout = QtWidgets.QFormLayout(self.ftp_settings_group_box)
         self.ftp_settings_layout.setObjectName('ftp_settings_layout')
-
         self.ftp_type_label = QtWidgets.QLabel(self.ftp_settings_group_box)
-        self.ftp_type_label.setObjectName('auth_token_label')
+        self.ftp_type_label.setObjectName('ftp_type_label')
         # FTP type
-        self.ftp_type_combo_box = QtWidgets.QComboBox(self.ftp_settings_group_box)
-        self.ftp_type_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-        self.ftp_type_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
-        self.ftp_type_combo_box.setObjectName('ftp_type_combo_box')
-        self.ftp_settings_layout.addRow(self.ftp_type_label, self.ftp_type_combo_box)
+        self.ftp_type_radio_group = QtWidgets.QButtonGroup(self)
+        self.ftp_unsecure_radio = QtWidgets.QRadioButton('', self)
+        self.ftp_type_radio_group.addButton(self.ftp_unsecure_radio, FtpType.Ftp)
+        self.ftp_settings_layout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.ftp_unsecure_radio)
+        self.ftp_secure_radio = QtWidgets.QRadioButton('', self)
+        self.ftp_type_radio_group.addButton(self.ftp_secure_radio, FtpType.FtpTls)
+        self.ftp_settings_layout.setWidget(1, QtWidgets.QFormLayout.SpanningRole, self.ftp_secure_radio)
+        self.left_layout.addWidget(self.sync_type_group_box)
         # FTP server address
         self.ftp_address_label = QtWidgets.QLabel(self.ftp_settings_group_box)
         self.ftp_address_label.setObjectName('address_label')
@@ -80,15 +110,12 @@ class RemoteSyncTab(SettingsTab):
         self.ftp_username_edit = QtWidgets.QLineEdit(self.ftp_settings_group_box)
         self.ftp_username_edit.setObjectName('ftp_username_edit')
         self.ftp_settings_layout.addRow(self.ftp_username_label, self.ftp_username_edit)
-        self.left_layout.addWidget(self.ftp_settings_group_box)
         # FTP server password
         self.ftp_pswd_label = QtWidgets.QLabel(self.ftp_settings_group_box)
         self.ftp_pswd_label.setObjectName('ftp_pswd_label')
         self.ftp_pswd_edit = QtWidgets.QLineEdit(self.ftp_settings_group_box)
         self.ftp_pswd_edit.setObjectName('ftp_pswd_edit')
         self.ftp_settings_layout.addRow(self.ftp_pswd_label, self.ftp_pswd_edit)
-        self.left_layout.addWidget(self.ftp_settings_group_box)
-
         # FTP server data folder
         self.ftp_folder_label = QtWidgets.QLabel(self.ftp_settings_group_box)
         self.ftp_folder_label.setObjectName('ftp_folder_label')
@@ -97,7 +124,7 @@ class RemoteSyncTab(SettingsTab):
         self.ftp_settings_layout.addRow(self.ftp_folder_label, self.ftp_folder_edit)
         self.left_layout.addWidget(self.ftp_settings_group_box)
 
-
+        """
         # Manual trigger actions
         self.actions_group_box = QtWidgets.QGroupBox(self.left_column)
         self.actions_group_box.setObjectName('actions_group_box')
@@ -113,6 +140,7 @@ class RemoteSyncTab(SettingsTab):
         self.receive_songs_btn.clicked.connect(self.on_receive_songs_clicked)
         self.actions_layout.addRow(self.send_songs_btn, self.receive_songs_btn)
         self.left_layout.addWidget(self.actions_group_box)
+        """
 
         self.remote_statistics_group_box = QtWidgets.QGroupBox(self.left_column)
         self.remote_statistics_group_box.setObjectName('remote_statistics_group_box')
@@ -136,17 +164,23 @@ class RemoteSyncTab(SettingsTab):
 
     def retranslate_ui(self):
         self.sync_type_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Synchronization Type'))
-        self.sync_type_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Select Synchronization Type:'))
+        self.disabled_sync_radio.setText(translate('RemotePlugin.RemoteSyncTab', 'Disabled'))
+        self.folder_sync_radio.setText(translate('RemotePlugin.RemoteSyncTab', 'Folder'))
+        self.folder_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Synchronization Folder'))
+        self.ftp_sync_radio.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP'))
+        self.folder_settings_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Folder Settings'))
         self.ftp_settings_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'FTP Settings'))
-        self.actions_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Actions'))
-        self.remote_statistics_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Remote Statistics'))
-        self.ftp_type_label.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP Type:'))
+        self.ftp_unsecure_radio.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP (unencrypted)'))
+        self.ftp_secure_radio.setText(translate('RemotePlugin.RemoteSyncTab', 'FTPS (encrypted)'))
+        #self.ftp_type_label.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP Type:'))
         self.ftp_address_label.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP server address:'))
         self.ftp_username_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Username:'))
         self.ftp_pswd_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Password:'))
         self.ftp_folder_label.setText(translate('RemotePlugin.RemoteSyncTab', 'FTP data folder:'))
-        self.receive_songs_btn.setText(translate('RemotePlugin.RemoteSyncTab', 'Receive Songs'))
-        self.send_songs_btn.setText(translate('RemotePlugin.RemoteSyncTab', 'Send Songs'))
+        #self.actions_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Actions'))
+        #self.receive_songs_btn.setText(translate('RemotePlugin.RemoteSyncTab', 'Receive Songs'))
+        #self.send_songs_btn.setText(translate('RemotePlugin.RemoteSyncTab', 'Send Songs'))
+        self.remote_statistics_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Remote Statistics'))
         self.update_policy_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Update Policy:'))
         self.last_sync_label.setText(translate('RemotePlugin.RemoteSyncTab', 'Last Sync:'))
 
