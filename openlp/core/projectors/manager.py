@@ -328,6 +328,8 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
     def udp_listen_add(self, port=PJLINK_PORT):
         """
         Add UDP broadcast listener
+
+        NOTE: Check if PJLinkUDP port needs to be started when adding
         """
         if port in self.pjlink_udp:
             log.warning('UDP Listener for port {port} already added - skipping'.format(port=port))
@@ -339,6 +341,8 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
     def udp_listen_delete(self, port):
         """
         Remove a UDP broadcast listener
+
+        NOTE: Check if PJLinkUDP port needs to be closed/stopped when deleting
         """
         log.debug('Checking for UDP port {port} listener deletion'.format(port=port))
         if port not in self.pjlink_udp:
