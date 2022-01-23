@@ -26,7 +26,6 @@ import logging
 
 from unittest.mock import MagicMock, patch
 
-from openlp.core.projectors.constants import PJLINK_PORT
 from openlp.core.projectors.db import ProjectorDB
 from openlp.core.projectors.editform import ProjectorEditForm
 from openlp.core.projectors.manager import ProjectorManager
@@ -121,30 +120,32 @@ def test_udp_listen_add_duplicate_port(projector_manager_nodb, caplog):
     """
     # GIVEN: Initial setup
     caplog.set_level(logging.DEBUG)
-    projector_manager_nodb.pjlink_udp[PJLINK_PORT] = "Something to set index item"
+    projector_manager_nodb.pjlink_udp[4352] = "Something to set index item"
 
     # WHEN: udp_listen_add is called with duplicate port number
     caplog.clear()
-    projector_manager_nodb.udp_listen_add(port=PJLINK_PORT)
+    projector_manager_nodb.udp_listen_add(port=4352)
 
     # THEN: Verify log entry and registry entry not called
     assert caplog.record_tuples[0] == ('openlp.core.projectors.manager', 30,
                                        'UDP Listener for port 4352 already added - skipping')
 
 
+@patch('openlp.core.projectors.manager.PJLinkUDP')
 @patch('openlp.core.projectors.manager.Registry')
-def test_udp_listen_add_new(mock_registry, projector_manager_nodb, caplog):
+def test_udp_listen_add_new(mock_registry, mock_udp, projector_manager_nodb, caplog):
     """
     Test adding new UDP port listener
     """
     # GIVEN: Initial setup
     caplog.set_level(logging.DEBUG)
-    log_entries = [('openlp.core.projectors.manager', 10, 'Adding UDP listener on port 4352'),
-                   ('openlp.core.projectors.pjlink', 10, '(UDP:4352) PJLinkUDP() Initialized')]
+    # Since Registry is a singleton, sleight of hand allows us to verify calls to Registry.methods()
+    mocked_registry = MagicMock()
+    mock_registry.return_value = mocked_registry
     # WHEN: Adding new listener
     caplog.clear()
-    projector_manager_nodb.udp_listen_add(port=PJLINK_PORT)
-
+    projector_manager_nodb.udp_listen_add(port=4352)
     # THEN: Appropriate listener and log entries
-    mock_registry.execute.called_with('udp_broadcast_add', port=PJLINK_PORT)
-    assert caplog.record_tuples == log_entries, 'Invalid log entries'
+    assert mocked_registry.execute.has_call('udp_broadcast_add', port=4352)
+    assert caplog.record_tuples == [('openlp.core.projectors.manager', 10, 'Adding UDP listener on port 4352')], \
+        'Invalid log entries'
