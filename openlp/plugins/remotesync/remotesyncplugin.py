@@ -39,6 +39,7 @@ from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
 from openlp.core.lib.db import Manager
+from openlp.core.common.enum import SyncType
 from openlp.plugins.remotesync.lib.backends.synchronizer import SyncItemType, SyncItemAction, ConflictException, \
     LockException
 from openlp.core.state import State
@@ -46,6 +47,7 @@ from openlp.plugins.songs.lib.db import Song
 
 from openlp.plugins.remotesync.lib import RemoteSyncTab
 from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSynchronizer
+from openlp.plugins.remotesync.lib.backends.ftpsynchronizer import FtpSynchronizer
 from openlp.plugins.remotesync.lib.db import init_schema, SyncQueueItem, RemoteSyncItem
 
 log = logging.getLogger(__name__)
@@ -96,12 +98,19 @@ class RemoteSyncPlugin(Plugin):
         # TODO: Generate a pc id
         self.settings_tab.generate_icon()
         sync_type = Settings().value('remotesync/type')
-        if sync_type == 'folder':
+        if sync_type == SyncType.Folder:
             self.synchronizer = FolderSynchronizer(self.manager, Settings().value('remotesync/folder path'),
                                                    Settings().value('remotesync/folder pc id'))
+        elif sync_type == SyncType.Ftp:
+            self.synchronizer = FtpSynchronizer(self.manager, Settings().value('remotesync/ftp data folder'),
+                                                Settings().value('remotesync/folder pc id'),
+                                                Settings().value('remotesync/ftp type'),
+                                                Settings().value('remotesync/ftp server'),
+                                                Settings().value('remotesync/ftp username'),
+                                                Settings().value('remotesync/ftp password'))
         else:
             self.synchronizer = None
-        if not self.synchronizer.check_connection():
+        if self.synchronizer and not self.synchronizer.check_connection():
             self.synchronizer.initialize_remote()
         # TODO: register delete functions
         Registry().register_function('song_changed', self.queue_song_for_sync)
@@ -111,8 +120,9 @@ class RemoteSyncPlugin(Plugin):
         Registry().register_function('synchronize_from_remote', self.pull_from_remote)
         Registry().register_function('song_deleted', self.queue_song_for_deletion)
         self.startup_check()
-        # Set a timer to start the processing of the queue in 10 seconds
-        QtCore.QTimer.singleShot(10000, self.synchronize)
+        if self.synchronizer:
+            # Set a timer to start the processing of the queue in 10 seconds
+            QtCore.QTimer.singleShot(10000, self.synchronize)
 
     def finalise(self):
         log.debug('finalise')

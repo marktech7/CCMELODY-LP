@@ -34,7 +34,7 @@ from PyQt5 import QtCore, QtGui
 
 from openlp.core.common import SlideLimits, ThemeLevel
 from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, ImageThemeMode, LayoutStyle, \
-    DisplayStyle, LanguageSelection, SongSearch, PluginStatus
+    DisplayStyle, LanguageSelection, SongSearch, PluginStatus, SyncType, FtpType
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
 from openlp.core.common.platform import is_linux, is_win
@@ -396,14 +396,14 @@ class Settings(QtCore.QSettings):
         'remotesync/db password': '',
         'remotesync/db hostname': '',
         'remotesync/db database': '',
-        'remotesync/type': 'folder',  # folder or ftp
-        'remotesync/folder path': '/tmp/openlp_remote_sync',
-        'remotesync/folder pc id': 'firstpc',
-        'remotesync/ftp host': 'ftp.openlp.io',
-        'remotesync/ftp port': '21',
-        'remotesync/ftp ssl': False,
-        'remotesync/ftp username': 'username',
-        'remotesync/ftp password': 'password',
+        'remotesync/type': SyncType.Disabled,
+        'remotesync/folder path': '',
+        'remotesync/folder pc id': None,
+        'remotesync/ftp host': '',
+        'remotesync/ftp type': FtpType.Ftp,
+        'remotesync/ftp username': '',
+        'remotesync/ftp password': '',
+        'remotesync/ftp data folder': '',
     }
     __file_path__ = ''
     # Settings upgrades prior to 3.0

@@ -25,6 +25,7 @@ import os.path
 from enum import IntEnum
 from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
 
+from openlp.core.common.enum import FtpType, SyncType
 from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.common.applocation import AppLocation
@@ -33,15 +34,6 @@ from openlp.core.lib import build_icon
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.enums import PathEditType
-from openlp.plugins.remotesync.lib.backends.ftpsynchronizer import FtpType
-
-class SyncType(IntEnum):
-    """
-    The synchronization types available
-    """
-    Disabled = 0
-    Folder = 1
-    Ftp = 2
 
 
 class RemoteSyncTab(SettingsTab):
@@ -141,7 +133,7 @@ class RemoteSyncTab(SettingsTab):
         self.actions_layout.addRow(self.send_songs_btn, self.receive_songs_btn)
         self.left_layout.addWidget(self.actions_group_box)
         """
-
+        # statistics
         self.remote_statistics_group_box = QtWidgets.QGroupBox(self.left_column)
         self.remote_statistics_group_box.setObjectName('remote_statistics_group_box')
         self.remote_statistics_layout = QtWidgets.QFormLayout(self.remote_statistics_group_box)

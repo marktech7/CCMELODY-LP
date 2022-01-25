@@ -25,12 +25,8 @@ import fnmatch
 from ftplib import FTP, FTP_TLS
 from io import TextIOBase
 
+from openlp.core.common.enum import FtpType
 from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSynchronizer
-
-
-class FtpType(IntEnum):
-    Ftp = 1
-    FtpTls = 2
 
 
 class FtpSynchronizer(FolderSynchronizer):

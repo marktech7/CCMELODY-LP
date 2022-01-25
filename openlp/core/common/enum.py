@@ -137,3 +137,22 @@ class SongSearch(IntEnum):
     Themes = 7
     Copyright = 8
     CCLInumber = 9
+
+
+@unique
+class SyncType(IntEnum):
+    """
+    The synchronization types available
+    """
+    Disabled = 0
+    Folder = 1
+    Ftp = 2
+
+
+@unique
+class FtpType(IntEnum):
+    """
+    The supported FTP types
+    """
+    Ftp = 1
+    FtpTls = 2
