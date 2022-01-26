@@ -665,7 +665,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.main_window.display_progress_bar(1000)
         try:
             with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
-                    zipfile.ZipFile(temp_file, 'w') as zip_file:
+                    zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
