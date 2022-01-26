@@ -591,6 +591,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                             if os.path.splitext(filename)[1] not in ['.png', '.jpg']:
                                 continue
                             filename_path = Path(thumbnail_path) / Path(filename)
+                            if not filename_path.exists():
+                                continue
                             # Create a thumbnail path in the zip/service file
                             service_path = filename_path.relative_to(thumbnail_path_parent)
                             write_list.append((filename_path, service_path))
@@ -600,6 +602,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         for frame in item['service_item'].get_frames():
                             if 'thumbnail' in frame:
                                 filename_path = Path(thumbnail_path) / Path(frame['thumbnail'])
+                                if not filename_path.exists():
+                                    continue
                                 # Create a thumbnail path in the zip/service file
                                 service_path = filename_path.relative_to(thumbnail_path_parent)
                                 path_from_tuple = (filename_path, service_path)
