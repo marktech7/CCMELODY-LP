@@ -51,19 +51,16 @@ def process_command(projector, cmd, data):
     :param cmd: Command to process
     :param data: Data being processed
     """
-    log.debug('({ip}) Processing command "{cmd}" with data "{data}"'.format(ip=projector.entry.name,
-                                                                            cmd=cmd,
-                                                                            data=data))
+    log.debug(F'({projector.entry.name}) Processing command "{cmd}" with data "{data}"')
     # cmd should already be in uppercase, but data may be in mixed-case.
     # Due to some replies should stay as mixed-case, validate using separate uppercase check
     _data = data.upper()
     # Check if we have a future command not available yet
     if cmd not in pjlink_functions:
-        log.warning('({ip}) Unable to process command="{cmd}" (Future option?)'.format(ip=projector.entry.name,
-                                                                                       cmd=cmd))
+        log.warning(f'({projector.entry.name}) Unable to process command="{cmd}" (Future option?)')
         return
     elif _data == 'OK':
-        log.debug('({ip}) Command "{cmd}" returned OK'.format(ip=projector.entry.name, cmd=cmd))
+        log.debug(f'({projector.entry.name}) Command "{cmd}" returned OK')
         # A command returned successfully, so do a query on command to verify status
         return S_DATA_OK
 
