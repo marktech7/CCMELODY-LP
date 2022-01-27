@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +24,22 @@ processing projector replies.
 
 NOTE: PJLink Class (version) checks are handled in the respective PJLink/PJLinkUDP classes.
       process_clss is the only exception.
+
+NOTE: Some commands are both commannd replies as well as UDP terminal-initiated status
+      messages.
+
+      Ex: POWR
+
+      CLSS1 (TCP): controller  sends "POWR x", projector replies "POWR=xxxxx"
+      CLSS2 (UDP): projector sends "POWER=xxxx"
+
+      Inn both instances, the messagege is processed the same.
+
+      For CLSS1, we initiate communication, so we know which projecttor instance
+      the message is routed to.
+
+      For CLSS2, the terminal initiates communication, so as part of the UDP process
+      we must find the projector that initiated the message.
 """
 
 import logging
@@ -51,7 +67,7 @@ def process_command(projector, cmd, data):
     :param cmd: Command to process
     :param data: Data being processed
     """
-    log.debug(F'({projector.entry.name}) Processing command "{cmd}" with data "{data}"')
+    log.debug(f'({projector.entry.name}) Processing command "{cmd}" with data "{data}"')
     # cmd should already be in uppercase, but data may be in mixed-case.
     # Due to some replies should stay as mixed-case, validate using separate uppercase check
     _data = data.upper()
@@ -66,19 +82,19 @@ def process_command(projector, cmd, data):
 
     elif _data in PJLINK_ERRORS:
         # Oops - projector error
-        log.error('({ip}) {cmd}: {err}'.format(ip=projector.entry.name,
-                                               cmd=cmd,
-                                               err=STATUS_MSG[PJLINK_ERRORS[_data]]))
+        log.error(f'({projector.entry.name}) {cmd}: {STATUS_MSG[PJLINK_ERRORS[_data]]}')
         return PJLINK_ERRORS[_data]
 
     # Command checks already passed
-    log.debug('({ip}) Calling function for {cmd}'.format(ip=projector.entry.name, cmd=cmd))
+    log.debug(f'({projector.entry.name}) Calling function for {cmd}')
     return pjlink_functions[cmd](projector=projector, data=data)
 
 
 def process_ackn(projector, data):
     """
     Process the ACKN command.
+
+    UDP reply to SRCH command
 
     :param projector: Projector instance
     :param data: Data in packet
@@ -336,7 +352,7 @@ def process_lamp(projector, data):
 
 def process_lkup(projector, data):
     """
-    Process reply indicating remote is available for connection
+    Process UDP request indicating remote is available for connection
 
     :param projector: Projector instance
     :param data: Data packet from remote
@@ -493,6 +509,8 @@ def process_srch(projector=None, data=None):
 
     SRCH is processed by terminals so we ignore any packet.
 
+    UDP command to find active CLSS 2 projectors. Reply is ACKN.
+
     :param projector: Projector instance (actually ignored for this command)
     :param data: Data in packet
     """
@@ -538,7 +556,7 @@ pjlink_functions = {
     'INPT': process_inpt,
     'INST': process_inst,
     'LAMP': process_lamp,
-    'LKUP': process_lkup,  # Class 2  (reply only - no cmd)
+    'LKUP': process_lkup,  # Class 2  (terminal request only - no cmd)
     'NAME': process_name,
     'PJLINK': process_pjlink,
     'POWR': process_powr,
