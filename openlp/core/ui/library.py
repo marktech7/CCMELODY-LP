@@ -73,6 +73,22 @@ class FolderLibraryItem(MediaManagerItem):
         self.add_folder_action.setText(UiStrings().AddFolder)
         self.add_folder_action.setToolTip(UiStrings().AddFolderDot)
 
+    def create_item_from_id(self, item_id):
+        """
+        Create a media item from an item id.
+
+        :param item_id: Id to make live
+        """
+        Item = self.item_class
+        if isinstance(item_id, (str, Path)):
+            # Probably a file name
+            item_data = self.manager.get_object_filtered(Item, Item.file_path == str(item_id))
+        else:
+            item_data = item_id
+        item = QtWidgets.QTreeWidgetItem()
+        item.setData(0, QtCore.Qt.UserRole, item_data)
+        return item
+
     def on_add_folder_click(self):
         """
         Called to add a new folder
@@ -355,7 +371,7 @@ class FolderLibraryItem(MediaManagerItem):
         :return: The search result.
         """
         string = string.lower()
-        items = self.manager.get_all_objects(self.item_class, self.item_class.file_path.match(string))
+        items = self.manager.get_all_objects(self.item_class, self.item_class.file_path.ilike('%' + string + '%'))
         return [self.format_search_result(item) for item in items]
 
     def validate_and_load(self, file_paths, target_folder=None):
