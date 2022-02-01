@@ -73,7 +73,7 @@ SocketSTate = QtNetwork.QAbstractSocket.SocketState
 
 # Add prefix here, but defer linkclass expansion until later when we have the actual
 # PJLink class for the command
-PJLINK_HEADER = '{prefix}{{linkclass}}'.format(prefix=PJLINK_PREFIX)
+PJLINK_HEADER = f'{PJLINK_PREFIX}{{linkclass}}'
 
 
 class PJLinkUDP(QtNetwork.QUdpSocket):
