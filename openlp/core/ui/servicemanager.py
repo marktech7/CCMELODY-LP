@@ -591,6 +591,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                             if os.path.splitext(filename)[1] not in ['.png', '.jpg']:
                                 continue
                             filename_path = Path(thumbnail_path) / Path(filename)
+                            if not filename_path.exists():
+                                continue
                             # Create a thumbnail path in the zip/service file
                             service_path = filename_path.relative_to(thumbnail_path_parent)
                             write_list.append((filename_path, service_path))
@@ -600,6 +602,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         for frame in item['service_item'].get_frames():
                             if 'thumbnail' in frame:
                                 filename_path = Path(thumbnail_path) / Path(frame['thumbnail'])
+                                if not filename_path.exists():
+                                    continue
                                 # Create a thumbnail path in the zip/service file
                                 service_path = filename_path.relative_to(thumbnail_path_parent)
                                 path_from_tuple = (filename_path, service_path)
@@ -665,7 +669,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.main_window.display_progress_bar(1000)
         try:
             with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
-                    zipfile.ZipFile(temp_file, 'w') as zip_file:
+                    zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
