@@ -29,10 +29,10 @@ from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext, build_icon, create_thumb, validate_thumb
-from openlp.core.ui.library import FolderLibraryItem
 from openlp.core.lib.serviceitem import ItemCapabilities
-from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, critical_error_message_box
+from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, create_widget_action, critical_error_message_box
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.library import FolderLibraryItem
 
 from openlp.plugins.presentations.lib.db import Folder, Item
 from openlp.plugins.presentations.lib.messagelistener import MessageListener
@@ -101,6 +101,20 @@ class PresentationMediaItem(FolderLibraryItem):
         self.list_view.setIconSize(QtCore.QSize(88, 50))
         self.load_list(self.manager.get_all_objects(Item, order_by_ref=Item.file_path), is_initial_load=True)
         self.populate_display_types()
+
+    def add_custom_context_actions(self):
+        """
+        Add custom actions to the context menu.
+        """
+        create_widget_action(self.list_view, separator=True)
+        create_widget_action(
+            self.list_view,
+            text=UiStrings().AddFolder, icon=UiIcons().folder, triggers=self.on_add_folder_click)
+        create_widget_action(
+            self.list_view,
+            text=translate('PresentationsPlugin', 'Add new presentation'),
+            icon=UiIcons().open, triggers=self.on_file_click)
+        create_widget_action(self.list_view, separator=True)
 
     def add_middle_header_bar(self):
         """

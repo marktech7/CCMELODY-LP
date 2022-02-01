@@ -32,7 +32,6 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.lib import MediaType, ServiceItemContext
-from openlp.core.lib.plugin import StringContent
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_action, create_widget_action, critical_error_message_box
 from openlp.core.state import State
@@ -124,62 +123,6 @@ class MediaMediaItem(FolderLibraryItem):
         self.load_list(self.manager.get_all_objects(Item, order_by_ref=Item.file_path), is_initial_load=True)
         self.service_path = AppLocation.get_section_data_path('media') / 'thumbnails'
         self.rebuild_players()
-
-    def add_list_view_to_toolbar(self):
-        """
-        Creates the main widget for listing items.
-        """
-        super().add_list_view_to_toolbar()
-        if self.has_edit_icon:
-            create_widget_action(
-                self.list_view,
-                text=self.plugin.get_string(StringContent.Edit)['title'],
-                icon=UiIcons().edit,
-                triggers=self.on_edit_click)
-            create_widget_action(self.list_view, separator=True)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{preview}Item'.format(name=self.plugin.name.title(), preview=StringContent.Preview.title()),
-            text=self.plugin.get_string(StringContent.Preview)['title'],
-            icon=UiIcons().preview,
-            can_shortcuts=True,
-            triggers=self.on_preview_click)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{live}Item'.format(name=self.plugin.name.title(), live=StringContent.Live.title()),
-            text=self.plugin.get_string(StringContent.Live)['title'],
-            icon=UiIcons().live,
-            can_shortcuts=True,
-            triggers=self.on_live_click)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{service}Item'.format(name=self.plugin.name.title(), service=StringContent.Service.title()),
-            can_shortcuts=True,
-            text=self.plugin.get_string(StringContent.Service)['title'],
-            icon=UiIcons().add,
-            triggers=self.on_add_click)
-        if self.add_to_service_item:
-            create_widget_action(self.list_view, separator=True)
-            create_widget_action(
-                self.list_view,
-                text=translate('OpenLP.MediaManagerItem', '&Add to selected Service Item'),
-                icon=UiIcons().add,
-                triggers=self.on_add_edit_click)
-            create_widget_action(self.list_view, separator=True)
-        if self.has_delete_icon:
-            create_widget_action(
-                self.list_view,
-                'listView{name}{delete}Item'.format(name=self.plugin.name.title(), delete=StringContent.Delete.title()),
-                text=self.plugin.get_string(StringContent.Delete)['title'],
-                icon=UiIcons().delete,
-                can_shortcuts=True, triggers=self.on_delete_click)
-        self.add_custom_context_actions()
-        # Create the context menu and add all actions from the list_view.
-        self.menu = QtWidgets.QMenu()
-        self.menu.addActions(self.list_view.actions())
-        self.list_view.doubleClicked.connect(self.on_double_clicked)
-        self.list_view.itemSelectionChanged.connect(self.on_selection_change)
-        self.list_view.customContextMenuRequested.connect(self.context_menu)
 
     def add_custom_context_actions(self):
         """
