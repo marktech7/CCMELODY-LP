@@ -308,15 +308,13 @@ def set_up_logging(log_path):
     logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
-    if log.isEnabledFor(logging.DEBUG):
-        print('Logging to: {name}'.format(name=file_path))
+    print(f'Logging to: {file_path} and level {log.level}')
 
 
 def main():
     """
     The main function which parses command line options and then runs
     """
-    log.debug('Entering function - main')
     args = parse_options()
     qt_args = ['--disable-web-security']
     # qt_args = []
@@ -385,6 +383,7 @@ def main():
     Registry.create()
     settings = Settings()
     Registry().register('settings', settings)
+    log.warning(f'Arguments passed {args}')
     # Need settings object for the threads.
     settings_thread = Settings()
     Registry().register('settings_thread', settings_thread)
