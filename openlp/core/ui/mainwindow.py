@@ -1412,16 +1412,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         :param list[str] args: List of remaining positional arguments
         """
-        if args:
-            arg = ' '.join(args)
-            self.log_info(arg)
-            # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
-            # Remove these to get the correct path.
-            while '&quot;' in arg:
-                arg = arg.replace('&quot;', '')
-            file_name = os.path.expanduser(arg)
-            if os.path.isfile(file_name):
-                self.log_info("File name found")
-                self.service_manager_contents.load_file(Path(file_name))
-            else:
-                self.log_error(f"File {file_name} not found for args {args}")
+        arg = ' '.join(args)
+        self.log_info(arg)
+        # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
+        # Remove these to get the correct path.
+        while '&quot;' in arg:
+            arg = arg.replace('&quot;', '')
+        file_name = os.path.expanduser(arg)
+        if os.path.isfile(file_name):
+            self.log_info("File name found")
+            self.service_manager_contents.load_file(Path(file_name))
+        else:
+            self.log_error(f"File {file_name} not found for args {args}")
