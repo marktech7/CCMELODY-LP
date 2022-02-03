@@ -642,7 +642,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
         # If not we need to see if we want to use the previous file.so count of 1
-        self.log_warning(self.application.args)
+        self.log_info(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
         elif self.settings.value('core/auto open'):
@@ -1406,15 +1406,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
-    def open_cmd_line_files(self, args):
+    def open_cmd_line_files(self, args: list):
         """
         Open files passed in through command line arguments
 
         :param list[str] args: List of remaining positional arguments
         """
         for arg in args:
-            self.log_warning(arg)
+            self.log_info(arg)
+            # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
+            # Remove these to get the correct path.
+            while '&quot;' in arg:
+                arg = arg.replace('&quot;', '')
             file_name = os.path.expanduser(arg)
             if os.path.isfile(file_name):
-                self.log_warning("File name found")
+                self.log_info("File name found")
                 self.service_manager_contents.load_file(Path(file_name))

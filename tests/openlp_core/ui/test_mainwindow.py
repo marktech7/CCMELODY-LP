@@ -119,13 +119,29 @@ def test_cmd_line_file(main_window):
     mocked_load_file.assert_called_with(Path(service))
 
 
+def test_cmd_line_file_encoded(main_window):
+    """
+    Test that passing a service file from the command line loads the service where extra encoded quotes are added
+    """
+    # GIVEN a service as an argument to openlp
+    service_base = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
+    service = f'&quot;{service_base}&quot;'
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files([service])
+
+    # THEN the service from the arguments is loaded
+    mocked_load_file.assert_called_with(Path(service_base))
+
+
 @patch('openlp.core.ui.servicemanager.ServiceManager.load_file')
 def test_cmd_line_arg(mocked_load_file, main_window):
     """
     Test that passing a non service file does nothing.
     """
     # GIVEN a non service file as an argument to openlp
-    service = 'run_openlp.py'
+    service = ['run_openlp.py']
 
     # WHEN the argument is processed
     main_window.open_cmd_line_files(service)
