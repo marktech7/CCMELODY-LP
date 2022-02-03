@@ -119,19 +119,72 @@ def test_cmd_line_file(main_window):
     mocked_load_file.assert_called_with(Path(service))
 
 
-@patch('openlp.core.ui.servicemanager.ServiceManager.load_file')
-def test_cmd_line_arg(mocked_load_file, main_window):
+def test_cmd_line_file_encoded(main_window):
+    """
+    Test that passing a service file from the command line loads the service where extra encoded quotes are added
+    """
+    # GIVEN a service as an argument to openlp
+    service_base = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
+    service = f'&quot;{service_base}&quot;'
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files([service])
+
+    # THEN the service from the arguments is loaded
+    mocked_load_file.assert_called_with(Path(service_base))
+
+
+def test_cmd_line_arg_non_service(main_window):
     """
     Test that passing a non service file does nothing.
     """
     # GIVEN a non service file as an argument to openlp
-    service = 'run_openlp.py'
+    args = ['run_openlp.py']
 
     # WHEN the argument is processed
-    main_window.open_cmd_line_files(service)
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
 
-    # THEN the file should not be opened
-    assert mocked_load_file.called is False, 'load_file should not have been called'
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_other_args(main_window):
+    """
+    Test that passing a non service file does nothing.
+    """
+    # GIVEN a non service file as an argument to openlp
+    service_file = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
+    args = ['--disable-web-security', service_file]
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is True, 'load_file should have been called'
+        mocked_load_file.assert_called_with(Path(service_file))
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+def test_cmd_line_filename_with_spaces(MockPath, main_window):
+    """
+    Test that passing a service file with spaces loads.
+    """
+    # GIVEN a set of arguments with a file separated by spaces
+    mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
+    MockPath.return_value.resolve.side_effect = [FileNotFoundError, FileNotFoundError,
+                                                 FileNotFoundError, mocked_path_is_file]
+    args = ['Service', '2022-02-06.osz']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should be looked for
+        assert MockPath.return_value.resolve.call_count == 4
+        mocked_load_file.assert_called_with(mocked_path_is_file)
 
 
 def test_main_window_title(main_window):
@@ -142,12 +195,12 @@ def test_main_window_title(main_window):
 
     # WHEN no changes are made to the service
 
-    # THEN the main window's title shoud be the same as the OpenLP string in the UiStrings class
+    # THEN the main window's title should be the same as the OpenLP string in the UiStrings class
     assert main_window.windowTitle() == UiStrings().OpenLP, \
         'The main window\'s title should be the same as the OpenLP string in UiStrings class'
 
 
-def test_set_service_modifed(main_window):
+def test_set_service_modified(main_window):
     """
     Test that when setting the service's title the main window's title is set correctly
     """
