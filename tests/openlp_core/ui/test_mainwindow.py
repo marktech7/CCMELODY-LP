@@ -150,6 +150,24 @@ def test_cmd_line_arg(mocked_load_file, main_window):
     assert mocked_load_file.called is False, 'load_file should not have been called'
 
 
+@patch('openlp.core.ui.mainwindow.os.path.isfile')
+def test_cmd_line_filename_with_spaces(mocked_isfile, main_window):
+    """
+    Test that passing a service file with spaces loads.
+    """
+    # GIVEN a service file as an argument to openlp
+    service = [os.path.join(TEST_RESOURCES_PATH, 'service', 'te'), 'st.osz']
+    service_string = ' '.join(service)
+    mocked_isfile.return_value = False
+
+    # WHEN the argument is processed
+    main_window.open_cmd_line_files(service)
+
+    # THEN the file should be looked for.
+    assert mocked_isfile.called is True, 'isfile should have been called'
+    assert mocked_isfile.called_with(service_string)
+
+
 def test_main_window_title(main_window):
     """
     Test that running a new instance of OpenLP set the window title correctly
@@ -158,12 +176,12 @@ def test_main_window_title(main_window):
 
     # WHEN no changes are made to the service
 
-    # THEN the main window's title shoud be the same as the OpenLP string in the UiStrings class
+    # THEN the main window's title should be the same as the OpenLP string in the UiStrings class
     assert main_window.windowTitle() == UiStrings().OpenLP, \
         'The main window\'s title should be the same as the OpenLP string in UiStrings class'
 
 
-def test_set_service_modifed(main_window):
+def test_set_service_modified(main_window):
     """
     Test that when setting the service's title the main window's title is set correctly
     """
