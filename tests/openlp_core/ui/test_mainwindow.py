@@ -146,8 +146,8 @@ def test_cmd_line_arg(main_window):
     with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
         main_window.open_cmd_line_files(service)
 
-    # THEN the file should not be opened
-    assert mocked_load_file.called is False, 'load_file should not have been called'
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
 
 
 @patch('openlp.core.ui.mainwindow.os.path.isfile')
