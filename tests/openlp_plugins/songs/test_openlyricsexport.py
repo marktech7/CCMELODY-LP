@@ -28,7 +28,6 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-# from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.openlyricsexport import OpenLyricsExport
 
 
