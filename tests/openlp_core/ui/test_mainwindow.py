@@ -135,8 +135,7 @@ def test_cmd_line_file_encoded(main_window):
     mocked_load_file.assert_called_with(Path(service_base))
 
 
-@patch('openlp.core.ui.servicemanager.ServiceManager.load_file')
-def test_cmd_line_arg(mocked_load_file, main_window):
+def test_cmd_line_arg(main_window):
     """
     Test that passing a non service file does nothing.
     """
@@ -144,7 +143,8 @@ def test_cmd_line_arg(mocked_load_file, main_window):
     service = ['run_openlp.py']
 
     # WHEN the argument is processed
-    main_window.open_cmd_line_files(service)
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(service)
 
     # THEN the file should not be opened
     assert mocked_load_file.called is False, 'load_file should not have been called'
