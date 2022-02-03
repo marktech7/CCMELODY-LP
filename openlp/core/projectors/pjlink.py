@@ -545,8 +545,9 @@ class PJLink(QtNetwork.QTcpSocket):
 
         :param buff:    Data to process.
         """
-        log.debug('({ip}) get_data(buffer="{buff}"'.format(ip=self.entry.name, buff=buff))
-        ignore_class = 'ignore_class' in kwargs
+        log.debug(f'({self.entry.name}) get_data(buffer="{buff}"')
+        ignore_class = False if 'ignore_class' not in kwargs else kwargs['ignore_class']
+        log.debug(f'({self.entry.name}) Setting ignore_class to "{ignore_class}"')
         # NOTE: Class2 has changed to some values being UTF-8
         data_in = decode(buff, 'utf-8') if isinstance(buff, bytes) else buff
         data = data_in.strip()
@@ -556,7 +557,7 @@ class PJLink(QtNetwork.QTcpSocket):
             self._trash_buffer(msg='get_data(): Invalid packet - length')
             return
         elif len(data) > self.max_size:
-            self._trash_buffer(msg='get_data(): Invalid packet - too long ({length} bytes)'.format(length=len(data)))
+            self._trash_buffer(msg=f'get_data(): Invalid packet - too long ({len(data)} bytes)')
             return
         elif not data.startswith(PJLINK_PREFIX):
             self._trash_buffer(msg='get_data(): Invalid packet - PJLink prefix missing')
@@ -566,10 +567,9 @@ class PJLink(QtNetwork.QTcpSocket):
             # data[8] = initial PJLink connection (after mangling)
             self._trash_buffer(msg='get_data(): Invalid reply - Does not have "="')
             return
-        log.debug('({ip}) get_data(): Checking new data "{data}"'.format(ip=self.entry.name, data=data))
+        log.debug(f'({self.entry.name}) get_data(): Checking new data "{data}"')
         header, data = data.split('=')
-        log.debug('({ip}) get_data() header="{header}" data="{data}"'.format(ip=self.entry.name,
-                                                                             header=header, data=data))
+        log.debug(f'({self.entry.name}) get_data() header="{header}" data="{data}"')
         # At this point, the header should contain:
         #   "PVCCCC"
         #   Where:
@@ -577,20 +577,18 @@ class PJLink(QtNetwork.QTcpSocket):
         #       V = PJLink class or version
         #       C = PJLink command
         version, cmd = header[1], header[2:].upper()
-        log.debug('({ip}) get_data() version="{version}" cmd="{cmd}" data="{data}"'.format(ip=self.entry.name,
-                                                                                           version=version,
-                                                                                           cmd=cmd,
-                                                                                           data=data))
+        log.debug(f'({self.entry.name}) get_data() version="{version}" cmd="{cmd}" data="{data}"')
         if cmd not in PJLINK_VALID_CMD:
-            self._trash_buffer('get_data(): Invalid packet - unknown command "{data}"'.format(data=cmd))
+            self._trash_buffer(msg=f'get_data(): Invalid packet - unknown command "{cmd}"')
             return
         elif version not in PJLINK_VALID_CMD[cmd]['version']:
             self._trash_buffer(msg='get_data() Command reply version does not match a valid command version')
             return
         elif int(self.pjlink_class) < int(version):
+            log.warning(f'({self.entry.name}) get_data(): pjlink_class={self.pjlink_class} packet={version}')
             if not ignore_class:
-                log.warning('({ip}) get_data(): Projector returned class reply higher '
-                            'than projector stated class'.format(ip=self.entry.name))
+                log.warning(f'({self.entry.name}) get_data(): Projector returned class reply higher '
+                            'than projector stated class')
                 return
 
         chk = process_command(self, cmd, data)
@@ -599,26 +597,27 @@ class PJLink(QtNetwork.QTcpSocket):
             return
         # PJLink initial connection checks
         elif chk == S_DATA_OK:
-            # Previous command returned OK
-            log.debug('({ip}) OK returned - resending command'.format(ip=self.entry.name))
+            # Previous command returned OK - resend command to retrieve status
+            log.debug(f'({self.entry.name}) OK returned - resending command')
             self.send_command(cmd=cmd, priority=True)
         elif chk == S_CONNECT:
             # Normal connection
-            log.debug('({ip}) Connecting normal'.format(ip=self.entry.name))
+            log.debug(f'({self.entry.name}) Connecting normal')
             self.change_status(S_CONNECTED)
             self.send_command(cmd='CLSS', priority=True)
             self.readyRead.connect(self.get_socket)
         elif chk == S_AUTHENTICATE:
             # Connection with pin
-            log.debug('({ip}) Connecting with pin'.format(ip=self.entry.name))
-            data_hash = str(qmd5_hash(salt=chk[1].encode('utf-8'), data=self.pin.encode('utf-8')),
+            log.debug(f'({self.entry.name}) Connecting with pin')
+            data_hash = str(qmd5_hash(salt=data.split()[1].encode('utf-8'),
+                                      data=self.pin.encode('utf-8')),
                             encoding='ascii')
             self.change_status(S_CONNECTED)
             self.readyRead.connect(self.get_socket)
             self.send_command(cmd='CLSS', salt=data_hash, priority=True)
         elif chk == E_AUTHENTICATION:
             # Projector did not like our pin
-            log.warning('({ip}) Failed authentication - disconnecting'.format(ip=self.entry.name))
+            log.warning(f'({self.entry.name}) Failed authentication - disconnecting')
             self.disconnect_from_host()
             self.projectorAuthentication.emit(self.entry.name)
             self.change_status(status=E_AUTHENTICATION)
