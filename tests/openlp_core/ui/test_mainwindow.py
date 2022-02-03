@@ -153,7 +153,8 @@ def test_cmd_line_arg(main_window):
 @patch('openlp.core.ui.mainwindow.os.path.isfile')
 def test_cmd_line_filename_with_spaces(mocked_isfile, main_window):
     """
-    Test that passing a service file with spaces loads.
+    Test that passing a service file with spaces loads.  The space forces the file name to be split into
+    parts and needs to be put back together.
     """
     # GIVEN a service file as an argument to openlp
     service = [os.path.join(TEST_RESOURCES_PATH, 'service', 'te'), 'st.osz']
