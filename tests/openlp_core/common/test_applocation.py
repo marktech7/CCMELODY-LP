@@ -150,7 +150,7 @@ def test_get_directory_for_plugins_dir(mocked_sys, mocked_split, mocked_abspath,
     Test the AppLocation.get_directory() method for AppLocation.PluginsDir
     """
     # GIVEN: _get_frozen_path, abspath, split and sys are mocked out
-    mocked_abspath.return_value = os.path.join('plugins', 'dir')
+    mocked_abspath.return_value = os.path.join('dir', 'plugins')
     mocked_split.return_value = ['openlp']
     mocked_get_frozen_path.return_value = Path('dir')
     mocked_sys.frozen = 1
@@ -160,7 +160,7 @@ def test_get_directory_for_plugins_dir(mocked_sys, mocked_split, mocked_abspath,
     directory = AppLocation.get_directory(AppLocation.PluginsDir)
 
     # THEN: The correct directory should be returned
-    assert directory == Path.cwd() / Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
+    assert directory == Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
 
 
 @patch('openlp.core.common.sys')
