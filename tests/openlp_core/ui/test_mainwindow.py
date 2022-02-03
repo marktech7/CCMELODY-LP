@@ -140,7 +140,7 @@ def test_cmd_line_arg(main_window):
     Test that passing a non service file does nothing.
     """
     # GIVEN a non service file as an argument to openlp
-    service = ['run_openlp.py']
+    service = []
 
     # WHEN the argument is processed
     with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
