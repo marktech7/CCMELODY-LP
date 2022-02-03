@@ -374,6 +374,8 @@ class TestSongSelectImport(TestCase, TestMixin):
             <p>verse thing 1<br>line 2</p>
             <h3>Verse 2</h3>
             <p>verse thing 2</p>
+            <h3>Spoken Words</h3>
+            <p>completely custom verse type</p>
         </div>
         <ul class="copyright">
           <li>Copy thing</li><li>Copy thing 2</li>
@@ -396,7 +398,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert result['topics'] == ['theme1', 'theme2']
         assert result['ccli_number'] == '1234_cclinumber_5678'
         assert result['verses'] == [{'label': 'Verse 1', 'lyrics': 'verse thing 1\nline 2'},
-                                    {'label': 'Verse 2', 'lyrics': 'verse thing 2'}]
+                                    {'label': 'Verse 2', 'lyrics': 'verse thing 2'},
+                                    {'label': 'Spoken Words', 'lyrics': 'completely custom verse type'}]
 
     @patch('openlp.plugins.songs.lib.songselect.clean_song')
     @patch('openlp.plugins.songs.lib.songselect.Topic')

@@ -243,7 +243,12 @@ class SongSelectImport(object):
                 verse_type = verse['label']
                 verse_number = 1
             verse_type = VerseType.from_loose_input(verse_type)
-            verse_number = int(verse_number)
+            try:
+                verse_number = int(verse_number)
+            except ValueError:
+                # Some custom verse types contain multiple words, and this messes with the verse number,
+                # so just default to 1 on ValueError. See https://gitlab.com/openlp/openlp/-/issues/937
+                verse_number = 1
             song_xml.add_verse_to_lyrics(VerseType.tags[verse_type], verse_number, verse['lyrics'])
             verse_order.append('{tag}{number}'.format(tag=VerseType.tags[verse_type], number=verse_number))
         db_song.verse_order = ' '.join(verse_order)
