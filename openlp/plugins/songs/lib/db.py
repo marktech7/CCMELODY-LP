@@ -388,9 +388,7 @@ def init_schema(url):
     try:
         class_mapper(Book)
     except UnmappedClassError:
-        mapper(Book, song_books_table, properties={
-            'songs': relation(Song, secondary=songs_songbooks_table)
-        })
+        mapper(Book, song_books_table)
     try:
         class_mapper(MediaFile)
     except UnmappedClassError:

@@ -288,6 +288,7 @@ class PathType(types.TypeDecorator):
     representation and store it as a Unicode type
     """
     impl = types.Unicode
+    cache_ok = True
 
     def coerce_compared_value(self, op, value):
         """
