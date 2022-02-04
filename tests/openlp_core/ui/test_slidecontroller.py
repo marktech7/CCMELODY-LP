@@ -1552,3 +1552,22 @@ def test_initial_preview_controller(registry):
     # WHEN: the default controller is built.
     # THEN: The controller should not be a live controller.
     assert preview_controller.is_live is False, 'The slide controller should be a Preview controller'
+
+
+def test_close_displays(registry):
+    """
+    Test that closing the displays calls the correct methods
+    """
+    # GIVEN: A Live controller and a mocked display
+    mocked_display = MagicMock()
+    live_controller = LiveController(None)
+    live_controller.displays = [mocked_display]
+
+    # WHEN: close_displays() is called
+    live_controller.close_displays()
+
+    # THEN: The display is closed
+    mocked_display.deregister_display.assert_called_once()
+    mocked_display.setParent.assert_called_once_with(None)
+    mocked_display.close.assert_called_once()
+    assert live_controller.displays == []

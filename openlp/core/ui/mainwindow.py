@@ -1096,9 +1096,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         if self.new_data_path:
             self.change_data_directory()
         # Close down the display
-        if self.live_controller.display:
-            self.live_controller.display.close()
-            # self.live_controller.display = None
+        self.live_controller.close_displays()
         # Clean temporary files used by services
         self.service_manager_contents.clean_up()
         if is_win():

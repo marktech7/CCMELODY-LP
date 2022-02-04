@@ -174,13 +174,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         if not self.is_live:
             return
-        if self.displays:
-            # Delete any existing displays
-            for display in self.displays:
-                display.deregister_display()
-                display.setParent(None)
-                del display
-            self.displays = []
+        # Delete any existing displays
+        self.close_displays()
         for screen in self.screens:
             if screen.is_display:
                 display = DisplayWindow(self, screen)
@@ -188,6 +183,17 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self._reset_blank(False)
         if self.display:
             self.__add_actions_to_widget(self.display)
+
+    def close_displays(self):
+        """
+        Close all open displays
+        """
+        for display in self.displays:
+            display.deregister_display()
+            display.setParent(None)
+            display.close()
+            del display
+        self.displays = []
 
     @property
     def display(self):

@@ -89,6 +89,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False
+        self._is_manual_close = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
@@ -130,6 +131,13 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             if len(ScreenList()) > 1 or self.settings.value('core/display on monitor'):
                 self.show()
 
+    def closeEvent(self, event):
+        """
+        Override the closeEvent method to prevent the window from being closed by the user
+        """
+        if not self._is_manual_close:
+            event.ignore()
+
     def _fix_font_name(self, font_name):
         """
         Do some font machinations to see if we can fix the font name
@@ -150,6 +158,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if self.is_display:
             Registry().remove_function('live_display_hide', self.hide_display)
             Registry().remove_function('live_display_show', self.show_display)
+        self._is_manual_close = True
 
     @property
     def is_initialised(self):
