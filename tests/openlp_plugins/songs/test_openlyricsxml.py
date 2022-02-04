@@ -37,6 +37,14 @@ RESULT_TAGS = [{"temporary": False, "protected": False, "desc": "z", "start tag"
                {"temporary": False, "end tag": "{/c}", "desc": "c", "start tag": "{c}",
                 "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
                 "protected": False}]
+VERSE_LINES_07_XML = '<lines>\
+                        <line>Amazing grace, how sweet the sound</line>\
+                        <line>That saved a wretch like me</line>\
+                      </lines>'
+VERSE_LINES_08_XML = '<lines>\
+                        Amazing grace, how sweet the sound<br/>\
+                        That saved a wretch like me\
+                      </lines>'
 AUTHOR_XML = '<properties>\
                   <authors>\
                       <author type="words">Test Author1</author>\
@@ -63,6 +71,37 @@ def test_songxml_get_verses_invalid_xml():
 
     # THEN: An empty list is returned
     assert result == []
+
+
+def test_process_verse_lines_v07():
+    """
+    Test that the _process_verse_lines method correctly processes the verse lines with v0.7 OpenLyrics
+    """
+    # GIVEN: Some lyrics XML and version 0.7 of OpenLyrics
+    open_lyrics = OpenLyrics(MagicMock())
+    lines = objectify.fromstring(VERSE_LINES_07_XML)
+
+    # WHEN: The lyrics of a verse are processed
+    result = open_lyrics._process_verse_lines(lines, '0.7')
+
+    # THEN: The results should be correct
+    assert result == 'Amazing grace, how sweet the sound\nThat saved a wretch like me'
+
+
+def test_process_verse_lines_v08():
+    """
+    Test that the _process_verse_lines method correctly processes the verse lines with v0.8 OpenLyrics
+    """
+    # GIVEN: Some lyrics XML and version 0.8 of OpenLyrics
+    open_lyrics = OpenLyrics(MagicMock())
+    lines = objectify.fromstring(VERSE_LINES_08_XML)
+
+    # WHEN: The lyrics of a verse are processed
+    result = open_lyrics._process_verse_lines(lines, '0.8')
+
+    # THEN: The results should be correct
+    assert result == '                        Amazing grace, how sweet the sound'\
+                     '                        That saved a wretch like me                      '
 
 
 def test_process_formatting_tags(settings):
