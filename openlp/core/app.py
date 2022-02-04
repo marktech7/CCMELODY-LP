@@ -383,7 +383,7 @@ def main():
     Registry.create()
     settings = Settings()
     Registry().register('settings', settings)
-    log.warning(f'Arguments passed {args}')
+    log.info(f'Arguments passed {args}')
     # Need settings object for the threads.
     settings_thread = Settings()
     Registry().register('settings_thread', settings_thread)

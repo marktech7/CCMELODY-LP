@@ -21,7 +21,6 @@
 """
 This is the main window, where all the action happens.
 """
-import os
 import shutil
 from datetime import datetime, date
 from pathlib import Path
@@ -642,7 +641,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
         # If not we need to see if we want to use the previous file.so count of 1
-        self.log_warning(self.application.args)
+        self.log_info(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
         elif self.settings.value('core/auto open'):
@@ -1406,15 +1405,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
-    def open_cmd_line_files(self, args):
+    def open_cmd_line_files(self, args: list):
         """
         Open files passed in through command line arguments
 
         :param list[str] args: List of remaining positional arguments
         """
+        self.log_info(args)
+        # Drop this argument, it's obvs not a filename
+        if '--disable-web-security' in args:
+            args.remove('--disable-web-security')
+        # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
+        # Remove these to get the correct path.
+        args = list(map(lambda x: x.replace('&quot;', ''), args))
+        # Loop through the parameters, and see if we can pull a file out
+        file_path = None
         for arg in args:
-            self.log_warning(arg)
-            file_name = os.path.expanduser(arg)
-            if os.path.isfile(file_name):
-                self.log_warning("File name found")
-                self.service_manager_contents.load_file(Path(file_name))
+            try:
+                # Resolve the file, and use strict mode to throw an exception if the file does not exist
+                file_path = Path(arg).resolve(strict=True)
+                # Check if this is actually a file
+                if file_path.is_file():
+                    break
+                else:
+                    file_path = None
+            except FileNotFoundError:
+                file_path = None
+        # If none of the individual components are files, let's try pulling them together
+        if not file_path:
+            path_so_far = []
+            for arg in args:
+                path_so_far.append(arg)
+                try:
+                    file_path = Path(' '.join(path_so_far)).resolve(strict=True)
+                    if file_path.is_file():
+                        break
+                    else:
+                        file_path = None
+                except FileNotFoundError:
+                    file_path = None
+            else:
+                file_path = None
+        if file_path and file_path.suffix in ['.osz', '.oszl']:
+            self.log_info("File name found")
+            self.service_manager_contents.load_file(file_path)
+        else:
+            self.log_error(f"File {file_path} not found for arg {arg}")
