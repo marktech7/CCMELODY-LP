@@ -666,3 +666,34 @@ def test_display_watcher_please_repaint(display_window_env, mock_settings):
 
     # THEN: Qt update for the webview should have been triggered
     assert display_window.webview.update.call_count == 1
+
+
+def test_close_event_ignores_event(display_window_env, mock_settings):
+    """
+    Test that when the window receives a close event, it ignores it
+    """
+    # GIVEN: A DisplayWindow instance and a mocked event
+    display_window = DisplayWindow()
+    mocked_event = MagicMock()
+
+    # WHEN: The closeEvent() method is called
+    display_window.closeEvent(mocked_event)
+
+    # THEN: The event should have been ignored
+    mocked_event.ignore.assert_called_once()
+
+
+def test_close_event_accepts_event_manual_close(display_window_env, mock_settings):
+    """
+    Test that when the window receives a close event due to manually being closed, it accepts it
+    """
+    # GIVEN: A DisplayWindow instance and a mocked event
+    display_window = DisplayWindow()
+    mocked_event = MagicMock()
+
+    # WHEN: The closeEvent() method is called
+    display_window._is_manual_close = True
+    display_window.closeEvent(mocked_event)
+
+    # THEN: The event should have been ignored
+    assert mocked_event.ignore.called is False
