@@ -34,7 +34,7 @@ install:
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   # Mac only dependencies
-  - sh: python -m pip install Pyro4 pyobjc-core pyobjc-framework-Cocoa py-applescript
+  - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
 
 build: off
 
