@@ -159,31 +159,30 @@ def process_clss(projector, data):
     #            : Received: '%1CLSS=Class 1'  (Optoma)
     #            : Received: '%1CLSS=Version1'  (BenQ)
     if len(data) > 1:
-        log.warning('({ip}) Non-standard CLSS reply: "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Non-standard CLSS reply: "{data}"')
         # Due to stupid projectors not following standards (Optoma, BenQ comes to mind),
         # AND the different responses that can be received, the semi-permanent way to
         # fix the class reply is to just remove all non-digit characters.
         chk = re.findall(r'\d', data)
         if len(chk) < 1:
-            log.warning('({ip}) No numbers found in class version reply "{data}" - '
-                        'defaulting to class "1"'.format(ip=projector.entry.name, data=data))
+            log.warning(f'({projector.entry.name}) No numbers found in class version reply '
+                        f'"{data}" - defaulting to class "1"')
             clss = '1'
         else:
             clss = chk[0]  # Should only be the first match
     elif not data.isdigit():
-        log.warning('({ip}) NAN CLSS version reply "{data}" - '
-                    'defaulting to class "1"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) NAN CLSS version reply '
+                    f'"{data}" - defaulting to class "1"')
         clss = '1'
     else:
         clss = data
     projector.pjlink_class = clss
-    log.debug('({ip}) Setting pjlink_class for this projector to "{data}"'.format(ip=projector.entry.name,
-                                                                                  data=projector.pjlink_class))
+    log.debug(f'({projector.entry.name}) Setting pjlink_class for this projector to "{projector.pjlink_class}"')
     if projector.no_poll:
         return
 
     # Since we call this one on first connect, setup polling from here
-    log.debug('({ip}) process_pjlink(): Starting timer'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
     projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
     projector.poll_timer.start()
     return
@@ -514,7 +513,10 @@ def process_srch(projector=None, data=None):
     :param projector: Projector instance (actually ignored for this command)
     :param data: Data in packet
     """
-    log.warning("({ip}) SRCH packet detected - ignoring".format(ip=projector.entry.ip))
+    if projector is None:
+        log.warning('SRCH packet detected - ignoring')
+    else:
+        log.warning(f'({projector.entry.name}) SRCH packet detected - ignoring')
     return
 
 
