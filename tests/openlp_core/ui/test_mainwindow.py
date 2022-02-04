@@ -137,10 +137,40 @@ def test_cmd_line_file_encoded(main_window):
 
 def test_cmd_line_arg_no_service(main_window):
     """
-    Test that passing no service file, does nothing.
+    Test that passing no service file does nothing.
+    """
+    # GIVEN a command line argument for openlp
+    args = ['--disable-web-security']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_not_service_file(main_window):
+    """
+    Test that passing a file that is not a service does nothing.
     """
     # GIVEN a non service file as an argument to openlp
-    args = ['--disable-web-security']
+    args = ['run_openlp.py']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_service_file_does_not_exist(main_window):
+    """
+    Test that passing a file that does not exist does nothing.
+    """
+    # GIVEN a service file that does not exist
+    args = ['Service 2022-02-06.osz']
 
     # WHEN the argument is processed
     with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
@@ -152,9 +182,9 @@ def test_cmd_line_arg_no_service(main_window):
 
 def test_cmd_line_arg_other_args(main_window):
     """
-    Test that passing a non service file does nothing.
+    Test that passing a service file with other command line arguments still opens the file
     """
-    # GIVEN a non service file as an argument to openlp
+    # GIVEN a valid existing service file and a command line argument
     service_file = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
     args = ['--disable-web-security', service_file]
 
@@ -170,7 +200,7 @@ def test_cmd_line_arg_other_args(main_window):
 @patch('openlp.core.ui.mainwindow.Path')
 def test_cmd_line_filename_with_spaces(MockPath, main_window):
     """
-    Test that passing a service file with spaces loads.
+    Test that a service file with spaces that split across arguments loads the file properly
     """
     # GIVEN a set of arguments with a file separated by spaces
     mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
@@ -190,7 +220,7 @@ def test_cmd_line_filename_with_spaces(MockPath, main_window):
 @patch('openlp.core.ui.mainwindow.Path')
 def test_cmd_line_filename_with_spaces_and_security(MockPath, main_window):
     """
-    Test that passing a service file with spaces loads.
+    Test that passing a service file with spaces and a command line argument loads properly
     """
     # GIVEN a set of arguments with a file separated by spaces
     mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
