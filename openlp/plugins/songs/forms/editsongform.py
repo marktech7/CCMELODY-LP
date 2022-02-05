@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2028-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -400,7 +400,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         self.songbooks = []
         self._load_objects(Book, self.songbooks_combo_box, self.songbooks)
 
-    def load_themes(self, theme_list):
+    def load_themes(self, theme_list: list):
         """
         Load the themes into a combobox.
         """
@@ -409,6 +409,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             return get_natural_key(theme)
 
         self.theme_combo_box.clear()
+        theme_list.insert(0, f"<{UiStrings().Default}>")
         self.themes = theme_list
         self.themes.sort(key=get_theme_key)
         self.theme_combo_box.addItems(theme_list)
@@ -1045,7 +1046,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         self.song.verse_order = ' '.join(order)
         self.song.ccli_number = self.ccli_number_edit.text()
         theme_name = self.theme_combo_box.currentText()
-        if theme_name:
+        if theme_name and theme_name != f"<{UiStrings().Default}>":
             self.song.theme_name = theme_name
         else:
             self.song.theme_name = None

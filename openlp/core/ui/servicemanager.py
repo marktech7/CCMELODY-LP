@@ -1620,10 +1620,14 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
     def create_custom(self):
         """
-        Saves the current text item as a custom slide
+        Saves the current text item as a custom slide and opens the custom tab (if is not open)
         """
         item = self.find_service_item()[0]
         Registry().execute('custom_create_from_service', self.service_items[item]['service_item'])
+        for pos in range(1, self.main_window.media_tool_box.count()):
+            if self.main_window.media_tool_box.itemText(pos) == Registry().execute('custom_visible_name')[0]:
+                self.main_window.media_tool_box.setItemEnabled(pos, True)
+                self.main_window.media_tool_box.setCurrentIndex(pos)
 
     def find_service_item(self):
         """
