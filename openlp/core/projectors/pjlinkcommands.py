@@ -382,41 +382,40 @@ def process_pjlink(projector, data):
     :param projector: Projector instance
     :param data: Initial packet with authentication scheme
     """
-    log.debug('({ip}) Processing PJLINK command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing PJLINK command')
     chk = data.split(' ')
-    if len(chk[0]) != 1:
+    if (len(chk[0]) != 1) or (chk[0] not in ('0', '1')):
         # Invalid - after splitting, first field should be 1 character, either '0' or '1' only
-        log.error('({ip}) Invalid initial authentication scheme - aborting'.format(ip=projector.entry.name))
+        log.error(f'({projector.entry.name}) Invalid initial authentication scheme - aborting')
         return E_AUTHENTICATION
     elif chk[0] == '0':
         # Normal connection no authentication
         if len(chk) > 1:
             # Invalid data - there should be nothing after a normal authentication scheme
-            log.error('({ip}) Normal connection with extra information - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Normal connection with extra information - aborting')
             return E_NO_AUTHENTICATION
         elif projector.pin:
-            log.error('({ip}) Normal connection but PIN set - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Normal connection but PIN set - aborting')
             return E_NO_AUTHENTICATION
-        log.debug('({ip}) PJLINK: Returning S_CONNECT'.format(ip=projector.entry.name))
+        log.debug(f'({projector.entry.name}) PJLINK: Returning S_CONNECT')
         return S_CONNECT
     elif chk[0] == '1':
         if len(chk) < 2:
             # Not enough information for authenticated connection
-            log.error('({ip}) Authenticated connection but not enough info - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authenticated connection but not enough info - aborting')
             return E_NO_AUTHENTICATION
         elif len(chk[-1]) != PJLINK_TOKEN_SIZE:
             # Bad token - incorrect size
-            log.error('({ip}) Authentication token invalid (size) - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authentication token invalid (size) - aborting')
             return E_NO_AUTHENTICATION
         elif not all(c in string.hexdigits for c in chk[-1]):
             # Bad token - not hexadecimal
-            log.error('({ip}) Authentication token invalid (not a hexadecimal number) '
-                      '- aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authentication token invalid (not a hexadecimal number) - aborting')
             return E_NO_AUTHENTICATION
         elif not projector.pin:
-            log.error('({ip}) Authenticate connection but no PIN - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authenticate connection but no PIN - aborting')
             return E_NO_AUTHENTICATION
-        log.debug('({ip}) PJLINK: Returning S_AUTHENTICATE'.format(ip=projector.entry.name))
+        log.debug(f'({projector.entry.name}) PJLINK: Returning S_AUTHENTICATE')
         return S_AUTHENTICATE
 
 
