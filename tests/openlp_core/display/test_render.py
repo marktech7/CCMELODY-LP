@@ -265,4 +265,3 @@ def test_format_slide_no_split(settings):
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['line one<br>line two']
-
