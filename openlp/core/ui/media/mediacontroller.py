@@ -62,6 +62,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.log_info('MediaController Initialising')
 
     def setup(self):
+        self.is_theme_background = False
         self.vlc_player = None
         self.current_media_players = {}
         # Timer for video state
@@ -217,7 +218,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         player.resize(controller)
 
-    def load_video(self, source, service_item, hidden=False):
+    def load_video(self, source, service_item, hidden=False, is_theme_background=False):
         """
         Loads and starts a video to run and sets the stored sound value.
 
@@ -225,6 +226,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param service_item: The player which is doing the playing
         :param hidden: The player which is doing the playing
         """
+        self.is_theme_background = is_theme_background
         is_valid = True
         controller = self._display_controllers(source)
         log.debug(f'load_video is_live:{controller.is_live}')
@@ -314,19 +316,21 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 if self.live_controller.media_info.media_type == MediaType.Stream:
                     self.log_warning('stream cannot be previewed while also streaming live')
                     return
-        autoplay = False
+        self.is_autoplay = False
         if service_item.requires_media() and hidden == HideMode.Theme:
-            autoplay = True
+            self.is_autoplay = True
         # Preview requested
         elif not controller.is_live:
-            autoplay = True
+            self.is_autoplay = True
         # Visible or background requested or Service Item wants to autostart
         elif not hidden and service_item.will_auto_start:
-            autoplay = True
+            self.is_autoplay = True
         # Unblank on load set
         elif self.settings.value('core/auto unblank'):
-            autoplay = True
-        if autoplay:
+            self.is_autoplay = True
+        if self.is_theme_background:
+            self.is_autoplay = True
+        if self.is_autoplay:
             if not self.media_play(controller):
                 critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
@@ -736,18 +740,15 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             Registry().execute('live_display_hide', hide_mode)
         controller_type = self.live_controller.controller_type
         playing = self.current_media_players[controller_type].get_live_state() == MediaState.Playing
-        if hide_mode == HideMode.Theme:
+        if self.is_theme_background and hide_mode == HideMode.Theme:
             if not playing:
                 self.media_play(self.live_controller)
             else:
                 self.live_hide_timer.stop()
         else:
-            if hide_mode == HideMode.Screen:
-                if playing:
-                    self.media_pause(self.live_controller)
-                self._media_set_visibility(self.live_controller, False)
-            else:
-                self.live_hide_timer.start(HIDE_DELAY_TIME)
+            if playing:
+                self.media_pause(self.live_controller)
+            self._media_set_visibility(self.live_controller, False)
 
     def media_unblank(self, msg):
         """
