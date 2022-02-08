@@ -32,11 +32,6 @@ sup {
   line-height: 0 !important;
 }
 
-.nbsp {
-  font-size: 50% !important;
-  line-height: 0;
-}
-
 body,
 .reveal .slides,
 .reveal .footer {

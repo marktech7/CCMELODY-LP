@@ -151,7 +151,6 @@ def remove_tags(text, can_remove_chords=False):
     """
     text = text.replace('<br>', '\n')
     text = text.replace('{br}', '\n')
-    text = text.replace('<span class="nbsp">&nbsp;</span>', ' ')
     text = text.replace('&nbsp;', ' ')
     text = text.replace('<sup>', '')
     text = text.replace('</sup>', '')
@@ -473,7 +472,7 @@ def words_split(line):
     :param line: Line to be split
     """
     # this parse we are to be wordy
-    return re.split(r' (?=[^>]*(?:<|$))', line)
+    return re.split(r'\s+', line)
 
 
 def get_start_tags(raw_text):
