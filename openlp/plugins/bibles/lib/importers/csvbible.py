@@ -48,9 +48,9 @@ There are two acceptable formats of the verses file.  They are:
 
 All CSV files are expected to use a comma (',') as the delimiter and double quotes ('"') as the quote symbol.
 """
-import csv
 import logging
 from collections import namedtuple
+from csv import Error as CSVError, reader
 
 from openlp.core.common import get_file_encoding
 from openlp.core.common.i18n import translate
@@ -61,6 +61,19 @@ log = logging.getLogger(__name__)
 
 Book = namedtuple('Book', 'id, testament_id, name, abbreviation')
 Verse = namedtuple('Verse', 'book_id_name, chapter_number, number, text')
+
+
+def _has_header(sample):
+    """Determine if the sample of a csv file has a header line"""
+    if '\r\n' in sample:
+        lines = sample.split('\r\n')
+    else:
+        lines = sample.split('\n')
+    row_1 = lines[0].split(',')
+    row_2 = lines[1].split(',')
+    if all([row_2[0].isdigit(), row_2[1].isdigit()]) and not all([row_1[0].isdigit(), row_1[1].isdigit()]):
+        return True
+    return False
 
 
 class CSVBible(BibleImport):
@@ -105,9 +118,17 @@ class CSVBible(BibleImport):
         try:
             encoding = get_file_encoding(file_path)
             with file_path.open('r', encoding=encoding, newline='') as csv_file:
-                csv_reader = csv.reader(csv_file, delimiter=',', quotechar='"')
+                # Grab a sample from the file, and rewind to the beginning
+                sample = csv_file.read(4096)
+                csv_file.seek(0)
+                # Create the reader
+                csv_reader = reader(csv_file, delimiter=',', quotechar='"')
+                # Determine if the CSV has a header and skip if necessary
+                if _has_header(sample):
+                    print("has_header")
+                    next(csv_reader)
                 return [results_tuple(*line) for line in csv_reader]
-        except (OSError, csv.Error, TypeError, UnicodeDecodeError):
+        except (OSError, CSVError, TypeError, UnicodeDecodeError, ValueError):
             log.exception('Parsing {file} failed.'.format(file=file_path))
             raise ValidationError(msg='Parsing "{file}" failed'.format(file=file_path))
 
