@@ -29,6 +29,7 @@ import openlp.core.projectors.pjlink
 from unittest.mock import DEFAULT, patch
 from openlp.core.projectors.constants import PJLINK_MAX_PACKET, PJLINK_PREFIX, \
     E_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_CONNECTED, S_DATA_OK
+from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
 
 test_module = openlp.core.projectors.pjlink.__name__
 test_qmd5 = openlp.core.common.__name__
@@ -414,15 +415,9 @@ def test_s_authenticate(pjlink, caplog):
         - Reply "%1CLSS=1"
     '''
     # GIVEN: Initial setup
-    # t_pin = "JBMIAProjectorLink"
-    # t_salt = "498e4a67"
-    # t_hash = "5d8409bc1c3fa39749434aa3a5c38682"
-    t_salt = '498e4a67'
-    t_hash = '5d8409bc1c3fa39749434aa3a5c38682'
-    t_pin = "JBMIAProjectorLink"
     t_cmd = "PJLINK"
     t_ver = "1"
-    t_data = f"1 {t_salt}"
+    t_data = f"1 {TEST_SALT}"
     t_buff = f"{PJLINK_PREFIX}{t_ver}{t_cmd}={t_data}"
     logs = [(f"{test_module}", logging.DEBUG,
              f'({pjlink.entry.name}) get_data(buffer="{t_buff}"'),
@@ -437,9 +432,9 @@ def test_s_authenticate(pjlink, caplog):
             (f'{test_module}', logging.DEBUG,
              f'({pjlink.entry.name}) Connecting with pin'),
             (f'{test_qmd5}.__init__', logging.DEBUG,
-             f'qmd5_hash(salt="b\'{t_salt}\'"'),
+             f'qmd5_hash(salt="b\'{TEST_SALT}\'"'),
             (f'{test_qmd5}.__init__', logging.DEBUG,
-             f'qmd5_hash() returning "b\'{t_hash}\'"')
+             f'qmd5_hash() returning "b\'{TEST_HASH}\'"')
             ]
     with patch.object(openlp.core.projectors.pjlink, "process_command") as mock_command, \
          patch.multiple(pjlink,
@@ -450,7 +445,7 @@ def test_s_authenticate(pjlink, caplog):
                         readyRead=DEFAULT,
                         get_socket=DEFAULT) as mock_pjlink:
         mock_command.return_value = S_AUTHENTICATE
-        pjlink.pin = t_pin
+        pjlink.pin = TEST_PIN
 
         # WHEN: get_data called with OK
         caplog.set_level(logging.DEBUG)
@@ -461,7 +456,7 @@ def test_s_authenticate(pjlink, caplog):
         assert caplog.record_tuples == logs, "Invalid log entries"
         mock_pjlink['receive_data_signal'].assert_called_once()
         mock_pjlink['_trash_buffer'].assert_not_called()
-        mock_pjlink['send_command'].assert_called_with(cmd='CLSS', salt=t_hash, priority=True)
+        mock_pjlink['send_command'].assert_called_with(cmd='CLSS', salt=TEST_HASH, priority=True)
         mock_pjlink['change_status'].assert_called_with(S_CONNECTED)
         mock_pjlink['readyRead'].connect.assert_called_once_with(mock_pjlink['get_socket'])
         mock_command.assert_called_with(pjlink, t_cmd, t_data)
