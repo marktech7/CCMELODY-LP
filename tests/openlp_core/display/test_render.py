@@ -39,10 +39,22 @@ def test_remove_tags(mocked_get_tags):
         'start tag': '{b}',
         'start html': '<span style="-webkit-text-fill-color:black">',
         'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-        'temporary': False
+        'temporary': False, 'hidden': False
+    }, {
+        'desc': 'Italics',
+        'start tag': '{it}',
+        'start html': '<em>',
+        'end tag': '{/it}', 'end html': '</em>', 'protected': True,
+        'temporary': False, 'hidden': False
+    }, {
+        'desc': 'Superscript',
+        'start tag': '{su}',
+        'start html': '<sup>',
+        'end tag': '{/su}', 'end html': '</sup>', 'protected': True,
+        'temporary': False, 'hidden': False
     }]
-    string_to_pass = 'ASDF<br>foo{br}bar&nbsp;{b}black{/b}'
-    expected_string = 'ASDF\nfoo\nbar black'
+    string_to_pass = 'ASDF<br>foo{br}bar&nbsp;{b}black{/b} {su}1,1&nbsp;{/su}In the {it}beggining{/it}...'
+    expected_string = 'ASDF\nfoo\nbar black 1,1 In the beggining...'
 
     # WHEN: Clean the string.
     result_string = remove_tags(string_to_pass)

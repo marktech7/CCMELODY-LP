@@ -152,6 +152,10 @@ def remove_tags(text, can_remove_chords=False):
     text = text.replace('<br>', '\n')
     text = text.replace('{br}', '\n')
     text = text.replace('&nbsp;', ' ')
+    text = text.replace('<sup>', '')
+    text = text.replace('</sup>', '')
+    text = text.replace('<em>', '')
+    text = text.replace('</em>', '')
     for tag in FormattingTags.get_html_tags():
         text = text.replace(tag['start tag'], '')
         text = text.replace(tag['end tag'], '')

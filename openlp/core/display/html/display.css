@@ -28,7 +28,8 @@ body.hide-mouse {
 
 sup {
   vertical-align: super !important;
-  font-size: smaller !important;
+  font-size: 50% !important;
+  line-height: 0 !important;
 }
 
 body,
