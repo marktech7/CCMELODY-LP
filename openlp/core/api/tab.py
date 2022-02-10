@@ -21,6 +21,11 @@
 """
 The :mod:`~openlp.core.api.tab` module contains the settings tab for the API
 """
+
+import PIL.ImageQt
+import PIL.Image
+import qrcode
+
 from time import sleep
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -213,9 +218,7 @@ class ApiTab(SettingsTab):
                                                     'Show thumbnails of non-text slides in remote and stage view.'))
         self.app_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Remote App'))
         self.app_qr_description_label.setText(
-            translate('RemotePlugin.RemoteTab',
-                      'Scan the QR code or click <a href="{qr}">download</a> to download an app for your mobile device'
-                      ).format(qr='https://openlp.org/#mobile-app-downloads'))
+            translate('RemotePlugin.RemoteTab', 'Scan the QR code to open the remote view on your mobile device'))
         self.user_login_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'User Authentication'))
         self.web_remote_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Web Remote'))
         self.check_version_button.setText(translate('RemotePlugin.RemoteTab', 'Check for Updates'))
@@ -268,14 +271,15 @@ class ApiTab(SettingsTab):
         Update the display based on the data input on the screen
         """
         ip_address = self.get_ip_address(self.address_edit.text())
-        http_url = 'http://{url}:{text}/'.format(url=ip_address, text=self.port_spin_box.text())
-        self.remote_url.setText('<a href="{url}">{url}</a>'.format(url=http_url))
-        http_url_temp = http_url + 'stage'
-        self.stage_url.setText('<a href="{url}">{url}</a>'.format(url=http_url_temp))
-        http_url_temp = http_url + 'chords'
-        self.chords_url.setText('<a href="{url}">{url}</a>'.format(url=http_url_temp))
-        http_url_temp = http_url + 'main'
-        self.live_url.setText('<a href="{url}">{url}</a>'.format(url=http_url_temp))
+        http_url = f'http://{ip_address}:{self.port_spin_box.text()}/'
+        self.remote_url.setText(f'<a href="{http_url}">{http_url}</a>')
+        self.stage_url.setText(f'<a href="{http_url}stage">{http_url}stage</a>')
+        self.chords_url.setText(f'<a href="{http_url}chords">{http_url}chords</a>')
+        self.live_url.setText(f'<a href="{http_url}main">{http_url}main</a>')
+        img = qrcode.make(http_url)
+        img = PIL.ImageQt.ImageQt(img)
+        image = QtGui.QPixmap.fromImage(img)
+        self.app_qr_code_label.setPixmap(image)
 
     def get_server_states(self):
         """
