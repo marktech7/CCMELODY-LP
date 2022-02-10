@@ -128,7 +128,8 @@ class Ui_FormattingTagDialog(object):
         self.tag_table_widget.horizontalHeaderItem(1).setText(translate('OpenLP.FormattingTagDialog', 'Tag'))
         self.tag_table_widget.horizontalHeaderItem(2).setText(translate('OpenLP.FormattingTagDialog', 'Start HTML'))
         self.tag_table_widget.horizontalHeaderItem(3).setText(translate('OpenLP.FormattingTagDialog', 'End HTML'))
-        self.tag_table_widget.horizontalHeaderItem(4).setText(translate('OpenLP.FormattingTagDialog', 'Hide content from Live/Preview'))
+        self.tag_table_widget.horizontalHeaderItem(4).setText(translate('OpenLP.FormattingTagDialog',
+                                                                        'Hide content from Live/Preview'))
         self.tag_table_widget.setColumnWidth(0, 80)
         self.tag_table_widget.setColumnWidth(1, 40)
         self.tag_table_widget.setColumnWidth(2, 320)
