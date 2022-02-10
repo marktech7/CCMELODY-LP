@@ -38,7 +38,7 @@ class Ui_FormattingTagDialog(object):
         """
         formatting_tag_dialog.setObjectName('formatting_tag_dialog')
         formatting_tag_dialog.setWindowIcon(UiIcons().main_icon)
-        formatting_tag_dialog.resize(725, 548)
+        formatting_tag_dialog.resize(835, 548)
         self.list_data_grid_layout = QtWidgets.QVBoxLayout(formatting_tag_dialog)
         self.list_data_grid_layout.setContentsMargins(8, 8, 8, 8)
         self.list_data_grid_layout.setObjectName('list_data_grid_layout')
@@ -128,7 +128,7 @@ class Ui_FormattingTagDialog(object):
         self.tag_table_widget.horizontalHeaderItem(1).setText(translate('OpenLP.FormattingTagDialog', 'Tag'))
         self.tag_table_widget.horizontalHeaderItem(2).setText(translate('OpenLP.FormattingTagDialog', 'Start HTML'))
         self.tag_table_widget.horizontalHeaderItem(3).setText(translate('OpenLP.FormattingTagDialog', 'End HTML'))
-        self.tag_table_widget.horizontalHeaderItem(4).setText(translate('OpenLP.FormattingTagDialog', 'Hide content'))
+        self.tag_table_widget.horizontalHeaderItem(4).setText(translate('OpenLP.FormattingTagDialog', 'Hide content from Live/Preview'))
         self.tag_table_widget.setColumnWidth(0, 80)
         self.tag_table_widget.setColumnWidth(1, 40)
         self.tag_table_widget.setColumnWidth(2, 320)
