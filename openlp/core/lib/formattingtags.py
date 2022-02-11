@@ -144,6 +144,12 @@ class FormattingTags(object):
                 'end tag': '{/u}', 'end html': '</span>', 'protected': True,
                 'temporary': False
             }, {
+                'desc': translate('OpenLP.FormattingTags', 'UpperCase'),
+                'start tag': '{uc}',
+                'start html': '<span style="text-transform: uppercase;">',
+                'end tag': '{/uc}', 'end html': '</span>', 'protected': True,
+                'temporary': False
+            }, {
                 'desc': translate('OpenLP.FormattingTags', 'Break'),
                 'start tag': '{br}', 'start html': '<br>', 'end tag': '',
                 'end html': '', 'protected': True,
