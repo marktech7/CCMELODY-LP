@@ -458,6 +458,8 @@ class OpenLyrics(object):
                 if tag['end html']:
                     element_close = self._add_text_to_element('close', element)
                     element_close.text = etree.CDATA(tag['end html'])
+                element_hidden = self._add_text_to_element('hidden', element)
+                element_hidden.text = etree.CDATA(str(tag['hidden']))
 
     def _add_text_with_tags_to_lines(self, verse_element, text, tags_element):
         """
@@ -602,7 +604,8 @@ class OpenLyrics(object):
                 'protected': False,
                 # Add 'temporary' key in case the formatting tag should not be saved otherwise it is supposed that
                 # formatting tag is permanent.
-                'temporary': temporary
+                'temporary': temporary,
+                'hidden': True if hasattr(tag, 'hidden') and tag.hidden.text == 'True' else False
             }
             found_tags.append(openlp_tag)
         existing_tag_ids = [tag['start tag'] for tag in FormattingTags.get_html_tags()]

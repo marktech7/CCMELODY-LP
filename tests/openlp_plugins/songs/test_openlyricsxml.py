@@ -31,12 +31,12 @@ from tests.utils.constants import RESOURCE_PATH
 
 TEST_PATH = RESOURCE_PATH / 'songs' / 'openlyrics'
 START_TAGS = [{"protected": False, "desc": "z", "start tag": "{z}", "end html": "</strong>", "temporary": False,
-               "end tag": "{/z}", "start html": "strong>"}]
+               "end tag": "{/z}", "start html": "strong>", "hidden": False}]
 RESULT_TAGS = [{"temporary": False, "protected": False, "desc": "z", "start tag": "{z}", "start html": "strong>",
-                "end html": "</strong>", "end tag": "{/z}"},
+                "end html": "</strong>", "end tag": "{/z}", "hidden": False},
                {"temporary": False, "end tag": "{/c}", "desc": "c", "start tag": "{c}",
                 "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
-                "protected": False}]
+                "protected": False, "hidden": False}]
 VERSE_LINES_07_XML = '<lines>\
                         <line>Amazing grace, how sweet the sound</line>\
                         <line>That saved a wretch like me</line>\
