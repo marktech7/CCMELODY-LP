@@ -332,9 +332,9 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         NOTE: Check if PJLinkUDP port needs to be started when adding
         """
         if port in self.pjlink_udp:
-            log.warning('UDP Listener for port {port} already added - skipping'.format(port=port))
+            log.warning(f'UDP Listener for port {port} already added - skipping')
         else:
-            log.debug('Adding UDP listener on port {port}'.format(port=port))
+            log.debug(f'Adding UDP listener on port {port}')
             self.pjlink_udp[port] = PJLinkUDP(port=port)
             Registry().execute('udp_broadcast_add', port=port, callback=self.pjlink_udp[port].check_settings)
 
@@ -344,20 +344,20 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
 
         NOTE: Check if PJLinkUDP port needs to be closed/stopped when deleting
         """
-        log.debug('Checking for UDP port {port} listener deletion'.format(port=port))
+        log.debug(f'Checking for UDP port {port} listener deletion')
         if port not in self.pjlink_udp:
-            log.warning('UDP listener for port {port} not there - skipping delete'.format(port=port))
+            log.warning(f'UDP listener for port {port} not there - skipping delete')
             return
         keep_port = False
         for item in self.projector_list:
             if port == item.link.port:
                 keep_port = True
         if keep_port:
-            log.warning('UDP listener for port {port} needed for other projectors - skipping delete'.format(port=port))
+            log.warning(f'UDP listener for port {port} needed for other projectors - skipping delete')
             return
         Registry().execute('udp_broadcast_remove', port=port)
         del self.pjlink_udp[port]
-        log.debug('UDP listener for port {port} deleted'.format(port=port))
+        log.debug(f'UDP listener for port {port} deleted')
 
     def get_settings(self):
         """
