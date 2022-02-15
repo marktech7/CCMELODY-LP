@@ -29,7 +29,8 @@ from unittest.mock import DEFAULT, MagicMock, patch
 test_module = openlp.core.projectors.manager.__name__
 
 
-def test_bootstrap_initialise(projector_manager, caplog):
+@patch('openlp.core.projectors.manager.ProjectorDB')
+def test_bootstrap_initialise(mock_db, projector_manager, caplog):
     """
     Test ProjectorManager initializes with existing ProjectorDB instance
     """
@@ -39,8 +40,7 @@ def test_bootstrap_initialise(projector_manager, caplog):
 
     with patch.multiple(projector_manager,
                         setup_ui=DEFAULT,
-                        get_settings=DEFAULT) as mock_manager, \
-         patch('openlp.core.projectors.manager.ProjectorDB') as mock_db:
+                        get_settings=DEFAULT) as mock_manager:
 
         # WHEN: we call bootstrap_initialise
         caplog.clear()
@@ -53,7 +53,8 @@ def test_bootstrap_initialise(projector_manager, caplog):
         mock_db.assert_not_called()
 
 
-def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
+@patch('openlp.core.projectors.manager.ProjectorDB')
+def test_bootstrap_initialise_nodb(mock_db, projector_manager_nodb, caplog):
     """
     Test ProjectorManager initializes with a new ProjectorDB instance
     """
@@ -63,8 +64,7 @@ def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
 
     with patch.multiple(projector_manager_nodb,
                         setup_ui=DEFAULT,
-                        get_settings=DEFAULT) as mock_manager, \
-         patch('openlp.core.projectors.manager.ProjectorDB') as mock_db:
+                        get_settings=DEFAULT) as mock_manager:
 
         # WHEN: we call bootstrap_initialise
         caplog.clear()
@@ -77,7 +77,9 @@ def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
         mock_db.assert_called_once()
 
 
-def test_bootstrap_post_set_up_autostart_false(projector_manager_memdb, settings, caplog):
+@patch('openlp.core.projectors.manager.ProjectorEditForm')
+@patch('openlp.core.projectors.manager.QtCore.QTimer')
+def test_bootstrap_post_set_up_autostart_false(mock_timer, mock_edit, projector_manager_memdb, settings, caplog):
     """
     Test post-initialize calls proper setups
     """
@@ -85,7 +87,7 @@ def test_bootstrap_post_set_up_autostart_false(projector_manager_memdb, settings
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, 'Loading all projectors')]
 
-    mock_timer = MagicMock()
+    # mock_timer = MagicMock()
     mock_newProjector = MagicMock()
     mock_editProjector = MagicMock()
     mock_edit = MagicMock()
@@ -95,13 +97,11 @@ def test_bootstrap_post_set_up_autostart_false(projector_manager_memdb, settings
     settings.setValue('projector/connect on start', False)
     projector_manager_memdb.bootstrap_initialise()
 
-    with patch('openlp.core.projectors.manager.ProjectorEditForm') as mocked_edit, \
-         patch('openlp.core.projectors.manager.QtCore') as mock_core, \
-         patch.multiple(projector_manager_memdb,
+    with patch.multiple(projector_manager_memdb,
                         _load_projectors=DEFAULT,
                         projector_list_widget=DEFAULT) as mock_manager:
         mocked_edit.return_value = mock_edit
-        mock_core.QTimer = mock_timer
+        # mock_core.QTimer = mock_timer
 
         # WHEN: Call to initialize is run
         caplog.clear()
@@ -116,7 +116,9 @@ def test_bootstrap_post_set_up_autostart_false(projector_manager_memdb, settings
         assert caplog.record_tuples == logs, 'Invalid log entries'
 
 
-def test_bootstrap_post_set_up_autostart_true(projector_manager_memdb, settings, caplog):
+@patch('openlp.core.projectors.manager.ProjectorEditForm')
+@patch('openlp.core.projectors.manager.QtCore')
+def test_bootstrap_post_set_up_autostart_true(mock_core, mock_edit, projector_manager_memdb, settings, caplog):
     """
     Test post-initialize calls proper setups
     """
@@ -134,9 +136,7 @@ def test_bootstrap_post_set_up_autostart_true(projector_manager_memdb, settings,
     settings.setValue('projector/connect on start', True)
     projector_manager_memdb.bootstrap_initialise()
 
-    with patch('openlp.core.projectors.manager.ProjectorEditForm') as mocked_edit, \
-         patch('openlp.core.projectors.manager.QtCore') as mock_core, \
-         patch.multiple(projector_manager_memdb,
+    with patch.multiple(projector_manager_memdb,
                         setup_ui=DEFAULT,
                         _load_projectors=DEFAULT,
                         projector_list_widget=DEFAULT) as mock_manager:
