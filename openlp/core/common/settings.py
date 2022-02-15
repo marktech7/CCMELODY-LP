@@ -208,7 +208,7 @@ class Settings(QtCore.QSettings):
         'api/authentication enabled': False,
         'api/ip address': '0.0.0.0',
         'api/thumbnails': True,
-        'api/download version': '0.0',
+        'api/download version': None,
         'api/last version test': '',
         'api/update check': True,
         'bibles/db type': 'sqlite',

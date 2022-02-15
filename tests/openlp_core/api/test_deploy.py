@@ -22,7 +22,8 @@ import json
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
-from openlp.core.api.deploy import REMOTE_URL, deploy_zipfile, download_version_info, download_and_check
+from openlp.core.api.deploy import REMOTE_URL, deploy_zipfile, download_version_info, download_and_install, \
+    get_installed_version
 
 
 CONFIG_FILE = '{"latest": {"version": "0.1", "filename": "remote-0.1.zip", "sha256": "", "size": 854039}}'
@@ -100,15 +101,15 @@ def test_download_version_info(mocked_get_web_page, mocked_get_openlp_user_agent
 
 @patch('openlp.core.api.deploy.log.warning')
 @patch('openlp.core.api.deploy.download_version_info')
-def test_download_and_check_log_warning(mocked_download_version_info, mocked_warning):
+def test_download_and_install_log_warning(mocked_download_version_info, mocked_warning):
     """
     Test that when the version info fails, a warning is logged
     """
     # GIVEN: A few mocks, and a version info of None
     mocked_download_version_info.return_value = None
 
-    # WHEN: download_and_check is run
-    result = download_and_check(None)
+    # WHEN: download_and_install is run
+    result = download_and_install(None)
 
     # THEN: None is returned and a warning is logged
     assert result is None, 'The result should be None'
@@ -118,8 +119,8 @@ def test_download_and_check_log_warning(mocked_download_version_info, mocked_war
 @patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
 @patch('openlp.core.api.deploy.download_file')
 @patch('openlp.core.api.deploy.download_version_info')
-def test_download_and_check_download_fails(mocked_download_version_info, mocked_download_file,
-                                           mocked_get_section_data_path):
+def test_download_and_install_download_fails(mocked_download_version_info, mocked_download_file,
+                                             mocked_get_section_data_path):
     """
     Test that when the version info fails, a warning is logged
     """
@@ -129,8 +130,8 @@ def test_download_and_check_download_fails(mocked_download_version_info, mocked_
     mocked_download_file.return_value = False
     mocked_get_section_data_path.return_value = Path('.')
 
-    # WHEN: download_and_check is run
-    result = download_and_check(mocked_callback)
+    # WHEN: download_and_install is run
+    result = download_and_install(mocked_callback)
 
     # THEN: None is returned and a warning is logged
     assert result is None, 'The result should be None'
@@ -140,8 +141,8 @@ def test_download_and_check_download_fails(mocked_download_version_info, mocked_
 @patch('openlp.core.api.deploy.deploy_zipfile')
 @patch('openlp.core.api.deploy.download_file')
 @patch('openlp.core.api.deploy.download_version_info')
-def test_download_and_check(mocked_download_version_info, mocked_download_file, mocked_deploy_zipfile,
-                            mocked_get_section_data_path):
+def test_download_and_install(mocked_download_version_info, mocked_download_file, mocked_deploy_zipfile,
+                              mocked_get_section_data_path):
     # GIVEN: A bunch of mocks
     mocked_callback = MagicMock()
     mocked_download_version_info.return_value = CONFIG_DICT
@@ -150,10 +151,60 @@ def test_download_and_check(mocked_download_version_info, mocked_download_file, 
     mocked_remote_zip = mocked_remote_path / 'remote.zip'
     mocked_get_section_data_path.return_value = mocked_remote_path
 
-    # WHEN: download_and_check() is called
-    result = download_and_check(mocked_callback)
+    # WHEN: download_and_install() is called
+    result = download_and_install(mocked_callback)
 
     # THEN: The correct things should have been done
     assert result == CONFIG_DICT['latest']['version'], 'The correct version is returned'
     mocked_download_file.assert_called_once_with(mocked_callback, REMOTE_URL + '0.1/remote-0.1.zip', mocked_remote_zip)
     mocked_deploy_zipfile.assert_called_once_with(mocked_remote_path, 'remote.zip')
+
+
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_get_installed_version_not_installed(mocked_get_section_data_path):
+    """Test that if there is no remote installed, None is returned"""
+    # GIVEN: A mocked AppLocation and no file installed
+    mocked_version_file = MagicMock()
+    mocked_version_file.__truediv__.return_value = mocked_version_file
+    mocked_version_file.exists.return_value = False
+    mocked_get_section_data_path.return_value = mocked_version_file
+
+    # WHEN: get_installed_version() is called but there is no version file
+    result = get_installed_version()
+
+    # THEN: The result should be None
+    assert result is None
+
+
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_get_installed_version_no_version(mocked_get_section_data_path):
+    """Test that if there is no matching version number, None is returned"""
+    # GIVEN: A mocked AppLocation and no file installed
+    mocked_version_file = MagicMock()
+    mocked_version_file.__truediv__.return_value = mocked_version_file
+    mocked_version_file.exists.return_value = True
+    mocked_version_file.read.return_value = 'let app_version = 0.9.7;'
+    mocked_get_section_data_path.return_value = mocked_version_file
+
+    # WHEN: get_installed_version() is called but there is no version in the file
+    result = get_installed_version()
+
+    # THEN: The result should be None
+    assert result is None
+
+
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_get_installed_version(mocked_get_section_data_path):
+    """Test that get_installed_version returns the version number"""
+    # GIVEN: A mocked AppLocation and no file installed
+    mocked_version_file = MagicMock()
+    mocked_version_file.__truediv__.return_value = mocked_version_file
+    mocked_version_file.exists.return_value = True
+    mocked_version_file.read.return_value = 'let appVersion = \'0.9.7\';'
+    mocked_get_section_data_path.return_value = mocked_version_file
+
+    # WHEN: get_installed_version() is called but there is no version file
+    result = get_installed_version()
+
+    # THEN: The result should be None
+    assert result == '0.9.7'

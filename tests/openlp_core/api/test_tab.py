@@ -24,6 +24,7 @@ This module contains tests for the lib submodule of the Remotes plugin.
 import hashlib
 import pytest
 import re
+from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtWidgets
 
@@ -114,22 +115,217 @@ def test_address_revert_button_clicked(api_tab, settings):
     assert api_tab.address_edit.text() == settings.get_default_value('api/ip address')
 
 
-def test_save(api_tab, settings):
+@patch('openlp.core.api.tab.QtWidgets.QMessageBox.information')
+def test_save(mocked_information, api_tab, registry, settings):
     """
-    Test the IP revert function works
+    Test the save method works correctly
     """
-    # GIVEN: The ip address text set to a non default value
-    api_tab.address_edit.setText(settings.value('api/ip address'))
+    # GIVEN: Various settings are set on the form and a mocked settings form
+    mocked_settings_form = MagicMock()
+    registry.remove('settings_form')
+    registry.register('settings_form', mocked_settings_form)
+    settings.setValue('api/ip address', '0.0.0.0')
+    api_tab.address_edit.setText('192.168.1.1')
     api_tab.twelve_hour = True
     api_tab.thumbnails = True
     api_tab.user_login_group_box.setChecked(True)
     api_tab.user_id.setText('user id thing')
     api_tab.password.setText('user password thing')
+
     # WHEN: save is called
     api_tab.save()
+
     # THEN: The text should have been changed to the default value
+    mocked_information.assert_called_once_with(api_tab, 'Restart Required',
+                                               'This change will only take effect once OpenLP has been restarted.')
+    mocked_settings_form.register_post_process.called_once_with('remotes_config_updated')
     assert settings.value('api/twelve hour') is True
     assert settings.value('api/thumbnails') is True
     assert settings.value('api/authentication enabled') is True
     assert settings.value('api/user id') == 'user id thing'
     assert settings.value('api/password') == 'user password thing'
+
+
+def test_available_version_property_get_none(api_tab):
+    """Test that the available version property is None on init"""
+    # GIVEN: An uninitialised API tab
+
+    # WHEN: the available version is GET'ed
+    result = api_tab.available_version
+
+    # THEN: The result is None
+    assert result is None
+
+
+def test_available_version_property_set(api_tab):
+    """Test that the available version property is set correctly"""
+    # GIVEN: An uninitialised API tab
+    available_version = '0.9.7'
+
+    # WHEN: the available version is SET
+    api_tab.available_version = available_version
+
+    # THEN: The internal value should be set, and the right methods should have been called
+    assert api_tab._available_version == available_version
+    assert api_tab.available_version_value.text() == available_version
+
+
+def test_available_version_property_set_none(api_tab):
+    """Test that the available version property is set correctly"""
+    # GIVEN: An uninitialised API tab
+    available_version = None
+
+    # WHEN: the available version is SET
+    api_tab.available_version = available_version
+
+    # THEN: The internal value should be set, and the right methods should have been called
+    assert api_tab._available_version == available_version
+    assert api_tab.available_version_value.text() == '(unknown)'
+
+
+def test_installed_version_property_get_none(api_tab):
+    """Test that the installed version property is None on init"""
+    # GIVEN: An uninitialised API tab
+
+    # WHEN: the installed version is GET'ed
+    result = api_tab.installed_version
+
+    # THEN: The result is None
+    assert result is None
+
+
+def test_installed_version_property_set(api_tab):
+    """Test that the installed version property is set correctly"""
+    # GIVEN: An uninitialised API tab
+    installed_version = '0.9.7'
+
+    # WHEN: the installed version is SET
+    api_tab.installed_version = installed_version
+
+    # THEN: The internal value should be set, and the right methods should have been called
+    assert api_tab._installed_version == installed_version
+    assert api_tab.installed_version_value.text() == installed_version
+
+
+def test_installed_version_property_set_none(api_tab):
+    """Test that the installed version property is set correctly"""
+    # GIVEN: An uninitialised API tab
+    installed_version = None
+
+    # WHEN: the installed version is SET
+    api_tab.installed_version = installed_version
+
+    # THEN: The internal value should be set, and the right methods should have been called
+    assert api_tab._installed_version == installed_version
+    assert api_tab.installed_version_value.text() == '(not installed)'
+
+
+def test_validate_available_version(api_tab):
+    """Test that the validate_available_version() method sets the label correctly"""
+    # GIVEN: An uninitialised API tab
+
+    # WHEN: validate_available_version() is run
+    api_tab.validate_available_version()
+
+    # THEN: The label should say "(unknown)"
+    assert api_tab.available_version_value.text() == '(unknown)'
+
+
+@patch('openlp.core.api.tab.is_thread_finished')
+def test_set_server_states_up(mock_is_thread_finished, registry, settings, api_tab):
+    """Test getting the server states when the servers are up"""
+    # GIVEN: An API tab and some mocks
+    mock_is_thread_finished.return_value = False
+
+    # WHEN: set_server_states() is called
+    api_tab.set_server_states()
+
+    # THEN: The servers should all be "up"
+    assert api_tab.server_http_state.text() == 'Active'
+    assert api_tab.server_websocket_state.text() == 'Active'
+    assert api_tab.server_zeroconf_state.text() == 'Active'
+
+
+@patch('openlp.core.api.tab.is_thread_finished')
+def test_set_server_states_disabled(mock_is_thread_finished, registry, settings, api_tab):
+    """Test getting the server states when the servers are disabled"""
+    # GIVEN: An API tab and some mocks
+    mock_is_thread_finished.return_value = True
+    registry.set_flag('no_web_server', True)
+
+    # WHEN: set_server_states() is called
+    api_tab.set_server_states()
+
+    # THEN: The servers should all be "up"
+    assert api_tab.server_http_state.text() == 'Disabled'
+    assert api_tab.server_websocket_state.text() == 'Disabled'
+    assert api_tab.server_zeroconf_state.text() == 'Disabled'
+
+
+@patch('openlp.core.api.tab.is_thread_finished')
+def test_set_server_states_down(mock_is_thread_finished, registry, settings, api_tab):
+    """Test getting the server states when the servers are down"""
+    # GIVEN: An API tab and some mocks
+    mock_is_thread_finished.return_value = True
+    registry.set_flag('no_web_server', False)
+
+    # WHEN: set_server_states() is called
+    api_tab.set_server_states()
+
+    # THEN: The servers should all be "up"
+    assert api_tab.server_http_state.text() == 'Failed'
+    assert api_tab.server_websocket_state.text() == 'Failed'
+    assert api_tab.server_zeroconf_state.text() == 'Failed'
+
+
+@patch('openlp.core.api.tab.download_version_info')
+def test_on_check_for_updates_button_clicked(mocked_download_version_info, mocked_qapp, registry, settings, api_tab):
+    """Test that the correct methods are called when the Check for Updates button is clicked"""
+    # GIVEN: An API tab and a couple of mocks
+    mocked_download_version_info.return_value = {'latest': {'version': '0.9.5'}}
+    mocked_main_window = MagicMock()
+    registry.register('main_window', mocked_main_window)
+    registry.remove('application')
+    registry.register('application', mocked_qapp)
+
+    # WHEN: The Check for Updates button is clicked
+    with patch.object(api_tab, 'can_enable_install_button') as mocked_can_enable_install_button:
+        mocked_can_enable_install_button.return_value = True
+        api_tab.on_check_for_updates_button_clicked()
+        assert mocked_can_enable_install_button.call_count == 2
+
+    # THEN: The correct methods were called
+    mocked_qapp.set_busy_cursor.assert_called_once()
+    assert mocked_qapp.process_events.call_count == 4
+    mocked_qapp.set_normal_cursor.assert_called_once()
+    mocked_download_version_info.assert_called_once()
+    mocked_main_window.information_message.assert_called_once_with(
+        'New version available!', 'There\'s a new version of the web remote available.'
+    )
+    assert api_tab.available_version == '0.9.5'
+
+
+@patch('openlp.core.api.tab.DownloadProgressDialog')
+@patch('openlp.core.api.tab.download_and_install')
+@patch('openlp.core.api.tab.sleep')
+def test_on_install_button_clicked(mocked_sleep, mocked_download_and_install, MockDownloadProgressDialog,
+                                   mocked_qapp, registry, settings, api_tab):
+    """Test that the correct methods are called when the Check for Updates button is clicked"""
+    # GIVEN: An API tab and a couple of mocks
+    mocked_download_and_install.return_value = '0.9.6'
+    mocked_progress = MagicMock()
+    MockDownloadProgressDialog.return_value = mocked_progress
+    registry.remove('application')
+    registry.register('application', mocked_qapp)
+
+    # WHEN: The Check for Updates button is clicked
+    api_tab.on_install_button_clicked()
+
+    # THEN: The correct methods were called
+    assert mocked_qapp.process_events.call_count == 3
+    MockDownloadProgressDialog.assert_called_once_with(api_tab, mocked_qapp)
+    mocked_progress.show.assert_called_once()
+    mocked_progress.close.assert_called_once()
+    mocked_download_and_install.assert_called_once_with(mocked_progress)
+    assert api_tab.installed_version == '0.9.6'
+    assert settings.value('api/download version') == '0.9.6'

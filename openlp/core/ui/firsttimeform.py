@@ -32,7 +32,7 @@ from tempfile import gettempdir
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
-from openlp.core.api.deploy import get_latest_size, download_and_check
+from openlp.core.api.deploy import get_latest_size, download_and_install
 from openlp.core.common import trace_error_handler
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import DownloadWorker, download_file, get_url_file_size, get_web_page
@@ -539,7 +539,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         if self.remote_page.can_download_remote:
             self._increment_progress_bar(self.downloading.format(name='Web Remote'), 0)
             self.previous_size = 0
-            remote_version = download_and_check(self, can_update_range=False)
+            remote_version = download_and_install(self, can_update_range=False)
             if remote_version:
                 self.settings.setValue('api/download version', remote_version)
             else:
