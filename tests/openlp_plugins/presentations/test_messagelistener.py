@@ -113,6 +113,7 @@ def test_start_pdf_presentation(media_mock, media_item):
     # THEN: unique_identifier should still be the same.
     assert mock_item.unique_identifier == expected_identifier, 'unique_identifier should not be changed'
 
+
 def test_add_handler_failure():
     """
     Test that add_handler does set doc.slidenumber to 0 in case filed loading
