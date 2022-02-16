@@ -44,13 +44,15 @@ from openlp.core.lib.formattingtags import FormattingTags
 
 log = logging.getLogger(__name__)
 
-ENGLISH_NOTES = '[CDEFGAB]'
-GERMAN_NOTES = '[CDEFGAH]'
-NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si)'
-CHORD_SUFFIXES = '(b|bb)?(#)?(m|maj7|maj|min7|min|sus)?(1|2|3|4|5|6|7|8|9)?'
+ENGLISH_NOTES = '(C|D|E|F|G|A|B|N\\.C\\.)?'
+GERMAN_NOTES = '(C|D|E|F|G|A|B|H|N\\.C\\.)?'
+NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si|N\\.C\\.)?'
+CHORD_PREFIXES = '(=|\\(|\\|)*?'
+CHORD_SUFFIXES = '(b|#|x|\\+|-|M|m|Maj|maj|min|sus|dim|add|aug|dom|0|1|2|3|4|5|6|7|8|9|\\(|\\)|no|omit)*?'
 SLIM_CHARS = 'fiíIÍjlĺľrtť.,;/ ()|"\'!:\\'
 CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
-FIRST_CHORD_TEMPLATE = '<span class="chordline firstchordline">{chord}</span>'
+FIRST_CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
+NO_CHORD_TEMPLATE = '<span class="nochordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
 VERSE = 'The Lord said to {r}Noah{/r}: \n' \
@@ -78,8 +80,8 @@ def _construct_chord_regex(notes):
     :param notes: The regular expression for a set of valid notes
     :return: An expanded regular expression for valid chords
     """
-    chord = notes + CHORD_SUFFIXES
-    return '(' + chord + '(/' + chord + ')?)'
+    # chord = CHORD_PREFIXES + notes + CHORD_SUFFIXES
+    return '(' + CHORD_PREFIXES + notes + CHORD_SUFFIXES + '(/' + notes + CHORD_SUFFIXES + ')?)'
 
 
 def _construct_chord_match(notes):
@@ -193,11 +195,11 @@ def render_chords_in_line(match):
     # The actual chord, would be "G" in match "[G]sweet the "
     chord = match.group(1)
     # The tailing word of the chord, would be "sweet" in match "[G]sweet the "
-    tail = match.group(11)
+    tail = match.group(8)
     # The remainder of the line, until line end or next chord. Would be " the " in match "[G]sweet the "
-    remainder = match.group(12)
+    remainder = match.group(9)
     # Line end if found, else None
-    end = match.group(13)
+    end = match.group(10)
     # Based on char width calculate width of chord
     for chord_char in chord:
         if chord_char not in SLIM_CHARS:
@@ -275,7 +277,10 @@ def render_chords(text):
             rendered_lines.append(new_line)
         else:
             chords_on_prev_line = False
-            rendered_lines.append(html.escape(line))
+            # rendered_lines.append(html.escape(line))
+            chord_template = NO_CHORD_TEMPLATE
+            new_line = chord_template.format(chord=line)
+            rendered_lines.append(new_line)
     return '{br}'.join(rendered_lines)
 
 

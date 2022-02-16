@@ -28,15 +28,16 @@ from shutil import copyfile
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
-from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.lib import MediaType, create_separated_list
+from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer
+from openlp.core.state import State
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.plugins.songs.forms.editsongdialog import Ui_EditSongDialog
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
@@ -44,8 +45,7 @@ from openlp.plugins.songs.forms.mediafilesform import MediaFilesForm
 from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Author, AuthorType, Book, MediaFile, Song, SongBookEntry, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
-from openlp.plugins.songs.lib.ui import SongStrings
-from openlp.core.lib.formattingtags import FormattingTags
+from openlp.plugins.songs.lib.ui import SongStrings, show_key_warning
 
 
 log = logging.getLogger(__name__)
@@ -245,14 +245,21 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         # Validate tags (lp#1199639)
         misplaced_tags = []
         verse_tags = []
+        chords = []
         for i in range(self.verse_list_widget.rowCount()):
             item = self.verse_list_widget.item(i, 0)
             tags = self.find_tags.findall(item.text())
+            stripped_text = re.sub(r'\[---\]', "\n", re.sub(r'\[--}{--\]', "\n", item.text()))
+            r = re.compile(r'\[(.*?)\]')
+            for match in r.finditer(stripped_text):
+                chords += match[1]
             field = item.data(QtCore.Qt.UserRole)
             verse_tags.append(field)
             if not self._validate_tags(tags):
                 misplaced_tags.append('{field1} {field2}'.format(field1=VerseType.translated_name(field[0]),
                                                                  field2=field[1:]))
+        if chords and not chords[0].startswith("="):
+            show_key_warning(self)
         if misplaced_tags:
             critical_error_message_box(
                 message=translate('SongsPlugin.EditSongForm',

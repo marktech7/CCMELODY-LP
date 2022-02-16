@@ -342,6 +342,7 @@ class Settings(QtCore.QSettings):
         'songs/songselect password': '',
         'songs/songselect searches': '',
         'songs/enable chords': True,
+        'songs/warn about missing song key': True,
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
         'songs/disable chords import': False,
         'songs/auto play audio': False,

@@ -150,7 +150,7 @@ def test_password_change(mocked_settings_set_val, mocked_question, form):
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
     mocked_question.assert_called_once()
-    assert mocked_settings_set_val.call_count == 10
+    assert mocked_settings_set_val.call_count == 11
 
 
 @patch('openlp.plugins.songs.lib.songstab.QtWidgets.QMessageBox.question')
@@ -166,7 +166,7 @@ def test_password_change_cancelled(mocked_settings_set_val, mocked_question, for
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
     mocked_question.assert_called_once()
-    assert mocked_settings_set_val.call_count == 9
+    assert mocked_settings_set_val.call_count == 10
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -178,7 +178,7 @@ def test_footer_nochange(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
-    assert mocked_settings_set_val.call_count == 10
+    assert mocked_settings_set_val.call_count == 11
 
 
 @patch('openlp.core.common.settings.Settings.setValue')
@@ -191,7 +191,7 @@ def test_footer_change(mocked_settings_set_val, form):
     # WHEN: save is invoked
     form.save()
     # THEN: footer should have been saved (one more call to setValue than the nochange test)
-    assert mocked_settings_set_val.call_count == 11
+    assert mocked_settings_set_val.call_count == 12
     assert form.footer_edit_box.toPlainText() == 'A new footer'
 
 

@@ -69,7 +69,8 @@ class Ui_EditVerseDialog(object):
         self.verse_type_layout.addStretch()
         self.dialog_layout.addLayout(self.verse_type_layout)
         if Registry().get('settings').value('songs/enable chords'):
-            self.transpose_layout = QtWidgets.QHBoxLayout()
+            self.transpose_widget = QtWidgets.QWidget()
+            self.transpose_layout = QtWidgets.QHBoxLayout(self.transpose_widget)
             self.transpose_layout.setObjectName('transpose_layout')
             self.transpose_label = QtWidgets.QLabel(edit_verse_dialog)
             self.transpose_label.setObjectName('transpose_label')
@@ -82,7 +83,7 @@ class Ui_EditVerseDialog(object):
             self.transpose_down_button.setIcon(UiIcons().arrow_down)
             self.transpose_down_button.setObjectName('transpose_down')
             self.transpose_layout.addWidget(self.transpose_down_button)
-            self.dialog_layout.addLayout(self.transpose_layout)
+            self.dialog_layout.addWidget(self.transpose_widget)
         self.button_box = create_button_box(edit_verse_dialog, 'button_box', ['cancel', 'ok'])
         self.dialog_layout.addWidget(self.button_box)
         self.retranslate_ui(edit_verse_dialog)

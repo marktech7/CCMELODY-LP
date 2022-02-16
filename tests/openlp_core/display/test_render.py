@@ -116,7 +116,7 @@ def test_render_chords(settings):
     text_with_rendered_chords = render_chords(text_with_chords)
 
     # THEN: We should get html that looks like below
-    expected_html = '<span class="chordline firstchordline">H<span class="chord"><span><strong>C</strong></span>' \
+    expected_html = '<span class="chordline">H<span class="chord"><span><strong>C</strong></span>' \
                     '</span>alleluya.<span class="chord"><span><strong>F</strong></span></span><span class="ws">' \
                     '&nbsp;&nbsp;</span> <span class="chord"><span><strong>G/B</strong></span></span></span>'
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected'
@@ -134,7 +134,7 @@ def test_render_chords_with_special_chars(settings):
     text_with_rendered_chords = render_tags(text_with_chords, can_render_chords=True)
 
     # THEN: We should get html that looks like below
-    expected_html = '<span class="chordline firstchordline">I<span class="chord"><span><strong>D</strong></span>' \
+    expected_html = '<span class="chordline">I<span class="chord"><span><strong>D</strong></span>' \
                     '</span>&#x27;M NOT MOVED BY WHAT I SEE HALLE<span class="chord"><span><strong>F</strong>' \
                     '</span></span>LUJA<span class="chord"><span><strong>C</strong></span></span>H</span>'
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected'

@@ -67,7 +67,10 @@ class SongsTab(SettingsTab):
         self.chords_layout.addWidget(self.chords_info_label)
         self.disable_chords_import_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.disable_chords_import_check_box.setObjectName('disable_chords_import_check_box')
+        self.song_key_warning_check_box = QtWidgets.QCheckBox(self.mode_group_box)
+        self.song_key_warning_check_box.setObjectName('song_key_warning_checkbox')
         self.chords_layout.addWidget(self.disable_chords_import_check_box)
+        self.chords_layout.addWidget(self.song_key_warning_check_box)
 
         # Chords notation group box
         self.chord_notation_label = QtWidgets.QLabel(self.chords_group_box)
@@ -128,6 +131,7 @@ class SongsTab(SettingsTab):
         self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
         self.auto_play_check_box.stateChanged.connect(self.on_auto_play_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
+        self.song_key_warning_check_box.stateChanged.connect(self.on_song_key_warning_check_box_changed)
         self.english_notation_radio_button.clicked.connect(self.on_english_notation_button_clicked)
         self.german_notation_radio_button.clicked.connect(self.on_german_notation_button_clicked)
         self.neolatin_notation_radio_button.clicked.connect(self.on_neolatin_notation_button_clicked)
@@ -156,6 +160,7 @@ class SongsTab(SettingsTab):
         self.german_notation_radio_button.setText(translate('SongsPlugin.SongsTab', 'German') + ' (C-D-E-F-G-A-H)')
         self.neolatin_notation_radio_button.setText(
             translate('SongsPlugin.SongsTab', 'Neo-Latin') + ' (Do-Re-Mi-Fa-Sol-La-Si)')
+        self.song_key_warning_check_box.setText(translate('SongsPlugin.SongsTab', 'Warn about missing song key'))
         self.footer_group_box.setTitle(translate('SongsPlugin.SongsTab', 'Footer'))
         # Keep this in sync with the list in mediaitem.py
         const = '<code>"{}"</code>'
@@ -224,6 +229,9 @@ class SongsTab(SettingsTab):
     def on_disable_chords_import_check_box_changed(self, check_state):
         self.disable_chords_import = (check_state == QtCore.Qt.Checked)
 
+    def on_song_key_warning_check_box_changed(self, check_state):
+        self.song_key_warning = (check_state == QtCore.Qt.Checked)
+
     def on_english_notation_button_clicked(self):
         self.chord_notation = 'english'
 
@@ -245,11 +253,13 @@ class SongsTab(SettingsTab):
         self.enable_chords = self.settings.value('songs/enable chords')
         self.chord_notation = self.settings.value('songs/chord notation')
         self.disable_chords_import = self.settings.value('songs/disable chords import')
+        self.song_key_warning = self.settings.value('songs/warn about missing song key')
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
         self.chords_group_box.setChecked(self.enable_chords)
         self.disable_chords_import_check_box.setChecked(self.disable_chords_import)
+        self.song_key_warning_check_box.setChecked(self.song_key_warning)
         if self.chord_notation == 'german':
             self.german_notation_radio_button.setChecked(True)
         elif self.chord_notation == 'neo-latin':
@@ -267,6 +277,7 @@ class SongsTab(SettingsTab):
         self.settings.setValue('songs/auto play audio', self.auto_play)
         self.settings.setValue('songs/enable chords', self.chords_group_box.isChecked())
         self.settings.setValue('songs/disable chords import', self.disable_chords_import)
+        self.settings.setValue('songs/warn about missing song key', self.song_key_warning)
         self.settings.setValue('songs/chord notation', self.chord_notation)
         self.settings.setValue('songs/songselect username', self.ccli_username.text())
         # Only save password if it's blank or the user acknowleges the warning
