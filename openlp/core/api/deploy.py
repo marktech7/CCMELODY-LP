@@ -23,6 +23,7 @@ Download and "install" the remote web client
 """
 import json
 import logging
+import re
 from datetime import date
 from zipfile import ZipFile
 
@@ -34,6 +35,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.threading import ThreadWorker, run_thread
 
 REMOTE_URL = 'https://get.openlp.org/remote/'
+LOCAL_VERSION = re.compile(r'appVersion.*=.*\'(.*?)\';')
 
 log = logging.getLogger(__name__)
 
@@ -117,7 +119,7 @@ def get_latest_size():
     return version_info['latest']['size']
 
 
-def download_and_check(callback=None, can_update_range=True):
+def download_and_install(callback=None, can_update_range=True):
     """
     Download the web site and deploy it.
     """
@@ -151,3 +153,18 @@ def check_for_remote_update(main_window):
     # TODO: Use this to figure out if there's an Internet connection?
     # worker.no_internet.connect(main_window.on_no_internet)
     run_thread(worker, 'remote-version')
+
+
+def get_installed_version():
+    """
+    Get the version of the remote that is installed, or None if there is no remote
+    """
+    version_file = AppLocation.get_section_data_path('remotes') / 'assets' / 'version.js'
+    if not version_file.exists():
+        return None
+    version_read = version_file.read()
+    print(version_read)
+    match = LOCAL_VERSION.search(version_read)
+    if not match:
+        return None
+    return match.group(1)
