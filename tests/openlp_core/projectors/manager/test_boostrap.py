@@ -29,7 +29,8 @@ from unittest.mock import DEFAULT, MagicMock, patch
 test_module = openlp.core.projectors.manager.__name__
 
 
-def test_bootstrap_initialise(projector_manager, caplog):
+@patch('openlp.core.projectors.manager.ProjectorDB')
+def test_bootstrap_initialise(mock_db, projector_manager, caplog):
     """
     Test ProjectorManager initializes with existing ProjectorDB instance
     """
@@ -39,8 +40,7 @@ def test_bootstrap_initialise(projector_manager, caplog):
 
     with patch.multiple(projector_manager,
                         setup_ui=DEFAULT,
-                        get_settings=DEFAULT) as mock_manager, \
-         patch('openlp.core.projectors.manager.ProjectorDB') as mock_db:
+                        get_settings=DEFAULT) as mock_manager:
 
         # WHEN: we call bootstrap_initialise
         caplog.clear()
@@ -53,7 +53,8 @@ def test_bootstrap_initialise(projector_manager, caplog):
         mock_db.assert_not_called()
 
 
-def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
+@patch('openlp.core.projectors.manager.ProjectorDB')
+def test_bootstrap_initialise_nodb(mock_db, projector_manager_nodb, caplog):
     """
     Test ProjectorManager initializes with a new ProjectorDB instance
     """
@@ -63,8 +64,7 @@ def test_bootstrap_initialise_nodb(projector_manager_nodb, caplog):
 
     with patch.multiple(projector_manager_nodb,
                         setup_ui=DEFAULT,
-                        get_settings=DEFAULT) as mock_manager, \
-         patch('openlp.core.projectors.manager.ProjectorDB') as mock_db:
+                        get_settings=DEFAULT) as mock_manager:
 
         # WHEN: we call bootstrap_initialise
         caplog.clear()
@@ -134,7 +134,6 @@ def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector
     projector_manager_memdb.bootstrap_initialise()
 
     with patch.multiple(projector_manager_memdb,
-                        setup_ui=DEFAULT,
                         _load_projectors=DEFAULT,
                         projector_list_widget=DEFAULT) as mock_manager:
         mocked_edit.return_value = mock_edit
@@ -145,6 +144,7 @@ def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector
 
         # THEN: verify calls and logs
         mock_timer.assert_called_once()
+        mock_timer.return_value.singleShot.assert_called_once_with(1500, projector_manager_memdb._load_projectors)
 
         mock_newProjector.connect.assert_called_once()
         mock_editProjector.connect.assert_called_once()
