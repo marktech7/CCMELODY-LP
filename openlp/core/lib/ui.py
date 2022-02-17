@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -87,6 +87,8 @@ def create_button_box(dialog, name, standard_buttons, custom_buttons=None):
         buttons |= QtWidgets.QDialogButtonBox.Cancel
     if 'close' in standard_buttons:
         buttons |= QtWidgets.QDialogButtonBox.Close
+    if 'help' in standard_buttons and hasattr(dialog, 'provide_help'):
+        buttons |= QtWidgets.QDialogButtonBox.Help
     if 'defaults' in standard_buttons:
         buttons |= QtWidgets.QDialogButtonBox.RestoreDefaults
     button_box = QtWidgets.QDialogButtonBox(dialog)
@@ -99,6 +101,8 @@ def create_button_box(dialog, name, standard_buttons, custom_buttons=None):
             button_box.addButton(*button)
     button_box.accepted.connect(dialog.accept)
     button_box.rejected.connect(dialog.reject)
+    if 'help' in standard_buttons and hasattr(dialog, 'provide_help'):
+        button_box.helpRequested.connect(dialog.provide_help)
     return button_box
 
 

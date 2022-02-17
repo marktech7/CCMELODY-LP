@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -301,6 +301,7 @@ def test_on_toggle_blank(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_blank() is called
     slide_controller.on_toggle_blank()
@@ -318,6 +319,7 @@ def test_on_toggle_blank_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Blank)
+    slide_controller._current_hide_mode = HideMode.Blank
 
     # WHEN: on_toggle_blank() is called
     slide_controller.on_toggle_blank()
@@ -335,6 +337,7 @@ def test_on_toggle_theme(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_theme() is called
     slide_controller.on_toggle_theme()
@@ -352,6 +355,7 @@ def test_on_toggle_theme_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Theme)
+    slide_controller._current_hide_mode = HideMode.Theme
 
     # WHEN: on_toggle_theme() is called
     slide_controller.on_toggle_theme()
@@ -369,6 +373,7 @@ def test_on_toggle_desktop(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=None)
+    slide_controller._current_hide_mode = None
 
     # WHEN: on_toggle_desktop() is called
     slide_controller.on_toggle_desktop()
@@ -386,6 +391,7 @@ def test_on_toggle_desktop_off(settings):
     slide_controller = SlideController(None)
     slide_controller.set_hide_mode = mocked_set_hide_mode
     slide_controller.get_hide_mode = MagicMock(return_value=HideMode.Screen)
+    slide_controller._current_hide_mode = HideMode.Screen
 
     # WHEN: on_toggle_desktop() is called
     slide_controller.on_toggle_desktop()
@@ -814,7 +820,7 @@ def test_theme_updated(mock_settings):
     mock_settings.value.return_value = True
 
     # WHEN: theme_updated is called
-    slide_controller.theme_updated()
+    slide_controller.on_theme_changed()
 
     # THEN: process_item is called with the current service_item and slide number
     slide_controller._process_item.assert_called_once_with(sentinel.service_item, 14)
@@ -832,7 +838,7 @@ def test_theme_updated_no_reload(mock_settings):
     mock_settings.value.return_value = False
 
     # WHEN: theme_updated is called
-    slide_controller.theme_updated()
+    slide_controller.on_theme_changed()
 
     # THEN: process_item is not called
     assert slide_controller._process_item.call_count == 0
@@ -954,6 +960,7 @@ def test_process_item_transition(mocked_execute, registry, state_media):
     slide_controller.song_menu = MagicMock()
     slide_controller.displays = [MagicMock()]
     slide_controller.toolbar = MagicMock()
+    slide_controller._current_hide_mode = None
     slide_controller.split = 0
     slide_controller.type_prefix = 'test'
     slide_controller.screen_capture = 'old_capture'
@@ -1069,6 +1076,7 @@ def test_process_item_song_vlc(mocked_execute, registry, state_media):
     slide_controller.displays = [MagicMock()]
     slide_controller.split = 0
     slide_controller.type_prefix = 'test'
+    slide_controller._current_hide_mode = None
 
     # WHEN: _process_item is called
     slide_controller._process_item(mocked_media_item, 0)
@@ -1544,3 +1552,22 @@ def test_initial_preview_controller(registry):
     # WHEN: the default controller is built.
     # THEN: The controller should not be a live controller.
     assert preview_controller.is_live is False, 'The slide controller should be a Preview controller'
+
+
+def test_close_displays(registry):
+    """
+    Test that closing the displays calls the correct methods
+    """
+    # GIVEN: A Live controller and a mocked display
+    mocked_display = MagicMock()
+    live_controller = LiveController(None)
+    live_controller.displays = [mocked_display]
+
+    # WHEN: close_displays() is called
+    live_controller.close_displays()
+
+    # THEN: The display is closed
+    mocked_display.deregister_display.assert_called_once()
+    mocked_display.setParent.assert_called_once_with(None)
+    mocked_display.close.assert_called_once()
+    assert live_controller.displays == []

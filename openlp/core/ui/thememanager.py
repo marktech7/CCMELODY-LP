@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -136,7 +136,9 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
     """
     Manages the orders of Theme.
     """
+    # These signals are used by the web api to update the theme on the ui thread
     theme_update_global = QtCore.pyqtSignal()
+    theme_level_updated = QtCore.pyqtSignal()
 
     def __init__(self, parent=None):
         """
@@ -169,7 +171,10 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.setup_ui(self)
         self.global_theme = self.settings.value('themes/global theme')
         self.build_theme_path()
-        self.theme_update_global.connect(self.change_global_from_tab)
+        Registry().register_function('reload_global_theme', self.on_update_global_theme)
+        # These signals are used by the web api to update the theme on the ui thread
+        self.theme_level_updated.connect(self.on_theme_level_updated)
+        self.theme_update_global.connect(self.on_update_global_theme)
 
     def bootstrap_post_set_up(self):
         """
@@ -179,14 +184,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
-
-    def bootstrap_completion(self):
-        """
-        process the bootstrap completion request
-        """
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
-        Registry().register_function('theme_update_global', self.change_global_from_tab)
 
     def screen_changed(self):
         """
@@ -259,12 +258,12 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         self.global_action.setVisible(visible)
         self.menu.exec(self.theme_list_widget.mapToGlobal(point))
 
-    def change_global_from_tab(self):
+    def on_update_global_theme(self):
         """
-        Change the global theme when it is changed through the Themes settings tab
+        Update the global theme to the theme set in the settings.
         """
         self.global_theme = self.settings.value('themes/global theme')
-        self.log_debug('change_global_from_tab {text}'.format(text=self.global_theme))
+        self.log_debug('on_update_global_theme {text}'.format(text=self.global_theme))
         for count in range(0, self.theme_list_widget.count()):
             # reset the old name
             item = self.theme_list_widget.item(count)
@@ -277,6 +276,13 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 name = translate('OpenLP.ThemeManager', '{text} (default)').format(text=new_name)
                 self.theme_list_widget.item(count).setText(name)
                 self.delete_toolbar_action.setVisible(item not in self.theme_list_widget.selectedItems())
+        Registry().execute('theme_change_global')
+
+    def on_theme_level_updated(self):
+        """
+        Update the theme level, called from web controller.
+        """
+        Registry().execute('theme_level_changed')
 
     def change_global_from_screen(self, index=-1):
         """
@@ -297,8 +303,7 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 name = translate('OpenLP.ThemeManager', '{text} (default)').format(text=self.global_theme)
                 self.theme_list_widget.item(count).setText(name)
                 self.settings.setValue('themes/global theme', self.global_theme)
-                Registry().execute('theme_update_global')
-                self._push_themes()
+        Registry().execute('theme_change_global')
 
     def on_add_theme(self, field=None):
         """

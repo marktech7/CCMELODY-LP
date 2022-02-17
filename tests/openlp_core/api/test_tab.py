@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,6 +21,7 @@
 """
 This module contains tests for the lib submodule of the Remotes plugin.
 """
+import hashlib
 from unittest.mock import MagicMock, patch
 import pytest
 import re
@@ -95,6 +96,11 @@ def test_set_urls(api_tab):
     assert api_tab.live_url.text() == \
         "<a href=\"http://192.168.1.1:4316/main\">http://192.168.1.1:4316/main</a>", \
         'The return value should be a fully formed main link'
+    assert api_tab.chords_url.text() == \
+        "<a href=\"http://192.168.1.1:4316/chords\">http://192.168.1.1:4316/chords</a>", \
+        'The return value should be a fully formed chords link'
+    assert hashlib.sha256(api_tab.app_qr_code_label.text().encode()).hexdigest() \
+           == 'e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855', 'Incorrect QR Code generated'
 
 
 def test_address_revert_button_clicked(api_tab, settings):

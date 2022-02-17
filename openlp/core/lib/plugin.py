@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -132,6 +132,7 @@ class Plugin(RegistryBase, RegistryProperties):
         self.status = PluginStatus.Inactive
         Registry().register_function('{name}_add_service_item'.format(name=self.name), self.process_add_service_event)
         Registry().register_function('{name}_config_updated'.format(name=self.name), self.config_update)
+        Registry().register_function('{name}_visible_name'.format(name=self.name), self.get_visible_name)
         self._setup(version)
 
     def _setup(self, version):
@@ -372,3 +373,9 @@ class Plugin(RegistryBase, RegistryProperties):
         The plugin's needs to handle a new song creation
         """
         pass
+
+    def get_visible_name(self):
+        """
+        Returns the plugins visible name
+        """
+        return str(self.get_string(StringContent.VisibleName)['title'])

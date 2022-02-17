@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -91,6 +91,36 @@ def test_x11_override_off(display_window_env, mock_settings):
     # THEN: The x11 override flag should not be set
     x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
     assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
+
+
+@patch('openlp.core.display.window.is_macosx')
+def test_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
+    """
+    Test that on macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is set
+    """
+    # GIVEN: We're on macOS
+    mocked_is_macosx.return_value = True
+
+    # WHEN: A DisplayWindow is created
+    display_window = DisplayWindow()
+
+    # THEN: The attribute is set
+    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is True
+
+
+@patch('openlp.core.display.window.is_macosx')
+def test_not_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
+    """
+    Test that on systems other than macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is NOT set
+    """
+    # GIVEN: We're on macOS
+    mocked_is_macosx.return_value = False
+
+    # WHEN: A DisplayWindow is created
+    display_window = DisplayWindow()
+
+    # THEN: The attribute is set
+    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is False
 
 
 def test_set_scale_not_initialised(display_window_env, mock_settings):
@@ -255,6 +285,7 @@ def test_after_loaded(display_window_env, mock_settings):
     display_window.run_javascript.assert_called_once_with('Display.init({'
                                                           'isDisplay: true,'
                                                           'doItemTransitions: true,'
+                                                          'slideNumbersInFooter: true,'
                                                           'hideMouse: true'
                                                           '});')
     display_window.set_scale.assert_called_once_with(2)
@@ -282,6 +313,7 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
     display_window.run_javascript.assert_called_once_with('Display.init({'
                                                           'isDisplay: false,'
                                                           'doItemTransitions: true,'
+                                                          'slideNumbersInFooter: true,'
                                                           'hideMouse: false'
                                                           '});')
 
@@ -481,7 +513,6 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, display_window
     # THEN: Should show the display and set the hide mode to none
     display_window.setVisible.assert_called_once_with(True)
     display_window.run_javascript.assert_called_once_with('Display.show();')
-    mocked_registry_execute.assert_called_once_with('live_display_active')
 
 
 @patch('openlp.core.display.window.ScreenList')
@@ -620,3 +651,49 @@ def test_display_watcher_set_initialised():
 
         # THEN: initialised should have been emitted
         mocked_initialised.emit.assert_called_once_with(True)
+
+
+def test_display_watcher_please_repaint(display_window_env, mock_settings):
+    """
+    Test that the repaint is initiated
+    """
+    # GIVEN: A DisplayWindow instance with mocked out webview
+    display_window = DisplayWindow()
+    display_window.webview = MagicMock()
+
+    # WHEN: pleaseRepaint is called on the DisplayWatcher
+    display_window.display_watcher.pleaseRepaint()
+
+    # THEN: Qt update for the webview should have been triggered
+    assert display_window.webview.update.call_count == 1
+
+
+def test_close_event_ignores_event(display_window_env, mock_settings):
+    """
+    Test that when the window receives a close event, it ignores it
+    """
+    # GIVEN: A DisplayWindow instance and a mocked event
+    display_window = DisplayWindow()
+    mocked_event = MagicMock()
+
+    # WHEN: The closeEvent() method is called
+    display_window.closeEvent(mocked_event)
+
+    # THEN: The event should have been ignored
+    mocked_event.ignore.assert_called_once()
+
+
+def test_close_event_accepts_event_manual_close(display_window_env, mock_settings):
+    """
+    Test that when the window receives a close event due to manually being closed, it accepts it
+    """
+    # GIVEN: A DisplayWindow instance and a mocked event
+    display_window = DisplayWindow()
+    mocked_event = MagicMock()
+
+    # WHEN: The closeEvent() method is called
+    display_window._is_manual_close = True
+    display_window.closeEvent(mocked_event)
+
+    # THEN: The event should have been ignored
+    assert mocked_event.ignore.called is False

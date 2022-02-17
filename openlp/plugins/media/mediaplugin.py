@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,12 +22,19 @@
 The Media plugin
 """
 import logging
+import os
+from pathlib import Path
 
-from openlp.core.state import State
+from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import translate
-from openlp.core.ui.icons import UiIcons
 from openlp.core.lib import build_icon
+from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.state import State
+from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.media import parse_optical_path, parse_stream_path
+
+from openlp.plugins.media.lib.db import Item, init_schema
 from openlp.plugins.media.lib.mediaitem import MediaMediaItem
 
 
@@ -43,7 +50,8 @@ class MediaPlugin(Plugin):
     log.info('{name} MediaPlugin loaded'.format(name=__name__))
 
     def __init__(self):
-        super(MediaPlugin, self).__init__('media', MediaMediaItem)
+        super().__init__('media', MediaMediaItem)
+        self.manager = Manager(plugin_name='media', init_schema=init_schema)
         self.weight = -6
         self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)
@@ -56,13 +64,28 @@ class MediaPlugin(Plugin):
         """
         Override the inherited initialise() method in order to upgrade the media before trying to load it
         """
+        media_files = self.settings.value('media/media files') or []
+        for filename in media_files:
+            if not isinstance(filename, (Path, str)):
+                continue
+            if isinstance(filename, Path):
+                name = filename.name
+                filename = str(filename)
+            elif filename.startswith('devicestream:') or filename.startswith('networkstream:'):
+                name, _, _ = parse_stream_path(filename)
+            elif filename.startswith('optical:'):
+                _, _, _, _, _, _, name = parse_optical_path(filename)
+            else:
+                name = os.path.basename(filename)
+            item = Item(name=name, file_path=filename)
+            if not filename.startswith('devicestream:') and not filename.startswith('networkstream:') \
+               and not filename.startswith('optical:'):
+                file_path = Path(filename)
+                if file_path.is_file() and file_path.exists():
+                    item.file_hash = sha256_file_hash(file_path)
+            self.manager.save_object(item)
+        self.settings.remove('media/media files')
         super().initialise()
-
-    def app_startup(self):
-        """
-        Override app_startup() in order to do nothing
-        """
-        pass
 
     def check_pre_conditions(self):
         """

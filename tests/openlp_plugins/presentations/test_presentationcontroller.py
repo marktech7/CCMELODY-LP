@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -96,7 +96,8 @@ def test_save_titles_and_notes(document):
 
         # THEN: the last call to open should have been for slideNotes2.txt
         assert mocked_write_text.call_count == 3, 'There should be exactly three files written'
-        mocked_write_text.assert_has_calls([call('uno\ndos'), call('one'), call('two')])
+        mocked_write_text.assert_has_calls([call('uno\ndos', encoding='utf-8'), call('one', encoding='utf-8'),
+                                            call('two', encoding='utf-8')])
 
 
 def test_save_titles_and_notes_with_none(document):

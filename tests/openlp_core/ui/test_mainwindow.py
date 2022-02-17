@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -30,6 +30,7 @@ from tempfile import mkdtemp
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
+from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
@@ -118,19 +119,122 @@ def test_cmd_line_file(main_window):
     mocked_load_file.assert_called_with(Path(service))
 
 
-@patch('openlp.core.ui.servicemanager.ServiceManager.load_file')
-def test_cmd_line_arg(mocked_load_file, main_window):
+def test_cmd_line_file_encoded(main_window):
     """
-    Test that passing a non service file does nothing.
+    Test that passing a service file from the command line loads the service where extra encoded quotes are added
     """
-    # GIVEN a non service file as an argument to openlp
-    service = 'run_openlp.py'
+    # GIVEN a service as an argument to openlp
+    service_base = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
+    service = f'&quot;{service_base}&quot;'
 
     # WHEN the argument is processed
-    main_window.open_cmd_line_files(service)
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files([service])
 
-    # THEN the file should not be opened
-    assert mocked_load_file.called is False, 'load_file should not have been called'
+    # THEN the service from the arguments is loaded
+    mocked_load_file.assert_called_with(Path(service_base))
+
+
+def test_cmd_line_arg_no_service(main_window):
+    """
+    Test that passing no service file does nothing.
+    """
+    # GIVEN a command line argument for openlp
+    args = ['--disable-web-security']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_not_service_file(main_window):
+    """
+    Test that passing a file that is not a service does nothing.
+    """
+    # GIVEN a non service file as an argument to openlp
+    args = ['run_openlp.py']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_service_file_does_not_exist(main_window):
+    """
+    Test that passing a file that does not exist does nothing.
+    """
+    # GIVEN a service file that does not exist
+    args = ['Service 2022-02-06.osz']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is False, 'load_file should not have been called'
+
+
+def test_cmd_line_arg_other_args(main_window):
+    """
+    Test that passing a service file with other command line arguments still opens the file
+    """
+    # GIVEN a valid existing service file and a command line argument
+    service_file = os.path.join(TEST_RESOURCES_PATH, 'service', 'test.osz')
+    args = ['--disable-web-security', service_file]
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should not be opened
+        assert mocked_load_file.called is True, 'load_file should have been called'
+        mocked_load_file.assert_called_with(Path(service_file))
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+def test_cmd_line_filename_with_spaces(MockPath, main_window):
+    """
+    Test that a service file with spaces that split across arguments loads the file properly
+    """
+    # GIVEN a set of arguments with a file separated by spaces
+    mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
+    MockPath.return_value.resolve.side_effect = [FileNotFoundError, FileNotFoundError,
+                                                 FileNotFoundError, mocked_path_is_file]
+    args = ['Service', '2022-02-06.osz']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should be looked for
+        assert MockPath.return_value.resolve.call_count == 4
+        mocked_load_file.assert_called_with(mocked_path_is_file)
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+def test_cmd_line_filename_with_spaces_and_security(MockPath, main_window):
+    """
+    Test that passing a service file with spaces and a command line argument loads properly
+    """
+    # GIVEN a set of arguments with a file separated by spaces
+    mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
+    MockPath.return_value.resolve.side_effect = [FileNotFoundError, FileNotFoundError,
+                                                 FileNotFoundError, mocked_path_is_file]
+    args = ['--disable-web-security', 'Service', '2022-02-06.osz']
+
+    # WHEN the argument is processed
+    with patch.object(main_window.service_manager, 'load_file') as mocked_load_file:
+        main_window.open_cmd_line_files(args)
+
+        # THEN the file should be looked for
+        assert MockPath.return_value.resolve.call_count == 4
+        mocked_load_file.assert_called_with(mocked_path_is_file)
 
 
 def test_main_window_title(main_window):
@@ -141,12 +245,12 @@ def test_main_window_title(main_window):
 
     # WHEN no changes are made to the service
 
-    # THEN the main window's title shoud be the same as the OpenLP string in the UiStrings class
+    # THEN the main window's title should be the same as the OpenLP string in the UiStrings class
     assert main_window.windowTitle() == UiStrings().OpenLP, \
         'The main window\'s title should be the same as the OpenLP string in UiStrings class'
 
 
-def test_set_service_modifed(main_window):
+def test_set_service_modified(main_window):
     """
     Test that when setting the service's title the main window's title is set correctly
     """
@@ -174,6 +278,70 @@ def test_set_service_unmodified(main_window):
         'The main window\'s title should be set to "<the contents of UiStrings().OpenLP> - test.osz"'
 
 
+def test_load_settings_position_valid(main_window, settings):
+    """
+    Test that the position of the main window is restored when it's valid
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    # set up a window position and geometry to use in the settings
+    main_window.move(QtCore.QPoint(10, 10))
+    main_window.resize(1000, 500)
+    # need to call show() to ensure the geometry works as expected
+    # unfortunately this seems to work on Windows only, not on linux
+    main_window.show()
+    main_window.hide()
+    # store the values in the settings
+    settings.setValue('user interface/main window position', main_window.pos())
+    settings.setValue('user interface/main window geometry', main_window.saveGeometry())
+    settings.setValue('user interface/main window state', main_window.saveState())
+    # change the position and size - then we can test if load_settings() sets it back correctly
+    main_window.move(QtCore.QPoint(20, 20))
+    main_window.resize(500, 300)
+
+    # WHEN the settings are loaded
+    main_window.load_settings()
+
+    # THEN the main window's position and geometry should be set to the saved setting
+    # on linux the tests works for the x position only
+    assert main_window.pos().x() == 10
+
+
+@pytest.mark.skipif(is_macosx(), reason='Test does not work on macOS')
+def test_load_settings_position_invalid(main_window, settings):
+    """
+    Test that the position of the main window is not restored when it's invalid, but rather set to (0, 0)
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    # set up a window position outside the parameters of the main_window fixture
+    # this can represent a monitor positioned above the primary display, but which has been unplugged
+    main_window.move(QtCore.QPoint(-100, -800))
+    main_window.resize(1000, 500)
+    # need to call show() to ensure the geometry works as expected (works on Windows, but not linux)
+    main_window.show()
+    main_window.hide()
+    # store the values in the settings
+    settings.setValue('user interface/main window position', main_window.pos())
+    settings.setValue('user interface/main window geometry', main_window.saveGeometry())
+    settings.setValue('user interface/main window state', main_window.saveState())
+    # change the position and size
+    main_window.move(QtCore.QPoint(20, 20))
+    main_window.resize(500, 300)
+
+    # WHEN the settings are loaded
+    main_window.load_settings()
+
+    # THEN the main window's position should be (0, 0)
+    assert main_window.pos().x() == 0
+
+
 def test_mainwindow_configuration(main_window):
     """
     Check that the Main Window initialises the Registry Correctly
@@ -187,7 +355,7 @@ def test_mainwindow_configuration(main_window):
                              'authentication_token', 'settings_form', 'service_manager', 'theme_manager',
                              'projector_manager']
     expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
-                               'config_screen_changed', 'theme_update_global']
+                               'config_screen_changed', 'theme_change_global']
     assert list(Registry().service_list.keys()) == expected_service_list, \
         'The service list should have been {}'.format(Registry().service_list.keys())
     assert list(Registry().functions_list.keys()) == expected_functions_list, \

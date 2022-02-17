@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -79,7 +79,7 @@ class AlertDialog(object):
         self.display_button = create_button(alert_dialog, 'display_button', icon=UiIcons().live, enabled=False)
         self.display_close_button = create_button(alert_dialog, 'display_close_button', icon=UiIcons().live,
                                                   enabled=False)
-        self.button_box = create_button_box(alert_dialog, 'button_box', ['close'],
+        self.button_box = create_button_box(alert_dialog, 'button_box', ['close', 'help'],
                                             [self.display_button, self.display_close_button])
         self.alert_dialog_layout.addWidget(self.button_box, 2, 0, 1, 2)
         self.retranslate_ui(alert_dialog)

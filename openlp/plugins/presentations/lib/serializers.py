@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,7 +21,7 @@
 """
 This module contains some helpers for serializing Path objects in Pyro4
 """
-from openlp.core.common.path import Path
+from pathlib import Path
 
 from Pyro4.util import SerializerBase
 

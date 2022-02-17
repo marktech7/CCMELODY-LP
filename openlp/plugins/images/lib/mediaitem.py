@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -97,7 +97,7 @@ class ImageMediaItem(MediaManagerItem):
         """
         Set which icons the media manager tab should show.
         """
-        MediaManagerItem.required_icons(self)
+        super().required_icons()
         self.has_file_icon = True
         self.has_new_icon = False
         self.has_edit_icon = False

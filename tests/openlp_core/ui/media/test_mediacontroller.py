@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -282,21 +282,17 @@ def test_media_reset(media_env):
     # GIVEN: A media controller, mocked slide controller, mocked media player and mocked display
     mocked_slide_controller = MagicMock()
     mocked_media_player = MagicMock()
-    mocked_display = MagicMock(hide_mode=None)
     mocked_slide_controller.controller_type = 'media player'
     mocked_slide_controller.media_info = MagicMock(is_background=False)
-    mocked_slide_controller.get_hide_mode = MagicMock(return_value=None)
     mocked_slide_controller.is_live = False
     media_env.media_controller.current_media_players = {'media player': mocked_media_player}
     media_env.media_controller.live_hide_timer = MagicMock()
-    media_env.media_controller._define_display = MagicMock(return_value=mocked_display)
     media_env.media_controller._media_set_visibility = MagicMock()
 
     # WHEN: media_reset() is called
     media_env.media_controller.media_reset(mocked_slide_controller)
 
     # THEN: The display should be shown, media should be hidden and removed
-    mocked_display.show_display.assert_called_once_with()
     media_env.media_controller._media_set_visibility.assert_called_once_with(mocked_slide_controller, False)
     assert 'media player' not in media_env.media_controller.current_media_players
 

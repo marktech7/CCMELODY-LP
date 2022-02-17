@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,9 +22,9 @@
 Package to test the openlp.plugins.songs.forms.editsongform package.
 """
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtTest, QtCore
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
@@ -143,3 +143,21 @@ def test_verse_order_lowercase(form):
 
     # THEN: The verse order should be converted to uppercase
     assert form.verse_order_edit.text() == 'V1 V2 C1 V3 C1 V4 C1'
+
+
+@patch.object(EditSongForm, 'provide_help')
+def test_help(mocked_help, settings):
+    """
+    Test the help button
+    """
+    # GIVEN: An edit song form and a patched help function
+    main_window = QtWidgets.QMainWindow()
+    Registry().register('main_window', main_window)
+    Registry().register('theme_manager', MagicMock())
+    edit_song_form = EditSongForm(MagicMock(), main_window, MagicMock())
+
+    # WHEN: The Help button is clicked
+    QtTest.QTest.mouseClick(edit_song_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
+
+    # THEN: The Help function should be called
+    mocked_help.assert_called_once()

@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -106,6 +106,7 @@ using a computer and a data projector.""",
         'flask-cors',
         'lxml',
         'Mako',
+        "pillow",
         'pymediainfo >= 2.2',
         'pyobjc; platform_system=="Darwin"',
         'pyobjc-framework-Cocoa; platform_system=="Darwin"',
@@ -115,6 +116,7 @@ using a computer and a data projector.""",
         'python-vlc',
         'pywin32; platform_system=="Windows"',
         'QtAwesome',
+        "qrcode",
         'requests',
         'SQLAlchemy >= 0.5',
         'waitress',

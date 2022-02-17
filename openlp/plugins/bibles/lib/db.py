@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -330,7 +330,6 @@ class BibleDB(Manager):
                     if not book_list:
                         book_list = books
             return [value['id'] for value in book_list if self.get_book_by_book_ref_id(value['id'])]
-        return []
 
     def get_verses(self, reference_list, show_error=True):
         """

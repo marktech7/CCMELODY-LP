@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,7 +21,6 @@
 """
 This is the main window, where all the action happens.
 """
-import os
 import shutil
 from datetime import datetime, date
 from pathlib import Path
@@ -523,7 +522,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Timestamp for latest screen-change-popup. Used to prevent spamming the user with popups
         self.screen_change_timestamp = None
         # Simple message boxes
-        Registry().register_function('theme_update_global', self.default_theme_changed)
+        Registry().register_function('theme_change_global', self.default_theme_changed)
         Registry().register_function('config_screen_changed', self.screen_changed)
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
         # Reset the cursor
@@ -577,7 +576,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.load_settings()
         self.restore_current_media_manager_item()
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
 
     def restore_current_media_manager_item(self):
         """
@@ -643,6 +642,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # We have -disable-web-security added by our code.
         # If a file is passed in we will have that as well so count of 2
         # If not we need to see if we want to use the previous file.so count of 1
+        self.log_info(self.application.args)
         if self.application.args and len(self.application.args) > 1:
             self.open_cmd_line_files(self.application.args)
         elif self.settings.value('core/auto open'):
@@ -716,7 +716,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 else:
                     self.active_plugin.toggle_status(PluginStatus.Inactive)
         # Set global theme and
-        Registry().execute('theme_update_global')
+        Registry().execute('theme_change_global')
         # Check if any Bibles downloaded.  If there are, they will be processed.
         Registry().execute('bibles_load_list')
         self.application.set_normal_cursor()
@@ -1099,9 +1099,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Close down WebSocketServer
         self.ws_server.close()
         # Close down the display
-        if self.live_controller.display:
-            self.live_controller.display.close()
-            # self.live_controller.display = None
+        self.live_controller.close_displays()
         # Clean temporary files used by services
         self.service_manager_contents.clean_up()
         if is_win():
@@ -1237,12 +1235,37 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.move(self.settings.value('user interface/main window position'))
         self.restoreGeometry(self.settings.value('user interface/main window geometry'))
         self.restoreState(self.settings.value('user interface/main window state'))
+        if not self._window_position_is_valid(self.pos(), self.geometry()):
+            self.move(0, 0)
         self.live_controller.splitter.restoreState(self.settings.value('user interface/live splitter geometry'))
         self.preview_controller.splitter.restoreState(self.settings.value('user interface/preview splitter geometry'))
         self.control_splitter.restoreState(self.settings.value('user interface/main window splitter geometry'))
         # This needs to be called after restoreState(), because saveState() also saves the "Collapsible" property
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
+
+    def _window_position_is_valid(self, position, geometry):
+        """
+        Checks if the saved window position is still valid by checking if the bar at the top of the window
+        (which allows the user to move the window) appears on one of the screens.
+        This may not be the case if the user has unplugged the monitor where openlp was previously shown,
+        or if the displays have been reconfigured.
+
+        :param position: QtCore.QtPoint for the top left position of the window
+        :param geometry: QtCore.QRect for the geometry of the window
+
+        :return:    True or False
+        """
+        screens = ScreenList()
+        for screen in screens:
+            # window top bar y value must be between top and bottom of a screen
+            # plus the left edge must be left of the right of the screen
+            # and the right edge must be right of the left of the screen (allowing 50 pixels for control buttons)
+            if ((screen.geometry.y() <= position.y() <= screen.geometry.y() + screen.geometry.height()) and
+                    (position.x() < screen.geometry.x() + screen.geometry.width()) and
+                    (position.x() + geometry.width() > screen.geometry.x() + 50)):
+                return True
+        return False
 
     def save_settings(self):
         """
@@ -1267,6 +1290,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.recent_files_menu.clear()
         count = 0
         for recent_path in self.recent_files:
+            recent_path = Path(recent_path)
             if not recent_path.is_file():
                 continue
             count += 1
@@ -1322,7 +1346,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         :param int increment: The value you to increase the progress bar by.
         """
-        self.load_progress_bar.setValue(self.load_progress_bar.value() + increment)
+        self.load_progress_bar.setValue(int(self.load_progress_bar.value() + increment))
         self.application.process_events()
 
     def finished_progress_bar(self):
@@ -1382,13 +1406,49 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.settings.remove('advanced/data path')
         self.application.set_normal_cursor()
 
-    def open_cmd_line_files(self, args):
+    def open_cmd_line_files(self, args: list):
         """
         Open files passed in through command line arguments
 
-        :param list[str] args: List of remaining positionall arguments
+        :param list[str] args: List of remaining positional arguments
         """
+        self.log_info(args)
+        # Drop this argument, it's obvs not a filename
+        if '--disable-web-security' in args:
+            args.remove('--disable-web-security')
+        # It has been known for Microsoft to double quote the path passed in and then encode one of the quotes.
+        # Remove these to get the correct path.
+        args = list(map(lambda x: x.replace('&quot;', ''), args))
+        # Loop through the parameters, and see if we can pull a file out
+        file_path = None
         for arg in args:
-            file_name = os.path.expanduser(arg)
-            if os.path.isfile(file_name):
-                self.service_manager_contents.load_file(Path(file_name))
+            try:
+                # Resolve the file, and use strict mode to throw an exception if the file does not exist
+                file_path = Path(arg).resolve(strict=True)
+                # Check if this is actually a file
+                if file_path.is_file():
+                    break
+                else:
+                    file_path = None
+            except FileNotFoundError:
+                file_path = None
+        # If none of the individual components are files, let's try pulling them together
+        if not file_path:
+            path_so_far = []
+            for arg in args:
+                path_so_far.append(arg)
+                try:
+                    file_path = Path(' '.join(path_so_far)).resolve(strict=True)
+                    if file_path.is_file():
+                        break
+                    else:
+                        file_path = None
+                except FileNotFoundError:
+                    file_path = None
+            else:
+                file_path = None
+        if file_path and file_path.suffix in ['.osz', '.oszl']:
+            self.log_info("File name found")
+            self.service_manager_contents.load_file(file_path)
+        else:
+            self.log_error(f"File {file_path} not found for arg {args}")

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -34,8 +34,8 @@ from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.ui import create_widget_action
 from openlp.core.projectors import DialogSourceStyle
 from openlp.core.projectors.constants import E_AUTHENTICATION, E_ERROR, E_NETWORK, E_NOT_CONNECTED, E_SOCKET_TIMEOUT,\
-    E_UNKNOWN_SOCKET_ERROR, QSOCKET_STATE, S_CONNECTED, S_CONNECTING, S_COOLDOWN, S_INITIALIZE, S_NOT_CONNECTED, S_OFF,\
-    S_ON, S_STANDBY, S_WARMUP, STATUS_CODE, STATUS_MSG
+    E_UNKNOWN_SOCKET_ERROR, PJLINK_PORT, QSOCKET_STATE, S_CONNECTED, S_CONNECTING, S_COOLDOWN, S_INITIALIZE, \
+    S_NOT_CONNECTED, S_OFF, S_ON, S_STANDBY, S_WARMUP, STATUS_CODE, STATUS_MSG
 
 from openlp.core.projectors.db import ProjectorDB
 from openlp.core.projectors.editform import ProjectorEditForm
@@ -325,9 +325,11 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         self.projector_form.editProjector.connect(self.edit_projector_from_wizard)
         self.projector_list_widget.itemSelectionChanged.connect(self.update_icons)
 
-    def udp_listen_add(self, port):
+    def udp_listen_add(self, port=PJLINK_PORT):
         """
         Add UDP broadcast listener
+
+        NOTE: Check if PJLinkUDP port needs to be started when adding
         """
         if port in self.pjlink_udp:
             log.warning('UDP Listener for port {port} already added - skipping'.format(port=port))
@@ -339,6 +341,8 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
     def udp_listen_delete(self, port):
         """
         Remove a UDP broadcast listener
+
+        NOTE: Check if PJLinkUDP port needs to be closed/stopped when deleting
         """
         log.debug('Checking for UDP port {port} listener deletion'.format(port=port))
         if port not in self.pjlink_udp:

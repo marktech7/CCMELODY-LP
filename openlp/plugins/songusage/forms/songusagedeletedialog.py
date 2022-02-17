@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,7 +52,7 @@ class Ui_SongUsageDeleteDialog(object):
         self.delete_calendar.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
         self.delete_calendar.setObjectName('delete_calendar')
         self.vertical_layout.addWidget(self.delete_calendar)
-        self.button_box = create_button_box(song_usage_delete_dialog, 'button_box', ['cancel', 'ok'])
+        self.button_box = create_button_box(song_usage_delete_dialog, 'button_box', ['cancel', 'ok', 'help'])
         self.vertical_layout.addWidget(self.button_box)
         self.retranslate_ui(song_usage_delete_dialog)
 

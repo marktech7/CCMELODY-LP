@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,17 +21,15 @@
 """
 This module contains tests for the OpenLyrics song importer.
 """
-import json
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
-from lxml import etree, objectify
+from lxml import etree
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.openlyrics import OpenLyricsImport
 from openlp.plugins.songs.lib.importers.songimport import SongImport
-from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics
 from openlp.plugins.songs.lib.ui import SongStrings
 from tests.helpers.testmixin import TestMixin
 from tests.utils.constants import RESOURCE_PATH
@@ -57,29 +55,6 @@ SONG_TEST_DATA = {
         ]
     }
 }
-
-start_tags = [{"protected": False, "desc": "z", "start tag": "{z}", "end html": "</strong>", "temporary": False,
-               "end tag": "{/z}", "start html": "strong>"}]
-result_tags = [{"temporary": False, "protected": False, "desc": "z", "start tag": "{z}", "start html": "strong>",
-                "end html": "</strong>", "end tag": "{/z}"},
-               {"temporary": False, "end tag": "{/c}", "desc": "c", "start tag": "{c}",
-                "start html": "<span class=\"chord\" style=\"display:none\"><strong>", "end html": "</strong></span>",
-                "protected": False}]
-
-author_xml = '<properties>\
-                  <authors>\
-                      <author type="words">Test Author1</author>\
-                      <author type="music">Test Author1</author>\
-                      <author type="words">Test Author2</author>\
-                  </authors>\
-            </properties>'
-
-songbook_xml = '<properties>\
-                    <songbooks>\
-                        <songbook name="Collection 1" entry="48"/>\
-                        <songbook name="Collection 2" entry="445 A"/>\
-                    </songbooks>\
-                </properties>'
 
 
 class TestOpenLyricsImport(TestCase, TestMixin):
@@ -176,64 +151,6 @@ class TestOpenLyricsImport(TestCase, TestMixin):
                     if args and isinstance(args[0], str):
                         error_message = args[0]
                         assert not error_message.startswith('XML syntax error in file')
-
-    def test_process_formatting_tags(self):
-        """
-        Test that _process_formatting_tags works
-        """
-        # GIVEN: A OpenLyric XML with formatting tags and a mocked out manager
-        mocked_manager = MagicMock()
-        Settings().setValue('formattingTags/html_tags', json.dumps(start_tags))
-        ol = OpenLyrics(mocked_manager)
-        parser = etree.XMLParser(remove_blank_text=True)
-        parsed_file = etree.parse((TEST_PATH / 'duchu-tags.xml').open('rb'), parser)
-        xml = etree.tostring(parsed_file).decode()
-        song_xml = objectify.fromstring(xml)
-
-        # WHEN: processing the formatting tags
-        ol._process_formatting_tags(song_xml, False)
-
-        # THEN: New tags should have been saved
-        assert json.loads(json.dumps(result_tags)) == json.loads(str(Settings().value('formattingTags/html_tags'))), \
-            'The formatting tags should contain both the old and the new'
-
-    def test_process_author(self):
-        """
-        Test that _process_authors works
-        """
-        # GIVEN: A OpenLyric XML with authors and a mocked out manager
-        with patch('openlp.plugins.songs.lib.openlyricsxml.Author'):
-            mocked_manager = MagicMock()
-            mocked_manager.get_object_filtered.return_value = None
-            ol = OpenLyrics(mocked_manager)
-            properties_xml = objectify.fromstring(author_xml)
-            mocked_song = MagicMock()
-
-            # WHEN: processing the author xml
-            ol._process_authors(properties_xml, mocked_song)
-
-            # THEN: add_author should have been called twice
-            assert mocked_song.method_calls[0][1][1] == 'words+music'
-            assert mocked_song.method_calls[1][1][1] == 'words'
-
-    def test_process_songbooks(self):
-        """
-        Test that _process_songbooks works
-        """
-        # GIVEN: A OpenLyric XML with songbooks and a mocked out manager
-        with patch('openlp.plugins.songs.lib.openlyricsxml.Book'):
-            mocked_manager = MagicMock()
-            mocked_manager.get_object_filtered.return_value = None
-            ol = OpenLyrics(mocked_manager)
-            properties_xml = objectify.fromstring(songbook_xml)
-            mocked_song = MagicMock()
-
-            # WHEN: processing the songbook xml
-            ol._process_songbooks(properties_xml, mocked_song)
-
-            # THEN: add_songbook_entry should have been called twice
-            assert mocked_song.method_calls[0][1][1] == '48'
-            assert mocked_song.method_calls[1][1][1] == '445 A'
 
     def test_leading_and_trailing_whitespaces_inside_lines_tags_are_removed(self):
         """

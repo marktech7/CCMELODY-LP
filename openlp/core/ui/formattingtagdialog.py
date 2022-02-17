@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,7 +38,7 @@ class Ui_FormattingTagDialog(object):
         """
         formatting_tag_dialog.setObjectName('formatting_tag_dialog')
         formatting_tag_dialog.setWindowIcon(UiIcons().main_icon)
-        formatting_tag_dialog.resize(725, 548)
+        formatting_tag_dialog.resize(835, 548)
         self.list_data_grid_layout = QtWidgets.QVBoxLayout(formatting_tag_dialog)
         self.list_data_grid_layout.setContentsMargins(8, 8, 8, 8)
         self.list_data_grid_layout.setObjectName('list_data_grid_layout')
@@ -72,7 +72,7 @@ class Ui_FormattingTagDialog(object):
         self.tag_table_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
         self.tag_table_widget.setCornerButtonEnabled(False)
         self.tag_table_widget.setObjectName('tag_table_widget')
-        self.tag_table_widget.setColumnCount(4)
+        self.tag_table_widget.setColumnCount(5)
         self.tag_table_widget.setRowCount(0)
         self.tag_table_widget.horizontalHeader().setStretchLastSection(True)
         item = QtWidgets.QTableWidgetItem()
@@ -83,6 +83,8 @@ class Ui_FormattingTagDialog(object):
         self.tag_table_widget.setHorizontalHeaderItem(2, item)
         item = QtWidgets.QTableWidgetItem()
         self.tag_table_widget.setHorizontalHeaderItem(3, item)
+        item = QtWidgets.QTableWidgetItem()
+        self.tag_table_widget.setHorizontalHeaderItem(4, item)
         self.list_data_grid_layout.addWidget(self.tag_table_widget)
         self.edit_button_layout = QtWidgets.QHBoxLayout()
         self.new_button = QtWidgets.QPushButton(formatting_tag_dialog)
@@ -126,6 +128,9 @@ class Ui_FormattingTagDialog(object):
         self.tag_table_widget.horizontalHeaderItem(1).setText(translate('OpenLP.FormattingTagDialog', 'Tag'))
         self.tag_table_widget.horizontalHeaderItem(2).setText(translate('OpenLP.FormattingTagDialog', 'Start HTML'))
         self.tag_table_widget.horizontalHeaderItem(3).setText(translate('OpenLP.FormattingTagDialog', 'End HTML'))
-        self.tag_table_widget.setColumnWidth(0, 120)
-        self.tag_table_widget.setColumnWidth(1, 80)
-        self.tag_table_widget.setColumnWidth(2, 330)
+        self.tag_table_widget.horizontalHeaderItem(4).setText(translate('OpenLP.FormattingTagDialog',
+                                                                        'Hide content from Live/Preview'))
+        self.tag_table_widget.setColumnWidth(0, 80)
+        self.tag_table_widget.setColumnWidth(1, 40)
+        self.tag_table_widget.setColumnWidth(2, 320)
+        self.tag_table_widget.setColumnWidth(3, 150)

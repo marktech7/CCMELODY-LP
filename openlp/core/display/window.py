@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ import re
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
-from openlp.core.common import is_win
+from openlp.core.common import is_win, is_macosx
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
@@ -51,6 +51,10 @@ class DisplayWatcher(QtCore.QObject):
     """
     initialised = QtCore.pyqtSignal(bool)
 
+    def __init__(self, parent):
+        super().__init__()
+        self._display_window = parent
+
     @QtCore.pyqtSlot(bool)
     def setInitialised(self, is_initialised):
         """
@@ -58,6 +62,13 @@ class DisplayWatcher(QtCore.QObject):
         """
         log.info('Display is initialised: {init}'.format(init=is_initialised))
         self.initialised.emit(is_initialised)
+
+    @QtCore.pyqtSlot()
+    def pleaseRepaint(self):
+        """
+        Called from the js in the webengine view when it's requesting a repaint by Qt
+        """
+        self._display_window.webview.update()
 
 
 class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
@@ -73,9 +84,12 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
+        if is_macosx():
+            self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False
+        self._is_manual_close = False
         self._can_show_startup_screen = can_show_startup_screen
         self._fbo = None
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
@@ -117,6 +131,13 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             if len(ScreenList()) > 1 or self.settings.value('core/display on monitor'):
                 self.show()
 
+    def closeEvent(self, event):
+        """
+        Override the closeEvent method to prevent the window from being closed by the user
+        """
+        if not self._is_manual_close:
+            event.ignore()
+
     def _fix_font_name(self, font_name):
         """
         Do some font machinations to see if we can fix the font name
@@ -137,6 +158,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if self.is_display:
             Registry().remove_function('live_display_hide', self.hide_display)
             Registry().remove_function('live_display_show', self.show_display)
+        self._is_manual_close = True
 
     @property
     def is_initialised(self):
@@ -212,13 +234,15 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         js_is_display = str(self.is_display).lower()
         item_transitions = str(self.settings.value('themes/item transitions')).lower()
         hide_mouse = str(self.settings.value('advanced/hide mouse') and self.is_display).lower()
+        slide_numbers_in_footer = str(self.settings.value('advanced/slide numbers in footer')).lower()
         self.run_javascript('Display.init({{'
                             'isDisplay: {is_display},'
                             'doItemTransitions: {do_item_transitions},'
+                            'slideNumbersInFooter: {slide_numbers_in_footer},'
                             'hideMouse: {hide_mouse}'
                             '}});'
                             .format(is_display=js_is_display, do_item_transitions=item_transitions,
-                                    hide_mouse=hide_mouse))
+                                    slide_numbers_in_footer=slide_numbers_in_footer, hide_mouse=hide_mouse))
         wait_for(lambda: self._is_initialised)
         if self.scale != 1:
             self.set_scale(self.scale)
@@ -411,9 +435,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         if self.isHidden():
             self.setVisible(True)
         self.hide_mode = None
-        # Trigger actions when display is active again.
-        if self.is_display:
-            Registry().execute('live_display_active')
 
     def hide_display(self, mode=HideMode.Screen):
         """
@@ -448,6 +469,16 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         if self.is_display and self.hide_mode == HideMode.Screen:
             self.setVisible(False)
+
+    def finish_with_current_item(self):
+        """
+        This is called whenever the song/image display is followed by eg a presentation or video which
+        has its own display.
+        This function ensures that the current item won't flash momentarily when the webengineview
+        is displayed for a subsequent song or image.
+        """
+        self.run_javascript('Display.finishWithCurrentItem();', True)
+        self.webview.update()
 
     def set_scale(self, scale):
         """

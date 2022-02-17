@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,7 +52,7 @@ class FormattingTagController(object):
         self.protected_tags = [tag for tag in FormattingTags.html_expands if tag.get('protected')]
         self.custom_tags = []
 
-    def validate_for_save(self, desc, tag, start_html, end_html):
+    def validate_for_save(self, desc, tag, start_html, end_html, hidden):
         """
         Validate a custom tag and add to the tags array if valid..
 
@@ -67,6 +67,9 @@ class FormattingTagController(object):
 
         `end_html`
             The end html tag.
+
+        `hidden`
+            option to hide tag content from main window.
 
         """
         for line_number, html1 in enumerate(self.protected_tags):
@@ -86,7 +89,8 @@ class FormattingTagController(object):
             'end tag': '{{/{tag}}}'.format(tag=tag),
             'end html': end_html,
             'protected': False,
-            'temporary': False
+            'temporary': False,
+            'hidden': hidden
         }
         self.custom_tags.append(tag)
 

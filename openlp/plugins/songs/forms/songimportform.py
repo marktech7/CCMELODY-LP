@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -23,7 +23,7 @@ The song import functions for OpenLP.
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
@@ -462,6 +462,12 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         self.format_widgets[this_format]['disabled_label'] = disabled_label
         self.format_widgets[this_format]['import_widget'] = import_widget
         return import_widget
+
+    def provide_help(self):
+        """
+        Provide help within the wizard by opening the appropriate page of the openlp manual in the user's browser
+        """
+        QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/songs.html#song-importer"))
 
 
 class SongImportSourcePage(QtWidgets.QWizardPage):

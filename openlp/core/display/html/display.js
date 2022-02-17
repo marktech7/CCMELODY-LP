@@ -137,14 +137,13 @@ function $(selector) {
 /**
  * Build linear gradient CSS
  * @private
- * @param {string} startDir - Starting direction
- * @param {string} endDir - Ending direction
+ * @param {string} direction - The direction or angle of the gradient e.g. to bottom or 90deg
  * @param {string} startColor - The starting color
  * @param {string} endColor - The ending color
  * @returns {string} A string of the gradient CSS
  */
-function _buildLinearGradient(startDir, endDir, startColor, endColor) {
-  return "-webkit-gradient(linear, " + startDir + ", " + endDir + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+function _buildLinearGradient(direction, startColor, endColor) {
+  return "linear-gradient(" + direction + ", " + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -156,7 +155,7 @@ function _buildLinearGradient(startDir, endDir, startColor, endColor) {
  * @returns {string} A string of the gradient CSS
  */
 function _buildRadialGradient(width, startColor, endColor) {
-  return "-webkit-gradient(radial, " + width + " 50%, 100, " + width + " 50%, " + width + ", from(" + startColor + "), to(" + endColor + ")) fixed";
+  return "radial-gradient(" + startColor + ", " + endColor + ") fixed";
 }
 
 /**
@@ -236,6 +235,19 @@ function _createStyle(selector, rules) {
 }
 
 /**
+ * Fixes font name to match CSS names.
+ * @param {string} fontName Font Name
+ * @returns Fixed Font Name
+ */
+function _fixFontName(fontName) {
+  if (!fontName || (fontName == 'Sans Serif')) {
+    return 'sans-serif';
+  }
+
+  return "'" + fontName + "'";
+}
+
+/**
  * The Display object is what we use from OpenLP
  */
 var Display = {
@@ -250,6 +262,7 @@ var Display = {
   _animationState: AnimationState.NoAnimation,
   _doTransitions: false,
   _doItemTransitions: false,
+  _skipNextTransition: false,
   _themeApplied: true,
   _revealConfig: {
     margin: 0.0,
@@ -282,6 +295,10 @@ var Display = {
     let isDisplay = options.isDisplay || false;
     let doItemTransitions = options.doItemTransitions || false;
     let hideMouse = options.hideMouse || false;
+    if (options.slideNumbersInFooter) {
+      Display._revealConfig.slideNumber = Display.setFooterSlideNumbers;
+    }
+
     // Now continue to initialisation
     if (!isDisplay) {
       document.body.classList.add('checkerboard');
@@ -349,7 +366,7 @@ var Display = {
     Display.applyTheme(new_slides, is_text);
     Display._slidesContainer.prepend(new_slides);
     var currentSlide = Reveal.getIndices();
-    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2) {
+    if (Display._doItemTransitions && Display._slidesContainer.children.length >= 2 && !Display._skipNextTransition) {
       // Set the slide one section ahead so we'll stay on the old slide after reinit
       Reveal.slide(1, currentSlide.v);
       Display.reinit();
@@ -359,6 +376,7 @@ var Display = {
       Reveal.slide(0, currentSlide.v);
       Reveal.sync();
       Display._removeLastSection();
+	  Display._skipNextTransition = false;
     }
   },
   /**
@@ -465,7 +483,7 @@ var Display = {
     // create styles for the alerts from the settings
     _createStyle("#alert-background.settings", {
       backgroundColor: settings.backgroundColor,
-      fontFamily: "'" + settings.fontFace + "'",
+      fontFamily: _fixFontName(settings.fontFace),
       fontSize: settings.fontSize.toString() + "pt",
       color: settings.fontColor
     });
@@ -483,6 +501,8 @@ var Display = {
     /* Either scroll the alert, or make it disappear at the end of its time */
     if (settings.scroll) {
       Display._animationState = AnimationState.ScrollingText;
+      alertText.classList.add('scrolling');
+      alertText.classList.replace("hide", "show");
       var animationSettings = "alert-scrolling-text " + settings.timeout +
                               "s linear 0.6s " + settings.repeat + " normal";
       alertText.style.animation = animationSettings;
@@ -566,9 +586,7 @@ var Display = {
   * Display the next alert in the queue
   */
   showNextAlert: function () {
-    console.log("showNextAlert");
     if (Display._alerts.length > 0) {
-      console.log("Showing next alert");
       var alertObject = Display._alerts.shift();
       Display._alertState = AlertState.DisplayingFromQueue;
       Display.showAlert(alertObject.text, alertObject.settings);
@@ -971,22 +989,22 @@ var Display = {
       case BackgroundType.Gradient:
         switch (Display._theme.background_direction) {
           case GradientType.Horizontal:
-            backgroundContent = _buildLinearGradient("left top", "left bottom",
+            backgroundContent = _buildLinearGradient("to right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.Vertical:
-            backgroundContent = _buildLinearGradient("left top", "right top",
+            backgroundContent = _buildLinearGradient("to bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftTop:
-            backgroundContent = _buildLinearGradient("left top", "right bottom",
+            backgroundContent = _buildLinearGradient("to right bottom",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
           case GradientType.LeftBottom:
-            backgroundContent = _buildLinearGradient("left bottom", "right top",
+            backgroundContent = _buildLinearGradient("to top right",
                                                                  Display._theme.background_start_color,
                                                                  Display._theme.background_end_color);
             break;
@@ -1106,6 +1124,18 @@ var Display = {
     }
   },
   /**
+   * Called whenever openlp wants to finish completely with the current text/image slides
+   * because a different window (eg presentation or vlc) is going to be displaying the next item
+   * and we don't want any flashbacks to the current slide contents
+   */
+  finishWithCurrentItem: function () {
+	Display.setTextSlide('');
+	var documentBody = $("body")[0];
+    documentBody.style.opacity = 1;
+	Display._skipNextTransition = true;
+	displayWatcher.pleaseRepaint();
+  },
+  /**
    * Return the video types supported by the video tag
    */
   getVideoTypes: function () {
@@ -1147,6 +1177,22 @@ var Display = {
       "left: -999999px"
     ].join(" !important;");
     document.body.appendChild(Display._fontContainer);
+  },
+  /**
+   * Prepare the slide number (slide x/y) for insertion into the Reveal footer
+   * This is a callback function which Reveal calls to get the values
+   * Fixes https://gitlab.com/openlp/openlp/-/issues/942
+   */
+  setFooterSlideNumbers: function (slide) {
+    let value = ['', '', ''];
+	// Reveal does call this function passing undefined
+    if (typeof slide === 'undefined') {
+      return value;
+    }
+    value[0] = Reveal.getSlidePastCount(slide) + 1;
+    value[1] = '/';
+    value[2] = Object.keys(Display._slides).length;
+    return value;
   }
 };
 new QWebChannel(qt.webChannelTransport, function (channel) {

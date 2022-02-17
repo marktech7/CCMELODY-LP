@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -115,16 +115,14 @@ def set_theme_level():
         abort(400)
     if theme_level == 'global':
         Registry().get('settings').setValue('themes/theme level', 1)
-        Registry().execute('theme_update_global')
     elif theme_level == 'service':
         Registry().get('settings').setValue('themes/theme level', 2)
-        Registry().execute('theme_update_service')
     elif theme_level == 'song':
         Registry().get('settings').setValue('themes/theme level', 3)
-        Registry().execute('theme_update_global')
     else:
         log.error('Unsupported data passed ' + theme_level)
         abort(400)
+    Registry().get('theme_manager').theme_level_updated.emit()
     return '', 204
 
 

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -55,7 +55,7 @@ from openlp.core.ui.firsttimeform import FirstTimeForm
 from openlp.core.ui.firsttimelanguageform import FirstTimeLanguageForm
 from openlp.core.ui.mainwindow import MainWindow
 from openlp.core.ui.splashscreen import SplashScreen
-from openlp.core.ui.style import get_application_stylesheet, set_windows_darkmode
+from openlp.core.ui.style import get_application_stylesheet, set_default_theme
 from openlp.core.version import check_for_update, get_version
 
 
@@ -117,9 +117,8 @@ class OpenLP(QtCore.QObject, LogMixin):
         self.backup_on_upgrade(has_run_wizard, can_show_splash)
         # start the main app window
         loader()
-        # Set the darkmode for windows is enabled
-        if is_win():
-            set_windows_darkmode(app)
+        # Set the darkmode based on theme
+        set_default_theme(app)
         self.main_window = MainWindow()
         self.main_window.installEventFilter(self.main_window)
         # Correct stylesheet bugs
@@ -309,15 +308,13 @@ def set_up_logging(log_path):
     logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
-    if log.isEnabledFor(logging.DEBUG):
-        print('Logging to: {name}'.format(name=file_path))
+    print(f'Logging to: {file_path} and level {log.level}')
 
 
 def main():
     """
     The main function which parses command line options and then runs
     """
-    log.debug('Entering function - main')
     args = parse_options()
     qt_args = ['--disable-web-security']
     # qt_args = []
@@ -386,6 +383,7 @@ def main():
     Registry.create()
     settings = Settings()
     Registry().register('settings', settings)
+    log.info(f'Arguments passed {args}')
     # Need settings object for the threads.
     settings_thread = Settings()
     Registry().register('settings_thread', settings_thread)

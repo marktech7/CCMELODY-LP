@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,13 +29,13 @@ from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
 
 
 @pytest.fixture
-def media_item(settings):
+def media_item(settings, mock_plugin):
     """Local test setup"""
     Registry().register('service_manager', MagicMock())
     Registry().register('main_window', MagicMock())
-    with patch('openlp.plugins.presentations.lib.mediaitem.MediaManagerItem._setup'), \
+    with patch('openlp.plugins.presentations.lib.mediaitem.FolderLibraryItem._setup'), \
             patch('openlp.plugins.presentations.lib.mediaitem.PresentationMediaItem.setup_item'):
-        m_item = PresentationMediaItem(None, MagicMock, MagicMock())
+        m_item = PresentationMediaItem(None, mock_plugin, MagicMock())
         m_item.settings_section = 'media'
     return m_item
 
@@ -44,4 +44,5 @@ def media_item(settings):
 def mock_plugin(temp_folder):
     m_plugin = MagicMock()
     m_plugin.settings_section = temp_folder
+    m_plugin.manager = MagicMock()
     yield m_plugin

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -132,3 +132,19 @@ def test_update_slide_list(form):
 
     # THEN: The slides should be created in correct order
     form.slide_list_view.addItems.assert_called_with(['1st Slide', '2nd Slide', '3rd Slide'])
+
+
+@patch.object(EditCustomForm, 'provide_help')
+def test_help(mocked_help, settings):
+    """
+    Test the help button
+    """
+    # GIVEN: An edit custom slide form and a patched help function
+    main_window = QtWidgets.QMainWindow()
+    custom_form = EditCustomForm(MagicMock(), main_window, MagicMock())
+
+    # WHEN: The Help button is clicked
+    QtTest.QTest.mouseClick(custom_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
+
+    # THEN: The Help function should be called
+    mocked_help.assert_called_once()

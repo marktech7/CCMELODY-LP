@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -44,13 +44,15 @@ from openlp.core.lib.formattingtags import FormattingTags
 
 log = logging.getLogger(__name__)
 
-ENGLISH_NOTES = '[CDEFGAB]'
-GERMAN_NOTES = '[CDEFGAH]'
-NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si)'
-CHORD_SUFFIXES = '(b|bb)?(#)?(m|maj7|maj|min7|min|sus)?(1|2|3|4|5|6|7|8|9)?'
+ENGLISH_NOTES = '(C|D|E|F|G|A|B|N\\.C\\.)?'
+GERMAN_NOTES = '(C|D|E|F|G|A|B|H|N\\.C\\.)?'
+NEOLATIN_NOTES = '(Do|Re|Mi|Fa|Sol|La|Si|N\\.C\\.)?'
+CHORD_PREFIXES = '(=|\\(|\\|)*?'
+CHORD_SUFFIXES = '(b|#|x|\\+|-|M|m|Maj|maj|min|sus|dim|add|aug|dom|0|1|2|3|4|5|6|7|8|9|\\(|\\)|no|omit)*?'
 SLIM_CHARS = 'fiíIÍjlĺľrtť.,;/ ()|"\'!:\\'
 CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
-FIRST_CHORD_TEMPLATE = '<span class="chordline firstchordline">{chord}</span>'
+FIRST_CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
+NO_CHORD_TEMPLATE = '<span class="nochordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
 VERSE = 'The Lord said to {r}Noah{/r}: \n' \
@@ -78,8 +80,8 @@ def _construct_chord_regex(notes):
     :param notes: The regular expression for a set of valid notes
     :return: An expanded regular expression for valid chords
     """
-    chord = notes + CHORD_SUFFIXES
-    return '(' + chord + '(/' + chord + ')?)'
+    # chord = CHORD_PREFIXES + notes + CHORD_SUFFIXES
+    return '(' + CHORD_PREFIXES + notes + CHORD_SUFFIXES + '(/' + notes + CHORD_SUFFIXES + ')?)'
 
 
 def _construct_chord_match(notes):
@@ -152,9 +154,16 @@ def remove_tags(text, can_remove_chords=False):
     text = text.replace('<br>', '\n')
     text = text.replace('{br}', '\n')
     text = text.replace('&nbsp;', ' ')
+    text = text.replace('<sup>', '')
+    text = text.replace('</sup>', '')
+    text = text.replace('<em>', '')
+    text = text.replace('</em>', '')
     for tag in FormattingTags.get_html_tags():
-        text = text.replace(tag['start tag'], '')
-        text = text.replace(tag['end tag'], '')
+        if tag.get('hidden'):
+            text = re.sub(r'' + tag['start tag'] + ".*?" + tag['end tag'], '', text)
+        else:
+            text = text.replace(tag['start tag'], '')
+            text = text.replace(tag['end tag'], '')
     # Remove ChordPro tags
     if can_remove_chords:
         text = remove_chords(text)
@@ -186,11 +195,11 @@ def render_chords_in_line(match):
     # The actual chord, would be "G" in match "[G]sweet the "
     chord = match.group(1)
     # The tailing word of the chord, would be "sweet" in match "[G]sweet the "
-    tail = match.group(11)
+    tail = match.group(8)
     # The remainder of the line, until line end or next chord. Would be " the " in match "[G]sweet the "
-    remainder = match.group(12)
+    remainder = match.group(9)
     # Line end if found, else None
-    end = match.group(13)
+    end = match.group(10)
     # Based on char width calculate width of chord
     for chord_char in chord:
         if chord_char not in SLIM_CHARS:
@@ -268,7 +277,10 @@ def render_chords(text):
             rendered_lines.append(new_line)
         else:
             chords_on_prev_line = False
-            rendered_lines.append(html.escape(line))
+            # rendered_lines.append(html.escape(line))
+            chord_template = NO_CHORD_TEMPLATE
+            new_line = chord_template.format(chord=line)
+            rendered_lines.append(new_line)
     return '{br}'.join(rendered_lines)
 
 
@@ -328,7 +340,7 @@ def find_formatting_tags(text, active_formatting_tags):
             # See if the found tag has an end tag
             for formatting_tag in FormattingTags.get_html_tags():
                 if formatting_tag['start tag'] == '{' + tag + '}':
-                    if formatting_tag['end tag']:
+                    if formatting_tag['end html']:
                         if start_tag:
                             # prepend the new tag to the list of active formatting tags
                             active_formatting_tags[:0] = [tag]
@@ -486,8 +498,12 @@ def get_start_tags(raw_text):
     """
     raw_tags = []
     html_tags = []
+    endless_tags = []
+    for formatting_tag in FormattingTags.get_html_tags():
+        if not formatting_tag['end html']:
+            endless_tags.append(formatting_tag['start tag'])
     for tag in FormattingTags.get_html_tags():
-        if tag['start tag'] == '{br}':
+        if tag['start tag'] in endless_tags:
             continue
         if raw_text.count(tag['start tag']) != raw_text.count(tag['end tag']):
             raw_tags.append((raw_text.find(tag['start tag']), tag['start tag'], tag['end tag']))
@@ -851,11 +867,17 @@ class Renderer(RegistryBase, ThemePreviewRenderer):
         """
         super().__init__(*args, **kwargs)
         self.force_page = False
-        for screen in ScreenList():
+        screen_list = ScreenList()
+        for screen in screen_list:
             if screen.is_display:
                 self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
                                  screen.display_geometry.width(), screen.display_geometry.height())
                 break
+        else:
+            # If there is no display screen, use the first screen as a fallback
+            screen = screen_list[0]
+            self.setGeometry(screen.display_geometry.x(), screen.display_geometry.y(),
+                             screen.display_geometry.width(), screen.display_geometry.height())
         # If the display is not show'ed and hidden like this webegine will not render
         self.show()
         self.hide()

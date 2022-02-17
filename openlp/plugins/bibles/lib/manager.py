@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+import gc
 import logging
 from pathlib import Path
 
@@ -141,7 +142,9 @@ class BibleManager(LogMixin, RegistryProperties):
             name = bible.get_name()
             # Remove corrupted files.
             if name is None:
-                bible.session.close_all()
+                bible.session.close()
+                bible.session = None
+                gc.collect()
                 delete_file(self.path / file_path)
                 continue
             log.debug('Bible Name: "{name}"'.format(name=name))
@@ -185,8 +188,9 @@ class BibleManager(LogMixin, RegistryProperties):
         """
         log.debug('BibleManager.delete_bible("{name}")'.format(name=name))
         bible = self.db_cache[name]
-        bible.session.close_all()
+        bible.session.close()
         bible.session = None
+        gc.collect()
         return delete_file(bible.path / '{name}{suffix}'.format(name=name, suffix=self.suffix))
 
     def get_bibles(self):

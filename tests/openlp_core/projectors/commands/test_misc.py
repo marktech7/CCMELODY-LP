@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -18,51 +18,47 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+
 """
-Package to test the openlp.core.projectors.pjlink base package.
+Tests for commands that do not need much testing
 """
 
+import logging
+import openlp.core.projectors.pjlinkcommands
 
-def test_bug_1550891_process_clss_nonstandard_reply_1():
-    """
-    Bugfix 1550891: CLSS request returns non-standard reply with Optoma/Viewsonic projector
-    """
-    # Test now part of test_projector_pjlink_commands_01
-    # Keeping here for bug reference
-    pass
+from openlp.core.projectors.pjlinkcommands import process_srch
+
+test_module = openlp.core.projectors.pjlinkcommands.__name__
 
 
-def test_bug_1550891_process_clss_nonstandard_reply_2():
+def test_srch_no_projector(caplog):
     """
-    Bugfix 1550891: CLSS request returns non-standard reply with BenQ projector
+    Test SRCH command with no projector instance
     """
-    # Test now part of test_projector_pjlink_commands_01
-    # Keeping here for bug reference
-    pass
+    # GIVEN: Test setup
+    caplog.set_level(logging.DEBUG)
+    logs = [(f'{test_module}', logging.WARNING, 'SRCH packet detected - ignoring')]
+
+    # WHEN: Called
+    t_chk = process_srch()
+
+    # THEN: Appropriate return code and log entries
+    assert t_chk is None, 'Invalid return code'
+    assert caplog.record_tuples == logs, 'Invalid log entries'
 
 
-def test_bug_1593882_no_pin_authenticated_connection():
+def test_srch_with_projector(pjlink, caplog):
     """
-    Test bug 1593882 no pin and authenticated request exception
+    Test SRCH command with projector
     """
-    # Test now part of test_projector_pjlink_commands_02
-    # Keeping here for bug reference
-    pass
+    # GIVEN: Test setup
+    caplog.set_level(logging.DEBUG)
+    logs = [(f'{test_module}', logging.WARNING,
+             f'({pjlink.entry.name}) SRCH packet detected - ignoring')]
 
+    # WHEN: Called
+    t_chk = process_srch(projector=pjlink)
 
-def test_bug_1593883_pjlink_authentication():
-    """
-    Test bugfix 1593883 pjlink authentication and ticket 92187
-    """
-    # Test now part of test_projector_pjlink_commands_02
-    # Keeping here for bug reference
-    pass
-
-
-def test_bug_1734275_process_lamp_nonstandard_reply():
-    """
-    Test bugfix 17342785 non-standard LAMP response with one lamp hours only
-    """
-    # Test now part of test_projector_pjlink_commands_01
-    # Keeping here for bug reference
-    pass
+    # THEN: Appropriate return code and log entries
+    assert t_chk is None, 'Invalid return code'
+    assert caplog.record_tuples == logs, 'Invalid log entries'

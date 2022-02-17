@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -1024,7 +1024,7 @@ class BibleMediaItem(MediaManagerItem):
             DisplayStyle.Curly: ('{', '}'),
             DisplayStyle.Square: ('[', ']')
         }[self.settings_tab.display_style]
-        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}{{/su}}&nbsp;'.format(verse_text=verse_text, bracket=bracket)
+        return '{{su}}{bracket[0]}{verse_text}{bracket[1]}&nbsp;{{/su}}'.format(verse_text=verse_text, bracket=bracket)
 
     def search_options(self, option=None):
         """

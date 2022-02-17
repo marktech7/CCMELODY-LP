@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,13 +26,12 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import get_images_filter, is_win
+from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.settingstab import SettingsTab
-from openlp.core.ui.style import HAS_DARK_STYLE
+from openlp.core.ui.style import UiThemes, has_ui_theme
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
-
 
 log = logging.getLogger(__name__)
 
@@ -41,6 +40,7 @@ class GeneralTab(SettingsTab):
     """
     GeneralTab is the general settings tab in the settings dialog.
     """
+
     def __init__(self, parent):
         """
         Initialise the general settings tab
@@ -157,16 +157,28 @@ class GeneralTab(SettingsTab):
         self.autoscroll_combo_box.setObjectName('autoscroll_combo_box')
         self.ui_layout.addRow(self.autoscroll_label)
         self.ui_layout.addRow(self.autoscroll_combo_box)
+        self.slide_no_in_footer_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
+        self.slide_no_in_footer_checkbox.setObjectName('SlideNumbersInFooter_check_box')
+        self.ui_layout.addRow(self.slide_no_in_footer_checkbox)
         self.search_as_type_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.search_as_type_check_box.setObjectName('SearchAsType_check_box')
         self.ui_layout.addRow(self.search_as_type_check_box)
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
-            self.use_dark_style_checkbox.setObjectName('use_dark_style_checkbox')
-            self.ui_layout.addRow(self.use_dark_style_checkbox)
+        self.new_service_message_check_box = QtWidgets.QCheckBox(self.ui_group_box)
+        self.new_service_message_check_box.setObjectName('new_service_message_check_box')
+        self.ui_layout.addRow(self.new_service_message_check_box)
+        self.ui_theme_style_label = QtWidgets.QLabel(self.ui_group_box)
+        self.ui_theme_style_label.setObjectName('theme_style_label')
+        self.ui_theme_style_combo_box = QtWidgets.QComboBox(self.ui_group_box)
+        if has_ui_theme(UiThemes.QDarkStyle):
+            self.ui_theme_style_combo_box.addItems(['', '', '', ''])
+        else:
+            self.ui_theme_style_combo_box.addItems(['', '', ''])
+        self.ui_theme_style_combo_box.setObjectName('theme_style_combo_box')
+        self.ui_layout.addRow(self.ui_theme_style_label)
+        self.ui_layout.addRow(self.ui_theme_style_combo_box)
         self.right_layout.addWidget(self.ui_group_box)
         # Push everything in both columns to the top
         self.left_layout.addStretch()
@@ -214,8 +226,7 @@ class GeneralTab(SettingsTab):
                                                       'Max height for non-text slides\nin slide controller:'))
         self.slide_max_height_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Disabled'))
         self.slide_max_height_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Automatic'))
-        self.autoscroll_label.setText(translate('OpenLP.AdvancedTab',
-                                                'When changing slides:'))
+        self.autoscroll_label.setText(translate('OpenLP.AdvancedTab', 'When changing slides:'))
         self.autoscroll_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Do not auto-scroll'))
         self.autoscroll_combo_box.setItemText(1, translate('OpenLP.AdvancedTab',
                                                            'Auto-scroll the previous slide into view'))
@@ -241,9 +252,16 @@ class GeneralTab(SettingsTab):
                                                             'Auto-scroll the next slide to bottom'))
         self.enable_auto_close_check_box.setText(translate('OpenLP.AdvancedTab',
                                                            'Enable application exit confirmation'))
+        self.slide_no_in_footer_checkbox.setText(translate('SongsPlugin.GeneralTab', 'Include slide number in footer'))
+        self.new_service_message_check_box.setText(translate('OpenLP.AdvancedTab',
+                                                             'Alert if New clicked on blank service'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox.setText(translate('OpenLP.AdvancedTab', 'Use dark style (needs restart)'))
+        self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab', 'Interface Theme (needs restart):'))
+        self.ui_theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Use system theme'))
+        self.ui_theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Default Light'))
+        self.ui_theme_style_combo_box.setItemText(2, translate('OpenLP.AdvancedTab', 'Default Dark'))
+        if has_ui_theme(UiThemes.QDarkStyle):
+            self.ui_theme_style_combo_box.setItemText(3, translate('OpenLP.AdvancedTab', 'QDarkStyle'))
         self.hide_mouse_check_box.setText(translate('OpenLP.AdvancedTab', 'Hide mouse cursor when over display window'))
 
     def load(self):
@@ -280,11 +298,54 @@ class GeneralTab(SettingsTab):
             if self.autoscroll_map[i] == autoscroll_value and i < self.autoscroll_combo_box.count():
                 self.autoscroll_combo_box.setCurrentIndex(i)
         self.enable_auto_close_check_box.setChecked(self.settings.value('advanced/enable exit confirmation'))
-        if not is_win() and HAS_DARK_STYLE:
-            self.use_dark_style_checkbox.setChecked(self.settings.value('advanced/use_dark_style'))
+        ui_theme_index = GeneralTab.get_ui_theme_index(self.settings.value('advanced/ui_theme_name'))
+        self.ui_theme_style_combo_box.setCurrentIndex(ui_theme_index)
+        self.slide_no_in_footer_checkbox.setChecked(self.settings.value('advanced/slide numbers in footer'))
+        self.new_service_message_check_box.setChecked(self.settings.value('advanced/new service message'))
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
+
+    @staticmethod
+    def get_ui_theme_index(ui_theme):
+        """
+        Converts :class:`~openlp.core.ui.dark.UiThemes` item to Interface Theme ComboBox
+
+        :param ui_theme UIThemes enum item
+        :return ComboBox index
+        """
+        if ui_theme == UiThemes.Automatic:
+            return 0
+        if ui_theme == UiThemes.DefaultLight:
+            return 1
+        if ui_theme == UiThemes.DefaultDark:
+            return 2
+        if ui_theme == UiThemes.QDarkStyle:
+            return 3 if has_ui_theme(UiThemes.QDarkStyle) else 2
+
+        return 0
+
+    @staticmethod
+    def get_ui_theme_name(index):
+        """
+        Converts "Interface Theme" ComboBox index to :class:`~openlp.core.ui.dark.UiThemes` item
+
+        :param index "Interface Theme" ComboBox current index
+        :return UiThemes enum item
+        """
+        if not has_ui_theme(UiThemes.QDarkStyle) and index == 3:
+            index = 2
+
+        if index == 0:
+            return UiThemes.Automatic
+        if index == 1:
+            return UiThemes.DefaultLight
+        if index == 2:
+            return UiThemes.DefaultDark
+        if index == 3:
+            return UiThemes.QDarkStyle
+
+        return UiThemes.Automatic
 
     def save(self):
         """
@@ -310,11 +371,13 @@ class GeneralTab(SettingsTab):
         slide_max_height_value = self.slide_max_height_combo_box.itemData(slide_max_height_index)
         self.settings.setValue('advanced/slide max height', slide_max_height_value)
         self.settings.setValue('advanced/autoscrolling', self.autoscroll_map[self.autoscroll_combo_box.currentIndex()])
+        self.settings.setValue('advanced/slide numbers in footer', self.slide_no_in_footer_checkbox.isChecked())
         self.settings.setValue('advanced/enable exit confirmation', self.enable_auto_close_check_box.isChecked())
+        self.settings.setValue('advanced/new service message', self.new_service_message_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
-        if not is_win() and HAS_DARK_STYLE:
-            self.settings.setValue('advanced/use_dark_style', self.use_dark_style_checkbox.isChecked())
+        theme_name = GeneralTab.get_ui_theme_name(self.ui_theme_style_combo_box.currentIndex())
+        self.settings.setValue('advanced/ui_theme_name', theme_name)
         self.post_set_up()
 
     def post_set_up(self):

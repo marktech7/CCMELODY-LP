@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -48,12 +48,12 @@ class MediaPlayer(RegistryProperties):
         """
         return False
 
-    def setup(self, controller, display, live_display):
+    def setup(self, controller, display):
         """
         Create the related widgets for the current display
 
+        :param controller: Which Controller is running the show.
         :param display: The display to be updated.
-        :param live_display: Is the display a live one.
         """
         pass
 
@@ -66,11 +66,11 @@ class MediaPlayer(RegistryProperties):
         """
         return True
 
-    def resize(self, display):
+    def resize(self, controller):
         """
         If the main display size or position is changed, the media widgets
         should also resized
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         """
         pass
 
@@ -83,53 +83,53 @@ class MediaPlayer(RegistryProperties):
         """
         pass
 
-    def pause(self, display):
+    def pause(self, controller):
         """
         Pause of current Media File
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         """
         pass
 
-    def stop(self, display):
+    def stop(self, controller):
         """
         Stop playing of current Media File
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         """
         pass
 
-    def volume(self, display, volume):
+    def volume(self, controller, volume):
         """
         Change volume of current Media File
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         :param volume: The volume to set.
         """
         pass
 
-    def seek(self, display, seek_value):
+    def seek(self, controller, seek_value):
         """
         Change playing position of current Media File
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         :param seek_value: The where to seek to.
         """
         pass
 
-    def reset(self, display):
+    def reset(self, controller):
         """
         Remove the current loaded video
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         """
         pass
 
-    def set_visible(self, display, status):
+    def set_visible(self, controller, status):
         """
         Show/Hide the media widgets
 
-        :param display: The display to be updated.
+        :param controller: Which Controller is running the show.
         :param status: The status to be set.
         """
         pass

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -39,10 +39,22 @@ def test_remove_tags(mocked_get_tags):
         'start tag': '{b}',
         'start html': '<span style="-webkit-text-fill-color:black">',
         'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-        'temporary': False
+        'temporary': False, 'hidden': False
+    }, {
+        'desc': 'Italics',
+        'start tag': '{it}',
+        'start html': '<em>',
+        'end tag': '{/it}', 'end html': '</em>', 'protected': True,
+        'temporary': False, 'hidden': False
+    }, {
+        'desc': 'Superscript',
+        'start tag': '{su}',
+        'start html': '<sup>',
+        'end tag': '{/su}', 'end html': '</sup>', 'protected': True,
+        'temporary': False, 'hidden': False
     }]
-    string_to_pass = 'ASDF<br>foo{br}bar&nbsp;{b}black{/b}'
-    expected_string = 'ASDF\nfoo\nbar black'
+    string_to_pass = 'ASDF<br>foo{br}bar&nbsp;{b}black{/b} {su}1,1&nbsp;{/su}In the {it}beggining{/it}...'
+    expected_string = 'ASDF\nfoo\nbar black 1,1 In the beggining...'
 
     # WHEN: Clean the string.
     result_string = remove_tags(string_to_pass)
@@ -64,21 +76,21 @@ def test_render_tags(mocked_get_tags, settings):
             'start tag': '{b}',
             'start html': '<span style="-webkit-text-fill-color:black">',
             'end tag': '{/b}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         },
         {
             'desc': 'Yellow',
             'start tag': '{y}',
             'start html': '<span style="-webkit-text-fill-color:yellow">',
             'end tag': '{/y}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         },
         {
             'desc': 'Green',
             'start tag': '{g}',
             'start html': '<span style="-webkit-text-fill-color:green">',
             'end tag': '{/g}', 'end html': '</span>', 'protected': True,
-            'temporary': False
+            'temporary': False, 'hidden': False
         }
     ]
     string_to_pass = '{b}black{/b}{y}yellow{/y}'
@@ -104,7 +116,7 @@ def test_render_chords(settings):
     text_with_rendered_chords = render_chords(text_with_chords)
 
     # THEN: We should get html that looks like below
-    expected_html = '<span class="chordline firstchordline">H<span class="chord"><span><strong>C</strong></span>' \
+    expected_html = '<span class="chordline">H<span class="chord"><span><strong>C</strong></span>' \
                     '</span>alleluya.<span class="chord"><span><strong>F</strong></span></span><span class="ws">' \
                     '&nbsp;&nbsp;</span> <span class="chord"><span><strong>G/B</strong></span></span></span>'
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected'
@@ -122,7 +134,7 @@ def test_render_chords_with_special_chars(settings):
     text_with_rendered_chords = render_tags(text_with_chords, can_render_chords=True)
 
     # THEN: We should get html that looks like below
-    expected_html = '<span class="chordline firstchordline">I<span class="chord"><span><strong>D</strong></span>' \
+    expected_html = '<span class="chordline">I<span class="chord"><span><strong>D</strong></span>' \
                     '</span>&#x27;M NOT MOVED BY WHAT I SEE HALLE<span class="chord"><span><strong>F</strong>' \
                     '</span></span>LUJA<span class="chord"><span><strong>C</strong></span></span>H</span>'
     assert text_with_rendered_chords == expected_html, 'The rendered chords should look as expected'

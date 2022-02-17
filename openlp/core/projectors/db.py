@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -36,10 +36,10 @@ The Projector table keeps track of entries for controlled projectors.
 import logging
 
 from sqlalchemy import Column, ForeignKey, Integer, MetaData, String, and_
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 
-from openlp.core.lib.db import Manager, init_db, init_url
+from openlp.core.lib.db import CommonMixin, Manager, init_db, init_url
 from openlp.core.projectors import upgrade
 from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES
 
@@ -49,17 +49,6 @@ log.debug('projector.lib.db module loaded')
 
 
 Base = declarative_base(MetaData())
-
-
-class CommonMixin(object):
-    """
-    Base class to automate table name and ID column.
-    """
-    @declared_attr
-    def __tablename__(self):
-        return self.__name__.lower()
-
-    id = Column(Integer, primary_key=True)
 
 
 class Manufacturer(Base, CommonMixin):

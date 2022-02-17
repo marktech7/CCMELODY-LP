@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +24,22 @@ processing projector replies.
 
 NOTE: PJLink Class (version) checks are handled in the respective PJLink/PJLinkUDP classes.
       process_clss is the only exception.
+
+NOTE: Some commands are both commannd replies as well as UDP terminal-initiated status
+      messages.
+
+      Ex: POWR
+
+      CLSS1 (TCP): controller  sends "POWR x", projector replies "POWR=xxxxx"
+      CLSS2 (UDP): projector sends "POWER=xxxx"
+
+      Inn both instances, the messagege is processed the same.
+
+      For CLSS1, we initiate communication, so we know which projecttor instance
+      the message is routed to.
+
+      For CLSS2, the terminal initiates communication, so as part of the UDP process
+      we must find the projector that initiated the message.
 """
 
 import logging
@@ -51,37 +67,34 @@ def process_command(projector, cmd, data):
     :param cmd: Command to process
     :param data: Data being processed
     """
-    log.debug('({ip}) Processing command "{cmd}" with data "{data}"'.format(ip=projector.entry.name,
-                                                                            cmd=cmd,
-                                                                            data=data))
+    log.debug(f'({projector.entry.name}) Processing command "{cmd}" with data "{data}"')
     # cmd should already be in uppercase, but data may be in mixed-case.
     # Due to some replies should stay as mixed-case, validate using separate uppercase check
     _data = data.upper()
     # Check if we have a future command not available yet
     if cmd not in pjlink_functions:
-        log.warning('({ip}) Unable to process command="{cmd}" (Future option?)'.format(ip=projector.entry.name,
-                                                                                       cmd=cmd))
+        log.warning(f'({projector.entry.name}) Unable to process command="{cmd}" (Future option?)')
         return
     elif _data == 'OK':
-        log.debug('({ip}) Command "{cmd}" returned OK'.format(ip=projector.entry.name, cmd=cmd))
+        log.debug(f'({projector.entry.name}) Command "{cmd}" returned OK')
         # A command returned successfully, so do a query on command to verify status
         return S_DATA_OK
 
     elif _data in PJLINK_ERRORS:
         # Oops - projector error
-        log.error('({ip}) {cmd}: {err}'.format(ip=projector.entry.name,
-                                               cmd=cmd,
-                                               err=STATUS_MSG[PJLINK_ERRORS[_data]]))
+        log.error(f'({projector.entry.name}) {cmd}: {STATUS_MSG[PJLINK_ERRORS[_data]]}')
         return PJLINK_ERRORS[_data]
 
     # Command checks already passed
-    log.debug('({ip}) Calling function for {cmd}'.format(ip=projector.entry.name, cmd=cmd))
+    log.debug(f'({projector.entry.name}) Calling function for {cmd}')
     return pjlink_functions[cmd](projector=projector, data=data)
 
 
 def process_ackn(projector, data):
     """
     Process the ACKN command.
+
+    UDP reply to SRCH command
 
     :param projector: Projector instance
     :param data: Data in packet
@@ -146,31 +159,30 @@ def process_clss(projector, data):
     #            : Received: '%1CLSS=Class 1'  (Optoma)
     #            : Received: '%1CLSS=Version1'  (BenQ)
     if len(data) > 1:
-        log.warning('({ip}) Non-standard CLSS reply: "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Non-standard CLSS reply: "{data}"')
         # Due to stupid projectors not following standards (Optoma, BenQ comes to mind),
         # AND the different responses that can be received, the semi-permanent way to
         # fix the class reply is to just remove all non-digit characters.
         chk = re.findall(r'\d', data)
         if len(chk) < 1:
-            log.warning('({ip}) No numbers found in class version reply "{data}" - '
-                        'defaulting to class "1"'.format(ip=projector.entry.name, data=data))
+            log.warning(f'({projector.entry.name}) No numbers found in class version reply '
+                        f'"{data}" - defaulting to class "1"')
             clss = '1'
         else:
             clss = chk[0]  # Should only be the first match
     elif not data.isdigit():
-        log.warning('({ip}) NAN CLSS version reply "{data}" - '
-                    'defaulting to class "1"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) NAN CLSS version reply '
+                    f'"{data}" - defaulting to class "1"')
         clss = '1'
     else:
         clss = data
     projector.pjlink_class = clss
-    log.debug('({ip}) Setting pjlink_class for this projector to "{data}"'.format(ip=projector.entry.name,
-                                                                                  data=projector.pjlink_class))
+    log.debug(f'({projector.entry.name}) Setting pjlink_class for this projector to "{projector.pjlink_class}"')
     if projector.no_poll:
         return
 
     # Since we call this one on first connect, setup polling from here
-    log.debug('({ip}) process_pjlink(): Starting timer'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
     projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
     projector.poll_timer.start()
     return
@@ -339,7 +351,7 @@ def process_lamp(projector, data):
 
 def process_lkup(projector, data):
     """
-    Process reply indicating remote is available for connection
+    Process UDP request indicating remote is available for connection
 
     :param projector: Projector instance
     :param data: Data packet from remote
@@ -370,41 +382,40 @@ def process_pjlink(projector, data):
     :param projector: Projector instance
     :param data: Initial packet with authentication scheme
     """
-    log.debug('({ip}) Processing PJLINK command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing PJLINK command')
     chk = data.split(' ')
-    if len(chk[0]) != 1:
+    if (len(chk[0]) != 1) or (chk[0] not in ('0', '1')):
         # Invalid - after splitting, first field should be 1 character, either '0' or '1' only
-        log.error('({ip}) Invalid initial authentication scheme - aborting'.format(ip=projector.entry.name))
+        log.error(f'({projector.entry.name}) Invalid initial authentication scheme - aborting')
         return E_AUTHENTICATION
     elif chk[0] == '0':
         # Normal connection no authentication
         if len(chk) > 1:
             # Invalid data - there should be nothing after a normal authentication scheme
-            log.error('({ip}) Normal connection with extra information - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Normal connection with extra information - aborting')
             return E_NO_AUTHENTICATION
         elif projector.pin:
-            log.error('({ip}) Normal connection but PIN set - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Normal connection but PIN set - aborting')
             return E_NO_AUTHENTICATION
-        log.debug('({ip}) PJLINK: Returning S_CONNECT'.format(ip=projector.entry.name))
+        log.debug(f'({projector.entry.name}) PJLINK: Returning S_CONNECT')
         return S_CONNECT
     elif chk[0] == '1':
         if len(chk) < 2:
             # Not enough information for authenticated connection
-            log.error('({ip}) Authenticated connection but not enough info - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authenticated connection but not enough info - aborting')
             return E_NO_AUTHENTICATION
         elif len(chk[-1]) != PJLINK_TOKEN_SIZE:
             # Bad token - incorrect size
-            log.error('({ip}) Authentication token invalid (size) - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authentication token invalid (size) - aborting')
             return E_NO_AUTHENTICATION
         elif not all(c in string.hexdigits for c in chk[-1]):
             # Bad token - not hexadecimal
-            log.error('({ip}) Authentication token invalid (not a hexadecimal number) '
-                      '- aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authentication token invalid (not a hexadecimal number) - aborting')
             return E_NO_AUTHENTICATION
         elif not projector.pin:
-            log.error('({ip}) Authenticate connection but no PIN - aborting'.format(ip=projector.entry.name))
+            log.error(f'({projector.entry.name}) Authenticate connection but no PIN - aborting')
             return E_NO_AUTHENTICATION
-        log.debug('({ip}) PJLINK: Returning S_AUTHENTICATE'.format(ip=projector.entry.name))
+        log.debug(f'({projector.entry.name}) PJLINK: Returning S_AUTHENTICATE')
         return S_AUTHENTICATE
 
 
@@ -496,10 +507,15 @@ def process_srch(projector=None, data=None):
 
     SRCH is processed by terminals so we ignore any packet.
 
+    UDP command to find active CLSS 2 projectors. Reply is ACKN.
+
     :param projector: Projector instance (actually ignored for this command)
     :param data: Data in packet
     """
-    log.warning("({ip}) SRCH packet detected - ignoring".format(ip=projector.entry.ip))
+    if projector is None:
+        log.warning('SRCH packet detected - ignoring')
+    else:
+        log.warning(f'({projector.entry.name}) SRCH packet detected - ignoring')
     return
 
 
@@ -541,7 +557,7 @@ pjlink_functions = {
     'INPT': process_inpt,
     'INST': process_inst,
     'LAMP': process_lamp,
-    'LKUP': process_lkup,  # Class 2  (reply only - no cmd)
+    'LKUP': process_lkup,  # Class 2  (terminal request only - no cmd)
     'NAME': process_name,
     'PJLINK': process_pjlink,
     'POWR': process_powr,

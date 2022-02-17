@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -725,10 +725,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
         'notes': '',
         'slides': [
             {
-                'chords': 'Amazing Grace! how sweet the sound\n'
+                'chords': '<span class="nochordline">'
+                          'Amazing Grace! how sweet the sound\n'
                           'That saved a wretch like me;\n'
                           'I once was lost, but now am found,\n'
-                          'Was blind, but now I see.',
+                          'Was blind, but now I see.</span>',
                 'html': 'Amazing Grace! how sweet the sound\n'
                         'That saved a wretch like me;\n'
                         'I once was lost, but now am found,\n'
@@ -743,10 +744,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '’Twas grace that taught my heart to fear,\n'
+                'chords': '<span class="nochordline">'
+                          '’Twas grace that taught my heart to fear,\n'
                           'And grace my fears relieved;\n'
                           'How precious did that grace appear,\n'
-                          'The hour I first believed!',
+                          'The hour I first believed!</span>',
                 'html': '’Twas grace that taught my heart to fear,\n'
                         'And grace my fears relieved;\n'
                         'How precious did that grace appear,\n'
@@ -761,10 +763,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': 'Through many dangers, toils and snares\n'
+                'chords': '<span class="nochordline">'
+                          'Through many dangers, toils and snares\n'
                           'I have already come;\n'
                           '’Tis grace that brought me safe thus far,\n'
-                          'And grace will lead me home.',
+                          'And grace will lead me home.</span>',
                 'html': 'Through many dangers, toils and snares\n'
                         'I have already come;\n'
                         '’Tis grace that brought me safe thus far,\n'
@@ -779,10 +782,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': 'The Lord has promised good to me,\n'
+                'chords': '<span class="nochordline">'
+                          'The Lord has promised good to me,\n'
                           'His word my hope secures;\n'
                           'He will my shield and portion be\n'
-                          'As long as life endures.',
+                          'As long as life endures.</span>',
                 'html': 'The Lord has promised good to me,\n'
                         'His word my hope secures;\n'
                         'He will my shield and portion be\n'
@@ -797,10 +801,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': 'Yes, when this heart and flesh shall fail,\n'
+                'chords': '<span class="nochordline">'
+                          'Yes, when this heart and flesh shall fail,\n'
                           'And mortal life shall cease,\n'
                           'I shall possess within the veil\n'
-                          'A life of joy and peace.',
+                          'A life of joy and peace.</span>',
                 'html': 'Yes, when this heart and flesh shall fail,\n'
                         'And mortal life shall cease,\n'
                         'I shall possess within the veil\n'
@@ -815,10 +820,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': 'When we’ve been there a thousand years,\n'
+                'chords': '<span class="nochordline">'
+                          'When we’ve been there a thousand years,\n'
                           'Bright shining as the sun,\n'
                           'We’ve no less days to sing God’s praise\n'
-                          'Than when we first begun.',
+                          'Than when we first begun.</span>',
                 'html': 'When we’ve been there a thousand years,\n'
                         'Bright shining as the sun,\n'
                         'We’ve no less days to sing God’s praise\n'

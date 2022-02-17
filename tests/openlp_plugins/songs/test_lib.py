@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -275,12 +275,17 @@ def test_transpose_chord_up():
     """
     # GIVEN: A Chord
     chord = 'C'
+    key = None
+    last_chord = None
+    is_bass = False
 
     # WHEN: Transposing it 1 up
-    new_chord = transpose_chord(chord, 1, 'english')
+    new_chord, key, last_chord = transpose_chord(chord, 1, 'english', key, last_chord, is_bass)
 
     # THEN: The chord should be transposed up one note
     assert new_chord == 'C#', 'The chord should be transposed up.'
+    assert key is None, 'The key should not be set'
+    assert last_chord == 'C#', 'If not is_bass, then last_chord should be returned'
 
 
 def test_transpose_chord_up_adv():
@@ -288,13 +293,23 @@ def test_transpose_chord_up_adv():
     Test that the transpose_chord() method works when transposing up an advanced chord
     """
     # GIVEN: An advanced Chord
-    chord = '(C/D#)'
-
+    chord = '(D/F#)'
+    key = None
+    last_chord = None
+    is_bass = False
+    chord_split = chord.split("/")
     # WHEN: Transposing it 1 up
-    new_chord = transpose_chord(chord, 1, 'english')
+    new_chord, key, last_chord = transpose_chord(chord_split[0], 1, 'english', key, last_chord, is_bass)
+
+    # AFTER "/" isbass is true, lastchord is set
+    is_bass = True
+    new_bass, key, last_chord = transpose_chord(chord_split[1], 1, 'english', key, last_chord, is_bass)
 
     # THEN: The chord should be transposed up one note
-    assert new_chord == '(C#/E)', 'The chord should be transposed up.'
+    assert new_chord == '(Eb', 'The chord should be transposed up.'
+    assert new_bass == 'G)', 'Bass should be transposed up.'
+    assert key is None, 'no key should be defined'
+    assert last_chord == 'Eb', 'last_chord is generated'
 
 
 def test_transpose_chord_down():
@@ -303,12 +318,17 @@ def test_transpose_chord_down():
     """
     # GIVEN: A Chord
     chord = 'C'
+    key = None
+    last_chord = None
+    is_bass = False
 
     # WHEN: Transposing it 1 down
-    new_chord = transpose_chord(chord, -1, 'english')
+    new_chord, key, last_chord = transpose_chord(chord, -1, 'english', key, last_chord, is_bass)
 
     # THEN: The chord should be transposed down one note
     assert new_chord == 'B', 'The chord should be transposed down.'
+    assert key is None, 'The key should not be set'
+    assert last_chord == 'B', 'If not is_bass, then last_chord should be returned'
 
 
 def test_transpose_chord_error():
@@ -320,10 +340,10 @@ def test_transpose_chord_error():
 
     # WHEN: Transposing it 1 down
     # THEN: An exception should be raised
-    with pytest.raises(ValueError) as err:
-        transpose_chord(chord, -1, 'english')
-    assert err.value != ValueError('\'T\' is not in list'), \
-        'ValueError exception should have been thrown for invalid chord'
+    with pytest.raises(KeyError) as err:
+        transpose_chord(chord, -1, 'english', None, None, False)
+    assert err.value != KeyError('\'T\' is not in list'), \
+        'KeyError exception should have been thrown for invalid chord'
 
 
 @patch('openlp.plugins.songs.lib.transpose_verse')
@@ -339,15 +359,15 @@ def test_transpose_lyrics(mocked_transpose_verse, mock_settings):
              '---[Verse:2]---\n'\
              'I once was lost but now I\'m found.'
     mock_settings.value.return_value = 'english'
-
+    mocked_transpose_verse.return_value = ['', None]
     # WHEN: Transposing the lyrics
     transpose_lyrics(lyrics, 1)
 
     # THEN: transpose_verse should have been called
-    mocked_transpose_verse.assert_any_call('', 1, 'english')
-    mocked_transpose_verse.assert_any_call('\nAmazing grace how sweet the sound\n', 1, 'english')
-    mocked_transpose_verse.assert_any_call('\nThat saved a wretch like me.\n', 1, 'english')
-    mocked_transpose_verse.assert_any_call('\nI once was lost but now I\'m found.', 1, 'english')
+    mocked_transpose_verse.assert_any_call('', 1, 'english', None)
+    mocked_transpose_verse.assert_any_call('\nAmazing grace how sweet the sound\n', 1, 'english', None)
+    mocked_transpose_verse.assert_any_call('\nThat saved a wretch like me.\n', 1, 'english', None)
+    mocked_transpose_verse.assert_any_call('\nI once was lost but now I\'m found.', 1, 'english', None)
 
 
 def test_translated_tag():

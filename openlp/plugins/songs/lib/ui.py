@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,7 +22,10 @@
 The :mod:`openlp.plugins.songs.lib.ui` module provides standard UI components
 for the songs plugin.
 """
+from PyQt5 import QtWidgets
+
 from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
 
 
 class SongStrings(object):
@@ -41,3 +44,18 @@ class SongStrings(object):
     Topic = translate('OpenLP.Ui', 'Topic', 'Singular')
     Topics = translate('OpenLP.Ui', 'Topics', 'Plural')
     XMLSyntaxError = translate('OpenLP.Ui', 'XML syntax error')
+
+
+def show_key_warning(parent):
+    """
+    Check the settings to see if we need to show the warning message, and then show a warning about the key of the song
+    """
+    if Registry().get('settings').value('songs/enable chords') and \
+            Registry().get('settings').value('songs/warn about missing song key'):
+        QtWidgets.QMessageBox.warning(
+            parent,
+            translate('SongsPlugin.UI', 'Song key warning'),
+            translate('SongsPlugin.UI', 'No musical key has been detected for this song, it should be placed before '
+                      'the first chord.\nFor an optimal chord experience, please include a song key at the beginning '
+                      'of the song. For example: [=G]\n\nYou can disable this warning message in songs settings.')
+        )

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,7 +22,7 @@
 This module contains tests for the editverseform of the Songs plugin.
 """
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
 
@@ -94,3 +94,29 @@ def test_on_split_button_clicked(edit_verse_form):
     # THEN the verse number must not be changed
     assert '[---]\nText\n' == edit_verse_form.verse_text_edit.toPlainText(), \
         'The verse number should be [---]\nText\n'
+
+
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+def test_on_transpose_up_button_clicked(mocked_show_key_warning, edit_verse_form):
+    """
+    Test that transpose button will transpose the chords and warn about missing song key
+    """
+    # GIVEN some input values
+    edit_verse_form.verse_text_edit.setPlainText('Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    # WHEN the method is called
+    edit_verse_form.on_transpose_up_button_clicked()
+    mocked_show_key_warning.assert_called_once_with(edit_verse_form)
+    # THEN chords should be transposed up
+    assert 'Am[Ab]azing gr[Ab/C]ace, how sw[C#]eet the s[Ab]ound' == edit_verse_form.verse_text_edit.toPlainText()
+
+
+def test_on_transpose_down_button_clicked(edit_verse_form):
+    """
+    Test that transpose button will transpose the chords and warn about missing song key
+    """
+    # GIVEN some input values
+    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    # WHEN the method is called
+    edit_verse_form.on_transpose_down_button_clicked()
+    # THEN chords should be transposed up
+    assert '[=F#]Am[F#]azing gr[F#/A#]ace, how sw[B]eet the s[F#]ound' == edit_verse_form.verse_text_edit.toPlainText()

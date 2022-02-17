@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -243,7 +243,12 @@ class SongSelectImport(object):
                 verse_type = verse['label']
                 verse_number = 1
             verse_type = VerseType.from_loose_input(verse_type)
-            verse_number = int(verse_number)
+            try:
+                verse_number = int(verse_number)
+            except ValueError:
+                # Some custom verse types contain multiple words, and this messes with the verse number,
+                # so just default to 1 on ValueError. See https://gitlab.com/openlp/openlp/-/issues/937
+                verse_number = 1
             song_xml.add_verse_to_lyrics(VerseType.tags[verse_type], verse_number, verse['lyrics'])
             verse_order.append('{tag}{number}'.format(tag=VerseType.tags[verse_type], number=verse_number))
         db_song.verse_order = ' '.join(verse_order)

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -340,8 +340,8 @@ class ScreenList(metaclass=Singleton):
         :param screen_dict: The dict describing the screen to match.
         """
         for screen in self.screens:
-            if screen.to_dict()['geometry'] == screen_dict['geometry'] \
-                    and screen.is_primary == screen_dict['is_primary']:
+            if screen.to_dict().get('geometry') == screen_dict.get('geometry') \
+                    and screen.is_primary == screen_dict.get('is_primary'):
                 return screen.number
         return None
 

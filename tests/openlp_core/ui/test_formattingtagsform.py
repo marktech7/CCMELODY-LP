@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -63,8 +63,11 @@ def test_on_new_clicked(tagform_env):
 
     # WHEN: on_new_clicked is run (i.e. the Add new button was clicked)
     with patch('openlp.core.ui.formattingtagform.QtWidgets.QTableWidgetItem') as MockedQTableWidgetItem:
+        mockedwidget = patch('openlp.core.ui.formattingtagform.QtWidgets.QWidget')
         mocked_table_widget = MagicMock()
+        mocked_widget = MagicMock()
         MockedQTableWidgetItem.return_value = mocked_table_widget
+        mockedwidget.return_value = mocked_widget
         form.on_new_clicked()
 
         # THEN: A new row should be added to the table

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -122,26 +122,38 @@ def test_controller_set_theme_level_aborts_if_no_theme_level(flask_client, setti
 
 
 def test_controller_set_theme_level_aborts_if_invalid_theme_level(flask_client, settings):
+    fake_theme_manager = MagicMock()
+    Registry().register('theme_manager', fake_theme_manager)
     res = flask_client.post('/api/v2/controller/theme-level', json=dict(level='foo'))
     assert res.status_code == 400
+    fake_theme_manager.theme_level_updated.emit.assert_not_called()
 
 
 def test_controller_set_theme_level_sets_theme_level_global(flask_client, settings):
+    fake_theme_manager = MagicMock()
+    Registry().register('theme_manager', fake_theme_manager)
     res = flask_client.post('/api/v2/controller/theme-level', json=dict(level='global'))
     assert res.status_code == 204
     assert Registry().get('settings').value('themes/theme level') == 1
+    fake_theme_manager.theme_level_updated.emit.assert_called_once()
 
 
 def test_controller_set_theme_level_sets_theme_level_service(flask_client, settings):
+    fake_theme_manager = MagicMock()
+    Registry().register('theme_manager', fake_theme_manager)
     res = flask_client.post('/api/v2/controller/theme-level', json=dict(level='service'))
     assert res.status_code == 204
     assert Registry().get('settings').value('themes/theme level') == 2
+    fake_theme_manager.theme_level_updated.emit.assert_called_once()
 
 
 def test_controller_set_theme_level_sets_theme_level_song(flask_client, settings):
+    fake_theme_manager = MagicMock()
+    Registry().register('theme_manager', fake_theme_manager)
     res = flask_client.post('/api/v2/controller/theme-level', json=dict(level='song'))
     assert res.status_code == 204
     assert Registry().get('settings').value('themes/theme level') == 3
+    fake_theme_manager.theme_level_updated.emit.assert_called_once()
 
 
 def test_controller_get_themes_retrieves_themes_list(flask_client, settings):

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2021 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -336,6 +336,8 @@ class UiStrings(metaclass=Singleton):
         """
         self.About = translate('OpenLP.Ui', 'About')
         self.Add = translate('OpenLP.Ui', '&Add')
+        self.AddFolder = translate('OpenLP.Ui', 'Add folder')
+        self.AddFolderDot = translate('OpenLP.Ui', 'Add folder.')
         self.AddGroup = translate('OpenLP.Ui', 'Add group')
         self.AddGroupDot = translate('OpenLP.Ui', 'Add group.')
         self.Advanced = translate('OpenLP.Ui', 'Advanced')
