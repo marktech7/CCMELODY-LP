@@ -98,6 +98,7 @@ def test_start_pdf_presentation(media_mock, media_item):
     mock_item = MagicMock()
     mock_item.processor = 'Pdf'
     mock_item.get_frame_path.return_value = "test.pdf"
+    expected_identifier = mock_item.unique_identifier
     media_item.generate_slide_data = MagicMock()
     ml = MessageListener(media_item)
     ml.media_item = media_item
@@ -108,6 +109,9 @@ def test_start_pdf_presentation(media_mock, media_item):
 
     # THEN: The handler should be set to None
     assert ml.handler is None, 'The handler should be None'
+
+    # THEN: unique_identifier should still be the same.
+    assert mock_item.unique_identifier == expected_identifier, 'unique_identifier should not be changed'
 
 
 def test_add_handler_failure():
