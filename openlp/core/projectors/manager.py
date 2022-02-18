@@ -382,7 +382,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         real_projector = item.data(QtCore.Qt.UserRole)
         projector_name = str(item.text())
         visible = real_projector.link.status_connect >= S_CONNECTED
-        log.debug('({name}) Building menu - visible = {visible}'.format(name=projector_name, visible=visible))
+        log.debug(f'({projector_name}) Building menu - visible = {visible}')
         self.delete_action.setVisible(True)
         self.edit_action.setVisible(True)
         self.connect_action.setVisible(not visible)
@@ -424,7 +424,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                                                         projectordb=self.projectordb,
                                                         edit=edit)
             source = source_select_form.exec(projector.link)
-        log.debug('({ip}) source_select_form() returned {data}'.format(ip=projector.link.ip, data=source))
+        log.debug(f'({projector.link.ip}) source_select_form() returned {source}')
         if source is not None and source > 0:
             projector.link.set_input_source(str(source))
         return
@@ -465,10 +465,10 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         projector = item.data(QtCore.Qt.UserRole)
         if QSOCKET_STATE[projector.link.state()] != S_CONNECTED:
             try:
-                log.debug('ProjectorManager: Calling connect_to_host() on "{ip}"'.format(ip=projector.link.ip))
+                log.debug(f'ProjectorManager: Calling connect_to_host() on "{projector.link.ip}"')
                 projector.link.connect_to_host()
             except Exception:
-                log.debug('ProjectorManager: "{ip}" already connected - skipping'.format(ip=projector.link.ip))
+                log.debug(f'ProjectorManager: "{projector.link.ip}" already connected - skipping')
         return
 
     def on_connect_projector(self, opt=None):
@@ -501,9 +501,9 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         projector = list_item.data(QtCore.Qt.UserRole)
         msg = QtWidgets.QMessageBox()
         msg.setText(translate('OpenLP.ProjectorManager',
-                              'Delete projector ({ip}) {name}?'.format(ip=projector.link.ip,
-                                                                       name=projector.link.name)))
-        msg.setInformativeText(translate('OpenLP.ProjectorManager', 'Are you sure you want to delete this projector?'))
+                              f'Delete projector ({projector.link.ip}) {projector.link.name}?'))
+        msg.setInformativeText(translate('OpenLP.ProjectorManager',
+                                         'Are you sure you want to delete this projector?'))
         msg.setStandardButtons(msg.Cancel | msg.Ok)
         msg.setDefaultButton(msg.Cancel)
         ans = msg.exec()
@@ -541,16 +541,16 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         new_list = []
         for item in self.projector_list:
             if item.link.db_item.id == projector.link.db_item.id:
-                log.debug('Removing projector "{item}"'.format(item=item.link.name))
+                log.debug(f'Removing projector "{item.link.name}"')
                 continue
             new_list.append(item)
         self.projector_list = new_list
         list_item = self.projector_list_widget.takeItem(self.projector_list_widget.currentRow())
         list_item = None
         if not self.projectordb.delete_projector(projector.db_item):
-            log.warning('Delete projector {item} failed'.format(item=projector.db_item))
+            log.warning(f'Delete projector {projector.db_item} failed')
         for item in self.projector_list:
-            log.debug('New projector list - item: {ip} {name}'.format(ip=item.link.ip, name=item.link.name))
+            log.debug(f'New projector list - item: {item.link.ip} {item.link.name}')
         self.udp_listen_delete(old_port)
 
     def on_disconnect_projector(self, opt=None):
@@ -760,7 +760,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         if start:
             item.link.connect_to_host()
         for item in self.projector_list:
-            log.debug('New projector list - item: ({ip}) {name}'.format(ip=item.link.ip, name=item.link.name))
+            log.debug(f'New projector list - item: ({item.link.ip}) {item.link.name}')
 
     @QtCore.pyqtSlot(str)
     def add_projector_from_wizard(self, ip, opts=None):
@@ -770,7 +770,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param ip: IP address of new record item to find
         :param opts: Needed by PyQt5
         """
-        log.debug('add_projector_from_wizard(ip={ip})'.format(ip=ip))
+        log.debug(f'add_projector_from_wizard(ip={ip})')
         item = self.projectordb.get_projector_by_ip(ip)
         self.add_projector(item)
 
@@ -781,7 +781,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
 
         :param projector: Projector() instance of projector with updated information
         """
-        log.debug('edit_projector_from_wizard(ip={ip})'.format(ip=projector.ip))
+        log.debug(f'edit_projector_from_wizard(ip={projector.ip})')
         old_port = self.old_projector.link.port
         old_ip = self.old_projector.link.ip
         self.old_projector.link.name = projector.name
@@ -836,22 +836,22 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                 item = list_item
                 break
         if item is None:
-            log.error('ProjectorManager: Unknown item "{ip}" - not updating status'.format(ip=ip))
+            log.error(f'ProjectorManager: Unknown item "{ip}" - not updating status')
             return
         elif item.status == status:
-            log.debug('ProjectorManager: No status change for "{ip}" - not updating status'.format(ip=ip))
+            log.debug(f'ProjectorManager: No status change for "{ip}" - not updating status')
             return
 
         item.status = status
         item.icon = self.status_icons[status]
-        log.debug('({name}) Updating icon with {code}'.format(name=item.link.name, code=STATUS_CODE[status]))
+        log.debug(f'({item.link.name}) Updating icon with {STATUS_CODE[code]}')
         item.widget.setIcon(item.icon)
         return self.update_icons()
 
     def get_toolbar_item(self, name, enabled=False, hidden=False):
         item = self.one_toolbar.findChild(QtWidgets.QAction, name)
         if item == 0:
-            log.debug('No item found with name "{name}"'.format(name=name))
+            log.debug(f'No item found with name "{name}"')
             return
         item.setVisible(False if hidden else True)
         item.setEnabled(True if enabled else False)
