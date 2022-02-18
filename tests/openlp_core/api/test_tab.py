@@ -22,7 +22,6 @@
 This module contains tests for the lib submodule of the Remotes plugin.
 """
 import hashlib
-from unittest.mock import MagicMock, patch
 import pytest
 import re
 from unittest.mock import MagicMock, patch
@@ -119,12 +118,6 @@ def test_address_revert_button_clicked(api_tab, settings):
 @patch('openlp.core.api.tab.QtWidgets.QMessageBox.information')
 def test_save(mocked_information, api_tab, registry, settings):
     """
-<<<<<<< HEAD
-    Test the save function works
-    """
-    # GIVEN: Some example remote data
-    api_tab.address_edit.setText(settings.value('api/ip address'))
-=======
     Test the save method works correctly
     """
     # GIVEN: Various settings are set on the form and a mocked settings form
@@ -133,7 +126,6 @@ def test_save(mocked_information, api_tab, registry, settings):
     registry.register('settings_form', mocked_settings_form)
     settings.setValue('api/ip address', '0.0.0.0')
     api_tab.address_edit.setText('192.168.1.1')
->>>>>>> master
     api_tab.twelve_hour = True
     api_tab.thumbnails = True
     api_tab.user_login_group_box.setChecked(True)
@@ -142,15 +134,11 @@ def test_save(mocked_information, api_tab, registry, settings):
 
     # WHEN: save is called
     api_tab.save()
-<<<<<<< HEAD
-    # THEN: The text should have been changed to provided values
-=======
 
     # THEN: The text should have been changed to the default value
     mocked_information.assert_called_once_with(api_tab, 'Restart Required',
                                                'This change will only take effect once OpenLP has been restarted.')
     mocked_settings_form.register_post_process.called_once_with('remotes_config_updated')
->>>>>>> master
     assert settings.value('api/twelve hour') is True
     assert settings.value('api/thumbnails') is True
     assert settings.value('api/authentication enabled') is True
@@ -158,21 +146,6 @@ def test_save(mocked_information, api_tab, registry, settings):
     assert settings.value('api/password') == 'user password thing'
 
 
-<<<<<<< HEAD
-@patch('openlp.core.api.tab.QtWidgets.QMessageBox')
-def test_different_ip_save_shows_restart_message(mock_qmessagebox, api_tab, settings):
-    """
-    Test if the "change will only take effect on restart" is presented after IP change.
-    """
-    # GIVEN: The ip address text set to a non default value and a mocked QMessageBox
-    mock_qmessagebox.information = MagicMock()
-    api_tab.address_edit.setText('not the default')
-    api_tab._settings_form = MagicMock()
-    # WHEN: save is called
-    api_tab.save()
-    # THEN: The messagebox should be shown
-    mock_qmessagebox.information.assert_called_once()
-=======
 def test_available_version_property_get_none(api_tab):
     """Test that the available version property is None on init"""
     # GIVEN: An uninitialised API tab
@@ -356,4 +329,3 @@ def test_on_install_button_clicked(mocked_sleep, mocked_download_and_install, Mo
     mocked_download_and_install.assert_called_once_with(mocked_progress)
     assert api_tab.installed_version == '0.9.6'
     assert settings.value('api/download version') == '0.9.6'
->>>>>>> master
