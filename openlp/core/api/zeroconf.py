@@ -95,7 +95,7 @@ class ZeroconfWorker(ThreadWorker):
             if zc is not None:
                 zc.unregister_all_services()
                 zc.close()
-                self.quit.emit()
+            self.quit.emit()
 
     def stop(self):
         """
