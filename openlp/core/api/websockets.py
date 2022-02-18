@@ -113,7 +113,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
                 await self.send_reply(websocket, client_id, reply)
             while True:
                 done, pending = await asyncio.wait(
-                    [queue.get(), websocket.wait_closed()],
+                    [asyncio.create_task(queue.get()), asyncio.create_task(websocket.wait_closed())],
                     return_when=asyncio.FIRST_COMPLETED
                 )
                 for task in pending:
