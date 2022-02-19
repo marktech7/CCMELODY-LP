@@ -79,7 +79,7 @@ def test_bootstrap_initialise_nodb(mock_db, projector_manager_nodb, caplog):
 
 @patch('openlp.core.projectors.manager.ProjectorEditForm')
 @patch('openlp.core.projectors.manager.QtCore.QTimer')
-def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projector_manager_memdb, settings, caplog):
+def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projector_manager, settings, caplog):
     """
     Test post-initialize calls proper setups
     """
@@ -95,15 +95,15 @@ def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projecto
     mocked_edit.return_value = mock_edit
 
     settings.setValue('projector/connect on start', False)
-    projector_manager_memdb.bootstrap_initialise()
+    projector_manager.bootstrap_initialise()
 
-    with patch.multiple(projector_manager_memdb,
+    with patch.multiple(projector_manager,
                         _load_projectors=DEFAULT,
                         projector_list_widget=DEFAULT) as mock_manager:
 
         # WHEN: Call to initialize is run
         caplog.clear()
-        projector_manager_memdb.bootstrap_post_set_up()
+        projector_manager.bootstrap_post_set_up()
 
         # THEN: verify calls and logs
         mock_timer.assert_not_called()
@@ -116,7 +116,7 @@ def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projecto
 
 @patch('openlp.core.projectors.manager.ProjectorEditForm')
 @patch('openlp.core.projectors.manager.QtCore.QTimer')
-def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector_manager_memdb, settings, caplog):
+def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector_manager, settings, caplog):
     """
     Test post-initialize calls proper setups
     """
@@ -131,20 +131,20 @@ def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector
     mock_edit.editProjector = mock_editProjector
 
     settings.setValue('projector/connect on start', True)
-    projector_manager_memdb.bootstrap_initialise()
+    projector_manager.bootstrap_initialise()
 
-    with patch.multiple(projector_manager_memdb,
+    with patch.multiple(projector_manager,
                         _load_projectors=DEFAULT,
                         projector_list_widget=DEFAULT) as mock_manager:
         mocked_edit.return_value = mock_edit
 
         # WHEN: Call to initialize is run
         caplog.clear()
-        projector_manager_memdb.bootstrap_post_set_up()
+        projector_manager.bootstrap_post_set_up()
 
         # THEN: verify calls and logs
         mock_timer.assert_called_once()
-        mock_timer.return_value.singleShot.assert_called_once_with(1500, projector_manager_memdb._load_projectors)
+        mock_timer.return_value.singleShot.assert_called_once_with(1500, projector_manager._load_projectors)
 
         mock_newProjector.connect.assert_called_once()
         mock_editProjector.connect.assert_called_once()

@@ -62,17 +62,6 @@ def projector_manager_nodb(settings):
 
 
 @pytest.fixture()
-def projector_manager_memdb(settings):
-    with patch('openlp.core.lib.db.init_url') as mock_url:
-        mock_url.return_value = 'sqlite://'
-        proj_db = ProjectorDB()
-        proj_manager = ProjectorManager(projectordb=proj_db)
-        yield proj_manager
-        proj_db.session.close()
-        del proj_manager, proj_db
-
-
-@pytest.fixture()
 def pjlink():
     pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
     yield pj_link

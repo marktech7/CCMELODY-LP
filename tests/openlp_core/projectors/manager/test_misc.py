@@ -29,36 +29,35 @@ from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
 
 
-def test_on_edit_input(projector_manager_memdb):
+def test_on_edit_input(projector_manager):
     """
     Test calling edit from input selection
     """
     # GIVEN: Test environment
-    with patch.object(projector_manager_memdb, 'on_select_input') as mock_edit:
+    with patch.object(projector_manager, 'on_select_input') as mock_edit:
 
         # WHEN: Called
-        projector_manager_memdb.on_edit_input()
+        projector_manager.on_edit_input()
 
         # THEN: select input called with edit option
         mock_edit.assert_called_with(opt=None, edit=True)
 
 
-def test_on_add_projector(projector_manager_memdb):
+def test_on_add_projector(projector_manager):
     # GIVEN: Test environment
-    projector_manager_memdb.bootstrap_initialise()
-    projector_manager_memdb.bootstrap_post_set_up()
+    projector_manager.bootstrap_initialise()
+    projector_manager.bootstrap_post_set_up()
 
-    with patch.object(projector_manager_memdb, 'projector_form') as mock_form:
+    with patch.object(projector_manager, 'projector_form') as mock_form:
 
         # WHEN called
-        projector_manager_memdb.on_add_projector()
+        projector_manager.on_add_projector()
 
         # THEN: projector form called
         mock_form.exec.assert_called_once()
 
 
-def test_add_projector_from_wizard(projector_manager_memdb):
-    projector_manager = projector_manager_memdb
+def test_add_projector_from_wizard(projector_manager):
 
     # GIVEN: Test environment
     with patch.multiple(projector_manager,
