@@ -63,15 +63,13 @@ def projector_manager_nodb(settings):
 
 @pytest.fixture()
 def projector_manager_memdb(settings):
-    with patch('openlp.core.projectors.db.init_url') as mocked_init_url, \
-         patch('openlp.core.lib.db.upgrade_db') as mocked_upgrade:
-        mocked_init_url.return_value = 'sqlite://'
-        mocked_upgrade.return_value = (2, 2)
-        projectordb = ProjectorDB()
-        proj_manager = ProjectorManager(projectordb=projectordb)
+    with patch('openlp.core.lib.db.init_url') as mock_url:
+        mock_url.return_value = 'sqlite://'
+        proj_db = ProjectorDB()
+        proj_manager = ProjectorManager(projectordb=proj_db)
         yield proj_manager
-        projectordb.session.close()
-        del proj_manager
+        proj_db.session.close()
+        del proj_manager, proj_db
 
 
 @pytest.fixture()

@@ -844,7 +844,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
 
         item.status = status
         item.icon = self.status_icons[status]
-        log.debug(f'({item.link.name}) Updating icon with {STATUS_CODE[code]}')
+        log.debug(f'({item.link.name}) Updating icon with {STATUS_CODE[status]}')
         item.widget.setIcon(item.icon)
         return self.update_icons()
 
