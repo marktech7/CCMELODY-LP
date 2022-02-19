@@ -79,8 +79,9 @@ class ZeroconfWorker(ThreadWorker):
                                 addresses=addresses, port=self.http_port, properties={})
         ws_info = ServiceInfo('_ws._tcp.local.', 'OpenLP._ws._tcp.local.',
                               addresses=addresses, port=self.ws_port, properties={})
-        zc = Zeroconf()
+        zc = None
         try:
+            zc = Zeroconf()
             zc.register_service(http_info)
             zc.register_service(ws_info)
             self._can_run = True
@@ -88,9 +89,12 @@ class ZeroconfWorker(ThreadWorker):
                 sleep(0.1)
         except Error as e:
             self.error.emit('Cannot start Zeroconf service', _get_error_message(e))
+        except OSError as e:
+            self.error.emit('Cannot start Zeroconf service', str(e))
         finally:
-            zc.unregister_all_services()
-            zc.close()
+            if zc is not None:
+                zc.unregister_all_services()
+                zc.close()
             self.quit.emit()
 
     def stop(self):
