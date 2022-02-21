@@ -253,7 +253,6 @@ class ProjectorDB(Manager):
         Declarative uses table classes to define schema.
         """
         self.db_url = init_url('projector')
-        print(self.db_url)
         session, metadata = init_db(self.db_url, base=Base)
         metadata.create_all(checkfirst=True)
         return session

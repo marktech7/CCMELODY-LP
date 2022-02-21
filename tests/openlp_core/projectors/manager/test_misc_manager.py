@@ -21,12 +21,11 @@
 """
 Test misc. functions with few test paths
 """
-
 from unittest.mock import DEFAULT, patch
 
 from openlp.core.projectors.db import Projector
 
-from tests.resources.projector.data import TEST1_DATA
+from tests.resources.projector.data import TEST1_DATA, TEST2_DATA, TEST3_DATA
 
 
 def test_on_edit_input(projector_manager):
@@ -45,8 +44,14 @@ def test_on_edit_input(projector_manager):
 
 def test_on_add_projector(projector_manager):
     # GIVEN: Test environment
-    projector_manager.bootstrap_initialise()
-    projector_manager.bootstrap_post_set_up()
+    # Mock to keep from getting event not registered error in Registry()
+    with patch.multiple(projector_manager,
+                        udp_listen_add=DEFAULT,
+                        udp_listen_delete=DEFAULT) as mock_manager:
+        # Satisfy Flake8 linting
+        mock_manager['udp_listen_add'].return_value = None
+        projector_manager.bootstrap_initialise()
+        projector_manager.bootstrap_post_set_up()
 
     with patch.object(projector_manager, 'projector_form') as mock_form:
 
@@ -58,7 +63,6 @@ def test_on_add_projector(projector_manager):
 
 
 def test_add_projector_from_wizard(projector_manager):
-
     # GIVEN: Test environment
     with patch.multiple(projector_manager,
                         projectordb=DEFAULT,
@@ -72,3 +76,35 @@ def test_add_projector_from_wizard(projector_manager):
 
         # THEN: appropriate calls made
         mock_manager['add_projector'].assert_called_with(t_item)
+
+
+def test_get_projector_list(projector_manager_mtdb, settings):
+    # GIVEN: Test environment
+    t_db = projector_manager_mtdb.projectordb  # Shortcut helper
+    for itm in (TEST1_DATA, TEST2_DATA, TEST3_DATA):
+        t_db.add_projector(Projector(**itm))
+    t_list = t_db.get_projector_all()
+
+    # Mock to keep from getting event not registered error in Registry()
+    with patch.multiple(projector_manager_mtdb,
+                        udp_listen_add=DEFAULT,
+                        udp_listen_delete=DEFAULT) as mock_manager:
+        # Satisfy Flake8 linting
+        mock_manager['udp_listen_add'].return_value = None
+        projector_manager_mtdb.bootstrap_initialise()
+        projector_manager_mtdb.bootstrap_post_set_up()
+
+    # WHEN: Called
+    t_chk = projector_manager_mtdb.get_projector_list()
+
+    # THEN: DB items for both t_list and projector_list are the same
+    assert len(t_chk) == len(t_list), 'projector_list length mismatch with test items length'
+
+    # Isolate the DB entries used to create projector_manager.projector_list
+    # This check assumes (!) that t_list and projector_list items are both
+    #   populated in the same sequence as the ProjectorDB.get_projector_all() method
+    #   retrieves the records.
+    t_chk_list = []
+    for dbitem in t_chk:
+        t_chk_list.append(dbitem.db_item)
+    assert t_list == t_chk_list, 'projector_list DB items do not match test items'
