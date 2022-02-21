@@ -28,9 +28,48 @@ from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA, TEST2_DATA, TEST3_DATA
 
 
+def test_private_load_projectors(projector_manager_mtdb):
+    """
+    Test that _load_projectors() retrieves all entries from projector database
+    """
+    # GIVEN: Test environment
+    t_db = projector_manager_mtdb.projectordb  # Shortcut helper
+    for itm in (TEST1_DATA, TEST2_DATA, TEST3_DATA):
+        t_db.add_projector(Projector(**itm))
+    t_db.session.commit()
+
+    t_list = t_db.get_projector_all()
+
+    # Mock to keep from getting event not registered error in Registry()
+    # during bootstrap_post_set_up()
+    # Although we're testing _load_projectors, need to mock
+    # it first to get past bootstrap_post_set_up() before test
+    with patch.multiple(projector_manager_mtdb,
+                        udp_listen_add=DEFAULT,
+                        udp_listen_delete=DEFAULT,
+                        _load_projectors=DEFAULT) as mock_manager:
+        # Satisfy Flake8 linting
+        mock_manager['udp_listen_add'].return_value = None
+        projector_manager_mtdb.bootstrap_initialise()
+        projector_manager_mtdb.bootstrap_post_set_up()
+
+    # WHEN: Called
+    projector_manager_mtdb._load_projectors()
+
+    assert len(projector_manager_mtdb.projector_list) == len(t_list), \
+        'Invalid number of entries between check and list'
+
+    # Isolate the DB entries used to create projector_manager.projector_list
+    t_chk = []
+    for dbitem in projector_manager_mtdb.projector_list:
+        t_chk.append(dbitem.db_item)
+
+    assert t_chk == t_list, 'projector_list DB items do not match test items'
+
+
 def test_on_edit_input(projector_manager):
     """
-    Test calling edit from input selection
+    Test calling edit projector input GUI from input selection icon makes appropriate calls
     """
     # GIVEN: Test environment
     with patch.object(projector_manager, 'on_select_input') as mock_edit:
@@ -43,8 +82,12 @@ def test_on_edit_input(projector_manager):
 
 
 def test_on_add_projector(projector_manager):
+    """
+    Test add new projector edit GUI is called properly
+    """
     # GIVEN: Test environment
     # Mock to keep from getting event not registered error in Registry()
+    # during bootstrap_post_set_up()
     with patch.multiple(projector_manager,
                         udp_listen_add=DEFAULT,
                         udp_listen_delete=DEFAULT) as mock_manager:
@@ -63,6 +106,9 @@ def test_on_add_projector(projector_manager):
 
 
 def test_add_projector_from_wizard(projector_manager):
+    """
+    Test when add projector from GUI, appropriate method is called correctly
+    """
     # GIVEN: Test environment
     with patch.multiple(projector_manager,
                         projectordb=DEFAULT,
@@ -78,7 +124,10 @@ def test_add_projector_from_wizard(projector_manager):
         mock_manager['add_projector'].assert_called_with(t_item)
 
 
-def test_get_projector_list(projector_manager_mtdb, settings):
+def test_get_projector_list(projector_manager_mtdb):
+    """
+    Test get_projector_list() returns valid entries
+    """
     # GIVEN: Test environment
     t_db = projector_manager_mtdb.projectordb  # Shortcut helper
     for itm in (TEST1_DATA, TEST2_DATA, TEST3_DATA):
@@ -86,6 +135,7 @@ def test_get_projector_list(projector_manager_mtdb, settings):
     t_list = t_db.get_projector_all()
 
     # Mock to keep from getting event not registered error in Registry()
+    # during bootstrap_post_set_up()
     with patch.multiple(projector_manager_mtdb,
                         udp_listen_add=DEFAULT,
                         udp_listen_delete=DEFAULT) as mock_manager:
@@ -101,9 +151,6 @@ def test_get_projector_list(projector_manager_mtdb, settings):
     assert len(t_chk) == len(t_list), 'projector_list length mismatch with test items length'
 
     # Isolate the DB entries used to create projector_manager.projector_list
-    # This check assumes (!) that t_list and projector_list items are both
-    #   populated in the same sequence as the ProjectorDB.get_projector_all() method
-    #   retrieves the records.
     t_chk_list = []
     for dbitem in t_chk:
         t_chk_list.append(dbitem.db_item)
