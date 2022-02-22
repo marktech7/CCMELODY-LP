@@ -28,6 +28,7 @@ import sys
 import threading
 from datetime import datetime
 from time import sleep
+import vlc
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -40,37 +41,17 @@ from openlp.core.ui.media.mediaplayer import MediaPlayer
 
 log = logging.getLogger(__name__)
 
-# Audio and video extensions copied from 'include/vlc_interface.h' from vlc 2.2.0 source
-
-
-def get_vlc():
-    """
-    In order to make this module more testable, we have to wrap the VLC import inside a method. We do this so that we
-    can mock out the VLC module entirely.
-
-    :return: The "vlc" module, or None
-    """
-    # Import the VLC module if not already done
-    if 'vlc' not in sys.modules:
-        try:
-            import vlc  # noqa module is not used directly, but is used via sys.modules['vlc']
-        except (ImportError, OSError):
-            return None
-    # Verify that VLC is also loadable
-    is_vlc_available = False
-    try:
-        is_vlc_available = bool(sys.modules['vlc'].get_default_instance())
-    except Exception:
-        pass
-    if is_vlc_available:
-        return sys.modules['vlc']
-    return None
+IS_VLC_AVAILABLE = False
+try:
+    IS_VLC_AVAILABLE = bool(sys.modules['vlc'].get_default_instance())
+except Exception:
+    pass
 
 
 # On linux we need to initialise X threads, but not when running tests.
 # This needs to happen on module load and not in get_vlc(), otherwise it can cause crashes on some DE on some setups
 # (reported on Gnome3, Unity, Cinnamon, all GTK+ based) when using native filedialogs...
-if is_linux() and 'pytest' not in sys.argv[0] and get_vlc():
+if is_linux() and 'pytest' not in sys.argv[0] and IS_VLC_AVAILABLE:
     try:
         try:
             x11 = ctypes.cdll.LoadLibrary('libX11.so.6')
@@ -91,11 +72,24 @@ class VlcPlayer(MediaPlayer):
         """
         Constructor
         """
-        super(VlcPlayer, self).__init__(parent, 'vlc')
-        self.original_name = 'VLC'
-        self.display_name = '&VLC'
+        super(VlcPlayer, self).__init__(parent)
         self.parent = parent
         self.can_folder = True
+
+    def state_changed(self, args, controller):
+        print("\nstate changed")
+        print(args)
+
+    @staticmethod
+    def pos_callback(event, controller):
+        """
+        Update the time the media has been [playing
+        :param event: The VLC Event
+        :param controller: The controller running the event.
+        :return:
+        """
+        controller.media_info.timer = controller.vlc_media_player.get_time()
+        controller.media_controller.tick(controller)
 
     def setup(self, controller, display):
         """
@@ -105,7 +99,6 @@ class VlcPlayer(MediaPlayer):
         :param display: The display where the media is.
         :return:
         """
-        vlc = get_vlc()
         if controller.is_live:
             controller.vlc_widget = QtWidgets.QFrame()
             controller.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool |
@@ -137,6 +130,9 @@ class VlcPlayer(MediaPlayer):
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
         controller.vlc_widget.resize(controller.size())
         controller.vlc_widget.hide()
+        controller.vlc_events = controller.vlc_media_player.event_manager()
+        controller.vlc_events.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.pos_callback, controller)
+
         # The media player has to be 'connected' to the QFrame.
         # (otherwise a video would be displayed in it's own window)
         # This is platform specific!
@@ -158,7 +154,8 @@ class VlcPlayer(MediaPlayer):
         """
         Return the availability of VLC
         """
-        return get_vlc() is not None
+
+        return IS_VLC_AVAILABLE
 
     def load(self, controller, output_display, file):
         """
@@ -171,7 +168,6 @@ class VlcPlayer(MediaPlayer):
         """
         if not controller.vlc_instance:
             return False
-        vlc = get_vlc()
         log.debug('load video in VLC Controller')
         path = None
         if file and not controller.media_info.media_type == MediaType.Stream:
@@ -221,6 +217,11 @@ class VlcPlayer(MediaPlayer):
         else:
             controller.vlc_media = controller.vlc_instance.media_new_path(path)
             controller.vlc_media_player.set_media(controller.vlc_media)
+            controller.vlc_media_event_manager = controller.vlc_media.event_manager()
+            controller.vlc_media_event_manager.event_attach(vlc.EventType.MediaStateChanged, self.state_changed,
+                                                            controller)
+            controller.vlc_media_event_manager.event_attach(vlc.EventType.MediaParsedChanged, self.state_changed,
+                                                            controller)
             controller.media_info.start_time = 0
             controller.media_info.end_time = controller.media_info.length
         # parse the metadata of the file
@@ -239,7 +240,6 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller where the media is
         :return:
         """
-        vlc = get_vlc()
         start = datetime.now()
         while media_state != controller.vlc_media.get_state():
             sleep(0.1)
@@ -270,9 +270,11 @@ class VlcPlayer(MediaPlayer):
         :param output_display: The display where the media is
         :return:
         """
-        vlc = get_vlc()
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
         threading.Thread(target=controller.vlc_media_player.play).start()
+        controller.vlc_media_player_event_manager = controller.vlc_media_player.event_manager()
+        controller.vlc_media_player_event_manager.event_attach(vlc.EventType.MediaStateChanged, self.state_changed)
+        controller.vlc_media_player_event_manager.event_attach(vlc.EventType.MediaParsedChanged, self.state_changed)
         if not self.media_state_wait(controller, vlc.State.Playing):
             return False
         self.volume(controller, controller.media_info.volume)
@@ -286,7 +288,6 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller which is managing the display
         :return:
         """
-        vlc = get_vlc()
         if controller.vlc_media.get_state() != vlc.State.Playing:
             return
         controller.vlc_media_player.pause()

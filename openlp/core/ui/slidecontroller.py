@@ -789,7 +789,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.play_slides_loop.setIcon(UiIcons().loop)
         self.play_slides_loop.setText(UiStrings().PlaySlidesInLoop)
         if item.is_text():
-            if (self.settings.value('songs/display songbar') and not self.song_menu.menu().isEmpty()):
+            if self.settings.value('songs/display songbar') and not self.song_menu.menu().isEmpty():
                 self.toolbar.set_widget_visible('song_menu', True)
         if item.is_capable(ItemCapabilities.CanLoop) and len(item.slides) > 1:
             self.toolbar.set_widget_visible(LOOP_LIST)
