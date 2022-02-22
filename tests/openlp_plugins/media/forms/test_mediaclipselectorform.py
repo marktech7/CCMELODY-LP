@@ -28,11 +28,11 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtTest, QtWidgets
 
-from openlp.core.ui.media.vlcplayer import get_vlc
+from openlp.core.ui.media.vlcplayer import IS_VLC_AVAILABLE
 from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
 
 
-if os.name == 'nt' and not get_vlc():
+if os.name == 'nt' and not IS_VLC_AVAILABLE:
     raise SkipTest('Windows without VLC, skipping this test since it cannot run without vlc')
 
 
