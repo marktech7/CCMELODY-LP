@@ -581,7 +581,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         print("triggered stop")
         self.log_debug(f'media_stop is_live:{controller.is_live}')
         if controller.controller_type in self.current_media_players:
-            # self.current_media_players[controller.controller_type].stop(controller)
+            self.current_media_players[controller.controller_type].stop(controller)
             if controller.is_live:
                 self.live_hide_timer.start(HIDE_DELAY_TIME)
                 if not controller.media_info.is_background:

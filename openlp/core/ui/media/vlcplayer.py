@@ -231,9 +231,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_media_events.event_attach(vlc.EventType.MediaPlayerStopped, self.state_changed, 1)
             controller.vlc_media_events.event_attach(vlc.EventType.MediaPlayerEndReached, self.song_finished, 1)
             controller.vlc_media_events.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.pos_callback,
-                                               controller.vlc_media_player)
-
-
+                                                     controller.vlc_media_player)
             controller.media_info.start_time = 0
             controller.media_info.end_time = controller.media_info.length
         # parse the metadata of the file
