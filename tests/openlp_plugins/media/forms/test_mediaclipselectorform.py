@@ -39,7 +39,7 @@ if os.name == 'nt' and not IS_VLC_AVAILABLE:
 @pytest.fixture()
 def form(settings):
     main_window = QtWidgets.QMainWindow()
-    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
+    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.vlc')
     vlc_patcher.start()
     timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
     timer_patcher.start()
