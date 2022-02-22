@@ -28,18 +28,18 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtTest, QtWidgets
 
-from openlp.core.ui.media.vlcplayer import get_vlc
+from openlp.core.ui.media.vlcplayer import IS_VLC_AVAILABLE
 from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
 
 
-if os.name == 'nt' and not get_vlc():
+if os.name == 'nt' and not IS_VLC_AVAILABLE:
     raise SkipTest('Windows without VLC, skipping this test since it cannot run without vlc')
 
 
 @pytest.fixture()
 def form(settings):
     main_window = QtWidgets.QMainWindow()
-    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.get_vlc')
+    vlc_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.vlc')
     vlc_patcher.start()
     timer_patcher = patch('openlp.plugins.media.forms.mediaclipselectorform.QtCore.QTimer')
     timer_patcher.start()

@@ -33,9 +33,9 @@ from openlp.core.ui.media import VIDEO_EXT
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.labels import FormLabel
-from openlp.core.ui.media.vlcplayer import get_vlc
+from openlp.core.ui.media.vlcplayer import IS_VLC_AVAILABLE
 
-if get_vlc() is not None:
+if IS_VLC_AVAILABLE is not None:
     from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
     from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
 
@@ -219,7 +219,7 @@ class BackgroundPage(GridLayoutPage):
         """
         Open the Stream selection form.
         """
-        if get_vlc():
+        if IS_VLC_AVAILABLE:
             stream_selector_form = StreamSelectorForm(self, self.set_stream, True)
             # prefill in the form any device stream already defined
             if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("devicestream"):
@@ -234,7 +234,7 @@ class BackgroundPage(GridLayoutPage):
         """
         Open the Stream selection form.
         """
-        if get_vlc():
+        if IS_VLC_AVAILABLE:
             stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
             # prefill in the form any network stream already defined
             if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("networkstream"):

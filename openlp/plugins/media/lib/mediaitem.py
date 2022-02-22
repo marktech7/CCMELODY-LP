@@ -38,11 +38,11 @@ from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
 from openlp.core.ui.media import parse_optical_path, parse_stream_path, format_milliseconds, AUDIO_EXT, VIDEO_EXT
-from openlp.core.ui.media.vlcplayer import get_vlc
+from openlp.core.ui.media.vlcplayer import IS_VLC_AVAILABLE
 
 from openlp.plugins.media.lib.db import Folder, Item
 
-if get_vlc() is not None:
+if IS_VLC_AVAILABLE is not None:
     from openlp.plugins.media.forms.mediaclipselectorform import MediaClipSelectorForm
     from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
     from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
@@ -365,7 +365,7 @@ class MediaMediaItem(FolderLibraryItem):
         """
         When the load optical button is clicked, open the clip selector window.
         """
-        if get_vlc():
+        if IS_VLC_AVAILABLE:
             media_clip_selector_form = MediaClipSelectorForm(self, self.main_window, None)
             media_clip_selector_form.exec()
             del media_clip_selector_form
@@ -385,7 +385,7 @@ class MediaMediaItem(FolderLibraryItem):
         """
         When the open device stream button is clicked, open the stream selector window.
         """
-        if get_vlc():
+        if IS_VLC_AVAILABLE:
             stream_selector_form = StreamSelectorForm(self.main_window, self.add_device_stream)
             stream_selector_form.exec()
             del stream_selector_form
@@ -405,7 +405,7 @@ class MediaMediaItem(FolderLibraryItem):
         """
         When the open network stream button is clicked, open the stream selector window.
         """
-        if get_vlc():
+        if IS_VLC_AVAILABLE:
             stream_selector_form = NetworkStreamSelectorForm(self.main_window, self.add_network_stream)
             stream_selector_form.exec()
             del stream_selector_form

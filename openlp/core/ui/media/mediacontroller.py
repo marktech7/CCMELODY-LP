@@ -42,7 +42,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path
 from openlp.core.ui.media.remote import register_views
-from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
+from openlp.core.ui.media.vlcplayer import VlcPlayer
 
 
 log = logging.getLogger(__name__)
@@ -101,7 +101,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.vlc_player = VlcPlayer(self)
         State().add_service('mediacontroller', 0)
         State().add_service('media_live', 0)
-        has_vlc = get_vlc()
+        has_vlc = self.vlc_player.check_available()
         if has_vlc and pymediainfo_available:
             State().update_pre_conditions('mediacontroller', True)
             State().update_pre_conditions('media_live', True)
@@ -578,6 +578,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param controller: The controller that needs to be stopped
         """
+        print("triggered stop")
         self.log_debug(f'media_stop is_live:{controller.is_live}')
         if controller.controller_type in self.current_media_players:
             self.current_media_players[controller.controller_type].stop(controller)
