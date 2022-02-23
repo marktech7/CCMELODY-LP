@@ -240,3 +240,53 @@ def test_receive_data_signal(pjlink):
         # THEN: Appropriate calls and settings
         assert pjlink.send_busy is False, 'Did not clear send_busy'
         mock_receive.emit.assert_called_once()
+
+
+def test_status_timer_update_two_callbacks(pjlink, caplog):
+    """
+    Test status_timer_update calls status_timer.stop when no updates listed
+    """
+    # GIVEN: Test setup
+    t_cb1 = MagicMock()
+    t_cb2 = MagicMock()
+
+    pjlink.status_timer_checks = {'ONE': t_cb1,
+                                  'TWO': t_cb2}
+
+    caplog.set_level(logging.DEBUG)
+    logs = [(test_module, logging.DEBUG, f'({pjlink.entry.name}) Status update call for ONE'),
+            (test_module, logging.DEBUG, f'({pjlink.entry.name}) Status update call for TWO')]
+
+    with patch.object(pjlink, 'status_timer') as mock_timer:
+
+        # WHEN: Called
+        caplog.clear()
+        pjlink.status_timer_update()
+
+        # THEN: Returns with timer stop called
+        assert caplog.record_tuples == logs, 'Invalid log entries'
+        mock_timer.stop.assert_not_called()
+        t_cb1.assert_called_once_with(priority=True)
+        t_cb2.assert_called_once_with(priority=True)
+
+
+def test_status_timer_update_empty(pjlink, caplog):
+    """
+    Test status_timer_update calls status_timer.stop when no updates listed
+    """
+    # GIVEN: Test setup
+    pjlink.status_timer_checks = {}
+
+    caplog.set_level(logging.DEBUG)
+    logs = [(test_module, logging.WARNING,
+             f'({pjlink.entry.name}) status_timer_update() called when no callbacks - Race condition?')]
+
+    with patch.object(pjlink, 'status_timer') as mock_timer:
+
+        # WHEN: Called
+        caplog.clear()
+        pjlink.status_timer_update()
+
+        # THEN: Returns with timer stop called
+        assert caplog.record_tuples == logs, 'Invalid log entries'
+        mock_timer.stop.assert_called_once()
