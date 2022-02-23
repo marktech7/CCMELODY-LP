@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -159,6 +159,7 @@ class Settings(QtCore.QSettings):
         'advanced/default service hour': 11,
         'advanced/default service minute': 0,
         'advanced/default service name': 'Service %Y-%m-%d %H-%M',
+        'advanced/delete service item confirmation': False,
         'advanced/display size': 0,
         'advanced/double click live': False,
         'advanced/enable exit confirmation': True,
@@ -345,7 +346,6 @@ class Settings(QtCore.QSettings):
         'songs/warn about missing song key': True,
         'songs/chord notation': 'english',  # Can be english, german or neo-latin
         'songs/disable chords import': False,
-        'songs/auto play audio': False,
         'songusage/status': PluginStatus.Inactive,
         'songusage/db type': 'sqlite',
         'songusage/db username': '',

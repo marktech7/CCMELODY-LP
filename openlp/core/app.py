@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -308,13 +308,15 @@ def set_up_logging(log_path):
     logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
-    print(f'Logging to: {file_path} and level {log.level}')
+    if log.isEnabledFor(logging.DEBUG):
+        print('Logging to: {name}'.format(name=file_path))
 
 
 def main():
     """
     The main function which parses command line options and then runs
     """
+    log.debug('Entering function - main')
     args = parse_options()
     qt_args = ['--disable-web-security']
     # qt_args = []
@@ -383,7 +385,6 @@ def main():
     Registry.create()
     settings = Settings()
     Registry().register('settings', settings)
-    log.info(f'Arguments passed {args}')
     # Need settings object for the threads.
     settings_thread = Settings()
     Registry().register('settings_thread', settings_thread)

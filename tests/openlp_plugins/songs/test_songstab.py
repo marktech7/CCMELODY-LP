@@ -91,7 +91,6 @@ def test_save_check_box_settings(form):
     form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
     form.on_songbook_slide_check_box_changed(QtCore.Qt.Unchecked)
     form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
-    form.on_auto_play_check_box_changed(QtCore.Qt.Checked)
     # WHEN: Save is invoked
     form.save()
     # THEN: The correct values should be stored in the settings
@@ -101,7 +100,6 @@ def test_save_check_box_settings(form):
     assert form.settings.value('songs/add song from service') is True
     assert form.settings.value('songs/add songbook slide') is False
     assert form.settings.value('songs/disable chords import') is False
-    assert form.settings.value('songs/auto play audio') is True
 
 
 def test_english_notation_button(form):

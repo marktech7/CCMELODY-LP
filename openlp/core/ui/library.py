@@ -30,8 +30,7 @@ from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.lib import check_item_selected
 from openlp.core.lib.mediamanageritem import MediaManagerItem
-from openlp.core.lib.plugin import StringContent
-from openlp.core.lib.ui import create_widget_action, critical_error_message_box
+from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.folders import AddFolderForm, ChooseFolderForm
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.views import TreeWidgetWithDnD
@@ -72,22 +71,6 @@ class FolderLibraryItem(MediaManagerItem):
         """
         self.add_folder_action.setText(UiStrings().AddFolder)
         self.add_folder_action.setToolTip(UiStrings().AddFolderDot)
-
-    def create_item_from_id(self, item_id):
-        """
-        Create a media item from an item id.
-
-        :param item_id: Id to make live
-        """
-        Item = self.item_class
-        if isinstance(item_id, (str, Path)):
-            # Probably a file name
-            item_data = self.manager.get_object_filtered(Item, Item.file_path == str(item_id))
-        else:
-            item_data = item_id
-        item = QtWidgets.QTreeWidgetItem()
-        item.setData(0, QtCore.Qt.UserRole, item_data)
-        return item
 
     def on_add_folder_click(self):
         """
@@ -161,62 +144,6 @@ class FolderLibraryItem(MediaManagerItem):
         self.page_layout.addWidget(self.list_view)
         # define and add the context menu
         self.list_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        if self.has_edit_icon:
-            create_widget_action(
-                self.list_view,
-                text=self.plugin.get_string(StringContent.Edit)['title'],
-                icon=UiIcons().edit,
-                triggers=self.on_edit_click)
-            create_widget_action(self.list_view, separator=True)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{preview}Item'.format(name=self.plugin.name.title(), preview=StringContent.Preview.title()),
-            text=self.plugin.get_string(StringContent.Preview)['title'],
-            icon=UiIcons().preview,
-            can_shortcuts=True,
-            triggers=self.on_preview_click)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{live}Item'.format(name=self.plugin.name.title(), live=StringContent.Live.title()),
-            text=self.plugin.get_string(StringContent.Live)['title'],
-            icon=UiIcons().live,
-            can_shortcuts=True,
-            triggers=self.on_live_click)
-        create_widget_action(
-            self.list_view,
-            'listView{name}{service}Item'.format(name=self.plugin.name.title(), service=StringContent.Service.title()),
-            can_shortcuts=True,
-            text=self.plugin.get_string(StringContent.Service)['title'],
-            icon=UiIcons().add,
-            triggers=self.on_add_click)
-        if self.add_to_service_item:
-            create_widget_action(self.list_view, separator=True)
-            create_widget_action(
-                self.list_view,
-                text=translate('OpenLP.MediaManagerItem', '&Add to selected Service Item'),
-                icon=UiIcons().add,
-                triggers=self.on_add_edit_click)
-            create_widget_action(self.list_view, separator=True)
-        if self.has_delete_icon:
-            create_widget_action(
-                self.list_view,
-                'listView{name}{delete}Item'.format(name=self.plugin.name.title(), delete=StringContent.Delete.title()),
-                text=self.plugin.get_string(StringContent.Delete)['title'],
-                icon=UiIcons().delete,
-                can_shortcuts=True, triggers=self.on_delete_click)
-        self.add_custom_context_actions()
-        # Create the context menu and add all actions from the list_view.
-        self.menu = QtWidgets.QMenu()
-        self.menu.addActions(self.list_view.actions())
-        self.list_view.doubleClicked.connect(self.on_double_clicked)
-        self.list_view.itemSelectionChanged.connect(self.on_selection_change)
-        self.list_view.customContextMenuRequested.connect(self.context_menu)
-
-    def add_custom_context_actions(self):
-        """
-        Override this method to add custom context actions
-        """
-        pass
 
     def add_middle_header_bar(self):
         """
@@ -371,7 +298,7 @@ class FolderLibraryItem(MediaManagerItem):
         :return: The search result.
         """
         string = string.lower()
-        items = self.manager.get_all_objects(self.item_class, self.item_class.file_path.ilike('%' + string + '%'))
+        items = self.manager.get_all_objects(self.item_class, self.item_class.file_path.match(string))
         return [self.format_search_result(item) for item in items]
 
     def validate_and_load(self, file_paths, target_folder=None):

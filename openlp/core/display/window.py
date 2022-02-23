@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ import re
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
-from openlp.core.common import is_win, is_macosx
+from openlp.core.common import is_win
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
@@ -84,8 +84,6 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
-        if is_macosx():
-            self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
         # Need to import this inline to get around a QtWebEngine issue
         from openlp.core.display.webengine import WebEngineView
         self._is_initialised = False

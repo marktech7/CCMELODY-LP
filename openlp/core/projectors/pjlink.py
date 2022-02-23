@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -73,7 +73,7 @@ SocketSTate = QtNetwork.QAbstractSocket.SocketState
 
 # Add prefix here, but defer linkclass expansion until later when we have the actual
 # PJLink class for the command
-PJLINK_HEADER = f'{PJLINK_PREFIX}{{linkclass}}'
+PJLINK_HEADER = '{prefix}{{linkclass}}'.format(prefix=PJLINK_PREFIX)
 
 
 class PJLinkUDP(QtNetwork.QUdpSocket):

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2021 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -186,12 +186,12 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         pixmap.fill(QtCore.Qt.white)
         paint = QtGui.QPainter(pixmap)
         paint.setPen(QtGui.QPen(QtCore.Qt.blue, 2))
-        main_rect = QtCore.QRect(int(self.theme.font_main_x), int(self.theme.font_main_y),
-                                 int(self.theme.font_main_width - 1), int(self.theme.font_main_height - 1))
+        main_rect = QtCore.QRect(self.theme.font_main_x, self.theme.font_main_y,
+                                 self.theme.font_main_width - 1, self.theme.font_main_height - 1)
         paint.drawRect(main_rect)
         paint.setPen(QtGui.QPen(QtCore.Qt.red, 2))
-        footer_rect = QtCore.QRect(int(self.theme.font_footer_x), int(self.theme.font_footer_y),
-                                   int(self.theme.font_footer_width - 1), int(self.theme.font_footer_height - 1))
+        footer_rect = QtCore.QRect(self.theme.font_footer_x, self.theme.font_footer_y,
+                                   self.theme.font_footer_width - 1, self.theme.font_footer_height - 1)
         paint.drawRect(footer_rect)
         paint.end()
         self.theme_layout_form.exec(pixmap)
@@ -372,12 +372,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_main_color = self.main_area_page.font_color
         self.theme.font_main_size = self.main_area_page.font_size
         self.theme.font_main_line_adjustment = self.main_area_page.line_spacing
-        self.theme.font_main_outline = self.main_area_page.is_outline_enabled
-        self.theme.font_main_outline_color = self.main_area_page.outline_color
         self.theme.font_main_outline_size = self.main_area_page.outline_size
-        self.theme.font_main_shadow = self.main_area_page.is_shadow_enabled
         self.theme.font_main_shadow_size = self.main_area_page.shadow_size
-        self.main_area_page.shadow_color = self.theme.font_main_shadow_color
         self.theme.font_main_bold = self.main_area_page.is_bold
         self.theme.font_main_italics = self.main_area_page.is_italic
         # footer page

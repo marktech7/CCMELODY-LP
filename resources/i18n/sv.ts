@@ -1,4 +1,4 @@
-<?xml version="1.0" ?><!DOCTYPE TS><TS version="2.0" language="sv">
+<?xml version="1.0" ?><!DOCTYPE TS><TS language="sv" version="2.0">
 <context>
     <name>AlertsPlugin</name>
     <message>
@@ -1942,7 +1942,7 @@ Vill du lägga till dom andra bilderna ändå?</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="72"/>
         <source>Theme:</source>
-        <translation>Tema:</translation>
+        <translation type="unfinished"/>
     </message>
 </context>
 <context>
@@ -2245,7 +2245,7 @@ Vill du lägga till dom andra bilderna ändå?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="84"/>
         <source>VLC (requires restart)</source>
-        <translation>VLC (kräver omstart)</translation>
+        <translation type="unfinished"/>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="85"/>

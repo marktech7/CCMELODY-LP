@@ -21,7 +21,7 @@
 """
 This module contains some helpers for serializing Path objects in Pyro4
 """
-from pathlib import Path
+from openlp.core.common.path import Path
 
 from Pyro4.util import SerializerBase
 
