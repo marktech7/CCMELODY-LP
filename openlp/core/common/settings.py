@@ -186,6 +186,7 @@ class Settings(QtCore.QSettings):
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
         'advanced/search as type': True,
         'advanced/ui_theme_name': UiThemes.Automatic,
+        'advanced/delete service item confirmation': False,
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',

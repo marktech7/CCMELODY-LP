@@ -359,6 +359,18 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.service_item_edit_form = ServiceItemEditForm()
         self.start_time_form = StartTimeForm()
 
+    def _delete_confirmation_dialog(self):
+        msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
+                                        translate('OpenLP.ServiceManager', 'Delete item from service'),
+                                        translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
+                                                  'this item from the service?'),
+                                        QtWidgets.QMessageBox.StandardButtons(
+                                            QtWidgets.QMessageBox.Close | QtWidgets.QMessageBox.Cancel), self)
+        del_button = msg_box.button(QtWidgets.QMessageBox.Close)
+        del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
+        msg_box.setDefaultButton(QtWidgets.QMessageBox.Close)
+        return msg_box.exec()
+
     def add_media_suffixes(self):
         """
         Add the suffixes supported by :mod:`openlp.core.ui.media.vlcplayer`
@@ -1276,7 +1288,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Remove the current ServiceItem from the list.
         """
         item = self.find_service_item()[0]
-        if item != -1:
+        if item != -1 and not self.settings.value('advanced/delete service item confirmation') or \
+                self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close:
             self.service_items.remove(self.service_items[item])
             self.repaint_service_list(item - 1, -1)
             self.set_modified()

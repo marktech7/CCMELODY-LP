@@ -25,6 +25,7 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
+import pytest
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel
@@ -1095,6 +1096,105 @@ def test_on_new_service_clicked_unmodified_blank_service(MockQMessageBox, regist
     mocked_message_box.exec.assert_called_once_with()
     mocked_settings.setValue.assert_called_once_with('advanced/new service message', False)
     service_manager.new_file.assert_called_once_with()
+
+
+def _create_mock_action(parent, name, **kwargs):
+    """
+    Create a fake action with some "real" attributes
+    """
+    action = QtWidgets.QAction(parent)
+    action.setObjectName(name)
+    if kwargs.get('triggers'):
+        action.triggered.connect(kwargs.pop('triggers'))
+    return action
+
+
+def _add_service_item(s_manager):
+    "adds a mocked service item to the passed service manager"
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'songs'
+    service_item = ServiceItem(mocked_plugin)
+    service_item.add_icon()
+    slide = "Test slide"
+    service_item.add_from_text(slide)
+    service_item.title = "Test item"
+    s_manager.add_service_item(service_item, rebuild=True, selected=True)
+
+
+@pytest.fixture()
+def service_manager(registry, settings):
+    """Setup a service manager with a service item and a few mocked registry entries"""
+    # Mocked registry entries
+    Registry().register('main_window', MagicMock())
+    Registry().register('live_controller', MagicMock())
+    Registry().register('renderer', MagicMock())
+
+    # Service manager
+    add_toolbar_action_patcher = patch('openlp.core.ui.mainwindow.create_action')
+    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
+    mocked_add_toolbar_action.side_effect = _create_mock_action
+
+    service_manager = ServiceManager()
+    service_manager.setup_ui(service_manager)
+
+    yield service_manager
+    del service_manager
+
+    add_toolbar_action_patcher.stop()
+
+
+def test_on_delete_from_service_confirmation_disabled(settings, service_manager):
+    """
+    Test that when the on_delete_from_service function is called and
+    confirmation for deleting items is disabled, the currently selected
+    item is removed.
+    """
+    # GIVEN delete item confirmation is disabled and a mock service item
+    settings.setValue('advanced/delete service item confirmation', False)
+    _add_service_item(service_manager)
+
+    # WHEN the on_delete_from_service function is called
+    service_manager.on_delete_from_service()
+
+    # THEN the service_items list should be empty
+    assert len(service_manager.service_items) == 0
+
+
+def test_on_delete_from_service_confirmation_enabled_choose_delete(settings, service_manager):
+    """
+    Test that when the on_delete_from_service function is called and
+    confirmation for deleting items is enabled, and the user confirms
+    deletion, the currently selected item is removed from the service.
+    """
+    # GIVEN delete item confirmation is enabled and a mock service item
+    settings.setValue('advanced/delete service item confirmation', True)
+    _add_service_item(service_manager)
+
+    # WHEN the on_delete_from_service function is called and the user chooses to delete
+    service_manager._delete_confirmation_dialog = MagicMock(return_value=QtWidgets.QMessageBox.Close)
+    service_manager.on_delete_from_service()
+
+    # THEN the service_items list should be empty
+    assert len(service_manager.service_items) == 0
+
+
+def test_on_delete_from_service_confirmation_enabled_choose_cancel(settings, service_manager):
+    """
+    Test that when the on_delete_from_service function is called and
+    confirmation for deleting items is enabled, and the user confirms
+    deletion, the service remains unchanged.
+    """
+    # GIVEN delete item confirmation is enabled a mock service item
+    settings.setValue('advanced/delete service item confirmation', True)
+    _add_service_item(service_manager)
+    service_items_copy = service_manager.service_items.copy()
+
+    # WHEN the on_delete_from_service function is called and the user cancels
+    service_manager._delete_confirmation_dialog = MagicMock(return_value=QtWidgets.QMessageBox.Cancel)
+    service_manager.on_delete_from_service()
+
+    # THEN the service_items list should be unchanged
+    assert service_manager.service_items == service_items_copy
 
 
 def test_on_load_service_clicked(registry):
