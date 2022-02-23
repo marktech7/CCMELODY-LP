@@ -1130,11 +1130,11 @@ def service_manager(registry, settings):
     Registry().register('renderer', MagicMock())
 
     # Service manager
-    add_toolbar_action_patcher = patch('openlp.core.ui.mainwindow.create_action')
-    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
-    mocked_add_toolbar_action.side_effect = _create_mock_action
-
     service_manager = ServiceManager()
+    add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
+    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
+    mocked_add_toolbar_action.side_effect = \
+        lambda name, **kwargs: _create_mock_action(service_manager.toolbar, name, **kwargs)
     service_manager.setup_ui(service_manager)
 
     yield service_manager

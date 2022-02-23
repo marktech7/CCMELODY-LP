@@ -1288,8 +1288,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Remove the current ServiceItem from the list.
         """
         item = self.find_service_item()[0]
-        if item != -1 and not self.settings.value('advanced/delete service item confirmation') or \
-                self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close:
+        if item != -1 and (not self.settings.value('advanced/delete service item confirmation') or
+                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close):
             self.service_items.remove(self.service_items[item])
             self.repaint_service_list(item - 1, -1)
             self.set_modified()
