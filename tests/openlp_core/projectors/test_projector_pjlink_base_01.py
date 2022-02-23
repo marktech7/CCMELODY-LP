@@ -26,7 +26,7 @@ from unittest.mock import MagicMock, call, patch
 import openlp.core.projectors.pjlink
 from openlp.core.projectors.pjlinkcommands import process_command
 from openlp.core.projectors.constants import E_NOT_CONNECTED, E_PARAMETER, E_UNKNOWN_SOCKET_ERROR, QSOCKET_STATE, \
-    S_CONNECTED, S_CONNECTING, S_NOT_CONNECTED, S_OK, S_ON, STATUS_CODE, STATUS_MSG
+    S_CONNECTED, S_CONNECTING, S_OK, S_ON, STATUS_CODE, STATUS_MSG
 
 
 @patch.object(openlp.core.projectors.pjlink.PJLink, 'changeStatus')
@@ -433,47 +433,3 @@ def test_projector_get_power_status(mock_log, mock_send_command, pjlink):
     # THEN: log data and send_command should have been called
     mock_log.debug.assert_has_calls(log_debug_calls)
     mock_send_command.assert_called_once_with(cmd=test_data, priority=False)
-
-
-def test_projector_get_status_invalid(pjlink):
-    """
-    Test to check returned information for error code
-    """
-    # GIVEN: Test object
-    test_string = 'NaN test'
-
-    # WHEN: get_status called
-    code, message = pjlink._get_status(status=test_string)
-
-    # THEN: Proper data should have been returned
-    assert code == -1, 'Should have returned -1 as a bad status check'
-    assert message is None, 'Invalid code type should have returned None for message'
-
-
-def test_projector_get_status_valid(pjlink):
-    """
-    Test to check returned information for status codes
-    """
-    # GIVEN: Test object
-    test_message = 'Not Connected'
-
-    # WHEN: get_status called
-    code, message = pjlink._get_status(status=S_NOT_CONNECTED)
-
-    # THEN: Proper strings should have been returned
-    assert code == 'S_NOT_CONNECTED', 'Code returned should have been the same code that was sent'
-    assert message == test_message, 'Description of code should have been returned'
-
-
-def test_projector_get_status_unknown(pjlink):
-    """
-    Test to check returned information for unknown code
-    """
-    # GIVEN: Test object
-
-    # WHEN: get_status called
-    code, message = pjlink._get_status(status=9999)
-
-    # THEN: Proper strings should have been returned
-    assert code is None, 'Code returned should have been the same code that was sent'
-    assert message is None, 'Should have returned None as message'
