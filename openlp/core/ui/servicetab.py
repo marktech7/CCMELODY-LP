@@ -133,6 +133,15 @@ class ServiceTab(SettingsTab):
         self.next_item_radio_button.setObjectName('next_item_radio_button')
         self.slide_layout.addWidget(self.next_item_radio_button)
         self.right_layout.addWidget(self.slide_group_box)
+        # Service Editing
+        self.service_editing_groupbox = QtWidgets.QGroupBox(self.left_column)
+        self.service_editing_groupbox.setObjectName('service_editing_groupbox')
+        self.service_editing_layout = QtWidgets.QFormLayout(self.service_editing_groupbox)
+        self.service_editing_layout.setObjectName('service_editing_layout')
+        self.service_editing_check_box = QtWidgets.QCheckBox(self.service_editing_groupbox)
+        self.service_editing_check_box.setObjectName('service_editing_check_box')
+        self.service_editing_layout.addRow(self.service_editing_check_box)
+        self.right_layout.addWidget(self.service_editing_groupbox)
         # Push everything in both columns to the top
         self.left_layout.addStretch()
         self.right_layout.addStretch()
@@ -189,6 +198,10 @@ class ServiceTab(SettingsTab):
         self.end_slide_radio_button.setText(translate('OpenLP.ServiceTab', '&Remain on Slide'))
         self.wrap_slide_radio_button.setText(translate('OpenLP.ServiceTab', '&Wrap around'))
         self.next_item_radio_button.setText(translate('OpenLP.ServiceTab', '&Move to next/previous service item'))
+        # Service Editing
+        self.service_editing_groupbox.setTitle(translate('OpenLP.ServiceTab', 'Service Editing'))
+        self.service_editing_check_box.setText(translate('OpenLP.ServiceTab', 'Show confirmation box when deleting '
+                                                                              'item from service'))
 
     def load(self):
         """
@@ -216,6 +229,8 @@ class ServiceTab(SettingsTab):
             self.wrap_slide_radio_button.setChecked(True)
         else:
             self.next_item_radio_button.setChecked(True)
+        # Service Editing
+        self.service_editing_check_box.setChecked(self.settings.value('advanced/delete service item confirmation'))
 
     def save(self):
         """
@@ -242,6 +257,8 @@ class ServiceTab(SettingsTab):
         # Service Item Wrapping
         self.settings.setValue('advanced/slide limits', self.slide_limits)
         self.settings_form.register_post_process('slidecontroller_update_slide_limits')
+        # Service Editing
+        self.settings.setValue('advanced/delete service item confirmation', self.service_editing_check_box.isChecked())
         self.post_set_up()
 
     def post_set_up(self):
