@@ -50,6 +50,7 @@ def test_connect_to_host_connected(pjlink, caplog):
 
     mock_state = MagicMock()
     mock_state.return_value = QSOCKET_STATE[S_CONNECTED]
+    # Set error_status to something not normally used for this test
     pjlink.error_status = E_GENERAL
 
     with patch.multiple(pjlink,
@@ -62,7 +63,7 @@ def test_connect_to_host_connected(pjlink, caplog):
 
         # THEN: Appropriate entries and calls
         assert caplog.record_tuples == logs, 'Invalid log entries'
-        assert pjlink.error_status == E_GENERAL, 'Error status did not change'
+        assert pjlink.error_status == E_GENERAL, 'Error status should not have change'
         mock_pjlink['change_status'].assert_not_called()
         mock_pjlink['connectToHost']. assert_not_called()
 
