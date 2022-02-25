@@ -12,9 +12,10 @@
   }
 }
 
-body {
+html, body {
   background: transparent;
   color: rgb(255, 255, 255) !important;
+  transition: background-color 800ms ease-in-out;
 }
 
 body.checkerboard {
@@ -44,6 +45,27 @@ body.transition .reveal .slides,
 body.transition .reveal .footer {
   /* Transition speed for content visibility */
   transition: opacity 800ms ease-in-out !important;
+}
+
+body {
+  /*
+    It's a fake transition, but the transitionend event will be
+    fired at the end of the transition time. For the user there will
+    be no animation (due to the curve
+  */
+  transition: opacity 75ms steps(1, start);
+}
+
+body.disable-transitions *,
+body.disable-transitions.transition,
+body.disable-transitions.transition .reveal .slides, 
+body.disable-transitions.transition .reveal .footer {
+  transition: none !important;
+}
+
+body.is-desktop .pause-overlay {
+  /* Avoids a black flash while activating "Show Desktop" */
+  opacity: 0 !important;
 }
 
 .reveal .slide-background {

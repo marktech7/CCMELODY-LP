@@ -33,7 +33,7 @@ from PyQt5 import QtCore
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.display.window import DisplayWindow, DisplayWatcher
+from openlp.core.display.window import TRANSITION_END_EVENT_ID, DisplayWindow, DisplayWatcher
 from openlp.core.common import is_win
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.theme import Theme
@@ -602,20 +602,149 @@ def test_hide_display_to_transparent(display_window_env, mock_settings):
     assert display_window.setVisible.call_count == 0
 
 
+def test_display_watcher_dispatches_registered_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher dispatches events to the registered listeners
+    """
+    # GIVEN: Display window and a dummy event
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should be called
+    event_listener.assert_called_once()
+
+
+def test_display_watcher_dispatches_permanent_registered_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher dispatches events to the permanent registered listeners
+    """
+    # GIVEN: Display window and a dummy event
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener, True)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should be called
+    event_listener.assert_called_once()
+
+
+def test_display_watcher_dispatches_transient_and_permanent_registered_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher dispatches events to both transient and permanent registered listeners
+    """
+    # GIVEN: Display window and a dummy event
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    event_listener_permanent = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener, True)
+    display_window.display_watcher.register_event_listener(event_name, event_listener_permanent, False)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should be called
+    event_listener.assert_called_once()
+    event_listener_permanent.assert_called_once()
+
+
+def test_display_watcher_unregisters_registered_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher unregisters registered listeners
+    """
+    # GIVEN: Display window and a dummy event that is unregistered later
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener)
+    display_window.display_watcher.unregister_event_listener(event_name)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should not be called
+    event_listener.assert_not_called()
+
+
+def test_display_watcher_unregisters_registered_permanent_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher unregisters registered permanent listeners
+    """
+    # GIVEN: Display window and a dummy event that is unregistered later
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener, True)
+    display_window.display_watcher.unregister_event_listener(event_name)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should not be called
+    event_listener.assert_not_called()
+
+
+def test_display_watcher_unregisters_registered_permanent_and_transient_event(display_window_env, mock_settings):
+    """
+    Test that the display watcher unregisters registered listeners, both permanent and transient
+    """
+    # GIVEN: Display window and a dummy event that is unregistered later
+    event_name = 'dummy_event'
+    event_listener = MagicMock()
+    event_listener_permanent = MagicMock()
+    display_window = DisplayWindow()
+    display_window.display_watcher.register_event_listener(event_name, event_listener)
+    display_window.display_watcher.register_event_listener(event_name, event_listener_permanent, False)
+    display_window.display_watcher.unregister_event_listener(event_name)
+    display_window.display_watcher.unregister_event_listener(event_name, False)
+
+    # WHEN: Event is dispatched
+    display_window.display_watcher.dispatchEvent(event_name, {})
+
+    # THEN: Events should not be called
+    event_listener.assert_not_called()
+    event_listener_permanent.assert_not_called()
+
+
 def test_hide_transparent_to_screen(display_window_env, mock_settings):
     """
     Test that when going transparent, and the disable transparent setting is enabled,
     the screen mode should be used.
     """
-    # GIVEN: Display window and setting advanced/disable transparent display = True
+    # GIVEN: Display window, setting advanced/disable transparent display = True and mocked run_javascript
     display_window = DisplayWindow()
     display_window.setVisible = MagicMock()
+    has_ran_event = False
+
+    def set_has_ran_event(_):
+        nonlocal has_ran_event
+        has_ran_event = True
+
+    def on_dispatch_event(_):
+        display_window.display_watcher.register_event_listener(TRANSITION_END_EVENT_ID, set_has_ran_event, False)
+        display_window.display_watcher.dispatchEvent(TRANSITION_END_EVENT_ID, {})
+    display_window.run_javascript = MagicMock(side_effect=on_dispatch_event)
     mock_settings.value.return_value = True
 
     # WHEN: Hide display is run with HideMode.Screen
     display_window.hide_display(HideMode.Screen)
 
     # THEN: Should run setVisible(False)
+    elapsed_time = 0
+    while not has_ran_event:
+        time.sleep(0.05)
+        elapsed_time += 0.05
+        if elapsed_time > 1:
+            break
+    assert has_ran_event is True
     display_window.setVisible.assert_called_once_with(False)
 
 
