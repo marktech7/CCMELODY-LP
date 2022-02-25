@@ -12,10 +12,9 @@
   }
 }
 
-html, body {
+body {
   background: transparent;
   color: rgb(255, 255, 255) !important;
-  transition: background-color 800ms ease-in-out;
 }
 
 body.checkerboard {
