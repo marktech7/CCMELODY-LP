@@ -141,6 +141,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
     user uses to control the displaying of verses/slides/etc on the screen.
     """
 
+    slidecontroller_changed = QtCore.pyqtSignal()
+
     def __init__(self, *args, **kwargs):
         """
         Set up the Slide Controller.
@@ -1278,6 +1280,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         The output has changed so we need to poke to POLL Websocket.
         """
         self.slide_count += 1
+        self.slidecontroller_changed.emit()
 
     def display_maindisplay(self):
         """

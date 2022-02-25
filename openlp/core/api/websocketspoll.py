@@ -18,21 +18,30 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from PyQt5 import QtCore
 from openlp.core.common.mixins import RegistryProperties
 
 
-class WebSocketPoller(RegistryProperties):
+class WebSocketPoller(QtCore.QObject, RegistryProperties):
     """
     Accessed by web sockets to get status type information from the application
     """
+
+    poller_changed = QtCore.pyqtSignal()
+
     def __init__(self):
         """
         Constructor for the web sockets poll builder class.
         """
         super(WebSocketPoller, self).__init__()
-        self._previous = {}
+        self._state = None
 
     def get_state(self):
+        if self._state is None:
+            self._state = self.create_state()
+        return self._state
+
+    def create_state(self):
         return {'results': {
             'counter': self.live_controller.slide_count if self.live_controller.slide_count else 0,
             'service': self.service_manager.service_id,
@@ -47,17 +56,20 @@ class WebSocketPoller(RegistryProperties):
             'chordNotation': self.settings.value('songs/chord notation')
         }}
 
-    def get_state_if_changed(self):
-        """
-        Poll OpenLP to determine current state if it has changed.
+    def hook_signals(self):
+        self.live_controller.slidecontroller_changed.connect(self.on_signal_received)
+        self.service_manager.servicemanager_changed.connect(self.on_signal_received)
 
-        This must only be used by web sockets or else we could miss a state change.
+    def unhook_signals(self):
+        try:
+            self.live_controller.slidecontroller_changed.disconnect(self.on_signal_received)
+            self.service_manager.servicemanager_changed.disconnect(self.on_signal_received)
+        except Exception:
+            pass
 
-        :return: The current application state or None if unchanged since last call
-        """
-        current = self.get_state()
-        if self._previous != current:
-            self._previous = current
-            return current
-        else:
-            return None
+    @QtCore.pyqtSlot(list)
+    @QtCore.pyqtSlot(str)
+    @QtCore.pyqtSlot()
+    def on_signal_received(self):
+        self._state = self.create_state()
+        self.poller_changed.emit()
