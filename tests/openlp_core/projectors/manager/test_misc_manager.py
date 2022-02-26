@@ -47,9 +47,7 @@ def test_private_load_projectors(projector_manager_mtdb):
     with patch.multiple(projector_manager_mtdb,
                         udp_listen_add=DEFAULT,
                         udp_listen_delete=DEFAULT,
-                        _load_projectors=DEFAULT) as mock_manager:
-        # Satisfy Flake8 linting
-        mock_manager['udp_listen_add'].return_value = None
+                        _load_projectors=DEFAULT):
         projector_manager_mtdb.bootstrap_initialise()
         projector_manager_mtdb.bootstrap_post_set_up()
 
@@ -100,9 +98,7 @@ def test_get_projector_list(projector_manager_mtdb):
     # during bootstrap_post_set_up()
     with patch.multiple(projector_manager_mtdb,
                         udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT) as mock_manager:
-        # Satisfy Flake8 linting
-        _ = (mock_manager == mock_manager)
+                        udp_listen_delete=DEFAULT):
         projector_manager_mtdb.bootstrap_initialise()
         projector_manager_mtdb.bootstrap_post_set_up()
 

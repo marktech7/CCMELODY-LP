@@ -38,9 +38,7 @@ def test_on_add_projector(projector_manager):
     # during bootstrap_post_set_up()
     with patch.multiple(projector_manager,
                         udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT) as mock_manager:
-        # Satisfy Flake8 linting
-        _ = (mock_manager == mock_manager)
+                        udp_listen_delete=DEFAULT):
         projector_manager.bootstrap_initialise()
         projector_manager.bootstrap_post_set_up()
 
