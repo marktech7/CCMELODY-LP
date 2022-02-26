@@ -22,6 +22,10 @@
 The :mod:`tests.resources.projector.data file contains test data
 """
 
+from unittest.mock import MagicMock
+from PyQt5 import QtNetwork
+from openlp.core.projectors.constants import S_OK, S_NOT_CONNECTED
+
 # Test data
 TEST_DB_PJLINK1 = 'projector_pjlink1.sqlite'
 
@@ -35,7 +39,8 @@ TEST_HASH = '5d8409bc1c3fa39749434aa3a5c38682'
 
 TEST_CONNECT_AUTHENTICATE = 'PJLink 1 {salt}'.format(salt=TEST_SALT)
 
-TEST1_DATA = dict(ip='111.111.111.111',
+TEST1_DATA = dict(id=1,
+                  ip='111.111.111.111',
                   port='1111',
                   pin='1111',
                   name='___TEST_ONE___',
@@ -47,7 +52,8 @@ TEST1_DATA = dict(ip='111.111.111.111',
                   model_lamp='Lamp type 1',
                   mac_adx='11:11:11:11:11:11')
 
-TEST2_DATA = dict(ip='222.222.222.222',
+TEST2_DATA = dict(id=2,
+                  ip='222.222.222.222',
                   port='2222',
                   pin='2222',
                   name='___TEST_TWO___',
@@ -59,7 +65,8 @@ TEST2_DATA = dict(ip='222.222.222.222',
                   model_lamp='Lamp type 2',
                   mac_adx='22:22:22:22:22:22')
 
-TEST3_DATA = dict(ip='333.333.333.333',
+TEST3_DATA = dict(id=3,
+                  ip='333.333.333.333',
                   port='3333',
                   pin='3333',
                   name='___TEST_THREE___',
@@ -293,6 +300,51 @@ class FakeProjector(object):
         self.link = self
         self.port = port
         self.name = name
+
+
+class FakePJLink(object):
+    def __init__(self, projector=None, *args, **kwargs):
+        # Method/signals mocks
+        self.changeStatus = MagicMock()
+        self.poll_timer = MagicMock()
+        self.projectorStatus = MagicMock()
+        self.projectorAuthentication = MagicMock()
+        self.projectorNoAuthentication = MagicMock()
+        self.projectorReceivedData = MagicMock()
+        self.projectorUpdateIcons = MagicMock()
+        self.set_shutter_closed = MagicMock()
+        self.socket_timer = MagicMock()
+        self.status_timer = MagicMock()
+        self.state = MagicMock()
+
+        # Some tests that may include what it thinks are ProjectorItem()
+        # If ProjectorItem() is called, will probably overwrite these - OK
+        self.link = self
+        self.pjlink = self
+
+        # Normal entries from PJLink
+        self.entry = TEST1_DATA if projector is None else projector
+        self.ip = self.entry.ip
+        self.qhost = QtNetwork.QHostAddress(self.ip)
+        self.location = self.entry.location
+        self.mac_adx = self.entry.mac_adx
+        self.name = self.entry.name
+        self.notes = self.entry.notes
+        self.pin = self.entry.pin
+        self.port = int(self.entry.port)
+        self.pjlink_class = "1" if self.entry.pjlink_class is None else self.entry.pjlink_class
+        self.poll_time = 20000 if 'poll_time' not in kwargs else kwargs['poll_time'] * 1000
+        self.socket_timeout = 5000 if 'socket_timeout' not in kwargs else kwargs['socket_timeout'] * 1000
+        self.no_poll = 'no_poll' in kwargs
+        self.status_connect = S_NOT_CONNECTED
+        self.last_command = ''
+        self.projector_status = S_NOT_CONNECTED
+        self.error_status = S_OK
+        self.send_queue = []
+        self.priority_queue = []
+        self.send_busy = False
+        self.status_timer_checks = {}  # Keep track of events for the status timer
+        # Default mock return values
 
 
 class FakePJLinkUDP(object):

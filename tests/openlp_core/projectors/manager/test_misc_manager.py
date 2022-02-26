@@ -67,44 +67,6 @@ def test_private_load_projectors(projector_manager_mtdb):
     assert t_chk == t_list, 'projector_list DB items do not match test items'
 
 
-def test_on_edit_input(projector_manager):
-    """
-    Test calling edit projector input GUI from input selection icon makes appropriate calls
-    """
-    # GIVEN: Test environment
-    with patch.object(projector_manager, 'on_select_input') as mock_edit:
-
-        # WHEN: Called
-        projector_manager.on_edit_input()
-
-        # THEN: select input called with edit option
-        mock_edit.assert_called_with(opt=None, edit=True)
-
-
-def test_on_add_projector(projector_manager):
-    """
-    Test add new projector edit GUI is called properly
-    """
-    # GIVEN: Test environment
-    # Mock to keep from getting event not registered error in Registry()
-    # during bootstrap_post_set_up()
-    with patch.multiple(projector_manager,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT) as mock_manager:
-        # Satisfy Flake8 linting
-        mock_manager['udp_listen_add'].return_value = None
-        projector_manager.bootstrap_initialise()
-        projector_manager.bootstrap_post_set_up()
-
-    with patch.object(projector_manager, 'projector_form') as mock_form:
-
-        # WHEN called
-        projector_manager.on_add_projector()
-
-        # THEN: projector form called
-        mock_form.exec.assert_called_once()
-
-
 def test_add_projector_from_wizard(projector_manager):
     """
     Test when add projector from GUI, appropriate method is called correctly
@@ -140,7 +102,7 @@ def test_get_projector_list(projector_manager_mtdb):
                         udp_listen_add=DEFAULT,
                         udp_listen_delete=DEFAULT) as mock_manager:
         # Satisfy Flake8 linting
-        mock_manager['udp_listen_add'].return_value = None
+        _ = (mock_manager == mock_manager)
         projector_manager_mtdb.bootstrap_initialise()
         projector_manager_mtdb.bootstrap_post_set_up()
 
