@@ -463,23 +463,18 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             projector.link.connect_to_host()
         return
 
-    def on_connect_projector(self, opt=None):
+    def on_connect_projector(self, item=None, opt=None):
         """
         Calls projector thread to connect to projector
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.connect_to_host()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.connect_to_host()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.connect_to_host()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.connect_to_host()
 
     def on_delete_projector(self, opt=None):
         """
