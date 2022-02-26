@@ -25,6 +25,7 @@ The :mod:`tests.resources.projector.data file contains test data
 from unittest.mock import MagicMock
 from PyQt5 import QtNetwork
 from openlp.core.projectors.constants import S_OK, S_NOT_CONNECTED
+from openlp.core.projectors.db import Projector
 
 # Test data
 TEST_DB_PJLINK1 = 'projector_pjlink1.sqlite'
@@ -304,14 +305,17 @@ class FakeProjector(object):
 
 class FakePJLink(object):
     def __init__(self, projector=None, *args, **kwargs):
-        # Method/signals mocks
-        self.changeStatus = MagicMock()
-        self.poll_timer = MagicMock()
+        # Signal mocks
         self.projectorStatus = MagicMock()
         self.projectorAuthentication = MagicMock()
         self.projectorNoAuthentication = MagicMock()
         self.projectorReceivedData = MagicMock()
         self.projectorUpdateIcons = MagicMock()
+
+        # Method mocks
+        self.changeStatus = MagicMock()
+        self.connect_to_host = MagicMock()
+        self.poll_timer = MagicMock()
         self.set_shutter_closed = MagicMock()
         self.socket_timer = MagicMock()
         self.status_timer = MagicMock()
@@ -323,7 +327,7 @@ class FakePJLink(object):
         self.pjlink = self
 
         # Normal entries from PJLink
-        self.entry = TEST1_DATA if projector is None else projector
+        self.entry = Projector(**TEST1_DATA) if projector is None else projector
         self.ip = self.entry.ip
         self.qhost = QtNetwork.QHostAddress(self.ip)
         self.location = self.entry.location

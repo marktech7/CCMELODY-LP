@@ -60,7 +60,7 @@ def test_on_blank_projector_direct(projector_manager_mtdb):
         projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
 
         # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(opt=t_1)
+        projector_manager_mtdb.on_blank_projector(item=t_1)
 
         # THEN: Only t_1.set_shutter_closed() should be called
         t_1.set_shutter_closed.assert_called_once()
@@ -99,7 +99,7 @@ def test_on_blank_projector_one_item(projector_manager_mtdb):
         projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
 
         # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(opt=None)
+        projector_manager_mtdb.on_blank_projector(item=None)
 
         # THEN: Only t_3.set_shutter_closed() should be called
         t_1.set_shutter_closed.assert_not_called()
@@ -138,7 +138,7 @@ def test_on_blank_projector_multiple_items(projector_manager_mtdb):
         projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
 
         # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(opt=None)
+        projector_manager_mtdb.on_blank_projector(item=None)
 
         # THEN: t_1 and t_3 set_shutter_closed() should be called
         t_1.set_shutter_closed.assert_called_once()

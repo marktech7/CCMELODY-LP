@@ -437,31 +437,30 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         self.projector_form.exec()
 
-    def on_blank_projector(self, opt=None):
+    def on_blank_projector(self, item=None, opt=None):
         """
         Calls projector(s) thread to send blank screen command
 
-        :param opt: Optional ProjectorItem() instance in case of direct call
+        :param item: Optional ProjectorItem() instance in case of direct call
+        :param opt: (Deprecated)
         """
-        if opt is not None:
-            return opt.pjlink.set_shutter_closed()
+        if item is not None:
+            return item.pjlink.set_shutter_closed()
         for list_item in self.projector_list_widget.selectedItems():
             list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_closed()
 
-    def on_doubleclick_item(self, item, opt=None):
+    def on_doubleclick_item(self, item):
         """
         When item is doubleclicked, will connect to projector.
 
         :param item: List widget item for connection.
-        :param opt: Needed by PyQt5
         """
         projector = item.data(QtCore.Qt.UserRole)
-        if QSOCKET_STATE[projector.link.state()] != S_CONNECTED:
-            try:
-                log.debug(f'ProjectorManager: Calling connect_to_host() on "{projector.link.ip}"')
-                projector.link.connect_to_host()
-            except Exception:
-                log.debug(f'ProjectorManager: "{projector.link.ip}" already connected - skipping')
+        if QSOCKET_STATE[projector.link.state()] == S_CONNECTED:
+            log.debug(f'ProjectorManager: "{projector.pjlink.name}" already connected - skipping')
+        else:
+            log.debug(f'ProjectorManager: "{projector.pjlink.name}" calling connect_to_host()')
+            projector.link.connect_to_host()
         return
 
     def on_connect_projector(self, opt=None):
