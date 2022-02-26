@@ -568,23 +568,18 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         self.projector_form.exec(projector.db_item)
         projector.db_item = self.projectordb.get_projector_by_id(self.old_projector.db_item.id)
 
-    def on_poweroff_projector(self, opt=None):
+    def on_poweroff_projector(self, item=None, opt=None):
         """
-        Calls projector link to send Power Off command
+        Calls projector thread to turn projector off
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_power_off()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_power_off()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_power_off()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_off()
 
     def on_poweron_projector(self, opt=None):
         """

@@ -317,6 +317,7 @@ class FakePJLink(object):
         self.connect_to_host = MagicMock()
         self.disconnect_from_host = MagicMock()
         self.poll_timer = MagicMock()
+        self.set_power_off = MagicMock()
         self.set_shutter_closed = MagicMock()
         self.socket_timer = MagicMock()
         self.status_timer = MagicMock()
