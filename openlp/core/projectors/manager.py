@@ -540,23 +540,18 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             log.debug(f'New projector list - item: {item.link.ip} {item.link.name}')
         self.udp_listen_delete(old_port)
 
-    def on_disconnect_projector(self, opt=None):
+    def on_disconnect_projector(self, item=None, opt=None):
         """
         Calls projector thread to disconnect from projector
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.disconnect_from_host()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.disconnect_from_host()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.disconnect_from_host()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.disconnect_from_host()
 
     def on_edit_projector(self, opt=None):
         """

@@ -208,3 +208,76 @@ def test_on_connect_projector_multiple_items(projector_manager_mtdb):
     t_1.connect_to_host.assert_called_once()
     t_2.connect_to_host.assert_not_called()
     t_3.connect_to_host.assert_called_once()
+
+
+def test_on_disconnect_projector_direct(projector_manager_mtdb):
+    """
+    Test calling method directly - projector_list_widget should not be called
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_disconnect_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ],
+                  test_item=t_1
+                  )
+
+    # THEN: Only t_1.disconnect_from_host() should be called
+    t_1.disconnect_from_host.assert_called_once()
+    t_2.disconnect_from_host.assert_not_called()
+    t_3.disconnect_from_host.assert_not_called()
+
+
+def test_on_disconnect_projector_one_item(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_disconnect_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: Only t_3.disconnect_from_host() should be called
+    t_1.disconnect_from_host.assert_not_called()
+    t_2.disconnect_from_host.assert_not_called()
+    t_3.disconnect_from_host.assert_called_once()
+
+
+def test_on_disconnect_projector_multiple_items(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with more than one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_disconnect_projector,
+                  effect=[{'item': t_1, 'select': True},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: t_1 and t_3 disconnect_from_host() should be called
+    t_1.disconnect_from_host.assert_called_once()
+    t_2.disconnect_from_host.assert_not_called()
+    t_3.disconnect_from_host.assert_called_once()
