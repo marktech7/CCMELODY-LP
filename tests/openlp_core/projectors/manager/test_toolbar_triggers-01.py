@@ -29,6 +29,41 @@ from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import FakePJLink, TEST1_DATA, TEST2_DATA, TEST3_DATA
 
 
+def helper_method(test_fixture, method, effect, test_item=None):
+    """
+    Boilerplate for tests
+
+    :param test_fixture: Fixture used for testing
+    :param method: Method in fixture to test
+    :param effect: Dict of items for testing
+                    {'item': Item class
+                     'select': Boolean to enable selected() in projector_list_widget
+    :param test_item: (Optional) Item to call method with
+
+    """
+    with patch.multiple(test_fixture,
+                        udp_listen_add=DEFAULT,
+                        udp_listen_delete=DEFAULT,
+                        update_icons=DEFAULT,
+                        _add_projector=DEFAULT) as mock_manager:
+
+        mock_manager['_add_projector'].side_effect = [item['item'] for item in effect]
+        test_fixture.bootstrap_initialise()
+        # projector_list_widget created here
+        test_fixture.bootstrap_post_set_up()
+
+        # Add ProjectorItem instances to projector_list_widget
+        for item in effect:
+            test_fixture.add_projector(projector=item['item'])
+
+        # Set at least one instance as selected to verify projector_list_widget is not called
+        for item in range(len(effect)):
+            test_fixture.projector_list_widget.item(item).setSelected(effect[item]['select'])
+
+        # WHEN: Called with projector instance
+        method(item=test_item)
+
+
 def test_on_blank_projector_direct(projector_manager_mtdb):
     """
     Test calling method directly - projector_list_widget should not be called
@@ -38,34 +73,20 @@ def test_on_blank_projector_direct(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_blank_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ],
+                  test_item=t_1
+                  )
 
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(item=t_1)
-
-        # THEN: Only t_1.set_shutter_closed() should be called
-        t_1.set_shutter_closed.assert_called_once()
-        t_2.set_shutter_closed.assert_not_called()
-        t_3.set_shutter_closed.assert_not_called()
+    # THEN: Only t_1.set_shutter_closed() should be called
+    t_1.set_shutter_closed.assert_called_once()
+    t_2.set_shutter_closed.assert_not_called()
+    t_3.set_shutter_closed.assert_not_called()
 
 
 def test_on_blank_projector_one_item(projector_manager_mtdb):
@@ -77,34 +98,19 @@ def test_on_blank_projector_one_item(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_blank_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': True},
+                          {'item': t_3, 'select': False}
+                          ]
+                  )
 
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(item=None)
-
-        # THEN: Only t_3.set_shutter_closed() should be called
-        t_1.set_shutter_closed.assert_not_called()
-        t_2.set_shutter_closed.assert_not_called()
-        t_3.set_shutter_closed.assert_called_once()
+    # THEN: Only t_3.set_shutter_closed() should be called
+    t_1.set_shutter_closed.assert_not_called()
+    t_2.set_shutter_closed.assert_called_once()
+    t_3.set_shutter_closed.assert_not_called()
 
 
 def test_on_blank_projector_multiple_items(projector_manager_mtdb):
@@ -116,34 +122,19 @@ def test_on_blank_projector_multiple_items(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_blank_projector,
+                  effect=[{'item': t_1, 'select': True},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
 
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(True)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_blank_projector(item=None)
-
-        # THEN: t_1 and t_3 set_shutter_closed() should be called
-        t_1.set_shutter_closed.assert_called_once()
-        t_2.set_shutter_closed.assert_not_called()
-        t_3.set_shutter_closed.assert_called_once()
+    # THEN: t_1 and t_3 set_shutter_closed() should be called
+    t_1.set_shutter_closed.assert_called_once()
+    t_2.set_shutter_closed.assert_not_called()
+    t_3.set_shutter_closed.assert_called_once()
 
 
 def test_on_connect_projector_direct(projector_manager_mtdb):
@@ -155,34 +146,20 @@ def test_on_connect_projector_direct(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_connect_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ],
+                  test_item=t_1
+                  )
 
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_connect_projector(item=t_1)
-
-        # THEN: Only t_1.connect_to_host() should be called
-        t_1.connect_to_host.assert_called_once()
-        t_2.connect_to_host.assert_not_called()
-        t_3.connect_to_host.assert_not_called()
+    # THEN: Only t_1.connect_to_host() should be called
+    t_1.connect_to_host.assert_called_once()
+    t_2.connect_to_host.assert_not_called()
+    t_3.connect_to_host.assert_not_called()
 
 
 def test_on_connect_projector_one_item(projector_manager_mtdb):
@@ -194,34 +171,19 @@ def test_on_connect_projector_one_item(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_connect_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
 
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_connect_projector(item=None)
-
-        # THEN: Only t_3.connect_to_host() should be called
-        t_1.connect_to_host.assert_not_called()
-        t_2.connect_to_host.assert_not_called()
-        t_3.connect_to_host.assert_called_once()
+    # THEN: Only t_3.connect_to_host() should be called
+    t_1.connect_to_host.assert_not_called()
+    t_2.connect_to_host.assert_not_called()
+    t_3.connect_to_host.assert_called_once()
 
 
 def test_on_connect_projector_multiple_items(projector_manager_mtdb):
@@ -233,31 +195,16 @@ def test_on_connect_projector_multiple_items(projector_manager_mtdb):
     t_2 = FakePJLink(Projector(**TEST2_DATA))
     t_3 = FakePJLink(Projector(**TEST3_DATA))
 
-    with patch.multiple(projector_manager_mtdb,
-                        udp_listen_add=DEFAULT,
-                        udp_listen_delete=DEFAULT,
-                        update_icons=DEFAULT,
-                        _add_projector=DEFAULT) as mock_manager:
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_connect_projector,
+                  effect=[{'item': t_1, 'select': True},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
 
-        projector_manager_mtdb.bootstrap_initialise()
-        # projector_list_widget created here
-        projector_manager_mtdb.bootstrap_post_set_up()
-
-        # Add ProjectorItem instances to projector_list_widget
-        mock_manager['_add_projector'].side_effect = [t_1, t_2, t_3]
-        projector_manager_mtdb.add_projector(projector=t_1)
-        projector_manager_mtdb.add_projector(projector=t_2)
-        projector_manager_mtdb.add_projector(projector=t_3)
-
-        # Set at least one instance as selected to verify projector_list_widget is not called
-        projector_manager_mtdb.projector_list_widget.item(0).setSelected(True)
-        projector_manager_mtdb.projector_list_widget.item(1).setSelected(False)
-        projector_manager_mtdb.projector_list_widget.item(2).setSelected(True)
-
-        # WHEN: Called with projector instance
-        projector_manager_mtdb.on_connect_projector(item=None)
-
-        # THEN: t_1 and t_3 connect_to_host() should be called
-        t_1.connect_to_host.assert_called_once()
-        t_2.connect_to_host.assert_not_called()
-        t_3.connect_to_host.assert_called_once()
+    # THEN: t_1 and t_3 connect_to_host() should be called
+    t_1.connect_to_host.assert_called_once()
+    t_2.connect_to_host.assert_not_called()
+    t_3.connect_to_host.assert_called_once()
