@@ -20,6 +20,11 @@
 ##########################################################################
 """
 Test misc. functions with few test paths
+
+_load_projectors()
+add_projector_from_wizard()
+get_projector_list()
+
 """
 from unittest.mock import DEFAULT, patch
 

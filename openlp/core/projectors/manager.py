@@ -581,41 +581,31 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             for list_item in self.projector_list_widget.selectedItems():
                 list_item.data(QtCore.Qt.UserRole).pjlink.set_power_off()
 
-    def on_poweron_projector(self, opt=None):
+    def on_poweron_projector(self, item=None, opt=None):
         """
-        Calls projector link to send Power On command
+        Calls projector thread to turn projector on
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_power_on()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_power_on()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_power_on()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_on()
 
-    def on_show_projector(self, opt=None):
+    def on_show_projector(self, item=None, opt=None):
         """
-        Calls projector thread to send open shutter command
+        Calls projector thread to open shutter
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_shutter_open()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_shutter_open()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_shutter_open()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_open()
 
     def on_status_projector(self, opt=None):
         """

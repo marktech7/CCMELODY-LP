@@ -20,6 +20,14 @@
 ##########################################################################
 """
 Test methods called by toolbar icons part 1
+
+on_blank_projector()
+on_connect_projector()
+on_disconnect_projector()
+on_poweroff_projector()
+on_poweron_projector()
+on_show_projector()
+
 """
 
 from unittest.mock import DEFAULT, patch
@@ -354,3 +362,149 @@ def test_on_poweroff_projector_multiple_items(projector_manager_mtdb):
     t_1.set_power_off.assert_called_once()
     t_2.set_power_off.assert_not_called()
     t_3.set_power_off.assert_called_once()
+
+
+def test_on_poweron_projector_direct(projector_manager_mtdb):
+    """
+    Test calling method directly - projector_list_widget should not be called
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_poweron_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ],
+                  test_item=t_1
+                  )
+
+    # THEN: Only t_1.set_power_on() should be called
+    t_1.set_power_on.assert_called_once()
+    t_2.set_power_on.assert_not_called()
+    t_3.set_power_on.assert_not_called()
+
+
+def test_on_poweron_projector_one_item(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_poweron_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: Only t_3.set_power_on() should be called
+    t_1.set_power_on.assert_not_called()
+    t_2.set_power_on.assert_not_called()
+    t_3.set_power_on.assert_called_once()
+
+
+def test_on_poweron_projector_multiple_items(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with more than one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_poweron_projector,
+                  effect=[{'item': t_1, 'select': True},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: t_1 and t_3 set_power_on() should be called
+    t_1.set_power_on.assert_called_once()
+    t_2.set_power_on.assert_not_called()
+    t_3.set_power_on.assert_called_once()
+
+
+def test_on_show_projector_direct(projector_manager_mtdb):
+    """
+    Test calling method directly - projector_list_widget should not be called
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_show_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ],
+                  test_item=t_1
+                  )
+
+    # THEN: Only t_1.set_shutter_open() should be called
+    t_1.set_shutter_open.assert_called_once()
+    t_2.set_shutter_open.assert_not_called()
+    t_3.set_shutter_open.assert_not_called()
+
+
+def test_on_show_projector_one_item(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_show_projector,
+                  effect=[{'item': t_1, 'select': False},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: Only t_3.set_shutter_open() should be called
+    t_1.set_shutter_open.assert_not_called()
+    t_2.set_shutter_open.assert_not_called()
+    t_3.set_shutter_open.assert_called_once()
+
+
+def test_on_show_projector_multiple_items(projector_manager_mtdb):
+    """
+    Test calling method using projector_list_widget with more than one item selected
+    """
+    # GIVEN: Test setup
+    t_1 = FakePJLink(Projector(**TEST1_DATA))
+    t_2 = FakePJLink(Projector(**TEST2_DATA))
+    t_3 = FakePJLink(Projector(**TEST3_DATA))
+
+    # WHEN: called
+    helper_method(test_fixture=projector_manager_mtdb,
+                  method=projector_manager_mtdb.on_show_projector,
+                  effect=[{'item': t_1, 'select': True},
+                          {'item': t_2, 'select': False},
+                          {'item': t_3, 'select': True}
+                          ]
+                  )
+
+    # THEN: t_1 and t_3 set_shutter_open() should be called
+    t_1.set_shutter_open.assert_called_once()
+    t_2.set_shutter_open.assert_not_called()
+    t_3.set_shutter_open.assert_called_once()

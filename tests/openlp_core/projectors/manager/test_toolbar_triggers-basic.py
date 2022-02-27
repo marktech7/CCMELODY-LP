@@ -20,6 +20,11 @@
 ##########################################################################
 """
 Test methods called by toolbar icons with minimal flow paths and tests
+
+on_add_projector()
+on_doubleclick_item()
+on_edit_input()
+
 """
 
 import logging
