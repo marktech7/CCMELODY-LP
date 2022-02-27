@@ -24,10 +24,43 @@ Test the ThemeForm class and related methods.
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 
+import pytest
+
 from openlp.core.common.registry import Registry
 from openlp.core.lib.theme import BackgroundType
 from openlp.core.ui.themeform import ThemeForm
 from openlp.core.ui.themelayoutform import ThemeLayoutForm
+
+
+def _make_path(s):
+    return MagicMock(**{'__str__.return_value': s, 'exists.return_value': True})
+
+
+THEME_BACKGROUNDS = {
+    'solid': [
+        ('color', 'background_color', '#ff0')
+    ],
+    'gradient': [
+        ('gradient_type', 'background_direction', 'horizontal'),
+        ('gradient_start', 'background_start_color', '#fff'),
+        ('gradient_end', 'background_end_color', '#000')
+    ],
+    'image': [
+        ('image_color', 'background_border_color', '#f0f0f0'),
+        ('image_path', 'background_source', '/path/to/image.png'),
+        ('image_path', 'background_filename', '/path/to/image.png')
+    ],
+    'video': [
+        ('video_color', 'background_border_color', '#222'),
+        ('video_path', 'background_source', '/path/to/video.mkv'),
+        ('video_path', 'background_filename', '/path/to/video.mkv')
+    ],
+    'stream': [
+        ('stream_color', 'background_border_color', '#222'),
+        ('stream_mrl', 'background_source', 'http:/127.0.0.1/stream.mkv'),
+        ('stream_mrl', 'background_filename', 'http:/127.0.0.1/stream.mkv')
+    ]
+}
 
 
 @patch('openlp.core.ui.themeform.ThemeForm._setup')
@@ -407,3 +440,163 @@ def test_initialise_page_area_position(mocked_setup, settings):
 
     # THEN: Everything is working right
     theme_form.set_position_page_values.assert_called_once()
+
+
+@patch('openlp.core.ui.themeform.ThemeForm._setup')
+def test_update_theme_static(mocked_setup, settings):
+    """
+    Test that the update_theme() method correctly sets all the "static" theme variables
+    """
+    # GIVEN: An instance of a ThemeForm with some mocked out pages which return certain values
+    theme_form = ThemeForm(None)
+    theme_form.can_update_theme = True
+    theme_form.theme = MagicMock()
+    theme_form.background_page = MagicMock()
+    theme_form.main_area_page = MagicMock(font_name='Montserrat', font_color='#f00', font_size=50, line_spacing=12,
+                                          is_outline_enabled=True, outline_color='#00f', outline_size=3,
+                                          is_shadow_enabled=True, shadow_color='#111', shadow_size=5, is_bold=True,
+                                          is_italic=False)
+    theme_form.footer_area_page = MagicMock(font_name='Oxygen', font_color='#fff', font_size=20, is_bold=False,
+                                            is_italic=True)
+    theme_form.alignment_page = MagicMock(horizontal_align='left', vertical_align='top', is_transition_enabled=True,
+                                          transition_type='fade', transition_speed='normal',
+                                          transition_direction='horizontal', is_transition_reverse_enabled=False)
+    theme_form.area_position_page = MagicMock(use_main_default_location=True, use_footer_default_location=True)
+
+    # WHEN: ThemeForm.update_theme() is called
+    theme_form.update_theme()
+
+    # THEN: The theme should be correct
+    # Main area
+    assert theme_form.theme.font_main_name == 'Montserrat'
+    assert theme_form.theme.font_main_color == '#f00'
+    assert theme_form.theme.font_main_size == 50
+    assert theme_form.theme.font_main_line_adjustment == 12
+    assert theme_form.theme.font_main_outline is True
+    assert theme_form.theme.font_main_outline_color == '#00f'
+    assert theme_form.theme.font_main_outline_size == 3
+    assert theme_form.theme.font_main_shadow is True
+    assert theme_form.theme.font_main_shadow_color == '#111'
+    assert theme_form.theme.font_main_shadow_size == 5
+    assert theme_form.theme.font_main_bold is True
+    assert theme_form.theme.font_main_italics is False
+    assert theme_form.theme.font_main_override is False
+    theme_form.theme.set_default_header.assert_called_once_with()
+    # Footer
+    assert theme_form.theme.font_footer_name == 'Oxygen'
+    assert theme_form.theme.font_footer_color == '#fff'
+    assert theme_form.theme.font_footer_size == 20
+    assert theme_form.theme.font_footer_bold is False
+    assert theme_form.theme.font_footer_italics is True
+    assert theme_form.theme.font_footer_override is False
+    theme_form.theme.set_default_footer.assert_called_once_with()
+    # Alignment
+    assert theme_form.theme.display_horizontal_align == 'left'
+    assert theme_form.theme.display_vertical_align == 'top'
+    # Transitions
+    assert theme_form.theme.display_slide_transition is True
+    assert theme_form.theme.display_slide_transition_type == 'fade'
+    assert theme_form.theme.display_slide_transition_direction == 'horizontal'
+    assert theme_form.theme.display_slide_transition_speed == 'normal'
+    assert theme_form.theme.display_slide_transition_reverse is False
+
+
+@patch('openlp.core.ui.themeform.ThemeForm._setup')
+def test_update_theme_overridden_areas(mocked_setup, settings):
+    """
+    Test that the update_theme() method correctly sets all the positioning information for a custom position
+    """
+    # GIVEN: An instance of a ThemeForm with some mocked out pages which return certain values
+    theme_form = ThemeForm(None)
+    theme_form.can_update_theme = True
+    theme_form.theme = MagicMock()
+    theme_form.background_page = MagicMock()
+    theme_form.main_area_page = MagicMock()
+    theme_form.footer_area_page = MagicMock()
+    theme_form.alignment_page = MagicMock()
+    theme_form.area_position_page = MagicMock(use_main_default_location=False, use_footer_default_location=False,
+                                              main_x=20, main_y=50, main_height=900, main_width=1880,
+                                              footer_x=20, footer_y=910, footer_height=70, footer_width=1880)
+
+    # WHEN: ThemeForm.update_theme() is called
+    theme_form.update_theme()
+
+    # THEN: The theme should be correct
+    assert theme_form.theme.font_main_override is True
+    assert theme_form.theme.font_main_x == 20
+    assert theme_form.theme.font_main_y == 50
+    assert theme_form.theme.font_main_height == 900
+    assert theme_form.theme.font_main_width == 1880
+    assert theme_form.theme.font_footer_override is True
+    assert theme_form.theme.font_footer_x == 20
+    assert theme_form.theme.font_footer_y == 910
+    assert theme_form.theme.font_footer_height == 70
+    assert theme_form.theme.font_footer_width == 1880
+
+
+@pytest.mark.parametrize('background_type', THEME_BACKGROUNDS.keys())
+@patch('openlp.core.ui.themeform.ThemeForm._setup')
+def test_update_theme_background(mocked_setup, background_type, settings):
+    """
+    Test that the update_theme() method correctly sets all the theme background variables for each background type
+    """
+    # GIVEN: An instance of a ThemeForm with some mocked out pages which return certain values
+    page_props = {page_prop: value for page_prop, _, value in THEME_BACKGROUNDS[background_type]}
+    theme_form = ThemeForm(None)
+    theme_form.can_update_theme = True
+    theme_form.theme = MagicMock()
+    theme_form.background_page = MagicMock(background_type=background_type, **page_props)
+    theme_form.main_area_page = MagicMock()
+    theme_form.footer_area_page = MagicMock()
+    theme_form.alignment_page = MagicMock()
+    theme_form.area_position_page = MagicMock()
+
+    # WHEN: ThemeForm.update_theme() is called
+    theme_form.update_theme()
+
+    # THEN: The theme should be correct
+    for _, theme_prop, value in THEME_BACKGROUNDS[background_type]:
+        assert getattr(theme_form.theme, theme_prop) == value, f'{theme_prop} should have been {value}'
+
+
+@pytest.mark.skip('Being a bit problematic right now')
+@pytest.mark.parametrize('background_type', THEME_BACKGROUNDS.keys())
+@patch('openlp.core.ui.themeform.ThemeForm._setup')
+def test_set_background_page_values(mocked_setup, background_type, settings):
+    """
+    Test that the set_background_page_values() method sets the background page values correctly
+    """
+    # GIVEN: An instance of a ThemeForm with some mocked out pages and a mocked theme with values
+    theme_props = {theme_prop: value for _, theme_prop, value in THEME_BACKGROUNDS[background_type]}
+    theme_form = ThemeForm(None)
+    theme_form.theme = MagicMock(background_type=background_type, **theme_props)
+    theme_form.background_page = MagicMock()
+    theme_form.main_area_page = MagicMock()
+    theme_form.footer_area_page = MagicMock()
+    theme_form.alignment_page = MagicMock()
+    theme_form.area_position_page = MagicMock()
+
+    # WHEN: set_background_page_values() is called
+    theme_form.set_background_page_values()
+
+    # THEN: The correct values are set on the page
+    for page_prop, _, value in THEME_BACKGROUNDS[background_type]:
+        assert getattr(theme_form.background_page, page_prop) == value, (
+            f'{page_prop} should have been {value} but was {getattr(theme_form.background_page, page_prop)}'
+        )
+
+
+@patch('openlp.core.ui.themeform.ThemeForm._setup')
+def test_update_theme_cannot_update(mocked_setup, settings):
+    """
+    Test that the update_theme() method skips out early when the theme cannot be updated
+    """
+    # GIVEN: An instance of a ThemeForm with some mocked out pages which return certain values
+    theme_form = ThemeForm(None)
+    theme_form.can_update_theme = False
+
+    # WHEN: ThemeForm.update_theme() is called
+    theme_form.update_theme()
+
+    # THEN: The theme should be correct
+    # TODO: Figure out a way to check this

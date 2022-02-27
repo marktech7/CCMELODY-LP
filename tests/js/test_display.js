@@ -53,6 +53,68 @@ describe("The function", function () {
     expect(gradient).toBe("radial-gradient(#000, #fff) fixed");
   });
 
+  it("_buildTextOutline should return an array of text-shadow values", function () {
+    let shadows = _buildTextOutline(2, "#fff");
+    expect(shadows).toEqual([
+      "#fff -2pt -2pt 0pt",
+      "#fff -2pt -1pt 0pt",
+      "#fff -2pt 0pt 0pt",
+      "#fff -2pt 1pt 0pt",
+      "#fff -2pt 2pt 0pt",
+      "#fff -1pt -2pt 0pt",
+      "#fff -1pt -1pt 0pt",
+      "#fff -1pt 0pt 0pt",
+      "#fff -1pt 1pt 0pt",
+      "#fff -1pt 2pt 0pt",
+      "#fff 0pt -2pt 0pt",
+      "#fff 0pt -1pt 0pt",
+      "#fff 0pt 0pt 0pt",
+      "#fff 0pt 1pt 0pt",
+      "#fff 0pt 2pt 0pt",
+      "#fff 1pt -2pt 0pt",
+      "#fff 1pt -1pt 0pt",
+      "#fff 1pt 0pt 0pt",
+      "#fff 1pt 1pt 0pt",
+      "#fff 1pt 2pt 0pt",
+      "#fff 2pt -2pt 0pt",
+      "#fff 2pt -1pt 0pt",
+      "#fff 2pt 0pt 0pt",
+      "#fff 2pt 1pt 0pt",
+      "#fff 2pt 2pt 0pt"
+    ]);
+  });
+
+  it("_buildTextShadow should return a string of text-shadow", function () {
+    let shadow = _buildTextShadow(2, 2, "#acf");
+    expect(shadow).toEqual([
+      "#acf 0pt 0pt 0pt",
+      "#acf 0pt 1pt 0pt",
+      "#acf 0pt 2pt 0pt",
+      "#acf 0pt 3pt 0pt",
+      "#acf 0pt 4pt 0pt",
+      "#acf 1pt 0pt 0pt",
+      "#acf 1pt 1pt 0pt",
+      "#acf 1pt 2pt 0pt",
+      "#acf 1pt 3pt 0pt",
+      "#acf 1pt 4pt 0pt",
+      "#acf 2pt 0pt 0pt",
+      "#acf 2pt 1pt 0pt",
+      "#acf 2pt 2pt 0pt",
+      "#acf 2pt 3pt 0pt",
+      "#acf 2pt 4pt 0pt",
+      "#acf 3pt 0pt 0pt",
+      "#acf 3pt 1pt 0pt",
+      "#acf 3pt 2pt 0pt",
+      "#acf 3pt 3pt 0pt",
+      "#acf 3pt 4pt 0pt",
+      "#acf 4pt 0pt 0pt",
+      "#acf 4pt 1pt 0pt",
+      "#acf 4pt 2pt 0pt",
+      "#acf 4pt 3pt 0pt",
+      "#acf 4pt 4pt 0pt"
+    ].join(", "));
+  });
+
   it("_getStyle should return the correct style on an element", function () {
     var div = _createDiv({"id": "style-test"});
     div.style.setProperty("width", "100px");
@@ -682,8 +744,7 @@ describe("Display.setTextSlides", function () {
     Display.setTextSlides(slides);
 
     const slidesDiv = $(".text-slides")[0];
-    expect(slidesDiv.style['-webkit-text-stroke']).toEqual('42pt red');
-    expect(slidesDiv.style['-webkit-text-fill-color']).toEqual('yellow');
+    expect(slidesDiv.style['text-shadow']).toEqual(_buildTextOutline(42, 'red').join(', '));
   })
 
   it("should correctly set text alignment,\
