@@ -731,6 +731,7 @@ def test_hide_transparent_to_screen(display_window_env, mock_settings):
     def on_dispatch_event(_):
         display_window.display_watcher.register_event_listener(TRANSITION_END_EVENT_NAME, set_has_ran_event, False)
         display_window.display_watcher.dispatchEvent(TRANSITION_END_EVENT_NAME, {})
+    
     display_window.run_javascript = MagicMock(side_effect=on_dispatch_event)
     mock_settings.value.return_value = True
 
