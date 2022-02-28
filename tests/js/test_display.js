@@ -269,7 +269,7 @@ describe("Screen Visibility", function () {
     Display._theme = null;
   });
 
-  it("should trigger dispatchEvent when toTransparent(event_id) is called with an event parameter", function (done) {
+  it("should trigger dispatchEvent when toTransparent(event_name) is called with an event parameter", function (done) {
     var testEventName = 'event_32';
     displayWatcher.dispatchEvent = function(eventName) {
       if (eventName == testEventName) {
@@ -285,7 +285,7 @@ describe("Screen Visibility", function () {
     }, TRANSITION_TIMEOUT);
   });
   
-  it("should trigger dispatchEvent when toBlack(event_id) is called with an event parameter", function (done) {
+  it("should trigger dispatchEvent when toBlack(event_name) is called with an event parameter", function (done) {
     var testEventName = 'event_33';
     displayWatcher.dispatchEvent = function(eventName) {
       if (eventName == testEventName) {
@@ -301,7 +301,7 @@ describe("Screen Visibility", function () {
     }, TRANSITION_TIMEOUT);
   });
 
-  it("should trigger dispatchEvent when toTheme(event_id) is called with an event parameter", function (done) {
+  it("should trigger dispatchEvent when toTheme(event_name) is called with an event parameter", function (done) {
     var testEventName = 'event_34';
     displayWatcher.dispatchEvent = function(eventName) {
       if (eventName == testEventName) {
@@ -317,7 +317,7 @@ describe("Screen Visibility", function () {
     }, TRANSITION_TIMEOUT);
   });
 
-  it("should trigger dispatchEvent when show(event_id) is called with an event parameter", function (done) {
+  it("should trigger dispatchEvent when show(event_name) is called with an event parameter", function (done) {
     var testEventName = 'event_35';
     displayWatcher.dispatchEvent = function(eventName) {
       if (eventName == testEventName) {

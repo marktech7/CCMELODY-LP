@@ -823,7 +823,7 @@ var Display = {
   /**
    * Blank the screen
   */
-  toBlack: function (on_finished_event_id) {
+  toBlack: function (onFinishedEventId) {
     /* Avoid race conditions where display goes to transparent and quickly goes to black */
     Display._abortLastTransitionOperation();
     /*
@@ -838,8 +838,8 @@ var Display = {
       Display._reenableGlobalTransitions(function() {
         var documentBody = $("body")[0];
         documentBody.style.opacity = 1;
-        if (on_finished_event_id) {
-          displayWatcher.dispatchEvent(on_finished_event_id, {});
+        if (onFinishedEventId) {
+          displayWatcher.dispatchEvent(onFinishedEventId, {});
         }
       });
     });
@@ -847,7 +847,7 @@ var Display = {
   /**
    * Hide all but theme background
   */
-  toTheme: function (on_finished_event_id) {
+  toTheme: function (onFinishedEventId) {
     Display._abortLastTransitionOperation();
     /*
       Reveal's black overlay should be shown before the transitions are
@@ -862,15 +862,15 @@ var Display = {
       Reveal.togglePause();
     }
     Display._reenableGlobalTransitions(function() {
-      if (on_finished_event_id) {
-        displayWatcher.dispatchEvent(on_finished_event_id, {});
+      if (onFinishedEventId) {
+        displayWatcher.dispatchEvent(onFinishedEventId, {});
       }
     });
   },
   /**
    * Hide everything (CAUTION: Causes a invisible mouse barrier)
   */
-  toTransparent: function (on_finished_event_id) {
+  toTransparent: function (onFinishedEventId) {
     Display._abortLastTransitionOperation();
     var documentBody = $("body")[0];
     documentBody.style.opacity = 0;
@@ -910,8 +910,8 @@ var Display = {
       Display._requestAnimationFrameExclusive(function() {
         /* We're transparent now, aborting any transition event between */
         Display._abortLastTransitionOperation();
-        if (on_finished_event_id) {
-          displayWatcher.dispatchEvent(on_finished_event_id, {});
+        if (onFinishedEventId) {
+          displayWatcher.dispatchEvent(onFinishedEventId, {});
         }
       });
     }
@@ -919,7 +919,7 @@ var Display = {
   /**
    * Show the screen
   */
-  show: function (on_finished_event_id) {
+  show: function (onFinishedEventId) {
     var documentBody = $("body")[0];
     /*
       Removing transitionend event, avoids the content being hidden if the user
@@ -936,8 +936,8 @@ var Display = {
     Display._restorePauseBehavior();
     Display._reenableGlobalTransitions(function() {
       documentBody.style.opacity = 1;
-      if (on_finished_event_id) {
-        displayWatcher.dispatchEvent(on_finished_event_id, {});
+      if (onFinishedEventId) {
+        displayWatcher.dispatchEvent(onFinishedEventId, {});
       }
     });
   },

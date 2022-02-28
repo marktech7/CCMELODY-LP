@@ -33,7 +33,7 @@ from PyQt5 import QtCore
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.display.window import TRANSITION_END_EVENT_ID, DisplayWindow, DisplayWatcher
+from openlp.core.display.window import TRANSITION_END_EVENT_NAME, DisplayWindow, DisplayWatcher
 from openlp.core.common import is_win
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.theme import Theme
@@ -729,8 +729,8 @@ def test_hide_transparent_to_screen(display_window_env, mock_settings):
         has_ran_event = True
 
     def on_dispatch_event(_):
-        display_window.display_watcher.register_event_listener(TRANSITION_END_EVENT_ID, set_has_ran_event, False)
-        display_window.display_watcher.dispatchEvent(TRANSITION_END_EVENT_ID, {})
+        display_window.display_watcher.register_event_listener(TRANSITION_END_EVENT_NAME, set_has_ran_event, False)
+        display_window.display_watcher.dispatchEvent(TRANSITION_END_EVENT_NAME, {})
     display_window.run_javascript = MagicMock(side_effect=on_dispatch_event)
     mock_settings.value.return_value = True
 
