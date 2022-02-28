@@ -658,6 +658,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         elif view_mode == 'live' and self.settings.value('user interface/is preset layout'):
             self.set_view_mode(False, True, False, False, True, True)
             self.mode_live_item.setChecked(True)
+        else:
+            pass
 
     def first_time(self):
         """
