@@ -650,19 +650,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # This will store currently used layout preset so it remains enabled on next startup.
         # If any panel is enabled/disabled after preset is set, this setting is not saved.
         view_mode = self.settings.value('core/view mode')
-        if view_mode == 'default' and self.settings.value('user interface/is preset layout'):
-            self.mode_default_item.setChecked(True)
-        elif view_mode == 'setup' and self.settings.value('user interface/is preset layout'):
-            self.set_view_mode(True, True, False, True, False, True)
-            self.mode_setup_item.setChecked(True)
-        elif view_mode == 'live' and self.settings.value('user interface/is preset layout'):
-            self.set_view_mode(False, True, False, False, True, True)
-            self.mode_live_item.setChecked(True)
+        # If we are using a default mode set accordingly
+        if self.settings.value('user interface/is preset layout'):
+            if view_mode == 'default':
+                self.set_view_mode(True, True, True, True, True, True)
+                self.mode_default_item.setChecked(True)
+            elif view_mode == 'setup':
+                self.set_view_mode(True, True, False, True, False, True)
+                self.mode_setup_item.setChecked(True)
+            elif view_mode == 'live':
+                self.set_view_mode(False, True, False, False, True, True)
+                self.mode_live_item.setChecked(True)
         else:
             self.set_view_mode(True, True, True,
                                self.settings.value('user interface/preview panel'),
                                self.settings.value('user interface/live panel'),
                                True)
+
 
     def first_time(self):
         """
