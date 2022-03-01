@@ -437,57 +437,44 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         self.projector_form.exec()
 
-    def on_blank_projector(self, opt=None):
+    def on_blank_projector(self, item=None, opt=None):
         """
-        Calls projector thread to send blank screen command
+        Calls projector(s) thread to send blank screen command
 
-        :param opt: Needed by PyQt5
+        :param item: Optional ProjectorItem() instance in case of direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_shutter_closed()
-        except AttributeError:
-            for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_shutter_closed()
-                except Exception:
-                    continue
+        if item is not None:
+            return item.pjlink.set_shutter_closed()
+        for list_item in self.projector_list_widget.selectedItems():
+            list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_closed()
 
-    def on_doubleclick_item(self, item, opt=None):
+    def on_doubleclick_item(self, item):
         """
         When item is doubleclicked, will connect to projector.
 
         :param item: List widget item for connection.
-        :param opt: Needed by PyQt5
         """
         projector = item.data(QtCore.Qt.UserRole)
-        if QSOCKET_STATE[projector.link.state()] != S_CONNECTED:
-            try:
-                log.debug(f'ProjectorManager: Calling connect_to_host() on "{projector.link.ip}"')
-                projector.link.connect_to_host()
-            except Exception:
-                log.debug(f'ProjectorManager: "{projector.link.ip}" already connected - skipping')
+        if QSOCKET_STATE[projector.link.state()] == S_CONNECTED:
+            log.debug(f'ProjectorManager: "{projector.pjlink.name}" already connected - skipping')
+        else:
+            log.debug(f'ProjectorManager: "{projector.pjlink.name}" calling connect_to_host()')
+            projector.link.connect_to_host()
         return
 
-    def on_connect_projector(self, opt=None):
+    def on_connect_projector(self, item=None, opt=None):
         """
         Calls projector thread to connect to projector
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.connect_to_host()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.connect_to_host()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.connect_to_host()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.connect_to_host()
 
     def on_delete_projector(self, opt=None):
         """
@@ -553,23 +540,18 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             log.debug(f'New projector list - item: {item.link.ip} {item.link.name}')
         self.udp_listen_delete(old_port)
 
-    def on_disconnect_projector(self, opt=None):
+    def on_disconnect_projector(self, item=None, opt=None):
         """
         Calls projector thread to disconnect from projector
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.disconnect_from_host()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.disconnect_from_host()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.disconnect_from_host()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.disconnect_from_host()
 
     def on_edit_projector(self, opt=None):
         """
@@ -586,59 +568,44 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         self.projector_form.exec(projector.db_item)
         projector.db_item = self.projectordb.get_projector_by_id(self.old_projector.db_item.id)
 
-    def on_poweroff_projector(self, opt=None):
+    def on_poweroff_projector(self, item=None, opt=None):
         """
-        Calls projector link to send Power Off command
+        Calls projector thread to turn projector off
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_power_off()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_power_off()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_power_off()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_off()
 
-    def on_poweron_projector(self, opt=None):
+    def on_poweron_projector(self, item=None, opt=None):
         """
-        Calls projector link to send Power On command
+        Calls projector thread to turn projector on
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_power_on()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_power_on()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_power_on()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_on()
 
-    def on_show_projector(self, opt=None):
+    def on_show_projector(self, item=None, opt=None):
         """
-        Calls projector thread to send open shutter command
+        Calls projector thread to open shutter
 
-        :param opt: Needed by PyQt5
+        :param item: (Optional) ProjectorItem() for direct call
+        :param opt: (Deprecated)
         """
-        try:
-            opt.link.set_shutter_open()
-        except AttributeError:
+        if item is not None:
+            return item.pjlink.set_shutter_open()
+        else:
             for list_item in self.projector_list_widget.selectedItems():
-                if list_item is None:
-                    return
-                projector = list_item.data(QtCore.Qt.UserRole)
-                try:
-                    projector.link.set_shutter_open()
-                except Exception:
-                    continue
+                list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_open()
 
     def on_status_projector(self, opt=None):
         """
@@ -740,27 +707,27 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param projector: Projector instance to add
         :param start: Start projector if True
         """
-        item = ProjectorItem(link=self._add_projector(projector))
+        item = ProjectorItem(parent=self, item=self._add_projector(projector))
         item.db_item = projector
         item.icon = QtGui.QIcon(self.status_icons[S_NOT_CONNECTED])
         widget = QtWidgets.QListWidgetItem(item.icon,
-                                           item.link.name,
+                                           item.pjlink.name,
                                            self.projector_list_widget
                                            )
         widget.setData(QtCore.Qt.UserRole, item)
-        item.link.db_item = item.db_item
+        item.pjlink.db_item = item.db_item
         item.widget = widget
-        item.link.changeStatus.connect(self.update_status)
-        item.link.projectorAuthentication.connect(self.authentication_error)
-        item.link.projectorNoAuthentication.connect(self.no_authentication_error)
-        item.link.projectorUpdateIcons.connect(self.update_icons)
+        item.pjlink.changeStatus.connect(self.update_status)
+        item.pjlink.projectorAuthentication.connect(self.authentication_error)
+        item.pjlink.projectorNoAuthentication.connect(self.no_authentication_error)
+        item.pjlink.projectorUpdateIcons.connect(self.update_icons)
         # Add UDP listener for new projector port
-        self.udp_listen_add(item.link.port)
+        self.udp_listen_add(item.pjlink.port)
         self.projector_list.append(item)
         if start:
-            item.link.connect_to_host()
+            item.pjlink.connect_to_host()
         for item in self.projector_list:
-            log.debug(f'New projector list - item: ({item.link.ip}) {item.link.name}')
+            log.debug(f'New projector list - item: ({item.pjlink.ip}) {item.pjlink.name}')
 
     @QtCore.pyqtSlot(str)
     def add_projector_from_wizard(self, ip, opts=None):
@@ -969,13 +936,20 @@ class ProjectorItem(QtCore.QObject):
     Class for the projector list widget item.
     NOTE: Actual PJLink class instance should be saved as self.link
     """
-    def __init__(self, link=None):
+    def __init__(self, parent=None, link=None, item=None):
         """
         Initialization for ProjectorItem instance
 
-        :param link: PJLink instance for QListWidgetItem
+        :param link: (Deprecated) PJLink instance for QListWidgetItem
+        :param item: PJLink instance for QListWidgetItem
         """
-        self.link = link
+        # Refactor so self.link is renamed self.pjlink to clarify reference
+        if link is None:
+            self.link = item
+            self.pjlink = item
+        else:
+            self.link = link
+            self.pjlink = link
         self.thread = None
         self.icon = None
         self.widget = None
