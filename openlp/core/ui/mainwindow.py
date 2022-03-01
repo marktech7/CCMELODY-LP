@@ -667,7 +667,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                self.settings.value('user interface/live panel'),
                                True)
 
-
     def first_time(self):
         """
         Import themes if first time
