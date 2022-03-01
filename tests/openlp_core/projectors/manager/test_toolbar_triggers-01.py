@@ -34,7 +34,8 @@ from unittest.mock import DEFAULT, patch
 
 from openlp.core.projectors.db import Projector
 
-from tests.resources.projector.data import FakePJLink, TEST1_DATA, TEST2_DATA, TEST3_DATA
+from tests.helpers.projector import FakePJLink
+from tests.resources.projector.data import TEST1_DATA, TEST2_DATA, TEST3_DATA
 
 
 def helper_method(test_fixture, method, effect, test_item=None):

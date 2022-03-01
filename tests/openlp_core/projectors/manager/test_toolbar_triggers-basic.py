@@ -35,7 +35,7 @@ from unittest.mock import DEFAULT, patch
 from openlp.core.projectors.constants import QSOCKET_STATE, \
     S_CONNECTED, S_NOT_CONNECTED
 
-from tests.resources.projector.data import FakePJLink
+from tests.helpers.projector import FakePJLink
 
 test_module = openlp.core.projectors.manager.__name__
 

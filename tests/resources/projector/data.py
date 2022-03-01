@@ -22,11 +22,6 @@
 The :mod:`tests.resources.projector.data file contains test data
 """
 
-from unittest.mock import MagicMock
-from PyQt5 import QtNetwork
-from openlp.core.projectors.constants import S_OK, S_NOT_CONNECTED
-from openlp.core.projectors.db import Projector
-
 # Test data
 TEST_DB_PJLINK1 = 'projector_pjlink1.sqlite'
 
@@ -301,58 +296,6 @@ class FakeProjector(object):
         self.link = self
         self.port = port
         self.name = name
-
-
-class FakePJLink(object):
-    def __init__(self, projector=None, *args, **kwargs):
-        # Signal mocks
-        self.projectorStatus = MagicMock()
-        self.projectorAuthentication = MagicMock()
-        self.projectorNoAuthentication = MagicMock()
-        self.projectorReceivedData = MagicMock()
-        self.projectorUpdateIcons = MagicMock()
-
-        # Method mocks
-        self.changeStatus = MagicMock()
-        self.connect_to_host = MagicMock()
-        self.disconnect_from_host = MagicMock()
-        self.poll_timer = MagicMock()
-        self.set_power_off = MagicMock()
-        self.set_power_on = MagicMock()
-        self.set_shutter_closed = MagicMock()
-        self.set_shutter_open = MagicMock()
-        self.socket_timer = MagicMock()
-        self.status_timer = MagicMock()
-        self.state = MagicMock()
-
-        # Some tests that may include what it thinks are ProjectorItem()
-        # If ProjectorItem() is called, will probably overwrite these - OK
-        self.link = self
-        self.pjlink = self
-
-        # Normal entries from PJLink
-        self.entry = Projector(**TEST1_DATA) if projector is None else projector
-        self.ip = self.entry.ip
-        self.qhost = QtNetwork.QHostAddress(self.ip)
-        self.location = self.entry.location
-        self.mac_adx = self.entry.mac_adx
-        self.name = self.entry.name
-        self.notes = self.entry.notes
-        self.pin = self.entry.pin
-        self.port = int(self.entry.port)
-        self.pjlink_class = "1" if self.entry.pjlink_class is None else self.entry.pjlink_class
-        self.poll_time = 20000 if 'poll_time' not in kwargs else kwargs['poll_time'] * 1000
-        self.socket_timeout = 5000 if 'socket_timeout' not in kwargs else kwargs['socket_timeout'] * 1000
-        self.no_poll = 'no_poll' in kwargs
-        self.status_connect = S_NOT_CONNECTED
-        self.last_command = ''
-        self.projector_status = S_NOT_CONNECTED
-        self.error_status = S_OK
-        self.send_queue = []
-        self.priority_queue = []
-        self.send_busy = False
-        self.status_timer_checks = {}  # Keep track of events for the status timer
-        # Default mock return values
 
 
 class FakePJLinkUDP(object):
