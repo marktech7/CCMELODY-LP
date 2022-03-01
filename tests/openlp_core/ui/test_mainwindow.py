@@ -580,3 +580,110 @@ def test_projector_manager_dock_unlocked(main_window_reduced):
 
     # THEN: Projector manager dock should have been called with enable UI features
     projector_dock.setFeatures.assert_called_with(7)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_default_mode(mocked_view_mode, main_window, settings):
+    """
+    Test that the view mode is called with the correct parameters for default mode
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.settings.setValue('core/view mode', 'default')
+    main_window.settings.setValue('user interface/is preset layout', True)
+
+    # WHENL we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(True, True, True, True, True, True)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_setup_mode(mocked_view_mode, main_window, settings):
+    """
+    Test that the view mode is called with the correct parameters for setup mode
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.settings.setValue('core/view mode', 'setup')
+    main_window.settings.setValue('user interface/is preset layout', True)
+
+    # WHENL we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(True, True, False, True, False, True)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_live_mode(mocked_view_mode, main_window, settings):
+    """
+    Test that the view mode is called with the correct parameters for live mode
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.settings.setValue('core/view mode', 'live')
+    main_window.settings.setValue('user interface/is preset layout', True)
+
+    # WHENL we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(False, True, False, False, True, True)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_preview(mocked_view_mode, main_window, settings):
+    """
+    Test that the view mode is called with the correct parameters for default
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.settings.setValue('core/view mode', 'default')
+    main_window.settings.setValue('user interface/is preset layout', False)
+    main_window.settings.setValue('user interface/preview panel', False)
+
+    # WHENL we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(True, True, True, False, True, True)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_live(mocked_view_mode, main_window, settings):
+    """
+    Test that the view mode is called with the correct parameters for default
+    """
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.settings.setValue('core/view mode', 'default')
+    main_window.settings.setValue('user interface/is preset layout', False)
+    main_window.settings.setValue('user interface/live panel', False)
+
+    # WHENL we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(True, True, True, True, False, True)
