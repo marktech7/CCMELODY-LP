@@ -159,6 +159,45 @@ function _buildRadialGradient(width, startColor, endColor) {
 }
 
 /**
+ * Build a set of text shadows to form an outline
+ * @private
+ * @param {Number} size - The desired width of the outline
+ * @param {string} color - The color of the outline
+ * @returns {array} A list of shadows to be given to "text-shadow"
+ */
+function _buildTextOutline(size, color) {
+  let shadows = [];
+  // Outlines work from -(size) to +(size)
+  let from = size * -1;
+  // Loop through all the possible size iterations and add them to the array
+  for (let i = from; i <= size; i++) {
+    for (let j = from; j <= size; j++) {
+      shadows.push(color + " " + i + "pt " + j + "pt 0pt");
+    }
+  }
+  return shadows;
+}
+
+/**
+ * Build a text shadow
+ * @private
+ * @param {Number} offset - The offset of the shadow
+ * @param {string} color - The color that the shadow should be
+ * @returns {string} The text-shadow rule
+ */
+function _buildTextShadow(offset, size, color) {
+  let shadows = [];
+  let from = (size * -1) + offset;
+  let to = size + offset;
+  for (let i = from; i <= to; i++) {
+    for (let j = from; j <= to; j++) {
+      shadows.push(color + " " + i + "pt " + j + "pt 0pt");
+    }
+  }
+  return shadows.join(", ");
+}
+
+/**
  * Get a style value from an element (computed or manual)
  * @private
  * @param {Object} element - The element whose style we want
@@ -464,11 +503,9 @@ var Display = {
       return null;
     }
     if (Display._alertState === AlertState.Displaying) {
-      console.debug("Adding to queue");
       Display.addAlertToQueue(text, settings);
     }
     else {
-      console.debug("Displaying immediately");
       Display.showAlert(text, settings);
     }
   },
@@ -541,7 +578,6 @@ var Display = {
    */
   alertTransitionEndEvent: function (e) {
     e.stopPropagation();
-    console.debug("Transition end event reached: " + Display._transitionState);
     if (Display._transitionState === TransitionState.EntranceTransition) {
       Display._transitionState = TransitionState.NoTransition;
     }
@@ -1018,13 +1054,11 @@ var Display = {
         break;
       case BackgroundType.Image:
         backgroundContent = "url('" + Display._theme.background_filename + "')";
-        console.warn(backgroundContent);
         break;
       case BackgroundType.Video:
         // never actually used since background type is overridden from video to transparent in window.py
         backgroundContent = Display._theme.background_border_color;
         backgroundHtml = "<video loop autoplay muted><source src='" + Display._theme.background_filename + "'></video>";
-        console.warn(backgroundHtml);
         break;
       default:
         backgroundContent = "#000";
@@ -1039,11 +1073,6 @@ var Display = {
       return;
     }
     mainStyle = {};
-    if (!!Display._theme.font_main_outline) {
-      mainStyle["-webkit-text-stroke"] = "" + Display._theme.font_main_outline_size + "pt " +
-                                         Display._theme.font_main_outline_color;
-      mainStyle["-webkit-text-fill-color"] = Display._theme.font_main_color;
-    }
     // These need to be fixed, in the Python they use a width passed in as a parameter
     mainStyle.width = Display._theme.font_main_width + "px";
     mainStyle.height = Display._theme.font_main_height + "px";
@@ -1092,9 +1121,22 @@ var Display = {
       default:
         mainStyle["justify-content"] = "center";
     }
-    if (Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
-      mainStyle["text-shadow"] = Display._theme.font_main_shadow_color + " " + Display._theme.font_main_shadow_size + "pt " +
-                                 Display._theme.font_main_shadow_size + "pt";
+    /**
+     * This section draws the font outline. Previously we used the proprietary -webkit-text-stroke property
+     * but it draws the outline INSIDE the text, instead of OUTSIDE, so we had to go back to the old way
+     * of using multiple text-shadow rules to fake an outline.
+     */
+    if (!!Display._theme.font_main_outline && Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
+      let outlineShadows = _buildTextOutline(Display._theme.font_main_outline_size, Display._theme.font_main_outline_color);
+      let textShadow = _buildTextShadow(Display._theme.font_main_shadow_size, Display._theme.font_main_outline_size, Display._theme.font_main_shadow_color);
+      mainStyle["text-shadow"] = outlineShadows.join(", ") + ", " + textShadow;
+    }
+    else if (!!Display._theme.font_main_outline) {
+      let outlineShadows = _buildTextOutline(Display._theme.font_main_outline_size, Display._theme.font_main_outline_color);
+      mainStyle["text-shadow"] = outlineShadows.join(", ");
+    }
+    else if (Display._theme.hasOwnProperty('font_main_shadow_size') && !!Display._theme.font_main_shadow) {
+      mainStyle["text-shadow"] = _buildTextShadow(Display._theme.font_main_shadow_size, 0, Display._theme.font_main_shadow_color);
     }
     targetElement.style.cssText = "";
     for (var mainKey in mainStyle) {

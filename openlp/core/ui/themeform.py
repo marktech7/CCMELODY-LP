@@ -377,7 +377,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_main_outline_size = self.main_area_page.outline_size
         self.theme.font_main_shadow = self.main_area_page.is_shadow_enabled
         self.theme.font_main_shadow_size = self.main_area_page.shadow_size
-        self.main_area_page.shadow_color = self.theme.font_main_shadow_color
+        self.theme.font_main_shadow_color = self.main_area_page.shadow_color
         self.theme.font_main_bold = self.main_area_page.is_bold
         self.theme.font_main_italics = self.main_area_page.is_italic
         # footer page
