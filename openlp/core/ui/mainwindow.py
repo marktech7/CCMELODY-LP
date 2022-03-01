@@ -659,7 +659,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.set_view_mode(False, True, False, False, True, True)
             self.mode_live_item.setChecked(True)
         else:
-            pass
+            self.set_view_mode(True, True, True,
+                               self.settings.value('user interface/preview panel'),
+                               self.settings.value('user interface/live panel'),
+                               True)
 
     def first_time(self):
         """
