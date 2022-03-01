@@ -1104,6 +1104,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # Check if we need to change the data directory
         if self.new_data_path:
             self.change_data_directory()
+        # Close down WebSocketServer
+        self.ws_server.close()
         # Close down the display
         self.live_controller.close_displays()
         # Clean temporary files used by services
