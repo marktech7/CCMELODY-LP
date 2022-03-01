@@ -286,24 +286,3 @@ TEST_VIDEO_CODES = {
     '6Y': 'Internal Y',
     '6Z': 'Internal Z'
 }
-
-
-class FakeProjector(object):
-    """
-    Helper test class
-    """
-    def __init__(self, port=4352, name="Faker"):
-        self.link = self
-        self.port = port
-        self.name = name
-
-
-class FakePJLinkUDP(object):
-    """
-    Helper test class
-    """
-    def __init__(self, *args, **kwargs):
-        pass
-
-    def check_settings(self, *args, **kwargs):
-        pass

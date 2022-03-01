@@ -30,20 +30,10 @@ from openlp.core.projectors.pjlinkcommands import process_pjlink
 from openlp.core.projectors.constants import E_AUTHENTICATION, E_NO_AUTHENTICATION, \
     S_AUTHENTICATE, S_CONNECT
 
+from tests.helpers.projector import FakeProjector
 from tests.resources.projector.data import TEST_PIN, TEST_SALT
 
 test_module = openlp.core.projectors.pjlinkcommands.__name__
-
-
-class FakeProjector(object):
-    """
-    Helper test class
-    """
-    def __init__(self, port=4352, name="Faker"):
-        self.entry = self
-        self.name = name
-        self.pin = None
-        self.port = port
 
 
 @pytest.fixture

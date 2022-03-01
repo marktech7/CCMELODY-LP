@@ -26,7 +26,7 @@ import logging
 from unittest.mock import MagicMock, patch
 
 
-from tests.resources.projector.data import FakePJLinkUDP, FakeProjector
+from tests.helpers.projector import FakePJLinkUDP, FakeProjector
 
 
 def test_udp_listen_add_duplicate(projector_manager, caplog):
