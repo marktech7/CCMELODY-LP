@@ -18,7 +18,7 @@ environment:
       CHOCO_VLC_ARG: --forcex86
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
-    - APPVEYOR_BUILD_WORKER_IMAGE: macos-mojave
+    - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
