@@ -30,7 +30,33 @@ from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
 
 
+class FakeProjector(object):
+    """
+    Helper test class
+    """
+    def __init__(self, port=4352, name="Faker"):
+        self.link = self
+        self.entry = self
+        self.name = name
+        self.pin = None
+        self.port = port
+
+
+class FakePJLinkUDP(object):
+    """
+    Helper test class
+    """
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def check_settings(self, *args, **kwargs):
+        pass
+
+
 class FakePJLink(object):
+    """
+    Helper class with signals and methods mocked
+    """
     def __init__(self, projector=None, *args, **kwargs):
         # Signal mocks
         self.projectorStatus = MagicMock()
