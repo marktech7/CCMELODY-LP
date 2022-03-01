@@ -29,7 +29,6 @@ from threading import Lock
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.state import State
 from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.i18n import UiStrings, translate
@@ -40,10 +39,12 @@ from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ServiceItemAction, image_to_byte
 from openlp.core.lib.serviceitem import ItemCapabilities
-from openlp.core.ui.media import media_empty_song
+from openlp.core.lib.theme import BackgroundType
 from openlp.core.lib.ui import create_action
+from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
+from openlp.core.ui.media import media_empty_song
 from openlp.core.widgets.layouts import AspectRatioLayout
 from openlp.core.widgets.toolbar import OpenLPToolbar
 from openlp.core.widgets.views import ListPreviewWidget
@@ -1558,15 +1559,20 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         :param item: The service item to be processed
         """
         if State().check_preconditions('media'):
+            theme_data = item.get_theme_data()
+            is_theme_background = BackgroundType.from_string(theme_data.background_type) in [BackgroundType.Stream,
+                                                                                             BackgroundType.Video]
             if self.is_live and not item.is_media() and item.requires_media():
-                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
+                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode,
+                                                 is_theme_background)
             elif self.is_live:
                 if self._current_hide_mode == HideMode.Theme:
                     self.set_hide_mode(HideMode.Blank)
-                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode)
+                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode,
+                                                 is_theme_background)
             elif item.is_media():
                 # avoid loading the video if this is preview and the media is background
-                self.media_controller.load_video(self.controller_type, item)
+                self.media_controller.load_video(self.controller_type, item, is_theme_background=is_theme_background)
             if not self.is_live:
                 self.preview_display.show()
 
