@@ -42,6 +42,7 @@ from openlp.core.ui import HideMode
 
 
 FONT_FOUNDRY = re.compile(r'(.*?) \[(.*?)\]')
+TRANSITION_END_EVENT_NAME = 'transparent_transition_end'
 log = logging.getLogger(__name__)
 
 
@@ -54,6 +55,9 @@ class DisplayWatcher(QtCore.QObject):
     def __init__(self, parent):
         super().__init__()
         self._display_window = parent
+        self._transient_dispatch_events = {}
+        self._permanent_dispatch_events = {}
+        self._event_counter = 0
 
     @QtCore.pyqtSlot(bool)
     def setInitialised(self, is_initialised):
@@ -69,6 +73,57 @@ class DisplayWatcher(QtCore.QObject):
         Called from the js in the webengine view when it's requesting a repaint by Qt
         """
         self._display_window.webview.update()
+
+    @QtCore.pyqtSlot(str, 'QJsonObject')
+    def dispatchEvent(self, event_name, event_data):
+        """
+        Called from the js in the webengine view for event dispatches
+        """
+        transient_dispatch_events = self._transient_dispatch_events
+        permanent_dispatch_events = self._permanent_dispatch_events
+        if event_name in transient_dispatch_events:
+            event = transient_dispatch_events[event_name]
+            del transient_dispatch_events[event_name]
+            event(event_data)
+        if event_name in permanent_dispatch_events:
+            permanent_dispatch_events[event_name](event_data)
+
+    def register_event_listener(self, event_name, callback, transient=True):
+        """
+        Register an event listener from webengine view
+        :param event_name: Event name
+        :param callback: Callback listener when event happens
+        :param transient: If the event listener should be unregistered after being run
+        """
+        if transient:
+            events = self._transient_dispatch_events
+        else:
+            events = self._permanent_dispatch_events
+
+        events[event_name] = callback
+
+    def unregister_event_listener(self, event_name, transient=True):
+        """
+        Unregisters an event listener from webengine view
+        :param event_name: Event name
+        :param transient: If the event listener was registered as transient
+        """
+        if transient:
+            events = self._transient_dispatch_events
+        else:
+            events = self._permanent_dispatch_events
+
+        if event_name in events:
+            del events[event_name]
+
+    def get_unique_event_name(self):
+        """
+        Generates an unique event name
+        :returns: Unique event name
+        """
+        event_count = self._event_counter
+        self._event_counter += 1
+        return 'event_' + str(event_count)
 
 
 class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
@@ -431,9 +486,11 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
-        self.run_javascript('Display.show();')
+        # Aborting setVisible(False) call in case the display modes are changed quickly
+        self.display_watcher.unregister_event_listener(TRANSITION_END_EVENT_NAME)
         if self.isHidden():
             self.setVisible(True)
+        self.run_javascript('Display.show();')
         self.hide_mode = None
 
     def hide_display(self, mode=HideMode.Screen):
@@ -447,19 +504,24 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             # Only make visible on single monitor setup if setting enabled.
             if len(ScreenList()) == 1 and not self.settings.value('core/display on monitor'):
                 return
+        # Aborting setVisible(False) call in case the display modes are changed quickly
+        self.display_watcher.unregister_event_listener(TRANSITION_END_EVENT_NAME)
         # Update display to the selected mode
+        if mode != HideMode.Screen:
+            if self.isHidden():
+                self.setVisible(True)
         if mode == HideMode.Screen:
             if self.settings.value('advanced/disable transparent display'):
-                self.setVisible(False)
+                # Hide window only after all webview CSS ransitions are done
+                self.display_watcher.register_event_listener(TRANSITION_END_EVENT_NAME,
+                                                             lambda _: self.setVisible(False))
+                self.run_javascript("Display.toTransparent('{}');".format(TRANSITION_END_EVENT_NAME))
             else:
                 self.run_javascript('Display.toTransparent();')
         elif mode == HideMode.Blank:
             self.run_javascript('Display.toBlack();')
         elif mode == HideMode.Theme:
             self.run_javascript('Display.toTheme();')
-        if mode != HideMode.Screen:
-            if self.isHidden():
-                self.setVisible(True)
         self.hide_mode = mode
 
     def disable_display(self):

@@ -308,7 +308,92 @@ describe("Transitions", function () {
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition")).toEqual("convex-vertical-reverse");
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition-speed")).toEqual("slow");
   });
+});
 
+
+describe("Screen Visibility", function () {
+  var TRANSITION_TIMEOUT = 2000;
+
+  beforeEach(function() {
+    window.displayWatcher = jasmine.createSpyObj('DisplayWatcher', ['dispatchEvent', 'setInitialised', 'pleaseRepaint']);
+    document.body.innerHTML = "";
+    var revealDiv = _createDiv({"class": "reveal"});
+    var slidesDiv = _createDiv({"class": "slides"});
+    var footerDiv = _createDiv({"class": "footer"});
+    slidesDiv.innerHTML = "<section><section><p></p></section></section>";
+    revealDiv.append(slidesDiv);
+    revealDiv.append(footerDiv);
+    document.body.style.transition = "opacity 75ms ease-in-out";
+    Display.init({isDisplay: true, doItemTransition: false});
+  });
+  afterEach(function() {
+    // Reset theme
+    Display._theme = null;
+  });
+
+  it("should trigger dispatchEvent when toTransparent(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_32';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toTransparent(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+  
+  it("should trigger dispatchEvent when toBlack(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_33';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toBlack(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+
+  it("should trigger dispatchEvent when toTheme(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_34';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.toTheme(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
+
+  it("should trigger dispatchEvent when show(eventName) is called with an event parameter", function (done) {
+    var testEventName = 'event_35';
+    displayWatcher.dispatchEvent = function(eventName) {
+      if (eventName == testEventName) {
+        done();
+      }
+    };
+
+    Display.show(testEventName);
+
+    setTimeout(function() {
+      fail('dispatchEvent not called');
+      done();
+    }, TRANSITION_TIMEOUT);
+  });
 });
 
 describe("Display.alert", function () {

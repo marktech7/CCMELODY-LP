@@ -321,6 +321,8 @@ var Display = {
     width: "100%",
     height: "100%"
   },
+  _lastRequestAnimationFrameHandle: null,
+
   /**
    * Start up reveal and do any other initialisation
    * @param {object} options - The initialisation options:
@@ -415,7 +417,7 @@ var Display = {
       Reveal.slide(0, currentSlide.v);
       Reveal.sync();
       Display._removeLastSection();
-	  Display._skipNextTransition = false;
+      Display._skipNextTransition = false;
     }
   },
   /**
@@ -857,17 +859,37 @@ var Display = {
   /**
    * Blank the screen
   */
-  toBlack: function () {
-    var documentBody = $("body")[0];
-    documentBody.style.opacity = 1;
-    if (!Reveal.isPaused()) {
-      Reveal.togglePause();
-    }
+  toBlack: function (onFinishedEventName) {
+    /* Avoid race conditions where display goes to transparent and quickly goes to black */
+    Display._abortLastTransitionOperation();
+    /*
+      Reveal's black overlay should be shown before the transitions are
+      restored, to avoid screen flashes
+    */
+    Display._restorePauseBehavior();
+    Display._requestAnimationFrameExclusive(function() {
+      if (!Reveal.isPaused()) {
+        Reveal.togglePause();
+      }
+      Display._reenableGlobalTransitions(function() {
+        var documentBody = $("body")[0];
+        documentBody.style.opacity = 1;
+        if (onFinishedEventName) {
+          displayWatcher.dispatchEvent(onFinishedEventName, {});
+        }
+      });
+    });
   },
   /**
    * Hide all but theme background
   */
-  toTheme: function () {
+  toTheme: function (onFinishedEventName) {
+    Display._abortLastTransitionOperation();
+    /*
+      Reveal's black overlay should be shown before the transitions are
+      restored, to avoid screen flashes
+    */
+    Display._restorePauseBehavior();
     var documentBody = $("body")[0];
     documentBody.style.opacity = 1;
     Display._slidesContainer.style.opacity = 0;
@@ -875,31 +897,140 @@ var Display = {
     if (Reveal.isPaused()) {
       Reveal.togglePause();
     }
+    Display._reenableGlobalTransitions(function() {
+      if (onFinishedEventName) {
+        displayWatcher.dispatchEvent(onFinishedEventName, {});
+      }
+    });
   },
   /**
    * Hide everything (CAUTION: Causes a invisible mouse barrier)
   */
-  toTransparent: function () {
-    Display._slidesContainer.style.opacity = 0;
-    Display._footerContainer.style.opacity = 0;
+  toTransparent: function (onFinishedEventName) {
+    Display._abortLastTransitionOperation();
     var documentBody = $("body")[0];
     documentBody.style.opacity = 0;
     if (!Reveal.isPaused()) {
+      /*
+        Removing previously the overlay if it's not paused, to avoid a
+        content flash while going from black screen to transparent
+      */
+      document.body.classList.add('is-desktop');
       Reveal.togglePause();
+    }
+    /*
+      Waiting for body transition to happen, now it would be safe to
+      hide the Webview (as other transitions were suppressed)
+    */
+    Display._abortLastTransitionOperation();
+    Display._addTransitionEndEventToBody(transitionEndEvent);
+    function transitionEndEvent(e) {
+      // Targeting only body
+      if (e.target != documentBody) {
+        return;
+      }
+      /*
+        Disabling all transitions (except body) to allow the Webview to attain the
+        transparent state before it gets hidden by Qt.
+      */    
+      document.body.classList.add('disable-transitions');
+      document.body.classList.add('is-desktop');
+      Display._slidesContainer.style.opacity = 0;
+      Display._footerContainer.style.opacity = 0;
+      /*
+        Repainting before hiding the Webview to avoid flashes when
+        showing it again.
+      */
+      displayWatcher.pleaseRepaint();
+      /* Waiting for repaint to happen before saying that it's done. */
+      Display._requestAnimationFrameExclusive(function() {
+        /* We're transparent now, aborting any transition event between */
+        Display._abortLastTransitionOperation();
+        if (onFinishedEventName) {
+          displayWatcher.dispatchEvent(onFinishedEventName, {});
+        }
+      });
     }
   },
   /**
    * Show the screen
   */
-  show: function () {
+  show: function (onFinishedEventName) {
     var documentBody = $("body")[0];
-    documentBody.style.opacity = 1;
+    /*
+      Removing transitionend event, avoids the content being hidden if the user
+      tries to show content again before toTransparent() transitionend event
+      happens
+    */
+    Display._abortLastTransitionOperation();
+
     Display._slidesContainer.style.opacity = 1;
     Display._footerContainer.style.opacity = 1;
     if (Reveal.isPaused()) {
       Reveal.togglePause();
     }
+    Display._restorePauseBehavior();
+    Display._reenableGlobalTransitions(function() {
+      documentBody.style.opacity = 1;
+      if (onFinishedEventName) {
+        displayWatcher.dispatchEvent(onFinishedEventName, {});
+      }
+    });
   },
+
+  _reenableGlobalTransitions: function(afterCallback) {
+    Display._requestAnimationFrameExclusive(function() {
+      /*
+        Waiting for the previous opacity + unpause operations to complete
+        to restore the transitions behavior
+      */
+      document.body.classList.remove('disable-transitions');
+      if (typeof afterCallback === 'function') {
+        afterCallback();
+      }
+    });
+  },
+
+  /**
+   * Shows again the Reveal's black pause overlay that was
+   * hidden before Webview was hidden
+   */
+  _restorePauseBehavior: function() {
+    document.body.classList.remove('is-desktop');
+  },
+
+  /**
+   * Cancels previous requested animationFrame.
+   * Last animationFrame should be aborted to avoid race condition bugs when
+   * the user changes the view modes too quickly, for example.
+   */
+  _requestAnimationFrameExclusive: function(callback) {
+    cancelAnimationFrame(Display._lastRequestAnimationFrameHandle);
+    Display._lastRequestAnimationFrameHandle = requestAnimationFrame(callback);
+  },
+
+  /**
+   * Aborts last body's transitionend and requestAnimationFrame's events, to avoid
+   * race condition bugs.
+   */
+  _abortLastTransitionOperation: function() {
+    Display._removeTransitionEndEventToBody();
+    cancelAnimationFrame(Display._lastRequestAnimationFrameHandle);
+  },
+
+  /**
+   * Intercepts the addEventListener call and stores it, so that it acts
+   * like the ontransitionend GlobalEventHandler.
+   */
+  _addTransitionEndEventToBody: function(listener) {
+    Display._lastTransitionEndBodyEvent = listener;
+    document.body.addEventListener('transitionend', listener);
+  },
+
+  _removeTransitionEndEventToBody: function() {
+    document.body.removeEventListener('transitionend', Display._lastTransitionEndBodyEvent);
+  },
+
   /**
    * Figure out how many lines can fit on a slide given the font size
    * @param fontSize The font size in pts
@@ -1171,11 +1302,11 @@ var Display = {
    * and we don't want any flashbacks to the current slide contents
    */
   finishWithCurrentItem: function () {
-	Display.setTextSlide('');
-	var documentBody = $("body")[0];
+    Display.setTextSlide('');
+    var documentBody = $("body")[0];
     documentBody.style.opacity = 1;
-	Display._skipNextTransition = true;
-	displayWatcher.pleaseRepaint();
+    Display._skipNextTransition = true;
+    displayWatcher.pleaseRepaint();
   },
   /**
    * Return the video types supported by the video tag
@@ -1227,7 +1358,7 @@ var Display = {
    */
   setFooterSlideNumbers: function (slide) {
     let value = ['', '', ''];
-	// Reveal does call this function passing undefined
+    // Reveal does call this function passing undefined
     if (typeof slide === 'undefined') {
       return value;
     }
