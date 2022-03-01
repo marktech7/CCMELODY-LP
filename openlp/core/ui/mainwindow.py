@@ -985,7 +985,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.setValue('user interface/is preset layout', True)
         self.settings.setValue('projector/show after wizard', True)
 
-    def set_view_mode(self, media=True, service=True, theme=True, preview=True, live=True, projector=True, mode=''):
+    def set_view_mode(self, media=True, service=True, theme=True, preview=True,
+                      live=True, projector=True, mode='') -> None:
         """
         Set OpenLP to a different view mode.
         """
