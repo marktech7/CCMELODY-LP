@@ -583,7 +583,7 @@ def test_projector_manager_dock_unlocked(main_window_reduced):
 
 
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_default(mocked_view_mode, main_window, settings):
+def test_load_settings_view_mode_default_mode(mocked_view_mode, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for default mode
     """
@@ -604,7 +604,7 @@ def test_load_settings_view_mode_default(mocked_view_mode, main_window, settings
 
 
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_setup(mocked_view_mode, main_window, settings):
+def test_load_settings_view_mode_setup_mode(mocked_view_mode, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for setup mode
     """
@@ -625,7 +625,7 @@ def test_load_settings_view_mode_setup(mocked_view_mode, main_window, settings):
 
 
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_live(mocked_view_mode, main_window, settings):
+def test_load_settings_view_mode_live_mode(mocked_view_mode, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for live mode
     """
