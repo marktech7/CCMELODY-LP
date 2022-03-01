@@ -481,7 +481,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.set_up_default_values()
         self.about_form = AboutForm(self)
         self.ws_server = WebSocketServer()
-        self.ws_server.start()
         self.http_server = HttpServer(self)
         start_zeroconf()
         SettingsForm(self)
