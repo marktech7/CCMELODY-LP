@@ -28,6 +28,7 @@ from unittest.mock import patch
 from openlp.core.projectors.db import Projector, ProjectorDB
 from openlp.core.projectors.manager import ProjectorManager
 from openlp.core.projectors.pjlink import PJLink
+from tests.helpers.projector import FakePJLink
 from tests.resources.projector.data import TEST_DB, TEST1_DATA
 
 '''
@@ -76,6 +77,13 @@ def projector_manager_mtdb(settings):
         t_db.session.close()
         del t_db
         del t_manager
+
+
+@pytest.fixture
+def fake_pjlink():
+    faker = FakePJLink()
+    yield faker
+    del(faker)
 
 
 @pytest.fixture()

@@ -270,7 +270,7 @@ def process_inf2(projector, data):
     return
 
 
-_pjlink_functions['INF2'] = process_inf2()
+_pjlink_functions['INF2'] = process_inf2
 
 
 def process_info(projector, data):

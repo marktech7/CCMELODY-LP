@@ -24,26 +24,14 @@ Test process_pjlink method
 
 import logging
 import openlp.core.projectors.pjlinkcommands
-import pytest
 
 from openlp.core.projectors.pjlinkcommands import process_pjlink
 from openlp.core.projectors.constants import E_AUTHENTICATION, E_NO_AUTHENTICATION, \
     S_AUTHENTICATE, S_CONNECT
 
-from tests.helpers.projector import FakeProjector
 from tests.resources.projector.data import TEST_PIN, TEST_SALT
 
 test_module = openlp.core.projectors.pjlinkcommands.__name__
-
-
-@pytest.fixture
-def fake_pjlink():
-    """
-    Helper since we don't need a full-blown PJLink() instance
-    """
-    dumb_projector = FakeProjector()
-    yield dumb_projector
-    del(dumb_projector)
 
 
 def test_normal_no_authentication_type(fake_pjlink, caplog):
