@@ -454,10 +454,10 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                                                                controller.media_info.media_type is not MediaType.Stream)
                                                                or controller.media_info.media_type is MediaType.Audio)
         # Start Timer for ui updates
-        #if controller.is_live:
+        # if controller.is_live:
         #    if not self.live_timer.isActive():
         #        self.live_timer.start()
-        #else:
+        # else:
         #    if not self.preview_timer.isActive():
         #        self.preview_timer.start()
         controller.seek_slider.blockSignals(False)
@@ -483,7 +483,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         start_again = False
         stopped = False
         if controller.media_info.is_playing and controller.media_info.length > 0:
-            #controller.media_info.timer += TICK_TIME
+            # controller.media_info.timer += TICK_TIME
             print(controller.media_info.timer)
             print(controller.media_info.start_time + controller.media_info.length)
             if controller.media_info.timer >= controller.media_info.start_time + controller.media_info.length:
