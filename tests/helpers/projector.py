@@ -57,8 +57,10 @@ class FakePJLink(object):
     """
     Helper class with signals and methods mocked
     """
-    def __init__(self, projector=None, *args, **kwargs):
+    def __init__(self, projector=Projector(**TEST1_DATA), *args, **kwargs):
         # Signal mocks
+        self.changeStatus = MagicMock()  # Deprecated use projectorChangeStatus
+        self.projectorChangeStatus = MagicMock()
         self.projectorStatus = MagicMock()
         self.projectorAuthentication = MagicMock()
         self.projectorNoAuthentication = MagicMock()
@@ -66,7 +68,7 @@ class FakePJLink(object):
         self.projectorUpdateIcons = MagicMock()
 
         # Method mocks
-        self.changeStatus = MagicMock()
+        self.change_status = MagicMock()
         self.connect_to_host = MagicMock()
         self.disconnect_from_host = MagicMock()
         self.poll_timer = MagicMock()
@@ -84,7 +86,8 @@ class FakePJLink(object):
         self.pjlink = self
 
         # Normal entries from PJLink
-        self.entry = Projector(**TEST1_DATA) if projector is None else projector
+        self.db = projector
+        self.entry = self.db  # Deprecated use self.db
         self.ip = self.entry.ip
         self.qhost = QtNetwork.QHostAddress(self.ip)
         self.location = self.entry.location

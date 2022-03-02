@@ -186,12 +186,14 @@ class PJLink(QtNetwork.QTcpSocket):
     Socket services for PJLink TCP packets.
     """
     # Signals sent by this module
-    changeStatus = QtCore.pyqtSignal(str, int, str)
+    projectorChangeStatus = QtCore.pyqtSignal(str, int, str)
     projectorStatus = QtCore.pyqtSignal(int)  # Status update
     projectorAuthentication = QtCore.pyqtSignal(str)  # Authentication error
     projectorNoAuthentication = QtCore.pyqtSignal(str)  # PIN set and no authentication needed
     projectorReceivedData = QtCore.pyqtSignal()  # Notify when received data finished processing
     projectorUpdateIcons = QtCore.pyqtSignal()  # Update the status icons on toolbar
+    # Deprecated
+    changeStatus = projectorChangeStatus  # Use projectorChangeStatus
 
     def __init__(self, projector, *args, **kwargs):
         """
@@ -207,7 +209,8 @@ class PJLink(QtNetwork.QTcpSocket):
         log.debug(f'PJLink(projector="{projector}", args="{args}" kwargs="{kwargs}")')
         super().__init__()
         self.settings_section = 'projector'
-        self.entry = projector
+        self.db = projector
+        self.entry = self.db  # Deprecated use self.db
         self.ip = self.entry.ip
         self.qhost = QtNetwork.QHostAddress(self.ip)
         self.location = self.entry.location
