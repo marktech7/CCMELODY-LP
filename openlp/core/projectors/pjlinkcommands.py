@@ -110,16 +110,31 @@ def process_ackn(projector, data):
 _pjlink_functions['ACKN'] = process_ackn
 
 
-def process_avmt(projector, data):
+def _process_avmt_mute(projector, data):
+    """
+    Helper to set projector.mute
+    """
+    projector.mute = data
+
+
+def _process_avmt_shutter(projector, data):
+    """
+    Helper to set projector.shutter
+    """
+    projector.shutter = data
+
+
+def _process_avmt(projector, data):
     """
     Process shutter and speaker status. See PJLink specification for format.
-    Update projector.mute (audio) and projector.shutter (video shutter).
+
+    Update projector.mute (audio mute) and projector.shutter (video mute).
     10 = Shutter open, audio unchanged
     11 = Shutter closed, audio unchanged
-    20 = Shutter unchanged, Audio normal
-    21 = Shutter unchanged, Audio muted
-    30 = Shutter open, audio muted
-    31 = Shutter closed,  audio normal
+    20 = Shutter unchanged, audio normal
+    21 = Shutter unchanged, audio mute
+    30 = Shutter open, audio normal
+    31 = Shutter closed, audio mute
 
     :param projector: Projector instance
     :param data: Shutter and audio status
@@ -138,10 +153,11 @@ def process_avmt(projector, data):
     mute = settings[data]['mute']
     update_icons = False
     if projector.shutter != shutter:
-        projector.shutter = shutter
+        _process_avmt_shutter(projector=projector, data=shutter)
         update_icons = True
         log.debug(f'({projector.entry.name}) Setting shutter to {"closed" if shutter else "open"}')
     if projector.mute != mute:
+        _process_avmt_mute(projector=projector, data=mute)
         projector.mute = mute
         update_icons = True
         log.debug(f'({projector.entry.name}) Setting speaker to {"muted" if mute else "normal"}')
@@ -150,7 +166,7 @@ def process_avmt(projector, data):
     projector.status_timer_delete('AVMT')
 
 
-_pjlink_functions['AVMT'] = process_avmt
+_pjlink_functions['AVMT'] = _process_avmt
 
 
 def process_clss(projector, data):
