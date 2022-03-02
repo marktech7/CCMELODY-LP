@@ -687,3 +687,46 @@ def test_load_settings_view_mode_live(mocked_view_mode, main_window, settings):
     # THEN:
     # The default mode should have been called.
     mocked_view_mode.assert_called_with(True, True, True, True, False, True)
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.warning')
+def test_screen_changed_modal(mocked_warning, main_window):
+    """
+    Test that the screen changed modal is shown whether a 'config_screen_changed' event is dispatched
+    """
+    # GIVEN: a newly opened OpenLP instance, mocked screens and renderer
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window._renderer = MagicMock()
+
+    # WHEN: we trigger a 'config_screen_changed' event
+    Registry().execute('config_screen_changed')
+
+    # THEN: The modal should be called once
+    mocked_warning.assert_called_once()
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.warning')
+def test_screen_changed_modal_sets_timestamp_before_blocking_on_modal(mocked_warning, main_window):
+    """
+    Test that the screen changed modal latest shown timestamp is set before showing warning message, so
+    that duplicate modals due to event spamming on 'config_screen_changed' in less than 5 seconds is mitigated.
+    """
+    # GIVEN: a newly opened OpenLP instance, mocked screens, renderer and an special QMessageBox warning handler
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window._renderer = MagicMock()
+
+    def resets_timestamp(*args, **kwargs):
+        nonlocal main_window
+        main_window.screen_change_timestamp = None
+
+    mocked_warning.side_effect = resets_timestamp
+
+    # WHEN: we trigger a 'config_screen_changed' event
+    Registry().execute('config_screen_changed')
+
+    # THEN: main_window.screen_change_timestamp should be "None", indicating that timestamp is set before
+    # the blocking modal is shown.
+    mocked_warning.assert_called_once()
+    assert main_window.screen_change_timestamp is None
