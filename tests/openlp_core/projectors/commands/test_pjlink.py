@@ -135,6 +135,7 @@ def test_normal_login(fake_pjlink, caplog):
             (f'{test_module}', logging.DEBUG,
              f'({fake_pjlink.entry.name}) PJLINK: Returning S_CONNECT')
             ]
+    fake_pjlink.pin = None
 
     # WHEN: Calling function
     caplog.clear()
@@ -247,6 +248,7 @@ def test_authenticate_no_pin(fake_pjlink, caplog):
             (f'{test_module}', logging.ERROR,
              f'({fake_pjlink.entry.name}) Authenticate connection but no PIN - aborting')
             ]
+    fake_pjlink.pin = None
 
     # WHEN: Calling function
     caplog.clear()
