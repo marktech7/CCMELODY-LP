@@ -31,6 +31,23 @@ _process_lkup = openlp.core.projectors.pjlinkcommands._process_lkup
 _process_srch = openlp.core.projectors.pjlinkcommands._process_srch
 
 
+def test_lkup_connect(fake_pjlink, settings, caplog):
+    """
+    Test LKUP when settings indicate connect
+    """
+    # GIVEN: Test setup
+    caplog.set_level(logging.DEBUG)
+    logs = [(test_module, logging.DEBUG, f'({fake_pjlink.name}) Processing LKUP command')]
+    settings.setValue('projector/connect when LKUP received', True)
+
+    # WHEN: Called
+    _process_lkup(projector=fake_pjlink, data=None)
+
+    # THEN: Only log entry made
+    assert caplog.record_tuples == logs, 'Invalid log entries'
+    fake_pjlink.connect_to_host.assert_called_once()
+
+
 def test_lkup_no_connect(fake_pjlink, settings, caplog):
     """
     Test LKUP when settings indicate no connect
