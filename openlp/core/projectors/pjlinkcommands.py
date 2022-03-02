@@ -57,6 +57,10 @@ log.debug('Loading pjlinkcommands')
 
 __all__ = ['process_command']
 
+_pjlink_functions = {}
+# Helper until I update the rest of the tests
+pjlink_functions = _pjlink_functions
+
 
 # This should be the only function that's imported.
 def process_command(projector, cmd, data):
@@ -103,6 +107,9 @@ def process_ackn(projector, data):
     pass
 
 
+_pjlink_functions['ACKN'] = process_ackn
+
+
 def process_avmt(projector, data):
     """
     Process shutter and speaker status. See PJLink specification for format.
@@ -143,6 +150,9 @@ def process_avmt(projector, data):
     projector.status_timer_delete('AVMT')
 
 
+_pjlink_functions['AVMT'] = process_avmt
+
+
 def process_clss(projector, data):
     """
     PJLink class that this projector supports. See PJLink specification for format.
@@ -180,6 +190,9 @@ def process_clss(projector, data):
         log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
         projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
         projector.poll_timer.start()
+
+
+_pjlink_functions['CLSS'] = process_clss
 
 
 def process_erst(projector, data):
@@ -225,6 +238,9 @@ def process_erst(projector, data):
     return
 
 
+_pjlink_functions['ERST'] = process_erst
+
+
 def process_inf1(projector, data):
     """
     Manufacturer name set in projector.
@@ -236,6 +252,9 @@ def process_inf1(projector, data):
     projector.manufacturer = data
     log.debug(f'({projector.entry.name}) Setting projector manufacturer data to "{projector.manufacturer}"')
     return
+
+
+_pjlink_functions['INF1'] = process_inf1
 
 
 def process_inf2(projector, data):
@@ -251,6 +270,9 @@ def process_inf2(projector, data):
     return
 
 
+_pjlink_functions['INF2'] = process_inf2()
+
+
 def process_info(projector, data):
     """
     Any extra info set in projector.
@@ -262,6 +284,9 @@ def process_info(projector, data):
     projector.other_info = data
     log.debug(f'({projector.entry.name}) Setting projector other_info to "{projector.other_info}"')
     return
+
+
+_pjlink_functions['INFO'] = process_info
 
 
 def process_inpt(projector, data):
@@ -287,6 +312,9 @@ def process_inpt(projector, data):
     return
 
 
+_pjlink_functions['INPT'] = process_inpt
+
+
 def process_inst(projector, data):
     """
     Available source inputs. See PJLink specification for format.
@@ -304,6 +332,9 @@ def process_inst(projector, data):
     log.debug(f'({projector.entry.name}) Setting projector source_available to "{projector.source_available}"')
     projector.projectorUpdateIcons.emit()
     return
+
+
+_pjlink_functions['INST'] = process_inst
 
 
 def process_lamp(projector, data):
@@ -335,6 +366,9 @@ def process_lamp(projector, data):
     return
 
 
+_pjlink_functions['LAMP'] = process_lamp
+
+
 def process_lkup(projector, data):
     """
     Process UDP request indicating remote is available for connection
@@ -345,6 +379,9 @@ def process_lkup(projector, data):
     log.debug(f'({projector.entry.name}) Processing LKUP command')
     if Registry().get('settings').value('projector/connect when LKUP received'):
         projector.connect_to_host()
+
+
+_pjlink_functions['LKUP'] = process_lkup
 
 
 def process_name(projector, data):
@@ -358,6 +395,9 @@ def process_name(projector, data):
     projector.pjlink_name = data
     log.debug(f'({projector.entry.name}) Setting projector PJLink name to "{projector.pjlink_name}"')
     return
+
+
+_pjlink_functions['NAME'] = process_name
 
 
 def process_pjlink(projector, data):
@@ -404,6 +444,9 @@ def process_pjlink(projector, data):
         return S_AUTHENTICATE
 
 
+_pjlink_functions['PJLINK'] = process_pjlink
+
+
 def process_powr(projector, data):
     """
     Power status. See PJLink specification for format.
@@ -432,6 +475,9 @@ def process_powr(projector, data):
     return
 
 
+_pjlink_functions['POWR'] = process_powr
+
+
 def process_rfil(projector, data):
     """
     Process replacement filter type
@@ -447,6 +493,9 @@ def process_rfil(projector, data):
         log.warning(f'({projector.entry.name}) New model: "{data}"')
 
 
+_pjlink_functions['RFIL'] = process_rfil
+
+
 def process_rlmp(projector, data):
     """
     Process replacement lamp type
@@ -460,6 +509,9 @@ def process_rlmp(projector, data):
         log.warning(f'({projector.entry.name}) Lamp model already set')
         log.warning(f'({projector.entry.name}) Saved lamp: "{projector.model_lamp}"')
         log.warning(f'({projector.entry.name}) New lamp: "{data}"')
+
+
+_pjlink_functions['RLMP'] = process_rlmp
 
 
 def process_snum(projector, data):
@@ -484,6 +536,9 @@ def process_snum(projector, data):
         projector.serial_no_received = data
 
 
+_pjlink_functions['SNUM'] = process_snum
+
+
 def process_srch(projector=None, data=None):
     """
     Process the SRCH command.
@@ -500,6 +555,9 @@ def process_srch(projector=None, data=None):
     else:
         log.warning(f'({projector.entry.name}) SRCH packet detected - ignoring')
     return
+
+
+_pjlink_functions['SRCH'] = process_srch
 
 
 def process_sver(projector, data):
@@ -527,25 +585,4 @@ def process_sver(projector, data):
     projector.db_update = True
 
 
-# Map command to function.
-pjlink_functions = {
-    'ACKN': process_ackn,  # Class 2 (command is SRCH)
-    'AVMT': process_avmt,
-    'CLSS': process_clss,
-    'ERST': process_erst,
-    'INFO': process_info,
-    'INF1': process_inf1,
-    'INF2': process_inf2,
-    'INPT': process_inpt,
-    'INST': process_inst,
-    'LAMP': process_lamp,
-    'LKUP': process_lkup,  # Class 2  (terminal request only - no cmd)
-    'NAME': process_name,
-    'PJLINK': process_pjlink,
-    'POWR': process_powr,
-    'SNUM': process_snum,
-    'SRCH': process_srch,   # Class 2 (reply is ACKN)
-    'SVER': process_sver,
-    'RFIL': process_rfil,
-    'RLMP': process_rlmp
-}
+_pjlink_functions['SVER'] = process_sver
