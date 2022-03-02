@@ -77,8 +77,10 @@ class FakePJLink(object):
         self.set_shutter_closed = MagicMock()
         self.set_shutter_open = MagicMock()
         self.socket_timer = MagicMock()
-        self.status_timer = MagicMock()
         self.state = MagicMock()
+        self.status_timer = MagicMock()
+        self.status_timer_add = MagicMock()
+        self.status_timer_delete = MagicMock()
 
         # Some tests that may include what it thinks are ProjectorItem()
         # If ProjectorItem() is called, will probably overwrite these - OK
