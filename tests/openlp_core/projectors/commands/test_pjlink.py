@@ -219,7 +219,6 @@ def test_authenticate_invalid_salt(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = '1 1a2b3c4g'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.ERROR,
@@ -242,7 +241,6 @@ def test_authenticate_no_pin(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = f'1 {TEST_SALT}'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.ERROR,
@@ -266,7 +264,6 @@ def test_authenticate_login(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = f'1 {TEST_SALT}'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.DEBUG,
