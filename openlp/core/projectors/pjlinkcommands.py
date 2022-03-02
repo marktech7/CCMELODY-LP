@@ -125,25 +125,22 @@ def process_avmt(projector, data):
                 '31': {'shutter': True, 'mute': True}
                 }
     if data not in settings:
-        log.warning('({ip}) Invalid av mute response: {data}'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Invalid av mute response: {data}')
         return
     shutter = settings[data]['shutter']
     mute = settings[data]['mute']
-    # Check if we need to update the icons
-    update_icons = (shutter != projector.shutter) or (mute != projector.mute)
+    update_icons = False
+    if projector.shutter != shutter:
+        projector.shutter = shutter
+        update_icons = True
+        log.debug(f'({projector.entry.name}) Setting shutter to {"closed" if shutter else "open"}')
+    if projector.mute != mute:
+        projector.mute = mute
+        update_icons = True
+        log.debug(f'({projector.entry.name}) Setting speaker to {"muted" if mute else "normal"}')
     if update_icons:
-        if projector.shutter != shutter:
-            projector.shutter = shutter
-            log.debug('({ip}) Setting shutter to {chk}'.format(ip=projector.entry.name,
-                                                               chk='closed' if shutter else 'open'))
-        if projector.mute != mute:
-            projector.mute = mute
-            log.debug('({ip}) Setting speaker to {chk}'.format(ip=projector.entry.name,
-                                                               chk='muted' if shutter else 'normal'))
-        if 'AVMT' in projector.status_timer_checks:
-            projector.status_timer_delete('AVMT')
         projector.projectorUpdateIcons.emit()
-    return
+    projector.status_timer_delete('AVMT')
 
 
 def process_clss(projector, data):
@@ -178,14 +175,11 @@ def process_clss(projector, data):
         clss = data
     projector.pjlink_class = clss
     log.debug(f'({projector.entry.name}) Setting pjlink_class for this projector to "{projector.pjlink_class}"')
-    if projector.no_poll:
-        return
-
-    # Since we call this one on first connect, setup polling from here
-    log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
-    projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
-    projector.poll_timer.start()
-    return
+    if not projector.no_poll:
+        # Since we call this one on first connect, setup polling from here
+        log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
+        projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
+        projector.poll_timer.start()
 
 
 def process_erst(projector, data):
@@ -198,13 +192,11 @@ def process_erst(projector, data):
     """
     if len(data) != PJLINK_ERST_DATA['DATA_LENGTH']:
         count = PJLINK_ERST_DATA['DATA_LENGTH']
-        log.warning('({ip}) Invalid error status response "{data}": length != {count}'.format(ip=projector.entry.name,
-                                                                                              data=data,
-                                                                                              count=count))
+        log.warning(f'({projector.entry.name}) Invalid error status response "{data}": length != {count}')
         return
     if not data.isnumeric():
         # Bad data - ignore
-        log.warning('({ip}) Invalid error status response "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Invalid error status response "{data}"')
         return
     if int(data) == 0:
         projector.projector_errors = None
@@ -242,8 +234,7 @@ def process_inf1(projector, data):
     :param data: Projector manufacturer
     """
     projector.manufacturer = data
-    log.debug('({ip}) Setting projector manufacturer data to "{data}"'.format(ip=projector.entry.name,
-                                                                              data=projector.manufacturer))
+    log.debug(f'({projector.entry.name}) Setting projector manufacturer data to "{projector.manufacturer}"')
     return
 
 
@@ -256,7 +247,7 @@ def process_inf2(projector, data):
     :param data: Model name
     """
     projector.model = data
-    log.debug('({ip}) Setting projector model to "{data}"'.format(ip=projector.entry.name, data=projector.model))
+    log.debug(f'({projector.entry.name}) Setting projector model to "{projector.model}"')
     return
 
 
@@ -269,8 +260,7 @@ def process_info(projector, data):
     :param data: Projector other info
     """
     projector.other_info = data
-    log.debug('({ip}) Setting projector other_info to "{data}"'.format(ip=projector.entry.name,
-                                                                       data=projector.other_info))
+    log.debug(f'({projector.entry.name}) Setting projector other_info to "{projector.other_info}"')
     return
 
 
@@ -286,16 +276,14 @@ def process_inpt(projector, data):
     if projector.source_available is not None:
         # We have available inputs, so verify it's in the list
         if data not in projector.source_available:
-            log.warning('({ip}) Input source not listed in available sources - '
-                        'ignoring'.format(ip=projector.entry.name))
+            log.warning(f'({projector.entry.name}) Input source not listed in available sources - ignoring')
             return
     elif data not in PJLINK_DEFAULT_CODES:
         # Hmm - no sources available yet, so check with PJLink defaults
-        log.warning('({ip}) Input source not listed as a PJLink valid source '
-                    '- ignoring'.format(ip=projector.entry.name))
+        log.warning(f'({projector.entry.name}) Input source not listed as a PJLink valid source - ignoring')
         return
     projector.source = data
-    log.debug('({ip}) Setting current source to "{data}"'.format(ip=projector.entry.name, data=projector.source))
+    log.debug(f'({projector.entry.name}) Setting current source to "{projector.source}"')
     return
 
 
@@ -313,8 +301,7 @@ def process_inst(projector, data):
         sources.append(source)
     sources.sort()
     projector.source_available = sources
-    log.debug('({ip}) Setting projector source_available to "{data}"'.format(ip=projector.entry.name,
-                                                                             data=projector.source_available))
+    log.debug(f'({projector.entry.name}) Setting projector source_available to "{projector.source_available}"')
     projector.projectorUpdateIcons.emit()
     return
 
@@ -332,14 +319,13 @@ def process_lamp(projector, data):
     lamp_list = data.split()
     if len(lamp_list) < 2:
         # Invalid data - not enough information
-        log.warning('({ip}) process_lamp(): Invalid data "{data}" - '
-                    'Missing data'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) process_lamp(): Invalid data "{data}" - Missing data')
         return
     else:
         while lamp_list:
             if not lamp_list[0].isnumeric() or not lamp_list[1].isnumeric():
                 # Invalid data - we'll ignore the rest for now
-                log.warning('({ip}) process_lamp(): Invalid data "{data}"'.format(ip=projector.entry.name, data=data))
+                log.warning(f'({projector.entry.name}) process_lamp(): Invalid data "{data}"')
                 return
             fill = {'Hours': int(lamp_list[0]), 'On': False if lamp_list[1] == '0' else True}
             lamps.append(fill)
@@ -356,7 +342,7 @@ def process_lkup(projector, data):
     :param projector: Projector instance
     :param data: Data packet from remote
     """
-    log.debug('({ip}) Processing LKUP command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing LKUP command')
     if Registry().get('settings').value('projector/connect when LKUP received'):
         projector.connect_to_host()
 
@@ -370,8 +356,7 @@ def process_name(projector, data):
     :param data: Projector name
     """
     projector.pjlink_name = data
-    log.debug('({ip}) Setting projector PJLink name to "{data}"'.format(ip=projector.entry.name,
-                                                                        data=projector.pjlink_name))
+    log.debug(f'({projector.entry.name}) Setting projector PJLink name to "{projector.pjlink_name}"')
     return
 
 
@@ -427,15 +412,14 @@ def process_powr(projector, data):
     :param projector: Projector instance
     :param data: Power status
     """
-    log.debug('({ip}) Processing POWR command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing POWR command')
     if data not in PJLINK_POWR_STATUS:
         # Log unknown status response
-        log.warning('({ip}) Unknown power response: "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Unknown power response: "{data}"')
         return
 
     power = PJLINK_POWR_STATUS[data]
-    update_icons = projector.power != power
-    if update_icons:
+    if projector.power != power:
         projector.power = power
         projector.change_status(PJLINK_POWR_STATUS[data])
         projector.projectorUpdateIcons.emit()
@@ -443,7 +427,7 @@ def process_powr(projector, data):
             # Input sources list should only be available after power on, so update here
             projector.send_command('INST')
 
-    if projector.power in [S_ON, S_STANDBY, S_OFF] and 'POWR' in projector.status_timer_checks:
+    if projector.power in [S_ON, S_STANDBY, S_OFF]:
         projector.status_timer_delete(cmd='POWR')
     return
 
@@ -458,9 +442,9 @@ def process_rfil(projector, data):
     if projector.model_filter is None:
         projector.model_filter = data
     else:
-        log.warning('({ip}) Filter model already set'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved model: "{old}"'.format(ip=projector.entry.name, old=projector.model_filter))
-        log.warning('({ip}) New model: "{new}"'.format(ip=projector.entry.name, new=data))
+        log.warning(f'({projector.entry.name}) Filter model already set')
+        log.warning(f'({projector.entry.name}) Saved model: "{projector.model_filter}"')
+        log.warning(f'({projector.entry.name}) New model: "{data}"')
 
 
 def process_rlmp(projector, data):
@@ -473,9 +457,9 @@ def process_rlmp(projector, data):
     if projector.model_lamp is None:
         projector.model_lamp = data
     else:
-        log.warning('({ip}) Lamp model already set'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved lamp: "{old}"'.format(ip=projector.entry.name, old=projector.model_lamp))
-        log.warning('({ip}) New lamp: "{new}"'.format(ip=projector.entry.name, new=data))
+        log.warning(f'({projector.entry.name}) Lamp model already set')
+        log.warning(f'({projector.entry.name}) Saved lamp: "{projector.model_lamp}"')
+        log.warning(f'({projector.entry.name}) New lamp: "{data}"')
 
 
 def process_snum(projector, data):
@@ -486,18 +470,17 @@ def process_snum(projector, data):
     :param data: Serial number from projector.
     """
     if projector.serial_no is None:
-        log.debug('({ip}) Setting projector serial number to "{data}"'.format(ip=projector.entry.name, data=data))
+        log.debug(f'({projector.entry.name}) Setting projector serial number to "{data}"')
         projector.serial_no = data
         projector.db_update = False
         return
 
     # Compare serial numbers and see if we got the same projector
     if projector.serial_no != data:
-        log.warning('({ip}) Projector serial number does not match saved serial '
-                    'number'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved:    "{old}"'.format(ip=projector.entry.name, old=projector.serial_no))
-        log.warning('({ip}) Received: "{new}"'.format(ip=projector.entry.name, new=data))
-        log.warning('({ip}) NOT saving serial number'.format(ip=projector.entry.name))
+        log.warning(f'({projector.entry.name}) Projector serial number does not match saved serial number')
+        log.warning(f'({projector.entry.name}) Saved:    "{projector.serial_no}"')
+        log.warning(f'({projector.entry.name}) Received: "{data}"')
+        log.warning(f'({projector.entry.name}) NOT saving serial number')
         projector.serial_no_received = data
 
 
@@ -532,15 +515,14 @@ def process_sver(projector, data):
         return
     if projector.sw_version is not None:
         if projector.sw_version == data:
-            log.debug('({ip}) Software version same as saved version - returning'.format(ip=projector.entry.name))
+            log.debug(f'({projector.entry.name}) Software version same as saved version - returning')
             return
-        log.warning('({ip}) Projector software version does not match saved '
-                    'software version'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved:    "{old}"'.format(ip=projector.entry.name, old=projector.sw_version))
-        log.warning('({ip}) Received: "{new}"'.format(ip=projector.entry.name, new=data))
-        log.warning('({ip}) Updating software version'.format(ip=projector.entry.name))
+        log.warning(f'({projector.entry.name}) Projector software version does not match saved software version')
+        log.warning(f'({projector.entry.name}) Saved:    "{projector.sw_version}"')
+        log.warning(f'({projector.entry.name}) Received: "{data}"')
+        log.warning(f'({projector.entry.name}) Updating software version')
 
-    log.debug('({ip}) Setting projector software version to "{data}"'.format(ip=projector.entry.name, data=data))
+    log.debug(f'({projector.entry.name}) Setting projector software version to "{data}"')
     projector.sw_version = data
     projector.db_update = True
 
