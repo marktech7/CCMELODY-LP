@@ -385,7 +385,7 @@ def process_lamp(projector, data):
 _pjlink_functions['LAMP'] = process_lamp
 
 
-def process_lkup(projector, data):
+def _process_lkup(projector, data):
     """
     Process UDP request indicating remote is available for connection
 
@@ -397,7 +397,7 @@ def process_lkup(projector, data):
         projector.connect_to_host()
 
 
-_pjlink_functions['LKUP'] = process_lkup
+_pjlink_functions['LKUP'] = _process_lkup
 
 
 def process_name(projector, data):
@@ -555,7 +555,7 @@ def process_snum(projector, data):
 _pjlink_functions['SNUM'] = process_snum
 
 
-def process_srch(projector=None, data=None):
+def _process_srch(projector=None, data=None):
     """
     Process the SRCH command.
 
@@ -566,14 +566,14 @@ def process_srch(projector=None, data=None):
     :param projector: Projector instance (actually ignored for this command)
     :param data: Data in packet
     """
-    if projector is None:
-        log.warning('SRCH packet detected - ignoring')
-    else:
-        log.warning(f'({projector.entry.name}) SRCH packet detected - ignoring')
-    return
+    msg = 'SRCH packet detected - ignoring'
+    name = ''
+    if projector is not None:
+        name = f'({projector.entry.name}) '
+    log.warning(f'{name}{msg}')
 
 
-_pjlink_functions['SRCH'] = process_srch
+_pjlink_functions['SRCH'] = _process_srch
 
 
 def process_sver(projector, data):
