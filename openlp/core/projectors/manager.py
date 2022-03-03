@@ -497,7 +497,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         if ans == msg.Cancel:
             return
         try:
-            projector.link.changeStatus.disconnect(self.update_status)
+            projector.link.projectorChangeStatus.disconnect(self.update_status)
         except (AttributeError, TypeError):
             pass
         try:
@@ -717,7 +717,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         widget.setData(QtCore.Qt.UserRole, item)
         item.pjlink.db_item = item.db_item
         item.widget = widget
-        item.pjlink.changeStatus.connect(self.update_status)
+        item.pjlink.projectorChangeStatus.connect(self.update_status)
         item.pjlink.projectorAuthentication.connect(self.authentication_error)
         item.pjlink.projectorNoAuthentication.connect(self.no_authentication_error)
         item.pjlink.projectorUpdateIcons.connect(self.update_icons)

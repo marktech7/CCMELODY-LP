@@ -25,7 +25,7 @@ Help classes/functions for PJLink Projector tests
 from unittest.mock import MagicMock
 from PyQt5 import QtNetwork
 
-from openlp.core.projectors.constants import S_OK, S_NOT_CONNECTED
+from openlp.core.projectors.constants import S_NOT_CONNECTED, S_OFF, S_OK
 from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
 
@@ -57,8 +57,10 @@ class FakePJLink(object):
     """
     Helper class with signals and methods mocked
     """
-    def __init__(self, projector=None, *args, **kwargs):
+    def __init__(self, projector=Projector(**TEST1_DATA), *args, **kwargs):
         # Signal mocks
+        self.changeStatus = MagicMock()  # Deprecated use projectorChangeStatus
+        self.projectorChangeStatus = MagicMock()
         self.projectorStatus = MagicMock()
         self.projectorAuthentication = MagicMock()
         self.projectorNoAuthentication = MagicMock()
@@ -66,7 +68,7 @@ class FakePJLink(object):
         self.projectorUpdateIcons = MagicMock()
 
         # Method mocks
-        self.changeStatus = MagicMock()
+        self.change_status = MagicMock()
         self.connect_to_host = MagicMock()
         self.disconnect_from_host = MagicMock()
         self.poll_timer = MagicMock()
@@ -75,8 +77,10 @@ class FakePJLink(object):
         self.set_shutter_closed = MagicMock()
         self.set_shutter_open = MagicMock()
         self.socket_timer = MagicMock()
-        self.status_timer = MagicMock()
         self.state = MagicMock()
+        self.status_timer = MagicMock()
+        self.status_timer_add = MagicMock()
+        self.status_timer_delete = MagicMock()
 
         # Some tests that may include what it thinks are ProjectorItem()
         # If ProjectorItem() is called, will probably overwrite these - OK
@@ -84,19 +88,20 @@ class FakePJLink(object):
         self.pjlink = self
 
         # Normal entries from PJLink
-        self.entry = Projector(**TEST1_DATA) if projector is None else projector
-        self.ip = self.entry.ip
+        self.db = projector
+        self.entry = self.db  # Deprecated use self.db
+        self.ip = self.db.ip
         self.qhost = QtNetwork.QHostAddress(self.ip)
-        self.location = self.entry.location
-        self.mac_adx = self.entry.mac_adx
-        self.name = self.entry.name
-        self.notes = self.entry.notes
-        self.pin = self.entry.pin
-        self.port = int(self.entry.port)
-        self.pjlink_class = "1" if self.entry.pjlink_class is None else self.entry.pjlink_class
-        self.poll_time = 20000 if 'poll_time' not in kwargs else kwargs['poll_time'] * 1000
-        self.socket_timeout = 5000 if 'socket_timeout' not in kwargs else kwargs['socket_timeout'] * 1000
-        self.no_poll = 'no_poll' in kwargs
+        self.location = self.db.location
+        self.mac_adx = self.db.mac_adx
+        self.name = self.db.name
+        self.notes = self.db.notes
+        self.pin = self.db.pin
+        self.port = int(self.db.port)
+        self.pjlink_class = "1" if self.db.pjlink_class is None else self.db.pjlink_class
+        self.poll_time = 20000
+        self.socket_timeout = 5000
+        self.no_poll = True
         self.status_connect = S_NOT_CONNECTED
         self.last_command = ''
         self.projector_status = S_NOT_CONNECTED
@@ -105,4 +110,25 @@ class FakePJLink(object):
         self.priority_queue = []
         self.send_busy = False
         self.status_timer_checks = {}  # Keep track of events for the status timer
-        # Default mock return values
+
+        # reset_information attributes
+        self.fan = None  # ERST
+        self.filter_time = None  # FILT
+        self.lamp = None  # LAMP
+        self.mac_adx_received = None  # ACKN
+        self.manufacturer = None  # INF1
+        self.model = None  # INF2
+        self.model_filter = None  # RFIL
+        self.model_lamp = None  # RLMP
+        self.mute = None  # AVMT
+        self.other_info = None  # INFO
+        self.pjlink_name = None  # NAME
+        self.power = S_OFF  # POWR
+        self.projector_errors = {}  # Full ERST errors
+        self.serial_no = None  # SNUM
+        self.serial_no_received = None
+        self.sw_version = None  # SVER
+        self.sw_version_received = None
+        self.shutter = None  # AVMT
+        self.source_available = None  # INST
+        self.source = None  # INPT
