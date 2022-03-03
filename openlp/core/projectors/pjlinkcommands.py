@@ -49,8 +49,9 @@ import string
 from openlp.core.common.registry import Registry
 
 from openlp.core.projectors.constants import E_AUTHENTICATION, PJLINK_DEFAULT_CODES, PJLINK_ERRORS, \
-    PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_TOKEN_SIZE, \
-    E_NO_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_DATA_OK, S_OFF, S_OK, S_ON, S_STANDBY, STATUS_MSG
+    PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_SVER_MAX_LEN, \
+    PJLINK_TOKEN_SIZE, E_NO_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_DATA_OK, S_OFF, S_OK, S_ON, \
+    S_STANDBY, STATUS_MSG
 
 log = logging.getLogger(__name__)
 log.debug('Loading pjlinkcommands')
@@ -576,29 +577,28 @@ def _process_srch(projector=None, data=None):
 _pjlink_functions['SRCH'] = _process_srch
 
 
-def process_sver(projector, data):
+def _process_sver(projector, data):
     """
     Software version of projector
 
     :param projector: Projector instance
     :param data: Software version of projector
     """
-    if len(data) > 32:
-        # Defined in specs max version is 32 characters
-        log.warning('Invalid software version - too long')
+    if len(data) > PJLINK_SVER_MAX_LEN:
+        # Defined in specs 0-32 characters max
+        log.warning(f'({projector.name}) Invalid software version - too long')
         return
-    if projector.sw_version is not None:
-        if projector.sw_version == data:
-            log.debug(f'({projector.entry.name}) Software version same as saved version - returning')
-            return
-        log.warning(f'({projector.entry.name}) Projector software version does not match saved software version')
-        log.warning(f'({projector.entry.name}) Saved:    "{projector.sw_version}"')
-        log.warning(f'({projector.entry.name}) Received: "{data}"')
-        log.warning(f'({projector.entry.name}) Updating software version')
+    elif projector.sw_version == data:
+        log.debug(f'({projector.name}) Software version unchanged - returning')
+        return
+    elif projector.sw_version is not None:
+        log.debug(f'({projector.name}) Old software version "{projector.sw_version}"')
+        log.debug(f'({projector.name}) New software version "{data}"')
 
+    # Software version changed - save
     log.debug(f'({projector.entry.name}) Setting projector software version to "{data}"')
     projector.sw_version = data
     projector.db_update = True
 
 
-_pjlink_functions['SVER'] = process_sver
+_pjlink_functions['SVER'] = _process_sver
