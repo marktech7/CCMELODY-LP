@@ -30,12 +30,11 @@ class MediaPlayer(RegistryProperties):
     This is the base class media Player class to provide OpenLP with a pluggable media display framework.
     """
 
-    def __init__(self, parent, name='media_player'):
+    def __init__(self, parent):
         """
         Constructor
         """
         self.parent = parent
-        self.name = name
         self.available = self.check_available()
         self.can_background = False
         self.can_folder = False
