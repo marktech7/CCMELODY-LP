@@ -21,6 +21,7 @@
 """
 Fixtures for projector tests
 """
+import os
 import pytest
 
 from unittest.mock import patch
@@ -76,6 +77,20 @@ def projector_manager_mtdb(settings):
         t_db.session.close()
         del t_db
         del t_manager
+
+
+@pytest.fixture()
+def projectordb(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
 
 
 @pytest.fixture()

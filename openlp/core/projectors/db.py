@@ -272,7 +272,7 @@ class ProjectorDB(Manager):
             projector.name = kwargs['name']
         if projector.ip is None and 'ip' in kwargs:
             projector.ip = kwargs['ip']
-        if projector.port is None and ['port'] in kwargs:
+        if projector.port is None and 'port' in kwargs:
             projector.port = kwargs['port']
 
         if projector.id is not None:
