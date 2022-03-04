@@ -121,7 +121,6 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_widget = QtWidgets.QFrame(display)
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # creating a basic vlc instance
-        command_line_options = '--no-video-title-show --input-repeat=99999999 '
         command_line_options = '--no-video-title-show --input-repeat=0 '
         if self.settings.value('advanced/hide mouse') and controller.is_live:
             command_line_options += '--mouse-hide-timeout=0 '

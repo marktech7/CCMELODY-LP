@@ -47,7 +47,6 @@ from openlp.core.ui.media.vlcplayer import VlcPlayer
 
 log = logging.getLogger(__name__)
 
-TICK_TIME = 300  # Matches VLC time
 HIDE_DELAY_TIME = 2500
 
 
@@ -71,19 +70,13 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         self.vlc_player = None
         self.current_media_players = {}
         # Timer for video state
-        self.live_timer = QtCore.QTimer()
-        self.live_timer.setInterval(TICK_TIME)
         self.live_hide_timer = QtCore.QTimer()
         self.live_hide_timer.setSingleShot(True)
         self.live_kill_timer = QtCore.QTimer()
         self.live_kill_timer.setSingleShot(True)
-        self.preview_timer = QtCore.QTimer()
-        self.preview_timer.setInterval(TICK_TIME)
         # Signals
-        self.live_timer.timeout.connect(self._media_state_live)
         self.live_hide_timer.timeout.connect(self._on_media_hide_live)
         self.live_kill_timer.timeout.connect(self._on_media_kill_live)
-        self.preview_timer.timeout.connect(self._media_state_preview)
         Registry().register_function('playbackPlay', self.media_play_msg)
         Registry().register_function('playbackPause', self.media_pause_msg)
         Registry().register_function('playbackStop', self.media_stop_msg)
@@ -144,8 +137,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         self.vlc_live_media_stop.connect(self.live_media_stopped)
         self.vlc_preview_media_stop.connect(self.preview_media_stopped)
-        self.vlc_live_media_tick.connect(self.live_media_ticked)
-        self.vlc_preview_media_tick.connect(self.preview_media_ticked)
+        self.vlc_live_media_tick.connect(self._media_state_live)
+        self.vlc_preview_media_tick.connect(self._media_state_preview)
         if State().check_preconditions('mediacontroller'):
             try:
                 self.setup_display(self.live_controller, False)
@@ -173,10 +166,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             media_player = self.current_media_players[DisplayControllerType.Live]
             media_player.resize(self.live_controller)
             media_player.update_ui(self.live_controller, self._define_display(self.live_controller))
-            if not self.tick(self.live_controller):
-                self.live_timer.stop()
         else:
-            self.live_timer.stop()
             self.media_stop(self.live_controller)
 
     def _media_state_preview(self):
@@ -187,10 +177,7 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             media_player = self.current_media_players[DisplayControllerType.Preview]
             media_player.resize(self.preview_controller)
             media_player.update_ui(self.preview_controller, self._define_display(self.preview_controller))
-            if not self.tick(self.preview_controller):
-                self.preview_timer.stop()
         else:
-            self.preview_timer.stop()
             self.media_stop(self.preview_controller)
 
     def setup_display(self, controller, preview):
@@ -462,13 +449,6 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         controller.mediabar.actions['playbackLoop'].setVisible((not controller.media_info.is_background and
                                                                controller.media_info.media_type is not MediaType.Stream)
                                                                or controller.media_info.media_type is MediaType.Audio)
-        # Start Timer for ui updates
-        #if controller.is_live:
-        #    if not self.live_timer.isActive():
-        #        self.live_timer.start()
-        #else:
-        #    if not self.preview_timer.isActive():
-        #        self.preview_timer.start()
         controller.seek_slider.blockSignals(False)
         controller.volume_slider.blockSignals(False)
         controller.media_info.is_playing = True
@@ -481,14 +461,6 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             display.load_verses([{"verse": "v1", "text": "", "footer": " "}])
         controller.output_has_changed()
         return True
-
-    def live_media_ticked(self) -> None:
-        print("live tick")
-        self.tick(self.live_controller)
-
-    def preview_media_ticked(self) -> None:
-        print("preview tick" )
-        self.tick(self.preview_controller)
 
     def tick(self, controller):
         """
@@ -554,9 +526,6 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             controller.mediabar.actions['playbackPlay'].setVisible(True)
             controller.mediabar.actions['playbackPause'].setVisible(False)
             controller.media_info.is_playing = False
-            # Add a tick to the timer to prevent it finishing the video before it can loop back or stop
-            # If the clip finishes, we hit a bug where we cannot start the video
-            #controller.media_info.timer += TICK_TIME
             controller.output_has_changed()
             return True
         return False
@@ -810,10 +779,8 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
         """
         Reset all the media controllers when OpenLP shuts down
         """
-        self.live_timer.stop()
         self.live_hide_timer.stop()
         self.live_kill_timer.stop()
-        self.preview_timer.stop()
         self.media_reset(self._display_controllers(DisplayControllerType.Live))
         self.media_reset(self._display_controllers(DisplayControllerType.Preview))
 
