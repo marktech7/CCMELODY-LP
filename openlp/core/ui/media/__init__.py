@@ -80,6 +80,7 @@ class ItemMediaInfo(object):
     audio_track = 0
     subtitle_track = 0
     media_type = MediaType()
+    looped = False
 
 
 def parse_optical_path(input_string):

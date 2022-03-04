@@ -34,6 +34,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
+from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.media import MediaState, MediaType
@@ -78,7 +79,16 @@ class VlcPlayer(MediaPlayer):
 
     def state_changed(self, args, controller):
         print("\nstate changed")
-        print(args)
+        #print(args)
+
+    @staticmethod
+    def end_reached( args, controller):
+        print("\nend reached")
+        #controller.media_info.looped = True
+        if controller.is_live:
+            Registry().get('media_controller').vlc_live_media_stop.emit()
+        else:
+            Registry().get('media_controller').vlc_preview_media_stop.emit()
 
     @staticmethod
     def pos_callback(event, controller):
@@ -88,8 +98,12 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller running the event.
         :return:
         """
+        print(f'v {controller.media_info.timer} {controller.media_info.looped}')
         controller.media_info.timer = controller.vlc_media_player.get_time()
-        controller.media_controller.tick(controller)
+        if controller.is_live:
+            Registry().get('media_controller').vlc_live_media_tick.emit()
+        else:
+            Registry().get('media_controller').vlc_preview_media_tick.emit()
 
     def setup(self, controller, display):
         """
@@ -108,6 +122,7 @@ class VlcPlayer(MediaPlayer):
         controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
         # creating a basic vlc instance
         command_line_options = '--no-video-title-show --input-repeat=99999999 '
+        command_line_options = '--no-video-title-show --input-repeat=0 '
         if self.settings.value('advanced/hide mouse') and controller.is_live:
             command_line_options += '--mouse-hide-timeout=0 '
         if self.settings.value('media/vlc arguments'):
@@ -131,7 +146,8 @@ class VlcPlayer(MediaPlayer):
         controller.vlc_widget.resize(controller.size())
         controller.vlc_widget.hide()
         controller.vlc_events = controller.vlc_media_player.event_manager()
-        controller.vlc_events.event_attach(vlc.EventType.MediaPlayerPositionChanged, self.pos_callback, controller)
+        controller.vlc_events.event_attach(vlc.EventType.MediaPlayerTimeChanged, self.pos_callback, controller)
+        controller.vlc_events.event_attach(vlc.EventType.MediaPlayerEndReached, self.end_reached, controller)
 
         # The media player has to be 'connected' to the QFrame.
         # (otherwise a video would be displayed in it's own window)
