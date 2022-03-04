@@ -21,6 +21,7 @@
 """
 Fixtures for projector tests
 """
+import os
 import pytest
 
 from pathlib import PurePath
@@ -113,6 +114,20 @@ def projectordb(temp_folder, settings):
     proj.add_projector(Projector(**TEST1_DATA))
     proj.add_projector(Projector(**TEST2_DATA))
     proj.add_projector(Projector(**TEST3_DATA))
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projectordb(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
     yield proj
     proj.session.close()
     del proj
