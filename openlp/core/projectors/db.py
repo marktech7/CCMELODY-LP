@@ -159,29 +159,14 @@ class Projector(Base, CommonMixin):
         """
         Return basic representation of Source table entry.
         """
-        return '< Projector(id="{data}", ip="{ip}", port="{port}", mac_adx="{mac}", pin="{pin}", name="{name}", ' \
-            'location="{location}", notes="{notes}", pjlink_name="{pjlink_name}", pjlink_class="{pjlink_class}", ' \
-            'manufacturer="{manufacturer}", model="{model}", serial_no="{serial}", other="{other}", ' \
-            'sources="{sources}", source_list="{source_list}", model_filter="{mfilter}", ' \
-            'model_lamp="{mlamp}", sw_version="{sw_ver}") >'.format(data=self.id,
-                                                                    ip=self.ip,
-                                                                    port=self.port,
-                                                                    mac=self.mac_adx,
-                                                                    pin=self.pin,
-                                                                    name=self.name,
-                                                                    location=self.location,
-                                                                    notes=self.notes,
-                                                                    pjlink_name=self.pjlink_name,
-                                                                    pjlink_class=self.pjlink_class,
-                                                                    manufacturer=self.manufacturer,
-                                                                    model=self.model,
-                                                                    other=self.other,
-                                                                    sources=self.sources,
-                                                                    source_list=self.source_list,
-                                                                    serial=self.serial_no,
-                                                                    mfilter=self.model_filter,
-                                                                    mlamp=self.model_lamp,
-                                                                    sw_ver=self.sw_version)
+        return f'< Projector(id="{self.id}", ip="{self.ip}", port="{self.port}", mac_adx="{self.mac_adx}", ' \
+            f'pin="{self.pin}", name="{self.name}", location="{self.location}", notes="{self.notes}", ' \
+            f'pjlink_name="{self.pjlink_name}", pjlink_class="{self.pjlink_class}", ' \
+            f'manufacturer="{self.manufacturer}", model="{self.model}", serial_no="{self.serial_no}", ' \
+            f'other="{self.other}", sources="{self.sources}", source_list="{self.source_list}", ' \
+            f'model_filter="{self.model_filter}", model_lamp="{self.model_lamp}", ' \
+            f'sw_version="{self.sw_version}") >'
+
     ip = Column(String(100))
     port = Column(String(8))
     mac_adx = Column(String(18))
@@ -256,6 +241,55 @@ class ProjectorDB(Manager):
         session, metadata = init_db(self.db_url, base=Base)
         metadata.create_all(checkfirst=True)
         return session
+
+    def get_projector(self, *args, **kwargs):
+        """
+        Get projector instance(s) in database
+
+        If projector=Projector() instance, use projector as filter object.
+
+        id=<int> or projector.id is not None: Filter by record.id
+        name=<str> or projector.name is not None: Filter by record.name
+        ip=<str> or projector.ip is not None: Filter by record.ip
+        port=<str> or projector.port is not None: Filter by record.port
+
+        Any other options ignored
+
+        In order:
+            id returns 1 record - all other following options ignored
+            name returns 1 record - all other following options ignored
+            ip AND port returns 1 record
+            ip only may return 1+ records
+            port only may return 1+ records
+
+        :returns: None if no record found, otherwise list
+        """
+        db_filter = []
+        projector = Projector() if 'projector' not in kwargs else kwargs['projector']
+        if projector.id is None and 'id' in kwargs:
+            projector.id = int(kwargs['id'])
+        if projector.name is None and 'name' in kwargs:
+            projector.name = kwargs['name']
+        if projector.ip is None and 'ip' in kwargs:
+            projector.ip = kwargs['ip']
+        if projector.port is None and ['port'] in kwargs:
+            projector.port = kwargs['port']
+
+        if projector.id is not None:
+            db_filter.append(Projector.id == projector.id)
+        elif projector.name is not None:
+            db_filter.append(Projector.name == projector.name)
+        else:
+            if projector.ip is not None:
+                db_filter.append(Projector.ip == projector.ip)
+            if projector.port is not None:
+                db_filter.append(Projector.port == projector.port)
+
+        if len(db_filter) < 1:
+            log.warning('get_projector(): No valid query found - cancelled')
+            return None
+
+        return self.get_projector_all(object_class=Projector, filter_clause=db_filter)
 
     def get_projector_by_id(self, dbid):
         """
