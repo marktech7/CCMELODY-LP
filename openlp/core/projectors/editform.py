@@ -248,7 +248,6 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
 
     def exec(self, projector=None, edit=True):
         if projector is not None:
-            chk = Projector()
             if not isinstance(projector, Projector):
                 log.warning('edit_form() Projector type not valid for this form')
                 log.warning(f'editform() projector type is {type(projector)}')
