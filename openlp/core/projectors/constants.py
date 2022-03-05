@@ -39,6 +39,7 @@ PJLINK_PORT = 4352
 PJLINK_SUFFIX = CR
 PJLINK_TIMEOUT = 30.0
 PJLINK_TOKEN_SIZE = 8  # PJLINK 1 <token> : where <token> is 8 characters
+PJLINK_VALID_PORTS = range(1000, 32768)
 
 # Error and status codes
 S_OK = E_OK = 0  # E_OK included since I sometimes forget
