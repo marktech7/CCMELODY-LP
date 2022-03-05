@@ -88,7 +88,7 @@ def fake_pjlink():
 
 
 @pytest.fixture()
-def projectordb(temp_folder, settings):
+def projectordb_mtdb(temp_folder, settings):
     """
     Set up anything necessary for all tests
     """
@@ -102,7 +102,7 @@ def projectordb(temp_folder, settings):
 
 
 @pytest.fixture()
-def projectordb_data(temp_folder, settings):
+def projectordb(temp_folder, settings):
     """
     Set up anything necessary for all tests
     """
