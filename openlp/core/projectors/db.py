@@ -167,6 +167,28 @@ class Projector(Base, CommonMixin):
             f'model_filter="{self.model_filter}", model_lamp="{self.model_lamp}", ' \
             f'sw_version="{self.sw_version}") >'
 
+    def __eq__(self, other):
+        if not isinstance(other, Projector):
+            return False
+        # Does not check self.id == other.id
+        return \
+            self.ip == other.ip and \
+            self.port == other.port and \
+            self.mac_adx == other.mac_adx and \
+            self.pin == other.pin and \
+            self.name == other.name and \
+            self.location == other.location and \
+            self.notes == other.notes and \
+            self.pjlink_name == other.pjlink_name and \
+            self.pjlink_class == other.pjlink_class and \
+            self.manufacturer == other.manufacturer and \
+            self.model == other.model and \
+            self.other == other.other and \
+            self.serial_no == other.serial_no and \
+            self.sw_version == other.sw_version and \
+            self.model_filter == other.model_filter and \
+            self.model_lamp == other.model_lamp
+
     ip = Column(String(100))
     port = Column(String(8))
     mac_adx = Column(String(18))
