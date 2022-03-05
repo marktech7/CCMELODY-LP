@@ -289,7 +289,7 @@ class ProjectorDB(Manager):
             log.warning('get_projector(): No valid query found - cancelled')
             return None
 
-        return self.get_projector_all(object_class=Projector, filter_clause=db_filter)
+        return self.get_all_objects(object_class=Projector, filter_clause=db_filter)
 
     def get_projector_by_id(self, dbid):
         """
