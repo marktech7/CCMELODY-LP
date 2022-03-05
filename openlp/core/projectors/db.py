@@ -298,14 +298,21 @@ class ProjectorDB(Manager):
             projector.port = kwargs['port']
 
         if projector.id is not None:
+            log.debug('Filter by ID')
             db_filter.append(Projector.id == projector.id)
         elif projector.name is not None:
+            log.debug('Filter by Name')
             db_filter.append(Projector.name == projector.name)
         else:
+            p = ''
             if projector.ip is not None:
                 db_filter.append(Projector.ip == projector.ip)
+                p += " IP"
             if projector.port is not None:
                 db_filter.append(Projector.port == projector.port)
+                p += " Port"
+            if len(p) > 0:
+                log.debug(f'Filter by{p}')
 
         if len(db_filter) < 1:
             log.warning('get_projector(): No valid query found - cancelled')
@@ -389,15 +396,13 @@ class ProjectorDB(Manager):
                   True if entry added
                   False if entry already in DB or db error
         """
-        old_projector = self.get_object_filtered(Projector, Projector.ip == projector.ip)
+        old_projector = self.get_object_filtered(Projector,
+                                                 Projector.ip == projector.ip,
+                                                 Projector.port == projector.port)
         if old_projector is not None:
-            log.warning('add_projector() skipping entry ip="{ip}" (Already saved)'.format(ip=old_projector.ip))
+            log.warning(f'add_projector() Duplicate record ip={old_projector} port={old_projector.port}')
             return False
-        log.debug('add_projector() saving new entry')
-        log.debug('ip="{ip}", name="{name}", location="{location}"'.format(ip=projector.ip,
-                                                                           name=projector.name,
-                                                                           location=projector.location))
-        log.debug('notes="{notes}"'.format(notes=projector.notes))
+        log.debug(f'add_projector() saving new entry name="{projector.name}" ip={projector.ip} port={projector.port}')
         return self.save_object(projector)
 
     def update_projector(self, projector=None):
