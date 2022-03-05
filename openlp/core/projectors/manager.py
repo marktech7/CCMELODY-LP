@@ -205,6 +205,11 @@ class UiProjectorManager(object):
                                                                '&Edit Projector'),
                                                 icon=UiIcons().edit,
                                                 triggers=self.on_edit_projector)
+        self.view_action = create_widget_action(self.menu,
+                                                text=translate('OpenLP.ProjectorManager',
+                                                               '&View Projector'),
+                                                icon=UiIcons().edit,
+                                                triggers=self.on_view_projector)
         self.menu.addSeparator()
         self.connect_action = create_widget_action(self.menu,
                                                    text=translate('OpenLP.ProjectorManager',
@@ -248,6 +253,11 @@ class UiProjectorManager(object):
                                                                '&Show Projector Screen'),
                                                 icon=UiIcons().projector,
                                                 triggers=self.on_show_projector)
+        self.view_action = create_widget_action(self.menu,
+                                                text=translate('OpenLP.ProjectorManager',
+                                                               '&Show Projector Screen'),
+                                                icon=UiIcons().projector,
+                                                triggers=self.on_view_projector)
         self.menu.addSeparator()
         self.delete_action = create_widget_action(self.menu,
                                                   text=translate('OpenLP.ProjectorManager',
@@ -321,8 +331,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             log.debug('Loading all projectors')
             self._load_projectors()
         self.projector_form = ProjectorEditForm(self, projectordb=self.projectordb)
-        self.projector_form.newProjector.connect(self.add_projector_from_wizard)
-        self.projector_form.editProjector.connect(self.edit_projector_from_wizard)
+        self.projector_form.updateProjectors.connect(self._load_projectors)
         self.projector_list_widget.itemSelectionChanged.connect(self.update_icons)
 
     def udp_listen_add(self, port=PJLINK_PORT):
@@ -385,6 +394,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         log.debug(f'({projector_name}) Building menu - visible = {visible}')
         self.delete_action.setVisible(True)
         self.edit_action.setVisible(True)
+        self.view_action.setVisible(True)
         self.connect_action.setVisible(not visible)
         self.disconnect_action.setVisible(visible)
         self.status_action.setVisible(visible)
@@ -687,6 +697,19 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                     message += '<b>{key}</b>: {data}<br />'.format(key=key, data=STATUS_MSG[val])
         QtWidgets.QMessageBox.information(self, translate('OpenLP.ProjectorManager', 'Projector Information'), message)
 
+    def on_view_projector(self, opt=None):
+        """
+        Calls edit dialog as readonly with selected projector to show information
+
+        :param opt: Needed by PyQt5
+        """
+        list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
+        projector = list_item.data(QtCore.Qt.UserRole)
+        if projector is None:
+            return
+        self.old_projector = projector
+        self.projector_form.exec(projector.db_item, edit=False)
+
     def _add_projector(self, projector):
         """
         Helper app to build a projector instance
@@ -771,7 +794,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
 
     def _load_projectors(self):
         """'
-        Load projectors - only call when initializing
+        Load projectors - only call when initializing or after database changes
         """
         log.debug('_load_projectors()')
         self.projector_list_widget.clear()
