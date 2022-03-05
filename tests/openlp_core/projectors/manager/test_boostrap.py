@@ -87,11 +87,9 @@ def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projecto
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, 'Loading all projectors')]
 
-    mock_newProjector = MagicMock()
-    mock_editProjector = MagicMock()
+    mock_updateProjectors = MagicMock()
     mock_edit = MagicMock()
-    mock_edit.newProjector = mock_newProjector
-    mock_edit.editProjector = mock_editProjector
+    mock_edit.updateProjectors = mock_updateProjectors
     mocked_edit.return_value = mock_edit
 
     settings.setValue('projector/connect on start', False)
@@ -107,8 +105,7 @@ def test_bootstrap_post_set_up_autostart_false(mock_timer, mocked_edit, projecto
 
         # THEN: verify calls and logs
         mock_timer.assert_not_called()
-        mock_newProjector.connect.assert_called_once()
-        mock_editProjector.connect.assert_called_once()
+        mock_updateProjectors.connect.assert_called_once()
         mock_manager['_load_projectors'].assert_called_once(),
         mock_manager['projector_list_widget'].itemSelectionChanged.connect.assert_called_once()
         assert caplog.record_tuples == logs, 'Invalid log entries'
@@ -124,11 +121,9 @@ def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, 'Delaying 1.5 seconds before loading all projectors')]
 
-    mock_newProjector = MagicMock()
-    mock_editProjector = MagicMock()
+    mock_updateProjectors = MagicMock()
     mock_edit = MagicMock()
-    mock_edit.newProjector = mock_newProjector
-    mock_edit.editProjector = mock_editProjector
+    mock_edit.updateProjectors = mock_updateProjectors
 
     settings.setValue('projector/connect on start', True)
     projector_manager.bootstrap_initialise()
@@ -146,8 +141,7 @@ def test_bootstrap_post_set_up_autostart_true(mock_timer, mocked_edit, projector
         mock_timer.assert_called_once()
         mock_timer.return_value.singleShot.assert_called_once_with(1500, projector_manager._load_projectors)
 
-        mock_newProjector.connect.assert_called_once()
-        mock_editProjector.connect.assert_called_once()
+        mock_updateProjectors.connect.assert_called_once()
         mock_manager['_load_projectors'].assert_not_called(),
         mock_manager['projector_list_widget'].itemSelectionChanged.connect.assert_called_once()
         assert caplog.record_tuples == logs, 'Invalid log entries'
