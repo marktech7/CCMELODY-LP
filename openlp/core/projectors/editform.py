@@ -247,15 +247,18 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         self.button_box_view.accepted.connect(self.cancel_me)
 
     def exec(self, projector=None, edit=True):
-        if projector is not None:
+        if projector is None:
+            self.projector = Projector()
+            self.new_projector = True
+        else:
             if not isinstance(projector, Projector):
                 log.warning('edit_form() Projector type not valid for this form')
                 log.warning(f'editform() projector type is {type(projector)}')
                 Message.PROJECTOR_INVALID.warning
                 return
+            self.projector = projector
+            self.new_projector = False
 
-        self.projector = Projector() if projector is None else projector
-        self.new_projector = True if projector is None else False
         self.button_box_edit.setVisible(edit)
         self.button_box_view.setVisible(not edit)
         self.name_text.setReadOnly(not edit)
