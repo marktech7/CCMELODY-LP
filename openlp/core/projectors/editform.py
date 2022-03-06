@@ -231,7 +231,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         location = Column(String(30))
         notes = Column(String(200))
     """
-    updateProjectors = QtCore.pyqtSignal()  # Replace new/editProjector signals with this one
+    updateProjectors = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, projectordb=None):
         self.projectordb = projectordb
