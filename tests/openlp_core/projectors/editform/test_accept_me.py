@@ -28,7 +28,7 @@ import openlp.core.projectors.db
 import openlp.core.projectors.editform
 
 from openlp.core.projectors.constants import PJLINK_PORT, PJLINK_VALID_PORTS
-from tests.resources.projector.data import TEST1_DATA, TEST3_DATA
+from tests.resources.projector.data import TEST1_DATA
 
 _test_module = openlp.core.projectors.editform.__name__
 _test_module_db = openlp.core.projectors.db.__name__
@@ -115,10 +115,8 @@ def test_name_NAME_DUPLICATE(projector_editform, caplog):
     Test when name duplicate
     """
     # GIVEN: Test setup
-    t_id = TEST1_DATA['id']
     t_name = TEST1_DATA['name']
     # As long as the new record port number is different, we should be good
-    t_port = PJLINK_PORT
     caplog.set_level(logging.DEBUG)
     logs = [(_test_module, logging.DEBUG, 'accept_me() signal received'),
             (_test_module_db, logging.DEBUG, 'Filter by Name'),
@@ -341,7 +339,6 @@ def test_name_ADDRESS_DUPLICATE(projector_editform, caplog):
     Test when IP:Port address duplicate
     """
     # GIVEN: Test setup
-    t_id = TEST1_DATA['id']
     t_name = 'Pass name test'
     t_ip = TEST1_DATA['ip']
     t_port = TEST1_DATA['port']
