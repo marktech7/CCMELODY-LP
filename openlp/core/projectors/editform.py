@@ -301,7 +301,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         elif len(_record) > 1:
             log.warning(f'editform(): Multiple records found for name "{_name}"')
             for item in _record:
-                log.warning(f'editform() Found redord={item.id} name="{item.name}"')
+                log.warning(f'editform() Found record={item.id} name="{item.name}"')
             Message.DATABASE_MULTIPLE.warning
             _valid = False
             return
