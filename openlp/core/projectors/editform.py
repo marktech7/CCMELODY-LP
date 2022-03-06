@@ -109,13 +109,6 @@ class Message(Enum):
         self.text = text
 
     @property
-    def info(self, form=None):
-        """
-        Display QMessageBox.warning()
-        """
-        return QtWidgets.QMessageBox.information(form, self.title, self.text)
-
-    @property
     def warning(self, form=None):
         """
         Display QMessageBox.warning()
