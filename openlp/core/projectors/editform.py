@@ -339,6 +339,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         check = self.projectordb.get_projector(ip=_ip, port=str(_port))
         if len(check) == 1:
             if self.projector.id != check[0].id:
+                log.warning(f'editform(): Address already in database {_ip}:{_port}')
                 Message.ADDRESS_DUPLICATE.warning
                 _valid = False
                 return
