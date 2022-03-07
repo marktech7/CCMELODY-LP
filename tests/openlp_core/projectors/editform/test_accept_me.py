@@ -28,6 +28,7 @@ import openlp.core.projectors.db
 import openlp.core.projectors.editform
 
 from openlp.core.projectors.constants import PJLINK_PORT, PJLINK_VALID_PORTS
+from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
 
 _test_module = openlp.core.projectors.editform.__name__
@@ -142,13 +143,17 @@ def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
     Test when multiple database records have the same name
     """
     # GIVEN: Test setup
+    # Save another instance of TEST1_DATA
+    t_proj = Projector(**TEST1_DATA)
+    t_proj.id = None
+    projector_editform.projectordb.save_object(t_proj)
+
+    # Test variables
     t_id1 = TEST1_DATA['id']
     # There should only be 3 records in the DB, TEST[1,2,3]_DATA
-    t_id2 = 4
+    # The above save_object() should have created record 4
+    t_id2 = t_proj.id
     t_name = TEST1_DATA['name']
-    t_ip = TEST1_DATA['ip']
-    # As long as the new record port number is different, we should be good
-    t_port = PJLINK_PORT
     caplog.set_level(logging.DEBUG)
     logs = [(_test_module, logging.DEBUG, 'accept_me() signal received'),
             (_test_module_db, logging.DEBUG, 'Filter by Name'),
@@ -158,11 +163,6 @@ def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
             ]
     projector_editform.exec()
     projector_editform.name_text.setText(t_name)
-    projector_editform.projector.name = t_name
-    projector_editform.projector.id = None
-    projector_editform.projector.ip = t_ip
-    projector_editform.projector.port = t_port
-    projector_editform.projectordb.add_projector(projector_editform.projector)
 
     # WHEN: Called
     caplog.clear()
@@ -339,9 +339,9 @@ def test_name_ADDRESS_DUPLICATE(projector_editform, caplog):
     Test when IP:Port address duplicate
     """
     # GIVEN: Test setup
-    t_name = 'Pass name test'
     t_ip = TEST1_DATA['ip']
     t_port = TEST1_DATA['port']
+
     caplog.set_level(logging.DEBUG)
     logs = [(_test_module, logging.DEBUG, 'accept_me() signal received'),
             (_test_module_db, logging.DEBUG, 'Filter by Name'),
@@ -349,12 +349,9 @@ def test_name_ADDRESS_DUPLICATE(projector_editform, caplog):
             (_test_module, logging.WARNING, f'editform(): Address already in database {t_ip}:{t_port}')
             ]
     projector_editform.exec()
-    projector_editform.name_text.setText(t_name)
-    projector_editform.projector.name = t_name
+    projector_editform.name_text.setText('A Different Name Not In DB')
     projector_editform.ip_text.setText(t_ip)
-    projector_editform.projector.ip = t_ip
     projector_editform.port_text.setText(str(t_port))
-    projector_editform.projector.port = t_ip
 
     # WHEN: Called
     caplog.clear()
@@ -367,46 +364,40 @@ def test_name_ADDRESS_DUPLICATE(projector_editform, caplog):
                                                                     Message.ADDRESS_DUPLICATE.text)
 
 
-@pytest.mark.skip(reason='Figure out how to duplicate db record without causing IntegrityError')
 def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
     """
     Test when database has multiple same IP:Port records
     """
     # GIVEN: Test setup
+    t_proj = Projector(**TEST1_DATA)
+    t_proj.id = None
+    projector_editform.projectordb.save_object(t_proj)
     t_id1 = TEST1_DATA['id']
-    # There should only be 3 records in the DB, TEST[1,2,3]_DATA
-    t_id2 = 4
-    t_name1 = TEST1_DATA['name']
-    t_name2 = '__TEST_FOUR__'
+    t_id2 = t_proj.id
+    t_name = TEST1_DATA['name']
     t_ip = TEST1_DATA['ip']
     t_port = TEST1_DATA['port']
-    # As long as the new record port number is different, we should be good
-    t_port = PJLINK_PORT
+
     caplog.set_level(logging.DEBUG)
     logs = [(_test_module, logging.DEBUG, 'accept_me() signal received'),
             (_test_module_db, logging.DEBUG, 'Filter by Name'),
+            (_test_module_db, logging.DEBUG, 'Filter by IP Port'),
             (_test_module, logging.WARNING, f'editform(): Multiple records found for {t_ip}:{t_port}'),
-            (_test_module, logging.WARNING, f'editform(): record={t_id1} name="{t_name1}" adx={t_ip}:{t_port}'),
-            (_test_module, logging.WARNING, f'editform(): record={t_id2} name="{t_name2}" adx={t_ip}:{t_port}')
+            (_test_module, logging.WARNING, f'editform(): record={t_id1} name="{t_name}" adx={t_ip}:{t_port}'),
+            (_test_module, logging.WARNING, f'editform(): record={t_id2} name="{t_name}" adx={t_ip}:{t_port}')
             ]
     projector_editform.exec()
-    projector_editform.projector.id = t_id2
-    projector_editform.name_text.setText(t_name1)
-    projector_editform.projector.name = t_name1
-    projector_editform.projector.ip = t_ip
-    projector_editform.projector.port = t_port
-    projector_editform.projectordb.save_object(projector_editform.projector)
-    projector_editform.name_text.setText('pass name test')
-    projector_editform.projector.id = None
+    projector_editform.name_text.setText('A Different Name Not In DB')
+    projector_editform.ip_text.setText(t_ip)
+    projector_editform.port_text.setText(str(t_port))
 
     # WHEN: Called
     caplog.clear()
     projector_editform.accept_me()
-    print()
-    print(caplog.record_tuples)
-    print()
+
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_MULTIPLE.title,
                                                                     Message.DATABASE_MULTIPLE.text)
+

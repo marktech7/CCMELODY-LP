@@ -347,7 +347,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
             log.warning(f'editform(): Multiple records found for {_ip}:{_port}')
             for chk in check:
                 log.warning(f'editform(): record={chk.id} name="{chk.name}" adx={chk.ip}:{chk.port}')
-            Message.DATABASE_ERROR.warning
+            Message.DATABASE_MULTIPLE.warning
             _valid = False
             return
 
