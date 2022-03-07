@@ -24,13 +24,20 @@ Fixtures for projector tests
 import os
 import pytest
 
+import openlp.core.projectors.db
+import openlp.core.projectors.editform
+import openlp.core.projectors.manager
+import openlp.core.projectors.pjlink
+
 from unittest.mock import patch
 
-from openlp.core.projectors.db import Projector, ProjectorDB
-from openlp.core.projectors.editform import ProjectorEditForm
-from openlp.core.projectors.manager import ProjectorManager
-from openlp.core.projectors.pjlink import PJLink
 from tests.resources.projector.data import TEST_DB, TEST1_DATA, TEST2_DATA, TEST3_DATA
+
+PJLink = openlp.core.projectors.pjlink.PJLink
+Projector = openlp.core.projectors.db.Projector
+ProjectorDB = openlp.core.projectors.db.ProjectorDB
+ProjectorEditForm = openlp.core.projectors.editform.ProjectorEditForm
+ProjectorManager = openlp.core.projectors.manager.ProjectorManager
 
 '''
 NOTE: Since Registry is a singleton, sleight of hand allows us to verify
@@ -110,7 +117,7 @@ def projector_manager_mtdb(projectordb_mtdb, settings):
 @pytest.fixture()
 def projector_editform(projectordb):
     """
-    Provides ProjectorEditForm with mocked QMessageBox, QDialog and populated ProjectorDB
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog, udpateProjectors, close, and a populated ProjectorDB
     """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
          patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
@@ -129,14 +136,14 @@ def projector_editform(projectordb):
 @pytest.fixture()
 def projector_editform_mtdb(projectordb_mtdb):
     """
-    Provides ProjectorEditForm with mocked QMessageBox, QDialog and empty ProjectorDB
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog, updateProjectors, close,  and an empty ProjectorDB
     """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
          patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
          patch.object(ProjectorEditForm, 'updateProjectors') as mock_update, \
          patch.object(ProjectorEditForm, 'close') as mock_close:
 
-        _form = ProjectorEditForm(projectordb=projectordb)
+        _form = ProjectorEditForm(projectordb=projectordb_mtdb)
         _form.mock_msg_box = mock_msg_box
         _form.mock_dialog_box = mock_dialog_box
         _form.mock_updateProjectors = mock_update
