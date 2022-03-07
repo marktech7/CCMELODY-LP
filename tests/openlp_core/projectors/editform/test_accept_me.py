@@ -26,6 +26,8 @@ import logging
 import openlp.core.projectors.db
 import openlp.core.projectors.editform
 
+from unittest.mock import DEFAULT, MagicMock, patch
+
 from openlp.core.projectors.constants import PJLINK_VALID_PORTS
 from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
@@ -399,3 +401,120 @@ def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_MULTIPLE.title,
                                                                     Message.DATABASE_MULTIPLE.text)
+
+
+@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
+@patch.object(openlp.core.projectors.db.ProjectorDB, 'add_projector')
+def test_save_new(mock_add, projector_editform_mtdb, **kwargs):
+    """
+    Test editform saving new projector instance where db fails to save
+    """
+    # GIVEN: Test environment
+    mock_update = kwargs['updateProjectors']
+    mock_close = kwargs['close']
+    mock_add.return_value = True
+
+    t_proj = Projector(**TEST1_DATA)
+    t_proj.id = None
+    projector_editform_mtdb.new_projector = True
+    projector_editform_mtdb.exec()
+    projector_editform_mtdb.name_text.setText(t_proj.name)
+    projector_editform_mtdb.ip_text.setText(t_proj.ip)
+    projector_editform_mtdb.port_text.setText(str(t_proj.port))
+
+    # WHEN: Called
+    projector_editform_mtdb.accept_me()
+
+    # THEN: appropriate message called
+    projector_editform_mtdb.mock_msg_box.warning.assert_not_called()
+    mock_update.emit.assert_called_once()
+    mock_close.assert_called_once()
+
+
+@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
+@patch.object(openlp.core.projectors.db.ProjectorDB, 'add_projector')
+def test_save_new_fail(mock_add, projector_editform_mtdb, caplog, **kwargs):
+    """
+    Test editform saving new projector instance where db fails to save
+    """
+    # GIVEN: Test environment
+    mock_update = kwargs['updateProjectors']
+    mock_close = kwargs['close']
+    mock_add.return_value = False
+
+    caplog.set_level(logging.DEBUG)
+    t_proj = Projector(**TEST1_DATA)
+    t_proj.id = None
+    projector_editform_mtdb.new_projector = True
+    projector_editform_mtdb.exec()
+    projector_editform_mtdb.name_text.setText(t_proj.name)
+    projector_editform_mtdb.ip_text.setText(t_proj.ip)
+    projector_editform_mtdb.port_text.setText(str(t_proj.port))
+
+    # WHEN: Called
+    projector_editform_mtdb.accept_me()
+
+    # THEN: appropriate message called
+    mock_add.assert_called_once_with(projector_editform_mtdb.projector)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
+                                                                         Message.DATABASE_ERROR.title,
+                                                                         Message.DATABASE_ERROR.text)
+    mock_update.assert_not_called()
+    mock_close.assert_not_called()
+
+
+@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
+@patch.object(openlp.core.projectors.db.ProjectorDB, 'update_projector')
+def test_save_update(mock_add, projector_editform, **kwargs):
+    """
+    Test editform update projector instance in database
+    """
+    # GIVEN: Test environment
+    mock_update = kwargs['updateProjectors']
+    mock_close = kwargs['close']
+    mock_add.return_value = True
+
+    t_proj = Projector(**TEST1_DATA)
+    projector_editform.new_projector = True
+    projector_editform.exec(projector=t_proj)
+    projector_editform.name_text.setText(t_proj.name)
+    projector_editform.ip_text.setText(t_proj.ip)
+    projector_editform.port_text.setText(str(t_proj.port))
+
+    # WHEN: Called
+    projector_editform.accept_me()
+
+    # THEN: appropriate message called
+    projector_editform.mock_msg_box.warning.assert_not_called()
+    mock_update.emit.assert_called_once()
+    mock_close.assert_called_once()
+
+
+@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
+@patch.object(openlp.core.projectors.db.ProjectorDB, 'update_projector')
+def test_save_update_fail(mock_add, projector_editform, caplog, **kwargs):
+    """
+    Test editform updating projector instance where db fails to save
+    """
+    # GIVEN: Test environment
+    mock_update = kwargs['updateProjectors']
+    mock_close = kwargs['close']
+    mock_add.return_value = False
+
+    caplog.set_level(logging.DEBUG)
+    t_proj = Projector(**TEST1_DATA)
+    projector_editform.exec(projector=t_proj)
+    projector_editform.name_text.setText(t_proj.name)
+    projector_editform.ip_text.setText(t_proj.ip)
+    projector_editform.port_text.setText(str(t_proj.port))
+
+    # WHEN: Called
+    projector_editform.accept_me()
+
+    # THEN: appropriate message called
+    mock_add.assert_called_once_with(projector_editform.projector)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
+                                                                    Message.DATABASE_ERROR.title,
+                                                                    Message.DATABASE_ERROR.text)
+    mock_update.assert_not_called()
+    mock_close.assert_not_called()
