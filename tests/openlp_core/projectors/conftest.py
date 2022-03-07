@@ -21,14 +21,23 @@
 """
 Fixtures for projector tests
 """
+import os
 import pytest
+
+import openlp.core.projectors.db
+import openlp.core.projectors.editform
+import openlp.core.projectors.manager
+import openlp.core.projectors.pjlink
 
 from unittest.mock import patch
 
-from openlp.core.projectors.db import Projector, ProjectorDB
-from openlp.core.projectors.manager import ProjectorManager
-from openlp.core.projectors.pjlink import PJLink
-from tests.resources.projector.data import TEST_DB, TEST1_DATA
+from tests.resources.projector.data import TEST_DB, TEST1_DATA, TEST2_DATA, TEST3_DATA
+
+PJLink = openlp.core.projectors.pjlink.PJLink
+Projector = openlp.core.projectors.db.Projector
+ProjectorDB = openlp.core.projectors.db.ProjectorDB
+ProjectorEditForm = openlp.core.projectors.editform.ProjectorEditForm
+ProjectorManager = openlp.core.projectors.manager.ProjectorManager
 
 '''
 NOTE: Since Registry is a singleton, sleight of hand allows us to verify
@@ -44,42 +53,110 @@ def test_function(mock_registry):
 
 
 @pytest.fixture()
-def projector_manager(settings):
+def projectordb(temp_folder, settings):
+    """
+    Provides a projector database with 3 test records
+    """
+    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
     with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
-        mocked_init_url.return_value = 'sqlite:///%s' % TEST_DB
-        projectordb = ProjectorDB()
-        proj_manager = ProjectorManager(projectordb=projectordb)
-        yield proj_manager
-        projectordb.session.close()
-        del proj_manager
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    proj.add_projector(Projector(**TEST1_DATA))
+    proj.add_projector(Projector(**TEST2_DATA))
+    proj.add_projector(Projector(**TEST3_DATA))
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projectordb_mtdb(temp_folder, settings):
+    """
+    Provides an empty projector database
+    """
+    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projector_manager(projectordb, settings):
+    """
+    Provides ProjectorManager with a populated ProjectorDB
+    """
+    proj_manager = ProjectorManager(projectordb=projectordb)
+    yield proj_manager
+    projectordb.session.close()
+    del proj_manager
 
 
 @pytest.fixture()
 def projector_manager_nodb(settings):
+    """
+    Provides ProjectorManager with no previously defined ProjectorDB
+    """
     proj_manager = ProjectorManager(projectordb=None)
     yield proj_manager
     del proj_manager
 
 
 @pytest.fixture()
-def projector_manager_mtdb(settings):
-    with patch('openlp.core.projectors.db.init_url') as mock_url:
-        mock_url.return_value = 'sqlite:///%s' % TEST_DB
-        t_db = ProjectorDB()
-        # Ensure we have an empty DB at the beginning of the test
-        for itm in t_db.get_projector_all():
-            t_db.delete_projector(itm)
-        t_db.session.commit()
+def projector_manager_mtdb(projectordb_mtdb, settings):
+    """
+    Provides a ProjectorManager with an empty ProjectorDB
+    """
+    t_manager = ProjectorManager(projectordb=projectordb_mtdb)
+    yield t_manager
+    del t_manager
 
-        t_manager = ProjectorManager(projectordb=t_db)
-        yield t_manager
-        t_db.session.close()
-        del t_db
-        del t_manager
+
+@pytest.fixture()
+def projector_editform(projectordb):
+    """
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog, udpateProjectors, close, and a populated ProjectorDB
+    """
+    with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
+         patch.object(ProjectorEditForm, 'updateProjectors') as mock_update, \
+         patch.object(ProjectorEditForm, 'close') as mock_close:
+
+        _form = ProjectorEditForm(projectordb=projectordb)
+        _form.mock_msg_box = mock_msg_box
+        _form.mock_dialog_box = mock_dialog_box
+        _form.mock_updateProjectors = mock_update
+        _form.mock_close = mock_close
+        yield _form
+    del _form
+
+
+@pytest.fixture()
+def projector_editform_mtdb(projectordb_mtdb):
+    """
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog, updateProjectors, close,  and an empty ProjectorDB
+    """
+    with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
+         patch.object(ProjectorEditForm, 'updateProjectors') as mock_update, \
+         patch.object(ProjectorEditForm, 'close') as mock_close:
+
+        _form = ProjectorEditForm(projectordb=projectordb_mtdb)
+        _form.mock_msg_box = mock_msg_box
+        _form.mock_dialog_box = mock_dialog_box
+        _form.mock_updateProjectors = mock_update
+        _form.mock_close = mock_close
+        yield _form
+    del _form
 
 
 @pytest.fixture()
 def pjlink():
+    """
+    Provides a PJLink instance with TEST1_DATA
+    """
     pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
     yield pj_link
     del pj_link
