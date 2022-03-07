@@ -26,7 +26,7 @@ import logging
 import openlp.core.projectors.db
 import openlp.core.projectors.editform
 
-from unittest.mock import DEFAULT, MagicMock, patch
+from unittest.mock import DEFAULT, patch
 
 from openlp.core.projectors.constants import PJLINK_VALID_PORTS
 from openlp.core.projectors.db import Projector
