@@ -46,58 +46,9 @@ def test_function(mock_registry):
 
 
 @pytest.fixture()
-def projector_manager(settings):
-    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
-        mocked_init_url.return_value = 'sqlite:///%s' % TEST_DB
-        projectordb = ProjectorDB()
-        proj_manager = ProjectorManager(projectordb=projectordb)
-        yield proj_manager
-        projectordb.session.close()
-        del proj_manager
-
-
-@pytest.fixture()
-def projector_manager_nodb(settings):
-    proj_manager = ProjectorManager(projectordb=None)
-    yield proj_manager
-    del proj_manager
-
-
-@pytest.fixture()
-def projector_manager_mtdb(settings):
-    with patch('openlp.core.projectors.db.init_url') as mock_url:
-        mock_url.return_value = 'sqlite:///%s' % TEST_DB
-        t_db = ProjectorDB()
-        # Ensure we have an empty DB at the beginning of the test
-        for itm in t_db.get_projector_all():
-            t_db.delete_projector(itm)
-        t_db.session.commit()
-
-        t_manager = ProjectorManager(projectordb=t_db)
-        yield t_manager
-        t_db.session.close()
-        del t_db
-        del t_manager
-
-
-@pytest.fixture()
-def projectordb_mtdb(temp_folder, settings):
-    """
-    Set up anything necessary for all tests
-    """
-    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
-    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
-        mocked_init_url.return_value = tmpdb_url
-        proj = ProjectorDB()
-    yield proj
-    proj.session.close()
-    del proj
-
-
-@pytest.fixture()
 def projectordb(temp_folder, settings):
     """
-    Set up anything necessary for all tests
+    Provides a projector database with 3 test records
     """
     tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
     with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
@@ -112,7 +63,55 @@ def projectordb(temp_folder, settings):
 
 
 @pytest.fixture()
+def projectordb_mtdb(temp_folder, settings):
+    """
+    Provides an empty projector database
+    """
+    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projector_manager(projectordb, settings):
+    """
+    Provides ProjectorManager with a populated ProjectorDB
+    """
+    proj_manager = ProjectorManager(projectordb=projectordb)
+    yield proj_manager
+    projectordb.session.close()
+    del proj_manager
+
+
+@pytest.fixture()
+def projector_manager_nodb(settings):
+    """
+    Provides ProjectorManager with no previously defined ProjectorDB
+    """
+    proj_manager = ProjectorManager(projectordb=None)
+    yield proj_manager
+    del proj_manager
+
+
+@pytest.fixture()
+def projector_manager_mtdb(projectordb_mtdb, settings):
+    """
+    Provides a ProjectorManager with an empty ProjectorDB
+    """
+    t_manager = ProjectorManager(projectordb=projector_manager_mtdb)
+    yield t_manager
+    del t_manager
+
+
+@pytest.fixture()
 def projector_editform(projectordb):
+    """
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog and populated ProjectorDB
+    """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
          patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
         _form = ProjectorEditForm(projectordb=projectordb)
@@ -124,6 +123,9 @@ def projector_editform(projectordb):
 
 @pytest.fixture()
 def projector_editform_mtdb(projectordb_mtdb):
+    """
+    Provides ProjectorEditForm with mocked QMessageBox, QDialog and empty ProjectorDB
+    """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
          patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
         _form = ProjectorEditForm(projectordb=projectordb_mtdb)
@@ -135,6 +137,9 @@ def projector_editform_mtdb(projectordb_mtdb):
 
 @pytest.fixture()
 def pjlink():
+    """
+    Provides a PJLink instance with TEST1_DATA
+    """
     pj_link = PJLink(Projector(**TEST1_DATA), no_poll=True)
     yield pj_link
     del pj_link
