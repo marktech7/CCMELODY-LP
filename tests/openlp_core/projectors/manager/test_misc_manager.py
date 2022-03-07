@@ -36,7 +36,7 @@ from unittest.mock import DEFAULT, patch
 
 from openlp.core.projectors.db import Projector
 
-from tests.resources.projector.data import TEST1_DATA, TEST2_DATA, TEST3_DATA
+from tests.resources.projector.data import TEST1_DATA
 
 
 @patch.multiple(openlp.core.projectors.manager.ProjectorManager,
