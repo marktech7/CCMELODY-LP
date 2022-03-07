@@ -102,7 +102,7 @@ def projector_manager_mtdb(projectordb_mtdb, settings):
     """
     Provides a ProjectorManager with an empty ProjectorDB
     """
-    t_manager = ProjectorManager(projectordb=projector_manager_mtdb)
+    t_manager = ProjectorManager(projectordb=projectordb_mtdb)
     yield t_manager
     del t_manager
 
