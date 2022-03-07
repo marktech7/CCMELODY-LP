@@ -113,10 +113,15 @@ def projector_editform(projectordb):
     Provides ProjectorEditForm with mocked QMessageBox, QDialog and populated ProjectorDB
     """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
-         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
+         patch.object(ProjectorEditForm, 'updateProjectors') as mock_update, \
+         patch.object(ProjectorEditForm, 'close') as mock_close:
+
         _form = ProjectorEditForm(projectordb=projectordb)
         _form.mock_msg_box = mock_msg_box
         _form.mock_dialog_box = mock_dialog_box
+        _form.mock_updateProjectors = mock_update
+        _form.mock_close = mock_close
         yield _form
     del _form
 
@@ -127,10 +132,15 @@ def projector_editform_mtdb(projectordb_mtdb):
     Provides ProjectorEditForm with mocked QMessageBox, QDialog and empty ProjectorDB
     """
     with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
-         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
-        _form = ProjectorEditForm(projectordb=projectordb_mtdb)
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box, \
+         patch.object(ProjectorEditForm, 'updateProjectors') as mock_update, \
+         patch.object(ProjectorEditForm, 'close') as mock_close:
+
+        _form = ProjectorEditForm(projectordb=projectordb)
         _form.mock_msg_box = mock_msg_box
         _form.mock_dialog_box = mock_dialog_box
+        _form.mock_updateProjectors = mock_update
+        _form.mock_close = mock_close
         yield _form
     del _form
 
