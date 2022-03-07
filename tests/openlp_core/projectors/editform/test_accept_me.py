@@ -56,6 +56,8 @@ def test_name_NAME_BLANK(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.NAME_BLANK.title,
                                                                          Message.NAME_BLANK.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_name_DATABASE_ERROR_id(projector_editform_mtdb, caplog):
@@ -83,6 +85,8 @@ def test_name_DATABASE_ERROR_id(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.DATABASE_ERROR.title,
                                                                          Message.DATABASE_ERROR.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_name_DATABASE_ERROR_name(projector_editform_mtdb, caplog):
@@ -110,6 +114,8 @@ def test_name_DATABASE_ERROR_name(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.DATABASE_ERROR.title,
                                                                          Message.DATABASE_ERROR.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_name_NAME_DUPLICATE(projector_editform, caplog):
@@ -137,6 +143,8 @@ def test_name_NAME_DUPLICATE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.NAME_DUPLICATE.title,
                                                                     Message.NAME_DUPLICATE.text)
+    projector_editform.mock_updateProjectors.assert_not_called()
+    projector_editform.mock_close.assert_not_called()
 
 
 def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
@@ -174,6 +182,8 @@ def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_MULTIPLE.title,
                                                                     Message.DATABASE_MULTIPLE.text)
+    projector_editform.mock_updateProjectors.assert_not_called()
+    projector_editform.mock_close.assert_not_called()
 
 
 def test_ip_IP_BLANK(projector_editform_mtdb, caplog):
@@ -198,6 +208,8 @@ def test_ip_IP_BLANK(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.IP_BLANK.title,
                                                                          Message.IP_BLANK.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_ip_IP_INVALID(projector_editform_mtdb, caplog):
@@ -223,6 +235,8 @@ def test_ip_IP_INVALID(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.IP_INVALID.title,
                                                                          Message.IP_INVALID.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_port_PORT_BLANK(projector_editform_mtdb, caplog):
@@ -250,6 +264,8 @@ def test_port_PORT_BLANK(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.PORT_BLANK.title,
                                                                          Message.PORT_BLANK.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_port_PORT_INVALID_not_decimal(projector_editform_mtdb, caplog):
@@ -277,6 +293,8 @@ def test_port_PORT_INVALID_not_decimal(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.PORT_INVALID.title,
                                                                          Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_port_PORT_INVALID_low(projector_editform_mtdb, caplog):
@@ -305,6 +323,8 @@ def test_port_PORT_INVALID_low(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.PORT_INVALID.title,
                                                                          Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_port_PORT_INVALID_high(projector_editform_mtdb, caplog):
@@ -333,6 +353,8 @@ def test_port_PORT_INVALID_high(projector_editform_mtdb, caplog):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.PORT_INVALID.title,
                                                                          Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
 def test_adx_ADDRESS_DUPLICATE(projector_editform, caplog):
@@ -363,6 +385,8 @@ def test_adx_ADDRESS_DUPLICATE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.ADDRESS_DUPLICATE.title,
                                                                     Message.ADDRESS_DUPLICATE.text)
+    projector_editform.mock_updateProjectors.assert_not_called()
+    projector_editform.mock_close.assert_not_called()
 
 
 def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
@@ -401,17 +425,16 @@ def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_MULTIPLE.title,
                                                                     Message.DATABASE_MULTIPLE.text)
+    projector_editform.mock_updateProjectors.assert_not_called()
+    projector_editform.mock_close.assert_not_called()
 
 
-@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
 @patch.object(openlp.core.projectors.db.ProjectorDB, 'add_projector')
-def test_save_new(mock_add, projector_editform_mtdb, **kwargs):
+def test_save_new(mock_add, projector_editform_mtdb):
     """
     Test editform saving new projector instance where db fails to save
     """
     # GIVEN: Test environment
-    mock_update = kwargs['updateProjectors']
-    mock_close = kwargs['close']
     mock_add.return_value = True
 
     t_proj = Projector(**TEST1_DATA)
@@ -427,19 +450,16 @@ def test_save_new(mock_add, projector_editform_mtdb, **kwargs):
 
     # THEN: appropriate message called
     projector_editform_mtdb.mock_msg_box.warning.assert_not_called()
-    mock_update.emit.assert_called_once()
-    mock_close.assert_called_once()
+    projector_editform_mtdb.mock_updateProjectors.emit.assert_called_once()
+    projector_editform_mtdb.mock_close.assert_called_once()
 
 
-@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
 @patch.object(openlp.core.projectors.db.ProjectorDB, 'add_projector')
-def test_save_new_fail(mock_add, projector_editform_mtdb, caplog, **kwargs):
+def test_save_new_fail(mock_add, projector_editform_mtdb, caplog):
     """
     Test editform saving new projector instance where db fails to save
     """
     # GIVEN: Test environment
-    mock_update = kwargs['updateProjectors']
-    mock_close = kwargs['close']
     mock_add.return_value = False
 
     caplog.set_level(logging.DEBUG)
@@ -459,19 +479,16 @@ def test_save_new_fail(mock_add, projector_editform_mtdb, caplog, **kwargs):
     projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
                                                                          Message.DATABASE_ERROR.title,
                                                                          Message.DATABASE_ERROR.text)
-    mock_update.assert_not_called()
-    mock_close.assert_not_called()
+    projector_editform_mtdb.mock_updateProjectors.assert_not_called()
+    projector_editform_mtdb.mock_close.assert_not_called()
 
 
-@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
 @patch.object(openlp.core.projectors.db.ProjectorDB, 'update_projector')
-def test_save_update(mock_add, projector_editform, **kwargs):
+def test_save_update(mock_add, projector_editform):
     """
     Test editform update projector instance in database
     """
     # GIVEN: Test environment
-    mock_update = kwargs['updateProjectors']
-    mock_close = kwargs['close']
     mock_add.return_value = True
 
     t_proj = Projector(**TEST1_DATA)
@@ -486,19 +503,16 @@ def test_save_update(mock_add, projector_editform, **kwargs):
 
     # THEN: appropriate message called
     projector_editform.mock_msg_box.warning.assert_not_called()
-    mock_update.emit.assert_called_once()
-    mock_close.assert_called_once()
+    projector_editform.mock_updateProjectors.emit.assert_called_once()
+    projector_editform.mock_close.assert_called_once()
 
 
-@patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
 @patch.object(openlp.core.projectors.db.ProjectorDB, 'update_projector')
-def test_save_update_fail(mock_add, projector_editform, caplog, **kwargs):
+def test_save_update_fail(mock_add, projector_editform, caplog):
     """
     Test editform updating projector instance where db fails to save
     """
     # GIVEN: Test environment
-    mock_update = kwargs['updateProjectors']
-    mock_close = kwargs['close']
     mock_add.return_value = False
 
     caplog.set_level(logging.DEBUG)
@@ -516,5 +530,5 @@ def test_save_update_fail(mock_add, projector_editform, caplog, **kwargs):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_ERROR.title,
                                                                     Message.DATABASE_ERROR.text)
-    mock_update.assert_not_called()
-    mock_close.assert_not_called()
+    projector_editform.mock_updateProjectors.assert_not_called()
+    projector_editform.mock_close.assert_not_called()
