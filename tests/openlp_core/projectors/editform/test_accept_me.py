@@ -22,12 +22,11 @@
 Test ProjectorEditForm.accept_me
 """
 import logging
-import pytest
 
 import openlp.core.projectors.db
 import openlp.core.projectors.editform
 
-from openlp.core.projectors.constants import PJLINK_PORT, PJLINK_VALID_PORTS
+from openlp.core.projectors.constants import PJLINK_VALID_PORTS
 from openlp.core.projectors.db import Projector
 from tests.resources.projector.data import TEST1_DATA
 
@@ -334,7 +333,7 @@ def test_port_PORT_INVALID_high(projector_editform_mtdb, caplog):
                                                                          Message.PORT_INVALID.text)
 
 
-def test_name_ADDRESS_DUPLICATE(projector_editform, caplog):
+def test_adx_ADDRESS_DUPLICATE(projector_editform, caplog):
     """
     Test when IP:Port address duplicate
     """
@@ -400,4 +399,3 @@ def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
     projector_editform.mock_msg_box.warning.assert_called_once_with(None,
                                                                     Message.DATABASE_MULTIPLE.title,
                                                                     Message.DATABASE_MULTIPLE.text)
-
