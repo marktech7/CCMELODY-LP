@@ -33,7 +33,7 @@ test_module = openlp.core.projectors.db.__name__
 Projector = openlp.core.projectors.db.Projector
 
 
-def test_invalid_projector(projectordb, caplog):
+def test_invalid_projector(projectordb_mtdb, caplog):
     """
     Test get_projector with no Projector() instance and no options
     """
@@ -43,14 +43,14 @@ def test_invalid_projector(projectordb, caplog):
 
     # WHEN: Called
     caplog.clear()
-    t_chk = projectordb.get_projector()
+    t_chk = projectordb_mtdb.get_projector()
 
     # THEN: Only log entries found and return is None
     assert caplog.record_tuples == logs, 'Invalid log entries'
     assert t_chk is None, 'Should have returned None'
 
 
-def test_invald_key(projectordb, caplog):
+def test_invald_key(projectordb_mtdb, caplog):
     """
     Test returning None if not one of the main keys
     """
@@ -60,7 +60,7 @@ def test_invald_key(projectordb, caplog):
 
     # WHEN: Called
     caplog.clear()
-    t_chk = projectordb.get_projector(pin='')
+    t_chk = projectordb_mtdb.get_projector(pin='')
 
     # THEN: Logs and one returned item
     assert caplog.record_tuples == logs, 'Invalid log entries'
@@ -133,8 +133,7 @@ def test_by_ip_multiple(projectordb, caplog):
     logs = [(test_module, logging.DEBUG, 'Filter by IP')]
     t_p2 = Projector(**TEST2_DATA)
     t_p2.id = None
-    t_p2.port = PJLINK_PORT
-    projectordb.add_projector(projector=t_p2)
+    projectordb.save_object(object_instance=t_p2)
     t_p2chk = Projector(**TEST2_DATA)
 
     # WHEN: Called
@@ -144,10 +143,9 @@ def test_by_ip_multiple(projectordb, caplog):
     # THEN: Logs and one returned item
     assert caplog.record_tuples == logs, 'Invalid log entries'
     assert len(t_chk) == 2, 'Should have returned 2 records'
-    assert t_p2.name == t_chk[0].name and t_p2.name == t_chk[1].name, 'DB records names do not match'
-    assert t_p2.ip == t_chk[0].ip and t_p2.ip == t_chk[1].ip, 'DB records IP addresses do not match'
-    assert t_p2.name == t_chk[0].name and t_p2.name == t_chk[1].name, 'DB records names do not match'
-    assert t_p2chk.port == t_chk[0].port and t_p2.port == t_chk[1].port, 'DB records ports do not match'
+    assert t_p2chk.name == t_chk[0].name and t_p2chk.name == t_chk[1].name, 'DB records names do not match'
+    assert t_p2chk.ip == t_chk[0].ip and t_p2chk.ip == t_chk[1].ip, 'DB records IP addresses do not match'
+    assert t_p2chk.port == t_chk[0].port and t_p2chk.port == t_chk[1].port, 'DB records ports do not match'
 
 
 def test_by_port_single(projectordb, caplog):
@@ -171,7 +169,7 @@ def test_by_port_single(projectordb, caplog):
 
 def test_by_port_multiple(projectordb_mtdb, caplog):
     """
-    Test returning one entry by Port
+    Test returning multiple entries by Port
     """
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
