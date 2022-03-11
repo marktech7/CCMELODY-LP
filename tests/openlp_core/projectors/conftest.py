@@ -21,7 +21,6 @@
 """
 Fixtures for projector tests
 """
-import os
 import pytest
 
 from pathlib import PurePath
