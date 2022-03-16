@@ -30,6 +30,7 @@ from unittest.mock import patch
 from openlp.core.projectors.db import Projector, ProjectorDB
 from openlp.core.projectors.manager import ProjectorManager
 from openlp.core.projectors.pjlink import PJLink
+
 from tests.helpers.projector import FakePJLink
 from tests.resources.projector.data import TEST_DB, TEST1_DATA, TEST2_DATA, TEST3_DATA
 
@@ -124,10 +125,27 @@ def projectordb(temp_folder, settings):
     """
     Set up anything necessary for all tests
     """
-    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
+    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
     with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
         mocked_init_url.return_value = tmpdb_url
         proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projectordb_data(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = f'sqlite:///{os.path.join(temp_folder, TEST_DB)}'
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    proj.add_projector(Projector(**TEST1_DATA))
+    proj.add_projector(Projector(**TEST2_DATA))
+    proj.add_projector(Projector(**TEST3_DATA))
     yield proj
     proj.session.close()
     del proj
