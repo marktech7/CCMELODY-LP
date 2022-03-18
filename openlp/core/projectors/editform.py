@@ -24,10 +24,9 @@ database.
 """
 import logging
 
-from enum import Enum
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import verify_ip_address
+from openlp.core.common import verify_ip_address, Singleton
 from openlp.core.common.i18n import translate
 from openlp.core.projectors.constants import PJLINK_PORT, PJLINK_VALID_PORTS
 from openlp.core.projectors.db import Projector
@@ -42,79 +41,79 @@ log.debug('editform loaded')
 _translate_group = 'OpenLP.ProjectorEditForm'
 
 
-class Message(Enum):
+class MessageList(metaclass=Singleton):
     """
     Consolidate the messages here. Simplify calls to QMessageBox.
     """
-    ADDRESS_DUPLICATE = (translate(_translate_group, 'Duplicate Address'),
-                         translate(_translate_group,
-                                   'IP:port combination are already in the database <br /><br />'
-                                   'Please Enter a different IP:port combination.')
-                         )
-    DATABASE_ERROR = (translate(_translate_group, 'Database Error'),
-                      translate(_translate_group,
-                                'There was an error saving projector information.<br /><br />'
-                                'See the log for the error')
-                      )
-    DATABASE_ID = (translate(_translate_group, 'Database ID Error'),
-                   translate(_translate_group,
-                             'Mismatch between this entry and the database.<br /><br />'
-                             'See the log for possible issues.')
-                   )
-    DATABASE_MULTIPLE = (translate(_translate_group, 'Multiple Records'),
-                         translate(_translate_group,
-                                   'Multiple entries found in the database<br /><br />'
-                                   'Ensure Name and/or IP/Port data is unique')
-                         )
-    IP_BLANK = (translate(_translate_group, 'IP Address Not Set'),
-                translate(_translate_group,
-                          'You must enter an IP address.<br /><br />'
-                          'Please enter a valid IP address.')
-                )
-    IP_INVALID = (translate(_translate_group, 'Invalid IP Address'),
-                  translate(_translate_group,
-                            'IP address is not valid.<br /><br />'
-                            'Please enter a valid IP address.')
-                  )
-    NAME_BLANK = (translate(_translate_group, 'Name Not Set'),
-                  translate(_translate_group,
-                            'You must enter a name for this entry.<br /><br />'
-                            'Please enter a unique name for this entry.')
-                  )
-    NAME_DUPLICATE = (translate(_translate_group, 'Duplicate Name'),
-                      translate(_translate_group,
-                                'Entries must have unique names.<br /><br />'
-                                'Please enter a different name.')
-                      )
-    PROJECTOR_INVALID = (translate(_translate_group, 'Invalid Projector'),
-                         translate(_translate_group,
-                                   'Projector instance not a valid PJLink or Projector Instance<br /><br />'
-                                   'See log for issue')
-                         )
-    PORT_BLANK = (translate(_translate_group, 'Port Not Set'),
-                  translate(_translate_group,
-                            'You must enter a port number for this entry.<br /><br />'
-                            'Please enter a valid port number.')
-                  )
-    PORT_INVALID = (translate(_translate_group, 'Invalid Port Number'),
-                    translate(_translate_group,
-                              'Port numbers below 1000 are reserved for admin use only.<br />'
-                              'Port numbers above 32767 are not currently usable.<br /><br />'
-                              'Please enter a valid port number between 1000 and 32767 inclusive.<br /><br />'
-                              f'Default PJLink port is {PJLINK_PORT}')
-                    )
-
-    def __init__(self, title, text):
-        self.title = title
-        self.text = text
+    def __init__(self):
+        self.AddressDuplicate = {'title': translate(_translate_group, 'Duplicate Address'),
+                                 'text': translate(_translate_group,
+                                                   'IP:port combination are already in the database <br /><br />'
+                                                   'Please Enter a different IP:port combination.')
+                                 }
+        self.DatabaseError = {'title': translate(_translate_group, 'Database Error'),
+                              'text': translate(_translate_group,
+                                                'There was an error saving projector information.<br /><br />'
+                                                'See the log for the error')
+                              }
+        self.DatabaseID = {'title': translate(_translate_group, 'Database ID Error'),
+                           'text': translate(_translate_group,
+                                             'Mismatch between this entry and the database.<br /><br />'
+                                             'See the log for possible issues.')
+                           }
+        self.DatabaseMultiple = {'title': translate(_translate_group, 'Multiple Records'),
+                                 'text': translate(_translate_group,
+                                                   'Multiple entries found in the database<br /><br />'
+                                                   'Ensure Name and/or IP/Port data is unique')
+                                 }
+        self.IPBlank = {'title': translate(_translate_group, 'IP Address Not Set'),
+                        'text': translate(_translate_group,
+                                          'You must enter an IP address.<br /><br />'
+                                          'Please enter a valid IP address.')
+                        }
+        self.IPInvalid = {'title': translate(_translate_group, 'Invalid IP Address'),
+                          'text': translate(_translate_group,
+                                            'IP address is not valid.<br /><br />'
+                                            'Please enter a valid IP address.')
+                          }
+        self.NameBlank = {'title': translate(_translate_group, 'Name Not Set'),
+                          'text': translate(_translate_group,
+                                            'You must enter a name for this entry.<br /><br />'
+                                            'Please enter a unique name for this entry.')
+                          }
+        self.NameDuplicate = {'title': translate(_translate_group, 'Duplicate Name'),
+                              'text': translate(_translate_group,
+                                                'Entries must have unique names.<br /><br />'
+                                                'Please enter a different name.')
+                              }
+        self.ProjectorInvalid = {'title': translate(_translate_group, 'Invalid Projector'),
+                                 'text': translate(_translate_group,
+                                                   'Projector instance not a valid PJLink or Projector Instance'
+                                                   '<br /><br />See log for issue')
+                                 }
+        self.PortBlank = {'title': translate(_translate_group, 'Port Not Set'),
+                          'text': translate(_translate_group,
+                                            'You must enter a port number for this entry.<br /><br />'
+                                            'Please enter a valid port number.')
+                          }
+        self.PortInvalid = {'title': translate(_translate_group, 'Invalid Port Number'),
+                            'text': translate(_translate_group,
+                                              'Port numbers below 1000 are reserved for admin use only.<br />'
+                                              'Port numbers above 32767 are not currently usable.<br /><br />'
+                                              'Please enter a valid port number between 1000 and 32767 inclusive.'
+                                              f'<br /><br />Default PJLink port is {PJLINK_PORT}')
+                            }
 
     @staticmethod
     def show_warning(message, form=None):
         """
         Display QMessageBox.warning()
         """
-        print(message)
-        return QtWidgets.QMessageBox.warning(parent=form, title=message.title, text=message.text)
+        return QtWidgets.QMessageBox.warning(form, message['title'], message['text'])
+
+
+Message = MessageList()
+print(Message.NameBlank)
 
 
 class Ui_ProjectorEditForm(object):
@@ -249,7 +248,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
             if not isinstance(projector, Projector):
                 log.warning('edit_form() Projector type not valid for this form')
                 log.warning(f'editform() projector type is {type(projector)}')
-                return Message.show_warning(Message.PROJECTOR_INVALID)
+                return Message.show_warning(Message.ProjectorInvalid)
             self.projector = projector
             self.new_projector = False
 
@@ -276,42 +275,43 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
 
         # Verify name
         _name = self.name_text.text().strip()
+
         if len(_name) < 1:
-            return Message.show_warning(Message.NAME_BLANK)
+            return Message.show_warning(message=Message.NameBlank)
         _record = self.projectordb.get_projector(name=_name)
         if len(_record) == 0:
             if self.new_projector:
                 if self.projector.id is not None:
                     log.warning(f'editform(): No record found but projector had id={self.projector.id}')
-                    return Message.show_warning(Message.DATABASE_ERROR)
+                    return Message.show_warning(message=Message.DatabaseError)
             else:
                 if self.projector.name.strip() == _name:
                     log.warning(f'editform(): No record found when there should be name="{_name}"')
-                    return Message.show_warning(Message.DATABASE_ERROR)
+                    return Message.show_warning(message=Message.DatabaseError)
         elif len(_record) == 1 and self.new_projector:
             log.warning(f'editform(): Name "{_name}" already in database')
-            return Message.show_warning(Message.NAME_DUPLICATE)
+            return Message.show_warning(message=Message.NameDuplicate)
         elif len(_record) > 1:
             log.warning(f'editform(): Multiple records found for name "{_name}"')
             for item in _record:
                 log.warning(f'editform() Found record={item.id} name="{item.name}"')
-            return Message.show_warning(Message.DATABASE_MULTIPLE)
+            return Message.show_warning(message=Message.DatabaseMultiple)
 
         # Verify IP address
         _ip = self.ip_text.text().strip()
         if len(_ip) < 1:
-            return Message.show_warning(Message.IP_BLANK)
+            return Message.show_warning(message=Message.IPBlank)
         elif not verify_ip_address(_ip):
-            return Message.show_warning(Message.IP_INVALID)
+            return Message.show_warning(message=Message.IPInvalid)
 
         # Verify valid port
         _port = self.port_text.text().strip()
         if len(_port) < 1:
-            return Message.show_warning(Message.PORT_BLANK)
+            return Message.show_warning(message=Message.PortBlank)
         elif not _port.isdecimal():
-            return Message.show_warning(Message.PORT_INVALID)
+            return Message.show_warning(message=Message.PortInvalid)
         elif int(_port) not in PJLINK_VALID_PORTS:
-            return Message.show_warning(Message.PORT_INVALID)
+            return Message.show_warning(message=Message.PortInvalid)
         _port = int(_port)
 
         # Verify valid ip:port address
@@ -319,12 +319,12 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         if len(check) == 1:
             if self.projector.id != check[0].id:
                 log.warning(f'editform(): Address already in database {_ip}:{_port}')
-                return Message.show_warning(Message.ADDRESS_DUPLICATE)
+                return Message.show_warning(message=Message.AddressDuplicate)
         elif len(check) > 1:
             log.warning(f'editform(): Multiple records found for {_ip}:{_port}')
             for chk in check:
                 log.warning(f'editform(): record={chk.id} name="{chk.name}" adx={chk.ip}:{chk.port}')
-            return Message.show_warning(Message.DATABASE_MULTIPLE)
+            return Message.show_warning(message=Message.DatabaseMultiple)
 
         self.projector.name = _name
         self.projector.ip = _ip
@@ -338,7 +338,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         else:
             _saved = self.projectordb.update_projector(self.projector)
         if not _saved:
-            return Message.show_warning(Message.DATABASE_ERROR)
+            return Message.show_warning(message=Message.DatabaseError)
 
         self.updateProjectors.emit()
         self.projector = None
