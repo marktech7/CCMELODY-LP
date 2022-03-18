@@ -109,11 +109,11 @@ class Message(Enum):
         self.text = text
 
     @property
-    def warning(self, form=None):
+    def warning(self):
         """
         Display QMessageBox.warning()
         """
-        return QtWidgets.QMessageBox.warning(form, self.title, self.text)
+        return QtWidgets.QMessageBox.warning(None, self.title, self.text)
 
 
 class Ui_ProjectorEditForm(object):
@@ -227,6 +227,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
     updateProjectors = QtCore.pyqtSignal()
 
     def __init__(self, parent=None, projectordb=None):
+        self.parent = parent
         self.projectordb = projectordb
         self.new_projector = False
         super(ProjectorEditForm, self).__init__(parent,
@@ -295,7 +296,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
                     return
         elif len(_record) == 1 and self.new_projector:
             log.warning(f'editform(): Name "{_name}" already in database')
-            Message.NAME_DUPLICATE.warning
+            Message.NAME_DUPLICATE.warning(form=self.parent)
             _valid = False
             return
         elif len(_record) > 1:
