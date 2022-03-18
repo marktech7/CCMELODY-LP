@@ -113,7 +113,6 @@ class MessageList(metaclass=Singleton):
 
 
 Message = MessageList()
-print(Message.NameBlank)
 
 
 class Ui_ProjectorEditForm(object):
