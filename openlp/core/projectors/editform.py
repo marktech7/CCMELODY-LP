@@ -108,12 +108,13 @@ class Message(Enum):
         self.title = title
         self.text = text
 
-    @property
-    def warning(self):
+    @staticmethod
+    def show_warning(message, form=None):
         """
         Display QMessageBox.warning()
         """
-        return QtWidgets.QMessageBox.warning(None, self.title, self.text)
+        print(message)
+        return QtWidgets.QMessageBox.warning(parent=form, title=message.title, text=message.text)
 
 
 class Ui_ProjectorEditForm(object):
@@ -248,8 +249,7 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
             if not isinstance(projector, Projector):
                 log.warning('edit_form() Projector type not valid for this form')
                 log.warning(f'editform() projector type is {type(projector)}')
-                Message.PROJECTOR_INVALID.warning
-                return
+                return Message.show_warning(Message.PROJECTOR_INVALID)
             self.projector = projector
             self.new_projector = False
 
@@ -273,67 +273,45 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         Validate inputs before accepting.
         """
         log.debug('accept_me() signal received')
-        _valid = True
 
         # Verify name
         _name = self.name_text.text().strip()
         if len(_name) < 1:
-            Message.NAME_BLANK.warning
-            return
+            return Message.show_warning(Message.NAME_BLANK)
         _record = self.projectordb.get_projector(name=_name)
         if len(_record) == 0:
             if self.new_projector:
                 if self.projector.id is not None:
                     log.warning(f'editform(): No record found but projector had id={self.projector.id}')
-                    Message.DATABASE_ERROR.warning
-                    _valid = False
-                    return
+                    return Message.show_warning(Message.DATABASE_ERROR)
             else:
                 if self.projector.name.strip() == _name:
                     log.warning(f'editform(): No record found when there should be name="{_name}"')
-                    Message.DATABASE_ERROR.warning
-                    _valid = False
-                    return
+                    return Message.show_warning(Message.DATABASE_ERROR)
         elif len(_record) == 1 and self.new_projector:
             log.warning(f'editform(): Name "{_name}" already in database')
-            Message.NAME_DUPLICATE.warning(form=self.parent)
-            _valid = False
-            return
+            return Message.show_warning(Message.NAME_DUPLICATE)
         elif len(_record) > 1:
             log.warning(f'editform(): Multiple records found for name "{_name}"')
             for item in _record:
                 log.warning(f'editform() Found record={item.id} name="{item.name}"')
-            Message.DATABASE_MULTIPLE.warning
-            _valid = False
-            return
-        self.projector.name = _name
+            return Message.show_warning(Message.DATABASE_MULTIPLE)
 
         # Verify IP address
         _ip = self.ip_text.text().strip()
         if len(_ip) < 1:
-            Message.IP_BLANK.warning
-            _valid = False
-            return
+            return Message.show_warning(Message.IP_BLANK)
         elif not verify_ip_address(_ip):
-            Message.IP_INVALID.warning
-            _valid = False
-            return
-        self.projector.ip = _ip
+            return Message.show_warning(Message.IP_INVALID)
 
         # Verify valid port
         _port = self.port_text.text().strip()
         if len(_port) < 1:
-            Message.PORT_BLANK.warning
-            _valid = False
-            return
+            return Message.show_warning(Message.PORT_BLANK)
         elif not _port.isdecimal():
-            Message.PORT_INVALID.warning
-            _valid = False
-            return
+            return Message.show_warning(Message.PORT_INVALID)
         elif int(_port) not in PJLINK_VALID_PORTS:
-            Message.PORT_INVALID.warning
-            _valid = False
-            return
+            return Message.show_warning(Message.PORT_INVALID)
         _port = int(_port)
 
         # Verify valid ip:port address
@@ -341,33 +319,26 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         if len(check) == 1:
             if self.projector.id != check[0].id:
                 log.warning(f'editform(): Address already in database {_ip}:{_port}')
-                Message.ADDRESS_DUPLICATE.warning
-                _valid = False
-                return
+                return Message.show_warning(Message.ADDRESS_DUPLICATE)
         elif len(check) > 1:
             log.warning(f'editform(): Multiple records found for {_ip}:{_port}')
             for chk in check:
                 log.warning(f'editform(): record={chk.id} name="{chk.name}" adx={chk.ip}:{chk.port}')
-            Message.DATABASE_MULTIPLE.warning
-            _valid = False
-            return
+            return Message.show_warning(Message.DATABASE_MULTIPLE)
 
-        # Validation checks should be done now - save the record
-        if _valid:
-            self.projector.name = _name
-            self.projector.ip = _ip
-            self.projector.port = _port
-            self.projector.pin = self.pin_text.text()
-            self.projector.location = self.location_text.text()
-            self.projector.notes = self.notes_text.toPlainText()
-            # TODO: Update calls when update_projector fixed
-            if self.new_projector:
-                saved = self.projectordb.add_projector(self.projector)
-            else:
-                saved = self.projectordb.update_projector(self.projector)
-            if not saved:
-                Message.DATABASE_ERROR.warning
-                return
+        self.projector.name = _name
+        self.projector.ip = _ip
+        self.projector.port = _port
+        self.projector.pin = self.pin_text.text()
+        self.projector.location = self.location_text.text()
+        self.projector.notes = self.notes_text.toPlainText()
+        # TODO: Update calls when update_projector fixed
+        if self.new_projector:
+            _saved = self.projectordb.add_projector(self.projector)
+        else:
+            _saved = self.projectordb.update_projector(self.projector)
+        if not _saved:
+            return Message.show_warning(Message.DATABASE_ERROR)
 
         self.updateProjectors.emit()
         self.projector = None

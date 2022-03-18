@@ -55,9 +55,9 @@ def test_exec_projector_bad(projector_editform, caplog):
     assert caplog.record_tuples == logs, 'Invalid log entries'
     assert projector_editform.new_projector is False, 'new_projector should not have changed'
     projector_editform.mock_dialog_box.exec.assert_not_called()
-    projector_editform.mock_msg_box.warning.assert_called_with(None,
-                                                               Message.PROJECTOR_INVALID.title,
-                                                               Message.PROJECTOR_INVALID.text)
+    projector_editform.mock_msg_box.warning.assert_called_with(parent=None,
+                                                               title=Message.PROJECTOR_INVALID.title,
+                                                               text=Message.PROJECTOR_INVALID.text)
     # TODO: Check signals for QDialogButtonBox (projector_editform.button_box_edit/button_box_view)
 
 

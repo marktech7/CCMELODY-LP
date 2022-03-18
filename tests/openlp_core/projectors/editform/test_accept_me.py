@@ -53,9 +53,9 @@ def test_name_NAME_BLANK(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.NAME_BLANK.title,
-                                                                         Message.NAME_BLANK.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.NAME_BLANK.title,
+                                                                         text=Message.NAME_BLANK.text)
 
 
 def test_name_DATABASE_ERROR_id(projector_editform_mtdb, caplog):
@@ -80,9 +80,9 @@ def test_name_DATABASE_ERROR_id(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.DATABASE_ERROR.title,
-                                                                         Message.DATABASE_ERROR.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.DATABASE_ERROR.title,
+                                                                         text=Message.DATABASE_ERROR.text)
 
 
 def test_name_DATABASE_ERROR_name(projector_editform_mtdb, caplog):
@@ -107,9 +107,9 @@ def test_name_DATABASE_ERROR_name(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.DATABASE_ERROR.title,
-                                                                         Message.DATABASE_ERROR.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.DATABASE_ERROR.title,
+                                                                         text=Message.DATABASE_ERROR.text)
 
 
 def test_name_NAME_DUPLICATE(projector_editform, caplog):
@@ -134,9 +134,9 @@ def test_name_NAME_DUPLICATE(projector_editform, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
-                                                                    Message.NAME_DUPLICATE.title,
-                                                                    Message.NAME_DUPLICATE.text)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                    title=Message.NAME_DUPLICATE.title,
+                                                                    text=Message.NAME_DUPLICATE.text)
 
 
 def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
@@ -171,9 +171,9 @@ def test_name_DATABASE_MULTIPLE(projector_editform, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
-                                                                    Message.DATABASE_MULTIPLE.title,
-                                                                    Message.DATABASE_MULTIPLE.text)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                    title=Message.DATABASE_MULTIPLE.title,
+                                                                    text=Message.DATABASE_MULTIPLE.text)
 
 
 def test_ip_IP_BLANK(projector_editform_mtdb, caplog):
@@ -195,9 +195,9 @@ def test_ip_IP_BLANK(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.IP_BLANK.title,
-                                                                         Message.IP_BLANK.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.IP_BLANK.title,
+                                                                         text=Message.IP_BLANK.text)
 
 
 def test_ip_IP_INVALID(projector_editform_mtdb, caplog):
@@ -220,9 +220,9 @@ def test_ip_IP_INVALID(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.IP_INVALID.title,
-                                                                         Message.IP_INVALID.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.IP_INVALID.title,
+                                                                         text=Message.IP_INVALID.text)
 
 
 def test_port_PORT_BLANK(projector_editform_mtdb, caplog):
@@ -247,9 +247,9 @@ def test_port_PORT_BLANK(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.PORT_BLANK.title,
-                                                                         Message.PORT_BLANK.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.PORT_BLANK.title,
+                                                                         text=Message.PORT_BLANK.text)
 
 
 def test_port_PORT_INVALID_not_decimal(projector_editform_mtdb, caplog):
@@ -274,9 +274,9 @@ def test_port_PORT_INVALID_not_decimal(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.PORT_INVALID.title,
-                                                                         Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.PORT_INVALID.title,
+                                                                         text=Message.PORT_INVALID.text)
 
 
 def test_port_PORT_INVALID_low(projector_editform_mtdb, caplog):
@@ -302,9 +302,9 @@ def test_port_PORT_INVALID_low(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.PORT_INVALID.title,
-                                                                         Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.PORT_INVALID.title,
+                                                                         text=Message.PORT_INVALID.text)
 
 
 def test_port_PORT_INVALID_high(projector_editform_mtdb, caplog):
@@ -330,9 +330,9 @@ def test_port_PORT_INVALID_high(projector_editform_mtdb, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.PORT_INVALID.title,
-                                                                         Message.PORT_INVALID.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.PORT_INVALID.title,
+                                                                         text=Message.PORT_INVALID.text)
 
 
 def test_adx_ADDRESS_DUPLICATE(projector_editform, caplog):
@@ -360,9 +360,9 @@ def test_adx_ADDRESS_DUPLICATE(projector_editform, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
-                                                                    Message.ADDRESS_DUPLICATE.title,
-                                                                    Message.ADDRESS_DUPLICATE.text)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                    title=Message.ADDRESS_DUPLICATE.title,
+                                                                    text=Message.ADDRESS_DUPLICATE.text)
 
 
 def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
@@ -398,9 +398,9 @@ def test_adx_DATABASE_MULTIPLE(projector_editform, caplog):
 
     # THEN: Appropriate calls made
     assert caplog.record_tuples == logs, 'Invalid logs'
-    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
-                                                                    Message.DATABASE_MULTIPLE.title,
-                                                                    Message.DATABASE_MULTIPLE.text)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                    title=Message.DATABASE_MULTIPLE.title,
+                                                                    text=Message.DATABASE_MULTIPLE.text)
 
 
 @patch.multiple(openlp.core.projectors.editform.ProjectorEditForm, updateProjectors=DEFAULT, close=DEFAULT)
@@ -456,9 +456,9 @@ def test_save_new_fail(mock_add, projector_editform_mtdb, caplog, **kwargs):
 
     # THEN: appropriate message called
     mock_add.assert_called_once_with(projector_editform_mtdb.projector)
-    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(None,
-                                                                         Message.DATABASE_ERROR.title,
-                                                                         Message.DATABASE_ERROR.text)
+    projector_editform_mtdb.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                         title=Message.DATABASE_ERROR.title,
+                                                                         text=Message.DATABASE_ERROR.text)
     mock_update.assert_not_called()
     mock_close.assert_not_called()
 
@@ -513,8 +513,8 @@ def test_save_update_fail(mock_add, projector_editform, caplog, **kwargs):
 
     # THEN: appropriate message called
     mock_add.assert_called_once_with(projector_editform.projector)
-    projector_editform.mock_msg_box.warning.assert_called_once_with(None,
-                                                                    Message.DATABASE_ERROR.title,
-                                                                    Message.DATABASE_ERROR.text)
+    projector_editform.mock_msg_box.warning.assert_called_once_with(parent=None,
+                                                                    title=Message.DATABASE_ERROR.title,
+                                                                    text=Message.DATABASE_ERROR.text)
     mock_update.assert_not_called()
     mock_close.assert_not_called()
