@@ -444,23 +444,23 @@ class PJLink(QtNetwork.QTcpSocket):
             elif len(read) < 8:
                 log.warning(f'({self.entry.name}) Not enough data read - skipping')
                 return
-            data = decode(read, 'utf-8')
+            data = read
             # Possibility of extraneous data on input when reading.
             # Clean out extraneous characters in buffer.
-            self.read(1024)
+            _ = self.read(1024)
             log.debug(f'({self.entry.name}) check_login() read "{data.strip()}"')
         # At this point, we should only have the initial login prompt with
         # possible authentication
         # PJLink initial login will be:
         # 'PJLink 0' - Unauthenticated login - no extra steps required.
         # 'PJLink 1 XXXXXX' Authenticated login - extra processing required.
-        if not data.startswith('PJLINK'):
+        if not data.upper().startswith('PJLINK'):
             # Invalid initial packet - close socket
             log.error(f'({self.entry.name}) Invalid initial packet received - closing socket')
             return self.disconnect_from_host()
         # Convert the initial login prompt with the expected PJLink normal command format for processing
         log.debug(f'({self.entry.name}) check_login(): Formatting initial connection prompt to PJLink packet')
-        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1).encode("utf-8")}')
+        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1)}')
 
     def _trash_buffer(self, msg=None):
         """
