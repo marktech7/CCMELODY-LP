@@ -42,6 +42,7 @@ def test_socket_timeout(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
             (test_module, logging.ERROR, f'({pjlink.name}) Socket timeout waiting for login'),
             ]
 
@@ -51,7 +52,8 @@ def test_socket_timeout(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = False
         mock_pjlink['readLine'].return_value = t_readLine
 
@@ -77,6 +79,8 @@ def test_readLine_no_data(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Checking for data'),
             (test_module, logging.WARNING, f'({pjlink.name}) read is None - socket error?'),
             ]
 
@@ -86,7 +90,8 @@ def test_readLine_no_data(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = True
         mock_pjlink['readLine'].return_value = t_readLine
 
@@ -112,6 +117,8 @@ def test_readLine_short_data(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Checking for data'),
             (test_module, logging.WARNING, f'({pjlink.name}) Not enough data read - skipping'),
             ]
 
@@ -121,7 +128,8 @@ def test_readLine_short_data(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = True
         mock_pjlink['readLine'].return_value = t_readLine
 
@@ -147,6 +155,8 @@ def test_readLine_invalid_data(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Checking for data'),
             (test_module, logging.DEBUG, f'({pjlink.name}) check_login() read "{t_readLine}"'),
             (test_module, logging.ERROR, f'({pjlink.name}) Invalid initial packet received - closing socket')
             ]
@@ -157,7 +167,8 @@ def test_readLine_invalid_data(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = True
         mock_pjlink['readLine'].return_value = t_readLine
 
@@ -186,6 +197,8 @@ def test_readLine_no_authentication(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Checking for data'),
             (test_module, logging.DEBUG, f'({pjlink.name}) check_login() read "{t_readLine}"'),
             (test_module, logging.DEBUG,
              f'({pjlink.name}) check_login(): Formatting initial connection prompt to PJLink packet')
@@ -197,7 +210,8 @@ def test_readLine_no_authentication(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = True
         mock_pjlink['readLine'].return_value = t_readLine
 
@@ -226,6 +240,8 @@ def test_readLine_with_authentication(pjlink, caplog):
 
     caplog.set_level(logging.DEBUG)
     logs = [(test_module, logging.DEBUG, f'({pjlink.name}) check_login(data="{t_data}")'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Waiting for readyRead()'),
+            (test_module, logging.DEBUG, f'({pjlink.name}) check_login() Checking for data'),
             (test_module, logging.DEBUG, f'({pjlink.name}) check_login() read "{t_readLine}"'),
             (test_module, logging.DEBUG,
              f'({pjlink.name}) check_login(): Formatting initial connection prompt to PJLink packet')
@@ -237,7 +253,8 @@ def test_readLine_with_authentication(pjlink, caplog):
                         change_status=DEFAULT,
                         readLine=DEFAULT,
                         read=DEFAULT,
-                        disconnect_from_host=DEFAULT) as mock_pjlink:
+                        disconnect_from_host=DEFAULT,
+                        write=DEFAULT) as mock_pjlink:
         mock_pjlink['waitForReadyRead'].return_value = True
         mock_pjlink['readLine'].return_value = t_readLine
 

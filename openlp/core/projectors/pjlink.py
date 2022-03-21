@@ -46,7 +46,7 @@ Website: http://pjlink.jbmia.or.jp/english/dl_class2.html
     where ``CCCC`` is the PJLink command being processed
 """
 import logging
-from codecs import decode
+from codecs import decode, encode
 from copy import copy
 
 from PyQt5 import QtCore, QtNetwork
@@ -55,7 +55,7 @@ from openlp.core.common import qmd5_hash
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.projectors.pjlinkcommands import process_command
-from openlp.core.projectors.constants import CONNECTION_ERRORS, E_AUTHENTICATION, E_CONNECTION_REFUSED, E_GENERAL, \
+from openlp.core.projectors.constants import CR, CONNECTION_ERRORS, E_AUTHENTICATION, E_CONNECTION_REFUSED, E_GENERAL, \
     E_NETWORK, E_NOT_CONNECTED, E_SOCKET_TIMEOUT, PJLINK_CLASS, \
     PJLINK_MAX_PACKET, PJLINK_PORT, PJLINK_PREFIX, PJLINK_SUFFIX, \
     PJLINK_VALID_CMD, PROJECTOR_STATE, QSOCKET_STATE, S_AUTHENTICATE, S_CONNECT, S_CONNECTED, S_CONNECTING, \
@@ -431,11 +431,15 @@ class PJLink(QtNetwork.QTcpSocket):
         log.debug(f'({self.entry.name}) check_login(data="{data}")')
         if data is None:
             # Reconnected setup?
-            if not self.waitForReadyRead(2000):
+            log.debug(f'({self.name}) check_login() Waiting for readyRead()')
+            self.write(encode(CR, 'ascii'))
+            _chk = self.waitForReadyRead(2000)  # 2 seconds should be plenty of time
+            if not _chk:
                 # Possible timeout issue
                 log.error(f'({self.entry.name}) Socket timeout waiting for login')
                 self.change_status(E_SOCKET_TIMEOUT)
                 return
+            log.debug(f'({self.name}) check_login() Checking for data')
             data = self.readLine(self.max_size)
             if data is None:
                 log.warning(f'({self.entry.name}) read is None - socket error?')
