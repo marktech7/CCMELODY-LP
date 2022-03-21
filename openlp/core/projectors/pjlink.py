@@ -436,15 +436,13 @@ class PJLink(QtNetwork.QTcpSocket):
                 log.error(f'({self.entry.name}) Socket timeout waiting for login')
                 self.change_status(E_SOCKET_TIMEOUT)
                 return
-            read = self.readLine(self.max_size)
-            self.readLine(self.max_size)  # Clean out any trailing whitespace
-            if read is None:
+            data = self.readLine(self.max_size)
+            if data is None:
                 log.warning(f'({self.entry.name}) read is None - socket error?')
                 return
-            elif len(read) < 8:
+            elif len(data) < 8:
                 log.warning(f'({self.entry.name}) Not enough data read - skipping')
                 return
-            data = read
             # Possibility of extraneous data on input when reading.
             # Clean out extraneous characters in buffer.
             _ = self.read(1024)
