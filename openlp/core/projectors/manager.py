@@ -444,7 +444,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: Optional ProjectorItem() instance in case of direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.set_shutter_closed()
         for list_item in self.projector_list_widget.selectedItems():
             list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_closed()
@@ -470,7 +470,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: (Optional) ProjectorItem() for direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.connect_to_host()
         else:
             for list_item in self.projector_list_widget.selectedItems():
@@ -547,7 +547,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: (Optional) ProjectorItem() for direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.disconnect_from_host()
         else:
             for list_item in self.projector_list_widget.selectedItems():
@@ -575,7 +575,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: (Optional) ProjectorItem() for direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.set_power_off()
         else:
             for list_item in self.projector_list_widget.selectedItems():
@@ -588,7 +588,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: (Optional) ProjectorItem() for direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.set_power_on()
         else:
             for list_item in self.projector_list_widget.selectedItems():
@@ -601,7 +601,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param item: (Optional) ProjectorItem() for direct call
         :param opt: (Deprecated)
         """
-        if item is not None:
+        if hasattr(item, 'pjlink'):
             return item.pjlink.set_shutter_open()
         else:
             for list_item in self.projector_list_widget.selectedItems():

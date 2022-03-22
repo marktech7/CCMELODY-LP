@@ -46,7 +46,7 @@ Website: http://pjlink.jbmia.or.jp/english/dl_class2.html
     where ``CCCC`` is the PJLink command being processed
 """
 import logging
-from codecs import decode, encode
+from codecs import decode
 from copy import copy
 
 from PyQt5 import QtCore, QtNetwork
@@ -55,7 +55,7 @@ from openlp.core.common import qmd5_hash
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.projectors.pjlinkcommands import process_command
-from openlp.core.projectors.constants import CR, CONNECTION_ERRORS, E_AUTHENTICATION, E_CONNECTION_REFUSED, E_GENERAL, \
+from openlp.core.projectors.constants import CONNECTION_ERRORS, E_AUTHENTICATION, E_CONNECTION_REFUSED, E_GENERAL, \
     E_NETWORK, E_NOT_CONNECTED, E_SOCKET_TIMEOUT, PJLINK_CLASS, \
     PJLINK_MAX_PACKET, PJLINK_PORT, PJLINK_PREFIX, PJLINK_SUFFIX, \
     PJLINK_VALID_CMD, PROJECTOR_STATE, QSOCKET_STATE, S_AUTHENTICATE, S_CONNECT, S_CONNECTED, S_CONNECTING, \
@@ -432,7 +432,6 @@ class PJLink(QtNetwork.QTcpSocket):
         if data is None:
             # Reconnected setup?
             log.debug(f'({self.name}) check_login() Waiting for readyRead()')
-            self.write(encode(CR, 'ascii'))
             _chk = self.waitForReadyRead(2000)  # 2 seconds should be plenty of time
             if not _chk:
                 # Possible timeout issue
@@ -456,13 +455,15 @@ class PJLink(QtNetwork.QTcpSocket):
         # PJLink initial login will be:
         # 'PJLink 0' - Unauthenticated login - no extra steps required.
         # 'PJLink 1 XXXXXX' Authenticated login - extra processing required.
+        if type(data) is bytes:
+            data = decode(data, 'utf-8')
         if not data.upper().startswith('PJLINK'):
             # Invalid initial packet - close socket
             log.error(f'({self.entry.name}) Invalid initial packet received - closing socket')
             return self.disconnect_from_host()
         # Convert the initial login prompt with the expected PJLink normal command format for processing
         log.debug(f'({self.entry.name}) check_login(): Formatting initial connection prompt to PJLink packet')
-        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1)}')
+        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1)}'.strip())
 
     def _trash_buffer(self, msg=None):
         """
@@ -535,8 +536,11 @@ class PJLink(QtNetwork.QTcpSocket):
         ignore_class = False if 'ignore_class' not in kwargs else kwargs['ignore_class']
         log.debug(f'({self.entry.name}) Setting ignore_class to "{ignore_class}"')
         # NOTE: Class2 has changed to some values being UTF-8
-        data_in = decode(buff, 'utf-8') if isinstance(buff, bytes) else buff
-        data = data_in.strip()
+        if type(buff) is bytes:
+            data = decode(buff, 'utf-8')
+        else:
+            data = buff
+        data = data.strip()
         self.receive_data_signal()
         # Initial packet checks
         if len(data) < 7:
