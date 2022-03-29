@@ -351,7 +351,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if MediaInfo.can_parse():
             media_data = MediaInfo.parse(media_path)
             # duration returns in milli seconds
-            return media_data.tracks[0].duration
+            return media_data.tracks[0].duration or 0
         return 0
 
     def media_setup_optical(self, filename, title, audio_track, subtitle_track, start, end, display, controller):
