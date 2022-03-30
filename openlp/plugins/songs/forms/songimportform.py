@@ -25,6 +25,7 @@ import logging
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
+from openlp.core.common.handlers import handle_permission_error
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.lib.ui import critical_error_message_box
@@ -496,9 +497,10 @@ class SongImportSourcePage(QtWidgets.QWizardPage):
                     return True
             else:
                 file_path = wizard.format_widgets[this_format]['path_edit'].path
-                if file_path:
-                    if select_mode == SongFormatSelect.SingleFile and file_path.is_file():
-                        return True
-                    elif select_mode == SongFormatSelect.SingleFolder and file_path.is_dir():
-                        return True
+                if file_path and file_path.exists():
+                    with handle_permission_error(file_path):
+                        if select_mode == SongFormatSelect.SingleFile and file_path.is_file():
+                            return True
+                        elif select_mode == SongFormatSelect.SingleFolder and file_path.is_dir():
+                            return True
         return False
