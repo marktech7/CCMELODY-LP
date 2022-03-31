@@ -108,9 +108,8 @@ OPTIONAL_MODULES = [
     ('pysword', '(import SWORD bibles)'),
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
-    ('jenkins', '(access jenkins api)'),
     ('pytest', '(testing framework)'),
-    ('pytestqt', '(testing framework)'),
+    ('pytestqt', '((PyPI pytest-qt) PyQt testing framework)'),
     ('flake8', '(linter)')
 ]
 
