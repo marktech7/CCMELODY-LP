@@ -76,7 +76,7 @@ MODULES = [
     'PyQt5.QtOpenGL',
     'PyQt5.QtSvg',
     'PyQt5.QtTest',
-    'PyQt5.QtWebEngine',
+    ('PyQt5.QtWebEngineWidgets', '(pypi PyQtWebEngine)'),
     'PyQt5.QtMultimedia',
     'appdirs',
     'sqlalchemy',
@@ -238,7 +238,10 @@ def main():
     verify_python()
     print('Checking for modules...')
     for m in MODULES:
-        check_module(m)
+        if type(m) is tuple or type(m) is list:
+            check_module(m[0], text=m[1])
+        else:
+            check_module(m)
     print('Checking for optional modules...')
     for m in OPTIONAL_MODULES:
         check_module(m[0], text=m[1])
