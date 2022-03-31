@@ -109,7 +109,7 @@ OPTIONAL_MODULES = [
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
     ('pytest', '(testing framework)'),
-    ('pytestqt', '((PyPI pytest-qt) PyQt testing framework)'),
+    ('pytestqt', '(PyQt testing framework - pytest-qt on PyPI)'),
     ('flake8', '(linter)')
 ]
 
