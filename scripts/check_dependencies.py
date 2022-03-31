@@ -76,7 +76,7 @@ MODULES = [
     'PyQt5.QtOpenGL',
     'PyQt5.QtSvg',
     'PyQt5.QtTest',
-    'PyQt5.QtWebEngineWidgets',
+    'PyQt5.QtWebEngine',
     'PyQt5.QtMultimedia',
     'appdirs',
     'sqlalchemy',
