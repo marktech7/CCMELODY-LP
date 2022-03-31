@@ -238,7 +238,7 @@ def main():
     verify_python()
     print('Checking for modules...')
     for m in MODULES:
-        if type(m) is tuple or type(m) is list:
+        if isinstance(m, (tuple, list)):
             check_module(m[0], text=m[1])
         else:
             check_module(m)
