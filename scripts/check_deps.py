@@ -38,7 +38,7 @@ project.json format:
 
 {
     project : {
-                "version" : Project version this file refers to
+                "version"* : Project version this file refers to
                 module : {
                             "status"[1] : "optional" | "dev" | "new" | "ignore",  # "required" if not defined
                             "os"[1] : "linux" | "windows" | "darwin",  # O/S Agnostic if not defined
@@ -88,27 +88,86 @@ class DataClass(object):
         super().__init__()
         self.base_dir = None  # Project base directory
         self.proj_dir = None  # Subdirectory of base_dir where source files are located
+        self.test_dir = None  # Directory where tests are located
         self.file_list = None  # Keep track of files to check
         self.dep_list = None  # (dict() of JSON file contents
         self.save_file = None  # JSON file
 
 
 data = DataClass()
+ExclDir = ['js', 'resources']
+ExclFile = ['resources.py']
 
 
-def get_deps(deps):
+def _get_deps(chk, builtin=False, stdlib=False):
+    """Helper function to scan file and search for dependencies.
+
+    :type Path chk: File to scan. Must already exist and be a regular file
+    :type bool builtin: Include built-in dependency
+    :type bool stdlib: Include standard lib dependency
+
+    :return: Found dependencies
+    :rtype: list or None
+    """
+
+    _deplist = []
+    log.debug(f'(_get_deps) Scanning {chk}')
+    try:
+        with chk.open('r') as fp:
+            for _line in fp:
+                _line = _line.strip()
+                if _line.startswith('#') or len(_line) < 8:
+                    # Skip comment lines
+                    continue
+                log.debug(f'(_get_deps) Checking "{_line}"')
+                if 'import' in _line:
+                    log.debug(f'(_get_deps) Found import "{_line}"')
+                    # Check for continuation line
+                    if _line.strip().endswith('\\'):
+                        while True:
+                            _l = fp.readline()
+                            _line = f'{_line} {_l}'.strip()
+
+                            # Check for another continuation line
+                            if not _l.strip().endswith('\\'):
+                                break
+
+                    _deplist.append(_line)
+
+    except Exception as e:
+        print(e)
+        raise
+
+    return _deplist
+
+
+def get_deps(chk=None):
     """Process dependency list and verify status of installed dependencies
 
     Print to stdout status of dependency.
     Does not include standard lib or built-in packages
 
-    :param dict deps: Dependenies to check
+    :param Path chk: File to check. use data.file_list if None
     :return: Tuple of bool (required, optional, developer) dependency status
     :rtype: tuple
     """
     log.debug('(get_deps) Starting dependency checks')
 
     _req = _opt = _dev = True
+
+    _count = 10
+    for _k in data.file_list:
+        _count -= 1
+        _p = Path(_k)
+        if data.file_list[_k] != 'NOFILES':
+            for _f in data.file_list[_k]:
+                if 'NOFILES' not in _f:
+                    _c = _p.joinpath(_f)
+                    if _c.exists() and _c.is_file():
+                        print(_get_deps(_c))
+
+        if _count < 1:
+            break
 
     print(f'\nRequired  dependencies {"good" if _req else "not fully met"}')
     print(f'Optional  dependencies {"good" if _opt else "not fully met"}')
@@ -117,12 +176,13 @@ def get_deps(deps):
     return
 
 
-def _find_files(_dir, e_dir, e_file):
+def _find_files(_dir, e_dir, e_file, i_ext=('.py')):
     """Helper to list files in (dir)
 
     :param Path dir_: Directory to search
     :param list e_dir: List of directory names to exclude
     :param list e_file: List of file names to exclude
+    :param list i_ext: List of valid filename extensions to look for
 
     :return: (Directory list, File list)
     :rtype: tuple
@@ -143,7 +203,7 @@ def _find_files(_dir, e_dir, e_file):
             elif _f.is_file() and \
                     _f.name not in _e_file and \
                     not _f.name.startswith('.') and \
-                    _f.name.endswith('.py') and \
+                    _f.suffix in i_ext and \
                     _f.name not in _files:
                 _files.append(_f.name)
 
@@ -155,7 +215,7 @@ def _find_files(_dir, e_dir, e_file):
     return (_dirs, _files)
 
 
-def find_files(base, data, excl_dir=None, excl_file=None):
+def find_files(base, excl_dir=ExclDir, excl_file=ExclFile):
     """Search through (base) for source files to check
 
     :param Path base: Base directory of project
@@ -166,7 +226,9 @@ def find_files(base, data, excl_dir=None, excl_file=None):
     :return: dict of {base: [files]}
     :rtype: dict
     """
-    _excl_dir = [] if excl_dir is None else excl_dir
+
+    _excl_dir = excl_dir
+    _excl_file = excl_file
 
     if '__pycache__' not in _excl_dir:
         _excl_dir.append('__pycache__')
@@ -185,7 +247,7 @@ def find_files(base, data, excl_dir=None, excl_file=None):
 
     if _dirs is None and _f is None:
         print(f'(find_files) Removing {base} from list')
-        _ = data.file_list.popitem(base)
+        _ = data.file_list.pop(base)
         return
 
     if _dirs is not None:
@@ -299,7 +361,7 @@ def get_base_dirs(proj, base=None):
     return (_base.parent, _base)
 
 
-def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None):
+def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None, excl_dir=ExclDir, excl_file=ExclFile):
     """Entry point for dependency checks
 
     :param str proj: Project name
@@ -343,7 +405,7 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
         log.info('(check_deps) Full scan check starting')
         _recurse = True
         data.file_list = dict()
-        data.file_list[data.base_dir] = None
+        data.file_list[data.proj_dir] = None
 
         if start is not None:
             log.debug(f'(check_deps) Checking for start file {start}')
@@ -352,14 +414,16 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
                 log.debug(f'(check_deps) Start file: {_f}')
                 data.file_list[data.base_dir] = [_f.name]
 
-        if testdir is not None:
-            log.debug(f'(check_deps) Checking for test directory "{testdir}"')
-            _f = Path(data.base_dir, testdir)
-            if _f.is_dir():
-                log.debug(f'(check_deps) Adding "{testdir}" directory to check')
-                data.file_list[_f] = None
+        if testdir:
+            log.debug('(check_deps) Checking for test directory')
+            _d, _ = _find_files(data.base_dir, [], [])
+            if _d is not None:
+                for _f in _d:
+                    if 'test' in _f.name:
+                        log.debug(f'(check_deps) Adding "{testdir}" directory to check')
+                        data.test_dir = _f
+                        data.file_list[_f] = None
 
-        _excl_dir = ['js', 'resources']
         while _first_run or _recurse:
             _first_run = False
             _check = None
@@ -376,26 +440,27 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
                 _recurse = False
                 break
             log.debug(f'(check_deps) Getting files from {_check}')
-            find_files(base=_check, data=data, excl_dir=_excl_dir)
+            find_files(base=_check, excl_dir=excl_dir, excl_file=excl_file)
 
         # Finished dependency checks - save results to JSON file
         _chk = save_json_file(data.save_file, data.dep_list)
         if _chk is None:
             log.error(f'(check_deps) Problem saving data to {data.save_file}')
 
-    '''
-    print(f'\n{dir(data)}\n')
-    print(f'data.base_dir: {data.base_dir}')
+    get_deps(data.dep_list[proj])
+
+    print(f'\ndata.base_dir: {data.base_dir}')
     print(f'data.proj_dir: {data.proj_dir}')
-    print(f'data.save_file: {data.save_file}')
+    print(f'data.test_dir: {data.test_dir}')
+    print(f'data.save_file: {data.save_file}\n')
+
     if data.file_list is not None:
         print('data.file_list:')
         for k in data.file_list:
-            print(f'    {k}: {data.file_list[k]}')
-    print(f'data.dep_list: {data.dep_list}')
-    '''
+            # print(f'    {k}: {data.file_list[k]}')
+            print(f'    {k}')
+    print(f'\ndata.dep_list: {data.dep_list}')
 
-    get_deps(data.dep_list[proj])
     # Return data.save_file if successful
     return data.save_file
 
@@ -425,7 +490,7 @@ if __name__ == "__main__":
     parser.add_argument('project', nargs='+')
     parser.add_argument('-b', '--base_dir', help='Base directory of project', default=None)
     parser.add_argument('-s', '--start', help='File that runs the program from CLI', default=None)
-    parser.add_argument('-t', '--test', help='Test directory to check (default None)')
+    parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
     parser.add_argument('-f', '--full', help='Search for dependencies prior to checking', action='store_true')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
