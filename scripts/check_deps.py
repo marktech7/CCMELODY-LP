@@ -99,28 +99,43 @@ ExclDir = ['js', 'resources']
 ExclFile = ['resources.py']
 
 
-def _get_deps(chk, builtin=False, stdlib=False):
+def _get_deps(chk, builtin=False, stdlib=False, testing=False):
     """Helper function to scan file and search for dependencies.
 
-    :type Path chk: File to scan. Must already exist and be a regular file
-    :type bool builtin: Include built-in dependency
-    :type bool stdlib: Include standard lib dependency
+    :param Path chk: File to scan. Must already exist and be a regular file
+    :param bool builtin: Include built-in dependency
+    :param bool stdlib: Include standard lib dependency
+    :param bool testing: Include test dependencies except builtins
 
-    :return: Found dependencies
-    :rtype: list or None
+    :return: ( [direct imports], [from imports] )
+    :rtype: tuple ([direct imports or None], [from imports or None])
     """
 
-    _deplist = []
+    _deplist = []  # Direct import "import xxx"
+    _fromlist = []  # From import "from xxx import ..."
+
     log.debug(f'(_get_deps) Scanning {chk}')
     try:
         with chk.open('r') as fp:
+            _bigstring = False
+            _docscring = False
             for _line in fp:
                 _line = _line.strip()
-                if _line.startswith('#') or len(_line) < 8:
+                if _line.startswith("'''") and not _line.endswith("'''"):
+                    _bigstring = not _bigstring
+                    continue
+                elif _line.startswith('"""') and not _line.endswith('"""'):
+                    _docstring = not _docscring
+                    continue
+                elif _bigstring or _docscring:
+                    continue
+                elif _line.startswith('#') or len(_line) < 5:
                     # Skip comment lines
                     continue
-                log.debug(f'(_get_deps) Checking "{_line}"')
+
+                # log.debug(f'(_get_deps) Checking "{_line}"')
                 if 'import' in _line:
+                    _line = _line.strip()
                     log.debug(f'(_get_deps) Found import "{_line}"')
                     # Check for continuation line
                     if _line.strip().endswith('\\'):
@@ -131,22 +146,33 @@ def _get_deps(chk, builtin=False, stdlib=False):
                             # Check for another continuation line
                             if not _l.strip().endswith('\\'):
                                 break
+                    if _line.startswith('import '):
+                        _deplist.append(_line)
+                    elif _line.startswith('from '):
+                        _fromlist.append(_line)
 
-                    _deplist.append(_line)
-
+    # Until we find out what exceptions to exclude, reraise
     except Exception as e:
-        print(e)
         raise
 
-    return _deplist
+    if not _deplist:
+        _deplist = None
+    if not _fromlist:
+        _fromlist = None
+
+    log.debug(f'(_get_deps) Returning direct: {_deplist}')
+    log.debug(f'(_get_deps) Returning from  : {_fromlist}')
+
+    return (_deplist, _fromlist)
 
 
-def get_deps(chk=None):
+def get_deps(proj, chk=None):
     """Process dependency list and verify status of installed dependencies
 
     Print to stdout status of dependency.
     Does not include standard lib or built-in packages
 
+    :param str proj: Project name
     :param Path chk: File to check. use data.file_list if None
     :return: Tuple of bool (required, optional, developer) dependency status
     :rtype: tuple
@@ -161,10 +187,11 @@ def get_deps(chk=None):
         _p = Path(_k)
         if data.file_list[_k] != 'NOFILES':
             for _f in data.file_list[_k]:
-                if 'NOFILES' not in _f:
-                    _c = _p.joinpath(_f)
-                    if _c.exists() and _c.is_file():
-                        print(_get_deps(_c))
+                if 'NOFILES' in _f:
+                    continue
+                _c = _p.joinpath(_f)
+                if _c.exists() and _c.is_file():
+                    pkg, mod = _get_deps(_c)
 
         if _count < 1:
             break
@@ -447,8 +474,9 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
         if _chk is None:
             log.error(f'(check_deps) Problem saving data to {data.save_file}')
 
-    get_deps(data.dep_list[proj])
+    get_deps(proj, data.dep_list[proj])
 
+    '''
     print(f'\ndata.base_dir: {data.base_dir}')
     print(f'data.proj_dir: {data.proj_dir}')
     print(f'data.test_dir: {data.test_dir}')
@@ -460,6 +488,7 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
             # print(f'    {k}: {data.file_list[k]}')
             print(f'    {k}')
     print(f'\ndata.dep_list: {data.dep_list}')
+    '''
 
     # Return data.save_file if successful
     return data.save_file
