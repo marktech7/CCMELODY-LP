@@ -97,6 +97,21 @@ class DataClass(object):
 data = DataClass()
 ExclDir = ['js', 'resources']
 ExclFile = ['resources.py']
+InclExt = ['.py']
+
+
+def check_deps_simple(chk, builtin=False, stdlib=False, testing=False):
+    """Check simple imports
+
+    :param list chk: List of strings with imports to check
+    :param bool builtin: (optional) Include builtins in dependencies in list
+    :param bool stdlib: (optional) Include stdlib dependencies in list
+    :param bool testing: (optional) Include testing dependencies in list
+
+    :return: Active dependencies
+    :rtype: dict
+    """
+    pass
 
 
 def _get_deps(chk, builtin=False, stdlib=False, testing=False):
@@ -127,7 +142,7 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
                         continue
                 elif _line.startswith('"""'):
                     if not _line.endswith('"""'):
-                        _docstring = not _docscring
+                        _docscring = not _docscring
                     continue
                 elif _bigstring or _docscring:
                     continue
@@ -137,7 +152,7 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
                 # log.debug(f'(_get_deps) Checking "{_line}"')
                 if 'import' in _line:
                     _line = _line.strip()
-                    log.debug(f'(_get_deps) Found import "{_line}"')
+                    log.debug(f'(_get_deps) Found possible import "{_line}"')
                     # Check for continuation line
                     if _line.endswith('\\'):
                         log.debug('(_get_deps) Found continuation line mark')
@@ -156,6 +171,7 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
 
     # Until we find out what exceptions to exclude, reraise
     except Exception as e:
+        print(e)
         raise
 
     if not _deplist:
@@ -163,8 +179,8 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
     if not _fromlist:
         _fromlist = None
 
-    log.debug(f'(_get_deps) Returning direct: {_deplist}')
-    log.debug(f'(_get_deps) Returning from  : {_fromlist}')
+    log.info(f'(_get_deps) Returning direct   : {_deplist}')
+    log.info(f'(_get_deps) Returning indirect : {_fromlist}')
 
     return (_deplist, _fromlist)
 
@@ -184,9 +200,7 @@ def get_deps(proj, chk=None):
 
     _req = _opt = _dev = True
 
-    _count = 10
     for _k in data.file_list:
-        _count -= 1
         _p = Path(_k)
         if data.file_list[_k] != 'NOFILES':
             for _f in data.file_list[_k]:
@@ -196,8 +210,7 @@ def get_deps(proj, chk=None):
                 if _c.exists() and _c.is_file():
                     pkg, mod = _get_deps(_c)
 
-        if _count < 1:
-            break
+                # Check simple dependencies
 
     print(f'\nRequired  dependencies {"good" if _req else "not fully met"}')
     print(f'Optional  dependencies {"good" if _opt else "not fully met"}')
@@ -206,7 +219,7 @@ def get_deps(proj, chk=None):
     return
 
 
-def _find_files(_dir, e_dir, e_file, i_ext=('.py')):
+def _find_files(_dir, e_dir, e_file, i_ext):
     """Helper to list files in (dir)
 
     :param Path dir_: Directory to search
@@ -217,6 +230,8 @@ def _find_files(_dir, e_dir, e_file, i_ext=('.py')):
     :return: (Directory list, File list)
     :rtype: tuple
     """
+    log.debug(f'(_find_files) Scanning {_dir}')
+
     _e_dir = [] if e_dir is None else e_dir
     _e_file = [] if e_file is None else e_file
     _dirs = []
@@ -245,20 +260,21 @@ def _find_files(_dir, e_dir, e_file, i_ext=('.py')):
     return (_dirs, _files)
 
 
-def find_files(base, excl_dir=ExclDir, excl_file=ExclFile):
+def find_files(base, excl_dir=ExclDir, excl_file=ExclFile, incl_ext=InclExt):
     """Search through (base) for source files to check
 
     :param Path base: Base directory of project
-    :param DataClass data: Class with required data
     :param list excl_dir: List of directory names to exclude
     :param list excl_file: List of file names to exclude
 
     :return: dict of {base: [files]}
     :rtype: dict
     """
+    log.info(f'(find_files) Starting project file search at {base}')
 
     _excl_dir = excl_dir
     _excl_file = excl_file
+    _incl_ext = incl_ext
 
     if '__pycache__' not in _excl_dir:
         _excl_dir.append('__pycache__')
@@ -267,16 +283,16 @@ def find_files(base, excl_dir=ExclDir, excl_file=ExclFile):
         log.debug(f'(find_files) {base} in exclusion list - skipping')
 
     _excl_file = [] if excl_file is None else excl_file
-    log.info(f'(find_files) base={base} excl_dir={_excl_dir}, excl_file={_excl_file}')
+    log.debug(f'(find_files) base={base} excl_dir={_excl_dir}, excl_file={_excl_file}')
 
     if base not in data.file_list:
         data.file_list[base] = None
 
     log.debug(f'(find_files) Starting file search at base {base}')
-    _dirs, _f = _find_files(base, e_dir=_excl_dir, e_file=_excl_file)
+    _dirs, _f = _find_files(base, e_dir=_excl_dir, e_file=_excl_file, i_ext=_incl_ext)
 
     if _dirs is None and _f is None:
-        print(f'(find_files) Removing {base} from list')
+        log.debug(f'(find_files) Removing {base} from list')
         _ = data.file_list.pop(base)
         return
 
@@ -446,7 +462,7 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
 
         if testdir:
             log.debug('(check_deps) Checking for test directory')
-            _d, _ = _find_files(data.base_dir, [], [])
+            _d, _ = _find_files(data.base_dir, [], [], [])
             if _d is not None:
                 for _f in _d:
                     if 'test' in _f.name:
