@@ -121,16 +121,17 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
             _docscring = False
             for _line in fp:
                 _line = _line.strip()
-                if _line.startswith("'''") and not _line.endswith("'''"):
-                    _bigstring = not _bigstring
-                    continue
-                elif _line.startswith('"""') and not _line.endswith('"""'):
-                    _docstring = not _docscring
+                if _line.startswith("'''"):
+                    if not _line.endswith("'''"):
+                        _bigstring = not _bigstring
+                        continue
+                elif _line.startswith('"""'):
+                    if not _line.endswith('"""'):
+                        _docstring = not _docscring
                     continue
                 elif _bigstring or _docscring:
                     continue
                 elif _line.startswith('#') or len(_line) < 5:
-                    # Skip comment lines
                     continue
 
                 # log.debug(f'(_get_deps) Checking "{_line}"')
@@ -138,10 +139,12 @@ def _get_deps(chk, builtin=False, stdlib=False, testing=False):
                     _line = _line.strip()
                     log.debug(f'(_get_deps) Found import "{_line}"')
                     # Check for continuation line
-                    if _line.strip().endswith('\\'):
+                    if _line.endswith('\\'):
+                        log.debug('(_get_deps) Found continuation line mark')
                         while True:
                             _l = fp.readline()
-                            _line = f'{_line} {_l}'.strip()
+                            _l = _l.strip()
+                            _line = f'{_line} {_l}'
 
                             # Check for another continuation line
                             if not _l.strip().endswith('\\'):
@@ -177,7 +180,7 @@ def get_deps(proj, chk=None):
     :return: Tuple of bool (required, optional, developer) dependency status
     :rtype: tuple
     """
-    log.debug('(get_deps) Starting dependency checks')
+    log.info('(get_deps) Starting dependency checks')
 
     _req = _opt = _dev = True
 
@@ -264,7 +267,7 @@ def find_files(base, excl_dir=ExclDir, excl_file=ExclFile):
         log.debug(f'(find_files) {base} in exclusion list - skipping')
 
     _excl_file = [] if excl_file is None else excl_file
-    log.debug(f'(find_files) base={base} excl_dir={_excl_dir}, excl_file={_excl_file}')
+    log.info(f'(find_files) base={base} excl_dir={_excl_dir}, excl_file={_excl_file}')
 
     if base not in data.file_list:
         data.file_list[base] = None
@@ -300,7 +303,7 @@ def save_json_file(src, deps):
 
     :return: Path or None
     """
-    log.debug(f'(save_json_file) Saving data to {src}')
+    log.info(f'(save_json_file) Saving data to {src}')
     if type(deps) is not dict:
         log.warning('(save_json_file) Cannot save data - wrong type (not dict)')
         return None
@@ -327,14 +330,14 @@ def get_json_file(src):
     :param Path src: Fully qualified file path/name
     :rtype: dict or None
     """
-    log.debug(f'(get_json_file) Checking for previous {src} dependency list')
+    log.info(f'(get_json_file) Checking for previous {src} dependency list')
 
     if src.exists():
         log.info(f'(get_json_file) Parsing {src}')
         try:
             with open(src, 'r') as fp:
                 _ret = json.load(fp)
-                log.debug('(get_json_file) Loaded JSON file')
+                log.info('(get_json_file) Loaded JSON file')
                 log.debug(_ret)
                 return _ret
         except json.JSONDecodeError:
@@ -357,7 +360,7 @@ def get_base_dirs(proj, base=None):
     :returns: tuple(base_dir, project_dir)
     :raises: FileNotFoundError
     """
-    log.debug('(get_base_dirs) Getting project base')
+    log.info('(get_base_dirs) Getting project base')
     _base = Path(__name__).absolute() if base is None else Path(base).absolute()
     if __name__ in _base.parts:
         # No base directory given, derive base directory from this file
@@ -407,8 +410,8 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
     _first_run = True
     _recurse = full
 
-    log.debug('(check_deps) Starting dependency search')
-    log.debug(f'(check_deps) initial file list: {data.file_list}')
+    log.info('(check_deps) Starting dependency search')
+    log.info(f'(check_deps) initial file list: {data.file_list}')
 
     # Get base directory and project directory
     data.base_dir, data.proj_dir = get_base_dirs(proj=proj, base=base)
@@ -474,6 +477,7 @@ def check_deps(proj, base=None, full=False, start=None, jfile=None, testdir=None
         if _chk is None:
             log.error(f'(check_deps) Problem saving data to {data.save_file}')
 
+    # Files found - time to check dependencies
     get_deps(proj, data.dep_list[proj])
 
     '''
