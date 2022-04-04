@@ -50,7 +50,7 @@ setup(
     long_description="""\
 OpenLP (previously openlp.org) is free church presentation software, or lyrics projection software, used to display
 slides of songs, Bible verses, videos, images, and even presentations (if PowerPoint is installed) for church worship
-using a computer and a data projector.""",
+using a computer and a display/projector.""",
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: MacOS X',
@@ -132,8 +132,6 @@ using a computer and a data projector.""",
         'postgresql': ['psycopg2'],
         'spellcheck': ['pyenchant >= 1.6'],
         'sword-bibles': ['pysword'],
-        # Required for scripts/*.py:
-        'jenkins': ['python-jenkins'],
         'test': [
             'PyMuPDF',
             'pyodbc',
