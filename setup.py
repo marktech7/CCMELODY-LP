@@ -47,7 +47,7 @@ setup(
     name='OpenLP',
     version=version_string,
     description="Open source Church presentation and lyrics projection application.",
-    long_description="""\
+    long_description="""
 OpenLP (previously openlp.org) is free church presentation software, or lyrics projection software, used to display
 slides of songs, Bible verses, videos, images, and even presentations (if PowerPoint is installed) for church worship
 using a computer and a display/projector.""",
