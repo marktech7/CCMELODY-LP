@@ -447,16 +447,17 @@ def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
     :rtype: tuple
     """
     log.info(f'(_list_dir) Starting directory scan in {base}')
+
+    _chk = data.base_dir.joinpath(base)
+    if not _chk.is_dir():
+        log.warning(f'(_list_dir) "{base} not a directory - returning')
+        return (None, None)
+
     _e_dir = [] if not e_dir else e_dir
     _e_file = [] if not e_file else e_file
     _i_ext = [] if not i_ext else i_ext
     _dirs = []
     _files = []
-    _chk = data.base_dir.joinpath(base)
-
-    if not _chk.is_dir():
-        log.warning(f'(_list_dir) "{base} not a directory - returning')
-        return (None, None)
 
     if '__pycache__' not in e_dir:
         _e_dir.append('__pycache__')
@@ -465,7 +466,7 @@ def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
         log.debug(f'(_list_dir) Checking {_check}')
         if _check.is_file() \
                 and _check.suffix in _i_ext \
-                and _check not in _e_file \
+                and _check.name not in _e_file \
                 and not _check.name.startswith('.'):
             log.debug(f'(_list_dir) Adding {_check.name} to files')
             _files.append(_check.relative_to(data.base_dir))
@@ -486,34 +487,25 @@ def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
 def _save_json_file(src, deps):
     """Save dependency list to file. Return None on error.
 
-    :param Path src: File to save to
+    :param Path src: Fully-qualified /path/to/file to save to
     :param dict deps: Dependency dictionary
-
-    :return: Path or None
+    :return: bool
     """
-    log.info(f'(save_json_file) Saving data to {src}')
     if type(deps) is not dict:
         log.warning('(save_json_file) Cannot save data - wrong type (not dict)')
-        return None
+        return False
 
+    log.info(f'(save_json_file) Saving data to {src}')
     try:
         with open(src, 'w') as fp:
-            log.debug(f'(save_json_file) Saving data to {src}')
             json.dump(deps, fp, indent=4, sort_keys=True)
 
     except Exception as err:
         log.warning(f'(save_json_file) Error saving data: ({err=}')
-        return None
+        return False
 
     log.info(f'(save_json_file) Data saved to {src}')
-    return src
-
-
-###########################################################
-#                                                         #
-#                Public Functions                         #
-#                                                         #
-###########################################################
+    return True
 
 
 # #####################################################################################
