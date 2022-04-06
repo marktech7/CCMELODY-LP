@@ -44,11 +44,11 @@ project.json format:
     "project"        : Project directory name
     "name"           : Proper project name
     "version"[1]     : Project version this file refers to
-    "git_version"[1] : Git repo project version
+    "git_version"[1] : Git repo version
 
     module : {
-                "status"[1]  : "optional" | "dev" | "new" | "ignore",  # "required" if not defined
-                "os"[1]      : "linux" | "windows" | "darwin",  # O/S Agnostic if not defined
+                "status"[1]  : "required" | "optional" | "dev" | "new" | "ignore",  # "required" if not defined
+                "os"[1]      : os.name,  # O/S Agnostic if not defined
                 "version"[1] : min [, max],
                 repo[2]      : [ repo_pacakge_name, repo_package_name, ... ],
                 "parent"[2]  : module,
@@ -101,18 +101,24 @@ class DataClass(object):
         All other directory references will be relative to base_dir
         """
         super().__init__()
+        # All directories in here are relative to base_dir
         self.base_dir = Path('.').resolve()  # Project base directory (current directory)
         self.dep_list = None  # (dict() of JSON file contents
+        # All files in file_list will be relative to the directory they're found in
+        # file_list.keys() are directories relative to base_dir
         self.file_list = None  # Keep track of files to check
         self.git_version = None  # Git version
         self.helpers = []  # Director(ies) that contain helper scripts
+        # proj_dir will be relative to base_dir
         self.proj_dir = None  # Subdirectory of base_dir where source files are located
         self.project = 'openlp'  # Directory name
         self.project_name = 'OpenLP'  # Proper name
+        # save_file is just the name of the file, not a Path()
         self.save_file = None  # JSON file
         self.setup = None  # Options from setup.py
         self.setup_py = None
         self.start_py = None  # Hopefully the name of the script that starts the program
+        # test_dir is relative to base_dir
         self.test_dir = None  # Directory where tests are located
         self.version = None  # Project version
         self.version_file = '.version'  # Name of version file
@@ -157,12 +163,15 @@ class DataClass(object):
 data = DataClass()
 
 # Exclude directories from project
-ExclDir = ['resources', 'documentation', 'docs']
+ExclDir = ['__pycache__', 'resources', 'documentation', 'docs']
 # Exclude directories in tests
 ExclDirTest = ['js']
 # Exclude files
 ExclFile = ['resources.py']
 InclExt = ['.py']
+
+# Indicates there are no files in a directory list
+No_Files_Marker = '###-NOFILES-###'
 
 ###########################################################
 #                                                         #
@@ -256,6 +265,58 @@ def _check_docstrings(fp, check, skip=True):
     return _line
 
 
+def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
+    """Process the project directory and add source files to data.file_list
+
+    :param Path base: Initial directory to process relative to data.base_dir
+    :param bool recurse: Process subdirectories
+    :param list e_dir: Directory names to exclude
+    :param list e_file: File names to exclude
+    :param list i_ext: File name extensions to include (default ['.py']
+    """
+    __my_name__ = '_get_directory'
+
+    if not base.is_dir():
+        log.error(f'({__my_name__}) Base is not a directory - exiting')
+        return
+
+    log.info(f'({__my_name__}) Starting process on {base}')
+
+    _base_dir = data.base_dir
+
+    if base not in data.file_list or data.file_list[base] is None:
+        data.file_list[base] = []
+    _dirs, _files = _list_dir(data.base_dir.joinpath(base))
+
+    # Process directories
+    if _dirs is not None:
+        for _chk in _dirs:
+            if _chk not in data.file_list:
+                data.file_list[_chk] = None
+
+    if _files is None:
+        # No files, so mark it as so
+        data.file_list[base] = No_Files_Marker
+    else:
+        for _chk in _files:
+            # Don't need relative path since we only scanned base
+            data.file_list[base].append(_chk.name)
+    log.debug(f'({__my_name__}) Directory list: {data.file_list[base]}')
+
+
+def _get_empty_items():
+    """Find all entries in data.file_list that are set to None
+
+    :return: dict
+    """
+    _ret = dict()
+
+    for _key in data.file_list:
+        if data.file_list[_key] is None:
+            _ret[_key] = None
+    return _ret
+
+
 def _get_json_file(src):
     """Initialize data.dep_list
 
@@ -264,24 +325,24 @@ def _get_json_file(src):
 
     :param Path src: Fully qualified file path/name
     """
-    log.info(f'(_get_json_file) Checking for previous {src.relative_to(data.base_dir)} dependency list')
+    __my_name__ = '_get_json_file'
+    log.info(f'({__my_name__}) Checking for previous {src.relative_to(data.base_dir)} dependency list')
 
     _ret = None
     _src = data.base_dir.joinpath(src)
 
     if _src.exists():
-        log.info(f'(_get_json_file) Parsing {src}')
+        log.info(f'({__my_name__}) Parsing {src}')
         try:
             with open(_src, 'r') as fp:
                 _ret = json.load(fp)
-                log.info('(_get_json_file) Loaded JSON file')
-                log.debug(_ret)
+                log.info(f'({__my_name__}) Loaded JSON file')
 
         except json.JSONDecodeError:
-            log.warning(f'(_get_json_file) {src} appears to be corrupted - returning new dictionary')
+            log.warning(f'({__my_name__}) {src} appears to be corrupted - returning new dictionary')
             _ret = None
     else:
-        log.info(f'(_get_json_file) Source {src} does not exists, returning new dictionary')
+        log.info(f'({__my_name__}) Source {src} does not exists, returning new dictionary')
 
     if _ret is None:
         if data.version is None:
@@ -321,33 +382,34 @@ def _get_project_dir(proj=data.project):
     :param str proj: Name of project
     :return: None
     """
+    __my_name__ = '_get_project_dir'
     _base = data.base_dir
-    _dirs, _files = _list_dir(data.base_dir)
+    _dirs, _files = _list_dir('.')
 
     if _dirs is None:
-        log.error('(_get_project_dir) Unable to determine starting point - exiting')
+        log.error(f'({__my_name__}) Unable to determine starting point - exiting')
         return
 
-    log.info(f'(_get_project_dir) Starting base checks')
+    log.info(f'({__my_name__}) Starting base checks')
     if _dirs is not None:
         _proj_chk = []
         for _checkdir in _dirs:
-            log.debug(f'(_get_project_dir) Checking {_checkdir}')
+            log.debug(f'({__my_name__}) Checking {_checkdir}')
             if _checkdir.name == 'src':
                 if data.base_dir.joinpath(_checkdir).exists():
                     # PyPI project
                     _proj_chk.append(_checkdir)
                     continue
             elif data.project is not None and _checkdir.name == data.project:
-                log.debug(f'(_get_project_dir) Adding "{_checkdir.name}"')
+                log.debug(f'({__my_name__}) Adding "{_checkdir.name}"')
                 _proj_chk.append(_checkdir)
                 continue
             elif _checkdir.name.startswith('test'):
-                log.debug(f'(_get_project_dir) Setting data.test_dir to "{_checkdir.name}"')
+                log.debug(f'({__my_name__}) Setting data.test_dir to "{_checkdir.name}"')
                 data.test_dir = _checkdir
                 continue
             elif _checkdir.name.startswith('script'):
-                log.debug(f'(_get_project_dir) Adding "{_checkdir.name}" to helpers list')
+                log.debug(f'({__my_name__}) Adding "{_checkdir.name}" to helpers list')
                 data.helpers.append(_checkdir)
                 continue
             # Check for module spec
@@ -364,15 +426,15 @@ def _get_project_dir(proj=data.project):
 
             _c = Path(_chk.origin).parts
             if 'test' in _c[-2]:
-                data.test_dir = _dir.relative_to(_base)
+                data.test_dir = _checkdir.relative_to(_base)
                 continue
             elif 'script' in _c[-2]:
                 # Helper scripts
-                data.helpers = _dir.relative_to(_base)
+                data.helpers = _checkdir.relative_to(_base)
                 continue
 
             # Unknown directory - recheck later
-            _proj_chk.append(_dir)
+            _proj_chk.append(_checkdir.relative_to(_base))
 
         if len(_proj_chk) == 1:
             # Hopefully found our package
@@ -380,8 +442,8 @@ def _get_project_dir(proj=data.project):
             data.proj_dir = _proj_chk[0]
             _proj_chk.pop(0)
 
-    log.debug('(_get_project_dir) Finished processing directories')
-    log.debug(f'(_get_project_dir) Leftover list: {_proj_chk}')
+    log.debug(f'({__my_name__}) Finished processing directories')
+    log.debug(f'({__my_name__}) Leftover list: {_proj_chk}')
 
     _proj_chk = []
     if _files is not None:
@@ -404,7 +466,8 @@ def _get_version(proj=data.project, vfile=data.version_file):
     :returns: (version, git_version)
     :rtype: tuple
     """
-    log.info(f'(_get_version) Getting version for project "{proj}"')
+    __my_name__ = '_get_version'
+    log.info(f'({__my_name__}) Getting version for project "{proj}"')
     git_version = ''
     proj_version = ''
 
@@ -431,10 +494,10 @@ def _get_version(proj=data.project, vfile=data.version_file):
             proj_version = git_version.split('-', 1)[0]
 
     if proj_version is None:
-        log.warning(f'(_get_version) Unable to get {proj} version')
-        log.warning(f'(_get_version) Version file {proj}/{proj_version} missing')
+        log.warning(f'({__my_name__}) Unable to get {proj} version')
+        log.warning(f'({__my_name__}) Version file {proj}/{proj_version} missing')
     else:
-        log.info(f'(_get_version) Project version: {proj_version} Git version: {git_version}')
+        log.info(f'({__my_name__}) Project version: {proj_version} Git version: {git_version}')
 
     return (proj_version, git_version)
 
@@ -442,45 +505,40 @@ def _get_version(proj=data.project, vfile=data.version_file):
 def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
     """Scan directory and returns entries. Excludes __pycache__ directory.
 
-    :param str base: Directory to scan
+    :param str base: Fully qualified Path()
     :return: (directories, files)
     :rtype: tuple
     """
-    log.info(f'(_list_dir) Starting directory scan in {base}')
+    __my_name__ = '_list_dir'
 
-    _chk = data.base_dir.joinpath(base)
+    _chk = Path(base).resolve()
     if not _chk.is_dir():
-        log.warning(f'(_list_dir) "{base} not a directory - returning')
+        log.warning(f'({__my_name__}) "{base} not a directory - returning')
         return (None, None)
 
-    _e_dir = [] if not e_dir else e_dir
-    _e_file = [] if not e_file else e_file
-    _i_ext = [] if not i_ext else i_ext
+    log.info(f'({__my_name__}) Starting directory scan in {base}')
     _dirs = []
     _files = []
 
-    if '__pycache__' not in e_dir:
-        _e_dir.append('__pycache__')
-
     for _check in _chk.iterdir():
-        log.debug(f'(_list_dir) Checking {_check}')
+        log.debug(f'({__my_name__}) Checking {_check}')
         if _check.is_file() \
-                and _check.suffix in _i_ext \
-                and _check.name not in _e_file \
+                and _check.suffix in i_ext \
+                and _check.name not in e_file \
                 and not _check.name.startswith('.'):
-            log.debug(f'(_list_dir) Adding {_check.name} to files')
+            log.debug(f'({__my_name__}) Adding {_check.name} to files')
             _files.append(_check.relative_to(data.base_dir))
 
         elif _check.is_dir() \
-                and _check.name not in _e_dir \
+                and _check.name not in e_dir \
                 and not _check.name.startswith('.'):
-            log.debug(f'(_list_dir) Adding {_check.name} to directories')
+            log.debug(f'({__my_name__}) Adding {_check.name} to directories')
             _dirs.append(_check.relative_to(data.base_dir))
 
     _dirs = None if not _dirs else _dirs
     _files = None if not _files else _files
-    log.debug(f'(_list_dir) dirs  : {_dirs}')
-    log.debug(f'(_list_dir) files : {_files}')
+    log.debug(f'({__my_name__}) dirs  : {_dirs}')
+    log.debug(f'({__my_name__}) files : {_files}')
     return (_dirs, _files)
 
 
@@ -491,20 +549,22 @@ def _save_json_file(src, deps):
     :param dict deps: Dependency dictionary
     :return: bool
     """
+    __my_name__ = '_save_json_file'
+
     if type(deps) is not dict:
-        log.warning('(save_json_file) Cannot save data - wrong type (not dict)')
+        log.warning(f'({__my_name__}) Cannot save data - wrong type (not dict)')
         return False
 
-    log.info(f'(save_json_file) Saving data to {src}')
+    log.info(f'({__my_name__}) Saving data to {src}')
     try:
         with open(src, 'w') as fp:
             json.dump(deps, fp, indent=4, sort_keys=True)
 
     except Exception as err:
-        log.warning(f'(save_json_file) Error saving data: ({err=}')
+        log.warning(f'({__my_name__}) Error saving data: ({err=}')
         return False
 
-    log.info(f'(save_json_file) Data saved to {src}')
+    log.info(f'({__my_name__}) Data saved to {src}')
     return True
 
 
@@ -525,10 +585,8 @@ def check_deps(base=data.base_dir, full=False, jfile=None, testdir=None, e_dir=E
     :param list e_file: File names to exclude
     :param list i_ext: File name extensions to include (default ['.py']
     """
-    log.info('(check_deps) Starting dependency search')
-
-    _first_run = True
-    _recurse = full or not data.dep_list
+    __my_name__ = 'check_deps'
+    log.info(f'({__my_name__}) Starting dependency checks')
 
     if data.proj_dir is None:
         _get_project_dir()
@@ -538,12 +596,33 @@ def check_deps(base=data.base_dir, full=False, jfile=None, testdir=None, e_dir=E
     elif data.project is not None:
         data.save_file = f'{data.project}-deps.json'
     else:
-        log.warning('(check_deps) Save file not specified - using "project-deps.json"')
+        log.warning(f'({__my_name__}) Save file not specified - using "project-deps.json"')
         data.save_file = 'project-deps.json'
-    log.info(f'(check_deps) Saving dependency list in {data.base_dir.joinpath(data.save_file)}')
+    log.info(f'({__my_name__}) Saving dependency list in {data.base_dir.joinpath(data.save_file)}')
 
-    if not data.dep_list:
-        _get_json_file(data.base_dir.joinpath(data.save_file))
+    if full or data.file_list is None or len(data.file_list) <= 4:
+        # len(data.file_list) <= 4 indicates a new data.file_list
+        log.info(f'({__my_name__}) Processing dependency checks')
+
+        if not data.dep_list:
+            _get_json_file(data.base_dir.joinpath(data.save_file))
+
+        # Process directories
+        if data.file_list is None:
+            log.debug(f'({__my_name__}) Starting file processing')
+            data.file_list = {data.proj_dir: None}
+        else:
+            log.debug(f'({__my_name__}) Continuing file processing')
+
+        _dir_list = _get_empty_items()
+        while _dir_list:
+            for _key in _dir_list:
+                _get_directory(_key)
+            _dir_list = _get_empty_items()
+
+    # Done/skipped finding deps, now to check them
+
+    return
 
 
 # #####################################################################################
