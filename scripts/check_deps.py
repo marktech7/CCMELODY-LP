@@ -80,7 +80,6 @@ import json
 import logging
 import os
 import re
-import string
 
 from importlib.machinery import PathFinder
 from pathlib import Path
@@ -91,10 +90,9 @@ if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)-10s :  %(message)s')
     log = logging.getLogger()
     _log_width, _ = os.get_terminal_size()
-    _log_width = 100
 else:
     log = logging.getLogger(__name__)
-    _log_width = 100
+    _log_width = 110
 
 
 class DataClass(object):
@@ -571,11 +569,9 @@ def _log_formatter(lvl, header, msg, spacer=10):
         if _len >= _last:
             _len = _last
         else:
-            # Account for possible extra space at the beginning
-            # and possibly towards the end of the message
-            if _curr + 5 <= _len and re.search('\s', _msg[_curr + 5:_len]):  # noqa
-                while _msg[_len] not in string.whitespace:
-                    _len -= 1
+            _l = [i for i in re.finditer('\s', _msg[_curr:_len])]  # noqa
+            if _l:
+                _len = _curr + _l[-1].span()[0]
         _line = _msg[_curr:_len]
         lvl(f'{_spaces}{_line}')
         _curr = _len
