@@ -78,6 +78,9 @@ project.json format:
 """
 import json
 import logging
+import os
+import re
+import string
 
 from importlib.machinery import PathFinder
 from pathlib import Path
@@ -87,8 +90,11 @@ __all__ = ['check_deps']
 if __name__ == '__main__':
     logging.basicConfig(format='%(levelname)-10s :  %(message)s')
     log = logging.getLogger()
+    _log_width, _ = os.get_terminal_size()
+    _log_width = 100
 else:
     log = logging.getLogger(__name__)
+    _log_width = 100
 
 
 class DataClass(object):
@@ -282,8 +288,6 @@ def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=Inc
 
     log.info(f'({__my_name__}) Starting process on {base}')
 
-    _base_dir = data.base_dir
-
     if base not in data.file_list or data.file_list[base] is None:
         data.file_list[base] = []
     _dirs, _files = _list_dir(data.base_dir.joinpath(base))
@@ -301,7 +305,8 @@ def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=Inc
         for _chk in _files:
             # Don't need relative path since we only scanned base
             data.file_list[base].append(_chk.name)
-    log.debug(f'({__my_name__}) Directory list: {data.file_list[base]}')
+    # log.debug(f'({__my_name__}) Directory list: {data.file_list[base]}')
+    _log_formatter(log.debug, f'({__my_name__}) Directory list:', data.file_list[base])
 
 
 def _get_empty_items():
@@ -537,9 +542,43 @@ def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
 
     _dirs = None if not _dirs else _dirs
     _files = None if not _files else _files
-    log.debug(f'({__my_name__}) dirs  : {_dirs}')
-    log.debug(f'({__my_name__}) files : {_files}')
+    _log_formatter(log.debug, f'({__my_name__}) dirs  : ', _dirs)
+    _log_formatter(log.debug, f'({__my_name__}) files : ', _files)
     return (_dirs, _files)
+
+
+def _log_formatter(lvl, header, msg, spacer=10):
+    """Log a class, dict, list, tuple with minor extra formatting
+
+    :param func lvl: Logger method
+    :param str header: Message header
+    :param msg: dict, list, tuple, class to log
+    :param int spacer: Indent level for message
+    """
+    _spacer = spacer * 3
+
+    if len(f'{header} : {msg}') < _log_width - _spacer:
+        return lvl(f'{header}{msg}')
+
+    _spaces = ' ' * spacer
+    _msg = msg.__repr__()
+    _curr = 0
+    _last = len(_msg)
+    lvl(f'{header} :')
+
+    while _curr < _last:
+        _len = _curr + _log_width - _spacer
+        if _len >= _last:
+            _len = _last
+        else:
+            # Account for possible extra space at the beginning
+            # and possibly towards the end of the message
+            if _curr + 5 <= _len and re.search('\s', _msg[_curr + 5:_len]):  # noqa
+                while _msg[_len] not in string.whitespace:
+                    _len -= 1
+        _line = _msg[_curr:_len]
+        lvl(f'{_spaces}{_line}')
+        _curr = _len
 
 
 def _save_json_file(src, deps):
@@ -600,19 +639,19 @@ def check_deps(base=data.base_dir, full=False, jfile=None, testdir=None, e_dir=E
         data.save_file = 'project-deps.json'
     log.info(f'({__my_name__}) Saving dependency list in {data.base_dir.joinpath(data.save_file)}')
 
-    if full or data.file_list is None or len(data.file_list) <= 4:
-        # len(data.file_list) <= 4 indicates a new data.file_list
-        log.info(f'({__my_name__}) Processing dependency checks')
+    if full or data.dep_list is None or len(data.dep_list) <= 4:
+        # len(data.dep_list) <= 4 indicates no dependency list found
+        log.info(f'({__my_name__}) Searching for project source files')
 
         if not data.dep_list:
             _get_json_file(data.base_dir.joinpath(data.save_file))
 
         # Process directories
         if data.file_list is None:
-            log.debug(f'({__my_name__}) Starting file processing')
+            log.debug(f'({__my_name__}) Starting new file search')
             data.file_list = {data.proj_dir: None}
         else:
-            log.debug(f'({__my_name__}) Continuing file processing')
+            log.debug(f'({__my_name__}) Updating file list')
 
         _dir_list = _get_empty_items()
         while _dir_list:
