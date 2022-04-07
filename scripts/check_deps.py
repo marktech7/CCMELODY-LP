@@ -22,9 +22,12 @@
 
 """Parse Python source files and check dependencies are available
 
-Must be run in the base directory of your project.
-ex: base = current_directory
-    project = base/name
+NOTE: If you include this script in your project, you may want to
+        adjust some of the DataClass parameters to match your project.
+
+Should be run in the base directory of your project.
+ex: base = (current_directory)
+    project = base/project_name
 
 This script goes through a project and builds a dependency
 list. It only searches for "import" or "from ... import" to validate
@@ -36,13 +39,13 @@ include the package that the module may be located as well as
 the repository where the package may be found (ex. PyPI or a fedora repo).
 
 After building a dependency list, project managers can then
-assign "required | optional | dev" status to the dependencies.
+assign "required | optional | dev | ..." status to the dependencies.
 
 project.json format:
 
 {
-    "project"        : Project directory name
-    "name"           : Proper project name
+    "project"        : Project name (ex. "openlp")
+    "name"           : Proper project name (ex. "OpenLP")
     "version"[1]     : Project version this file refers to
     "git_version"[1] : Git repo version
 
@@ -71,7 +74,7 @@ project.json format:
                           ex. repo="fedora": "<fedora package name>"
                 "parent": <Name of parent module>
                        ex. module="QtWebEngineWidgets": { "parent": "PyQt5 }
-                       Note: "parent" points to another "module" entry
+                       Note: "parent" points to another module entry
 
 :author: Ken Roberts <alisonken1_#_gmail_dot_com>
 :copyright: OpenLP
@@ -109,9 +112,7 @@ class Singleton(type):
 
 
 class DataClass(metaclass=Singleton):
-    """
-    Class to hold module data
-    """
+    """Class to hold module data"""
     @classmethod
     def create(self):
         # All directories in here are relative to base_dir
@@ -230,85 +231,6 @@ class PrettyLog(metaclass=Singleton):
         self.indents = {0: ''}
         self.log_items = []
 
-    @classmethod
-    def log(self, txt, lvl=None, head=None, fromlist=False):
-        """
-        :param txt: Text to log
-        :type txt: object
-        :param func lvl: Logging function (logging.debug, logging.info, ...)
-        :param str head: Text prefix
-        """
-        prefix = head if head is not None else ''
-        # Check if we don't have to process further
-        if isinstance(txt, (Singleton)):
-            log.warning('To log Singleton class, provide instance (i.e. DataClass())')
-            log.warning(f'Log called with {txt}')
-            return
-        elif not isinstance(txt, (DataClass, PrettyLog)):
-            # Check for my two classes so I can actually show
-            # what they have
-            if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
-                return
-
-        # Item too big to log on a single line, time to process
-        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
-        if type(txt) is list:
-            self.log_list(self)
-        elif type(txt) is dict:
-            self.log_dict(self)
-        else:
-            self.log_obj(self)
-
-    @classmethod
-    def pop_item(self, lst):
-        """Pops the last item from a list"""
-        if type(lst) is not list:
-            log.warning('(PrettyLog:pop_item) Not a list - returning')
-            return
-        try:
-            lst.pop(-1)
-        except IndexError:
-            log.warning('(PrettyLog:pop_item) Trying to pop an empty list')
-
-    def set_indent(self, decr=False):
-        """Common routine to work with the indentation level of entries
-
-        :param bool decr: Decrement indent level
-        """
-        if decr:
-            if self.indent > 0:
-                if self.indent in self.indents:
-                    self.indents.pop(self.indent)
-                self.indent -= 1
-        else:
-            self.indent += 1
-
-    def get_lead(self):
-        if self.indent not in self.indents:
-            self.indents[self.indent] = '     ' * self.indent
-        return self.indents[self.indent]
-
-    def log_line(self, txt, lvl):
-        """Common point to actually log.
-
-        Verify the text to print will fit within the display
-        terminal or specified width.
-
-        :param str txt: Text to log
-        :param func lvl: Logging level instance (logging.debug, logging.info, ...)
-        :return: True if logged
-        :rtype: bool
-        """
-        if not txt:
-            return False
-        _lvl = log.debug if lvl is None else lvl
-        lead = self.get_lead(self)
-        _line = f'{lead}{txt}'
-        if len(_line) > self.width - len(lead):
-            return False
-        _lvl(_line)
-        return True
-
     def format_line(self):
         """Split a line as needed for logging
 
@@ -361,6 +283,63 @@ class PrettyLog(metaclass=Singleton):
             if not log_chk:
                 log.warning('(PrettyLog:format_line) Line failed to print')
 
+    def get_lead(self):
+        if self.indent not in self.indents:
+            self.indents[self.indent] = '     ' * self.indent
+        return self.indents[self.indent]
+
+    @classmethod
+    def log(self, txt, lvl=None, head=None, fromlist=False):
+        """
+        :param txt: Text to log
+        :type txt: object
+        :param func lvl: Logging function (logging.debug, logging.info, ...)
+        :param str head: Text prefix
+        """
+        prefix = head if head is not None else ''
+        # Check if we don't have to process further
+        if isinstance(txt, (Singleton)):
+            log.warning('To log Singleton class, provide instance (i.e. PrettyLog())')
+            log.warning(f'Log called with {txt}')
+            return
+        elif not isinstance(txt, (DataClass, PrettyLog)):
+            # Check for my two classes so I can actually show
+            # what they have.
+            # If this script added to a different project, you
+            # may have to adapt the isinstance() to your project.
+            if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
+                return
+
+        # Item too big to log on a single line, time to process
+        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
+        if type(txt) is list:
+            self.log_list(self)
+        elif type(txt) is dict:
+            self.log_dict(self)
+        else:
+            self.log_obj(self)
+
+    def log_line(self, txt, lvl):
+        """Common point to actually log.
+
+        Verify the text to print will fit within the display
+        terminal or specified width.
+
+        :param str txt: Text to log
+        :param func lvl: Logging level instance (logging.debug, logging.info, ...)
+        :return: True if logged
+        :rtype: bool
+        """
+        if not txt:
+            return False
+        _lvl = log.debug if lvl is None else lvl
+        lead = self.get_lead(self)
+        _line = f'{lead}{txt}'
+        if len(_line) > self.width - len(lead):
+            return False
+        _lvl(_line)
+        return True
+
     def log_dict(self):
         """Format a dictionary for logging"""
         item = self.log_items[-1]
@@ -393,19 +372,47 @@ class PrettyLog(metaclass=Singleton):
         # if isinstance(item, (Singleton)):
         #    # Try and get the current instance
         #    item = item()
-        print([k for k in item])
         lvl = item['lvl']
         head = item['head']
         text = item['txt']
         self.log_line(self, lvl=lvl, txt=(f'{head} {{'))
         self.set_indent(self)
 
+        chk = dict()
         for k in text:
-            print(f'{k}: {getattr(text, k)}')
+            # Build dict from attributes
+            chk[k] = getattr(text, k)
+        for k in chk:
+            itm = chk[k]
+            self.log(lvl=lvl, head=f'{k}: ', txt=itm)
 
         self.set_indent(self, decr=True)
         self.log_line(self, lvl=lvl, txt=('}'))
         self.pop_item(self.log_items)
+
+    @classmethod
+    def pop_item(self, lst):
+        """Pops the last item from a list"""
+        if type(lst) is not list:
+            log.warning('(PrettyLog:pop_item) Not a list - returning')
+            return
+        try:
+            lst.pop(-1)
+        except IndexError:
+            log.warning('(PrettyLog:pop_item) Trying to pop an empty list')
+
+    def set_indent(self, decr=False):
+        """Common routine to work with the indentation level of entries
+
+        :param bool decr: Decrement indent level
+        """
+        if decr:
+            if self.indent > 0:
+                if self.indent in self.indents:
+                    self.indents.pop(self.indent)
+                self.indent -= 1
+        else:
+            self.indent += 1
 
 
 DataClass.create()
@@ -777,7 +784,8 @@ def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
 
     if proj_version is None:
         log.warning(f'({__my_name__}) Unable to get {proj} version')
-        log.warning(f'({__my_name__}) Version file {proj}/{proj_version} missing')
+        log.warning(f'({__my_name__}) Version file {proj}/{vfile} missing')
+        log.warning(f'({__my_name__}) Git either unavailable or not installed')
     else:
         log.info(f'({__my_name__}) Project version: {proj_version} Git version: {git_version}')
 
@@ -886,7 +894,11 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
     log.info(f'({__my_name__}) Saving dependency list in {DataClass.base_dir.joinpath(DataClass.save_file)}')
 
     if full or DataClass.dep_list is None or len(DataClass.dep_list) <= 4:
-        # len(DataClass.dep_list) <= 4 indicates no dependency list found
+        # len(DataClass.dep_list) <= 4 indicates
+        #   - No dependency list found
+        #   - Error with previous file
+        #
+        # In these cases, a new dependency list is created
         log.info(f'({__my_name__}) Scanning all project source files')
 
         if not DataClass.dep_list:
