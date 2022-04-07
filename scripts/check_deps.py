@@ -179,12 +179,43 @@ class DataClass(metaclass=Singleton):
             f' version_file={self.version_file}' \
             f' imports_list={self.imports_list}'
 
+    def __iter__(self):
+        """Make class iterable"""
+        for i in dict([('base_dir', self.base_dir),
+                       ('dep_list', self.dep_list),
+                       ('file_list', self.file_list),
+                       ('git_version', self.git_version),
+                       ('helpers', self.helpers),
+                       ('proj_dir', self.proj_dir),
+                       ('project', self.project),
+                       ('project_name', self.project_name),
+                       ('save_file', self.save_file),
+                       ('setup', self.setup),
+                       ('setup_py', self.setup_py),
+                       ('start_py', self.start_py),
+                       ('test_dir', self.test_dir),
+                       ('version', self.version),
+                       ('version_file', self.version_file),
+                       ('imports_list', self.imports_list)
+                       ]):
+            yield i
+
 
 class PrettyLog(metaclass=Singleton):
     """Pretty-printing log method for objects.
 
     Hopefully it's thread-safe as well.
     """
+    def __iter__(self):
+        """Make it an iterable"""
+        for k in dict([('width', self.width),
+                       ('indent', self.indent),
+                       ('indent_str', self.indent_str),
+                       ('indents', self.indents),
+                       ('log_items', self.log_items)
+                       ]):
+            yield k
+
     @classmethod
     def create(self):
         """Initialize the class"""
@@ -209,8 +240,15 @@ class PrettyLog(metaclass=Singleton):
         """
         prefix = head if head is not None else ''
         # Check if we don't have to process further
-        if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt.__repr__()}'):
+        if isinstance(txt, (Singleton)):
+            log.warning('To log Singleton class, provide instance (i.e. DataClass())')
+            log.warning(f'Log called with {txt}')
             return
+        elif not isinstance(txt, (DataClass, PrettyLog)):
+            # Check for my two classes so I can actually show
+            # what they have
+            if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
+                return
 
         # Item too big to log on a single line, time to process
         self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
@@ -218,6 +256,19 @@ class PrettyLog(metaclass=Singleton):
             self.log_list(self)
         elif type(txt) is dict:
             self.log_dict(self)
+        else:
+            self.log_obj(self)
+
+    @classmethod
+    def pop_item(self, lst):
+        """Pops the last item from a list"""
+        if type(lst) is not list:
+            log.warning('(PrettyLog:pop_item) Not a list - returning')
+            return
+        try:
+            lst.pop(-1)
+        except IndexError:
+            log.warning('(PrettyLog:pop_item) Trying to pop an empty list')
 
     def set_indent(self, decr=False):
         """Common routine to work with the indentation level of entries
@@ -278,7 +329,7 @@ class PrettyLog(metaclass=Singleton):
                 return re_chk[-1].start()
             return 0
 
-        item = self.log_items.pop()
+        item = self.log_items[-1]
         msg = item['txt'].__str__()
         lvl = item['lvl']
         if self.log_line(self, lvl=lvl, txt=msg):
@@ -323,6 +374,7 @@ class PrettyLog(metaclass=Singleton):
             self.log(lvl=lvl, head=f'{k}: ', txt=v)
         self.log_line(self, lvl=lvl, txt='}')
         self.set_indent(self, decr=True)
+        self.pop_item(self.log_items)
 
     def log_list(self):
         """Format a list object for logging"""
@@ -333,6 +385,27 @@ class PrettyLog(metaclass=Singleton):
         self.set_indent(self)
         self.format_line(self)
         self.set_indent(self, decr=True)
+        self.pop_item(self.log_items)
+
+    def log_obj(self):
+        """Format a class object for logging"""
+        item = self.log_items[-1]
+        # if isinstance(item, (Singleton)):
+        #    # Try and get the current instance
+        #    item = item()
+        print([k for k in item])
+        lvl = item['lvl']
+        head = item['head']
+        text = item['txt']
+        self.log_line(self, lvl=lvl, txt=(f'{head} {{'))
+        self.set_indent(self)
+
+        for k in text:
+            print(f'{k}: {getattr(text, k)}')
+
+        self.set_indent(self, decr=True)
+        self.log_line(self, lvl=lvl, txt=('}'))
+        self.pop_item(self.log_items)
 
 
 DataClass.create()
@@ -854,9 +927,11 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
                 _get_deps(DataClass.base_dir.joinpath(my_dir, _file))
 
     log.debug(f'({__my_name__}) Finished dependency list')
+    '''
     PrettyLog.log(lvl=log.debug,
                   head=f'({__my_name__}) Dependency list: ',
                   txt=DataClass.imports_list)
+    '''
 
     # Done/skipped finding deps, now to check them
 
@@ -898,6 +973,5 @@ if __name__ == "__main__":
         DataClass.start_py = args.start
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
-
-    print('\n\n')
-    # PrettyLog(lvl=log.debug, head='DataDir : DataClass.file_list', txt=DataClass.file_list)
+    # PrettyLog.log(lvl=log.debug, head='DataDir : DataClass: ', txt=DataClass)
+    PrettyLog.log(lvl=log.debug, head='DataDir : PrettyLog: ', txt=PrettyLog())
