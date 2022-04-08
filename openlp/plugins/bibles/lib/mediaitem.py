@@ -608,6 +608,9 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         book_ref_id = self.select_book_combo_box.currentData()
+        if not book_ref_id:
+            # If there is no book selected, just exit early
+            return
         book = self.plugin.manager.get_book_by_id(self.bible.name, book_ref_id)
         self.chapter_count = self.plugin.manager.get_chapter_count(self.bible.name, book)
         verse_count = self.plugin.manager.get_verse_count_by_book_ref_id(self.bible.name, book_ref_id, 1)

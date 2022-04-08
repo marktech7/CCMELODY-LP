@@ -933,6 +933,20 @@ def test_on_advanced_book_combo_box(media_item):
         assert mocked_critical_error_message_box.called is True
 
 
+def test_on_advanced_book_combo_box_no_selection(media_item):
+    """
+    Test on_advanced_book_combo_box when there is nothing selected
+    """
+    # GIVEN: An instance of :class:`MediaManagerItem` and a mocked manager
+    media_item.select_book_combo_box = MagicMock(**{'currentData.return_value': None})
+
+    # WHEN: Calling on_advanced_book_combo_box
+    media_item.on_advanced_book_combo_box()
+
+    # THEN: The method should exit early, and no query made
+    assert media_item.plugin.manager.get_book_by_id.call_count == 0
+
+
 def test_on_advanced_book_combo_box_set_up_comboboxes(media_item):
     """
     Test on_advanced_book_combo_box when the book returns 6 for the verse count.
