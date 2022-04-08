@@ -80,6 +80,7 @@ class PresentationManagerImport(SongImport):
             except etree.XMLSyntaxError:
                 # Try to detect encoding and use it
                 self.process_xml(file_path, get_file_encoding(file_path))
+                return
 
         file_str = etree.tostring(tree)
         if not file_str:
