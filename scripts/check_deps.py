@@ -113,34 +113,28 @@ class Singleton(type):
 
 class DataClass(metaclass=Singleton):
     """Class to hold module data"""
-    @classmethod
-    def create(self):
-        # All directories in here are relative to base_dir
-        self.base_dir = Path('.').resolve()  # Project base directory (current directory)
-        self.dep_list = None  # (dict() of JSON file contents
-        # All files in file_list will be relative to the directory they're found in
-        # file_list.keys() are directories relative to base_dir
-        self.file_list = None  # Keep track of files to check
-        self.git_version = None  # Git version
-        self.imports_list = []  # List of lines to check for imports
-        self.helpers = []  # Director(ies) that contain helper scripts
-        # proj_dir will be relative to base_dir
-        self.proj_dir = None  # Subdirectory of base_dir where source files are located
-        self.project = 'openlp'  # Directory name
-        self.project_name = 'OpenLP'  # Proper name
-        # save_file is just the name of the file, not a Path()
-        self.save_file = None  # JSON file
-        self.setup = None  # Options from setup.py
-        self.setup_py = None
-        self.start_py = None  # Hopefully the name of the script that starts the program
-        # test_dir is relative to base_dir
-        self.test_dir = None  # Directory where tests are located
-        self.version = None  # Project version
-        self.version_file = '.version'  # Name of version file
-        #
-        # Following variables are used by the local functions
-        self._format_level = 0
-        self._format_space = {0: ''}
+    def __getattr__(self, name):
+        return getattr(self, name)
+
+    def __iter__(self):
+        """Make class iterable"""
+        for item in ['base_dir',
+                     'dep_list',
+                     'file_list',
+                     'git_version',
+                     'helpers',
+                     'proj_dir',
+                     'project'
+                     'project_name',
+                     'save_file',
+                     'setup'
+                     'setup_py'
+                     'start_py',
+                     'test_dir',
+                     'version',
+                     'version_file'
+                     'imports_list']:
+            yield item
 
     def __repr__(self):
         return f'<DataClass: ' \
@@ -180,26 +174,34 @@ class DataClass(metaclass=Singleton):
             f' version_file={self.version_file}' \
             f' imports_list={self.imports_list}'
 
-    def __iter__(self):
-        """Make class iterable"""
-        for i in dict([('base_dir', self.base_dir),
-                       ('dep_list', self.dep_list),
-                       ('file_list', self.file_list),
-                       ('git_version', self.git_version),
-                       ('helpers', self.helpers),
-                       ('proj_dir', self.proj_dir),
-                       ('project', self.project),
-                       ('project_name', self.project_name),
-                       ('save_file', self.save_file),
-                       ('setup', self.setup),
-                       ('setup_py', self.setup_py),
-                       ('start_py', self.start_py),
-                       ('test_dir', self.test_dir),
-                       ('version', self.version),
-                       ('version_file', self.version_file),
-                       ('imports_list', self.imports_list)
-                       ]):
-            yield i
+    @classmethod
+    def create(self):
+        # All directories in here are relative to base_dir
+        self.base_dir = Path('.').resolve()  # Project base directory (current directory)
+        self.dep_list = None  # (dict() of JSON file contents
+        # All files in file_list will be relative to the directory they're found in
+        # file_list.keys() are directories relative to base_dir
+        self.file_list = None  # Keep track of files to check
+        self.git_version = None  # Git version
+        self.imports_list = []  # List of lines to check for imports
+        self.helpers = []  # Director(ies) that contain helper scripts
+        # proj_dir will be relative to base_dir
+        self.proj_dir = None  # Subdirectory of base_dir where source files are located
+        self.project = 'openlp'  # Directory name
+        self.project_name = 'OpenLP'  # Proper name
+        # save_file is just the name of the file, not a Path()
+        self.save_file = None  # JSON file
+        self.setup = None  # Options from setup.py
+        self.setup_py = None
+        self.start_py = None  # Hopefully the name of the script that starts the program
+        # test_dir is relative to base_dir
+        self.test_dir = None  # Directory where tests are located
+        self.version = None  # Project version
+        self.version_file = '.version'  # Name of version file
+        #
+        # Following variables are used by the local functions
+        self._format_level = 0
+        self._format_space = {0: ''}
 
 
 class PrettyLog(metaclass=Singleton):
@@ -207,15 +209,12 @@ class PrettyLog(metaclass=Singleton):
 
     Hopefully it's thread-safe as well.
     """
+    def __getattr__(self, name):
+        return getattr(self, name)
+
     def __iter__(self):
-        """Make it an iterable"""
-        for k in dict([('width', self.width),
-                       ('indent', self.indent),
-                       ('indent_str', self.indent_str),
-                       ('indents', self.indents),
-                       ('log_items', self.log_items)
-                       ]):
-            yield k
+        for item in ['width', 'indent', 'indent_str', 'indents', 'log_items']:
+            yield item
 
     @classmethod
     def create(self):
@@ -378,13 +377,8 @@ class PrettyLog(metaclass=Singleton):
         self.log_line(self, lvl=lvl, txt=(f'{head} {{'))
         self.set_indent(self)
 
-        chk = dict()
         for k in text:
-            # Build dict from attributes
-            chk[k] = getattr(text, k)
-        for k in chk:
-            itm = chk[k]
-            self.log(lvl=lvl, head=f'{k}: ', txt=itm)
+            self.log(lvl=lvl, head=f'{k}: ', txt=getattr(text, k))
 
         self.set_indent(self, decr=True)
         self.log_line(self, lvl=lvl, txt=('}'))
