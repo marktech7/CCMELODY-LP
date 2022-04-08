@@ -184,6 +184,17 @@ class Singleton(type):
         if hasattr(self, '__showme__'):
             return iter(self.__showme__)
 
+    @classmethod
+    def pop_item(self, lst):
+        """Pops the last item from a list"""
+        if type(lst) is not list:
+            log.warning(f'({self.__name__}:pop_item) Not a list - returning')
+            return
+        try:
+            lst.pop(-1)
+        except IndexError:
+            log.warning(f'({self.__name__}:pop_item) Trying to pop an empty list')
+
 
 class DataClass(metaclass=Singleton):
     """Class to hold module data"""
@@ -386,15 +397,14 @@ class PrettyLog(metaclass=Singleton):
         self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
         # Check if we don't have to process further
 
-        # Check for my two classes so I can actually show
-        # what they have.
         # If this script added to a different project, you
         # may have to adapt the isinstance() to your project.
-        if not isinstance(txt, (Singleton, DataClass, PrettyLog)):
+        if not isinstance(txt, (Singleton)):
             if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
                 self.pop_item(self.log_items)
                 return
 
+        # Too long to log onto a single line. Separate processing.
         if type(txt) is list:
             self.log_list(self)
         elif type(txt) is dict:
@@ -472,17 +482,6 @@ class PrettyLog(metaclass=Singleton):
 
         self.set_indent(self, decr=True)
         self.log_line(self, lvl=lvl, txt=('}'))
-
-    @classmethod
-    def pop_item(self, lst):
-        """Pops the last item from a list"""
-        if type(lst) is not list:
-            log.warning('(PrettyLog:pop_item) Not a list - returning')
-            return
-        try:
-            lst.pop(-1)
-        except IndexError:
-            log.warning('(PrettyLog:pop_item) Trying to pop an empty list')
 
     def set_indent(self, decr=False):
         """Common routine to work with the indentation level of entries
@@ -1118,6 +1117,9 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
     for dep in DataClass.imports_list[:8]:
         _check_dependencies(dep)
 
+    # Save the results
+    _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
+
     return
 
 
@@ -1156,5 +1158,5 @@ if __name__ == "__main__":
         DataClass.start_py = args.start
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
-    PrettyLog.log(lvl=log.debug, head='DataDir : DataClass: ', txt=DataClass)
-    # PrettyLog.log(lvl=log.debug, head='DataDir : PrettyLog: ', txt=PrettyLog())
+    PrettyLog.log(lvl=log.debug, head='DataDir DataClass:', txt=DataClass)
+    PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
