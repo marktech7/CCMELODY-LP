@@ -33,48 +33,113 @@ This script goes through a project and builds a dependency
 list. It only searches for "import" or "from ... import" to validate
 dependencies.
 
-This script does NOT install missing dependencies. Modules listed
-as dependencies may be updated in the resulting json file to
-include the package that the module may be located as well as
-the repository where the package may be found (ex. PyPI or a fedora repo).
+Modules within project are ignored since we only want external
+dependencies listed.
 
 After building a dependency list, project managers can then
-assign "required | optional | dev | ..." status to the dependencies.
+assign the appropriate status for each dependency.
 
-project.json format:
+"project-dep.json" format:
 
-{
-    "project"        : Project name (ex. "openlp")
-    "name"           : Proper project name (ex. "OpenLP")
-    "version"[1]     : Project version this file refers to
-    "git_version"[1] : Git repo version
-
-    module : {
-                "status"[1]  : "required" | "optional" | "dev" | "new" | "ignore",  # "required" if not defined
-                "os"[1]      : os.name,  # O/S Agnostic if not defined
-                "version"[1] : min [, max],
-                repo[2]      : [ repo_pacakge_name, repo_package_name, ... ],
-                "parent"[2]  : module,
-                "notes"[1]   : "Module notes"
-             }
+    {
+        "project"        : string,
+        "name"           : string,
+        "version"[1]     : string,
+        "git_version"[1] : string,
+        "deplist"        : { module : { "status"  : string,
+                                        "os"      : string,
+                                        "version" : string,
+                                        "parent"  : string,
+                                        "notes"   : string,
+                                        "repo"    : { repo : list,
+                                                      repo : list
+                                                    }
+                                        },
+                             module : { ... },
+                             ...
+                            }
     }
-}
 
-    Note: Entry in "quotes" is exact item. Entry not in quotes is pointer to item use.
-        ex "version" indicates exact attribute
-        ex. repo indicates pointer to item use. ex: "pypi", "fedora", ...
+Main Item definitions:
+
+    "project"       : Name of project (ex. "project": "openlp"
+    "name"          : Proper name of project (ex. "name" : "OpenLP"
+    "version"       : Project version (ex. "version" : "2.7.4"
+    "git_version"   : Git repo version (ex. "git_version" : "2.7.4-261-g624647327"
+    "deplist"       : Object holding dependencies
+
+"deplist" definitions:
+
+    "deplist" : module { ... }
+
+    The "deplist" object holds the dependencies.
+
+"deplist": module object
+
+    "module" is the name of the depdendency. Example:
+
+        "deplist" : { "PyQt5" : { ... },
+                      "sqlalchemy" : { ... }
+                    }
+
+    Format for "deplist": module object
+
+        module : {"status"  : string,
+                  "os"      : string,
+                  "version" : string,
+                  "parent"  : string,
+                  "notes"   : string,
+                  "repo"    : object
+                  }
+
+        "module"  : Dependency listed
+        "os"      : If given, this module is only needed for the listed O/S
+        "status"  : If given, the project status of this dependency.
+                    If not given, "required" is assumed.
+                    options: required | optional | new | ignore
+        "version" : If given, required module version.See [1] for options.
+        "parent"  : If given, the parent module of this dependency.
+        "notes"   : If given, developer notes for this dependency.
+        "repo"    : If given, Object holding repository package name information.
+
+"deplist" : "module" : "repo" object
+
+    Object for holding module repository information.
+
+    Format for "deplist": module object
+
+        "repo" : { reponame : list,
+                   reponame : list
+                 }
+
+    Example:
+
+        { "deplist" : {"QtWebEngineWidget" : {"status"   : "required",
+                                              "os"       : "linux",
+                                              "parent"   : "PyQt5",
+                                              "notes"    : "developer QtWebEngineWidget notes"
+                                             },
+                       "QtWebEngine" : {"status" : "required",
+                                        "os"     : "windows",
+                                        "parent" : "PyQt5",
+                                        "notes"  : "Developer QtWebEngine notes"
+                                        },
+                       "PyQt5" : {"status"   : "required",
+                                  "version"  : ">= 5.12"
+                                  "parent"   : "PyQt5",
+                                  "notes"    : "developer PyQt5 notes"
+                                  "repo"     : {"pypi"     : ["PyQt5"],
+                                                "fedora"   : ["python3-qt5", "python3-pyqt5-sip"]
+                                                }
+                                 }
+                       }
+        }
+
 
     Note: If "status" is "new", dependency was found and has not been classified yet.
           If "status" is "ignore", then don't check
 
-    [1] Optional.
-    [2] Optional. Typical usage is "module" name does not match repository name
-        ex:     repo: Name of distribution for package manager with package name as value
-                          ex. repo="pip": "<PyPI package name>"
-                          ex. repo="fedora": "<fedora package name>"
-                "parent": <Name of parent module>
-                       ex. module="QtWebEngineWidgets": { "parent": "PyQt5 }
-                       Note: "parent" points to another module entry
+[1] https://docs.python.org/3/distutils/setupscript.html#relationships-between-distributions-and-packages
 
 :author: Ken Roberts <alisonken1_#_gmail_dot_com>
 :copyright: OpenLP
@@ -478,6 +543,16 @@ def _check_continues(fp, check):
         line = line.rstrip('\\').strip()
 
     return line
+
+
+def _check_dependencies(deplist):
+    """Check each dependency in list for non-project dependencies
+
+    Updates DataList.dep_list
+
+    :param str deplist: Line to scan and validate dependencies
+    """
+    pass
 
 
 def _check_docstrings(fp, check, skip=True):
@@ -932,12 +1007,10 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
             for _file in DataClass.file_list[my_dir]:
                 _get_deps(DataClass.base_dir.joinpath(my_dir, _file))
 
-    log.debug(f'({__my_name__}) Finished dependency list')
-    '''
     PrettyLog.log(lvl=log.debug,
                   head=f'({__my_name__}) Dependency list: ',
                   txt=DataClass.imports_list)
-    '''
+    log.debug(f'({__my_name__}) Finished dependency list')
 
     # Done/skipped finding deps, now to check them
 
