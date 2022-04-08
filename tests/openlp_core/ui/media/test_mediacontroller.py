@@ -326,7 +326,7 @@ def test_media_hide(media_env, registry):
 
 def test_media_length(media_env):
     """
-    Test the Media Info basic functionality
+    Check the duration of a few different files via MediaInfo
     """
     for test_data in TEST_MEDIA:
         # GIVEN: a media file
@@ -337,6 +337,38 @@ def test_media_length(media_env):
 
         # THEN you can determine the run time
         assert results == test_data[1], 'The correct duration is returned for ' + test_data[0]
+
+
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
+def test_media_length_duration_none(mocked_parse, media_env):
+    """
+    Test that when MediaInfo doesn't give us a duration, we default to 0
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
+    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=None)])
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    assert duration == 0, 'The duration should be 0'
+
+
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.can_parse')
+def test_media_length_no_can_parse(mocked_can_parse, media_env):
+    """
+    Check that 0 is returned when MediaInfo cannot parse
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.can_parse() function
+    mocked_can_parse.return_value = False
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    assert duration == 0, 'The duration should be 0'
 
 
 def test_on_media_play(media_env):

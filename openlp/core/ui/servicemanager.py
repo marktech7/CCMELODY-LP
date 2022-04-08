@@ -580,19 +580,18 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             # If the item has files, see if they exists
             if item['service_item'].uses_file():
                 for frame in item['service_item'].get_frames():
-                    path_from = item['service_item'].get_frame_path(frame=frame)
-                    path_from_path = Path(path_from)
-                    if item['service_item'].stored_filename:
-                        sha256_file_name = item['service_item'].stored_filename
-                    else:
-                        sha256_file_name = sha256_file_hash(path_from_path) + os.path.splitext(path_from)[1]
-                    path_from_tuple = (path_from_path, sha256_file_name)
-                    if path_from_tuple in write_list or str(path_from_path) in missing_list:
+                    frame_path = item['service_item'].get_frame_path(frame=frame)
+                    if not frame_path.exists():
+                        missing_list.append(str(frame_path))
                         continue
-                    if not os.path.exists(path_from):
-                        missing_list.append(str(path_from_path))
+                    if item['service_item'].stored_filename:
+                        sha256_file_name = Path(item['service_item'].stored_filename)
                     else:
-                        write_list.append(path_from_tuple)
+                        sha256_file_name = sha256_file_hash(frame_path) / frame_path.suffix
+                    bundle = (frame_path, sha256_file_name)
+                    if bundle in write_list or str(frame_path) in missing_list:
+                        continue
+                    write_list.append(bundle)
                 # For items that has thumbnails, add them to the list
                 if item['service_item'].is_capable(ItemCapabilities.HasThumbnails):
                     thumbnail_path = item['service_item'].get_thumbnail_path()

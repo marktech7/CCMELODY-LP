@@ -755,16 +755,12 @@ class ServiceItem(RegistryProperties):
             except IndexError:
                 return ''
         if self.is_image() or self.is_capable(ItemCapabilities.IsOptical):
-            path_from = frame['path']
+            frame_path = Path(frame['path'])
         elif self.is_command() and not self.has_original_file_path and self.sha256_file_hash:
-            path_from = os.path.join(frame['path'], self.stored_filename)
+            frame_path = Path(frame['path']) / self.stored_filename
         else:
-            path_from = os.path.join(frame['path'], frame['title'])
-        if isinstance(path_from, str):
-            # Handle service files prior to OpenLP 3.0
-            # Windows can handle both forward and backward slashes, so we use ntpath to get the basename
-            path_from = Path(path_from)
-        return path_from
+            frame_path = Path(frame['path']) / frame['title']
+        return frame_path
 
     def remove_frame(self, frame):
         """
