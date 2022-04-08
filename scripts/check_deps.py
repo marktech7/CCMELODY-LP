@@ -153,7 +153,9 @@ import json
 import logging
 import os
 import re
+import sys
 
+from copy import copy
 from importlib.machinery import PathFinder, ModuleSpec
 from pathlib import Path
 
@@ -527,59 +529,6 @@ Dep_Check_Markers = {'ignore': '###-IGNORE-###',
 ###########################################################
 
 
-def _check_comments(fp, check):
-    """Checks for blank lines and lines starting with #
-
-    :param obj fp: Open file object
-    :param str check: Initial string to check
-    :return: str
-    """
-    line = check.strip()
-    if not line:
-        return ''
-    elif '#' in line:
-        if line.split('#', 1)[0]:
-            # Line does not start with hashtag
-            return line.split('#', 1)[0]
-
-    # Already checked current line, continue with following lines
-    for line in fp:
-        if not line or fp.closed:
-            # Empty line or end of file
-            return ''
-        line = line.strip()
-        if line and not line.startswith('#'):
-            # Found a non-comment line
-            break
-    return line
-
-
-def _check_continues(fp, check):
-    """Check for multi-line command and condense it
-
-    :param obj fp: Open file object
-    :param str check: Initial string to check
-    :return: Full line
-    :rtype: str
-    """
-    line = check.strip()
-    if not line.endswith('\\'):
-        return line
-
-    line = line.rstrip('\\').strip()
-    for _l in fp:
-        if not _l or fp.closed:
-            return line
-        _l = _l.strip()
-        line = ' '.join([line, _l])
-
-        if not line.endswith('\\'):
-            break
-        line = line.rstrip('\\').strip()
-
-    return line
-
-
 def _check_dependencies(depcheck):
     """Check each dependency in list for non-project dependencies
 
@@ -588,6 +537,24 @@ def _check_dependencies(depcheck):
     :param str depcheck: Line to scan and validate dependencies
     """
     __my_name__ = '_check_dependencies'
+
+    def system_check(name, syschk=None):
+        """Helper to do system checks on package"""
+        _syscheck = False
+        if name in sys.builtin_module_names:
+            _syscheck = True
+        elif syschk is not None:
+            if syschk.name.startswith('python'):
+                _syscheck = True
+            elif syschk.parent.name.startswith('python'):
+                _syscheck = True
+            elif syschk.parent.name.startswith('lib-') and path.parent.parent.name.startswith('python'):
+                _syscheck = True
+
+        if _syscheck:
+            log.debug(f'({__my_name__}.build_check) System module {name} - skipping')
+
+        return _syscheck
 
     def build_check(name, spec, mark=Dep_Check_Markers['unknown']):
         """builds a dictionary with module check items
@@ -604,18 +571,21 @@ def _check_dependencies(depcheck):
             # Already checked - ignore
             log.debug(f'({__my_name__}.build_check) Duplicate entry {name}')
             return
+
         _check = {'spec': spec,
                   'mark': mark}
 
-        if hasattr(chk, 'origin'):
-            path = Path(spec.origin)
-            if path.name.startswith('__init__'):
-                path = path.parent
-            if path.parent.name.startswith('site-'):
-                if path.name == name:
-                    _check['mark'] = Dep_Check_Markers['check']
-            elif path.parent.name.startswith('python'):
-                _check['mark'] = Dep_Check_Markers['sys']
+        if hasattr(spec, 'origin'):
+            path = Path(spec.origin).parent
+            log.debug(f'({__my_name__}.build_check) Checking origin={spec.origin}')
+            log.debug(f'({__my_name__}.build_check) Checking path={path}')
+            if system_check(name, path):
+                return
+            log.debug(f'({__my_name__}.build_check) name={path.name} parent={path.parent.name}')
+
+            if path.name == name and path.parent.name.startswith('site-'):
+                log.debug(f'({__my_name__}.build_check) Possible site package {name}')
+                _check['mark'] = Dep_Check_Markers['check']
 
         log.debug(f'({__my_name__}.build_check) Adding entry {name} as "{_check["mark"]}"')
         DataClass.dep_check[name] = _check
@@ -631,70 +601,64 @@ def _check_dependencies(depcheck):
             return None
         return _chk
 
+    def check_submodule(name):
+        """Check module path to find parent module
+
+        :param str name: Package name dotted.notation
+        :param Path path:
+        :rtype: (name, ModuleSpec) or None
+        """
+        search = copy(name)
+        while search:
+            log.debug(f'({__my_name__}.check_submodule) Checking {search}')
+            chk = find_spec(search)
+            if chk:
+                log.debug(f'({__my_name__}.check_submodule) Returning {search}')
+                return (search, chk)
+            search = '.'.join(search.split('.')[:-1])
+        return None
+
+    def check_module(name):
+        """Helper to verify module"""
+        if name.startswith(DataClass.project) or name.startswith('.') or system_check(name):
+            log.debug(f'({__my_name__}.check_module) Ignoring project import {name}')
+            return
+
+        log.debug(f'({__my_name__}.check_module) Checking {name}')
+
+        _name = name
+        _spec = None
+        if '.' in name:
+            chk = check_submodule(_name)
+            if chk is not None:
+                _name, _spec = chk
+        else:
+            _spec = find_spec(name)
+
+        if _spec is None:
+            log.debug(f'({__my_name__}.check_module) Spec not found: '
+                      f'marking {_name} as "{Dep_Check_Markers["unknown"]}"')
+            DataClass.dep_check[_name] = Dep_Check_Markers['unknown']
+            return
+        return build_check(name=_name, spec=_spec)
+
+    # ########### END LOCAL FUNCTIONS ############
+
     log.info(f'({__my_name__}) Starting import checks on "{depcheck}"')
 
     lst = depcheck.replace(',', ' ').split()
+    if lst[-2] == 'as':
+        # Looks like we have an 'import ... as ..'
+        lst = lst[-2]
     if lst[0] == 'import':
-        if lst[1].startswith(DataClass.project):
-            log.debug(f'({__my_name__}) Ignoring project import {lst[1]}')
-        else:
-            # OK - quick and dirty pass
-            for itm in lst[1:]:
-                log.debug(f'({__my_name__}) Checking {itm}')
-                chk = find_spec(itm)
-                if chk is None:
-                    log.debug(f'({__my_name__}) Spec not found: marking {itm} as "{Dep_Check_Markers["unknown"]}"')
-                    DataClass.dep_check[itm] = Dep_Check_Markers['unknown']
-                    continue
-                build_check(name=itm, spec=chk)
+        for itm in lst[1:]:
+            check_module(itm)
+
     elif lst[0] == 'from':
-        if lst[1].startswith(DataClass.project):
-            log.debug(f'({__my_name__}) Skipping project import "{lst[1]}"')
-        else:
-            # 'from' import checks
-            pass
+        chk = check_module(lst[1])
 
     else:
         log.warning(f'({__my_name__}) Invalid line? {depcheck}')
-
-
-def _check_docstrings(fp, check, skip=True):
-    """Check for docstring and skip if found
-
-    :param obj fp: File object to scan
-    :param str check: Initial tring to check
-    :param bool skip: If False, return docstring as a single string
-    :return: str
-    """
-    line = check.strip()
-    if "'" * 3 in line:
-        # Get around possible issues with using triplets string and parsing this file
-        chk = "'" * 3
-    elif '"' * 3 in line:
-        # Get around possible issues with using triplets string and parsing this file
-        chk = '"' * 3
-    else:
-        # No initial docstring marker found
-        return line
-
-    _c = line.split(chk)
-    if len(_c) == 3 and not f'{_c[0]}{_c[-1]}':
-        # Single-line docstring
-        if skip:
-            return ''
-        return line
-
-    for _l in fp:
-        if not _l or fp.closed:
-            # Empty line or end of file
-            break
-        _l = _l.strip()
-        line = ' '.join([line, _l])
-        if chk in _l:
-            # Found closing docstring marker
-            break
-
-    return line if not skip else ''
 
 
 def _get_deps(src):
@@ -709,6 +673,7 @@ def _get_deps(src):
             if fp.closed:
                 break
             line = _get_next_line(fp, line)
+
             if line.startswith('import ') or line.startswith('from '):
                 if line in DataClass.imports_list:
                     log.debug(f'({__my_name__}) Duplicate dependency "{line}" - skipping')
@@ -810,22 +775,6 @@ def _get_json_file(src):
     return
 
 
-def _get_next_line(fp, check, skip=True):
-    """Helper to find next line that's not a comment or a docstring
-
-    :param obj fp: File object
-    :param str check: Initial string to check
-    :return: str
-    """
-    check = _check_comments(fp, check)
-    if check:
-        check = _check_continues(fp, check)
-        if check:
-            return _check_docstrings(fp, check, skip=skip)
-
-    return ''
-
-
 def _get_project_dir(proj=DataClass.project):
     """Finds the project directory
 
@@ -913,6 +862,61 @@ def _get_project_dir(proj=DataClass.project):
         PrettyLog(lvl=log.info,
                   head=f'({__my_name__}) Extra files found:',
                   txt=proj_chk)
+
+
+def _get_source_file(path):
+    """Loads the source file 'path' into memory, removing docstrings and comments"""
+    def strip_docstring(fp, check):
+        for chk in fp:
+            if chk.startswith(check) or chk.endswith(check):
+                break
+        if fp.closed:
+            return None
+        return fp.readline()
+
+    src = []
+    with path.open() as fp:
+        for line in fp:
+            line = line.strip()
+            check = None
+            check = '"' * 3 if '""' in line else check
+            if check is None:
+                check = "'" * 3 if "''" in line else check
+            if check is not None:
+                line = strip_docstring(fp, check)
+
+            if line is not None:
+                src.append(line)
+
+    # Check for continuation lines
+    chk = ['']
+    cont = False
+    for line in src:
+        line = line.strip()
+        if line.endswith('\\'):
+            chk[-1] = ' '.join([chk[-1], line.rstrip('\\')[0]])
+            cont = True
+            continue
+        if cont:
+            chk[-1] = ' '.join([chk[-1], line])
+            cont = False
+            continue
+        chk.append(line)
+    src = chk
+
+    # Comments
+    chk = []
+    for line in src:
+        line = line.strip()
+        if not line or line.startswith('#'):
+            continue
+        elif '#' in line:
+            line = line.split('#', 1)[0]
+        if line.startswith('import ') or line.startswith('from '):
+            chk.append(line)
+
+    # Finally, add to the import checker list
+    DataClass.imports_list.extend(chk)
 
 
 def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
@@ -1104,9 +1108,11 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
             PrettyLog.log(lvl=log.debug,
                           head=f'({__my_name__}) Checking ',
                           txt=DataClass.file_list[my_dir])
+
             for _file in DataClass.file_list[my_dir]:
-                _get_deps(DataClass.base_dir.joinpath(my_dir, _file))
-            # Finished processing, so remove it from the global list
+                _get_source_file(DataClass.base_dir.joinpath(my_dir, _file))
+
+            # Finished processing directory files,, so remove it from the global list
             DataClass.file_list.pop(my_dir)
 
     PrettyLog.log(lvl=log.debug,
@@ -1121,9 +1127,11 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
     log.debug(f'({__my_name__}) Flushing module caches')
     importlib.invalidate_caches()
 
-    for dep in DataClass.imports_list:
+    while DataClass.imports_list:
+        # for dep in DataClass.imports_list:
+        dep = DataClass.imports_list.pop(0)
+        log.debug(f'({__my_name__}) Calling dep checks with "{dep}"')
         _check_dependencies(dep)
-        DataClass.imports_list.pop(0)
 
     # Save the results
     _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
@@ -1167,4 +1175,4 @@ if __name__ == "__main__":
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
     PrettyLog.log(lvl=log.debug, head='DataDir DataClass:', txt=DataClass)
-    PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
+    # PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
