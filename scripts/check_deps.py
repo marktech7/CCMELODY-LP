@@ -634,7 +634,7 @@ def _check_dependencies(depcheck):
     log.info(f'({__my_name__}) Starting import checks on "{depcheck}"')
 
     lst = depcheck.replace(',', ' ').split()
-    if lst[0] == 'import ':
+    if lst[0] == 'import':
         if lst[1].startswith(DataClass.project):
             log.debug(f'({__my_name__}) Ignoring project import {lst[1]}')
         else:
@@ -647,9 +647,9 @@ def _check_dependencies(depcheck):
                     DataClass.dep_check[itm] = Dep_Check_Markers['unknown']
                     continue
                 build_check(name=itm, spec=chk)
-    elif lst[0] == 'from ':
+    elif lst[0] == 'from':
         if lst[1].startswith(DataClass.project):
-            log.debug(f'({__my_name__}) Skipping project import {lst[1]}')
+            log.debug(f'({__my_name__}) Skipping project import "{lst[1]}"')
         else:
             # 'from' import checks
             pass
