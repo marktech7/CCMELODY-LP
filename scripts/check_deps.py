@@ -154,7 +154,7 @@ import logging
 import os
 import re
 
-from importlib.machinery import PathFinder
+from importlib.machinery import PathFinder, ModuleSpec
 from pathlib import Path
 
 __all__ = ['check_deps']
@@ -180,32 +180,31 @@ class Singleton(type):
             self._instances[self] = super().__call__(*args, **kwargs)
         return self._instances[self]
 
+    def __iter__(self):
+        if hasattr(self, '__showme__'):
+            return iter(self.__showme__)
+
 
 class DataClass(metaclass=Singleton):
     """Class to hold module data"""
-    def __getattr__(self, name):
-        return getattr(self, name)
-
-    def __iter__(self):
-        """Make class iterable"""
-        for item in ['base_dir',
-                     'dep_list',
-                     'dep_check',
-                     'file_list',
-                     'git_version',
-                     'helpers',
-                     'proj_dir',
-                     'project'
-                     'project_name',
-                     'save_file',
-                     'setup'
-                     'setup_py'
-                     'start_py',
-                     'test_dir',
-                     'version',
-                     'version_file'
-                     'imports_list']:
-            yield item
+    __showme__ = ['base_dir',
+                  'dep_list',
+                  'dep_check',
+                  'file_list',
+                  'git_version',
+                  'helpers',
+                  'proj_dir',
+                  'project',
+                  'project_name',
+                  'save_file',
+                  'setup',
+                  'setup_py',
+                  'start_py',
+                  'test_dir',
+                  'version',
+                  'version_file',
+                  'imports_list'
+                  ]
 
     def __repr__(self):
         return f'<DataClass: ' \
@@ -302,12 +301,7 @@ class PrettyLog(metaclass=Singleton):
 
     Hopefully it's thread-safe as well.
     """
-    def __getattr__(self, name):
-        return getattr(self, name)
-
-    def __iter__(self):
-        for item in ['width', 'indent', 'indent_str', 'indents', 'log_items']:
-            yield item
+    __showme__ = ['width', 'indent', 'indent_str', 'indents', 'log_items']
 
     @classmethod
     def create(self):
@@ -389,27 +383,28 @@ class PrettyLog(metaclass=Singleton):
         :param str head: Text prefix
         """
         prefix = head if head is not None else ''
+        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
         # Check if we don't have to process further
-        if isinstance(txt, (Singleton)):
-            log.warning('To log Singleton class, provide instance (i.e. PrettyLog())')
-            log.warning(f'Log called with {txt}')
-            return
-        elif not isinstance(txt, (DataClass, PrettyLog)):
-            # Check for my two classes so I can actually show
-            # what they have.
-            # If this script added to a different project, you
-            # may have to adapt the isinstance() to your project.
+
+        # Check for my two classes so I can actually show
+        # what they have.
+        # If this script added to a different project, you
+        # may have to adapt the isinstance() to your project.
+        if not isinstance(txt, (Singleton, DataClass, PrettyLog)):
             if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
+                self.pop_item(self.log_items)
                 return
 
-        # Item too big to log on a single line, time to process
-        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
         if type(txt) is list:
             self.log_list(self)
         elif type(txt) is dict:
             self.log_dict(self)
+        elif type(txt) is ModuleSpec:
+            self.log_modspec(self)
         else:
             self.log_obj(self)
+
+        self.pop_item(self.log_items)
 
     def log_line(self, txt, lvl):
         """Common point to actually log.
@@ -445,7 +440,6 @@ class PrettyLog(metaclass=Singleton):
             self.log(lvl=lvl, head=f'{k}: ', txt=v)
         self.log_line(self, lvl=lvl, txt='}')
         self.set_indent(self, decr=True)
-        self.pop_item(self.log_items)
 
     def log_list(self):
         """Format a list object for logging"""
@@ -456,7 +450,11 @@ class PrettyLog(metaclass=Singleton):
         self.set_indent(self)
         self.format_line(self)
         self.set_indent(self, decr=True)
-        self.pop_item(self.log_items)
+
+    def log_modspec(self):
+        """Print a ModuleSpec item"""
+        item = self.log_items[-1]
+        self.log_line(self, lvl=item['lvl'], txt=f'{item["head"]} ModuleSpec(too_long_to_show_for_now)')
 
     def log_obj(self):
         """Format a class object for logging"""
@@ -469,13 +467,11 @@ class PrettyLog(metaclass=Singleton):
         text = item['txt']
         self.log_line(self, lvl=lvl, txt=(f'{head} {{'))
         self.set_indent(self)
-
         for k in text:
             self.log(lvl=lvl, head=f'{k}: ', txt=getattr(text, k))
 
         self.set_indent(self, decr=True)
         self.log_line(self, lvl=lvl, txt=('}'))
-        self.pop_item(self.log_items)
 
     @classmethod
     def pop_item(self, lst):
@@ -653,6 +649,9 @@ def _check_dependencies(depcheck):
         else:
             # 'from' import checks
             pass
+
+    else:
+        log.warning(f'({__my_name__}) Invalid line? {depcheck}')
 
 
 def _check_docstrings(fp, check, skip=True):
@@ -1157,5 +1156,5 @@ if __name__ == "__main__":
         DataClass.start_py = args.start
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
-    # PrettyLog.log(lvl=log.debug, head='DataDir : DataClass: ', txt=DataClass)
+    PrettyLog.log(lvl=log.debug, head='DataDir : DataClass: ', txt=DataClass)
     # PrettyLog.log(lvl=log.debug, head='DataDir : PrettyLog: ', txt=PrettyLog())
