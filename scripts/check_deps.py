@@ -112,7 +112,11 @@ Main Item definitions:
                    reponame : list
                  }
 
-    Example:
+        "reponame"   : Name of the repository
+                       ex: "pypi", "fedora", ...
+        list         : List of package name(s) for this repository
+
+"deplist" example:
 
         { "deplist" : {"QtWebEngineWidget" : {"status"   : "required",
                                               "os"       : "linux",
@@ -144,6 +148,7 @@ Main Item definitions:
 :author: Ken Roberts <alisonken1_#_gmail_dot_com>
 :copyright: OpenLP
 """
+import importlib
 import json
 import logging
 import os
@@ -185,6 +190,7 @@ class DataClass(metaclass=Singleton):
         """Make class iterable"""
         for item in ['base_dir',
                      'dep_list',
+                     'dep_check',
                      'file_list',
                      'git_version',
                      'helpers',
@@ -205,6 +211,7 @@ class DataClass(metaclass=Singleton):
         return f'<DataClass: ' \
             f'base_dir={self.base_dir},' \
             f' dep_list={self.dep_list},' \
+            f' dep_check={self.dep_check}', \
             f' file_list={self.file_list},' \
             f' git_version={self.git_version},' \
             f' helpers={self.helpers},' \
@@ -244,6 +251,7 @@ class DataClass(metaclass=Singleton):
         # All directories in here are relative to base_dir
         self.base_dir = Path('.').resolve()  # Project base directory (current directory)
         self.dep_list = None  # (dict() of JSON file contents
+        self.dep_check = {}  # Intermediate dictionary of found dependencies
         # All files in file_list will be relative to the directory they're found in
         # file_list.keys() are directories relative to base_dir
         self.file_list = None  # Keep track of files to check
@@ -252,7 +260,7 @@ class DataClass(metaclass=Singleton):
         self.helpers = []  # Director(ies) that contain helper scripts
         # proj_dir will be relative to base_dir
         self.proj_dir = None  # Subdirectory of base_dir where source files are located
-        self.project = 'openlp'  # Directory name
+        self.project = 'openlp'  # Project name - should be the same as the directory name
         self.project_name = 'OpenLP'  # Proper name
         # save_file is just the name of the file, not a Path()
         self.save_file = None  # JSON file
@@ -267,6 +275,26 @@ class DataClass(metaclass=Singleton):
         # Following variables are used by the local functions
         self._format_level = 0
         self._format_space = {0: ''}
+        #
+        # Set some defaults
+        self.default_dep = {'project': self.project,
+                            'name': self.project_name,
+                            'version': self.version,
+                            'git_version': self.git_version
+                            }
+        self.default_deplist = {'python': {'version': '>= 5.6',
+                                           'status': 'required'},
+                                'PyQt5': {'version': '>= 5.12',
+                                          'status': 'required'},
+                                'Qt5': {'version': '>= 5.9',
+                                        'status': 'required'},
+                                'pymediainfo': {'version': '>= 2.2',
+                                                'status': 'required'},
+                                'sqlalchemy': {'version': '>= 0.5',
+                                               'status': 'required'},
+                                'enchant': {'version': '>= 1.6',
+                                            'status': 'required'}
+                                }
 
 
 class PrettyLog(metaclass=Singleton):
@@ -489,6 +517,13 @@ InclExt = ['.py']
 # Indicates there are no files in a directory list
 No_Files_Marker = '###-NOFILES-###'
 
+Dep_Check_Markers = {'ignore': '###-IGNORE-###',
+                     'check': '###-CHECK-###',
+                     'sys': '###-SYSTEM-###',
+                     'unknown': '###-UNKNOWN-###',
+                     }
+
+
 ###########################################################
 #                                                         #
 #                Private Functions                        #
@@ -545,14 +580,79 @@ def _check_continues(fp, check):
     return line
 
 
-def _check_dependencies(deplist):
+def _check_dependencies(depcheck):
     """Check each dependency in list for non-project dependencies
 
     Updates DataList.dep_list
 
-    :param str deplist: Line to scan and validate dependencies
+    :param str depcheck: Line to scan and validate dependencies
     """
-    pass
+    __my_name__ = '_check_dependencies'
+
+    def build_check(name, spec, mark=Dep_Check_Markers['unknown']):
+        """builds a dictionary with module check items
+
+        DataClass.dep_check['name'] =  { 'spec': importlib.machinery.ModuleSpec
+                                         'mark': Dep_Check_Markers[mark]
+                                         }
+
+        :param str name: Module name
+        :param ModuleSpec spec: ModuleSpec instance
+        :param str marker: Dep_Check_Markers[mark] entry
+        """
+        if name in DataClass.imports_list:
+            # Already checked - ignore
+            log.debug(f'({__my_name__}.build_check) Duplicate entry {name}')
+            return
+        _check = {'spec': spec,
+                  'mark': mark}
+
+        if hasattr(chk, 'origin'):
+            path = Path(spec.origin)
+            if path.name.startswith('__init__'):
+                path = path.parent
+            if path.parent.name.startswith('site-'):
+                if path.name == name:
+                    _check['mark'] = Dep_Check_Markers['check']
+            elif path.parent.name.startswith('python'):
+                _check['mark'] = Dep_Check_Markers['sys']
+
+        log.debug(f'({__my_name__}.build_check) Adding entry {name} as "{_check["mark"]}"')
+        DataClass.dep_check[name] = _check
+
+    def find_spec(name):
+        """Find a module spec
+
+        :param str name: Name of module
+        :returns: importlib.machinery.ModuleSpec or None
+        """
+        _chk = PathFinder.find_spec(name)
+        if not _chk:
+            return None
+        return _chk
+
+    log.info(f'({__my_name__}) Starting import checks on "{depcheck}"')
+
+    lst = depcheck.replace(',', ' ').split()
+    if lst[0] == 'import ':
+        if lst[1].startswith(DataClass.project):
+            log.debug(f'({__my_name__}) Ignoring project import {lst[1]}')
+        else:
+            # OK - quick and dirty pass
+            for itm in lst[1:]:
+                log.debug(f'({__my_name__}) Checking {itm}')
+                chk = find_spec(itm)
+                if chk is None:
+                    log.debug(f'({__my_name__}) Spec not found: marking {itm} as "{Dep_Check_Markers["unknown"]}"')
+                    DataClass.dep_check[itm] = Dep_Check_Markers['unknown']
+                    continue
+                build_check(name=itm, spec=chk)
+    elif lst[0] == 'from ':
+        if lst[1].startswith(DataClass.project):
+            log.debug(f'({__my_name__}) Skipping project import {lst[1]}')
+        else:
+            # 'from' import checks
+            pass
 
 
 def _check_docstrings(fp, check, skip=True):
@@ -701,11 +801,8 @@ def _get_json_file(src):
         if DataClass.version is None:
             DataClass.version, DataClass.git_version = _get_version()
 
-        ret = {'project': DataClass.project,
-               'name': DataClass.project_name,
-               'version': DataClass.version,
-               'git_version': DataClass.git_version
-               }
+        ret = DataClass.default_dep
+
     DataClass.dep_list = ret
     return
 
@@ -1014,6 +1111,14 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
 
     # Done/skipped finding deps, now to check them
 
+    log.debug(f'({__my_name__}) Starting dependency checks')
+
+    log.debug(f'({__my_name__}) Flushing module caches')
+    importlib.invalidate_caches()
+
+    for dep in DataClass.imports_list[:8]:
+        _check_dependencies(dep)
+
     return
 
 
@@ -1053,4 +1158,4 @@ if __name__ == "__main__":
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
     # PrettyLog.log(lvl=log.debug, head='DataDir : DataClass: ', txt=DataClass)
-    PrettyLog.log(lvl=log.debug, head='DataDir : PrettyLog: ', txt=PrettyLog())
+    # PrettyLog.log(lvl=log.debug, head='DataDir : PrettyLog: ', txt=PrettyLog())
