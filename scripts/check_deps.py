@@ -199,8 +199,6 @@ class Singleton(type):
 class DataClass(metaclass=Singleton):
     """Class to hold module data"""
     __showme__ = ['base_dir',
-                  'dep_list',
-                  'dep_check',
                   'file_list',
                   'git_version',
                   'helpers',
@@ -214,7 +212,10 @@ class DataClass(metaclass=Singleton):
                   'test_dir',
                   'version',
                   'version_file',
-                  'imports_list'
+                  # Show last since they may be big
+                  'imports_list',
+                  'dep_list',
+                  'dep_check'
                   ]
 
     def __repr__(self):
@@ -534,8 +535,12 @@ def _check_comments(fp, check):
     :return: str
     """
     line = check.strip()
-    if line and not line.startswith('#'):
-        return line
+    if not line:
+        return ''
+    elif '#' in line:
+        if line.split('#', 1)[0]:
+            # Line does not start with hashtag
+            return line.split('#', 1)[0]
 
     # Already checked current line, continue with following lines
     for line in fp:
@@ -1101,6 +1106,8 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
                           txt=DataClass.file_list[my_dir])
             for _file in DataClass.file_list[my_dir]:
                 _get_deps(DataClass.base_dir.joinpath(my_dir, _file))
+            # Finished processing, so remove it from the global list
+            DataClass.file_list.pop(my_dir)
 
     PrettyLog.log(lvl=log.debug,
                   head=f'({__my_name__}) Dependency list: ',
@@ -1114,8 +1121,9 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
     log.debug(f'({__my_name__}) Flushing module caches')
     importlib.invalidate_caches()
 
-    for dep in DataClass.imports_list[:8]:
+    for dep in DataClass.imports_list:
         _check_dependencies(dep)
+        DataClass.imports_list.pop(0)
 
     # Save the results
     _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
