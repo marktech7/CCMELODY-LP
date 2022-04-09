@@ -548,7 +548,7 @@ def _check_dependencies(depcheck):
                 _syscheck = True
             elif syschk.parent.name.startswith('python'):
                 _syscheck = True
-            elif syschk.parent.name.startswith('lib-') and path.parent.parent.name.startswith('python'):
+            elif syschk.parent.name.startswith('lib-') and syschk.parent.parent.name.startswith('python'):
                 _syscheck = True
 
         if _syscheck:
@@ -655,32 +655,10 @@ def _check_dependencies(depcheck):
             check_module(itm)
 
     elif lst[0] == 'from':
-        chk = check_module(lst[1])
+        check_module(lst[1])
 
     else:
         log.warning(f'({__my_name__}) Invalid line? {depcheck}')
-
-
-def _get_deps(src):
-    """Process file and find dependencies in file
-
-    :param Path src: Source file
-    """
-    __my_name__ = '_get_deps'
-    log.info(f'({__my_name__}) Starting import scan on {src.relative_to(DataClass.base_dir)}')
-    with src.open() as fp:
-        for line in fp:
-            if fp.closed:
-                break
-            line = _get_next_line(fp, line)
-
-            if line.startswith('import ') or line.startswith('from '):
-                if line in DataClass.imports_list:
-                    log.debug(f'({__my_name__}) Duplicate dependency "{line}" - skipping')
-                else:
-                    log.debug(f'({__my_name__}) Adding "{line}"')
-                    DataClass.imports_list.append(line)
-    log.info(f'({__my_name__}) Finished import scan')
 
 
 def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
@@ -866,6 +844,9 @@ def _get_project_dir(proj=DataClass.project):
 
 def _get_source_file(path):
     """Loads the source file 'path' into memory, removing docstrings and comments"""
+    __my_name__ = "_get_source_file"
+    log.debug(f'{__my_name__}) Scanning file {path.name}')
+
     def strip_docstring(fp, check):
         for chk in fp:
             if chk.startswith(check) or chk.endswith(check):
@@ -912,11 +893,16 @@ def _get_source_file(path):
             continue
         elif '#' in line:
             line = line.split('#', 1)[0]
+
         if line.startswith('import ') or line.startswith('from '):
+            if line in DataClass.imports_list:
+                log.debug(f'({__my_name__}) Duplicate import - skipping')
+                continue
             chk.append(line)
+    src = chk
 
     # Finally, add to the import checker list
-    DataClass.imports_list.extend(chk)
+    DataClass.imports_list.extend(src)
 
 
 def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
