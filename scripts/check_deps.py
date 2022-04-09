@@ -569,7 +569,7 @@ def _check_dependencies(depcheck):
             log.debug(f'({__my_name__}.build_check) Duplicate entry {name}')
             return
 
-        _check = {'spec': spec,
+        _check = {'modulespec': spec,
                   'mark': mark}
 
         if hasattr(spec, 'origin'):
@@ -587,17 +587,6 @@ def _check_dependencies(depcheck):
         log.debug(f'({__my_name__}.build_check) Adding entry {name} as "{_check["mark"]}"')
         DataClass.dep_check[name] = _check
 
-    def find_spec(name):
-        """Find a module spec
-
-        :param str name: Name of module
-        :returns: importlib.machinery.ModuleSpec or None
-        """
-        _chk = PathFinder.find_spec(name)
-        if not _chk:
-            return None
-        return _chk
-
     def check_submodule(name):
         """Check module path to find parent module
 
@@ -609,7 +598,7 @@ def _check_dependencies(depcheck):
         search = copy(name)
         while search:
             log.debug(f'({__my_name__}.check_submodule) Checking {search}')
-            chk = find_spec(search)
+            chk = _get_spec(search)
             if chk:
                 log.debug(f'({__my_name__}.check_submodule) Returning {search}')
                 return (search, chk)
@@ -631,7 +620,7 @@ def _check_dependencies(depcheck):
             if chk is not None:
                 _name, _spec = chk
         else:
-            _spec = find_spec(name)
+            _spec = _get_spec(name)
 
         if _spec is None:
             log.debug(f'({__my_name__}.check_module) Spec not found: '
@@ -698,20 +687,6 @@ def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=Inc
             # file_list key is directory, so just add file name to list
             DataClass.file_list[base].append(chk.name)
     PrettyLog.log(lvl=log.debug, head=f'({__my_name__}) Directory list: ', txt=DataClass.file_list[base])
-
-
-def _get_unchecked_directories():
-    """Find all entries in data.file_list that are set to None
-
-    Helper function to find directories that have not been scanned yet.
-
-    :return: dict
-    """
-    ret = {k: None for k in DataClass.file_list if DataClass.file_list[k] is None}
-    PrettyLog.log(lvl=log.debug,
-                  head='(_get_unchecked_directories) Returning ',
-                  txt=ret)
-    return ret
 
 
 def _get_json_file(src):
@@ -841,6 +816,18 @@ def _get_project_dir(proj=DataClass.project):
                   txt=proj_chk)
 
 
+def _get_spec(name):
+    """Find a module spec
+
+    :param str name: Name of module
+    :returns: importlib.machinery.ModuleSpec or None
+    """
+    _chk = PathFinder.find_spec(name)
+    if not _chk:
+        return None
+    return _chk
+
+
 def _get_source_file(path):
     """Loads the source file 'path' into memory, removing docstrings and comments"""
     __my_name__ = "_get_source_file"
@@ -902,6 +889,20 @@ def _get_source_file(path):
 
     # Finally, add to the import checker list
     DataClass.imports_list.extend(src)
+
+
+def _get_unchecked_directories():
+    """Find all entries in data.file_list that are set to None
+
+    Helper function to find directories that have not been scanned yet.
+
+    :return: dict
+    """
+    ret = {k: None for k in DataClass.file_list if DataClass.file_list[k] is None}
+    PrettyLog.log(lvl=log.debug,
+                  head='(_get_unchecked_directories) Returning ',
+                  txt=ret)
+    return ret
 
 
 def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
@@ -1004,14 +1005,29 @@ def _save_json_file(src, deps):
         return False
 
     log.info(f'({__my_name__}) Saving data to {src}')
+    log.debug(f'({__my_name__}) Removing ModuleSpec items')
+
+    # #################################
+
+    chk = copy(DataClass.dep_check)
+    for k in chk:
+        log.debug(f'({__my_name__}) Checking {k}')
+        if 'modulespec' in chk[k]:
+            log.debug(f'({__my_name__}) Deleting entry {chk[k]["modulespec"]} from save list')
+            del chk[k]['modulespec']
+
+    # #################################
+
+    DataClass.dep_list['dep_check'] = chk
     try:
         with open(src, 'w') as fp:
-            json.dump(deps, fp, indent=4, sort_keys=True)
+            # Skipkeys=True should only skip the ModSpec key
+            # since importlib.machinery.ModuleSpec is non-serializable at this time
+            json.dump(deps, fp, indent=4, skipkeys=True)
 
     except Exception as err:
         log.warning(f'({__my_name__}) Error saving data: ({err=}')
         return False
-
     log.info(f'({__my_name__}) Data saved to {src}')
     return True
 
@@ -1120,10 +1136,8 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
         _check_dependencies(dep)
 
     # Save the results
-    if DataClass.dep_list:
-        DataClass.dep_list['dep_check'] = DataClass.dep_check
+    DataClass.dep_list['dep_check'] = DataClass.dep_check
     _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
-
     return
 
 
@@ -1171,4 +1185,4 @@ if __name__ == "__main__":
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
     PrettyLog.log(lvl=log.debug, head='DataDir DataClass:', txt=DataClass)
-    PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
+    # PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
