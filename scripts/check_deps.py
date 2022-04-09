@@ -708,6 +708,7 @@ def _get_json_file(src):
         try:
             with open(_src, 'r') as fp:
                 ret = json.load(fp)
+                PrettyLog.log(txt=ret, lvl=log.debug, head=f'({__my_name__})')
                 log.info(f'({__my_name__}) Loaded JSON file')
 
         except json.JSONDecodeError:
@@ -723,6 +724,9 @@ def _get_json_file(src):
 
         ret = DataClass.default_dep
 
+    if 'dep_check' in ret:
+        DataClass.dep_check = ret['dep_check']
+        del ret['dep_check']
     DataClass.dep_list = ret
     return
 
@@ -1007,16 +1011,12 @@ def _save_json_file(src, deps):
     log.info(f'({__my_name__}) Saving data to {src}')
     log.debug(f'({__my_name__}) Removing ModuleSpec items')
 
-    # #################################
-
     chk = copy(DataClass.dep_check)
     for k in chk:
         log.debug(f'({__my_name__}) Checking {k}')
         if 'modulespec' in chk[k]:
-            log.debug(f'({__my_name__}) Deleting entry {chk[k]["modulespec"]} from save list')
+            log.debug(f'({__my_name__}) Deleting entry {[k]}["modulespec"] from save list')
             del chk[k]['modulespec']
-
-    # #################################
 
     DataClass.dep_list['dep_check'] = chk
     try:
@@ -1029,6 +1029,8 @@ def _save_json_file(src, deps):
         log.warning(f'({__my_name__}) Error saving data: ({err=}')
         return False
     log.info(f'({__my_name__}) Data saved to {src}')
+    if 'dep_check' in DataClass.dep_list:
+        del DataClass.dep_list['dep_check']
     return True
 
 
