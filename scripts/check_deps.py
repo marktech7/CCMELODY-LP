@@ -161,10 +161,7 @@ from pathlib import Path
 
 __all__ = ['check_deps']
 
-if __name__ == '__main__':
-    logging.basicConfig(format='%(levelname)-10s :  %(message)s')
-    log = logging.getLogger()
-else:
+if __name__ != '__main__':
     log = logging.getLogger(__name__)
 
 
@@ -608,6 +605,7 @@ def _check_dependencies(depcheck):
         :param Path path:
         :rtype: (name, ModuleSpec) or None
         """
+        # NOTE: Add from imports to check list
         search = copy(name)
         while search:
             log.debug(f'({__my_name__}.check_submodule) Checking {search}')
@@ -654,6 +652,7 @@ def _check_dependencies(depcheck):
         for itm in lst[1:]:
             check_module(itm)
 
+    # NOTE: Include from extras for later checks
     elif lst[0] == 'from':
         check_module(lst[1])
 
@@ -1051,6 +1050,7 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
         log.warning(f'({__my_name__}) Save file not specified - using "project-deps.json"')
         DataClass.save_file = 'project-deps.json'
     log.info(f'({__my_name__}) Saving dependency list in {DataClass.base_dir.joinpath(DataClass.save_file)}')
+    _get_json_file(DataClass.base_dir.joinpath(DataClass.save_file))
 
     if full or DataClass.dep_list is None or len(DataClass.dep_list) <= 4:
         # len(DataClass.dep_list) <= 4 indicates
@@ -1120,6 +1120,8 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
         _check_dependencies(dep)
 
     # Save the results
+    if DataClass.dep_list:
+        DataClass.dep_list['dep_check'] = DataClass.dep_check
     _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
 
     return
@@ -1147,13 +1149,21 @@ if __name__ == "__main__":
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
     parser.add_argument('-f', '--full', help='Search for dependencies prior to checking', action='store_true')
     parser.add_argument('-j', '--save', help='JSON-format dependency file')
+    parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
+
+    if args.log:
+        logging.basicConfig(filename=args.log, format='%(levelname)-10s :  %(message)s')
+        print(f'Saving log output to {args.log}')
+    else:
+        logging.basicConfig(format='%(levelname)-10s :  %(message)s')
+    log = logging.getLogger()
 
     _levels = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
     debug = min(len(_levels), args.v + 1) - 1
     debug = max(0, debug)
-    log.setLevel(logging.getLevelName(_levels[debug]))
+    log.setLevel(level=logging.getLevelName(_levels[debug]))
     print(f'Settng log level to {logging.getLevelName(_levels[debug])}')
 
     if args.start is not None and args.start.endswith('.py'):
@@ -1161,4 +1171,4 @@ if __name__ == "__main__":
 
     check_deps(full=args.full, testdir=args.test, jfile=args.save)
     PrettyLog.log(lvl=log.debug, head='DataDir DataClass:', txt=DataClass)
-    # PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
+    PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
