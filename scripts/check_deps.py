@@ -58,6 +58,7 @@ assign the appropriate status for each dependency.
                              module : { ... },
                              ...
                             }
+        "dep_check"      : Dict used by script for dependency checks
     }
 
 Main Item definitions:
