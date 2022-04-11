@@ -46,18 +46,18 @@ assign the appropriate status for each dependency.
         "name"           : string,
         "version"[1]     : string,
         "git_version"[1] : string,
-        "deplist"        : { module : { "status"  : string,
-                                        "os"      : string,
-                                        "version" : string,
-                                        "parent"  : string,
-                                        "notes"   : string,
-                                        "repo"    : { repo : list,
-                                                      repo : list
-                                                    }
-                                        },
-                             module : { ... },
-                             ...
-                            }
+        "dep_list"        : { module : { "status"  : string,
+                                         "os"      : string,
+                                         "version" : string,
+                                         "parent"  : string,
+                                         "notes"   : string,
+                                         "repo"    : { repo : list,
+                                                       repo : list
+                                                     }
+                                         },
+                              module : { ... },
+                              ...
+                             }
         "dep_check"      : Dict used by script for dependency checks
     }
 
@@ -149,7 +149,7 @@ Main Item definitions:
 :author: Ken Roberts <alisonken1_#_gmail_dot_com>
 :copyright: OpenLP
 """
-import importlib
+# import importlib
 import json
 import logging
 import os
@@ -160,7 +160,7 @@ from copy import copy
 from importlib.machinery import PathFinder, ModuleSpec
 from pathlib import Path
 
-__all__ = ['check_deps']
+__all__ = ['check_deps', 'json_file']
 
 if __name__ != '__main__':
     log = logging.getLogger(__name__)
@@ -199,113 +199,116 @@ class Singleton(type):
 class DataClass(metaclass=Singleton):
     """Class to hold module data"""
     __showme__ = ['base_dir',
+                  'dep_default',
+                  'dep_list_default',
                   'file_list',
-                  'git_version',
-                  'helpers',
-                  'proj_dir',
+                  'format_level',
+                  'format_space',
                   'project',
+                  'project_dirs',
                   'project_name',
-                  'save_file',
-                  'setup',
+                  'setup_opts',
                   'setup_py',
-                  'start_py',
-                  'test_dir',
-                  'version',
-                  'version_file',
+                  'start_file',
                   # Show last since they may be big
                   'imports_list',
                   'dep_list',
-                  'dep_check'
+                  'dep_check',
                   ]
 
     def __repr__(self):
         return f'<DataClass: ' \
             f'base_dir={self.base_dir},' \
-            f' dep_list={self.dep_list},' \
-            f' dep_check={self.dep_check}', \
-            f' file_list={self.file_list},' \
-            f' git_version={self.git_version},' \
-            f' helpers={self.helpers},' \
-            f' proj_dir={self.proj_dir},' \
-            f' project={self.project},' \
-            f' project_name={self.project_name},' \
-            f' save_file={self.save_file},' \
-            f' setup={self.setup},' \
-            f' setup_py={self.setup_py},' \
-            f' start_py={self.start_py},' \
-            f' test_dir={self.test_dir},' \
-            f' version={self.version},' \
-            f' version_file={self.version_file}' \
-            f' imports_list={self.imports_list}' \
+            f'dep_check={self.dep_check},' \
+            f'dep_default={self.dep_default},' \
+            f'dep_list={self.dep_list},' \
+            f'dep_list_default={self.dep_list_default},' \
+            f'file_list={self.file_list},' \
+            f'format_level={self.format_level},' \
+            f'format_space={self.format_space},' \
+            f'imports_list={self.imports_list},' \
+            f'project={self.project},' \
+            f'project_dirs={self.dirs},' \
+            f'project_name={self.project.name},' \
+            f'setup_opts={self.setup_opts},' \
+            f'setup_py={self.setup_py},' \
+            f'start_file={self.start_file},' \
             '>'
 
     def __str__(self):
-        return f'base_dir={self.base_dir},' \
-            f' dep_list={self.dep_list},' \
-            f' file_list={self.file_list},' \
-            f' git_version={self.git_version},' \
-            f' helpers={self.helpers},' \
-            f' proj_dir={self.proj_dir},' \
-            f' project={self.project},' \
-            f' project_name={self.project_name},' \
-            f' save_file={self.save_file},' \
-            f' setup={self.setup},' \
-            f' setup_py={self.setup_py},' \
-            f' start_py={self.start_py},' \
-            f' test_dir={self.test_dir},' \
-            f' version={self.version},' \
-            f' version_file={self.version_file}' \
-            f' imports_list={self.imports_list}'
+        return \
+            f'base_dir={self.base_dir},' \
+            f'dep_check={self.dep_check},' \
+            f'dep_default={self.dep_default},' \
+            f'dep_list={self.dep_list},' \
+            f'dep_list_default={self.dep_list_default},' \
+            f'file_list={self.file_list},' \
+            f'format_level={self.format_level},' \
+            f'format_space={self.format_space},' \
+            f'imports_list={self.imports_list},' \
+            f'project={self.project},' \
+            f'project_dirs={self.dirs},' \
+            f'project_name={self.project.name},' \
+            f'setup_opts={self.setup_opts},' \
+            f'setup_py={self.setup_py},' \
+            f'start_file={self.start_file},'
 
     @classmethod
     def create(self):
-        # All directories in here are relative to base_dir
-        self.base_dir = Path('.').resolve()  # Project base directory (current directory)
-        self.dep_list = None  # (dict() of JSON file contents
+        # Unless otherwise noted, all paths are relative to bae_dir
+        # Default current directory
+        self.base_dir = Path('.').resolve()
+        self.project_name = None  # base_dir.name directory of project
+        self.project_dirs = {'project': None,
+                             'test': None,
+                             'helpers': []
+                             }
+        # project['dir'] is where project source files are located
+        #   Normal is base_dir.project_name
+        #   Variant 1 is base_dir.project_name.src.project_name (ex. PyPI}
+        # project['json'] is name of project json data
+        #   Normal is f'{project_name}-deps.json'
+        #   Variant 1 is 'project-deps.json'
+        self.project = {'dir': None,
+                        'name': None,  # Proper name of project - eg. 'OpenLP'
+                        'version': None,
+                        'git_version': None,
+                        'version_file': '.version',
+                        'json': None
+                        }
+
+        # The rest are used by this script for local use
+        self.dep_list = None  # Contents of project['json'] file
+        self.dep_list_default = {'project': self.project_name,
+                                 'name': self.project['name'],
+                                 'version': self.project['version'],
+                                 'git_version': self.project['git_version']
+                                 }
         self.dep_check = {}  # Intermediate dictionary of found dependencies
-        # All files in file_list will be relative to the directory they're found in
-        # file_list.keys() are directories relative to base_dir
         self.file_list = None  # Keep track of files to check
-        self.git_version = None  # Git version
         self.imports_list = []  # List of lines to check for imports
-        self.helpers = []  # Director(ies) that contain helper scripts
-        # proj_dir will be relative to base_dir
-        self.proj_dir = None  # Subdirectory of base_dir where source files are located
-        self.project = 'openlp'  # Project name - should be the same as the directory name
-        self.project_name = 'OpenLP'  # Proper name
-        # save_file is just the name of the file, not a Path()
-        self.save_file = None  # JSON file
-        self.setup = None  # Options from setup.py
-        self.setup_py = None
-        self.start_py = None  # Hopefully the name of the script that starts the program
-        # test_dir is relative to base_dir
-        self.test_dir = None  # Directory where tests are located
-        self.version = None  # Project version
-        self.version_file = '.version'  # Name of version file
-        #
-        # Following variables are used by the local functions
-        self._format_level = 0
-        self._format_space = {0: ''}
+        self.setup_opts = None  # Options from setup.py
+        self.setup_py = None  # setup.py if found
+        self.start_file = None  # Hopefully the name of the script that starts the program
+        # these two are used by PrettyLog
+        self.format_level = 0
+        self.format_space = {0: ''}
         #
         # Set some defaults
-        self.default_dep = {'project': self.project,
-                            'name': self.project_name,
-                            'version': self.version,
-                            'git_version': self.git_version
-                            }
-        self.default_deplist = {'python': {'version': '>= 5.6',
+        self.dep_default = {'python': {'version': '>= 5.6',
+                                       'status': 'required'},
+                            'PyQt5': {'version': '>= 5.12',
+                                      'status': 'required'},
+                            'Qt5': {'version': '>= 5.9',
+                                    'parent': 'PyQt5',
+                                    'status': 'required'},
+                            'pymediainfo': {'version': '>= 2.2',
+                                            'status': 'required'},
+                            'sqlalchemy': {'version': '>= 0.5',
                                            'status': 'required'},
-                                'PyQt5': {'version': '>= 5.12',
-                                          'status': 'required'},
-                                'Qt5': {'version': '>= 5.9',
-                                        'status': 'required'},
-                                'pymediainfo': {'version': '>= 2.2',
-                                                'status': 'required'},
-                                'sqlalchemy': {'version': '>= 0.5',
-                                               'status': 'required'},
-                                'enchant': {'version': '>= 1.6',
-                                            'status': 'required'}
-                                }
+                            'enchant': {'version': '>= 1.6',
+                                        'status': 'required'}
+                            }
 
 
 class PrettyLog(metaclass=Singleton):
@@ -387,27 +390,27 @@ class PrettyLog(metaclass=Singleton):
         return self.indents[self.indent]
 
     @classmethod
-    def log(self, txt, lvl=None, head=None, fromlist=False):
+    def log(self, txt, lvl=None, head=None, single=False):
         """
         :param txt: Text to log
         :type txt: object
         :param func lvl: Logging function (logging.debug, logging.info, ...)
         :param str head: Text prefix
+        :param bool single: For lists, show each entry on a separate line
         """
         prefix = head if head is not None else ''
-        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
         # Check if we don't have to process further
 
         # If this script added to a different project, you
         # may have to adapt the isinstance() to your project.
         if not isinstance(txt, (Singleton)):
             if self.log_line(self, lvl=lvl, txt=f'{prefix}{txt}'):
-                self.pop_item(self.log_items)
                 return
 
+        self.log_items.append({'lvl': lvl, 'head': head, 'txt': txt})
         # Too long to log onto a single line. Separate processing.
         if type(txt) is list:
-            self.log_list(self)
+            self.log_list(self, single)
         elif type(txt) is dict:
             self.log_dict(self)
         elif type(txt) is ModuleSpec:
@@ -452,14 +455,19 @@ class PrettyLog(metaclass=Singleton):
         self.log_line(self, lvl=lvl, txt='}')
         self.set_indent(self, decr=True)
 
-    def log_list(self):
+    def log_list(self, single):
         """Format a list object for logging"""
         item = self.log_items[-1]
         lvl = item['lvl']
         head = item['head']
+        text = item['txt']
         self.log_line(self, lvl=lvl, txt=head)
         self.set_indent(self)
-        self.format_line(self)
+        if single:
+            for itm in text:
+                self.log_line(self, lvl=lvl, txt=itm)
+        else:
+            self.format_line(self)
         self.set_indent(self, decr=True)
 
     def log_modspec(self):
@@ -650,14 +658,13 @@ def _check_dependencies(depcheck):
         log.warning(f'({__my_name__}) Invalid line? {depcheck}')
 
 
-def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
+def _get_directory(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
     """Process the project directory and add source files to DataClass.file_list
 
     Since we may have recursion issues, indicate the directory has not been
     scanned by setting entry to None instead of an empty list.
 
     :param Path base: Initial directory to process relative to DataClass.base_dir
-    :param bool recurse: Process subdirectories
     :param list e_dir: Directory names to exclude
     :param list e_file: File names to exclude
     :param list i_ext: File name extensions to include (default ['.py'])
@@ -690,49 +697,7 @@ def _get_directory(base, recurse=True, e_dir=ExclDir, e_file=ExclFile, i_ext=Inc
     PrettyLog.log(lvl=log.debug, head=f'({__my_name__}) Directory list: ', txt=DataClass.file_list[base])
 
 
-def _get_json_file(src):
-    """Initialize DataClass.dep_list
-
-    If json_file exists, populate from previously saved list.
-    DataClass.base_dir must already be checked before calling this function.
-
-    :param Path src: Fully qualified file path/name
-    """
-    __my_name__ = '_get_json_file'
-    log.info(f'({__my_name__}) Checking for previous {src.relative_to(DataClass.base_dir)} dependency list')
-
-    ret = None
-    _src = DataClass.base_dir.joinpath(src)
-
-    if _src.exists():
-        log.info(f'({__my_name__}) Parsing {src}')
-        try:
-            with open(_src, 'r') as fp:
-                ret = json.load(fp)
-                PrettyLog.log(txt=ret, lvl=log.debug, head=f'({__my_name__})')
-                log.info(f'({__my_name__}) Loaded JSON file')
-
-        except json.JSONDecodeError:
-            log.warning(f'({__my_name__}) {src} appears to be corrupted')
-            ret = None
-    else:
-        log.info(f'({__my_name__}) Source {src} does not exists')
-
-    if ret is None:
-        log.info(f'({__my_name__}) Creating new dependency list')
-        if DataClass.version is None:
-            DataClass.version, DataClass.git_version = _get_version()
-
-        ret = DataClass.default_dep
-
-    if 'dep_check' in ret:
-        DataClass.dep_check = ret['dep_check']
-        del ret['dep_check']
-    DataClass.dep_list = ret
-    return
-
-
-def _get_project_dir(proj=DataClass.project):
+def _get_project(proj=DataClass.project):
     """Finds the project directory
 
     Sets DataClass.proj_dir to (DataClass.base_dir)/dir.
@@ -740,97 +705,78 @@ def _get_project_dir(proj=DataClass.project):
     :param str proj: Name of project
     :return: None
     """
-    __my_name__ = '_get_project_dir'
+    __my_name__ = '_get_project'
     if DataClass.base_dir is None:
-        dirs, files = _list_dir('.')
-    else:
-        dirs, files = _list_dir(DataClass.base_dir)
+        DataClass.base_dir = Path('.').resolve()
 
+    dirs, files = _list_dir(DataClass.base_dir)
     if dirs is None:
         log.error(f'({__my_name__}) Unable to determine starting point - exiting')
         return
 
     log.info(f'({__my_name__}) Starting base checks')
-    if dirs is not None:
-        proj_chk = []
-        for checkdir in dirs:
-            log.debug(f'({__my_name__}) Checking {checkdir}')
-            if checkdir.name == 'src':
-                # Possible PyPI project
-                if DataClass.base_dir.joinpath(checkdir).exists():
-                    proj_chk.append(checkdir)
-                    continue
-            elif DataClass.project is not None and checkdir.name == DataClass.project:
-                log.debug(f'({__my_name__}) Adding "{checkdir.name}"')
-                proj_chk.append(checkdir)
-                continue
-            elif checkdir.name.startswith('test'):
-                log.debug(f'({__my_name__}) Setting DataClass.test_dir to "{checkdir.name}"')
-                DataClass.test_dir = checkdir
-                continue
-            elif checkdir.name.startswith('script'):
-                log.debug(f'({__my_name__}) Adding "{checkdir.name}" to helpers list')
-                DataClass.helpers.append(checkdir)
-                continue
-            # Check for module spec
-            chk = '.'.join([c for c in DataClass.base_dir.joinpath(checkdir).parts])
-            chk = PathFinder.find_spec(chk)
-            if not chk:
-                continue
-            elif chk.origin is None:
-                # Did not find spec - not a package
-                continue
-            elif 'site-package' in chk.origin:
-                # We're looking for source, not dpes here
-                continue
-
-            chk = Path(chk.origin).parts
-            if 'test' in chk[-2]:
-                DataClass.test_dir = checkdir.relative_to(DataClass.base_dir)
-                continue
-            elif 'script' in chk[-2]:
-                # Helper scripts
-                DataClass.helpers = checkdir.relative_to(DataClass.base_dir)
-                continue
-
-            # Unknown directory - recheck later
-            proj_chk.append(checkdir.relative_to(DataClass.base_dir))
-
-        if len(proj_chk) == 1:
-            # Hopefully found our package
-            DataClass.project = proj_chk[0].name
-            DataClass.proj_dir = proj_chk[0]
-            proj_chk.pop(0)
+    _pkg_check = []
+    _extra = []
+    while dirs:
+        _chk = dirs.pop()
+        log.debug(f'({__my_name__}) Checking {_chk}')
+        if _chk.name.startswith('test') and _chk.is_dir():
+            log.debug(f'({__my_name__}) Setting test directory as "{_chk.name}"')
+            DataClass.project_dirs['test'] = _chk
+            continue
+        elif _chk.name.startswith('script'):
+            log.debug(f'({__my_name__}) Adding "{_chk.name}" to helpers list')
+            DataClass.project_dirs['helpers'].append(_chk)
+            continue
+        elif _chk.joinpath('__init__.py').exists():
+            log.debug(f'({__my_name__}) Adding "{_chk.name}" to possible')
+            _pkg_check.append(_chk)
+            continue
+        _extra.append(_chk)
 
     log.debug(f'({__my_name__}) Finished processing directories')
-    log.debug(f'({__my_name__}) Leftover list: {proj_chk}')
+    if len(_pkg_check) == 1:
+        log.debug(f'({__my_name__}) Adding "{_pkg_check[0].name}" as project')
+        DataClass.project_name = _pkg_check[0].name
+        DataClass.project['dir'] = _pkg_check[0]
+        DataClass.project['json'] = f'{DataClass.project_name}-deps.json'
+        log.debug(f'({__my_name__}) Setting JSON file to "{DataClass.project["json"]}"')
+        DataClass.project['version'], DataClass.project['git_version'] = _get_version()
 
-    proj_chk = []
+    if len(_extra) > 0:
+        log.debug(f'({__my_name__}) Unknown directories: {_extra}')
+
+    _chkfiles = []
     if files is not None:
         for _file in files:
-            if DataClass.start_py is None and _file.name.startswith('run_'):
-                DataClass.start_py = _file.name
+            if DataClass.start_file is None and _file.name.startswith('run_'):
+                log.debug(f'({__my_name__}) Adding {_file.name} as starting file')
+                DataClass.start_file = _file
                 continue
             elif 'setup.py' == _file.name:
-                DataClass.setup_py = _file.name
+                log.debug(f'({__my_name__}) Adding setup.py for later checks')
+                DataClass.setup_py = _file
                 continue
-            proj_chk.append(_file)
-    if proj_chk:
-        PrettyLog(lvl=log.info,
-                  head=f'({__my_name__}) Extra files found:',
-                  txt=proj_chk)
+            _chkfiles.append(_file)
+        if _chkfiles:
+            log.debug(f'({__my_name__}) Extra files: {_chkfiles}')
+
+    PrettyLog.log(txt=DataClass, head=f'({__my_name__}) DataClass:', lvl=log.debug)
+    log.debug(f'({__my_name__}) Finished project checks')
 
 
-def _get_spec(name):
+def _get_spec(module, path=None):
     """Find a module spec
 
-    :param str name: Name of module
+    :param Path name: Name of module
+    :param str path: Fully-qualified path to search
     :returns: importlib.machinery.ModuleSpec or None
     """
-    _chk = PathFinder.find_spec(name)
-    if not _chk:
-        return None
-    return _chk
+    if path is None:
+        _chk = PathFinder.find_spec(module.name)
+    else:
+        _chk = PathFinder.find_spec(module.name, path)
+    return None if _chk is None else _chk
 
 
 def _get_source_file(path):
@@ -838,62 +784,73 @@ def _get_source_file(path):
     __my_name__ = "_get_source_file"
     log.debug(f'{__my_name__}) Scanning file {path.name}')
 
-    def strip_docstring(fp, check):
+    def get_docstring(fp, chk_s, chk_t):
+        """Helper for docstring processing"""
+        # chk_s = initial line
+        # chk_t = single- or double-quote docsitring
+        myline = chk_s
+        _chk_t = chk_t * 3
         for chk in fp:
-            if chk.startswith(check) or chk.endswith(check):
+            chk = chk.strip()
+            myline = f'{myline} {chk}'
+            if _chk_t not in chk or fp.closed:
                 break
-        if fp.closed:
-            return None
-        return fp.readline()
+        return myline
 
-    src = []
+    get_src = []
+
+    # Comments and docstrings
     with path.open() as fp:
         for line in fp:
+            if not line or fp.closed:
+                break
             line = line.strip()
-            check = None
-            check = '"' * 3 if '""' in line else check
-            if check is None:
-                check = "'" * 3 if "''" in line else check
-            if check is not None:
-                line = strip_docstring(fp, check)
+            # Docstring check so we don't add lines that should not be part of the check
+            if '""' in line:
+                # Double-quote docstring
+                line = get_docstring(fp, line, '"')
+            elif "''" in line:
+                line = get_docstring(fp, line, "'")
+            if line.startswith('#'):
+                continue
+            # Handle inline comments
+            elif '#' in line:
+                line = line.split('#', 1)[0]
 
-            if line is not None:
-                src.append(line)
+            get_src.append(line)
+            # Make txt a list so PrettyLog processes it correctly
+            PrettyLog.log(head=f'({__my_name__}) Adding line:', txt=[get_src[-1]])
+
+    PrettyLog.log(lvl=log.debug,
+                  head=f'{__my_name__}) Finished comments and docstring processing:',
+                  txt=get_src,
+                  single=True)
 
     # Check for continuation lines
-    chk = ['']
-    cont = False
-    for line in src:
-        line = line.strip()
+    my_cont = False
+    my_line = None
+    for line in get_src:
+        my_line = '' if my_line is None else my_line
         if line.endswith('\\'):
-            chk[-1] = ' '.join([chk[-1], line.rstrip('\\')[0]])
-            cont = True
+            if my_cont:
+                log.debug(f'({__my_name__}) Appending "{line}"')
+            else:
+                log.debug(f'{__my_name__}) Continuation line detected:')
+                log.debug(f'{line}')
+            my_cont = True
+            line = line.rstrip('\\').strip()
+            my_line = f'{my_line}{" " if line.endswith(",") else ""}{line}'
             continue
-        if cont:
-            chk[-1] = ' '.join([chk[-1], line])
-            cont = False
-            continue
-        chk.append(line)
-    src = chk
+        elif my_cont:
+            my_cont = False
+            my_line = None
+            line = my_line
+            PrettyLog.log(head=f'({__my_name__}) Adding line:', txt=[line])
 
-    # Comments
-    chk = []
-    for line in src:
-        line = line.strip()
-        if not line or line.startswith('#'):
-            continue
-        elif '#' in line:
-            line = line.split('#', 1)[0]
-
-        if line.startswith('import ') or line.startswith('from '):
-            if line in DataClass.imports_list:
-                log.debug(f'({__my_name__}) Duplicate import - skipping')
-                continue
-            chk.append(line)
-    src = chk
-
-    # Finally, add to the import checker list
-    DataClass.imports_list.extend(src)
+        if line and (line.startswith('import ') or line.startswith('from ')):
+            DataClass.imports_list.append(line)
+            PrettyLog.log(head=f'({__my_name__}) Adding line to DataClass.imports_list:',
+                          txt=[DataClass.imports_list[-1]])
 
 
 def _get_unchecked_directories():
@@ -910,19 +867,22 @@ def _get_unchecked_directories():
     return ret
 
 
-def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
+def _get_version(proj=None, vfile=None):
     """Get version information from Git, project/.version
 
-    :param str proj: Project directory
+    :param str proj: Project directory name
     :param str vfile: File with single-line version number format "N.N.N"
 
     :returns: (version, git_version)
     :rtype: tuple
     """
     __my_name__ = '_get_version'
-    log.info(f'({__my_name__}) Getting version for project "{proj}"')
-    git_version = ''
-    proj_version = ''
+    proj_name = DataClass.project_name if proj is None else proj
+    vers_file = DataClass.project['version_file'] if vfile is None else vfile
+
+    log.info(f'({__my_name__}) Getting version for project "{DataClass.project_name}"')
+    git_version = None
+    proj_version = None
 
     from subprocess import run
     try:
@@ -930,16 +890,17 @@ def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
                           capture_output=True,
                           check=True,
                           universal_newlines=True).stdout.strip()
-
     except FileNotFoundError:
         # Git not available or not installed?
         pass
 
     try:
-        vf = Path(proj, vfile)
+        vf = Path(proj_name, vers_file)
         with vf.open() as fp:
             proj_version = [v for v in fp.readlines() if v]
             proj_version = proj_version[0].strip()
+            log.info(f'({__my_name__}) project version: {proj_version}')
+            DataClass.project['version'] = proj_version
     except FileNotFoundError:
         # Version file not available
         if git_version is not None:
@@ -947,12 +908,13 @@ def _get_version(proj=DataClass.project, vfile=DataClass.version_file):
             proj_version = git_version.split('-', 1)[0]
 
     if proj_version is None:
-        log.warning(f'({__my_name__}) Unable to get {proj} version')
-        log.warning(f'({__my_name__}) Version file {proj}/{vfile} missing')
-        log.warning(f'({__my_name__}) Git either unavailable or not installed')
+        log.warning(f'({__my_name__}) Unable to get {proj_name} version')
+        log.warning(f'({__my_name__}) Version file {vers_file} missing')
+        log.warning(f'({__my_name__}) and/or git either unavailable or not installed')
     else:
-        log.info(f'({__my_name__}) Project version: {proj_version} Git version: {git_version}')
-
+        log.info(f'({__my_name__}) '
+                 f'project version: {DataClass.project["version"]} '
+                 f'git version: {DataClass.project["git_version"]}')
     return (proj_version, git_version)
 
 
@@ -996,99 +958,69 @@ def _list_dir(base, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
     return (dirs, files)
 
 
-def _save_json_file(src, deps):
-    """Save dependency list to file.
-
-    :param Path src: Fully-qualified /path/to/file to save to
-    :param dict deps: Dependency dictionary
-    :return: bool
-    """
-    __my_name__ = '_save_json_file'
-
-    if type(deps) is not dict:
-        log.warning(f'({__my_name__}) Cannot save data - wrong type (not dict)')
-        return False
-
-    log.info(f'({__my_name__}) Saving data to {src}')
-    log.debug(f'({__my_name__}) Removing ModuleSpec items')
-
-    chk = copy(DataClass.dep_check)
-    for k in chk:
-        log.debug(f'({__my_name__}) Checking {k}')
-        if 'modulespec' in chk[k]:
-            log.debug(f'({__my_name__}) Deleting entry {[k]}["modulespec"] from save list')
-            del chk[k]['modulespec']
-
-    DataClass.dep_list['dep_check'] = chk
-    try:
-        with open(src, 'w') as fp:
-            # Skipkeys=True should only skip the ModSpec key
-            # since importlib.machinery.ModuleSpec is non-serializable at this time
-            json.dump(deps, fp, indent=4, skipkeys=True)
-
-    except Exception as err:
-        log.warning(f'({__my_name__}) Error saving data: ({err=}')
-        return False
-    log.info(f'({__my_name__}) Data saved to {src}')
-    if 'dep_check' in DataClass.dep_list:
-        del DataClass.dep_list['dep_check']
-    return True
-
-
 # #####################################################################################
 # #####################################################################################
 # #####################################################################################
 # #####################################################################################
 
 
-def check_deps(base=DataClass.base_dir, full=False, jfile=None,
-               testdir=None, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):
+def check_deps(base=DataClass.base_dir, full=False, testdir=None, e_dir=ExclDir, e_file=ExclFile, i_ext=InclExt):  # noqa since kdevelop doesn't fold multi-line def statements
     """Entry point for dependency checks. Initializes required options.
 
     :param Path base: Base directory of project (default Path('.'))
     :param bool full: Force full dependency check (default False)
-    :param str jfile: Name of JSON file (default [project]-deps.json)
     :param bool testdir: Check test directory files
     :param list e_dir: Directory names to exclude
     :param list e_file: File names to exclude
     :param list i_ext: File name extensions to include (default ['.py']
     """
     __my_name__ = 'check_deps'
-    log.info(f'({__my_name__}) Starting dependency checks')
+    log.info(f'({__my_name__}) Starting run')
 
-    if DataClass.proj_dir is None:
-        _get_project_dir()
-    if DataClass.proj_dir is None:
-        log.error(f'({__my_name__}) Project directory not set - exiting')
-        return
-    if jfile is not None:
-        DataClass.save_file = jfile
-    elif DataClass.project is not None:
-        DataClass.save_file = f'{DataClass.project}-deps.json'
-    else:
-        log.warning(f'({__my_name__}) Save file not specified - using "project-deps.json"')
-        DataClass.save_file = 'project-deps.json'
-    log.info(f'({__my_name__}) Saving dependency list in {DataClass.base_dir.joinpath(DataClass.save_file)}')
-    _get_json_file(DataClass.base_dir.joinpath(DataClass.save_file))
+    # Initialize DataClass with important first-time data, like project name
+    if DataClass.project['dir'] is None:
+        _get_project()
+        if DataClass.project['dir'] is None:
+            # In case _get_project could not find source
+            log.error(f'({__my_name__}) Project directory not set - exiting')
+            return
 
-    if full or DataClass.dep_list is None or len(DataClass.dep_list) <= 4:
-        # len(DataClass.dep_list) <= 4 indicates
+    # Either retrieve previously-saved state or initialize a new state
+    log.info(f'({__my_name__}) Getting dependency list in'
+             f'{DataClass.base_dir.joinpath(DataClass.project["json"])}')
+    json_file(DataClass.project['json'])
+
+    if full \
+            or DataClass.dep_list is None \
+            or len(DataClass.dep_list) <= len(DataClass.dep_list_default):
+
+        # len(DataClass.dep_list) <= len(DataClass.dep_list_default indicates
+        # a new dep_list
         #   - No dependency list found
-        #   - Error with previous file
+        #   - Error with JSON file
         #
         # In these cases, a new dependency list is created
         log.info(f'({__my_name__}) Scanning all project source files')
 
         if not DataClass.dep_list:
-            # Try to load previous dependency list
-            _get_json_file(DataClass.base_dir.joinpath(DataClass.save_file))
+            DataClass.dep_list = copy(DataClass.dep_list_default)
+        PrettyLog.log(txt=DataClass.dep_list, head=f'({__my_name__}) DataClass.dep_list')
 
         # Process directories
         if DataClass.file_list is None:
             log.debug(f'({__my_name__}) Starting new file search')
-            DataClass.file_list = {DataClass.proj_dir: None}
+            # Initialize the list with the project name so we have a
+            # starting point for _get_unchecked_directories() to work with
+            DataClass.file_list = {DataClass.project_name: None}
         else:
             log.debug(f'({__my_name__}) Updating file list')
+
+        # ===============
+
+        json_file(DataClass.project['json'], DataClass.project)
+        return
+
+        # ===============
 
         dir_list = _get_unchecked_directories()
         while dir_list:
@@ -1122,7 +1054,8 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
 
     PrettyLog.log(lvl=log.debug,
                   head=f'({__my_name__}) Dependency list: ',
-                  txt=DataClass.imports_list)
+                  txt=DataClass.imports_list,
+                  single=True)
     log.debug(f'({__my_name__}) Finished dependency list')
 
     # Done/skipped finding deps, now to check them
@@ -1130,7 +1063,7 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
     log.debug(f'({__my_name__}) Starting dependency checks')
 
     log.debug(f'({__my_name__}) Flushing module caches')
-    importlib.invalidate_caches()
+    PathFinder.invalidate_caches()
 
     while DataClass.imports_list:
         # for dep in DataClass.imports_list:
@@ -1140,9 +1073,105 @@ def check_deps(base=DataClass.base_dir, full=False, jfile=None,
 
     # Save the results
     DataClass.dep_list['dep_check'] = DataClass.dep_check
-    _save_json_file(DataClass.base_dir.joinpath(DataClass.save_file), DataClass.dep_list)
+    json_file(DataClass.base_dir.joinpath(DataClass.project['json']), DataClass.dep_list)
     return
 
+
+def json_file(name=None, datalist=None):
+    """Save/Read project JSON file
+
+    If json_file exists, populate from previously saved list.
+
+    :param str name: Project directory name
+    :param list datalist: Data to save, otherwise get data
+    """
+    __my_name__ = 'json_file'
+
+    def dump_json(o):
+        if issubclass(o.__class__, Path):
+            return {'Path': str(o)}
+
+        elif issubclass(o.__class__, ModuleSpec):
+            chk = []
+            for itm in o.submodule_search_locations:
+                if DataClass.project_name in itm:
+                    str(chk.append(Path(itm).resolve().relative_to(DataClass.project['dir'])))
+
+            return {'ModuleSpec': {'name': o.name,
+                                   'origin': o.origin,
+                                   'submodule_search_locations': chk}
+                    }
+
+    def save_json():
+        # Load JSON or start a new dict
+        if name is None and DataClass.project['json'] is None:
+            # No previous file specified - so use default name
+            DataClass.project['json'] = 'project-deps.json'
+            log.warning(f'({__my_name__}) Unknown project save file - using default'
+                        f'{DataClass.project["json"]}')
+
+        # Try to load previous state
+        log.info(f'({__my_name__}) Checking for previous JSON list')
+        src = Path(DataClass.project['json'])
+
+        ret = None
+        if src.exists():
+            log.info(f'({__my_name__}) Parsing {src}')
+            try:
+                with src.open('r') as fp:
+                    ret = json.load(fp)
+                    PrettyLog.log(txt=ret, lvl=log.debug, head=f'({__my_name__})')
+                    log.info(f'({__my_name__}) Loaded JSON file')
+            except json.JSONDecodeError:
+                log.warning(f'({__my_name__}) Source {src} appears to be corrupted')
+                ret = None
+        else:
+            log.info(f'({__my_name__}) Source {src} does not exists')
+
+        if ret is None:
+            log.info(f'({__my_name__}) Creating new dependency list')
+
+        DataClass.dep_list = ret
+        return ret is not None
+
+    def load_json():
+        # Save JSON data
+        if type(datalist) is not dict:
+            log.warning(f'({__my_name__}) Cannot save data - wrong type (not dict)')
+            return False
+
+        log.info(f'({__my_name__}) Saving data to {name}')
+        DataClass.dep_list['dep_check'] = copy(DataClass.dep_check)
+
+        '''
+        log.debug(f'({__my_name__}) Removing ModuleSpec items')
+
+        _chk_dep = copy(DataClass.dep_check)
+        for k in _chk_dep:
+            log.debug(f'({__my_name__}) Checking {k}')
+            if 'modulespec' in _chk_dep[k]:
+                log.debug(f'({__my_name__}) Deleting entry {_chk_dep[k]["modulespec"]}')
+                del _chk_dep[k]['modulespec']
+        DataClass.dep_list['dep_check'] = _chk_dep
+        '''
+
+        try:
+            with open(name, 'w') as fp:
+                # Skipkeys=True should only skip the ModSpec key
+                # since importlib.machinery.ModuleSpec is non-serializable at this time
+                json.dump(datalist, fp, indent=4, skipkeys=True, default=dump_json)
+
+        except Exception as err:
+            log.warning(f'({__my_name__}) Error saving data: ({err=}')
+            return False
+        log.info(f'({__my_name__}) Data saved to {name}')
+        del DataClass.dep_list['dep_check']
+        return True
+
+    if datalist is None:
+        return save_json()
+    else:
+        return load_json()
 
 # #####################################################################################
 # #####################################################################################
@@ -1171,7 +1200,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.log:
-        logging.basicConfig(filename=args.log, format='%(levelname)-10s :  %(message)s')
+        logging.basicConfig(filename=args.log, filemode='w', format='%(levelname)-10s :  %(message)s')
         print(f'Saving log output to {args.log}')
     else:
         logging.basicConfig(format='%(levelname)-10s :  %(message)s')
@@ -1185,7 +1214,8 @@ if __name__ == "__main__":
 
     if args.start is not None and args.start.endswith('.py'):
         DataClass.start_py = args.start
+    DataClass.project['json'] = args.save
 
-    check_deps(full=args.full, testdir=args.test, jfile=args.save)
-    PrettyLog.log(lvl=log.debug, head='DataDir DataClass:', txt=DataClass)
+    check_deps(full=args.full, testdir=args.test)
+    PrettyLog.log(lvl=log.debug, head='(__main__) DataClass:', txt=DataClass)
     # PrettyLog.log(lvl=log.debug, head='DataDir PrettyLog:', txt=PrettyLog)
