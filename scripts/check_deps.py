@@ -580,6 +580,9 @@ def _check_dependencies(depcheck):
             # Already checked - ignore
             log.debug(f'({__my_name__}.build_check) Duplicate entry {name}')
             return
+        elif name in DataClass.dep_list['dep_list']:
+            log.debug(f'({__my_name__}.build_check) {name} already in dependency list')
+            return
 
         _check = {'modulespec': spec,
                   'mark': mark}
@@ -618,7 +621,10 @@ def _check_dependencies(depcheck):
         return None
 
     def check_module(name):
-        """Helper to verify module"""
+        """Helper to verify module
+
+        :param str name: Name of package to check
+        """
         if name.startswith(DataClass.project_name) or name.startswith('.') or system_check(name):
             log.debug(f'({__my_name__}.check_module) Ignoring project import {name}')
             return
