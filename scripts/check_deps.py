@@ -527,6 +527,9 @@ Dep_Check_Markers = {'ignore': '###-IGNORE-###',
                      'unknown': '###-UNKNOWN-###',
                      }
 
+RE_Single = re.compile(r"[']{3}")  # Single-quote docstring
+RE_Double = re.compile(r'["]{3}')  # Double-quote docstring
+
 
 ###########################################################
 #                                                         #
@@ -616,7 +619,7 @@ def _check_dependencies(depcheck):
 
     def check_module(name):
         """Helper to verify module"""
-        if name.startswith(DataClass.project) or name.startswith('.') or system_check(name):
+        if name.startswith(DataClass.project_name) or name.startswith('.') or system_check(name):
             log.debug(f'({__my_name__}.check_module) Ignoring project import {name}')
             return
 
@@ -643,6 +646,7 @@ def _check_dependencies(depcheck):
     log.info(f'({__my_name__}) Starting import checks on "{depcheck}"')
 
     lst = depcheck.replace(',', ' ').split()
+
     if lst[-2] == 'as':
         # Looks like we have an 'import ... as ..'
         lst = lst[-2]
@@ -772,85 +776,121 @@ def _get_spec(module, path=None):
     :param str path: Fully-qualified path to search
     :returns: importlib.machinery.ModuleSpec or None
     """
+    name = module
+    if issubclass(module.__class__, Path):
+        # Get the name as a string
+        name = module.name
+
     if path is None:
-        _chk = PathFinder.find_spec(module.name)
+        _chk = PathFinder.find_spec(name)
     else:
-        _chk = PathFinder.find_spec(module.name, path)
+        _chk = PathFinder.find_spec(name, path)
     return None if _chk is None else _chk
 
 
-def _get_source_file(path):
-    """Loads the source file 'path' into memory, removing docstrings and comments"""
+def _get_source_file(srcfile):
+    """Loads the source file (as list) and strip all non-import lines
+
+    Adds import statements to DataClass.imports_list
+
+    :param Path srcfile: Source file to parse
+    """
     __my_name__ = "_get_source_file"
-    log.debug(f'{__my_name__}) Scanning file {path.name}')
+    log.debug(f'({__my_name__}) Starting source file checks {srcfile}')
 
-    def get_docstring(fp, chk_s, chk_t):
-        """Helper for docstring processing"""
-        # chk_s = initial line
-        # chk_t = single- or double-quote docsitring
-        myline = chk_s
-        _chk_t = chk_t * 3
-        for chk in fp:
-            chk = chk.strip()
-            myline = f'{myline} {chk}'
-            if _chk_t not in chk or fp.closed:
-                break
-        return myline
+    def check_docstring(s):
+        """ Helper to check if docstring in line
 
-    get_src = []
+        :param str s: String to check
+        :rtype: string or None
+        """
+        if RE_Single.search(s):
+            m = RE_Single.search(s)
+        elif RE_Double.search(s):
+            m = RE_Double.search(s)
+        else:
+            return None
+        return len(re.findall(m.group(), s))
 
-    # Comments and docstrings
-    with path.open() as fp:
-        for line in fp:
-            if not line or fp.closed:
-                break
-            line = line.strip()
-            # Docstring check so we don't add lines that should not be part of the check
-            if '""' in line:
-                # Double-quote docstring
-                line = get_docstring(fp, line, '"')
-            elif "''" in line:
-                line = get_docstring(fp, line, "'")
+    def check_import(s):
+        """Check if this line is an import line
+
+        Add line to DataClass.imports_list if yes
+
+        :param str s: String to check
+        """
+        if s.startswith('import ') or s.startswith('from '):
+            s = s.split(' as ')[0]
+            log.debug(f'({__my_name__}) Adding line to imports list: "{s}"')
+            DataClass.imports_list.append(s)
+
+    with srcfile.open() as fp:
+        src = fp.readlines()
+
+    chk_ds = None  # Used for multi-line docstrings
+    chk_cont = None  # Used for multi-line continuations
+
+    while src:
+        line = src.pop(0).strip()
+        if not line:
+            log.debug(f'({__my_name__}) Skipping blank line')
+            continue
+
+        log.debug(f'({__my_name__}) Checking {line if chk_ds is None else chk_ds}')
+
+        # Handle docstrings first so we don't mistake the other checks
+        # or include an import that is part of a docstring explanation
+        # or hashmarks
+        if chk_ds:
+            log.debug(f'({__my_name__}) Adding "{line}" to docstring check')
+            chk_ds = line if chk_ds is None else f'{chk_ds} {line}'
+            chk = check_docstring(chk_ds)
+            if chk == 1:
+                # Still searching for ending
+                continue
+            # Found the ending
+            log.debug(f'({__my_name__}) Finished docstring')
+            log.debug(f'({__my_name__}) {chk_ds}')
+            # docstrings don't have imports that we can use, so skip it
+            chk_ds = None
+            continue
+
+        _ = check_docstring(line)
+        if _ is not None and _ > 0:
+            # Start a new docstring check
+            chk_ds = line
+            continue
+
+        if '#' in line:
             if line.startswith('#'):
+                log.debug(f'({__my_name__}) Skipping comment')
                 continue
             # Handle inline comments
             elif '#' in line:
+                # Still need to check the first part of the line
                 line = line.split('#', 1)[0]
 
-            get_src.append(line)
-            # Make txt a list so PrettyLog processes it correctly
-            PrettyLog.log(head=f'({__my_name__}) Adding line:', txt=[get_src[-1]])
-
-    PrettyLog.log(lvl=log.debug,
-                  head=f'{__my_name__}) Finished comments and docstring processing:',
-                  txt=get_src,
-                  single=True)
-
-    # Check for continuation lines
-    my_cont = False
-    my_line = None
-    for line in get_src:
-        my_line = '' if my_line is None else my_line
-        if line.endswith('\\'):
-            if my_cont:
-                log.debug(f'({__my_name__}) Appending "{line}"')
-            else:
-                log.debug(f'{__my_name__}) Continuation line detected:')
-                log.debug(f'{line}')
-            my_cont = True
-            line = line.rstrip('\\').strip()
-            my_line = f'{my_line}{" " if line.endswith(",") else ""}{line}'
+        if chk_cont:
+            chk_cont = f'{chk_cont} {line}'
+            if chk_cont.endswith('\\'):
+                log.debug(f'({__my_name__}) Adding {line} to continue checks')
+                chk_cont = chk_cont.rstrip('\\').strip()
+                continue
+            log.debug(f'({__my_name__}) Finished line continuation')
+            check_import(chk_cont)
+            chk_cont = None
             continue
-        elif my_cont:
-            my_cont = False
-            my_line = None
-            line = my_line
-            PrettyLog.log(head=f'({__my_name__}) Adding line:', txt=[line])
 
-        if line and (line.startswith('import ') or line.startswith('from ')):
-            DataClass.imports_list.append(line)
-            PrettyLog.log(head=f'({__my_name__}) Adding line to DataClass.imports_list:',
-                          txt=[DataClass.imports_list[-1]])
+        # Handle multi-line continuations
+        if line.endswith('\\'):
+            # Starting a new line continuation check
+            log.debug(f'({__my_name__}) Starting new continuation line check')
+            line = line.rstrip('\\').strip()
+            chk_cont = f'{"" if chk_cont is None else chk_cont} {line}'
+            continue
+
+        # Passed checks, so time to check for imports
+        check_import(line)
 
 
 def _get_unchecked_directories():
@@ -860,7 +900,7 @@ def _get_unchecked_directories():
 
     :return: dict
     """
-    ret = {k: None for k in DataClass.file_list if DataClass.file_list[k] is None}
+    ret = {Path(k): None for k in DataClass.file_list if DataClass.file_list[k] is None}
     PrettyLog.log(lvl=log.debug,
                   head='(_get_unchecked_directories) Returning ',
                   txt=ret)
@@ -1004,6 +1044,8 @@ def check_deps(base=DataClass.base_dir, full=False, testdir=None, e_dir=ExclDir,
 
         if not DataClass.dep_list:
             DataClass.dep_list = copy(DataClass.dep_list_default)
+        if 'dep_list' not in DataClass.dep_list:
+            DataClass.dep_list['dep_list'] = DataClass.dep_default
         PrettyLog.log(txt=DataClass.dep_list, head=f'({__my_name__}) DataClass.dep_list')
 
         # Process directories
@@ -1011,69 +1053,53 @@ def check_deps(base=DataClass.base_dir, full=False, testdir=None, e_dir=ExclDir,
             log.debug(f'({__my_name__}) Starting new file search')
             # Initialize the list with the project name so we have a
             # starting point for _get_unchecked_directories() to work with
-            DataClass.file_list = {DataClass.project_name: None}
+            DataClass.file_list = {Path(DataClass.project_name): None}
         else:
             log.debug(f'({__my_name__}) Updating file list')
 
-        # ===============
-
-        json_file(DataClass.project['json'], DataClass.project)
-        return
-
-        # ===============
-
+        # Time to process directories
         dir_list = _get_unchecked_directories()
+
         while dir_list:
+            # For each iteration, dir_list will have:
+            #    Any new directories will be added as {dir: None}
+            #    No files in this directory:
+            #        dir_list{dir: No_Files_Marker}
+            #    else:
+            #        dir_list{dir: [list of file names]}
             for key in dir_list:
-                # Scan directories to find source files
                 _get_directory(key)
-            # Reset dir_list
+
+            # Directory of entries that have been populated
+            dir_chk = {k: DataClass.file_list[k] for k in DataClass.file_list if DataClass.file_list[k] is not None}
+            for k, v in dir_chk.items():
+                if v == No_Files_Marker:
+                    # No files, so delete so we don't infinitely recurse
+                    del DataClass.file_list[k]
+                    continue
+                for src_file in v:
+                    # We have source files, so check for imports
+                    _get_source_file(Path(k, src_file))
+
+                # Processed the directory, now delete it from file_list
+                DataClass.file_list.pop(k)
+
+            # Rescan the list so we can finish processing
             dir_list = _get_unchecked_directories()
 
-        dir_list = [k for k in DataClass.file_list]
-        PrettyLog.log(lvl=log.debug, head=f'({__my_name__} Scanning directories: ',
-                      txt=dir_list)
+        PathFinder.invalidate_caches()
 
-        while dir_list:
-            my_dir = dir_list.pop()
-            PrettyLog.log(lvl=log.debug, head=f'({__my_name__} Scanning files: ',
-                          txt=my_dir)
-            # We have the directories, now go through the files
-            if DataClass.file_list[my_dir] == No_Files_Marker:
-                # No source files to scan in this directory
-                continue
-            PrettyLog.log(lvl=log.debug,
-                          head=f'({__my_name__}) Checking ',
-                          txt=DataClass.file_list[my_dir])
+        while DataClass.imports_list:
+            # for dep in DataClass.imports_list:
+            dep = DataClass.imports_list.pop(0)
+            log.debug(f'({__my_name__}) Calling dep checks with "{dep}"')
+            _check_dependencies(dep)
 
-            for _file in DataClass.file_list[my_dir]:
-                _get_source_file(DataClass.base_dir.joinpath(my_dir, _file))
+        # Save the results
+        DataClass.dep_list['dep_check'] = DataClass.dep_check
+        json_file(DataClass.base_dir.joinpath(DataClass.project['json']), DataClass.dep_list)
 
-            # Finished processing directory files,, so remove it from the global list
-            DataClass.file_list.pop(my_dir)
-
-    PrettyLog.log(lvl=log.debug,
-                  head=f'({__my_name__}) Dependency list: ',
-                  txt=DataClass.imports_list,
-                  single=True)
-    log.debug(f'({__my_name__}) Finished dependency list')
-
-    # Done/skipped finding deps, now to check them
-
-    log.debug(f'({__my_name__}) Starting dependency checks')
-
-    log.debug(f'({__my_name__}) Flushing module caches')
-    PathFinder.invalidate_caches()
-
-    while DataClass.imports_list:
-        # for dep in DataClass.imports_list:
-        dep = DataClass.imports_list.pop(0)
-        log.debug(f'({__my_name__}) Calling dep checks with "{dep}"')
-        _check_dependencies(dep)
-
-    # Save the results
-    DataClass.dep_list['dep_check'] = DataClass.dep_check
-    json_file(DataClass.base_dir.joinpath(DataClass.project['json']), DataClass.dep_list)
+    # We have finished full-scan processing, now verify the dependencies
     return
 
 

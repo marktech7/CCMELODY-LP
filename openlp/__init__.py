@@ -21,3 +21,11 @@
 """
 The :mod:`openlp` module contains all the project produced OpenLP functionality
 """
+
+# Line so I can check multi-line checks without
+# going through the whole project
+
+from openlp.core.projectors.constants import E_AUTHENTICATION, PJLINK_DEFAULT_CODES, PJLINK_ERRORS, \
+    PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_SVER_MAX_LEN, \
+    PJLINK_TOKEN_SIZE, E_NO_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_DATA_OK, S_OFF, S_OK, S_ON, \
+    S_STANDBY, STATUS_MSG
