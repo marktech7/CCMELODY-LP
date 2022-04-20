@@ -122,8 +122,12 @@ class PdfDocument(PresentationDocument):
                 # keep aspect ratio
                 scale = min(size.width() / src_size.width, size.height() / src_size.height)
                 matrix = fitz.Matrix(scale, scale)
-                page.getPixmap(matrix=matrix, alpha=False).writeImage(
-                    str(temp_dir_path / 'mainslide{:03d}.png'.format(i)))
+                pngpath = str(temp_dir_path / 'mainslide{:03d}.png'.format(i))
+                try:
+                    page.get_pixmap(matrix=matrix, alpha=False).save(pngpath)
+                except AttributeError:
+                    # old function names
+                    page.getPixmap(matrix=matrix, alpha=False).writeImage(pngpath)
             pdf.close()
             created_files = sorted(temp_dir_path.glob('*'))
             for image_path in created_files:
