@@ -467,6 +467,8 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-p', '--project', help='Project Name', default=None, action='store')
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
+    parser.add_argument('-s', '--saved', help='JSON ifle to load (default project-deps.json)',
+                        default='project-deps.json')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
 
@@ -483,11 +485,16 @@ if __name__ == "__main__":
     log.setLevel(level=logging.getLevelName(_levels[debug]))
     print(f'Settng log level to {logging.getLevelName(_levels[debug])}')
 
-    Data.load_json()
+    if args.saved:
+        Data.load_json(f=args.saved)
+    else:
+        Data.load_json()
+
     if Data.project['name'] is None:
         if args.project is None:
             Data.save_json()
             print(f'\n\nEdit {JSON_File} and set "name" to name of project and try again\n')
+            print('Or add -p <project> option')
             sys.exit()
         Data.set_name(args.project)
 

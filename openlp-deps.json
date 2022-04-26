@@ -6,114 +6,228 @@
     "git_version": null,
     "language": {
         "python": {
-            "version": ["3.6"],
+            "version": [
+                "3.6"
+            ],
             "base": "/usr/lib64/python3.9"
-        },
+        }
     },
-    "groups": {"db": {"status": "required",
-                      "group": "select"},
-              },
+    "groups": {
+        "db": {
+            "status": "required",
+            "group": "select"
+        }
+    },
     "modules": {
-                "alembic": {"status": "required"},
-                "appdirs": {"status": "required"},
-                "AppKit": {"status": "required",
-                           "os": "darwin"},
-                "bs4": {"status": "required"},
-                "chardet": {"status": "required"},
-                "dbus": {"status": "required",
-                         "os": "linux"},
-                "distro": {"status": "required",
-                           "os": "linux"},
-                "enchant": {"status": "optional",
-                            "version": ["1.6"],
-                            "notes": "Spell Checker"},
-                "fitz": {"status": "optional",
-                         "notes": "PyMuPDF - PDF Support"},
-                "flake8": {"status": "testing",
-                           "redhat": "python3-flake8",
-                           "pypi": "flake8"},
-                "flasK": {"status": "required"},
-                "flask_cors": {"status": "required"},
-                "lxml": {"status": "required"},
-                "mako": {"status": "required"},
-                "objc": {"status": "required",
-                         "os": "darwin"},
-                "PIL": {"status": "required",
-                        "redhat": "python3-pillow",
-                        "pypi": "Pillow",
-                        "subs": {"ImageQt": {"status": "required"},
-                                 },
-                "PyQt5": {"version": ["5.12"],
-                          "status": "required",
-                          "subs": {"QtCore": {"version": ["5.9"],
-                                              "status": "required"
-                                              },
-                                   "QtGui": {"status": "required"},
-                                   "QtWidgets": {"status": "required"},
-                                   "QtNetwork": {"status": "required"},
-                                   "QtOpenGL": {"status": "required"},
-                                   "QtSvg": {"status": "required"},
-                                   "QtTest": {"status": "required"},
-                                   "QtWebEngineWidgets": {"status": "required",
-                                                          "pypi": "PyQtWebEngine"},
-                                   "QtMultimedia": {"status": "required"}
-                                  },
-                          },
-                "Pyro4": {"status": "required",
-                          "os": "darwin"},
-                "pysqord": {"status": "optional",
-                            "notes": "SWORD Bible Import Support"},
-                "psycopg2": {"group": "db",
-                             "notes": "PostGreSQL DB Interface",
-                             "redhat": "python3-psycopg2",
-                             "pypi": "psycopg2"},
-                "pymediainfo": {"status": "required",
-                                "version": ["2.2"]},
-                "pymysql": {"group": "db",
-                            "notes": "MySQL/MariaDB DB Interface",
-                            "redhat": "python3-pymysql",
-                            "pypi": "PyMySQL"},
-                "pyodbc": {"group": "db",
-                           "notes": "ODBC DB Interface",
-                           "redhat": "python3-pyodbc",
-                           "pypi": "pyodbc"},
-                "pytest": {"status": "testing",
-                           "notes": "Testing Framework"},
-                "pytestqt": {"status": "testing",
-                             "notes": "Testing Framework for PyQt5",
-                             "pypi": "pytest-qt"},
-                "pywintypes": {"status": "required",
-                               "os": "win"},
-                "qdarkstyle": {"status": "optional",
-                               "redhat": "python3-qdarkstyle",
-                               "pypi": "QDarkStyle"},
-                "qrcode": {"status": "required",
-                           "redhat": "python3-qrcode",
-                           "pypi": "qrcode"},
-                "qtawesome": {"status": "required",
-                              "pypi": "QtAwesome",
-                              "redhat": "python3-QtAwesome"},
-                "sqlalchemy": {"status": "required",
-                               "version":["0.5"],
-                               "notes": "Database Abstraction Library",
-                               "redhat": "python3-sqlalchemy",
-                               "pypi": "SQLAlchemy"},
-                "sqlite3": {"group": "db",
-                            "notes": "SQLite3 DB Interface"},
-                "uno": {"status": "optional",
-                        "notes": "LibreOffice/OpenOffice Support"},
-                "vlc": {"status": "required",
-                        "redhat": "python3-vlc",
-                        "pypi": "python-vlc"},
-                "waitress": {"status": "required"},
-                "webob": {"status": "required"},
-                "websockets": {"status": "required"},
-                "win32com": {"status": "required",
-                             "os": "win"},
-                "win32ui": {"status": "required",
-                            "os": "win"},
-                "zeroconf": {"status": "required",
-                             "redhat": "python3-zeroconf",
-                             "pypi": "zeroconf3"},
+        "alembic": {
+            "status": "required"
+        },
+        "appdirs": {
+            "status": "required"
+        },
+        "AppKit": {
+            "status": "required",
+            "os": "darwin"
+        },
+        "bs4": {
+            "status": "required"
+        },
+        "chardet": {
+            "status": "required"
+        },
+        "dbus": {
+            "status": "required",
+            "os": "linux"
+        },
+        "distro": {
+            "status": "required",
+            "os": "linux"
+        },
+        "enchant": {
+            "status": "optional",
+            "version": [
+                "1.6"
+            ],
+            "notes": "Spell Checker"
+        },
+        "fitz": {
+            "status": "optional",
+            "notes": "PyMuPDF - PDF Support"
+        },
+        "flake8": {
+            "status": "testing",
+            "redhat": "python3-flake8",
+            "pypi": "flake8"
+        },
+        "flasK": {
+            "status": "required"
+        },
+        "flask_cors": {
+            "status": "required"
+        },
+        "lxml": {
+            "status": "required"
+        },
+        "mako": {
+            "status": "required"
+        },
+        "objc": {
+            "status": "required",
+            "os": "darwin"
+        },
+        "PIL": {
+            "status": "required",
+            "redhat": "python3-pillow",
+            "pypi": "Pillow",
+            "subs": {
+                "ImageQt": {
+                    "status": "required"
+                }
+            }
+        },
+        "PyQt5": {
+            "version": [
+                "5.12"
+            ],
+            "status": "required",
+            "subs": {
+                "Qt": {
+                    "version": [
+                        "5.9"
+                    ],
+                    "status": "required"
                 },
+                "QtGui": {
+                    "status": "required"
+                },
+                "QtWidgets": {
+                    "status": "required"
+                },
+                "QtNetwork": {
+                    "status": "required"
+                },
+                "QtOpenGL": {
+                    "status": "required"
+                },
+                "QtSvg": {
+                    "status": "required"
+                },
+                "QtTest": {
+                    "status": "required"
+                },
+                "QtWebEngineWidgets": {
+                    "status": "required",
+                    "pypi": "PyQtWebEngine",
+                    "redhat": "pyqtwebengine"
+                },
+                "QtMultimedia": {
+                    "status": "required"
+                }
+            }
+        },
+        "Pyro4": {
+            "status": "required",
+            "os": "darwin"
+        },
+        "pysqord": {
+            "status": "optional",
+            "notes": "SWORD Bible Import Support"
+        },
+        "psycopg2": {
+            "group": "db",
+            "notes": "PostGreSQL DB Interface",
+            "redhat": "python3-psycopg2",
+            "pypi": "psycopg2"
+        },
+        "pymediainfo": {
+            "status": "required",
+            "version": [
+                "2.2"
+            ]
+        },
+        "pymysql": {
+            "group": "db",
+            "notes": "MySQL/MariaDB DB Interface",
+            "redhat": "python3-pymysql",
+            "pypi": "PyMySQL"
+        },
+        "pyodbc": {
+            "group": "db",
+            "notes": "ODBC DB Interface",
+            "redhat": "python3-pyodbc",
+            "pypi": "pyodbc"
+        },
+        "pytest": {
+            "status": "testing",
+            "notes": "Testing Framework"
+        },
+        "pytestqt": {
+            "status": "testing",
+            "notes": "Testing Framework for PyQt5",
+            "pypi": "pytest-qt"
+        },
+        "pywintypes": {
+            "status": "required",
+            "os": "win"
+        },
+        "qdarkstyle": {
+            "status": "optional",
+            "redhat": "python3-qdarkstyle",
+            "pypi": "QDarkStyle"
+        },
+        "qrcode": {
+            "status": "required",
+            "redhat": "python3-qrcode",
+            "pypi": "qrcode"
+        },
+        "qtawesome": {
+            "status": "required",
+            "pypi": "QtAwesome",
+            "redhat": "python3-QtAwesome"
+        },
+        "sqlalchemy": {
+            "status": "required",
+            "version": [
+                "0.5"
+            ],
+            "notes": "Database Abstraction Library",
+            "redhat": "python3-sqlalchemy",
+            "pypi": "SQLAlchemy"
+        },
+        "sqlite3": {
+            "group": "db",
+            "notes": "SQLite3 DB Interface"
+        },
+        "uno": {
+            "status": "optional",
+            "notes": "LibreOffice/OpenOffice Support"
+        },
+        "vlc": {
+            "status": "required",
+            "redhat": "python3-vlc",
+            "pypi": "python-vlc"
+        },
+        "waitress": {
+            "status": "required"
+        },
+        "webob": {
+            "status": "required"
+        },
+        "websockets": {
+            "status": "required"
+        },
+        "win32com": {
+            "status": "required",
+            "os": "win"
+        },
+        "win32ui": {
+            "status": "required",
+            "os": "win"
+        },
+        "zeroconf": {
+            "status": "required",
+            "redhat": "python3-zeroconf",
+            "pypi": "zeroconf3"
+        }
+    }
 }
