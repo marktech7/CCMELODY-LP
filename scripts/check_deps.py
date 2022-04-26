@@ -135,7 +135,7 @@ class DataClass(metaclass=Singleton):
             if c.__spec__.origin in CHECK_MARKERS:
                 mod_['check'] = CHECK_MARKERS[c.__spec__.origin]
             else:
-                mod_['check'] = f'###-UNK-{c._-spec__.origin}-###'
+                mod_['check'] = f'###-UNK-{c.__spec__.origin}-###'
             mod_['path'] = None if not hasattr(c.__spec__, 'path') else c.__spec__.path
             self.INSTALLED[module] = mod_
         except ModuleNotFoundError:
