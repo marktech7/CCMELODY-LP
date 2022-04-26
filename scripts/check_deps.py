@@ -284,6 +284,19 @@ class DataClass(metaclass=Singleton):
         return True
 
     @classmethod
+    def set_version(self):
+        """Set version information in project"""
+        from subprocess import run, CalledProcessError
+        try:
+            tmp = run(['git', 'describe', '--tags'],
+                      capture_output=True,
+                      check=True,
+                      universal_newlines=True).stdout
+            Data.project['git_version'] = tmp.strip()
+        except CalledProcessError:
+            pass
+
+    @classmethod
     def set_name(self, name):
         """Set Data attributes that rely on project name
 
@@ -291,6 +304,7 @@ class DataClass(metaclass=Singleton):
         """
         self.project['name'] = name
         self.dir_list['project'] = self.dir_list['project'].joinpath(name)
+        self.set_version()
 
 
 # Initialize DataClass
