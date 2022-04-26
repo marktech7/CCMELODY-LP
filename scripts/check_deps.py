@@ -44,11 +44,14 @@ CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'ignore': '###-IGNORE-###',
                  'lib-dynload': '###-STD-LIB-###',
                  'module': '###-3RD-PARTY-###',  # alias for 'site-packages'
-                 'nofiles': '###-NOFILES-###',
                  'site-packages': '###-3RD-PARTY-###',
                  'std': '###-STD-LIB-###',
                  'unk': '###-UNKNOWN-###',
-                 'sysunk': None  # Check module adds actual marker
+                 'sysunk': None,  # _check_module adds actual marker for specific module
+                 # During actual checks, these can be ignored since they are built-in or part of stdlib
+                 # unless otherwise specified in module checks
+                 '###-BUILTIN-###': 'built-in',
+                 '###-STD-LIB-###': 'std',
                  }
 # Exclude directories from project
 EXCLDIR = ['__pycache__', 'resources', 'documentation', 'docs', 'js']
@@ -217,15 +220,6 @@ class DataClass(metaclass=Singleton):
         if issubclass(itm.__class__, Path):
             return str(itm)
         return itm
-
-    @staticmethod
-    def find_path(module):
-        """Find import path to module
-
-
-        :param str module: Module import to check
-        :rtype: Path | None
-        """
 
     @classmethod
     def load_json(self, f=JSON_File):
@@ -500,4 +494,4 @@ if __name__ == "__main__":
     Data.log(lvl=log.debug)
     if args.full or not Data.project.modules:
         find_all_imports()
-    Data.log(lvl=log.debug, installed=True)
+    Data.log(lvl=log.debug)
