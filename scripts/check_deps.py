@@ -111,6 +111,9 @@ class DataClass(metaclass=Singleton):
         cls.INSTALLED = dict()
         cls.project = deepcopy(cls._default_project)  # JSON data
 
+        if cls.project['name'] is not None:
+            cls.dir_list['project'] = Path('.', cls.project['name'])
+
         for f in pkgutil.iter_modules(path=sys.path[1:]):
             p = Path(f.module_finder.path)
             # p is path to installed module
@@ -475,6 +478,7 @@ if __name__ == "__main__":
     """
     parser = argparse.ArgumentParser(usage=__help__, description='Find module dependencies in a Python package')
     parser.add_argument('-f', '--full', help='Search for dependencies prior to checking', action='store_true')
+    parser.add_argument('-i', '--installed', help='Save currently installed modules to <file>'),
     parser.add_argument('-j', '--json', help='JSON-format dependency file')
     parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-p', '--project', help='Project Name', default=None, action='store')
@@ -514,3 +518,10 @@ if __name__ == "__main__":
     if args.full or not Data.project.modules:
         find_all_imports()
     Data.log(lvl=log.debug)
+
+    if args.installed:
+        tmp = dict()
+        tmp['language'] = Data._default_project['language']
+        tmp['import_list'] = Data.import_list
+        with open(args.installed, 'w') as fp:
+            json.dump(tmp, fp, indent=4)
