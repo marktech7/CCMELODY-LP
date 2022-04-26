@@ -730,7 +730,8 @@ def test_screen_changed_modal_sets_timestamp_before_blocking_on_modal(mocked_war
     # the blocking modal is shown.
     mocked_warning.assert_called_once()
     assert main_window.screen_change_timestamp is None
-    
+
+
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.critical')
 @patch('openlp.core.ui.mainwindow.FileDialog')
 @patch('openlp.core.ui.mainwindow.shutil')
