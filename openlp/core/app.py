@@ -32,7 +32,7 @@ import sys
 import time
 from datetime import datetime
 from pathlib import Path
-from shutil import copytree
+from shutil import copytree, move
 from traceback import format_exception
 
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets  # noqa
@@ -311,6 +311,69 @@ def set_up_logging(log_path):
     print(f'Logging to: {file_path} and level {log.level}')
 
 
+def backup_if_version_changed(settings):
+    """
+    Check version of settings and the application version and backup if the version is different.
+
+    :param Settings settings: The settings object
+    :rtype: None
+    """
+    is_downgrade = get_version()['version'] < settings.value('core/application version')
+    # No need to backup if we're not downgrading
+    if not (settings.version_mismatched() and settings.value('core/has run wizard')) and not is_downgrade:
+        return True
+    now = datetime.now()
+    data_folder_path = AppLocation.get_data_path()
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    data_folder_backup_path = data_folder_path.with_name(data_folder_path.name + '-' + timestamp)
+    # Warning if OpenLP is downgrading
+    if is_downgrade:
+        close_result = QtWidgets.QMessageBox.warning(
+            None, translate('OpenLP', 'Downgrade'),
+            translate('OpenLP', 'OpenLP has found a configuration file created by a newer version of OpenLP. '
+                      'OpenLP will start with a fresh install as downgrading data is not supported. Any existing data '
+                      'will be backed up to:\n\n{data_folder_backup_path}\n\n'
+                      'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
+            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
+            QtWidgets.QMessageBox.No)
+        if close_result == QtWidgets.QMessageBox.No:
+            # Return false as backup failed.
+            return False
+    # Backup the settings
+    if settings.version_mismatched() or is_downgrade:
+        settings_back_up_path = data_folder_path / (now.strftime('%Y-%m-%d %H-%M') + '.conf')
+        log.info('Settings are being backed up to {settings_back_up_path}'
+                 .format(settings_back_up_path=settings_back_up_path))
+        if not is_downgrade:
+            # Inform user of settings backup location
+            QtWidgets.QMessageBox.information(
+                None, translate('OpenLP', 'Settings Backup'),
+                translate('OpenLP', 'Your settings are about to be upgraded. A backup will be created at '
+                                    '{settings_back_up_path}').format(settings_back_up_path=settings_back_up_path))
+        # Backup the settings
+        try:
+            settings.export(settings_back_up_path)
+        except OSError:
+            QtWidgets.QMessageBox.warning(
+                None, translate('OpenLP', 'Settings Backup'),
+                translate('OpenLP', 'Settings back up failed.\n\nOpenLP will attempt to continue.'))
+    # Backup and remove data folder if downgrading
+    if is_downgrade:
+        try:
+            # We don't want to use data from newer versions, so rather than a copy, we'll just move/rename
+            move(data_folder_path, data_folder_backup_path)
+        except OSError:
+            log.exception('Failed to backup data for downgrade')
+            QtWidgets.QMessageBox.critical(None, translate('OpenLP', 'OpenLP Backup'),
+                                           translate('OpenLP', 'Backup of the data folder failed during downgrade.'))
+            return False
+    # Reset all the settings if we're downgrading
+    if is_downgrade:
+        settings.clear()
+    settings.upgrade_settings()
+    return True
+
+
 def main():
     """
     The main function which parses command line options and then runs
@@ -406,39 +469,11 @@ def main():
     if app.is_data_path_missing():
         server.close_server()
         sys.exit()
-    # Warning if OpenLP is downgrading
-    if settings.from_future():
-        close_result = QtWidgets.QMessageBox.warning(
-            None, translate('OpenLP', 'Settings Upgrade'),
-            translate('OpenLP', 'OpenLP has found a configuration file created by a newer version of OpenLP. '
-                      'OpenLP may encounter unexpected behaviour and could delete or corrupt data if you continue.\n\n'
-                      'Do you want to continue?'),
-            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
-            QtWidgets.QMessageBox.No)
-        if close_result == QtWidgets.QMessageBox.No:
-            server.close_server()
-            sys.exit()
-    if settings.version_mismatched():
-        now = datetime.now()
-        # Only back up if OpenLP has previously run, or if we are downgrading the settings.
-        if settings.value('core/has run wizard') or settings.from_future():
-            back_up_path = AppLocation.get_data_path() / (now.strftime('%Y-%m-%d %H-%M') + '.conf')
-            log.info('Settings about to be upgraded. Existing settings are being backed up to {back_up_path}'
-                     .format(back_up_path=back_up_path))
-            QtWidgets.QMessageBox.information(
-                None, translate('OpenLP', 'Settings Upgrade'),
-                translate('OpenLP', 'Your settings are about to be upgraded. A backup will be created at '
-                                    '{back_up_path}').format(back_up_path=back_up_path))
-            try:
-                settings.export(back_up_path)
-            except OSError:
-                QtWidgets.QMessageBox.warning(
-                    None, translate('OpenLP', 'Settings Upgrade'),
-                    translate('OpenLP', 'Settings back up failed.\n\nContinuing to upgrade.'))
-        # Reset all the settings if we're downgrading
-        if settings.from_future():
-            settings.clear()
-        settings.upgrade_settings()
+    # Do a backup
+    if not backup_if_version_changed(settings):
+        # Backup failed, stop before we damage data.
+        server.close_server()
+        sys.exit()
     # First time checks in settings
     if not settings.value('core/has run wizard'):
         if not FirstTimeLanguageForm().exec():
