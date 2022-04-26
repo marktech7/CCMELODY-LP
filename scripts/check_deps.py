@@ -300,6 +300,18 @@ Data = DataClass()
 ###########################################################
 
 
+def check_os(osmod):
+    """
+    Verify if module O/S dependency matches current machine
+
+    :param str osmod: String with O/S type ("linux" | "darwin" | "win")
+    :rtype: bool
+    """
+    return IS_LIN and osmod.startswith('lin') \
+        or IS_MAC and osmod.startswith('dar') \
+        or IS_WIN and osmod.startswith('win')
+
+
 def find_all_imports(src=Data.dir_list['project']):
     """Search project for all imports
 
