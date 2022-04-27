@@ -314,9 +314,11 @@ def set_up_logging(log_path):
 def backup_if_version_changed(settings):
     """
     Check version of settings and the application version and backup if the version is different.
+    Returns true if a backup was not required or the backup succeeded,
+    false if backup required but was cancelled or failed.
 
     :param Settings settings: The settings object
-    :rtype: None
+    :rtype: bool
     """
     is_downgrade = get_version()['version'] < settings.value('core/application version')
     # No need to backup if version matches and we're not downgrading
