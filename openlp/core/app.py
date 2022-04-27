@@ -319,7 +319,7 @@ def backup_if_version_changed(settings):
     :rtype: None
     """
     is_downgrade = get_version()['version'] < settings.value('core/application version')
-    # No need to backup if we're not downgrading
+    # No need to backup if version matches and we're not downgrading
     if not (settings.version_mismatched() and settings.value('core/has run wizard')) and not is_downgrade:
         return True
     now = datetime.now()
