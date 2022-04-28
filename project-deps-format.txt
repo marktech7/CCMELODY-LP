@@ -136,7 +136,7 @@ against the installed modules.
 
 The "modules": <module> key must match the module name exactly.
 Example: "pyqt5" module name does not match "PyQt5" module
-that is expected.
+that is expected by the language module scheme.
 
 In the case that 'project-deps.json' is not found:
 
