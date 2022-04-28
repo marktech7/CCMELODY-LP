@@ -134,6 +134,10 @@ Modules Format
 The modules field is used to verify project required modules
 against the installed modules.
 
+The "modules": <module> key must match the module name exactly.
+Example: "pyqt5" module name does not match "PyQt5" module
+that is expected.
+
 In the case that 'project-deps.json' is not found:
 
     The check script will create a 'project-deps.json' file
