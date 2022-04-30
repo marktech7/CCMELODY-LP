@@ -77,7 +77,7 @@ Format for the "language" field are as follows:
 For each <language> entry the format is:
 
             <language>: { "version": list,
-                          "base"   : string
+                          "base"   : string   # Optional - developer(s) use only
                         }
 
 language:  Environment language.
@@ -135,8 +135,8 @@ The modules field is used to verify project required modules
 against the installed modules.
 
 The "modules": <module> key must match the module name exactly.
-Example: "pyqt5" module name does not match "PyQt5" module
-that is expected by the language module scheme.
+Example: "pyqt5" module name does not match "PyQt5" module name
+that is expected by the language scheme.
 
 In the case that 'project-deps.json' is not found:
 
@@ -162,11 +162,21 @@ In the case that 'project-deps.json' is not found:
     operation of the project or is part of another package, the <module> entry
     may be deleted from the "modules" field.
 
-    An example would be:
-        'com': {'check': '###-UNKNOWN-###'}
+    Normally, a repository package consists of one module.
 
-        'com' module is part of the 'uno' module, so will be satisfied
-        when the 'uno' module is installed.
+    Example 1 would be:
+        Repo package = "python3-package1" contains module "module1".
+
+    Example 2 would be:
+        Repo package = "python3-packge2" contains modules "module2" and "module3"
+
+    In example 1, "module1" would be satisfied by installing "python3-package1",
+
+    In example 2, "module2" and "module3" would be satisfied by installing "python3-package2",
+    so if "module2" and "module3" are both required and the developer(s) know that
+    both "module2" and "module3" will be part of the installed package, the developer(s)
+    can add "module2" and remove "module3" from the JSON spec.
+
 
 The format for the modules field are as follows:
 
@@ -181,12 +191,17 @@ For each <module> entry the format is:
                     "group"    : string,     # Optional
                     "os"       : string,     # Optional
                     "version"  : list,       # Optional
+                    "vmod"     : string,     # Optional
+                    "vfunc"    : string,     # Optional - "vstr" takes precedence.
+                    "vstr"     : string,     # Optional
                     "notes"    : string,     # Optional
                     <repo>     : string,     # Optional
                     "subs"     : dictionary  # Optional
                     }
 
 "status"    : The status of the module.
+              "status" will be set to "required" if missing.
+
               Valid options for "status" are:
                 "required" - Module must be installed.
                              Project will not run if this module is not
@@ -223,7 +238,21 @@ For each <module> entry the format is:
                 "AppKit" is required, but only if running on Apple MAC (darwin)
                 "pywintypes" is required, but only if running on Windows
 
-"version"   : If added, has the same meaning as "language": {"version"}
+"version"   : If added, has the same meaning as "language": {"version"}.
+              By default, will look for "<mod>.__version__" to verify version string.
+              information. If <mod>.__version__ is not availalbe or is not in
+              the standard format, add "vfunc" or "vstr" field to validate
+              version information.
+
+"vmod"      : If given, the module where vstr or vfunc can be found.
+              Only needed if vfunc or vstr is not in the dependent module.
+              (ex: module="PyQt5", vmod="PyQt5.QtCore", vfunc="qVersion")
+
+"vfunc"     : If given, name of function to call to retrieve version information.
+              Function shall return a string in std format (ex: "3.9" or "3.9.1").
+
+"vstr"      : If given, name of variable that contains a standard version
+              string (ex: "3.9" or "3.9.1")
 
 "notes"     : Developer(s) notes about this module
 
@@ -309,6 +338,7 @@ Example JSON File
             "version": [
                 "1.6"
             ],
+            "vstr": "__version__",
             "notes": "Spell Checker"
         },
         "fitz": {
@@ -334,12 +364,14 @@ Example JSON File
             "version": [
                 "5.12"
             ],
+            "vfunc": "QtCore.qVersion",
             "status": "required",
             "subs": {
                 "Qt": {
                     "version": [
                         "5.9"
                     ],
+                    "vfunc" : "qVersion",
                     "status": "required"
                 },
                 "QtGui": {
