@@ -25,6 +25,7 @@
 :author: Ken Roberts <alisonken1_#_gmail_dot_com>
 :copyright: OpenLP
 """
+import importlib
 import json
 import logging
 import pkgutil
@@ -41,12 +42,15 @@ if __name__ != '__main__':
 
 CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'check': '###-CHECK-###',
+                 'dep': '###-DEPRECATED-###',  # Indicates system module is deprecated
                  'ignore': '###-IGNORE-###',
                  'lib-dynload': '###-STD-LIB-###',
                  'module': '###-3RD-PARTY-###',  # alias for 'site-packages'
                  'site-packages': '###-3RD-PARTY-###',
                  'std': '###-STD-LIB-###',
                  'unk': '###-UNKNOWN-###',
+                 'v-unk': '###-VERSION-UNKNOWN-###',
+                 'v-inv': '###-VERSION-MISMATCH-###',
                  'sysunk': None,  # _check_module adds actual marker for specific module
                  # During actual checks, these can be ignored since they are built-in or part of stdlib
                  # unless otherwise specified in module checks
@@ -102,7 +106,7 @@ class DataClass(metaclass=Singleton):
                         }
 
     def __new__(cls, *args, **kwargs):
-        cls.check = dict()  # Dependencies found need to verify against cls.project['modules']
+        cls.check = dict()  # Results of project['modules'] installed checks
         cls.dir_check = dict()  # Keep track of directories to parse relative to cls.dir_list['base']
         cls.dir_list = {'base': Path('.').resolve(),  # Project base directory
                         'project': Path('.'),  # Project source base directory relative to "base"
@@ -114,6 +118,7 @@ class DataClass(metaclass=Singleton):
         if cls.project['name'] is not None:
             cls.dir_list['project'] = Path('.', cls.project['name'])
 
+        # TODO: Add 'deprecated' check
         for f in pkgutil.iter_modules(path=sys.path[1:]):
             p = Path(f.module_finder.path)
             # p is path to installed module
@@ -317,16 +322,126 @@ Data = DataClass()
 ###########################################################
 
 
-def check_os(osmod):
+def check_dependencies():
+    """
+    Parse dependencies and verify if installed
+    """
+    __my_name__ = 'check_dependencies'
+    if not Data.project['modules']:
+        log.warning(f'({__my_name__}) No dependencies to check - returning')
+        return
+
+    def check_deps(parent, child=None, version=None):
+        """
+        Verify module is installed
+
+        :param str parent: Base module (ex: "PyQt5")
+        :param str child: Base submodule (ex: "QtWebEngine.QtWebEngineWidgets")
+        :param list version: Module version to verify
+        :rtype: bool or tuple
+        """
+        ret = False
+        retcode = None
+
+        chk = parent if child is None else f'{parent}.{child}'
+        log.debug(f'({__my_name__}.check_deps) Checking {chk}')
+        m = None
+        ret = True
+        try:
+            m = importlib.import_module(chk)
+        except ModuleNotFoundError:
+            log.debug(f'({__my_name__}.check_deps) {chk} not importable or not installed')
+            ret = False
+
+        if ret:
+            # Module available, so we can continue checks
+            if child is None:
+                dpmod = Data.project['modules'][parent]
+            else:
+                dpmod = Data.project['modules'][parent]['subs'][child]
+
+            v = None
+            if 'version' in dpmod:
+                log.debug(f'({__my_name__}.check_deps) Checking version information')
+                if hasattr(m, '__version__'):
+                    v = getattr(m, '__version__')
+                    log.debug(f'({__my_name__}.check_deps) Using "__version__"')
+                    retcode = v
+                elif 'vstr' in dpmod and hasattr(m, dpmod['vstr']):
+                    log.debug(f'({__my_name__}.check_deps) Using vstr({dpmod["vstr"]})')
+                    v = getattr(m, dpmod['vstr'])
+                    retcode = v
+                elif 'vfunc' in dpmod:
+                    vf = dpmod['vfunc']
+                    log.debug(f'({__my_name__}.check_deps) Using vfunc({vf})')
+                    if 'vmod' in dpmod:
+                        m = importlib.import_module(dpmod['vmod'])
+                    f = getattr(m, vf)
+                    v = f()
+                    retcode = v
+                else:
+                    retcode = CHECK_MARKERS['v-unk']
+        log.debug(f'({__my_name__}.check_deps) Verifying {chk}: ({ret}, "{retcode}")')
+        return (ret, retcode)
+
+    log.info(f'({__my_name__}) Starting dependency checks')
+    Data.check['required'] = dict()
+    Data.check['optional'] = dict()
+    Data.check['testing'] = dict()
+
+    if "groups" in Data.project:
+        Data.check['groups'] = dict()
+        for module in Data.project['groups']:
+            log.debug(f'({__my_name__}) Adding group "{module}" to checks')
+            if 'status' in Data.project['groups'][module]['status']:
+                s = Data.project['groups'][module]['status']
+            else:
+                s = 'required'
+            chk = {'status': s}
+            Data.check['groups'][module] = chk
+
+    for module in Data.project['modules']:
+        m = Data.project['modules'][module]
+        # TODO: Assumes no submodules if 'os' specified
+        if 'os' in m and not check_module_os(m['os']):
+            log.debug(f'({__my_name__}) Skipping "{m["os"]}" dependent module "{module}"')
+            continue
+
+        v = m['version'] if 'version' in m else None
+
+        # TODO: Assumes no submodules if 'group' specified
+        if 'group' in m:
+            log.debug(f'({__my_name__}) Adding group["{m["group"]}"] module {module} to checks')
+            g = Data.check['groups'][m['group']]
+            installed, rcode = check_deps(parent=module, version=v)
+            g[module] = {'check': installed if rcode is None else rcode}
+            continue
+
+        log.debug(f'({__my_name__}) Adding "{module}" to checks')
+
+        dest = m['status'] if 'status' in m else 'required'
+        installed, rcode = check_deps(parent=module, version=v)
+        Data.check[dest][module] = {'check': installed if rcode is None else rcode}
+        if installed and 'subs' in m:
+            # Parent installed and child module(s) dependency check exist
+            for sm in m['subs']:
+                log.debug(f'({__my_name__}) Adding "{module}.{sm}" to checks')
+                dest = sm['status'] if 'status' in sm else 'required'
+                v = sm['version'] if 'version' in sm else None
+                installed, rcode = check_deps(parent=module, child=sm, version=v)
+                Data.check[dest][f'{module}.{sm}'] = {'check': installed if rcode is None else rcode}
+
+
+def check_module_os(osmod):
     """
     Verify if module O/S dependency matches current machine
 
     :param str osmod: String with O/S type ("linux" | "darwin" | "win")
     :rtype: bool
     """
-    return IS_LIN and osmod.startswith('lin') \
-        or IS_MAC and osmod.startswith('dar') \
-        or IS_WIN and osmod.startswith('win')
+    return (IS_LIN and osmod.startswith('lin')) \
+        or (IS_MAC and osmod.startswith('dar')) \
+        or (IS_WIN and osmod.startswith('win'))
 
 
 def find_all_imports(src=Data.dir_list['project']):
@@ -441,7 +556,8 @@ def parse_source(srcfile):
 
 
 def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
-    """Parse directory and retrieve valid entries
+    """
+    Parse directory and retrieve valid entries
 
     Parse srcdir and return valid (directories, files) tuple
 
@@ -450,7 +566,7 @@ def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
     :param list e_file: List of files to exclude
     :param list i_ext: List of file extensions to include
 
-    :return: ( {directory: None} or None, [list_of_files] | None )
+    :return: tuple( dict | None, list | None )
     :rtype: tuple
     """
     __my_name__ = "parse_dir"
@@ -479,6 +595,26 @@ def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
     return (dirs, files)
 
 
+def set_new_imports():
+    """
+    Parse Data.INSTALLED and built Data.modules.
+
+    Data.project['modules'] has not been set, so create a template
+    for project non-system dependencies.
+    """
+    __my_name__ = 'set_new_imports'
+    log.debug(f'({__my_name__}) Building dependency check list')
+
+    for key in Data.import_list:
+        if Data.import_list[key][0] in CHECK_MARKERS:
+            # log.debug(f'{__my_name__} Skipping system module {key}')
+            continue
+        log.debug(f'({__my_name__}) Adding {key} to module list')
+        Data.project['modules'][key] = {'status': CHECK_MARKERS['unk'],
+                                        'check': Data.import_list[key][0]}
+    Data.save_json()
+
+
 if __name__ == "__main__":
     import argparse
 
@@ -493,11 +629,11 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(usage=__help__, description='Find module dependencies in a Python package')
     parser.add_argument('-f', '--full', help='Search for dependencies prior to checking', action='store_true')
     parser.add_argument('-i', '--installed', help='Save currently installed modules to <file>'),
-    parser.add_argument('-j', '--json', help='JSON-format dependency file')
+    parser.add_argument('-j', '--json', help='JSON-format dependency file', default='project-deps.py')
     parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-p', '--project', help='Project Name', default=None, action='store')
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
-    parser.add_argument('-s', '--saved', help='JSON ifle to load (default project-deps.json)',
+    parser.add_argument('-s', '--saved', help='Backup JSON file to load',
                         default='project-deps.json')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
@@ -528,10 +664,22 @@ if __name__ == "__main__":
             sys.exit()
         Data.set_name(args.project)
 
-    Data.log(lvl=log.debug)
-    if args.full or not Data.project.modules:
+    if args.full or not Data.project['modules']:
         find_all_imports()
-    Data.log(lvl=log.debug)
+    if not Data.project['modules']:
+        set_new_imports()
+        save_file = 'project-deps.json'
+        msg = f"""\n\n
+    Dependencies have been saved to "{save_file}".
+
+    Please edit the "{save_file}" file and update the "modules" section
+    with the appropriate entries.
+
+    See "project-deps-format.txt" for format of "{save_file}" format.
+    \n
+              """
+        print(msg)
+        sys.exit()
 
     if args.installed:
         tmp = dict()
@@ -539,3 +687,7 @@ if __name__ == "__main__":
         tmp['import_list'] = Data.import_list
         with open(args.installed, 'w') as fp:
             json.dump(tmp, fp, indent=4)
+
+    check_dependencies()
+    # Data.log(lvl=log.debug, installed=True)
+    Data.log(lvl=log.debug)
