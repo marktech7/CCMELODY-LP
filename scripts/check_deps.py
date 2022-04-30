@@ -44,6 +44,7 @@ CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'check': '###-CHECK-###',
                  'dep': '###-DEPRECATED-###',  # Indicates system module is deprecated
                  'ignore': '###-IGNORE-###',
+                 'imp-err': '###-IMPORT-ERROR-###',
                  'lib-dynload': '###-STD-LIB-###',
                  'module': '###-3RD-PARTY-###',  # alias for 'site-packages'
                  'site-packages': '###-3RD-PARTY-###',
@@ -335,54 +336,63 @@ def check_dependencies():
         """
         Verify module is installed
 
+        Returns a tuple (True if installed, None or error string)
+
         :param str parent: Base module (ex: "PyQt5")
         :param str child: Base submodule (ex: "QtWebEngine.QtWebEngineWidgets")
         :param list version: Module version to verify
-        :rtype: bool or tuple
+        :rtype: tuple
         """
-        ret = False
-        retcode = None
-
         chk = parent if child is None else f'{parent}.{child}'
         log.debug(f'({__my_name__}.check_deps) Checking {chk}')
+        if parent not in Data.INSTALLED:
+            return (False, None)
+
         m = None
         ret = True
-        try:
-            m = importlib.import_module(chk)
-        except ModuleNotFoundError:
-            log.debug(f'({__my_name__}.check_deps) {chk} not importable or not installed')
-            ret = False
+        retcode = None
 
-        if ret:
-            # Module available, so we can continue checks
-            if child is None:
-                dpmod = Data.project['modules'][parent]
+        # Module available, so we can continue checks
+        if child is None:
+            dpmod = Data.project['modules'][parent]
+        else:
+            dpmod = Data.project['modules'][parent]['subs'][child]
+
+        v = None
+        if 'version' in dpmod:
+            log.debug(f'({__my_name__}.check_deps) Checking version information')
+            try:
+                m = importlib.import_module(chk)
+                ret = True
+            except ModuleNotFoundError:
+                log.debug(f'({__my_name__}.check_deps) {chk} not importable or not installed')
+                return (False, CHECK_MARKERS['imp-err'])
+
+            if hasattr(m, '__version__'):
+                v = getattr(m, '__version__')
+                log.debug(f'({__my_name__}.check_deps) Using "__version__"')
+                retcode = v
+            elif 'vstr' in dpmod and hasattr(m, dpmod['vstr']):
+                log.debug(f'({__my_name__}.check_deps) Using vstr({dpmod["vstr"]})')
+                v = getattr(m, dpmod['vstr'])
+                retcode = v
+            elif 'vfunc' in dpmod:
+                vf = dpmod['vfunc']
+                log.debug(f'({__my_name__}.check_deps) Using vfunc({vf})')
+                if 'vmod' in dpmod:
+                    m = importlib.import_module(dpmod['vmod'])
+                f = getattr(m, vf)
+                v = f()
+                retcode = v
             else:
-                dpmod = Data.project['modules'][parent]['subs'][child]
+                retcode = CHECK_MARKERS['v-unk']
 
-            v = None
-            if 'version' in dpmod:
-                log.debug(f'({__my_name__}.check_deps) Checking version information')
-                if hasattr(m, '__version__'):
-                    v = getattr(m, '__version__')
-                    log.debug(f'({__my_name__}.check_deps) Using "__version__"')
-                    retcode = v
-                elif 'vstr' in dpmod and hasattr(m, dpmod['vstr']):
-                    log.debug(f'({__my_name__}.check_deps) Using vstr({dpmod["vstr"]})')
-                    v = getattr(m, dpmod['vstr'])
-                    retcode = v
-                elif 'vfunc' in dpmod:
-                    vf = dpmod['vfunc']
-                    log.debug(f'({__my_name__}.check_deps) Using vfunc({vf})')
-                    if 'vmod' in dpmod:
-                        m = importlib.import_module(dpmod['vmod'])
-                    f = getattr(m, vf)
-                    v = f()
-                    retcode = v
-                else:
-                    retcode = CHECK_MARKERS['v-unk']
         log.debug(f'({__my_name__}.check_deps) Verifying {chk}: ({ret}, "{retcode}")')
         return (ret, retcode)
+
+    ###########################
+    # check_dependencies body #
+    ###########################
 
     log.info(f'({__my_name__}) Starting dependency checks')
     Data.check['required'] = dict()
@@ -414,14 +424,18 @@ def check_dependencies():
             log.debug(f'({__my_name__}) Adding group["{m["group"]}"] module {module} to checks')
             g = Data.check['groups'][m['group']]
             installed, rcode = check_deps(parent=module, version=v)
-            g[module] = {'check': installed if rcode is None else rcode}
+            g[module] = {'check': installed}
+            if rcode is not None:
+                g[module]['error'] = rcode
             continue
 
         log.debug(f'({__my_name__}) Adding "{module}" to checks')
 
         dest = m['status'] if 'status' in m else 'required'
         installed, rcode = check_deps(parent=module, version=v)
-        Data.check[dest][module] = {'check': installed if rcode is None else rcode}
+        Data.check[dest][module] = {'check': installed}
+        if rcode is not None:
+            Data.check[dest][module]['error'] = rcode
         if installed and 'subs' in m:
             # Parent installed and child module(s) dependency check exist
             for sm in m['subs']:
@@ -429,7 +443,9 @@ def check_dependencies():
                 dest = sm['status'] if 'status' in sm else 'required'
                 v = sm['version'] if 'version' in sm else None
                 installed, rcode = check_deps(parent=module, child=sm, version=v)
-                Data.check[dest][f'{module}.{sm}'] = {'check': installed if rcode is None else rcode}
+                Data.check[dest][f'{module}.{sm}'] = {'check': installed}
+                if rcode is not None:
+                    Data.check[dest][f'{module}.{sm}']['error'] = rcode
 
 
 def check_module_os(osmod):
