@@ -59,7 +59,7 @@
             "redhat": "python3-flake8",
             "pypi": "flake8"
         },
-        "flasK": {
+        "flask": {
             "status": "required"
         },
         "flask_cors": {
@@ -89,12 +89,15 @@
             "version": [
                 "5.12"
             ],
+            "vmod": "PyQt5.QtCore",
+            "vfunc": "qVersion",
             "status": "required",
             "subs": {
                 "Qt": {
                     "version": [
                         "5.9"
                     ],
+                    "vfunc": "qVersion",
                     "status": "required"
                 },
                 "QtGui": {
@@ -129,7 +132,7 @@
             "status": "required",
             "os": "darwin"
         },
-        "pysqord": {
+        "pysword": {
             "status": "optional",
             "notes": "SWORD Bible Import Support"
         },
