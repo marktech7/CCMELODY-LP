@@ -454,6 +454,12 @@ def check_dependencies():
                 if rcode is not None:
                     Data.check[dest][f'{module}.{sm}']['error'] = rcode
 
+    # Move groups into appropriate section
+    for group in Data.check['groups']:
+        chk = Data.check['groups'][group]
+        dest = chk['status'] if 'status' in chk else 'required'
+        Data.check[dest][group] = {'subs': chk['subs']}
+
 
 def check_module_os(osmod):
     """
