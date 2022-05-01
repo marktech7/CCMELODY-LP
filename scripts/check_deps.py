@@ -50,8 +50,9 @@ CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'site-packages': '###-3RD-PARTY-###',
                  'std': '###-STD-LIB-###',
                  'unk': '###-UNKNOWN-###',
+                 'v-max': '###-VERSION-GREATER-THAN-###',
+                 'v-min': '###-VERSION-LESS-THAN-###',
                  'v-unk': '###-VERSION-UNKNOWN-###',
-                 'v-inv': '###-VERSION-MISMATCH-###',
                  'sysunk': None,  # _check_module adds actual marker for specific module
                  # During actual checks, these can be ignored since they are built-in or part of stdlib
                  # unless otherwise specified in module checks
@@ -359,6 +360,8 @@ def check_dependencies():
             dpmod = Data.project['modules'][parent]['subs'][child]
 
         v = None
+        v_low = None
+        v_high = None
         if 'version' in dpmod:
             log.debug(f'({__my_name__}.check_deps) Checking version information')
             try:
@@ -368,14 +371,15 @@ def check_dependencies():
                 log.debug(f'({__my_name__}.check_deps) {chk} not importable or not installed')
                 return (False, CHECK_MARKERS['imp-err'])
 
+            v_low = dpmod['version'][0]
+            if len(dpmod['version']) > 1:
+                v_high = dpmod['version'][1]
             if hasattr(m, '__version__'):
                 v = getattr(m, '__version__')
                 log.debug(f'({__my_name__}.check_deps) Using "__version__"')
-                retcode = v
             elif 'vstr' in dpmod and hasattr(m, dpmod['vstr']):
                 log.debug(f'({__my_name__}.check_deps) Using vstr({dpmod["vstr"]})')
                 v = getattr(m, dpmod['vstr'])
-                retcode = v
             elif 'vfunc' in dpmod:
                 vf = dpmod['vfunc']
                 log.debug(f'({__my_name__}.check_deps) Using vfunc({vf})')
@@ -383,9 +387,12 @@ def check_dependencies():
                     m = importlib.import_module(dpmod['vmod'])
                 f = getattr(m, vf)
                 v = f()
-                retcode = v
             else:
                 retcode = CHECK_MARKERS['v-unk']
+
+        if v is not None:
+            # Have a module version number, so time to compare
+            retcode = check_version(low=v_low, version=v, high=v_high)
 
         log.debug(f'({__my_name__}.check_deps) Verifying {chk}: ({ret}, "{retcode}")')
         return (ret, retcode)
@@ -407,8 +414,8 @@ def check_dependencies():
                 s = Data.project['groups'][module]['status']
             else:
                 s = 'required'
-            chk = {'status': s}
-            Data.check['groups'][module] = chk
+            Data.check['groups'][module] = {'status': s}
+            Data.check['groups'][module]['subs'] = dict()
 
     for module in Data.project['modules']:
         m = Data.project['modules'][module]
@@ -422,7 +429,7 @@ def check_dependencies():
         # TODO: Assumes no submodules if 'group' specified
         if 'group' in m:
             log.debug(f'({__my_name__}) Adding group["{m["group"]}"] module {module} to checks')
-            g = Data.check['groups'][m['group']]
+            g = Data.check['groups'][m['group']]['subs']
             installed, rcode = check_deps(parent=module, version=v)
             g[module] = {'check': installed}
             if rcode is not None:
@@ -458,6 +465,54 @@ def check_module_os(osmod):
     return (IS_LIN and osmod.startswith('lin')) \
         or (IS_MAC and osmod.startswith('dar')) \
         or (IS_WIN and osmod.startswith('win'))
+
+
+def check_version(low, version, high=None):
+    """
+    Simple version comparator
+
+    Compare version with minimum required and optionally maximum required.
+    Returns ether None or CHECK_MARKERS['min' | 'max']
+
+    Version string formatted as 'Major.Minor', ignore the rest
+
+    Converts version to a hex value to make comparison easier.
+
+    :param str low: Minimum version required
+    :param str version: Version to compare
+    :param str high: Maximum version allowed
+    :rtype: str | None
+    """
+
+    def hex_me(v, s):
+        """
+        Convert decimal values to combined hex value
+
+        :param v: Version major
+        :param s: Version minor
+        :rtype: hex
+        """
+        ret = int(v) << 8 | int(s)
+        return ret
+
+    __my_name__ = 'check_version'
+    log.debug(f'({__my_name__}) Checking low="{low}" version="{version}" high="{high}"')
+    valid = None
+    _ver = version.split('.')
+    _ver = hex_me(v=_ver[0], s=_ver[1])
+
+    _req = low.split('.')
+    _req = hex_me(v=_req[0], s=_req[1])
+    if _req > _ver:
+        valid = CHECK_MARKERS['v-min']
+    if valid is None and high is not None:
+        _req = high.split('.')
+        _req = hex_me(v=_req[0], s=_req[1])
+        if _ver > _req:
+            valid = CHECK_MARKERS['v-max']
+    r_ = None if valid is None else f'"{valid}"'
+    log.debug(f'({__my_name__}) Returning {r_}')
+    return valid
 
 
 def find_all_imports(src=Data.dir_list['project']):
