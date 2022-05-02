@@ -811,6 +811,7 @@ if __name__ == "__main__":
 
     if args.backup:
         Data.load_json(f=args.backup)
+        Data.save_json()
     else:
         Data.load_json()
 
