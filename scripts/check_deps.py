@@ -28,6 +28,7 @@
 import importlib
 import json
 import logging
+import os
 import pkgutil
 import re
 import sys
@@ -36,8 +37,8 @@ from copy import copy, deepcopy
 # from importlib.machinery import PathFinder
 from pathlib import Path
 
-log = logging.getLogger(__name__)
-
+if __name__ != '__main__':
+    log = logging.getLogger(__name__)
 
 CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'check': '###-CHECK-###',
@@ -67,6 +68,9 @@ INCLEXT = ['.py']
 IS_WIN = sys.platform.startswith('win')
 IS_LIN = sys.platform.startswith('lin')
 IS_MAC = sys.platform.startswith('dar')
+if IS_WIN:
+    # Enable color on Windows console
+    os.system("")
 JSON_File = 'project-deps.json'
 # Get the python installation directory.
 # Used to assist debugging possible module import issues.
@@ -318,6 +322,51 @@ class DataClass(metaclass=Singleton):
 # Initialize DataClass
 Data = DataClass()
 
+
+class Style(metaclass=Singleton):
+    """
+    Return a colorized string for printing on console
+    """
+    BOLD = '\33[1m'
+    NORMAL = '\33[22m'
+    UNDERLINE = '\033[4m'
+    RESET = '\033[0m'
+
+    class FG():
+        """Standard foreground colors"""
+        BLACK = '\033[30m'
+        RED = '\033[31m'
+        GREEN = '\033[32m'
+        YELLOW = '\033[33m'
+        BLUE = '\033[34m'
+        MAGENTA = '\033[35m'
+        CYAN = '\033[36m'
+        WHITE = '\033[37m'
+
+    class BG():
+        """Standard background colors"""
+        BLACK = '\033[40m'
+        RED = '\033[41m'
+        GREEN = '\033[42m'
+        YELLOW = '\033[43m'
+        BLUE = '\033[44m'
+        MAGENTA = '\033[45m'
+        CYAN = '\033[46m'
+        WHITE = '\033[47m'
+
+    @classmethod
+    def good(self, text):
+        return f'{self.BOLD}{self.FG.GREEN}{text}{self.RESET}'
+
+    @classmethod
+    def missing(self, text):
+        return f'{self.BOLD}{self.FG.YELLOW}{text}{self.RESET}'
+
+    @classmethod
+    def fail(self, text):
+        return f'{self.BOLD}{self.FG.RED}{text}{self.RESET}'
+
+
 ###########################################################
 #                                                         #
 #                Private Functions                        #
@@ -460,6 +509,37 @@ def check_dependencies():
         chk = Data.check['groups'][group]
         dest = chk['status'] if 'status' in chk else 'required'
         Data.check[dest][group] = {'subs': chk['subs']}
+
+
+def check_language(lang='python', con=True):
+    """
+    Verify language version within required version and return results.
+    Returns tuple (True, None) if version OK
+    Returns tuple (False, error_string) if version mismatch.
+
+    error_string will be CHECK_MARKERS['v-min' | 'v-max'] indicating version
+    mismatch.
+
+    :param str lang: DataClass.project['language'] item
+    :param bool con: Print to console.
+    :rtype: tuple
+    """
+    ver = Data.project['language'][lang]['version']
+    low = ver[0]
+    high = ver[1] if len(ver) > 1 else None
+    installed = Data.project['language'][lang]['check']
+    chk = check_version(low=low, version=installed, high=high)
+    ret = True if chk is None else False
+    if con:
+        if chk is None:
+            print(f'\n{lang} version: {Style.good(text=installed)}')
+        else:
+            if chk == CHECK_MARKERS['v-min']:
+                print(f'\n{lang} version: {Style.fail(text=chk)} {Style.fail(text=low)}\n')
+            else:
+                print(f'\n{lang} version: {Style.fail(text=chk)} {Style.fail(text=high)}')
+            print(f'\nInstalled python will not work. Verify {lang} version and try again.\n')
+    return (ret, chk)
 
 
 def check_module_os(osmod):
@@ -721,7 +801,7 @@ if __name__ == "__main__":
         print(f'Saving log output to {args.log}')
     else:
         logging.basicConfig(format='%(levelname)-10s :  %(message)s')
-
+    log = logging.getLogger()
     _levels = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
     debug = min(len(_levels), args.v + 1) - 1
     debug = max(0, debug)
@@ -741,6 +821,9 @@ if __name__ == "__main__":
             print('Or add -p <project> option')
             sys.exit()
         Data.set_name(args.project)
+
+    if not check_language()[0]:
+        sys.exit()
 
     if args.full or not Data.project['modules']:
         find_all_imports()
