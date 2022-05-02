@@ -757,7 +757,9 @@ def print_dependencies():
     """
     Parse Data.check and print results of dependency checks
     """
-    def header(txt, size=30):
+    header_size = 40
+
+    def header(txt, size=header_size):
         t = f'{txt} {"."*size}'
         return t[:size - 1]
 
@@ -772,7 +774,7 @@ def print_dependencies():
             if chk['check']:
                 continue
             else:
-                valid.append(f'     {header(module, size=25)} {style(text="MISSING")}')
+                valid.append(f'     {header(module, size=header_size-5)} {style(text="MISSING")}')
 
         if len(valid) == 1:
             print(f'{valid[0]} {Style.good(text="good")}')
