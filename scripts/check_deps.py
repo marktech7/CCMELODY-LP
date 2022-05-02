@@ -36,8 +36,7 @@ from copy import copy, deepcopy
 # from importlib.machinery import PathFinder
 from pathlib import Path
 
-if __name__ != '__main__':
-    log = logging.getLogger(__name__)
+log = logging.getLogger(__name__)
 
 
 CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
@@ -95,14 +94,17 @@ class Singleton(type):
 
 class DataClass(metaclass=Singleton):
     # Class attributes to expose
+    _vpython = f'{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}-{sys.version_info.releaselevel}'
     _all = ['project', 'dir_list', 'dir_check', 'import_list', 'check']
     _default_project = {'version': 0,
                         "name": None,
                         "proper": None,
                         "project_version": None,
                         "git_version": None,
-                        "language": {"python": {'version': ">= 3.6",
-                                                'base': str(PYTHON_BASE)}
+                        "language": {"python": {'version': ["3.6"],
+                                                'base': str(PYTHON_BASE),
+                                                'check': _vpython
+                                                },
                                      },
                         "modules": dict(),
                         }
@@ -116,7 +118,6 @@ class DataClass(metaclass=Singleton):
         cls.import_list = dict()  # Keep track of import lines
         cls.INSTALLED = dict()
         cls.project = deepcopy(cls._default_project)  # JSON data
-
         if cls.project['name'] is not None:
             cls.dir_list['project'] = Path('.', cls.project['name'])
 
@@ -132,7 +133,6 @@ class DataClass(metaclass=Singleton):
             else:
                 c = CHECK_MARKERS['unk']
             cls.INSTALLED[f.name] = {'path': p, 'check': c}
-
         return cls
 
     @classmethod
@@ -246,6 +246,9 @@ class DataClass(metaclass=Singleton):
             with src.open('r') as fp:
                 ret = json.load(fp)
                 log.info(f'({__my_name__}) Loaded JSON file')
+                if 'language' in ret:
+                    if 'python' in ret['language']:
+                        ret['language']['python']['check'] = Data._default_project['language']['python']['check']
                 self.project = ret
                 return
         except FileNotFoundError:
@@ -279,9 +282,7 @@ class DataClass(metaclass=Singleton):
         src = self.dir_list['base'].joinpath(f)
         try:
             with open(src, 'w') as fp:
-                # Skipkeys=True should only skip the ModSpec key
-                # since importlib.machinery.ModuleSpec is non-serializable at this time
-                json.dump(self.project, fp, indent=4)
+                json.dump(self.project, fp, indent=4, default=Data.check_json)
 
         except Exception as err:
             log.warning(f'({__my_name__}) Error saving data: ({err=}')
@@ -710,7 +711,7 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-p', '--project', help='Project Name', default=None, action='store')
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
-    parser.add_argument('-s', '--saved', help='Backup JSON file to load',
+    parser.add_argument('-b', '--backup', help='Backup JSON file to load',
                         default='project-deps.json')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
@@ -720,16 +721,16 @@ if __name__ == "__main__":
         print(f'Saving log output to {args.log}')
     else:
         logging.basicConfig(format='%(levelname)-10s :  %(message)s')
-    log = logging.getLogger()
 
     _levels = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
     debug = min(len(_levels), args.v + 1) - 1
     debug = max(0, debug)
     log.setLevel(level=logging.getLevelName(_levels[debug]))
     print(f'Settng log level to {logging.getLevelName(_levels[debug])}')
+    log = logging.getLogger()
 
-    if args.saved:
-        Data.load_json(f=args.saved)
+    if args.backup:
+        Data.load_json(f=args.backup)
     else:
         Data.load_json()
 
@@ -745,7 +746,7 @@ if __name__ == "__main__":
         find_all_imports()
     if not Data.project['modules']:
         set_new_imports()
-        save_file = 'project-deps.json'
+        save_file = JSON_File if not args.json else args.json
         msg = f"""\n\n
     Dependencies have been saved to "{save_file}".
 
@@ -759,11 +760,14 @@ if __name__ == "__main__":
         sys.exit()
 
     if args.installed:
+        # Save Data.import_list showing installed modules
+        # to a JSON file for review
         tmp = dict()
-        tmp['language'] = Data._default_project['language']
+        tmp['language'] = Data.project['language']
         tmp['import_list'] = Data.import_list
+        tmp['installed'] = Data.INSTALLED
         with open(args.installed, 'w') as fp:
-            json.dump(tmp, fp, indent=4)
+            json.dump(tmp, fp, indent=4, default=Data.check_json)
 
     check_dependencies()
     # Data.log(lvl=log.debug, installed=True)
