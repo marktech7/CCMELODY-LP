@@ -761,21 +761,27 @@ def print_dependencies():
         t = f'{txt} {"."*size}'
         return t[:size - 1]
 
-    print('\n Required dependencies:')
-    for module in Data.check['required']:
-        chk = Data.check['required'][module]
-        if 'subs' in chk:
-            continue
-        txt = Style.good(text='installed') if chk['check'] else Style.fail(text='MISSING')
-        print(f'     {header(module)} {txt}')
+    def check_group(group, txt=None, style=Style.fail):
+        if txt is None:
+            txt = group
+        valid = [f'\n {txt} dependencies: ']
+        for module in Data.check[group]:
+            chk = Data.check[group][module]
+            if 'subs' in chk:
+                continue
+            if chk['check']:
+                continue
+            else:
+                valid.append(f'     {header(module, size=25)} {style(text="MISSING")}')
 
-    print('\n Optional dependencies:')
-    for module in Data.check['optional']:
-        chk = Data.check['optional'][module]
-        if 'subs' in chk:
-            continue
-        txt = Style.good(text='installed') if chk['check'] else Style.missing(text='MISSING')
-        print(f'     {header(module)} {txt}')
+        if len(valid) == 1:
+            print(f'{valid[0]} {Style.good(text="good")}')
+        else:
+            for l_ in valid:
+                print(f'{l_}')
+
+    check_group(group='required', txt='Required')
+    check_group(group='optional', txt='Optional', style=Style.missing)
 
 
 def set_new_imports():
@@ -831,7 +837,7 @@ if __name__ == "__main__":
     debug = min(len(_levels), args.v + 1) - 1
     debug = max(0, debug)
     log.setLevel(level=logging.getLevelName(_levels[debug]))
-    print(f'Settng log level to {logging.getLevelName(_levels[debug])}')
+    print(f'Setting log level to {logging.getLevelName(_levels[debug])}')
     log = logging.getLogger()
 
     if args.backup:
