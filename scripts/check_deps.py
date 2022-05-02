@@ -753,6 +753,31 @@ def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
     return (dirs, files)
 
 
+def print_dependencies():
+    """
+    Parse Data.check and print results of dependency checks
+    """
+    def header(txt, size=30):
+        t = f'{txt} {"."*size}'
+        return t[:size - 1]
+
+    print('\n Required dependencies:')
+    for module in Data.check['required']:
+        chk = Data.check['required'][module]
+        if 'subs' in chk:
+            continue
+        txt = Style.good(text='installed') if chk['check'] else Style.fail(text='MISSING')
+        print(f'     {header(module)} {txt}')
+
+    print('\n Optional dependencies:')
+    for module in Data.check['optional']:
+        chk = Data.check['optional'][module]
+        if 'subs' in chk:
+            continue
+        txt = Style.good(text='installed') if chk['check'] else Style.missing(text='MISSING')
+        print(f'     {header(module)} {txt}')
+
+
 def set_new_imports():
     """
     Parse Data.INSTALLED and built Data.modules.
@@ -823,6 +848,7 @@ if __name__ == "__main__":
             sys.exit()
         Data.set_name(args.project)
 
+    # Check installed python version; exit if wrong version installed.
     if not check_language()[0]:
         sys.exit()
 
@@ -854,5 +880,7 @@ if __name__ == "__main__":
             json.dump(tmp, fp, indent=4, default=Data.check_json)
 
     check_dependencies()
+    print_dependencies()
+
     # Data.log(lvl=log.debug, installed=True)
     Data.log(lvl=log.debug)
