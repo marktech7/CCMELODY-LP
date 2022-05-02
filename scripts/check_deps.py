@@ -247,7 +247,7 @@ class DataClass(metaclass=Singleton):
         ret = None
         try:
             log.info(f'({__my_name__}) Parsing {src}')
-            with src.open('r') as fp:
+            with src.open('r', encoding='utf8') as fp:
                 ret = json.load(fp)
                 log.info(f'({__my_name__}) Loaded JSON file')
                 if 'language' in ret:
@@ -285,7 +285,7 @@ class DataClass(metaclass=Singleton):
         __my_name__ = 'DataClass.save_json'
         src = self.dir_list['base'].joinpath(f)
         try:
-            with open(src, 'w') as fp:
+            with open(src, 'w', encoding='utf8') as fp:
                 json.dump(self.project, fp, indent=4, default=Data.check_json)
 
         except Exception as err:
@@ -669,7 +669,7 @@ def parse_source(srcfile):
                 break
         return
 
-    with srcfile.open() as fp:
+    with srcfile.open(encoding='utf8') as fp:
         src = fp.readlines()
 
     chk_cont = None  # Used for multi-line continuations
@@ -849,7 +849,7 @@ if __name__ == "__main__":
         tmp['language'] = Data.project['language']
         tmp['import_list'] = Data.import_list
         tmp['installed'] = Data.INSTALLED
-        with open(args.installed, 'w') as fp:
+        with open(args.installed, 'w', encoding='utf8') as fp:
             json.dump(tmp, fp, indent=4, default=Data.check_json)
 
     check_dependencies()
