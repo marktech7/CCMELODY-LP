@@ -464,7 +464,7 @@ def check_dependencies():
                 s = Data.project['groups'][module]['status']
             else:
                 s = 'required'
-            Data.check['groups'][module] = {'status': s}
+            Data.check['groups'][module] = {'status': s, 'check': False}
             Data.check['groups'][module]['subs'] = dict()
 
     for module in Data.project['modules']:
@@ -479,11 +479,12 @@ def check_dependencies():
         # TODO: Assumes no submodules if 'group' specified
         if 'group' in m:
             log.debug(f'({__my_name__}) Adding group["{m["group"]}"] module {module} to checks')
-            g = Data.check['groups'][m['group']]['subs']
+            g = Data.check['groups'][m['group']]
             installed, rcode = check_deps(parent=module, version=v)
-            g[module] = {'check': installed}
+            g['subs'][module] = {'check': installed}
             if rcode is not None:
-                g[module]['error'] = rcode
+                g['subs'][module]['error'] = rcode
+            g['check'] = g['check'] or g['subs'][module]['check']
             continue
 
         log.debug(f'({__my_name__}) Adding "{module}" to checks')
@@ -508,7 +509,7 @@ def check_dependencies():
     for group in Data.check['groups']:
         chk = Data.check['groups'][group]
         dest = chk['status'] if 'status' in chk else 'required'
-        Data.check[dest][group] = {'subs': chk['subs']}
+        Data.check[dest][group] = Data.check['groups'][group]
 
 
 def check_language(lang='python', con=True):
@@ -769,9 +770,7 @@ def print_dependencies():
         valid = [f'\n {txt} dependencies: ']
         for module in Data.check[group]:
             chk = Data.check[group][module]
-            if 'subs' in chk:
-                continue
-            if chk['check']:
+            if chk['check'] or 'subs' in chk:
                 continue
             else:
                 valid.append(f'     {header(module, size=header_size-5)} {style(text="MISSING")}')
