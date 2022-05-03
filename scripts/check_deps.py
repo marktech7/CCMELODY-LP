@@ -741,15 +741,20 @@ def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
     files = []
 
     for chk in srcdir.iterdir():
-        if chk.is_dir() and chk.name not in e_dir and chk not in dirs and not chk.name.startswith('.'):
-            log.debug(f'({__my_name__}) Adding {chk} to directory list')
-            dirs[chk] = None
-            continue
-        elif chk.is_file() and chk.suffix in i_ext and chk.name not in e_file:
-            log.debug(f'({__my_name__}) Adding {chk.name} to file list')
-            files.append(chk.name)
-            continue
-        log.debug(f'({__my_name__}) Skipping entry {chk}')
+        txt = 'entry'
+        if chk.is_dir():
+            txt = 'directory'
+            if chk.name not in e_dir and chk not in dirs and not chk.name.startswith('.'):
+                log.debug(f'({__my_name__}) Adding {chk} to directory list')
+                dirs[chk] = None
+                continue
+        elif chk.is_file():
+            txt = 'file'
+            if chk.suffix in i_ext and chk.name not in e_file:
+                log.debug(f'({__my_name__}) Adding {chk.name} to file list')
+                files.append(chk.name)
+                continue
+        log.debug(f'({__my_name__}) Skipping {txt} {chk}')
 
     if not files:
         files = None
