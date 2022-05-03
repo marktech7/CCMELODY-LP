@@ -16,44 +16,66 @@
         "db": {
             "name": "DB",
             "status": "required",
+            "notes": "Database integration tools",
             "group": "select"
         }
     },
     "modules": {
         "alembic": {
-            "status": "required"
+            "status": "required",
+            "notes": "Database migration tool for SQLAlchemy",
+            "pypi": "alembic"
         },
         "appdirs": {
-            "status": "required"
+            "status": "required",
+            "notes": "Platform-specific user data directory handler",
+            "pypi": "appdirs"
         },
         "AppKit": {
             "status": "required",
+            "notes": "Desktop application framework",
             "os": "darwin"
         },
         "bs4": {
-            "status": "required"
+            "status": "required",
+            "notes": "BeautifulSoup4 HTML webpage scraper",
+            "pypi": "beautifulsoup4"
         },
         "chardet": {
-            "status": "required"
+            "status": "required",
+            "notes": "Character encoding detection",
+            "pypi": "chardet"
+        },
+        "com": {
+            "status": "ignore",
+            "notes": "Part of the LibreOffice/OpenOffice package interface"
         },
         "dbus": {
             "status": "required",
-            "os": "linux"
+            "notes": "Python DBus wrapper",
+            "os": "linux",
+            "redhat": "python3-pydbus"
         },
         "distro": {
             "status": "required",
-            "os": "linux"
+            "os": "linux",
+            "notes": "Linux distribution extra information tool",
+            "pypi": "distro",
+            "redhat": "python3-distro"
         },
         "enchant": {
             "status": "optional",
             "version": [
                 "1.6"
             ],
-            "notes": "Spell Checker"
+            "notes": "Python bindings for Enchant spell checker",
+            "pypi": "pyenchant"
         },
         "fitz": {
             "status": "optional",
-            "notes": "PyMuPDF - PDF Support"
+            "notes": "PyMuPDF - PDF Support",
+            "pypi": "PyMuPDF",
+            "redhat": "python3-PyMuPDF"
         },
         "flake8": {
             "status": "testing",
@@ -61,23 +83,34 @@
             "pypi": "flake8"
         },
         "flask": {
-            "status": "required"
+            "status": "required",
+            "notes": "WSGI web application framework",
+            "pypi": "Flask"
         },
         "flask_cors": {
-            "status": "required"
+            "status": "required",
+            "notes": "Flask extension for Cross Origin Resource Sharing (CORS)",
+            "pypi": "Flask-Cors"
         },
         "lxml": {
-            "status": "required"
+            "status": "required",
+            "notes": "XML parsing library",
+            "pypi": "lxml"
         },
         "mako": {
-            "status": "required"
+            "status": "required",
+            "notes": "HTML template library",
+            "pypi": "Mako"
         },
         "objc": {
             "status": "required",
-            "os": "darwin"
+            "notes": "Python Objective-C wrapper",
+            "os": "darwin",
+            "pypi": "pyobjc"
         },
         "PIL": {
             "status": "required",
+            "notes": "Python Image Library",
             "redhat": "python3-pillow",
             "pypi": "Pillow",
             "subs": {
@@ -86,6 +119,12 @@
                 }
             }
         },
+        "psycopg2": {
+            "group": "db",
+            "notes": "PostGreSQL DB Interface",
+            "redhat": "python3-psycopg2",
+            "pypi": "psycopg2"
+        },
         "PyQt5": {
             "version": [
                 "5.12"
@@ -93,6 +132,9 @@
             "vmod": "PyQt5.QtCore",
             "vfunc": "qVersion",
             "status": "required",
+            "notes": "Python bindngs for the Qt5 GUI library",
+            "pypi": "PyQt5",
+            "redhat": "python3-pyqt5-sip",
             "subs": {
                 "Qt": {
                     "version": [
@@ -131,23 +173,17 @@
         },
         "Pyro4": {
             "status": "required",
-            "os": "darwin"
-        },
-        "pysword": {
-            "status": "optional",
-            "notes": "SWORD Bible Import Support"
-        },
-        "psycopg2": {
-            "group": "db",
-            "notes": "PostGreSQL DB Interface",
-            "redhat": "python3-psycopg2",
-            "pypi": "psycopg2"
+            "os": "darwin",
+            "notes": "Python Remote Object network support",
+            "pypi": "Pyro4"
         },
         "pymediainfo": {
             "status": "required",
             "version": [
                 "2.2"
-            ]
+            ],
+            "notes": "Python wrapper for MediaInfo library",
+            "pypi": "pymediainfo"
         },
         "pymysql": {
             "group": "db",
@@ -161,14 +197,26 @@
             "redhat": "python3-pyodbc",
             "pypi": "pyodbc"
         },
+        "pysword": {
+            "status": "optional",
+            "notes": "SWORD Bible Import Support",
+            "pypi:": "pysword"
+        },
         "pytest": {
             "status": "testing",
-            "notes": "Testing Framework"
+            "notes": "Testing Framework",
+            "pypi": "pytest"
         },
         "pytestqt": {
             "status": "testing",
-            "notes": "Testing Framework for PyQt5",
+            "notes": "Testing Framework for PyQt5 applications",
             "pypi": "pytest-qt"
+        },
+        "pywin32": {
+            "status": "required",
+            "os": "win",
+            "notes": "Python wrapper for MS Windows API extensions",
+            "pypi": "pywin32"
         },
         "pywintypes": {
             "status": "required",
@@ -186,8 +234,14 @@
         },
         "qtawesome": {
             "status": "required",
+            "notes": "Icon fonts for PyQt applications",
             "pypi": "QtAwesome",
             "redhat": "python3-QtAwesome"
+        },
+        "requests": {
+            "status": "required",
+            "notes": "HTTP client library",
+            "pypi": "requests"
         },
         "sqlalchemy": {
             "status": "required",
@@ -204,21 +258,29 @@
         },
         "uno": {
             "status": "optional",
-            "notes": "LibreOffice/OpenOffice Support"
+            "notes": "LibreOffice/OpenOffice Support",
+            "redhat": "libreoffice-pyuno"
         },
         "vlc": {
             "status": "required",
+            "notes": "Python bindings to VideoLan VLC video player",
             "redhat": "python3-vlc",
             "pypi": "python-vlc"
         },
         "waitress": {
-            "status": "required"
+            "status": "required",
+            "notes": "WSGI Server",
+            "pypi": "waitress"
         },
         "webob": {
-            "status": "required"
+            "status": "required",
+            "notes": "HTTP request/response wrapper",
+            "pypi": "WebOb"
         },
         "websockets": {
-            "status": "required"
+            "status": "required",
+            "notes": "WebSocket server/client library",
+            "pypi": "websockets"
         },
         "win32com": {
             "status": "required",
@@ -230,6 +292,7 @@
         },
         "zeroconf": {
             "status": "required",
+            "notes": "Multicast DNS service discovery library",
             "redhat": "python3-zeroconf",
             "pypi": "zeroconf3"
         }

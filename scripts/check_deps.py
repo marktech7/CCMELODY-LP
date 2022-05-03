@@ -63,6 +63,7 @@ CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  # unless otherwise specified in module checks
                  '###-BUILTIN-###': 'built-in',
                  '###-STD-LIB-###': 'std',
+                 '###-IGNORE-###': 'ignore',
                  }
 # Exclude directories from project
 EXCLDIR = ['__pycache__', 'resources', 'documentation', 'docs', 'js']

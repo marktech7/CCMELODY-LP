@@ -171,6 +171,9 @@ In the case that 'project-deps.json' is not found:
     Example 2 would be:
         Repo package = "python3-packge2" contains modules "module2" and "module3"
 
+    Example 3 would be:
+        Module "module4" is part of a package that provides it's own python modules.
+
     In example 1, "module1" would be satisfied by installing "python3-package1",
 
     In example 2, "module2" and "module3" would be satisfied by installing "python3-package2",
@@ -178,6 +181,9 @@ In the case that 'project-deps.json' is not found:
     both "module2" and "module3" will be part of the installed package, the developer(s)
     can add "module2" and remove "module3" from the JSON spec.
 
+    In example3, some interfaces are not part of python or available via PyPI due
+    to the python interface being provided by some other o/s package.
+    Current examples inclued LibreOffice and OpenOffice and the "com.sun.star" module.
 
 The format for the modules field are as follows:
 
