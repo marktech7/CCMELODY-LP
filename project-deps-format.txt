@@ -216,6 +216,10 @@ For each <module> entry the format is:
                              If specified, then it must be installed
                              in order to run unit tests.
 
+                "ignore"   - Ignore module from checks. There should
+                             be an included "notes" field for clarification
+                             on why module is ignored.
+
 "groups"    : See "Groups Format" for description.
 
 "os"        : If added, specifies that this module is only supported if
