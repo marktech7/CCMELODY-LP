@@ -495,6 +495,12 @@ def check_dependencies():
         log.debug(f'({__my_name__}) Adding "{module}" to checks')
 
         dest = m['status'] if 'status' in m else 'required'
+        if dest == 'ignore':
+            # Ignore module - see "notes" in JSON file for more info
+            log.debug(f'({__my_name__}) Ignoring "{module}"')
+            if 'notes' in m:
+                log.debug(f'({__my_name__}) "{m["notes"]}"')
+            continue
         installed, rcode = check_deps(parent=module, version=v)
         Data.check[dest][module] = {'check': installed}
         if rcode is not None:
