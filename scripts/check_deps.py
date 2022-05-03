@@ -798,7 +798,7 @@ def print_dependencies():
         """
         txt = ''
         if check['group'] == 'select':
-            txt = ' (Minimum of 1 module installed satisfies dependency)'
+            txt = ' (Any module installed satisfies group)'
         gl = [f' {group["name"]} Group {check["name"]}{txt}:']
         for chk in check['subs']:
             if 'errors' in check['subs'][chk]:
@@ -871,7 +871,6 @@ if __name__ == "__main__":
     __help__ = """
     check_deps.py [options]
 
-    Positional parameters:
     If -f/--full specified or "project-deps.json" does not exist, search for all dependencies
     before testing.
 
@@ -930,7 +929,7 @@ if __name__ == "__main__":
     Please edit the "{save_file}" file and update the "modules" section
     with the appropriate entries.
 
-    See "project-deps-format.txt" for format of "{save_file}" format.
+    See "project-deps-format.txt" for format of "{save_file}".
     \n
               """
         print(msg)
