@@ -14,7 +14,7 @@
     },
     "groups": {
         "db": {
-            "name": "Database Group",
+            "name": "DB",
             "status": "required",
             "group": "select"
         }

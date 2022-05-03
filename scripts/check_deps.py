@@ -49,6 +49,7 @@ CHECK_MARKERS = {'built-in': '###-BUILTIN-###',
                  'module': '###-3RD-PARTY-###',  # alias for 'site-packages'
                  'site-packages': '###-3RD-PARTY-###',
                  'std': '###-STD-LIB-###',
+                 'test': '###-TEST-ENTRY-###',
                  'unk': '###-UNKNOWN-###',
                  'v-max': '###-VERSION-GREATER-THAN-###',
                  'v-min': '###-VERSION-LESS-THAN-###',
@@ -114,7 +115,10 @@ class DataClass(metaclass=Singleton):
                         }
 
     def __new__(cls, *args, **kwargs):
-        cls.check = dict()  # Results of project['modules'] installed checks
+        cls.check = {'groups': dict(),
+                     'required': {'name': 'Required'},  # Results of project['modules'] installed checks
+                     'optional': {'name': 'Optional'},
+                     'testing': dict()}
         cls.dir_check = dict()  # Keep track of directories to parse relative to cls.dir_list['base']
         cls.dir_list = {'base': Path('.').resolve(),  # Project base directory
                         'project': Path('.'),  # Project source base directory relative to "base"
@@ -452,19 +456,16 @@ def check_dependencies():
     ###########################
 
     log.info(f'({__my_name__}) Starting dependency checks')
-    Data.check['required'] = dict()
-    Data.check['optional'] = dict()
-    Data.check['testing'] = dict()
 
     if "groups" in Data.project:
-        Data.check['groups'] = dict()
         for module in Data.project['groups']:
             log.debug(f'({__my_name__}) Adding group "{module}" to checks')
-            if 'status' in Data.project['groups'][module]['status']:
+            if 'status' in Data.project['groups'][module]:
                 s = Data.project['groups'][module]['status']
             else:
                 s = 'required'
-            Data.check['groups'][module] = {'status': s, 'check': False}
+            Data.check['groups'][module] = {'name': Data.project['groups'][module]['name'],
+                                            'status': s, 'check': False}
             Data.check['groups'][module]['subs'] = dict()
 
     for module in Data.project['modules']:
@@ -505,11 +506,10 @@ def check_dependencies():
                 if rcode is not None:
                     Data.check[dest][f'{module}.{sm}']['error'] = rcode
 
-    # Move groups into appropriate section
+    # Add groups to appropriate section
     for group in Data.check['groups']:
         chk = Data.check['groups'][group]
-        dest = chk['status'] if 'status' in chk else 'required'
-        Data.check[dest][group] = Data.check['groups'][group]
+        Data.check[chk['status']][group] = chk
 
 
 def check_language(lang='python', con=True):
@@ -758,19 +758,46 @@ def print_dependencies():
     """
     Parse Data.check and print results of dependency checks
     """
+    __my_name__ = 'print_dependencies'
     header_size = 40
 
     def header(txt, size=header_size):
         t = f'{txt} {"."*size}'
         return t[:size - 1]
 
-    def check_group(group, txt=None, style=Style.fail):
+    def check_group(check, group, style=Style.missing):
+        """
+        Build a list to show group status
+
+        :param dict check: Data.check['group']
+        :param dict group: Group attached to (ex: Data.check['required']
+        :rtype: list
+        """
+        gl = [f' {group["name"]} Group {check["name"]}:']
+        for chk in check['subs']:
+            if 'errors' in check['subs'][chk]:
+                gl.append(f'     {header(chk, size=header_size-5)} {Style.fail(text=check["subs"][chk]["errors"])}')
+            elif not check['subs'][chk]['check']:
+                gl.append(f'     {header(chk, size=header_size-5)} {Style.missing(text="MISSING")}')
+            else:
+                gl.append(f'     {header(chk, size=header_size-5)} {Style.good(text="installed")}')
+        return gl
+
+    def check_main(group, txt=None, style=Style.fail):
+        log.debug(f'({__my_name__}.check_main) Printing {group["name"]}')
+        my_groups = {}
         if txt is None:
-            txt = group
+            txt = group['name']
         valid = [f'\n {txt} dependencies: ']
-        for module in Data.check[group]:
-            chk = Data.check[group][module]
-            if chk['check'] or 'subs' in chk:
+        for module in group:
+            if module == 'name':
+                continue
+            chk = group[module]
+            if 'subs' in chk:
+                my_groups[chk['name']] = check_group(check=chk, group=group)
+                continue
+
+            if chk['check']:
                 continue
             else:
                 valid.append(f'     {header(module, size=header_size-5)} {style(text="MISSING")}')
@@ -781,8 +808,15 @@ def print_dependencies():
             for l_ in valid:
                 print(f'{l_}')
 
-    check_group(group='required', txt='Required')
-    check_group(group='optional', txt='Optional', style=Style.missing)
+        if my_groups:
+            for grp in my_groups:
+                for l_ in my_groups[grp]:
+                    print(f'{l_}')
+
+    log.debug(f'({__my_name__}) Printing "required" group')
+    check_main(group=Data.check['required'])
+    log.debug(f'({__my_name__}) Printing "optional" group')
+    check_main(group=Data.check['optional'], style=Style.missing)
 
 
 def set_new_imports():
