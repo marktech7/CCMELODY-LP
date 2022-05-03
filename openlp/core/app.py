@@ -344,8 +344,7 @@ def backup_if_version_changed(settings):
     # Backup the settings
     if settings.version_mismatched() or is_downgrade:
         settings_back_up_path = data_folder_path / (now.strftime('%Y-%m-%d %H-%M') + '.conf')
-        log.info('Settings are being backed up to {settings_back_up_path}'
-                 .format(settings_back_up_path=settings_back_up_path))
+        log.info(f'Settings are being backed up to {settings_back_up_path}')
         if not is_downgrade:
             # Inform user of settings backup location
             QtWidgets.QMessageBox.information(
@@ -361,6 +360,7 @@ def backup_if_version_changed(settings):
                 translate('OpenLP', 'Settings back up failed.\n\nOpenLP will attempt to continue.'))
     # Backup and remove data folder if downgrading
     if is_downgrade:
+        log.info(f'Data folder being backed up to {data_folder_backup_path}')
         try:
             # We don't want to use data from newer versions, so rather than a copy, we'll just move/rename
             move(data_folder_path, data_folder_backup_path)
@@ -424,11 +424,11 @@ def main():
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
-        log.info('INI file: {name}'.format(name=portable_settings_path))
+        log.info('INI file: {portable_settings_path}')
         Settings.set_filename(portable_settings_path)
         portable_settings = Settings()
         # Set our data path
-        log.info('Data path: {name}'.format(name=data_path))
+        log.info('Data path: {data_path}')
         # Point to our data path
         portable_settings.setValue('advanced/data path', data_path)
         portable_settings.setValue('advanced/is portable', True)
