@@ -194,6 +194,12 @@ class DataClass(metaclass=Singleton):
                         self.import_list[dep].append(self.INSTALLED[dep]["check"])
                     elif self._check_module(dep):
                         self.import_list[dep].append(self.INSTALLED[dep]["check"])
+                    elif dep in self.project['modules'] \
+                            and 'status' in self.project['modules'][dep] \
+                            and self.project['modules'][dep]['status'] == 'ignore':
+                        self.import_list[dep].append(CHECK_MARKERS['ignore'])
+                        if 'notes' in self.project['modules'][dep]:
+                            self.import_list[dep].append(f'Ignore: {self.project["modules"][dep]["notes"]}')
                     else:
                         self.import_list[dep].append(CHECK_MARKERS["unk"])
 
