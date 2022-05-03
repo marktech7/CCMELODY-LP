@@ -798,7 +798,7 @@ def print_dependencies():
         """
         txt = ''
         if check['group'] == 'select':
-            txt = ' (Minimum of 1 module installed is required)'
+            txt = ' (Minimum of 1 module installed satisfies dependency)'
         gl = [f' {group["name"]} Group {check["name"]}{txt}:']
         for chk in check['subs']:
             if 'errors' in check['subs'][chk]:
