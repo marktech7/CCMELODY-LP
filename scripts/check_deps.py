@@ -476,7 +476,8 @@ def check_dependencies():
             else:
                 s = 'required'
             Data.check['groups'][module] = {'name': Data.project['groups'][module]['name'],
-                                            'status': s, 'check': False}
+                                            'status': s, 'check': False,
+                                            'group': Data.project['groups'][module]['group']}
             Data.check['groups'][module]['subs'] = dict()
 
     for module in Data.project['modules']:
@@ -795,7 +796,10 @@ def print_dependencies():
         :param dict group: Group attached to (ex: Data.check['required']
         :rtype: list
         """
-        gl = [f' {group["name"]} Group {check["name"]}:']
+        txt = ''
+        if check['group'] == 'select':
+            txt = ' (Minimum of 1 module installed is required)'
+        gl = [f' {group["name"]} Group {check["name"]}{txt}:']
         for chk in check['subs']:
             if 'errors' in check['subs'][chk]:
                 gl.append(f'     {header(chk, size=header_size-5)} {Style.fail(text=check["subs"][chk]["errors"])}')
@@ -853,7 +857,7 @@ def set_new_imports():
 
     for key in Data.import_list:
         if Data.import_list[key][0] in CHECK_MARKERS:
-            # log.debug(f'{__my_name__} Skipping system module {key}')
+            log.debug(f'{__my_name__} Skipping {key} status "{CHECK_MARKERS[Data.import_list[key][0]]}"')
             continue
         log.debug(f'({__my_name__}) Adding {key} to module list')
         Data.project['modules'][key] = {'status': CHECK_MARKERS['unk'],
