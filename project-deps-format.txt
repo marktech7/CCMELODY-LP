@@ -110,7 +110,8 @@ The "groups" section allows developer(s) to specify a group of
 modules, any one of which will satisfy this dependency.
 
               Example:
-                  "groups": { "db": {"status": "required",
+                  "groups": { "db": {"name": <display name for gruop>,
+                                     "status": "required",
                                      "group": "select"}
                             },
                   "modules": {
@@ -310,6 +311,7 @@ Example JSON File
     },
     "groups": {
         "db": {
+            "name": "DB",
             "status": "required",
             "group": "select"
         }
