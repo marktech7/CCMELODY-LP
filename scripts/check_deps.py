@@ -741,7 +741,7 @@ def parse_dir(srcdir, e_dir=EXCLDIR, e_file=EXCLFILE, i_ext=INCLEXT):
     files = []
 
     for chk in srcdir.iterdir():
-        if chk.is_dir() and chk.name not in e_dir and chk not in dirs:
+        if chk.is_dir() and chk.name not in e_dir and chk not in dirs and not chk.name.startswith('.'):
             log.debug(f'({__my_name__}) Adding {chk} to directory list')
             dirs[chk] = None
             continue
