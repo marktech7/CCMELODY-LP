@@ -123,13 +123,15 @@ class DataClass(metaclass=Singleton):
         cls.check = {'groups': dict(),
                      'required': {'name': 'Required'},  # Results of project['modules'] installed checks
                      'optional': {'name': 'Optional'},
-                     'testing': dict()}
+                     'testing': {'name': 'Testing'}
+                     }
         cls.dir_check = dict()  # Keep track of directories to parse relative to cls.dir_list['base']
         cls.dir_list = {'base': Path('.').resolve(),  # Project base directory
                         'project': Path('.'),  # Project source base directory relative to "base"
                         'test': None}  # Test scripts directory (if applicable) relative to "base"
         cls.import_list = dict()  # Keep track of import lines
         cls.INSTALLED = dict()
+        cls.SHOWALL = False  # Display results of dependency checks, not just summary
         cls.project = deepcopy(cls._default_project)  # JSON data
         if cls.project['name'] is not None:
             cls.dir_list['project'] = Path('.', cls.project['name'])
@@ -799,14 +801,17 @@ def print_dependencies():
         txt = ''
         if check['group'] == 'select':
             txt = ' (Any module installed satisfies group)'
-        gl = [f' {group["name"]} Group {check["name"]}{txt}:']
+        gl = [f'     {check["name"]} Group{txt}:']
         for chk in check['subs']:
             if 'errors' in check['subs'][chk]:
-                gl.append(f'     {header(chk, size=header_size-5)} {Style.fail(text=check["subs"][chk]["errors"])}')
+                if Data.SHOWALL:
+                    gl.append(f'          {header(chk, size=header_size-10)}'
+                              f'{Style.fail(text=check["subs"][chk]["errors"])}')
             elif not check['subs'][chk]['check']:
-                gl.append(f'     {header(chk, size=header_size-5)} {Style.missing(text="MISSING")}')
+                if Data.SHOWALL:
+                    gl.append(f'          {header(chk, size=header_size-10)} {Style.missing(text="MISSING")}')
             else:
-                gl.append(f'     {header(chk, size=header_size-5)} {Style.good(text="installed")}')
+                gl.append(f'          {header(chk, size=header_size-10)} {Style.good(text="installed")}')
         return gl
 
     def check_main(group, txt=None, style=Style.fail):
@@ -814,7 +819,7 @@ def print_dependencies():
         my_groups = {}
         if txt is None:
             txt = group['name']
-        valid = [f'\n {txt} dependencies: ']
+        valid = [f'\n {txt} dependencies: ', '     Modules: ']
         for module in group:
             if module == 'name':
                 continue
@@ -824,12 +829,15 @@ def print_dependencies():
                 continue
 
             if chk['check']:
+                if Data.SHOWALL:
+                    valid.append(f'          {header(module, size=header_size-10)} {Style.good(text="installed")}')
                 continue
             else:
-                valid.append(f'     {header(module, size=header_size-5)} {style(text="MISSING")}')
+                valid.append(f'          {header(module, size=header_size-10)} {style(text="MISSING")}')
 
-        if len(valid) == 1:
-            print(f'{valid[0]} {Style.good(text="good")}')
+        if len(valid) == 2:
+            print(f'{valid[0]}')
+            print(f'{valid[1]} {Style.good(text="good")}')
         else:
             for l_ in valid:
                 print(f'{l_}')
@@ -843,6 +851,8 @@ def print_dependencies():
     check_main(group=Data.check['required'])
     log.debug(f'({__my_name__}) Printing "optional" group')
     check_main(group=Data.check['optional'], style=Style.missing)
+    log.debug(f'({__my_name__}) Printing "testing" gorup')
+    check_main(group=Data.check['testing'], style=Style.missing)
 
 
 def set_new_imports():
@@ -880,10 +890,10 @@ if __name__ == "__main__":
     parser.add_argument('-i', '--installed', help='Save currently installed modules to <file>'),
     parser.add_argument('-j', '--json', help='JSON-format dependency file', default='project-deps.py')
     parser.add_argument('-l', '--log', help='Log save file')
-    parser.add_argument('-p', '--project', help='Project Name', default=None, action='store')
+    parser.add_argument('-n', '--name', help='Project Name', default=None, action='store')
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
-    parser.add_argument('-b', '--backup', help='Backup JSON file to load',
-                        default='project-deps.json')
+    parser.add_argument('-b', '--backup', help='Backup JSON file to load', default='project-deps.json')
+    parser.add_argument('-s', '--show', help='Show all dependency checks', action='store_true')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
 
@@ -907,7 +917,7 @@ if __name__ == "__main__":
         Data.load_json()
 
     if Data.project['name'] is None:
-        if args.project is None:
+        if args.name is None:
             Data.save_json()
             print(f'\n\nEdit {JSON_File} and set "name" to name of project and try again\n')
             print('Or add -p <project> option')
@@ -917,6 +927,9 @@ if __name__ == "__main__":
     # Check installed python version; exit if wrong version installed.
     if not check_language()[0]:
         sys.exit()
+
+    # Display all module checks, not just summary
+    Data.SHOWALL = args.show
 
     if args.full or not Data.project['modules']:
         find_all_imports()
