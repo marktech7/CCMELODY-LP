@@ -185,6 +185,21 @@ In the case that 'project-deps.json' is not found:
     to the python interface being provided by some other o/s package.
     Current examples inclued LibreOffice and OpenOffice and the "com.sun.star" module.
 
+Although built-in and standard library modules are normally excluded from
+the module list, if one of the standard library modules can be used in a
+group entry, it is recommended to include the standard library module in
+the module list as well.
+
+For example:
+    "SQLite3" is a standard library module.
+    "PyMySQL" is a 3rd party module.
+
+If you have a "DB" (database) group that "PyMySQL" is part of, and
+"SQLite3" may be substituted for PyMySQL, then add the standard library
+"SQLite3" entry in the "modules" section.
+
+See "Groups Format" section above for an example.
+
 The format for the modules field are as follows:
 
     "modules" : { <module>: options,
@@ -226,7 +241,9 @@ For each <module> entry the format is:
                              be an included "notes" field for clarification
                              on why module is ignored.
 
-"groups"    : See "Groups Format" for description.
+"group"     : See "Groups Format" for description.
+              If both "group" and "status" entries are listed, the "status"
+              entry is ignored.
 
 "os"        : If added, specifies that this module is only supported if
               running the project on the specific o/s.

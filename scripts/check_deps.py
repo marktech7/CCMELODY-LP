@@ -132,6 +132,7 @@ class DataClass(metaclass=Singleton):
         cls.import_list = dict()  # Keep track of import lines
         cls.INSTALLED = dict()
         cls.SHOWALL = False  # Display results of dependency checks, not just summary
+        cls.TEST = False  # Include testing directory in file scan
         cls.project = deepcopy(cls._default_project)  # JSON data
         if cls.project['name'] is not None:
             cls.dir_list['project'] = Path('.', cls.project['name'])
@@ -271,12 +272,17 @@ class DataClass(metaclass=Singleton):
                     if 'python' in ret['language']:
                         ret['language']['python']['check'] = Data._default_project['language']['python']['check']
                 self.project = ret
-                return
         except FileNotFoundError:
             log.warning(f'({__my_name__}) Source {src} is missing - using defaults')
             self.project = deepcopy(self._default_project)
         except json.JSONDecodeError:
             log.warning(f'({__my_name__}) Source {src} appears to be corrupted')
+            if __name__ == '__main__':
+                print(f'\nSource file {src} appears to be corrupted - exiting')
+                sys.exit()
+        if self.project['name'] is not None:
+            self.dir_list['project'] = self.dir_list['base'].joinpath(self.project['name'])
+        return
 
     @classmethod
     def log(self, lvl, installed=False):
@@ -612,12 +618,12 @@ def check_version(low, version, high=None):
     _req = low.split('.')
     _req = hex_me(v=_req[0], s=_req[1])
     if _req > _ver:
-        valid = CHECK_MARKERS['v-min']
+        valid = f'{CHECK_MARKERS["v-min"]} installed: {version} required: {low}'
     if valid is None and high is not None:
         _req = high.split('.')
         _req = hex_me(v=_req[0], s=_req[1])
         if _ver > _req:
-            valid = CHECK_MARKERS['v-max']
+            valid = f'{CHECK_MARKERS["v-max"]} installed: {version} required: {low} to {high}'
     r_ = None if valid is None else f'"{valid}"'
     log.debug(f'({__my_name__}) Returning {r_}')
     return valid
@@ -634,6 +640,18 @@ def find_all_imports(src=Data.dir_list['project']):
     log.info(f'({__my_name__}) Starting project scan')
     if not Data.dir_check:
         Data.dir_check[Data.dir_list['project']] = None
+
+    if Data.TEST:
+        # Scan testing directory as well
+        dirs, _ = parse_dir(Data.dir_list['base'])
+        if dirs is not None:
+            for chk in dirs:
+                if chk.name.startswith('test'):
+                    # First directory found wins
+                    log.debug(f'({__my_name__}) Adding {chk} to directory check list')
+                    Data.dir_check[chk] = None
+                    break
+
     while Data.dir_check:
         chkdir, chkfiles = Data.dir_check.popitem()
         log.debug(f'({__my_name__}) Checking {chkdir}')
@@ -650,6 +668,7 @@ def find_all_imports(src=Data.dir_list['project']):
             continue
         for itm in chk:
             parse_source(chkdir.joinpath(itm))
+    log.info(f'({__my_name__}) Finished project scan')
 
 
 def parse_source(srcfile):
@@ -907,7 +926,8 @@ if __name__ == "__main__":
     debug = min(len(_levels), args.v + 1) - 1
     debug = max(0, debug)
     log.setLevel(level=logging.getLevelName(_levels[debug]))
-    print(f'Setting log level to {logging.getLevelName(_levels[debug])}')
+    if args.log:
+        print(f'Setting log level to {logging.getLevelName(_levels[debug])}')
     log = logging.getLogger()
 
     if args.backup:
@@ -922,7 +942,7 @@ if __name__ == "__main__":
             print(f'\n\nEdit {JSON_File} and set "name" to name of project and try again\n')
             print('Or add -p <project> option')
             sys.exit()
-        Data.set_name(args.project)
+        Data.set_name(args.name)
 
     # Check installed python version; exit if wrong version installed.
     if not check_language()[0]:
@@ -930,6 +950,8 @@ if __name__ == "__main__":
 
     # Display all module checks, not just summary
     Data.SHOWALL = args.show
+    # Include test directory in file scan
+    Data.TEST = args.test
 
     if args.full or not Data.project['modules']:
         find_all_imports()
