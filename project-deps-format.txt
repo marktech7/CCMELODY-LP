@@ -217,7 +217,7 @@ For each <module> entry the format is:
                     "vfunc"    : string,     # Optional - "vstr" takes precedence.
                     "vstr"     : string,     # Optional
                     "notes"    : string,     # Optional
-                    <repo>     : string,     # Optional
+                    "repo"     : dictionary, # Optional
                     "subs"     : dictionary  # Optional
                     }
 
@@ -284,18 +284,30 @@ For each <module> entry the format is:
 
 "notes"     : Developer(s) notes about this module
 
-<repo>      : If added, <repo> is the repository where the module may be found,
+"repo"      : If added, the key is the repository where the module may be found,
               and the text is the package module name for that repository.
               Informational field only at this time.
 
               Example:
 
-                    "vlc": {"redhat": "python3-vlc",
-                            "pypi": "python-vlc"
+                    "vlc": {"repo": {"redhat": "python3-vlc",
+                                     "pypi": "python-vlc"
+                                     },
                             }
 
-                "redhat" if added, the package may be found on a RedHat-style repository.
+            Python:
                 "pypi" if added, the package may be found at Python Package Index repository.
+
+            Linux:
+                "debian" if added, the package may be found in a Debian-style repository.
+                "redhat" if added, the package may be found on a RedHat-style repository.
+
+            Mac:
+                "brew" if added, the package may be found in the Home Brew repository.
+                "macports" if added, the package may be found in the MacPorts repository.
+
+            Note:
+                O/S-specific repositories are normally recommended over PyPI if available.
 
 "subs"      : Sub-module dependencies may be listed under here.
               Example:
@@ -376,13 +388,17 @@ Example JSON File
         },
         "flake8": {
             "status": "testing",
-            "redhat": "python3-flake8",
-            "pypi": "flake8"
+            "repo": {
+                "redhat": "python3-flake8",
+                "pypi": "flake8"
+            },
         },
         "PIL": {
             "status": "required",
-            "redhat": "python3-pillow",
-            "pypi": "Pillow",
+            "repo": {
+                "redhat": "python3-pillow",
+                "pypi": "Pillow",
+            },
             "subs": {
                 "ImageQt": {
                     "status": "required"
@@ -427,20 +443,26 @@ Example JSON File
         "psycopg2": {
             "group": "db",
             "notes": "PostGreSQL DB Interface",
-            "redhat": "python3-psycopg2",
-            "pypi": "psycopg2"
+            "repo": {
+                "redhat": "python3-psycopg2",
+                "pypi": "psycopg2"
+            },
         },
         "pymysql": {
             "group": "db",
             "notes": "MySQL/MariaDB DB Interface",
-            "redhat": "python3-pymysql",
-            "pypi": "PyMySQL"
+            "repo": {
+                "redhat": "python3-pymysql",
+                "pypi": "PyMySQL"
+            },
         },
         "pyodbc": {
             "group": "db",
             "notes": "ODBC DB Interface",
-            "redhat": "python3-pyodbc",
-            "pypi": "pyodbc"
+            "repo": {
+                "redhat": "python3-pyodbc",
+                "pypi": "pyodbc"
+            },
         },
         "pytest": {
             "status": "testing",
@@ -449,7 +471,9 @@ Example JSON File
         "pytestqt": {
             "status": "testing",
             "notes": "Testing Framework for PyQt5",
-            "pypi": "pytest-qt"
+            "repo": {
+                "pypi": "pytest-qt"
+            },
         },
         "pywintypes": {
             "status": "required",
@@ -457,13 +481,17 @@ Example JSON File
         },
         "qdarkstyle": {
             "status": "optional",
-            "redhat": "python3-qdarkstyle",
-            "pypi": "QDarkStyle"
+            "repo": {
+                "redhat": "python3-qdarkstyle",
+                "pypi": "QDarkStyle"
+            },
         },
         "qtawesome": {
             "status": "required",
-            "pypi": "QtAwesome",
-            "redhat": "python3-QtAwesome"
+            "repo": {
+                "pypi": "QtAwesome",
+                "redhat": "python3-QtAwesome"
+            },
         },
         "sqlalchemy": {
             "status": "required",
@@ -471,8 +499,10 @@ Example JSON File
                 "0.5"
             ],
             "notes": "Database Abstraction Library",
-            "redhat": "python3-sqlalchemy",
-            "pypi": "SQLAlchemy"
+            "repo": {
+                "redhat": "python3-sqlalchemy",
+                "pypi": "SQLAlchemy"
+            },
         },
         "sqlite3": {
             "group": "db",
@@ -492,8 +522,10 @@ Example JSON File
         },
         "zeroconf": {
             "status": "required",
-            "redhat": "python3-zeroconf",
-            "pypi": "zeroconf3"
-        }
+            "repo": {
+                "redhat": "python3-zeroconf",
+                "pypi": "zeroconf3"
+            },
+        },
     },
 }
