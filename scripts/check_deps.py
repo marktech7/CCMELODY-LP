@@ -436,10 +436,11 @@ def check_dependencies():
         :rtype: tuple
         """
         chk = parent if child is None else f'{parent}.{child}'
-        log.debug(f'({__my_name__}.check_deps) Checking {chk}')
         if parent not in Data.INSTALLED:
+            log.warning(f'({__my_name__}.check_deps) Module {parent} not installed - skipping checks')
             return (False, None)
 
+        log.debug(f'({__my_name__}.check_deps) Checking {chk}')
         m = None
         ret = True
         retcode = None
@@ -485,7 +486,7 @@ def check_dependencies():
             # Have a module version number, so time to compare
             retcode = check_version(low=v_low, version=v, high=v_high)
 
-        log.debug(f'({__my_name__}.check_deps) Verifying {chk}: ({ret}, "{retcode}")')
+        log.debug(f'({__my_name__}.check_deps) Verify {chk}: ({ret}, "{retcode}")')
         return (ret, retcode)
 
     ###########################
