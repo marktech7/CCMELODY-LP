@@ -346,6 +346,24 @@ class DataClass(metaclass=Singleton):
 Data = DataClass()
 
 
+class NoLog(metaclass=Singleton):
+    """Replace logging if no log file set"""
+    def debug(self, *args, **kwargs):
+        pass
+
+    def error(self, *args, **kwargs):
+        pass
+
+    def fatal(self, *args, **kwargs):
+        pass
+
+    def info(self, *args, **kwargs):
+        pass
+
+    def warning(self, *args, **kwargs):
+        pass
+
+
 class Style(metaclass=Singleton):
     """
     Return a colorized string for printing on console
@@ -911,30 +929,27 @@ if __name__ == "__main__":
     parser.add_argument('-l', '--log', help='Log save file')
     parser.add_argument('-n', '--name', help='Project Name', default=None, action='store')
     parser.add_argument('-t', '--test', help='Include test directory (default False)', action='store_true')
-    parser.add_argument('-b', '--backup', help='Backup JSON file to load', default='project-deps.json')
+    parser.add_argument('-b', '--backup', help='Backup JSON file to load')
     parser.add_argument('-s', '--show', help='Show all dependency checks', action='store_true')
     parser.add_argument('-v', help='Increase debuging level for each -v', action='count', default=0)
     args = parser.parse_args()
 
     if args.log:
         logging.basicConfig(filename=args.log, filemode='w', format='%(levelname)-10s :  %(message)s')
+        _levels = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
+        debug = min(len(_levels), args.v + 1) - 1
+        debug = max(0, debug)
+        log = logging.getLogger()
+        log.setLevel(level=logging.getLevelName(_levels[debug]))
+        print(f'Setting log level to {logging.getLevelName(_levels[debug])}')
         print(f'Saving log output to {args.log}')
     else:
-        logging.basicConfig(format='%(levelname)-10s :  %(message)s')
-    log = logging.getLogger()
-    _levels = [logging.CRITICAL, logging.ERROR, logging.WARNING, logging.INFO, logging.DEBUG]
-    debug = min(len(_levels), args.v + 1) - 1
-    debug = max(0, debug)
-    log.setLevel(level=logging.getLevelName(_levels[debug]))
-    if args.log:
-        print(f'Setting log level to {logging.getLevelName(_levels[debug])}')
-    log = logging.getLogger()
+        log = NoLog()
 
-    if args.backup:
-        Data.load_json(f=args.backup)
-        Data.save_json()
-    else:
+    if args.backup is None:
         Data.load_json()
+    else:
+        Data.load_json(f=args.backup)
 
     if Data.project['name'] is None:
         if args.name is None:
@@ -963,6 +978,9 @@ if __name__ == "__main__":
 
     Please edit the "{save_file}" file and update the "modules" section
     with the appropriate entries.
+
+    If you have a testing directory, delete "{save_file}" and
+    and run again with "-t" option.
 
     See "project-deps-format.txt" for format of "{save_file}".
     \n
