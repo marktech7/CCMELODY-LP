@@ -653,9 +653,17 @@ class Settings(QtCore.QSettings):
             key = self.group() + '/' + key
         return Settings.__default_settings__[key]
 
-    def can_upgrade(self):
+    def from_future(self):
         """
-        Can / should the settings be upgraded
+        Is the settings version higher then the version required by OpenLP
+
+        :rtype: bool
+        """
+        return __version__ < self.value('settings/version')
+
+    def version_mismatched(self):
+        """
+        Are the settings a different version as required by OpenLP
 
         :rtype: bool
         """

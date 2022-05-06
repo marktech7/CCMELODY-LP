@@ -884,8 +884,17 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
+        # If settings are from the future, we can't import.
+        if import_settings.from_future():
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.MainWindow', 'Import settings'),
+                                           translate('OpenLP.MainWindow', 'OpenLP cannot import settings '
+                                                                          'from a newer version of OpenLP.\n\n'
+                                                                          'Processing has terminated and '
+                                                                          'no changes have been made.'),
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+            return
         # Upgrade settings to prepare the import.
-        if import_settings.can_upgrade():
+        if import_settings.version_mismatched():
             import_settings.upgrade_settings()
         # Lets do a basic sanity check. If it contains this string we can assume it was created by OpenLP and so we'll
         # load what we can from it, and just silently ignore anything we don't recognise.
