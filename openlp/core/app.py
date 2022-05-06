@@ -424,11 +424,11 @@ def main():
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
-        log.info('INI file: {portable_settings_path}')
+        log.info(f'INI file: {portable_settings_path}')
         Settings.set_filename(portable_settings_path)
         portable_settings = Settings()
         # Set our data path
-        log.info('Data path: {data_path}')
+        log.info(f'Data path: {data_path}')
         # Point to our data path
         portable_settings.setValue('advanced/data path', data_path)
         portable_settings.setValue('advanced/is portable', True)
