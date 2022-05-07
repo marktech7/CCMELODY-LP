@@ -17,6 +17,43 @@ Note on the JSON file format:
     See the example at the end for a properly-formatted JSON
     file that the Python language expects.
 
+EDITING JSON FILE NOTES:
+
+    The format for the JSON file is strict. When editing,
+    ensure that you use the correct format!
+
+    To edit a field that requires a string, use "string" (double-quotes).
+        "name": "string"
+
+    - Each entry is on a separate line
+    - If there are more fields in a section, ensure there is a "," (comma).
+    - If there are no more field in a section, ensure there is NO comma.
+    - When a multi-line section is added, no text on the same line as
+      the brackets/braces.
+    - Braces indicate a dictionary item. Dictionaries require a
+      "key": "value" entry separated by a ":" (colon)
+    - Brackets indicate a list item. Lists are single values
+      separated by a "," (comma).
+
+        "modules": {                  <-- Open brace - Begin a dictionary item "modules"
+            "PyQt5": {                <-- Open brace - Begin a dictionary item "PyQt5"
+                "status": "string",   <-- Comma indicates more entries
+                "check": "string",
+                "version": [          <-- Open bracket - Begin a list item "version"
+                    "3.6",            <-- Comma indicates more entries
+                    "3.8"             <-- No comma indicates no more entries
+                    ]                 <-- Closing bracket - end of list item "version"
+            },                        <-- Closing brace - end of dictionary item "PyQt5"
+            "sqlalchemy": {
+                "status": "string",
+                "check": "string"
+                "version": [
+                    "3.8"
+                    ],                <-- Comma indicates another entry
+                "base": "path/"       <-- No comma, last entry for "sqlalchemy"
+            }                         <-- Closing bracket - End of dictionary item "sqlalchemy"
+        }                             <-- Closing bracket - End of dictionary item "modules"
+
 The basic format is as follows:
 
     {

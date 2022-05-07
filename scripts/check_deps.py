@@ -659,12 +659,13 @@ def find_all_imports(src=Data.dir_list['project']):
     log.info(f'({__my_name__}) Starting project scan')
     if not Data.dir_check:
         Data.dir_check[Data.dir_list['project']] = None
-        # Verify project directory exists
-        if not Data.dir_list['project'].is_dir():
-            log.fatal(f'({__my_name__}) Project directory {Data.dir_list["project"].name} does not exist.')
-            if __name__ == '__main__':
-                print(f'\n     Project directory {Data.dir_list["project"].name} does not exist.\n     Exiting\n')
-                sys.exit()
+
+    # Verify project directory exists
+    if not Data.dir_list['project'].is_dir():
+        log.fatal(f'({__my_name__}) Project directory {Data.dir_list["project"].name} does not exist.')
+        if __name__ == '__main__':
+            print(f'\n     Project directory {Data.dir_list["project"].name} does not exist.\n     Exiting\n')
+            sys.exit()
 
     if Data.TEST:
         # Scan testing directory as well
