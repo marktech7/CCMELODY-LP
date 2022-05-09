@@ -63,35 +63,35 @@ class AlignmentTransitionsPage(GridLayoutPage):
         self.line = QtWidgets.QFrame(self)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
         self.line.setObjectName('line')
-        self.layout.addWidget(self.line, 2, 0, 1, 4)
+        self.layout.addWidget(self.line, 3, 0, 1, 4)
         # Transitions
         self.transitions_enabled_check_box = QtWidgets.QCheckBox(self)
         self.transitions_enabled_check_box.setObjectName('transitions_enabled_check_box')
-        self.layout.addWidget(self.transitions_enabled_check_box, 3, 1)
+        self.layout.addWidget(self.transitions_enabled_check_box, 4, 1)
         self.transition_effect_label = FormLabel(self)
         self.transition_effect_label.setObjectName('transition_effect_label')
-        self.layout.addWidget(self.transition_effect_label, 4, 0)
+        self.layout.addWidget(self.transition_effect_label, 5, 0)
         self.transition_effect_combo_box = QtWidgets.QComboBox(self)
         self.transition_effect_combo_box.setObjectName('transition_effect_combo_box')
         self.transition_effect_combo_box.addItems(['', '', '', '', ''])
-        self.layout.addWidget(self.transition_effect_combo_box, 4, 1)
+        self.layout.addWidget(self.transition_effect_combo_box, 5, 1)
         self.transition_speed_label = FormLabel(self)
         self.transition_speed_label.setObjectName('transition_speed_label')
-        self.layout.addWidget(self.transition_speed_label, 5, 0)
+        self.layout.addWidget(self.transition_speed_label, 6, 0)
         self.transition_speed_combo_box = QtWidgets.QComboBox(self)
         self.transition_speed_combo_box.setObjectName('transition_speed_combo_box')
         self.transition_speed_combo_box.addItems(['', '', ''])
-        self.layout.addWidget(self.transition_speed_combo_box, 5, 1)
+        self.layout.addWidget(self.transition_speed_combo_box, 6, 1)
         self.transition_direction_label = FormLabel(self)
         self.transition_direction_label.setObjectName('transition_direction_label')
-        self.layout.addWidget(self.transition_direction_label, 4, 2)
+        self.layout.addWidget(self.transition_direction_label, 5, 2)
         self.transition_direction_combo_box = QtWidgets.QComboBox(self)
         self.transition_direction_combo_box.setObjectName('transition_direction_combo_box')
         self.transition_direction_combo_box.addItems(['', ''])
-        self.layout.addWidget(self.transition_direction_combo_box, 4, 3)
+        self.layout.addWidget(self.transition_direction_combo_box, 5, 3)
         self.transition_reverse_check_box = QtWidgets.QCheckBox(self)
         self.transition_reverse_check_box.setObjectName('transition_reverse_check_box')
-        self.layout.addWidget(self.transition_reverse_check_box, 5, 3)
+        self.layout.addWidget(self.transition_reverse_check_box, 6, 3)
         # Connect slots
         self.transitions_enabled_check_box.stateChanged.connect(self._on_transition_enabled_changed)
 
@@ -168,7 +168,7 @@ class AlignmentTransitionsPage(GridLayoutPage):
         return self.wrap_combo_box.currentIndex()
 
     @wrap_style.setter
-    def wrap_align(self, value):
+    def wrap_style(self, value):
         if isinstance(value, str):
             self.wrap_combo_box.setCurrentIndex(WrapStyle.from_string(value))
         elif isinstance(value, int):

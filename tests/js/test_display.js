@@ -865,8 +865,7 @@ describe("Display.setTextSlides", function () {
     //
     const theme = {
       'display_horizontal_align': 3,
-      'display_vertical_align': 1,
-      'display_wrap_style': 0
+      'display_vertical_align': 1
     };
     spyOn(Reveal, "sync");
     spyOn(Reveal, "slide");
@@ -877,7 +876,6 @@ describe("Display.setTextSlides", function () {
     const slidesDiv = $(".text-slides")[0];
     expect(slidesDiv.style['text-align-last']).toEqual('justify');
     expect(slidesDiv.style['justify-content']).toEqual('center');
-    expect(slidesDiv.style['wrap_style']).toEqual('even');
   })
 
   it("should enable shadows", function () {
