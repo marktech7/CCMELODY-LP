@@ -24,7 +24,8 @@ The :mod:`~openlp.core.pages.alignment` module contains the alignment page used 
 from PyQt5 import QtWidgets
 
 from openlp.core.common.i18n import translate
-from openlp.core.lib.theme import HorizontalType, VerticalType, TransitionType, TransitionSpeed, TransitionDirection
+from openlp.core.lib.theme import HorizontalType, VerticalType, WrapStyle, TransitionType, TransitionSpeed, \
+    TransitionDirection
 from openlp.core.lib.ui import create_valign_selection_widgets
 from openlp.core.pages import GridLayoutPage
 from openlp.core.widgets.labels import FormLabel
@@ -51,6 +52,13 @@ class AlignmentTransitionsPage(GridLayoutPage):
         self.layout.addWidget(self.vertical_label, 1, 0)
         self.vertical_combo_box.setObjectName('vertical_combo_box')
         self.layout.addWidget(self.vertical_combo_box, 1, 1, 1, 3)
+        self.wrap_label = FormLabel(self)
+        self.wrap_label.setObjectName('wrap_label')
+        self.layout.addWidget(self.wrap_label, 2, 0)
+        self.wrap_combo_box = QtWidgets.QComboBox(self)
+        self.wrap_combo_box.addItems(['', ''])
+        self.wrap_combo_box.setObjectName('wrap_combo_box')
+        self.layout.addWidget(self.wrap_combo_box, 2, 1, 1, 3)
         # Line
         self.line = QtWidgets.QFrame(self)
         self.line.setFrameShape(QtWidgets.QFrame.HLine)
@@ -96,6 +104,9 @@ class AlignmentTransitionsPage(GridLayoutPage):
         self.horizontal_combo_box.setItemText(HorizontalType.Right, translate('OpenLP.ThemeWizard', 'Right'))
         self.horizontal_combo_box.setItemText(HorizontalType.Center, translate('OpenLP.ThemeWizard', 'Center'))
         self.horizontal_combo_box.setItemText(HorizontalType.Justify, translate('OpenLP.ThemeWizard', 'Justify'))
+        self.wrap_label.setText(translate('OpenLP.ThemeWizard', 'Line Wrap:'))
+        self.wrap_combo_box.setItemText(WrapStyle.Even, translate('OpenLP.ThemeWizard', 'Balanced'))
+        self.wrap_combo_box.setItemText(WrapStyle.Greedy, translate('OpenLP.ThemeWizard', 'Greedy'))
         self.transitions_enabled_check_box.setText(translate('OpenLP.ThemeWizard', 'Enable transitions'))
         self.transition_effect_label.setText(translate('OpenLP.ThemeWizard', 'Effect:'))
         self.transition_effect_combo_box.setItemText(TransitionType.Fade, translate('OpenLP.ThemeWizard', 'Fade'))
@@ -151,6 +162,19 @@ class AlignmentTransitionsPage(GridLayoutPage):
             self.vertical_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('vertical_align must either be a string or an int')
+
+    @property
+    def wrap_style(self):
+        return self.wrap_combo_box.currentIndex()
+
+    @wrap_style.setter
+    def wrap_align(self, value):
+        if isinstance(value, str):
+            self.wrap_combo_box.setCurrentIndex(WrapStyle.from_string(value))
+        elif isinstance(value, int):
+            self.wrap_combo_box.setCurrentIndex(value)
+        else:
+            raise TypeError('wrap_style must either be a string or an int')
 
     @property
     def is_transition_enabled(self):
