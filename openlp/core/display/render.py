@@ -27,6 +27,7 @@ import mako
 import math
 import os
 import re
+import json
 
 from PyQt5 import QtWidgets, QtGui
 
@@ -608,7 +609,6 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         """
         wait_for(lambda: self._is_initialised)
         self.log_debug('format slide')
-        print('format slide')
         if item:
             # Set theme for preview
             self.set_theme(item.get_theme_data(self.theme_level))
@@ -619,11 +619,12 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         # Split lines that are too long
         new_lines = []
         lines = text.split('\n')
-        for line in lines:
-            if self._line_fits_on_slide(line):
-                new_lines.append(line)
+        lines_fit = self._lines_fit_on_slide(lines)
+        for index, fits in enumerate(lines_fit):
+            if fits:
+                new_lines.append(lines[index].replace('[ ]', ' '))
             else:
-                split_lines = self._break_line(line)
+                split_lines = self._break_line(lines[index])
                 new_lines += split_lines
         text = '\n'.join(new_lines)
         # Bibles
@@ -701,18 +702,12 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                 new_segment_pieces = line_segments[end_of_previous_segment:]
                 new_segments.append(substitute.join(new_segment_pieces))
                 # If lines already fit, no need to split them more
-                if self._do_lines_fit(new_segments):
+                if all(self._lines_fit_on_slide(new_segments)):
                     return new_segments
                 else:
                     best_fit = new_segments
         # Full line fits, or failed to split // TODO: return best attempt rather than full thing on failure
         return best_fit
-
-    def _do_lines_fit(self, lines):
-        for line in lines:
-            if not self._line_fits_on_slide(line):
-                return False
-        return True
 
     def _calculate_optional_splits(self, text, line_end):
         pages = []
@@ -919,26 +914,26 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             return True
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
-        self.run_javascript('Display.setTextSlide("{text}");'
+        self.run_javascript('Display.setTextSlidesNoTransition(["{text}"]);'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
         does_text_fit = self.run_javascript('Display.doesContentFit();', is_sync=True)
         return does_text_fit
 
-    def _line_fits_on_slide(self, text):
+    def _lines_fit_on_slide(self, lines):
         """
         Checks if the given ``text`` fits on a slide. If it does ``True`` is returned, otherwise ``False``.
         Text should always "fit" for empty strings
 
         :param text:  The text to check. It may contain HTML tags.
         """
-        if text == '':
+        if lines == []:
             return True
         self.clear_slides()
-        self.log_debug('_text_fits_on_slide_width: \n{text}'.format(text=text))
-        self.run_javascript('Display.setTextSlide("{text}");'
-                            .format(text=text.replace('"', '\\"')), is_sync=True)
-        does_text_fit = self.run_javascript('Display.doesLineFit();', is_sync=True)
+        self.log_debug('_lines_fit_on_slide: \n{lines}'.format(lines=lines))
+        self.run_javascript('Display.setTextSlidesNoTransition({lines});'
+                            .format(lines=json.dumps(lines)), is_sync=True)
+        does_text_fit = self.run_javascript('Display.doLinesFit();', is_sync=True)
         return does_text_fit
 
     def save_screenshot(self, fname=None):

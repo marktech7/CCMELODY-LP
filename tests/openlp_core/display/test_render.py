@@ -250,7 +250,7 @@ def test_format_slide(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(side_effect=lambda a: a == '')
-    preview_renderer._line_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._lines_fit_on_slide = MagicMock(side_effect=lambda a: [True for _ in a])
     preview_renderer.force_page = False
 
     # WHEN: format_slide is run
@@ -272,7 +272,7 @@ def test_format_slide_no_split(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._lines_fit_on_slide = MagicMock(side_effect=lambda a: [True for _ in a])
     preview_renderer.force_page = False
 
     # WHEN: format_slide is run
@@ -294,7 +294,8 @@ def test_format_slide_line_split(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 40 else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
@@ -316,7 +317,8 @@ def test_format_slide_line_split_odd_spacing(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 20))
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 20 else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
@@ -338,7 +340,8 @@ def test_format_slide_triple_line_split(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 4))
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if (len(line) < 4) else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
@@ -360,7 +363,8 @@ def test_format_slide_manual_line_split(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 40 else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
@@ -382,7 +386,8 @@ def test_format_slide_comma_line_split(settings, display_window_env):
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
-    preview_renderer._line_fits_on_slide = MagicMock(side_effect=lambda a: (len(a) < 40))
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 40 else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run

@@ -441,16 +441,15 @@ var Display = {
     return currSlide.clientHeight >= currSlide.scrollHeight;
   },
   /**
-   * Checks if the present slide content fits within the slide
+   * Checks if the slide content fits within the slide
   */
-   doesLineFit: function () {
-    var currSlide = $("section.text-slides");
-    if (currSlide.length === 0) {
-      currSlide = Display._footerContainer;
-    } else {
-      currSlide = currSlide[0];
+   doLinesFit: function () {
+    var currSlides = $("section.text-slides > section");
+    var result = [];
+    for (var i = 0; i < currSlides.length; i++) {
+      result.push(currSlides[i].clientWidth >= currSlides[i].scrollWidth);
     }
-    return currSlide.clientWidth >= currSlide.scrollWidth;
+    return result;
   },
   /**
    * Generate the OpenLP startup splashscreen
@@ -681,33 +680,23 @@ var Display = {
     Display.replaceSlides(parentSection, true);
   },
   /**
-   * Set a single text slide. This changes the slide with no transition.
-   * Prevents the need to reapply the theme if only changing content.
-   * @param String slide - Text to put on the slide
+   * Sets text slides with no transition.
+   * @param String slides - Text to put on the slides
    */
-  setTextSlide: function (text) {
-    if (Display._slides.hasOwnProperty("test-slide") && Object.keys(Display._slides).length === 1) {
-      var slide = $("#" + "test-slide")[0];
-      var html = _prepareText(text);
-      if (slide.innerHTML != html) {
-        slide.innerHTML = html;
-      }
-      if (!Display._themeApplied) {
-        Display.applyTheme(slide.parent);
-      }
-    } else {
-      Display._clearSlidesList();
-      var slide_html;
-      var parentSection = document.createElement("section");
-      parentSection.classList = "text-slides";
-      slide_html = Display._createTextSlide("test-slide", text);
+  setTextSlidesNoTransition: function (slides) {
+    Display._clearSlidesList();
+    var slide_html;
+    var parentSection = document.createElement("section");
+    parentSection.classList = "text-slides";
+    for (var i = 0; i < slides.length; i++) {
+      slide_html = Display._createTextSlide(i, slides[i]);
       parentSection.appendChild(slide_html);
-      Display._slides["test-slide"] = 0;
-      Display.applyTheme(parentSection);
-      Display._slidesContainer.innerHTML = "";
-      Display._slidesContainer.prepend(parentSection);
-      Display.reinit();
+      Display._slides[i] = i;
     }
+    Display.applyTheme(parentSection);
+    Display._slidesContainer.innerHTML = "";
+    Display._slidesContainer.prepend(parentSection);
+    Display.reinit();
   },
   /**
    * Set image slides
@@ -1314,7 +1303,7 @@ var Display = {
    * and we don't want any flashbacks to the current slide contents
    */
   finishWithCurrentItem: function () {
-    Display.setTextSlide('');
+    Display.setTextSlidesNoTransition(['']);
     var documentBody = $("body")[0];
     documentBody.style.opacity = 1;
     Display._skipNextTransition = true;
