@@ -656,6 +656,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         cleaned_text = line
         for (sp, sub) in splitters:
             cleaned_text = cleaned_text.replace(sp, sub)
+        full_length = len(cleaned_text)
         best_fit = [cleaned_text]
         for (splitter, substitute) in splitters:
             cleaned_text = line
@@ -663,7 +664,6 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                 if splitter == sp:
                     continue
                 cleaned_text = cleaned_text.replace(sp, sub)
-            full_length = len(cleaned_text.replace(splitter, substitute))
             line_segments = cleaned_text.split(splitter)
             # Skip if none of this splitter are in the string
             max_segments = len(line_segments)
@@ -676,28 +676,29 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             for segment in line_segments:
                 current_length += len(segment) + substitute_length
                 split_spots.append(current_length)
-
+            # Attempt to split line into increasingly more lines until it fits
             for num_of_segments in range(2, max_segments + 1):
                 target_segment_size = full_length / num_of_segments
                 end_of_previous_segment = 0
-
                 new_segments = []
-                # For each split
+                # For each split we are attempting to make
                 for split_num in range(1, num_of_segments):
                     target_split_spot = target_segment_size * split_num
                     closest_split = end_of_previous_segment
                     last_split_offset = 10000000
+                    # Find best split place to split between segments
                     for index in range(end_of_previous_segment, max_segments):
                         split_offset = int(abs(target_split_spot - split_spots[index]))
                         if (split_offset > last_split_offset):
-                            closest_split = index - 1
+                            closest_split = index
                             break
                         last_split_offset = split_offset
-                    new_segment_pieces = line_segments[end_of_previous_segment:closest_split + 1]
-                    new_segments.append(substitute.join(new_segment_pieces))
-                    end_of_previous_segment = closest_split + 1
-                    if (end_of_previous_segment == max_segments):
+                    # No splits were left to use; end loop and add remaining text
+                    if (closest_split == end_of_previous_segment):
                         break
+                    new_segment_pieces = line_segments[end_of_previous_segment:closest_split]
+                    new_segments.append(substitute.join(new_segment_pieces))
+                    end_of_previous_segment = closest_split
                 # Add the remaining part of the string
                 new_segment_pieces = line_segments[end_of_previous_segment:]
                 new_segments.append(substitute.join(new_segment_pieces))
