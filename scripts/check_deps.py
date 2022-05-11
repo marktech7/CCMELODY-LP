@@ -896,8 +896,9 @@ def print_dependencies():
     check_main(group=Data.check['required'])
     log.debug(f'({__my_name__}) Printing "optional" group')
     check_main(group=Data.check['optional'], style=Style.missing)
-    log.debug(f'({__my_name__}) Printing "testing" gorup')
-    check_main(group=Data.check['testing'], style=Style.missing)
+    if Data.TEST:
+        log.debug(f'({__my_name__}) Printing "testing" gorup')
+        check_main(group=Data.check['testing'], style=Style.missing)
 
 
 def set_new_imports():
