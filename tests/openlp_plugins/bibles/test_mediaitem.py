@@ -250,9 +250,10 @@ def test_config_update_show_second_bible(media_item):
     Test the config update method
     """
     # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
-    media_item.settings.value = lambda key: {'bibles/second bibles': True}[key]
+    media_item.settings.value = lambda key: {'bibles/second bibles': True, 'bibles/verse layout style': 0}[key]
     media_item.general_bible_layout = MagicMock()
     media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
 
     # WHEN: Calling config_update()
     media_item.config_update()
@@ -266,15 +267,33 @@ def test_config_update_hide_second_bible(media_item):
     Test the config update method
     """
     # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
-    media_item.settings.value = lambda key: {'bibles/second bibles': False}[key]
+    media_item.settings.value = lambda key: {'bibles/second bibles': False, 'bibles/verse layout style': 0}[key]
     media_item.general_bible_layout = MagicMock()
     media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
 
     # WHEN: Calling config_update()
     media_item.config_update()
 
     # THEN: second_combo_box() should hidden
     media_item.second_combo_box.setVisible.assert_called_once_with(False)
+
+
+def test_config_update_set_layout_style(media_item):
+    """
+    Test the config update method
+    """
+    # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
+    media_item.settings.value = lambda key: {'bibles/second bibles': True, 'bibles/verse layout style': 1}[key]
+    media_item.general_bible_layout = MagicMock()
+    media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
+
+    # WHEN: Calling config_update()
+    media_item.config_update()
+
+    # THEN: style_combo_box should set the currentIndex to 1
+    media_item.style_combo_box.setCurrentIndex(1)
 
 
 def test_initalise(media_item):

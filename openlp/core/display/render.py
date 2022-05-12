@@ -617,7 +617,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             line_end = ' '
         # Bibles
         if item and item.name == 'bibles':
-            pages = self._paginate_slide_words(text.split('\n'), line_end)
+            if item.is_capable(ItemCapabilities.CanWordSplit):
+                pages = self._paginate_slide_words(text.split('\n'), line_end)
+            else:
+                if item.is_capable(ItemCapabilities.NoLineBreaks):
+                    pages = self._paginate_slide(text.split('\n'), "")
+                else:
+                    pages = self._paginate_slide(text.split('\n'), line_end)
         # Songs and Custom
         elif item is None or (item and item.is_capable(ItemCapabilities.CanSoftBreak)):
             pages = []
@@ -705,7 +711,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         formatted = []
         previous_html = ''
         previous_raw = ''
-        separator = '<br>'
+        # separator = '<br>'
+        separator = line_end
         html_lines = list(map(render_tags, lines))
         # Text too long so go to next page.
         if not self._text_fits_on_slide(separator.join(html_lines)):

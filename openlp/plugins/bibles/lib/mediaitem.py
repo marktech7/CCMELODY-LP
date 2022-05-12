@@ -198,7 +198,7 @@ class BibleMediaItem(MediaManagerItem):
         self.second_combo_box = create_horizontal_adjusting_combo_box(self, 'second_combo_box')
         self.general_bible_layout.addRow(translate('BiblesPlugin.MediaItem', 'Second:'), self.second_combo_box)
         self.style_combo_box = create_horizontal_adjusting_combo_box(self, 'style_combo_box')
-        self.style_combo_box.addItems(['', '', ''])
+        self.style_combo_box.addItems(['', '', '', ''])
         self.general_bible_layout.addRow(UiStrings().LayoutStyle, self.style_combo_box)
         self.options_tab.setVisible(False)
         self.page_layout.addWidget(self.options_tab)
@@ -265,6 +265,7 @@ class BibleMediaItem(MediaManagerItem):
         self.style_combo_box.setItemText(LayoutStyle.VersePerSlide, UiStrings().VersePerSlide)
         self.style_combo_box.setItemText(LayoutStyle.VersePerLine, UiStrings().VersePerLine)
         self.style_combo_box.setItemText(LayoutStyle.Continuous, UiStrings().Continuous)
+        self.style_combo_box.setItemText(LayoutStyle.WholeVerseContinuous, UiStrings().WholeVerseContinuous)
         self.clear_button.setToolTip(translate('BiblesPlugin.MediaItem', 'Clear the results on the current tab.'))
         self.save_results_button.setToolTip(
             translate('BiblesPlugin.MediaItem', 'Add the search results to the saved list.'))
@@ -296,6 +297,9 @@ class BibleMediaItem(MediaManagerItem):
         visible = self.settings.value('bibles/second bibles')
         self.general_bible_layout.labelForField(self.second_combo_box).setVisible(visible)
         self.second_combo_box.setVisible(visible)
+        layout_style = self.settings.value('bibles/verse layout style')
+        if layout_style is not None:
+            self.style_combo_box.setCurrentIndex(layout_style)
 
     def initialise(self):
         """
@@ -954,6 +958,8 @@ class BibleMediaItem(MediaManagerItem):
             # If we are 'Verse Per Line' then force a new line.
             elif self.settings_tab.layout_style == LayoutStyle.VersePerLine:
                 bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
+            elif self.settings_tab.layout_style == LayoutStyle.WholeVerseContinuous:
+                bible_text = '{bible} {verse}{data[text]}\n'.format(bible=bible_text, verse=verse_text, data=data)
             # We have to be 'Continuous'.
             else:
                 bible_text = '{bible} {verse}{data[text]}'.format(bible=bible_text, verse=verse_text, data=data)
@@ -989,9 +995,13 @@ class BibleMediaItem(MediaManagerItem):
         if self.settings_tab.layout_style == LayoutStyle.Continuous and not data['second_bible']:
             # Split the line but do not replace line breaks in renderer.
             service_item.add_capability(ItemCapabilities.NoLineBreaks)
+        if self.settings_tab.layout_style == LayoutStyle.WholeVerseContinuous:
+            if not data['second_bible']:
+                service_item.add_capability(ItemCapabilities.NoLineBreaks)
+        else:
+            service_item.add_capability(ItemCapabilities.CanWordSplit)
         service_item.add_capability(ItemCapabilities.CanPreview)
         service_item.add_capability(ItemCapabilities.CanLoop)
-        service_item.add_capability(ItemCapabilities.CanWordSplit)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         # Service Item: Title
         service_item.title = '{verse} {version}'.format(verse=verses.format_verses(), version=verses.format_versions())

@@ -90,6 +90,7 @@ class LayoutStyle(IntEnum):
     VersePerSlide = 0
     VersePerLine = 1
     Continuous = 2
+    WholeVerseContinuous = 3
 
 
 @unique
