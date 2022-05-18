@@ -32,7 +32,8 @@
             "status": "required",
             "notes": "Platform-specific user data directory handler",
             "repo": {
-                "pypi": "appdirs"
+                "pypi": "appdirs",
+                "redhat": "python3-appdirs"
             }
         },
         "AppKit": {
@@ -44,14 +45,16 @@
             "status": "required",
             "notes": "BeautifulSoup4 HTML webpage scraper",
             "repo": {
-                "pypi": "beautifulsoup4"
+                "pypi": "beautifulsoup4",
+                "redhat": "python3-beautifulsoup4"
             }
         },
         "chardet": {
             "status": "required",
             "notes": "Character encoding detection",
             "repo": {
-                "pypi": "chardet"
+                "pypi": "chardet",
+                "redhat": "python3-chardet"
             }
         },
         "com": {
@@ -82,7 +85,8 @@
             ],
             "notes": "Python bindings for Enchant spell checker",
             "repo": {
-                "pypi": "pyenchant"
+                "pypi": "pyenchant",
+                "redhat": "python3-enchant"
             }
         },
         "fitz": {
@@ -97,35 +101,40 @@
             "status": "testing",
             "redhat": "python3-flake8",
             "repo": {
-                "pypi": "flake8"
+                "pypi": "flake8",
+                "redhat": "python3-flake8"
             }
         },
         "flask": {
             "status": "required",
             "notes": "WSGI web application framework",
             "repo": {
-                "pypi": "Flask"
+                "pypi": "Flask",
+                "redhat": "python3-flask"
             }
         },
         "flask_cors": {
             "status": "required",
             "notes": "Flask extension for Cross Origin Resource Sharing (CORS)",
             "repo": {
-                "pypi": "Flask-Cors"
+                "pypi": "Flask-Cors",
+                "redhat": "python3-flask-cors"
             }
         },
         "lxml": {
             "status": "required",
             "notes": "XML parsing library",
             "repo": {
-                "pypi": "lxml"
+                "pypi": "lxml",
+                "redhat": "python3-lxml"
             }
         },
         "mako": {
             "status": "required",
             "notes": "HTML template library",
             "repo": {
-                "pypi": "Mako"
+                "pypi": "Mako",
+                "redhat": "python3-mako"
             }
         },
         "objc": {
@@ -222,7 +231,8 @@
             ],
             "notes": "Python wrapper for MediaInfo library",
             "repo": {
-                "pypi": "pymediainfo"
+                "pypi": "pymediainfo",
+                "redhat": "python3-pymediainfo"
             }
         },
         "pymysql": {
@@ -245,14 +255,16 @@
             "status": "optional",
             "notes": "SWORD Bible Import Support",
             "repo": {
-                "pypi:": "pysword"
+                "pypi:": "pysword",
+                "redhat": "python-pysword"
             }
         },
         "pytest": {
             "status": "testing",
             "notes": "Testing Framework",
             "repo": {
-                "pypi": "pytest"
+                "pypi": "pytest",
+                "redhat": "python3-pytest"
             }
         },
         "pytestqt": {
@@ -300,7 +312,8 @@
             "status": "required",
             "notes": "HTTP client library",
             "repo": {
-                "pypi": "requests"
+                "pypi": "requests",
+                "redhat": "python3-requests"
             }
         },
         "sqlalchemy": {

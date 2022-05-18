@@ -22,7 +22,6 @@
 
 """Parse Python source files and verify dependencies are met
 
-TODO: Add testing directory/dependencies
 TODO: Check for new dependencies to add to project-deps.json
 TODO: Check for removed dependencies to delete from project-deps.json
 

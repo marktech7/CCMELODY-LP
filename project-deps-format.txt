@@ -5,6 +5,18 @@ The "project-deps.json" file is used to set what modules are
 required for your project that are not included in the
 Python standard library.
 
+Note on repositories:
+    Some repositories may require extra repositories
+    to be enabled before finding the module.
+
+    In order to install these modules, you must enable
+    the extra repositor[y|ies] in order to find those
+    modules.
+
+    Example:
+        RedHat Fedora
+        vlc and python3-vlc are part of rpmfusion-free repository.
+
 Note on the JSON file format:
     This file will use a variation of the condensed version
     of the JSON format for brevity.
