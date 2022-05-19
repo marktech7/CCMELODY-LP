@@ -1229,6 +1229,24 @@ def test_load_service_modified_cancel_save(registry):
     assert result is False, 'The method did not exit early'
 
 
+@patch('openlp.core.ui.servicemanager.FileDialog.getOpenFileName')
+def test_load_service_without_file_path_canceled(mocked_get_open_file_name, registry):
+    """Test that the load_service() method does nothing when no file is loaded and the load dialog is canceled"""
+    # GIVEN: A modified ServiceManager
+    mocked_settings = MagicMock()
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=False)
+    mocked_get_open_file_name.return_value = None, None
+
+    # WHEN: A service is loaded but not path specified, and the load dialog is canceled
+    result = service_manager.load_service(file_path=None)
+
+    # THEN: The result should be False
+    mocked_get_open_file_name.assert_called_once()
+    assert result is False
+
+
 def test_load_service_modified_saved_with_file_path(registry):
     """Test that the load_service() method saves the file and loads the specified file"""
     # GIVEN: A modified ServiceManager
@@ -1374,6 +1392,22 @@ def test_service_manager_decide_save_method_save_as(registry):
     # THEN: The correct methods should have been called
     service_manager.save_file_as.assert_called_once()
     assert service_manager.save_file.call_count == 0, 'The save_file method should not have been called'
+
+
+def test_load_last_file(registry):
+    """Test the load_last_file() method"""
+    # GIVEN: Mocked out settings and a ServiceManager
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = Path('filename.osz')
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.load_file = MagicMock()
+
+    # WHEN: load_last_file() is called
+    service_manager.load_last_file()
+
+    # THEN: The file should have been loaded
+    service_manager.load_file.assert_called_once_with(Path('filename.osz'))
 
 
 class TestServiceManager(TestCase, TestMixin):
