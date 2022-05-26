@@ -25,7 +25,8 @@
             "status": "required",
             "notes": "Database migration tool for SQLAlchemy",
             "repo": {
-                "pypi": "alembic"
+                "pypi": "alembic",
+                "redhat": "python3-alembic"
             }
         },
         "appdirs": {
@@ -149,7 +150,7 @@
             "status": "required",
             "notes": "Python Image Library",
             "repo": {
-                "redhat": "python3-pillow",
+                "redhat": "python3-pillow-qt",
                 "pypi": "Pillow"
             },
             "subs": {
@@ -350,21 +351,24 @@
             "status": "required",
             "notes": "WSGI Server",
             "repo": {
-                "pypi": "waitress"
+                "pypi": "waitress",
+                "redhat": "python3-waitress"
             }
         },
         "webob": {
             "status": "required",
             "notes": "HTTP request/response wrapper",
             "repo": {
-                "pypi": "WebOb"
+                "pypi": "WebOb",
+                "redhat": "python3-webob"
             }
         },
         "websockets": {
             "status": "required",
             "notes": "WebSocket server/client library",
             "repo": {
-                "pypi": "websockets"
+                "pypi": "websockets",
+                "redhat": "python3-websockets"
             }
         },
         "win32com": {
