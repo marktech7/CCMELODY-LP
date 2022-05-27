@@ -556,7 +556,7 @@ class CWExtract(RegistryProperties):
         books_url = books_url.format(version=version)
         books = []
         books_page = get_web_page(books_url)
-        if books_page:
+        if not books_page:
             log.error('No books found in the CrossWalk response.')
             send_error_message('parse')
             return books
