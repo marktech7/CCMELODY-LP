@@ -35,6 +35,10 @@ class AlignmentWidget(ThemeEditorWidget):
     """
     A widget containing the alignment options
     """
+    def __init__(self, parent, grid_layout=None):
+        super().__init__(parent, grid_layout)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the UI
@@ -52,9 +56,18 @@ class AlignmentWidget(ThemeEditorWidget):
         self.main_layout.addWidget(self.vertical_label, 1, 0)
         self.vertical_combo_box.setObjectName('vertical_combo_box')
         self.main_layout.addWidget(self.vertical_combo_box, 1, 1, 1, 3)
+    
+    def connect_signals(self):
         # Connect signals to slots
-        self.horizontal_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
-        self.vertical_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.horizontal_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.vertical_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+    
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.horizontal_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.vertical_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
 
     def retranslate_ui(self):
         """
@@ -78,7 +91,6 @@ class AlignmentWidget(ThemeEditorWidget):
             self.horizontal_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('horizontal_align must either be a string or an int')
-        self.on_value_changed.emit()
 
     @property
     def vertical_align(self):
@@ -92,7 +104,6 @@ class AlignmentWidget(ThemeEditorWidget):
             self.vertical_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('vertical_align must either be a string or an int')
-        self.on_value_changed.emit()
 
     def _on_value_changed_emit(self):
         self.on_value_changed.emit()

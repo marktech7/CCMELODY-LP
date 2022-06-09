@@ -116,6 +116,11 @@ class ThemeEditorWidget(QtWidgets.QWidget):
     def retranslate_ui(self):
         ...
 
+    def connect_signals(self):
+        ...
+
+    def disconnect_signals(self):
+        ...
 
 def create_label(widget, parent = None):
     if widget.is_grid_layout:

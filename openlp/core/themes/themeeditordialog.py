@@ -57,11 +57,14 @@ class Ui_ThemeEditorDialog(object):
         # Toolbox
         self.main_toolbox_container = QtWidgets.QWidget()
         self.main_toolbox_layout = QtWidgets.QVBoxLayout()
+        self.main_toolbox_layout.setSpacing(0)
+        self.main_toolbox_layout.setContentsMargins(0, 0, 0, 0)
         self.theme_name_label = QtWidgets.QLabel(self.main_toolbox_container)
         self.theme_name_label.setObjectName('theme_name_label')
         self.theme_name_edit = QtWidgets.QLineEdit(self.main_toolbox_container)
         self.theme_name_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'[^/\\?*|<>\[\]":<>+%]+'), self))
         self.theme_name_edit.setObjectName('ThemeNameEdit')
+        self.theme_name_edit.setContentsMargins(0, 0, 0, 8)
         self.main_toolbox_layout.addWidget(self.theme_name_label)
         self.main_toolbox_layout.addWidget(self.theme_name_edit)
         self.main_toolbox = QtWidgets.QToolBox(self.main_toolbox_container)
@@ -119,7 +122,7 @@ class Ui_ThemeEditorDialog(object):
         # Alignment Widget
         self.alignment_widget = AlignmentWidget(theme_editor)
         self.alignment_widget.setObjectName('alignment_widget')
-        self.main_toolbox.addItem(self.alignment_widget, UiIcons().text, translate('OpenLP.ThemeEditor',
+        self.main_toolbox.addItem(self.alignment_widget, UiIcons().alignment, translate('OpenLP.ThemeEditor',
                                                                                    'Alignment'))
         # Area Position Widget
         self.area_position_section = QtWidgets.QWidget(self.main_toolbox)
@@ -139,17 +142,7 @@ class Ui_ThemeEditorDialog(object):
         self.transition_widget.setObjectName('transition_widget')
         self.main_toolbox.addItem(self.transition_widget, UiIcons().transition, translate('OpenLP.ThemeEditor',
                                                                                           'Transition'))
-        #theme_wizard.addPage(self.area_position_widget)
         # Preview Pane
-        #self.theme_name_layout = QtWidgets.QFormLayout()
-        #self.theme_name_layout.setObjectName('theme_name_layout')
-        #self.theme_name_label = QtWidgets.QLabel(self.preview_widget)
-        #self.theme_name_label.setObjectName('theme_name_label')
-        #self.theme_name_edit = QtWidgets.QLineEdit(self.preview_widget)
-        #self.theme_name_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'[^/\\?*|<>\[\]":<>+%]+'), self))
-        #self.theme_name_edit.setObjectName('ThemeNameEdit')
-        #self.theme_name_layout.addRow(self.theme_name_label, self.theme_name_edit)
-        #self.preview_layout.addLayout(self.theme_name_layout)
         screen_ratio = 16 / 9
         self.preview_area = QtWidgets.QWidget(self.main_splitter)
         self.preview_area.setObjectName('PreviewArea')
@@ -181,4 +174,3 @@ class Ui_ThemeEditorDialog(object):
         self.area_position_section_label.setText(translate('OpenLP.ThemeWizard', 'Allows you to change and move the'
                                                            ' Main and Footer areas.'))
         self.theme_name_label.setText(translate('OpenLP.ThemeWizard', 'Theme name:'))
-        pass

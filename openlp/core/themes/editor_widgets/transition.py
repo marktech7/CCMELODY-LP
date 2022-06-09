@@ -34,6 +34,10 @@ class TransitionWidget(ThemeEditorWidget):
     """
     A widget containing the transition options
     """
+    def __init__(self, parent, grid_layout=None):
+        super().__init__(parent, grid_layout)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the UI
@@ -66,11 +70,24 @@ class TransitionWidget(ThemeEditorWidget):
         self.transition_reverse_check_box = QtWidgets.QCheckBox(self)
         self.transition_reverse_check_box.setObjectName('transition_reverse_check_box')
         self.main_layout.addWidget(self.transition_reverse_check_box, 5, 3)
+
+    def connect_signals(self):
         # Connect slots
-        self.transitions_enabled_check_box.stateChanged.connect(self._on_transition_enabled_changed)
-        self.transition_speed_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
-        self.transition_effect_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
-        self.transition_direction_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.transitions_enabled_check_box.stateChanged.connect(self._on_transition_enabled_changed)
+            self.transitions_enabled_check_box.stateChanged.connect(self._on_value_changed_emit)
+            self.transition_speed_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.transition_effect_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.transition_direction_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.transitions_enabled_check_box.stateChanged.disconnect(self._on_transition_enabled_changed)
+        self.transitions_enabled_check_box.stateChanged.disconnect(self._on_value_changed_emit)
+        self.transition_speed_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.transition_effect_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.transition_direction_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
 
     def retranslate_ui(self):
         """
@@ -105,7 +122,6 @@ class TransitionWidget(ThemeEditorWidget):
         self.transition_direction_combo_box.setEnabled(value)
         self.transition_direction_label.setEnabled(value)
         self.transition_reverse_check_box.setEnabled(value)
-        self._on_value_changed_emit()
 
     @property
     def is_transition_enabled(self):
@@ -115,7 +131,6 @@ class TransitionWidget(ThemeEditorWidget):
     def is_transition_enabled(self, value):
         self.transitions_enabled_check_box.setChecked(value)
         self._on_transition_enabled_changed(value)
-        self._on_value_changed_emit()
 
     @property
     def transition_type(self):
@@ -129,7 +144,6 @@ class TransitionWidget(ThemeEditorWidget):
             self.transition_effect_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('transition_type must either be a string or an int')
-        self._on_value_changed_emit()
 
     @property
     def transition_speed(self):
@@ -143,7 +157,6 @@ class TransitionWidget(ThemeEditorWidget):
             self.transition_speed_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('transition_speed must either be a string or an int')
-        self._on_value_changed_emit()
 
     @property
     def transition_direction(self):
@@ -157,7 +170,6 @@ class TransitionWidget(ThemeEditorWidget):
             self.transition_direction_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('transition_direction must either be a string or an int')
-        self._on_value_changed_emit()
 
     @property
     def is_transition_reverse_enabled(self):
@@ -166,7 +178,6 @@ class TransitionWidget(ThemeEditorWidget):
     @is_transition_reverse_enabled.setter
     def is_transition_reverse_enabled(self, value):
         self.transition_reverse_check_box.setChecked(value)
-        self._on_value_changed_emit()
 
     def _on_value_changed_emit(self):
         self.on_value_changed.emit()

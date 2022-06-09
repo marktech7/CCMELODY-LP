@@ -33,6 +33,10 @@ class AreaPositionWidget(ThemeEditorWidget):
     """
     A widget for the area positioning in the theme editor
     """
+    def __init__(self, parent, grid_layout=None):
+        super().__init__(parent, grid_layout)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the UI
@@ -111,25 +115,50 @@ class AreaPositionWidget(ThemeEditorWidget):
         self.footer_position_layout.addWidget(self.footer_height_label, 4, 0)
         self.footer_position_layout.addWidget(self.footer_height_spin_box, 4, 1)
         self.main_layout.addWidget(self.footer_position_group_box, 0, 1)
+
+    def connect_signals(self):
         # Connect signals to slots
-        self.main_position_check_box.toggled.connect(self.main_x_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_y_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_width_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_height_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self._on_value_changed_emit)
-        self.footer_position_check_box.toggled.connect(self.footer_x_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_y_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_width_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_height_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self._on_value_changed_emit)
-        self.main_x_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.main_y_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.main_width_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.main_height_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.footer_x_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.footer_y_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.footer_width_spin_box.valueChanged.connect(self._on_value_changed_emit)
-        self.footer_height_spin_box.valueChanged.connect(self._on_value_changed_emit)
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.main_position_check_box.toggled.connect(self.main_x_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_y_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_width_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_height_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self._on_value_changed_emit)
+            self.footer_position_check_box.toggled.connect(self.footer_x_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_y_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_width_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_height_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self._on_value_changed_emit)
+            self.main_x_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_y_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_width_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_height_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_x_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_y_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_width_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_height_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.main_position_check_box.toggled.disconnect(self.main_x_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_y_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_width_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_height_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self._on_value_changed_emit)
+        self.footer_position_check_box.toggled.disconnect(self.footer_x_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_y_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_width_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_height_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self._on_value_changed_emit)
+        self.main_x_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_y_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_width_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_height_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_x_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_y_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_width_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_height_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
 
     def retranslate_ui(self):
         """
@@ -163,7 +192,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @use_main_default_location.setter
     def use_main_default_location(self, value):
         self.main_position_check_box.setChecked(value)
-        self._on_value_changed_emit()
 
     @property
     def main_x(self):
@@ -172,7 +200,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @main_x.setter
     def main_x(self, value):
         self.main_x_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def main_y(self):
@@ -181,7 +208,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @main_y.setter
     def main_y(self, value):
         self.main_y_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def main_width(self):
@@ -190,7 +216,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @main_width.setter
     def main_width(self, value):
         self.main_width_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def main_height(self):
@@ -199,7 +224,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @main_height.setter
     def main_height(self, value):
         self.main_height_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def use_footer_default_location(self):
@@ -208,7 +232,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @use_footer_default_location.setter
     def use_footer_default_location(self, value):
         self.footer_position_check_box.setChecked(value)
-        self._on_value_changed_emit()
 
     @property
     def footer_x(self):
@@ -217,7 +240,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @footer_x.setter
     def footer_x(self, value):
         self.footer_x_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def footer_y(self):
@@ -226,7 +248,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @footer_y.setter
     def footer_y(self, value):
         self.footer_y_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def footer_width(self):
@@ -235,7 +256,6 @@ class AreaPositionWidget(ThemeEditorWidget):
     @footer_width.setter
     def footer_width(self, value):
         self.footer_width_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     @property
     def footer_height(self):
@@ -244,7 +264,14 @@ class AreaPositionWidget(ThemeEditorWidget):
     @footer_height.setter
     def footer_height(self, value):
         self.footer_height_spin_box.setValue(value)
-        self._on_value_changed_emit()
 
     def _on_value_changed_emit(self):
         self.on_value_changed.emit()
+
+    def _on_value_changed_emit_debounce(self):
+        if not hasattr(self, 'debounce_timer'):
+            self.debounce_timer = QtCore.QTimer(self)
+            self.debounce_timer.setInterval(200)
+            self.debounce_timer.setSingleShot(True)
+            self.debounce_timer.timeout.connect(self._on_value_changed_emit)
+        self.debounce_timer.start()

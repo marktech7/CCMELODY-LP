@@ -71,8 +71,20 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.on_value_changed.connect(self.do_update)
         self.area_position_widget.on_value_changed.connect(self.do_update)
         self.preview_area_layout.resize.connect(self._update_preview_box_scale)
+        self.background_widget.connect_signals()
+        self.alignment_widget.connect_signals()
+        self.main_area_widget.connect_signals()
+        self.footer_area_widget.connect_signals()
+        self.transition_widget.connect_signals()
+        self.area_position_widget.connect_signals()
     
     def disconnect_events(self):
+        self.background_widget.disconnect_signals()
+        self.alignment_widget.disconnect_signals()
+        self.main_area_widget.disconnect_signals()
+        self.footer_area_widget.disconnect_signals()
+        self.transition_widget.disconnect_signals()
+        self.area_position_widget.disconnect_signals()
         self.background_widget.on_value_changed.disconnect(self.do_update)
         self.alignment_widget.on_value_changed.disconnect(self.do_update)
         self.main_area_widget.on_value_changed.disconnect(self.do_update)
@@ -211,7 +223,6 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.transition_direction = self.theme.display_slide_transition_direction
         self.transition_widget.is_transition_reverse_enabled = self.theme.display_slide_transition_reverse
 
-    @QtCore.pyqtSlot()
     def do_update(self, mark_as_changed = True):
         if mark_as_changed:
             self.has_changes = True
@@ -361,7 +372,6 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.set_defaults()
         self.can_update_theme = True
         self.edit_mode = edit
-        self.has_changes = False
         if edit:
             self.setWindowTitle(translate('OpenLP.ThemeWizard', 'Edit Theme - {name}'
                                           ).format(name=self.theme.theme_name))
@@ -373,14 +383,16 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
             self.theme_name_edit.setVisible(True)
             self.theme_name_label.setVisible(True)
             self.theme_name_edit.setText(None)
-        self.connect_events()
+        self.has_changes = False
         self.setDisabled(False)
         return super().exec()
 
     def showEvent(self, event):
         super().showEvent(event)
+        self.connect_events()
         self.do_update(False)
 
     def unload(self):
         self.disconnect_events()
+        self.has_changes = False
         self.preview_box.hide()

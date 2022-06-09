@@ -51,6 +51,10 @@ class BackgroundWidget(ThemeEditorWidget):
 
     on_value_changed = QtCore.pyqtSignal()
 
+    def __init__(self, parent, grid_layout=None):
+        super().__init__(parent, grid_layout)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the ui
@@ -155,20 +159,45 @@ class BackgroundWidget(ThemeEditorWidget):
         # Force everything up
         self.main_layout_spacer = QtWidgets.QSpacerItem(1, 1)
         self.main_layout.addItem(self.main_layout_spacer, 8, 0, 1, 4)
-        # Connect slots
-        self.background_combo_box.currentIndexChanged.connect(self._on_background_type_index_changed)
-        self.device_stream_select_button.clicked.connect(self._on_device_stream_select_button_triggered)
-        self.network_stream_select_button.clicked.connect(self._on_network_stream_select_button_triggered)
-        self.gradient_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
-        self.color_button.colorChanged.connect(self._on_value_changed_emit)
-        self.image_color_button.colorChanged.connect(self._on_value_changed_emit)
-        self.gradient_start_button.colorChanged.connect(self._on_value_changed_emit)
-        self.gradient_end_button.colorChanged.connect(self._on_value_changed_emit)
-        self.video_color_button.colorChanged.connect(self._on_value_changed_emit)
-        self.stream_color_button.colorChanged.connect(self._on_value_changed_emit)
-        self.stream_color_button.colorChanged.connect(self._on_value_changed_emit)
         # Force the first set of widgets to show
-        self._on_background_type_index_changed(0)
+        self._on_background_type_index_changed(0, emit = False)
+
+    def connect_signals(self):
+        # Connect slots
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.background_combo_box.currentIndexChanged.connect(self._on_background_type_index_changed)
+            self.device_stream_select_button.clicked.connect(self._on_device_stream_select_button_triggered)
+            self.network_stream_select_button.clicked.connect(self._on_network_stream_select_button_triggered)
+            self.gradient_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.image_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.gradient_start_button.colorChanged.connect(self._on_value_changed_emit)
+            self.gradient_end_button.colorChanged.connect(self._on_value_changed_emit)
+            self.video_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.stream_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.stream_lineedit.textChanged.connect(self._on_value_changed_emit)
+            self.image_path_edit.pathChanged.connect(self._on_value_changed_emit)
+            self.video_path_edit.pathChanged.connect(self._on_value_changed_emit)
+            # Force the first set of widgets to show
+            # Running after signal connect to ensure it's shown
+            self._on_background_type_index_changed(self.background_combo_box.currentIndex(), emit = False)
+    
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.background_combo_box.currentIndexChanged.disconnect(self._on_background_type_index_changed)
+        self.device_stream_select_button.clicked.disconnect(self._on_device_stream_select_button_triggered)
+        self.network_stream_select_button.clicked.disconnect(self._on_network_stream_select_button_triggered)
+        self.gradient_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.image_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.gradient_start_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.gradient_end_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.video_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.stream_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.stream_lineedit.textChanged.disconnect(self._on_value_changed_emit)
+        self.image_path_edit.pathChanged.disconnect(self._on_value_changed_emit)
+        self.video_path_edit.pathChanged.disconnect(self._on_value_changed_emit)
 
     def retranslate_ui(self):
         """
@@ -211,7 +240,7 @@ class BackgroundWidget(ThemeEditorWidget):
                                                            visible=visible_formats, actual=actual_formats)
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
 
-    def _on_background_type_index_changed(self, index):
+    def _on_background_type_index_changed(self, index, emit = True):
         """
         Hide and show widgets based on index
         """
@@ -223,7 +252,8 @@ class BackgroundWidget(ThemeEditorWidget):
         if index < len(widget_sets):
             for widget in widget_sets[index]:
                 widget.show()
-        self._on_value_changed_emit()
+        if emit:
+            self._on_value_changed_emit()
 
     def _on_device_stream_select_button_triggered(self):
         """
@@ -276,7 +306,6 @@ class BackgroundWidget(ThemeEditorWidget):
             self.background_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('background_type must either be a string or an int')
-        self._on_value_changed_emit()
 
     @property
     def color(self):
@@ -285,7 +314,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @color.setter
     def color(self, value):
         self.color_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def gradient_type(self):
@@ -299,7 +327,6 @@ class BackgroundWidget(ThemeEditorWidget):
             self.gradient_combo_box.setCurrentIndex(value)
         else:
             raise TypeError('gradient_type must either be a string or an int')
-        self._on_value_changed_emit()
 
     @property
     def gradient_start(self):
@@ -308,7 +335,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @gradient_start.setter
     def gradient_start(self, value):
         self.gradient_start_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def gradient_end(self):
@@ -317,7 +343,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @gradient_end.setter
     def gradient_end(self, value):
         self.gradient_end_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def image_color(self):
@@ -326,7 +351,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @image_color.setter
     def image_color(self, value):
         self.image_color_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def image_path(self):
@@ -335,7 +359,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @image_path.setter
     def image_path(self, value):
         self.image_path_edit.path = value
-        self._on_value_changed_emit()
 
     @property
     def video_color(self):
@@ -344,7 +367,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @video_color.setter
     def video_color(self, value):
         self.video_color_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def video_path(self):
@@ -353,7 +375,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @video_path.setter
     def video_path(self, value):
         self.video_path_edit.path = value
-        self._on_value_changed_emit()
 
     @property
     def stream_color(self):
@@ -362,7 +383,6 @@ class BackgroundWidget(ThemeEditorWidget):
     @stream_color.setter
     def stream_color(self, value):
         self.stream_color_button.color = value
-        self._on_value_changed_emit()
 
     @property
     def stream_mrl(self):

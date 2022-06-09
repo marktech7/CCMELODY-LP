@@ -55,6 +55,7 @@ class UiIcons(metaclass=Singleton):
             'active': {'icon': 'fa.child'},
             'add': {'icon': 'fa.plus-circle'},
             'alert': {'icon': 'fa.exclamation-triangle'},
+            'alignment': {'icon': 'fa.align-left'},
             'arrow_down': {'icon': 'fa.arrow-down'},
             'arrow_left': {'icon': 'fa.arrow-left'},
             'arrow_right': {'icon': 'fa.arrow-right'},
