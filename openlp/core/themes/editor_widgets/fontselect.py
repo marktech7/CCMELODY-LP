@@ -150,7 +150,7 @@ class FontSelectWidget(ThemeEditorWidget):
         self.shadow_layout.addWidget(self.shadow_size_spinbox, 1, 1)
         # Connect all the signals
         self.font_name_combobox.activated.connect(self._on_font_name_changed)
-        self.font_name_combobox.currentFontChanged.connect(self._on_font_name_changed)
+        self.font_name_combobox.currentFontChanged.connect(self._on_value_changed_emit)
         self.font_color_button.colorChanged.connect(self._on_font_color_changed)
         self.style_bold_button.toggled.connect(self._on_style_bold_toggled)
         self.style_italic_button.toggled.connect(self._on_style_italic_toggled)

@@ -55,11 +55,11 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self._setup()
 
     def _setup(self):
+        self.has_changes = False
         self.theme = None
         self.can_update_theme = True
         self.temp_background_filename = None
         self.display_aspect_ratio = 16 / 9
-        self.setMinimumSize(800, 600)
         self.setup_ui(self)
         self.preview_area.resizeEvent = self._preview_area_resize_event
     
@@ -86,33 +86,6 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         Provide help within the editor by opening the appropriate page of the openlp manual in the user's browser
         """
         QtGui.QDesktopServices.openUrl(QtCore.QUrl("https://manual.openlp.org/themes.html"))
-
-    def exec(self, edit=False):
-        """
-        Run the editor.
-        """
-        log.debug('Editing theme {name}'.format(name=self.theme.theme_name))
-        self.temp_background_filename = self.theme.background_source
-        self.can_update_theme = False
-        self.set_defaults()
-        self.can_update_theme = True
-        self.edit_mode = edit
-        if edit:
-            self.setWindowTitle(translate('OpenLP.ThemeWizard', 'Edit Theme - {name}'
-                                          ).format(name=self.theme.theme_name))
-        else:
-            self.setWindowTitle(UiStrings().NewTheme)
-        self.connect_events()
-        return QtWidgets.QDialog.exec(self)
-
-    def showEvent(self, event: QtGui.QShowEvent):
-        super().showEvent(event)
-        self.do_update()
-
-    def close(self):
-        super().close()
-        self.disconnect_events()
-        self.preview_box.hide()
 
     def _preview_area_resize_event(self, event=None):
         """
@@ -239,7 +212,9 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.is_transition_reverse_enabled = self.theme.display_slide_transition_reverse
 
     @QtCore.pyqtSlot()
-    def do_update(self):
+    def do_update(self, mark_as_changed = True):
+        if mark_as_changed:
+            self.has_changes = True
         self.update_theme()
         self.preview_box.clear_slides()
         self.preview_box.show()
@@ -320,3 +295,92 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme.display_slide_transition_direction = self.transition_widget.transition_direction
         self.theme.display_slide_transition_reverse = self.transition_widget.is_transition_reverse_enabled
 
+    def keyPressEvent(self, event: QtGui.QKeyEvent):
+        # Avoiding dialog accept when pressing Enter on input fields
+        if event.key() != QtCore.Qt.Key.Key_Return:
+            super().keyPressEvent(event)
+
+    def reject(self):
+        """
+        Warns user when trying to close with unsaved changes
+        """
+        if self.has_changes:
+            msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
+                                            translate('OpenLP.ThemeEditor', 'Unsaved Changes'),
+                                            translate('OpenLP.ThemeEditor', 'Any changes made in this theme will be lost.'
+                                                                            ' Are you sure you want to cancel?'),
+                                            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
+                                                                                    QtWidgets.QMessageBox.No),
+                                            self)
+            if msg_box.exec() != QtWidgets.QMessageBox.Yes:
+                return
+        self.unload()
+        return super().reject()
+
+    def accept(self):
+        """
+        Lets save the theme as Finish has been triggered
+        """
+        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
+        # Save the theme name
+        self.theme.theme_name = self.theme_name_edit.text()
+        if not self.theme.theme_name:
+            critical_error_message_box(
+                translate('OpenLP.ThemeWizard', 'Theme Name Missing'),
+                translate('OpenLP.ThemeWizard', 'There is no name for this theme. Please enter one.'))
+            return
+        if self.theme.theme_name == '-1' or self.theme.theme_name == 'None':
+            critical_error_message_box(
+                translate('OpenLP.ThemeWizard', 'Theme Name Invalid'),
+                translate('OpenLP.ThemeWizard', 'Invalid theme name. Please enter one.'))
+            return
+        self.setDisabled(True)
+        destination_path = None
+        if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or \
+                self.theme.background_type == BackgroundType.to_string(BackgroundType.Video):
+            file_name = self.theme.background_filename.name
+            destination_path = self.path / self.theme.theme_name / file_name
+        if self.theme.background_type == BackgroundType.to_string(BackgroundType.Stream):
+            destination_path = self.theme.background_source
+        if not self.edit_mode and not self.theme_manager.check_if_theme_exists(self.theme.theme_name):
+            return
+        # Set the theme background to the cache location
+        self.theme.background_filename = destination_path
+        self.theme_manager.save_theme(self.theme)
+        self.theme_manager.save_preview(self.theme.theme_name, self.preview_box.save_screenshot())
+        self.unload()
+        return super().accept()
+
+    def exec(self, edit=False):
+        """
+        Run the editor.
+        """
+        log.debug('Editing theme {name}'.format(name=self.theme.theme_name))
+        self.temp_background_filename = self.theme.background_source
+        self.can_update_theme = False
+        self.set_defaults()
+        self.can_update_theme = True
+        self.edit_mode = edit
+        self.has_changes = False
+        if edit:
+            self.setWindowTitle(translate('OpenLP.ThemeWizard', 'Edit Theme - {name}'
+                                          ).format(name=self.theme.theme_name))
+            self.theme_name_edit.setVisible(False)
+            self.theme_name_label.setVisible(False)
+            self.theme_name_edit.setText(self.theme.theme_name)
+        else:
+            self.setWindowTitle(UiStrings().NewTheme)
+            self.theme_name_edit.setVisible(True)
+            self.theme_name_label.setVisible(True)
+            self.theme_name_edit.setText(None)
+        self.connect_events()
+        self.setDisabled(False)
+        return super().exec()
+
+    def showEvent(self, event):
+        super().showEvent(event)
+        self.do_update(False)
+
+    def unload(self):
+        self.disconnect_events()
+        self.preview_box.hide()

@@ -182,10 +182,10 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         process the bootstrap post setup request
         """
         self.progress_form = ThemeProgressForm(self)
-        self.theme_form = ThemeForm(self)
+        #self.theme_form = ThemeForm(self)
+        #self.theme_form.path = self.theme_path
         self.theme_editor_form = ThemeEditorForm(self)
         self.theme_editor_form.path = self.theme_path
-        self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
@@ -315,8 +315,10 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         :param field:
         """
         theme = Theme()
-        self.theme_form.theme = theme
-        self.theme_form.exec()
+        #self.theme_form.theme = theme
+        #self.theme_form.exec()
+        self.theme_editor_form.theme = theme
+        self.theme_editor_form.exec()
         self.load_themes()
 
     def on_rename_theme(self, field=None):
