@@ -31,7 +31,8 @@ class GridLayoutPage(QtWidgets.QWizardPage):
     def __init__(self, parent=None):
         super().__init__(parent)
         self._column_width = 0
-        self.layout = QtWidgets.QGridLayout(self)
+        # self.layout conflicts with pyQT's layout() function, keeping the two variables for backward compatibility
+        self._layout = self.layout = QtWidgets.QGridLayout(self)
         self.setup_ui()
         self.retranslate_ui()
         self.resize_columns()
@@ -55,7 +56,9 @@ class GridLayoutPage(QtWidgets.QWizardPage):
             self.layout.setColumnMinimumWidth(column_number, self._column_width)
 
     def setup_ui(self):
-        raise NotImplementedError('Descendant pages need to implement setup_ui')
+        super(GridLayoutPage, self).setup_ui()
+        #raise NotImplementedError('Descendant pages need to implement setup_ui')
 
     def retranslate_ui(self):
-        raise NotImplementedError('Descendant pages need to implement retranslate_ui')
+        super(GridLayoutPage, self).retranslate_ui()
+#        raise NotImplementedError('Descendant pages need to implement retranslate_ui')

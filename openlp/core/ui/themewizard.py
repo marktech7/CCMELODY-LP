@@ -31,6 +31,7 @@ from openlp.core.pages.alignment import AlignmentTransitionsPage
 from openlp.core.pages.areaposition import AreaPositionPage
 from openlp.core.pages.background import BackgroundPage
 from openlp.core.pages.fontselect import FontSelectPage
+from openlp.core.themes.editor_widgets.fontselect import FontSelectFeatures
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.layouts import AspectRatioLayout
 
@@ -67,8 +68,8 @@ class Ui_ThemeWizard(object):
         # Footer Area Page
         self.footer_area_page = FontSelectPage()
         self.footer_area_page.setObjectName('footer_area_page')
-        self.footer_area_page.disable_features(FontSelectPage.Outline, FontSelectPage.Shadow,
-                                               FontSelectPage.LineSpacing)
+        self.footer_area_page.disable_features(FontSelectFeatures.Outline, FontSelectFeatures.Shadow,
+                                               FontSelectFeatures.LineSpacing)
         theme_wizard.addPage(self.footer_area_page)
         # Alignment Page
         self.alignment_page = AlignmentTransitionsPage()

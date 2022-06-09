@@ -19,20 +19,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.pages.background` module contains the background page used in the theme wizard
+The :mod:`~openlp.core.themes` module contains themes dialogs used by OpenLP.
 """
-from openlp.core.pages import GridLayoutPage
-from openlp.core.themes.editor_widgets import WidgetProxy
-from openlp.core.themes.editor_widgets.background import BackgroundWidget
-
-
-class BackgroundPage(GridLayoutPage, WidgetProxy):
-    """
-    A background selection widget
-    """
-    def __init__(self, parent=None):
-        GridLayoutPage.__init__(self, parent)
-
-    def create_widgets(self):
-        return BackgroundWidget(self, self._layout)
-        

@@ -56,8 +56,9 @@ QToolBar
 }
 """
 
-MEDIA_MANAGER_STYLE = """
-::tab#media_tool_box {
+TOOLBOX_STYLE = """
+::tab#media_tool_box,
+::tab#theme_editor_tool_box {
     background: qlineargradient(x1: 0, y1: 0, x2: 0, y2: 1,
         stop: 0 palette(button), stop: 1.0 palette(mid));
     border: 0;
@@ -253,6 +254,6 @@ def get_library_stylesheet():
     :return str: The correct stylesheet as a string
     """
     if not is_ui_theme(UiThemes.QDarkStyle):
-        return MEDIA_MANAGER_STYLE
+        return TOOLBOX_STYLE
     else:
         return ''

@@ -570,7 +570,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             footer_html = 'Dummy footer text'
         return footer_html
 
-    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True):
+    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True, use_delay=True):
         """
         Generate a preview of a theme.
 
@@ -590,8 +590,9 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             verses['verse'] = 'V1'
             verses['footer'] = self.generate_footer()
             self.load_verses([verses], is_sync=True)
-            # Wait for a second
-            wait_for(lambda: False, timeout=1)
+            if use_delay:
+                # Wait for a second
+                wait_for(lambda: False, timeout=1)
             self.force_page = False
             if generate_screenshot:
                 return self.grab()

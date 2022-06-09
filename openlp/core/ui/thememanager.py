@@ -41,6 +41,7 @@ from openlp.core.lib import build_icon, check_item_selected, create_thumb, get_t
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.theme import Theme
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box
+from openlp.core.themes.themeeditorform import ThemeEditorForm
 from openlp.core.ui.filerenameform import FileRenameForm
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.themeform import ThemeForm
@@ -182,6 +183,8 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         """
         self.progress_form = ThemeProgressForm(self)
         self.theme_form = ThemeForm(self)
+        self.theme_editor_form = ThemeEditorForm(self)
+        self.theme_editor_form.path = self.theme_path
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
@@ -387,8 +390,10 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
             theme = self.get_theme_data(item.data(QtCore.Qt.UserRole))
             if theme.background_type == 'image' or theme.background_type == 'video':
                 self.old_background_image_path = theme.background_filename
-            self.theme_form.theme = theme
-            self.theme_form.exec(True)
+            #self.theme_form.theme = theme
+            #self.theme_form.exec(True)
+            self.theme_editor_form.theme = theme
+            self.theme_editor_form.exec(True)
             self.old_background_image_path = None
             self.renderer.set_theme(theme)
             self.load_themes()

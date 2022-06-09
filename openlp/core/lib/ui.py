@@ -310,13 +310,13 @@ def set_case_insensitive_completer(cache, widget):
     widget.setCompleter(completer)
 
 
-def create_valign_selection_widgets(parent):
+def create_valign_selection_widgets(parent, use_form_label = True):
     """
     Creates a standard label and combo box for asking users to select a vertical alignment.
 
     :param parent: The parent object. This should be a ``QWidget`` descendant.
     """
-    label = FormLabel(parent)
+    label = FormLabel(parent) if use_form_label else QtWidgets.QLabel(parent)
     label.setText(translate('OpenLP.Ui', '&Vertical Align:'))
     combo_box = QtWidgets.QComboBox(parent)
     combo_box.addItems([UiStrings().Top, UiStrings().Middle, UiStrings().Bottom])
