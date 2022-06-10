@@ -49,13 +49,18 @@ import string
 from openlp.core.common.registry import Registry
 
 from openlp.core.projectors.constants import E_AUTHENTICATION, PJLINK_DEFAULT_CODES, PJLINK_ERRORS, \
-    PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_TOKEN_SIZE, \
-    E_NO_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_DATA_OK, S_OFF, S_OK, S_ON, S_STANDBY, STATUS_MSG
+    PJLINK_ERST_DATA, PJLINK_ERST_LIST, PJLINK_ERST_STATUS, PJLINK_POWR_STATUS, PJLINK_SVER_MAX_LEN, \
+    PJLINK_TOKEN_SIZE, E_NO_AUTHENTICATION, S_AUTHENTICATE, S_CONNECT, S_DATA_OK, S_OFF, S_OK, S_ON, \
+    S_STANDBY, STATUS_MSG
 
 log = logging.getLogger(__name__)
 log.debug('Loading pjlinkcommands')
 
 __all__ = ['process_command']
+
+_pjlink_functions = {}
+# Helper until I update the rest of the tests
+pjlink_functions = _pjlink_functions
 
 
 # This should be the only function that's imported.
@@ -103,16 +108,34 @@ def process_ackn(projector, data):
     pass
 
 
-def process_avmt(projector, data):
+_pjlink_functions['ACKN'] = process_ackn
+
+
+def _process_avmt_mute(projector, data):
+    """
+    Helper to set projector.mute
+    """
+    projector.mute = data
+
+
+def _process_avmt_shutter(projector, data):
+    """
+    Helper to set projector.shutter
+    """
+    projector.shutter = data
+
+
+def _process_avmt(projector, data):
     """
     Process shutter and speaker status. See PJLink specification for format.
-    Update projector.mute (audio) and projector.shutter (video shutter).
+
+    Update projector.mute (audio mute) and projector.shutter (video mute).
     10 = Shutter open, audio unchanged
     11 = Shutter closed, audio unchanged
-    20 = Shutter unchanged, Audio normal
-    21 = Shutter unchanged, Audio muted
-    30 = Shutter open, audio muted
-    31 = Shutter closed,  audio normal
+    20 = Shutter unchanged, audio normal
+    21 = Shutter unchanged, audio mute
+    30 = Shutter open, audio normal
+    31 = Shutter closed, audio mute
 
     :param projector: Projector instance
     :param data: Shutter and audio status
@@ -125,25 +148,26 @@ def process_avmt(projector, data):
                 '31': {'shutter': True, 'mute': True}
                 }
     if data not in settings:
-        log.warning('({ip}) Invalid av mute response: {data}'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Invalid av mute response: {data}')
         return
     shutter = settings[data]['shutter']
     mute = settings[data]['mute']
-    # Check if we need to update the icons
-    update_icons = (shutter != projector.shutter) or (mute != projector.mute)
+    update_icons = False
+    if projector.shutter != shutter:
+        _process_avmt_shutter(projector=projector, data=shutter)
+        update_icons = True
+        log.debug(f'({projector.entry.name}) Setting shutter to {"closed" if shutter else "open"}')
+    if projector.mute != mute:
+        _process_avmt_mute(projector=projector, data=mute)
+        projector.mute = mute
+        update_icons = True
+        log.debug(f'({projector.entry.name}) Setting speaker to {"muted" if mute else "normal"}')
     if update_icons:
-        if projector.shutter != shutter:
-            projector.shutter = shutter
-            log.debug('({ip}) Setting shutter to {chk}'.format(ip=projector.entry.name,
-                                                               chk='closed' if shutter else 'open'))
-        if projector.mute != mute:
-            projector.mute = mute
-            log.debug('({ip}) Setting speaker to {chk}'.format(ip=projector.entry.name,
-                                                               chk='muted' if shutter else 'normal'))
-        if 'AVMT' in projector.status_timer_checks:
-            projector.status_timer_delete('AVMT')
         projector.projectorUpdateIcons.emit()
-    return
+    projector.status_timer_delete('AVMT')
+
+
+_pjlink_functions['AVMT'] = _process_avmt
 
 
 def process_clss(projector, data):
@@ -178,14 +202,14 @@ def process_clss(projector, data):
         clss = data
     projector.pjlink_class = clss
     log.debug(f'({projector.entry.name}) Setting pjlink_class for this projector to "{projector.pjlink_class}"')
-    if projector.no_poll:
-        return
+    if not projector.no_poll:
+        # Since we call this one on first connect, setup polling from here
+        log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
+        projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
+        projector.poll_timer.start()
 
-    # Since we call this one on first connect, setup polling from here
-    log.debug(f'({projector.entry.name}) process_pjlink(): Starting timer')
-    projector.poll_timer.setInterval(1000)  # Set 1 second for initial information
-    projector.poll_timer.start()
-    return
+
+_pjlink_functions['CLSS'] = process_clss
 
 
 def process_erst(projector, data):
@@ -198,13 +222,11 @@ def process_erst(projector, data):
     """
     if len(data) != PJLINK_ERST_DATA['DATA_LENGTH']:
         count = PJLINK_ERST_DATA['DATA_LENGTH']
-        log.warning('({ip}) Invalid error status response "{data}": length != {count}'.format(ip=projector.entry.name,
-                                                                                              data=data,
-                                                                                              count=count))
+        log.warning(f'({projector.entry.name}) Invalid error status response "{data}": length != {count}')
         return
     if not data.isnumeric():
         # Bad data - ignore
-        log.warning('({ip}) Invalid error status response "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Invalid error status response "{data}"')
         return
     if int(data) == 0:
         projector.projector_errors = None
@@ -233,6 +255,9 @@ def process_erst(projector, data):
     return
 
 
+_pjlink_functions['ERST'] = process_erst
+
+
 def process_inf1(projector, data):
     """
     Manufacturer name set in projector.
@@ -242,9 +267,11 @@ def process_inf1(projector, data):
     :param data: Projector manufacturer
     """
     projector.manufacturer = data
-    log.debug('({ip}) Setting projector manufacturer data to "{data}"'.format(ip=projector.entry.name,
-                                                                              data=projector.manufacturer))
+    log.debug(f'({projector.entry.name}) Setting projector manufacturer data to "{projector.manufacturer}"')
     return
+
+
+_pjlink_functions['INF1'] = process_inf1
 
 
 def process_inf2(projector, data):
@@ -256,8 +283,11 @@ def process_inf2(projector, data):
     :param data: Model name
     """
     projector.model = data
-    log.debug('({ip}) Setting projector model to "{data}"'.format(ip=projector.entry.name, data=projector.model))
+    log.debug(f'({projector.entry.name}) Setting projector model to "{projector.model}"')
     return
+
+
+_pjlink_functions['INF2'] = process_inf2
 
 
 def process_info(projector, data):
@@ -269,9 +299,11 @@ def process_info(projector, data):
     :param data: Projector other info
     """
     projector.other_info = data
-    log.debug('({ip}) Setting projector other_info to "{data}"'.format(ip=projector.entry.name,
-                                                                       data=projector.other_info))
+    log.debug(f'({projector.entry.name}) Setting projector other_info to "{projector.other_info}"')
     return
+
+
+_pjlink_functions['INFO'] = process_info
 
 
 def process_inpt(projector, data):
@@ -286,17 +318,18 @@ def process_inpt(projector, data):
     if projector.source_available is not None:
         # We have available inputs, so verify it's in the list
         if data not in projector.source_available:
-            log.warning('({ip}) Input source not listed in available sources - '
-                        'ignoring'.format(ip=projector.entry.name))
+            log.warning(f'({projector.entry.name}) Input source not listed in available sources - ignoring')
             return
     elif data not in PJLINK_DEFAULT_CODES:
         # Hmm - no sources available yet, so check with PJLink defaults
-        log.warning('({ip}) Input source not listed as a PJLink valid source '
-                    '- ignoring'.format(ip=projector.entry.name))
+        log.warning(f'({projector.entry.name}) Input source not listed as a PJLink valid source - ignoring')
         return
     projector.source = data
-    log.debug('({ip}) Setting current source to "{data}"'.format(ip=projector.entry.name, data=projector.source))
+    log.debug(f'({projector.entry.name}) Setting current source to "{projector.source}"')
     return
+
+
+_pjlink_functions['INPT'] = process_inpt
 
 
 def process_inst(projector, data):
@@ -313,10 +346,12 @@ def process_inst(projector, data):
         sources.append(source)
     sources.sort()
     projector.source_available = sources
-    log.debug('({ip}) Setting projector source_available to "{data}"'.format(ip=projector.entry.name,
-                                                                             data=projector.source_available))
+    log.debug(f'({projector.entry.name}) Setting projector source_available to "{projector.source_available}"')
     projector.projectorUpdateIcons.emit()
     return
+
+
+_pjlink_functions['INST'] = process_inst
 
 
 def process_lamp(projector, data):
@@ -332,14 +367,13 @@ def process_lamp(projector, data):
     lamp_list = data.split()
     if len(lamp_list) < 2:
         # Invalid data - not enough information
-        log.warning('({ip}) process_lamp(): Invalid data "{data}" - '
-                    'Missing data'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) process_lamp(): Invalid data "{data}" - Missing data')
         return
     else:
         while lamp_list:
             if not lamp_list[0].isnumeric() or not lamp_list[1].isnumeric():
                 # Invalid data - we'll ignore the rest for now
-                log.warning('({ip}) process_lamp(): Invalid data "{data}"'.format(ip=projector.entry.name, data=data))
+                log.warning(f'({projector.entry.name}) process_lamp(): Invalid data "{data}"')
                 return
             fill = {'Hours': int(lamp_list[0]), 'On': False if lamp_list[1] == '0' else True}
             lamps.append(fill)
@@ -349,16 +383,22 @@ def process_lamp(projector, data):
     return
 
 
-def process_lkup(projector, data):
+_pjlink_functions['LAMP'] = process_lamp
+
+
+def _process_lkup(projector, data):
     """
     Process UDP request indicating remote is available for connection
 
     :param projector: Projector instance
     :param data: Data packet from remote
     """
-    log.debug('({ip}) Processing LKUP command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing LKUP command')
     if Registry().get('settings').value('projector/connect when LKUP received'):
         projector.connect_to_host()
+
+
+_pjlink_functions['LKUP'] = _process_lkup
 
 
 def process_name(projector, data):
@@ -370,9 +410,11 @@ def process_name(projector, data):
     :param data: Projector name
     """
     projector.pjlink_name = data
-    log.debug('({ip}) Setting projector PJLink name to "{data}"'.format(ip=projector.entry.name,
-                                                                        data=projector.pjlink_name))
+    log.debug(f'({projector.entry.name}) Setting projector PJLink name to "{projector.pjlink_name}"')
     return
+
+
+_pjlink_functions['NAME'] = process_name
 
 
 def process_pjlink(projector, data):
@@ -419,6 +461,9 @@ def process_pjlink(projector, data):
         return S_AUTHENTICATE
 
 
+_pjlink_functions['PJLINK'] = process_pjlink
+
+
 def process_powr(projector, data):
     """
     Power status. See PJLink specification for format.
@@ -427,15 +472,14 @@ def process_powr(projector, data):
     :param projector: Projector instance
     :param data: Power status
     """
-    log.debug('({ip}) Processing POWR command'.format(ip=projector.entry.name))
+    log.debug(f'({projector.entry.name}) Processing POWR command')
     if data not in PJLINK_POWR_STATUS:
         # Log unknown status response
-        log.warning('({ip}) Unknown power response: "{data}"'.format(ip=projector.entry.name, data=data))
+        log.warning(f'({projector.entry.name}) Unknown power response: "{data}"')
         return
 
     power = PJLINK_POWR_STATUS[data]
-    update_icons = projector.power != power
-    if update_icons:
+    if projector.power != power:
         projector.power = power
         projector.change_status(PJLINK_POWR_STATUS[data])
         projector.projectorUpdateIcons.emit()
@@ -443,9 +487,12 @@ def process_powr(projector, data):
             # Input sources list should only be available after power on, so update here
             projector.send_command('INST')
 
-    if projector.power in [S_ON, S_STANDBY, S_OFF] and 'POWR' in projector.status_timer_checks:
+    if projector.power in [S_ON, S_STANDBY, S_OFF]:
         projector.status_timer_delete(cmd='POWR')
     return
+
+
+_pjlink_functions['POWR'] = process_powr
 
 
 def process_rfil(projector, data):
@@ -458,9 +505,12 @@ def process_rfil(projector, data):
     if projector.model_filter is None:
         projector.model_filter = data
     else:
-        log.warning('({ip}) Filter model already set'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved model: "{old}"'.format(ip=projector.entry.name, old=projector.model_filter))
-        log.warning('({ip}) New model: "{new}"'.format(ip=projector.entry.name, new=data))
+        log.warning(f'({projector.entry.name}) Filter model already set')
+        log.warning(f'({projector.entry.name}) Saved model: "{projector.model_filter}"')
+        log.warning(f'({projector.entry.name}) New model: "{data}"')
+
+
+_pjlink_functions['RFIL'] = process_rfil
 
 
 def process_rlmp(projector, data):
@@ -473,9 +523,12 @@ def process_rlmp(projector, data):
     if projector.model_lamp is None:
         projector.model_lamp = data
     else:
-        log.warning('({ip}) Lamp model already set'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved lamp: "{old}"'.format(ip=projector.entry.name, old=projector.model_lamp))
-        log.warning('({ip}) New lamp: "{new}"'.format(ip=projector.entry.name, new=data))
+        log.warning(f'({projector.entry.name}) Lamp model already set')
+        log.warning(f'({projector.entry.name}) Saved lamp: "{projector.model_lamp}"')
+        log.warning(f'({projector.entry.name}) New lamp: "{data}"')
+
+
+_pjlink_functions['RLMP'] = process_rlmp
 
 
 def process_snum(projector, data):
@@ -486,22 +539,24 @@ def process_snum(projector, data):
     :param data: Serial number from projector.
     """
     if projector.serial_no is None:
-        log.debug('({ip}) Setting projector serial number to "{data}"'.format(ip=projector.entry.name, data=data))
+        log.debug(f'({projector.entry.name}) Setting projector serial number to "{data}"')
         projector.serial_no = data
         projector.db_update = False
         return
 
     # Compare serial numbers and see if we got the same projector
     if projector.serial_no != data:
-        log.warning('({ip}) Projector serial number does not match saved serial '
-                    'number'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved:    "{old}"'.format(ip=projector.entry.name, old=projector.serial_no))
-        log.warning('({ip}) Received: "{new}"'.format(ip=projector.entry.name, new=data))
-        log.warning('({ip}) NOT saving serial number'.format(ip=projector.entry.name))
+        log.warning(f'({projector.entry.name}) Projector serial number does not match saved serial number')
+        log.warning(f'({projector.entry.name}) Saved:    "{projector.serial_no}"')
+        log.warning(f'({projector.entry.name}) Received: "{data}"')
+        log.warning(f'({projector.entry.name}) NOT saving serial number')
         projector.serial_no_received = data
 
 
-def process_srch(projector=None, data=None):
+_pjlink_functions['SNUM'] = process_snum
+
+
+def _process_srch(projector=None, data=None):
     """
     Process the SRCH command.
 
@@ -512,58 +567,38 @@ def process_srch(projector=None, data=None):
     :param projector: Projector instance (actually ignored for this command)
     :param data: Data in packet
     """
-    if projector is None:
-        log.warning('SRCH packet detected - ignoring')
-    else:
-        log.warning(f'({projector.entry.name}) SRCH packet detected - ignoring')
-    return
+    msg = 'SRCH packet detected - ignoring'
+    name = ''
+    if projector is not None:
+        name = f'({projector.entry.name}) '
+    log.warning(f'{name}{msg}')
 
 
-def process_sver(projector, data):
+_pjlink_functions['SRCH'] = _process_srch
+
+
+def _process_sver(projector, data):
     """
     Software version of projector
 
     :param projector: Projector instance
     :param data: Software version of projector
     """
-    if len(data) > 32:
-        # Defined in specs max version is 32 characters
-        log.warning('Invalid software version - too long')
+    if len(data) > PJLINK_SVER_MAX_LEN:
+        # Defined in specs 0-32 characters max
+        log.warning(f'({projector.name}) Invalid software version - too long')
         return
-    if projector.sw_version is not None:
-        if projector.sw_version == data:
-            log.debug('({ip}) Software version same as saved version - returning'.format(ip=projector.entry.name))
-            return
-        log.warning('({ip}) Projector software version does not match saved '
-                    'software version'.format(ip=projector.entry.name))
-        log.warning('({ip}) Saved:    "{old}"'.format(ip=projector.entry.name, old=projector.sw_version))
-        log.warning('({ip}) Received: "{new}"'.format(ip=projector.entry.name, new=data))
-        log.warning('({ip}) Updating software version'.format(ip=projector.entry.name))
+    elif projector.sw_version == data:
+        log.debug(f'({projector.name}) Software version unchanged - returning')
+        return
+    elif projector.sw_version is not None:
+        log.debug(f'({projector.name}) Old software version "{projector.sw_version}"')
+        log.debug(f'({projector.name}) New software version "{data}"')
 
-    log.debug('({ip}) Setting projector software version to "{data}"'.format(ip=projector.entry.name, data=data))
+    # Software version changed - save
+    log.debug(f'({projector.entry.name}) Setting projector software version to "{data}"')
     projector.sw_version = data
     projector.db_update = True
 
 
-# Map command to function.
-pjlink_functions = {
-    'ACKN': process_ackn,  # Class 2 (command is SRCH)
-    'AVMT': process_avmt,
-    'CLSS': process_clss,
-    'ERST': process_erst,
-    'INFO': process_info,
-    'INF1': process_inf1,
-    'INF2': process_inf2,
-    'INPT': process_inpt,
-    'INST': process_inst,
-    'LAMP': process_lamp,
-    'LKUP': process_lkup,  # Class 2  (terminal request only - no cmd)
-    'NAME': process_name,
-    'PJLINK': process_pjlink,
-    'POWR': process_powr,
-    'SNUM': process_snum,
-    'SRCH': process_srch,   # Class 2 (reply is ACKN)
-    'SVER': process_sver,
-    'RFIL': process_rfil,
-    'RLMP': process_rlmp
-}
+_pjlink_functions['SVER'] = _process_sver

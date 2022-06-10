@@ -250,9 +250,10 @@ def test_config_update_show_second_bible(media_item):
     Test the config update method
     """
     # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
-    media_item.settings.value = lambda key: {'bibles/second bibles': True}[key]
+    media_item.settings.value = lambda key: {'bibles/second bibles': True, 'bibles/verse layout style': 0}[key]
     media_item.general_bible_layout = MagicMock()
     media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
 
     # WHEN: Calling config_update()
     media_item.config_update()
@@ -266,15 +267,33 @@ def test_config_update_hide_second_bible(media_item):
     Test the config update method
     """
     # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
-    media_item.settings.value = lambda key: {'bibles/second bibles': False}[key]
+    media_item.settings.value = lambda key: {'bibles/second bibles': False, 'bibles/verse layout style': 0}[key]
     media_item.general_bible_layout = MagicMock()
     media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
 
     # WHEN: Calling config_update()
     media_item.config_update()
 
     # THEN: second_combo_box() should hidden
     media_item.second_combo_box.setVisible.assert_called_once_with(False)
+
+
+def test_config_update_set_layout_style(media_item):
+    """
+    Test the config update method
+    """
+    # GIVEN: An instance of :class:`MediaManagerItem` and mocked out settings class with known values
+    media_item.settings.value = lambda key: {'bibles/second bibles': True, 'bibles/verse layout style': 1}[key]
+    media_item.general_bible_layout = MagicMock()
+    media_item.second_combo_box = MagicMock()
+    media_item.style_combo_box = MagicMock()
+
+    # WHEN: Calling config_update()
+    media_item.config_update()
+
+    # THEN: style_combo_box should set the currentIndex to 1
+    media_item.style_combo_box.setCurrentIndex(1)
 
 
 def test_initalise(media_item):
@@ -931,6 +950,20 @@ def test_on_advanced_book_combo_box(media_item):
         media_item.plugin.manager.get_book_by_id.assert_called_once_with('Bible 1', 2)
         media_item.search_button.setEnabled.assert_called_once_with(False)
         assert mocked_critical_error_message_box.called is True
+
+
+def test_on_advanced_book_combo_box_no_selection(media_item):
+    """
+    Test on_advanced_book_combo_box when there is nothing selected
+    """
+    # GIVEN: An instance of :class:`MediaManagerItem` and a mocked manager
+    media_item.select_book_combo_box = MagicMock(**{'currentData.return_value': None})
+
+    # WHEN: Calling on_advanced_book_combo_box
+    media_item.on_advanced_book_combo_box()
+
+    # THEN: The method should exit early, and no query made
+    assert media_item.plugin.manager.get_book_by_id.call_count == 0
 
 
 def test_on_advanced_book_combo_box_set_up_comboboxes(media_item):

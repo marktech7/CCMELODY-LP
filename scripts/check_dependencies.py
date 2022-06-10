@@ -76,7 +76,7 @@ MODULES = [
     'PyQt5.QtOpenGL',
     'PyQt5.QtSvg',
     'PyQt5.QtTest',
-    'PyQt5.QtWebEngineWidgets',
+    ('PyQt5.QtWebEngineWidgets', '(PyQtWebEngine on PyPI)'),
     'PyQt5.QtMultimedia',
     'appdirs',
     'sqlalchemy',
@@ -94,7 +94,9 @@ MODULES = [
     'qtawesome',
     'pymediainfo',
     'vlc',
-    'zeroconf'
+    'zeroconf',
+    'qrcode',
+    'PIL.ImageQt'
 ]
 
 
@@ -108,9 +110,8 @@ OPTIONAL_MODULES = [
     ('pysword', '(import SWORD bibles)'),
     ('uno', '(LibreOffice/OpenOffice support)'),
     # development/testing modules
-    ('jenkins', '(access jenkins api)'),
     ('pytest', '(testing framework)'),
-    ('pytestqt', '(testing framework)'),
+    ('pytestqt', '(PyQt testing framework - pytest-qt on PyPI)'),
     ('flake8', '(linter)')
 ]
 
@@ -239,7 +240,10 @@ def main():
     verify_python()
     print('Checking for modules...')
     for m in MODULES:
-        check_module(m)
+        if isinstance(m, (tuple, list)):
+            check_module(m[0], text=m[1])
+        else:
+            check_module(m)
     print('Checking for optional modules...')
     for m in OPTIONAL_MODULES:
         check_module(m[0], text=m[1])

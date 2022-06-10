@@ -186,12 +186,14 @@ class PJLink(QtNetwork.QTcpSocket):
     Socket services for PJLink TCP packets.
     """
     # Signals sent by this module
-    changeStatus = QtCore.pyqtSignal(str, int, str)
+    projectorChangeStatus = QtCore.pyqtSignal(str, int, str)
     projectorStatus = QtCore.pyqtSignal(int)  # Status update
     projectorAuthentication = QtCore.pyqtSignal(str)  # Authentication error
     projectorNoAuthentication = QtCore.pyqtSignal(str)  # PIN set and no authentication needed
     projectorReceivedData = QtCore.pyqtSignal()  # Notify when received data finished processing
     projectorUpdateIcons = QtCore.pyqtSignal()  # Update the status icons on toolbar
+    # Deprecated
+    changeStatus = projectorChangeStatus  # Use projectorChangeStatus
 
     def __init__(self, projector, *args, **kwargs):
         """
@@ -207,7 +209,8 @@ class PJLink(QtNetwork.QTcpSocket):
         log.debug(f'PJLink(projector="{projector}", args="{args}" kwargs="{kwargs}")')
         super().__init__()
         self.settings_section = 'projector'
-        self.entry = projector
+        self.db = projector
+        self.entry = self.db  # Deprecated use self.db
         self.ip = self.entry.ip
         self.qhost = QtNetwork.QHostAddress(self.ip)
         self.location = self.entry.location
@@ -428,36 +431,39 @@ class PJLink(QtNetwork.QTcpSocket):
         log.debug(f'({self.entry.name}) check_login(data="{data}")')
         if data is None:
             # Reconnected setup?
-            if not self.waitForReadyRead(2000):
+            log.debug(f'({self.name}) check_login() Waiting for readyRead()')
+            _chk = self.waitForReadyRead(2000)  # 2 seconds should be plenty of time
+            if not _chk:
                 # Possible timeout issue
                 log.error(f'({self.entry.name}) Socket timeout waiting for login')
                 self.change_status(E_SOCKET_TIMEOUT)
                 return
-            read = self.readLine(self.max_size)
-            self.readLine(self.max_size)  # Clean out any trailing whitespace
-            if read is None:
+            log.debug(f'({self.name}) check_login() Checking for data')
+            data = self.readLine(self.max_size)
+            if data is None:
                 log.warning(f'({self.entry.name}) read is None - socket error?')
                 return
-            elif len(read) < 8:
+            elif len(data) < 8:
                 log.warning(f'({self.entry.name}) Not enough data read - skipping')
                 return
-            data = decode(read, 'utf-8')
             # Possibility of extraneous data on input when reading.
             # Clean out extraneous characters in buffer.
-            self.read(1024)
+            _ = self.read(1024)
             log.debug(f'({self.entry.name}) check_login() read "{data.strip()}"')
         # At this point, we should only have the initial login prompt with
         # possible authentication
         # PJLink initial login will be:
         # 'PJLink 0' - Unauthenticated login - no extra steps required.
         # 'PJLink 1 XXXXXX' Authenticated login - extra processing required.
-        if not data.startswith('PJLINK'):
+        if type(data) is bytes:
+            data = decode(data, 'utf-8')
+        if not data.upper().startswith('PJLINK'):
             # Invalid initial packet - close socket
             log.error(f'({self.entry.name}) Invalid initial packet received - closing socket')
             return self.disconnect_from_host()
         # Convert the initial login prompt with the expected PJLink normal command format for processing
         log.debug(f'({self.entry.name}) check_login(): Formatting initial connection prompt to PJLink packet')
-        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1).encode("utf-8")}')
+        return self.get_data(f'{PJLINK_PREFIX}1{data.replace(" ", "=", 1)}'.strip())
 
     def _trash_buffer(self, msg=None):
         """
@@ -530,8 +536,11 @@ class PJLink(QtNetwork.QTcpSocket):
         ignore_class = False if 'ignore_class' not in kwargs else kwargs['ignore_class']
         log.debug(f'({self.entry.name}) Setting ignore_class to "{ignore_class}"')
         # NOTE: Class2 has changed to some values being UTF-8
-        data_in = decode(buff, 'utf-8') if isinstance(buff, bytes) else buff
-        data = data_in.strip()
+        if type(buff) is bytes:
+            data = decode(buff, 'utf-8')
+        else:
+            data = buff
+        data = data.strip()
         self.receive_data_signal()
         # Initial packet checks
         if len(data) < 7:

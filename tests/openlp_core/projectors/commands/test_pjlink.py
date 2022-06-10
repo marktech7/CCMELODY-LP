@@ -24,26 +24,14 @@ Test process_pjlink method
 
 import logging
 import openlp.core.projectors.pjlinkcommands
-import pytest
 
 from openlp.core.projectors.pjlinkcommands import process_pjlink
 from openlp.core.projectors.constants import E_AUTHENTICATION, E_NO_AUTHENTICATION, \
     S_AUTHENTICATE, S_CONNECT
 
-from tests.helpers.projector import FakeProjector
 from tests.resources.projector.data import TEST_PIN, TEST_SALT
 
 test_module = openlp.core.projectors.pjlinkcommands.__name__
-
-
-@pytest.fixture
-def fake_pjlink():
-    """
-    Helper since we don't need a full-blown PJLink() instance
-    """
-    dumb_projector = FakeProjector()
-    yield dumb_projector
-    del(dumb_projector)
 
 
 def test_normal_no_authentication_type(fake_pjlink, caplog):
@@ -147,6 +135,7 @@ def test_normal_login(fake_pjlink, caplog):
             (f'{test_module}', logging.DEBUG,
              f'({fake_pjlink.entry.name}) PJLINK: Returning S_CONNECT')
             ]
+    fake_pjlink.pin = None
 
     # WHEN: Calling function
     caplog.clear()
@@ -230,7 +219,6 @@ def test_authenticate_invalid_salt(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = '1 1a2b3c4g'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.ERROR,
@@ -253,12 +241,12 @@ def test_authenticate_no_pin(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = f'1 {TEST_SALT}'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.ERROR,
              f'({fake_pjlink.entry.name}) Authenticate connection but no PIN - aborting')
             ]
+    fake_pjlink.pin = None
 
     # WHEN: Calling function
     caplog.clear()
@@ -276,7 +264,6 @@ def test_authenticate_login(fake_pjlink, caplog):
     # GIVEN: Test setup
     caplog.set_level(logging.DEBUG)
     t_data = f'1 {TEST_SALT}'
-    print(t_data)
     logs = [(f'{test_module}', logging.DEBUG,
             f'({fake_pjlink.entry.name}) Processing PJLINK command'),
             (f'{test_module}', logging.DEBUG,

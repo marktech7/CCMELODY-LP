@@ -26,9 +26,43 @@ Tests for commands that do not need much testing
 import logging
 import openlp.core.projectors.pjlinkcommands
 
-from openlp.core.projectors.pjlinkcommands import process_srch
-
 test_module = openlp.core.projectors.pjlinkcommands.__name__
+_process_lkup = openlp.core.projectors.pjlinkcommands._process_lkup
+_process_srch = openlp.core.projectors.pjlinkcommands._process_srch
+
+
+def test_lkup_connect(fake_pjlink, settings, caplog):
+    """
+    Test LKUP when settings indicate connect
+    """
+    # GIVEN: Test setup
+    caplog.set_level(logging.DEBUG)
+    logs = [(test_module, logging.DEBUG, f'({fake_pjlink.name}) Processing LKUP command')]
+    settings.setValue('projector/connect when LKUP received', True)
+
+    # WHEN: Called
+    _process_lkup(projector=fake_pjlink, data=None)
+
+    # THEN: Only log entry made
+    assert caplog.record_tuples == logs, 'Invalid log entries'
+    fake_pjlink.connect_to_host.assert_called_once()
+
+
+def test_lkup_no_connect(fake_pjlink, settings, caplog):
+    """
+    Test LKUP when settings indicate no connect
+    """
+    # GIVEN: Test setup
+    caplog.set_level(logging.DEBUG)
+    logs = [(test_module, logging.DEBUG, f'({fake_pjlink.name}) Processing LKUP command')]
+    settings.setValue('projector/connect when LKUP received', False)
+
+    # WHEN: Called
+    _process_lkup(projector=fake_pjlink, data=None)
+
+    # THEN: Only log entry made
+    assert caplog.record_tuples == logs, 'Invalid log entries'
+    fake_pjlink.connect_to_host.assert_not_called()
 
 
 def test_srch_no_projector(caplog):
@@ -40,7 +74,7 @@ def test_srch_no_projector(caplog):
     logs = [(f'{test_module}', logging.WARNING, 'SRCH packet detected - ignoring')]
 
     # WHEN: Called
-    t_chk = process_srch()
+    t_chk = _process_srch()
 
     # THEN: Appropriate return code and log entries
     assert t_chk is None, 'Invalid return code'
@@ -57,7 +91,7 @@ def test_srch_with_projector(pjlink, caplog):
              f'({pjlink.entry.name}) SRCH packet detected - ignoring')]
 
     # WHEN: Called
-    t_chk = process_srch(projector=pjlink)
+    t_chk = _process_srch(projector=pjlink)
 
     # THEN: Appropriate return code and log entries
     assert t_chk is None, 'Invalid return code'

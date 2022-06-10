@@ -23,12 +23,16 @@ Fixtures for projector tests
 """
 import pytest
 
+from pathlib import PurePath
 from unittest.mock import patch
 
 from openlp.core.projectors.db import Projector, ProjectorDB
+from openlp.core.projectors.editform import ProjectorEditForm
 from openlp.core.projectors.manager import ProjectorManager
 from openlp.core.projectors.pjlink import PJLink
-from tests.resources.projector.data import TEST_DB, TEST1_DATA
+
+from tests.helpers.projector import FakePJLink
+from tests.resources.projector.data import TEST_DB, TEST1_DATA, TEST2_DATA, TEST3_DATA
 
 '''
 NOTE: Since Registry is a singleton, sleight of hand allows us to verify
@@ -76,6 +80,66 @@ def projector_manager_mtdb(settings):
         t_db.session.close()
         del t_db
         del t_manager
+
+
+@pytest.fixture
+def fake_pjlink():
+    faker = FakePJLink()
+    yield faker
+    del(faker)
+
+
+@pytest.fixture()
+def projectordb_mtdb(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = f'sqlite:///{PurePath(temp_folder, TEST_DB)}'
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projectordb(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = f'sqlite:///{PurePath(temp_folder, TEST_DB)}'
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    proj.add_projector(Projector(**TEST1_DATA))
+    proj.add_projector(Projector(**TEST2_DATA))
+    proj.add_projector(Projector(**TEST3_DATA))
+    yield proj
+    proj.session.close()
+    del proj
+
+
+@pytest.fixture()
+def projector_editform(projectordb):
+    with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
+        _form = ProjectorEditForm(projectordb=projectordb)
+        _form.mock_msg_box = mock_msg_box
+        _form.mock_dialog_box = mock_dialog_box
+        yield _form
+    del _form
+
+
+@pytest.fixture()
+def projector_editform_mtdb(projectordb_mtdb):
+    with patch('openlp.core.projectors.editform.QtWidgets.QMessageBox') as mock_msg_box, \
+         patch('openlp.core.projectors.editform.QtWidgets.QDialog') as mock_dialog_box:
+        _form = ProjectorEditForm(projectordb=projectordb_mtdb)
+        _form.mock_msg_box = mock_msg_box
+        _form.mock_dialog_box = mock_dialog_box
+        yield _form
+    del _form
 
 
 @pytest.fixture()

@@ -568,12 +568,20 @@ class Manager(object):
         :param order_by_ref: Any parameters to order the returned objects by. Defaults to None.
         """
         query = self.session.query(object_class)
+        # Check filter_clause
         if filter_clause is not None:
-            query = query.filter(filter_clause)
-        if isinstance(order_by_ref, list):
-            query = query.order_by(*order_by_ref)
-        elif order_by_ref is not None:
-            query = query.order_by(order_by_ref)
+            if isinstance(filter_clause, list):
+                for dbfilter in filter_clause:
+                    query = query.filter(dbfilter)
+            else:
+                query = query.filter(filter_clause)
+        # Check order_by_ref
+        if order_by_ref is not None:
+            if isinstance(order_by_ref, list):
+                query = query.order_by(*order_by_ref)
+            else:
+                query = query.order_by(order_by_ref)
+
         for try_count in range(3):
             try:
                 return query.all()

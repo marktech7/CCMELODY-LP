@@ -69,7 +69,7 @@ class BiblesTab(SettingsTab):
         self.layout_style_label.setObjectName('layout_style_label')
         self.layout_style_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
         self.layout_style_combo_box.setObjectName('layout_style_combo_box')
-        self.layout_style_combo_box.addItems(['', '', ''])
+        self.layout_style_combo_box.addItems(['', '', '', ''])
         self.verse_display_layout.addRow(self.layout_style_label, self.layout_style_combo_box)
         self.bible_second_check_box = QtWidgets.QCheckBox(self.verse_display_group_box)
         self.bible_second_check_box.setObjectName('bible_second_check_box')
@@ -183,6 +183,7 @@ class BiblesTab(SettingsTab):
         self.layout_style_combo_box.setItemText(LayoutStyle.VersePerSlide, UiStrings().VersePerSlide)
         self.layout_style_combo_box.setItemText(LayoutStyle.VersePerLine, UiStrings().VersePerLine)
         self.layout_style_combo_box.setItemText(LayoutStyle.Continuous, UiStrings().Continuous)
+        self.layout_style_combo_box.setItemText(LayoutStyle.WholeVerseContinuous, UiStrings().WholeVerseContinuous)
         self.display_style_combo_box.setItemText(DisplayStyle.NoBrackets,
                                                  translate('BiblesPlugin.BiblesTab', 'No Brackets'))
         self.display_style_combo_box.setItemText(DisplayStyle.Round,

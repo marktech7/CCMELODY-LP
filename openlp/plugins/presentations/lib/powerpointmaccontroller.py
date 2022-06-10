@@ -345,8 +345,12 @@ class PowerPointMacDocument(AppleScriptBaseDocument):
                     # keep aspect ratio
                     scale = min(640 / src_size.width, 480 / src_size.height)
                     m = fitz.Matrix(scale, scale)
-                    page.getPixmap(matrix=m, alpha=False).writeImage(str(self.get_thumbnail_folder() /
-                                                                     'slide{num}.png'.format(num=i)))
+                    pngpath = str(self.get_thumbnail_folder() / 'slide{num}.png'.format(num=i))
+                    try:
+                        page.get_pixmap(matrix=m, alpha=False).save(pngpath)
+                    except AttributeError:
+                        # old function names
+                        page.getPixmap(matrix=m, alpha=False).writeImage(pngpath)
                 pdf.close()
                 # delete pdf
                 pdf_file.unlink()

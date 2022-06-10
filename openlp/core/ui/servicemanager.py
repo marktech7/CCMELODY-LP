@@ -34,7 +34,6 @@ from tempfile import NamedTemporaryFile
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel, delete_file, sha256_file_hash
-from openlp.core.state import State
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
@@ -47,6 +46,7 @@ from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.lib.ui import create_widget_action, critical_error_message_box, find_and_set_in_combo_box
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import AUDIO_EXT, VIDEO_EXT
 from openlp.core.ui.serviceitemeditform import ServiceItemEditForm
@@ -331,6 +331,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.service_has_all_original_files = True
         self.list_double_clicked = False
         self.servicefile_version = None
+        self.tree_widget_items = []
 
     def bootstrap_initialise(self):
         """
@@ -580,19 +581,19 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             # If the item has files, see if they exists
             if item['service_item'].uses_file():
                 for frame in item['service_item'].get_frames():
-                    path_from = item['service_item'].get_frame_path(frame=frame)
-                    path_from_path = Path(path_from)
-                    if item['service_item'].stored_filename:
-                        sha256_file_name = item['service_item'].stored_filename
-                    else:
-                        sha256_file_name = sha256_file_hash(path_from_path) + os.path.splitext(path_from)[1]
-                    path_from_tuple = (path_from_path, sha256_file_name)
-                    if path_from_tuple in write_list or str(path_from_path) in missing_list:
+                    frame_path = item['service_item'].get_frame_path(frame=frame)
+                    if not frame_path.exists():
+                        if 'thumbnail' not in frame_path.parts:
+                            missing_list.append(str(frame_path))
                         continue
-                    if not os.path.exists(path_from):
-                        missing_list.append(str(path_from_path))
+                    if item['service_item'].stored_filename:
+                        sha256_file_name = Path(item['service_item'].stored_filename)
                     else:
-                        write_list.append(path_from_tuple)
+                        sha256_file_name = Path(sha256_file_hash(frame_path)) / frame_path.suffix
+                    bundle = (frame_path, sha256_file_name)
+                    if bundle in write_list or str(frame_path) in missing_list:
+                        continue
+                    write_list.append(bundle)
                 # For items that has thumbnails, add them to the list
                 if item['service_item'].is_capable(ItemCapabilities.HasThumbnails):
                     thumbnail_path = item['service_item'].get_thumbnail_path()
@@ -603,7 +604,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         # Run through everything in the thumbnail folder and add pictures
                         for filename in os.listdir(thumbnail_path):
                             # Skip non-pictures
-                            if os.path.splitext(filename)[1] not in ['.png', '.jpg']:
+                            if os.path.splitext(filename)[1] not in ['.png', '.jpg', '.jpeg']:
                                 continue
                             filename_path = Path(thumbnail_path) / Path(filename)
                             if not filename_path.exists():
@@ -616,7 +617,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         # All image thumbnails will be put in a folder named 'thumbnails'
                         for frame in item['service_item'].get_frames():
                             if 'thumbnail' in frame:
-                                filename_path = Path(thumbnail_path) / Path(frame['thumbnail'])
+                                filename_path = Path(thumbnail_path) / frame['thumbnail']
                                 if not filename_path.exists():
                                     continue
                                 # Create a thumbnail path in the zip/service file
@@ -679,7 +680,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         service_content_size = len(bytes(service_content, encoding='utf-8'))
         total_size = service_content_size
         for local_file_item, zip_file_item in write_list:
-            total_size += local_file_item.stat().st_size
+            try:
+                total_size += local_file_item.stat().st_size
+            except FileNotFoundError:
+                self.log_exception(f'Local file {local_file_item} not found')
         self.log_debug('ServiceManager.save_file - ZIP contents size is %i bytes' % total_size)
         self.main_window.display_progress_bar(1000)
         try:
@@ -1315,11 +1319,13 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             if not item['service_item'].has_original_file_path:
                 self.service_has_all_original_files = False
         # Repaint the screen
-        self.service_manager_list.clear()
+        self.tree_widget_items = []
         self.service_manager_list.clearSelection()
+        self.service_manager_list.clear()
         for item_index, item in enumerate(self.service_items):
             service_item_from_item = item['service_item']
             tree_widget_item = QtWidgets.QTreeWidgetItem(self.service_manager_list)
+            self.tree_widget_items.append(tree_widget_item)
             if service_item_from_item.is_valid:
                 icon = service_item_from_item.icon.pixmap(80, 80).toImage()
                 icon = icon.scaled(80, 80, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)

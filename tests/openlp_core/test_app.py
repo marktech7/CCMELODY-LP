@@ -19,6 +19,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import sys
+import pytest
+
+from pathlib import Path
+from tempfile import mkdtemp
 
 from unittest.mock import MagicMock, patch
 
@@ -27,8 +31,36 @@ from PyQt5 import QtCore, QtWidgets
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.app import parse_options
+from openlp.core.app import parse_options, backup_if_version_changed, main as app_main
 from openlp.core.common import is_win
+
+
+@pytest.fixture
+def app_main_env():
+    with patch('openlp.core.app.Settings') as mock_settings, \
+            patch('openlp.core.app.Registry') as mock_registry, \
+            patch('openlp.core.app.AppLocation') as mock_apploc, \
+            patch('openlp.core.app.LanguageManager'), \
+            patch('openlp.core.app.qInitResources'), \
+            patch('openlp.core.app.parse_options'), \
+            patch('openlp.core.app.QtWidgets.QApplication'), \
+            patch('openlp.core.app.QtWidgets.QMessageBox.warning') as mock_warn, \
+            patch('openlp.core.app.QtWidgets.QMessageBox.information'), \
+            patch('openlp.core.app.OpenLP') as mock_openlp, \
+            patch('openlp.core.app.Server') as mock_server, \
+            patch('openlp.core.app.sys'):
+        mock_registry.return_value = MagicMock()
+        mock_settings.return_value = MagicMock()
+        openlp_server = MagicMock()
+        mock_server.return_value = openlp_server
+        openlp_server.is_another_instance_running.return_value = False
+        mock_apploc.get_data_path.return_value = Path()
+        mock_apploc.get_directory.return_value = Path()
+        mock_warn.return_value = True
+        openlp_instance = MagicMock()
+        mock_openlp.return_value = openlp_instance
+        openlp_instance.is_data_path_missing.return_value = False
+        yield
 
 
 def test_parse_options_basic():
@@ -269,3 +301,57 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
     assert mocked_question.call_count == 1, 'A question should have been asked!'
     qapp.splash.hide.assert_called_once_with()
     qapp.splash.show.assert_called_once_with()
+
+
+@patch('openlp.core.app.OpenLP')
+@patch('openlp.core.app.sys')
+@patch('openlp.core.app.backup_if_version_changed')
+def test_main(mock_backup, mock_sys, mock_openlp, app_main_env):
+    """
+    Test the main method performs primary actions
+    """
+    # GIVEN: A mocked openlp instance
+    openlp_instance = MagicMock()
+    mock_openlp.return_value = openlp_instance
+    openlp_instance.is_data_path_missing.return_value = False
+    mock_backup.return_value = True
+
+    # WHEN: the main method is run
+    app_main()
+
+    # THEN: Check the application is run and exited
+    openlp_instance.run.assert_called_once()
+    mock_sys.exit.assert_called_once()
+
+
+@patch('openlp.core.app.QtWidgets.QMessageBox.warning')
+@patch('openlp.core.app.get_version')
+@patch('openlp.core.app.AppLocation.get_data_path')
+@patch('openlp.core.app.move')
+def test_main_future_settings(mock_move, mock_get_path, mock_version, mock_warn, app_main_env, settings):
+    """
+    Test the backup_if_version_changed method backs up data if version from the future and user consents
+    """
+    # GIVEN: A mocked openlp instance with mocked future settings
+    settings.from_future = MagicMock(return_value=True)
+    settings.version_mismatched = MagicMock(return_value=True)
+    settings.clear = MagicMock()
+    settings.setValue('core/application version', '3.0.1')
+    mock_warn.return_value = QtWidgets.QMessageBox.Yes
+    MOCKED_VERSION = {
+        'full': '2.9.3',
+        'version': '2.9.3',
+        'build': 'None'
+    }
+    mock_version.return_value = MOCKED_VERSION
+    temp_folder = Path(mkdtemp())
+    mock_get_path.return_value = temp_folder
+
+    # WHEN: the main method is run
+    result = backup_if_version_changed(settings)
+
+    # THEN: Check everything was backed up, the settings were cleared and the warn prompt was shown
+    assert result is True
+    mock_move.assert_called_once()
+    settings.clear.assert_called_once_with()
+    mock_warn.assert_called_once()

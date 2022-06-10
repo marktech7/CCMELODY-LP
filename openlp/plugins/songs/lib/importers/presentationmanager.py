@@ -46,35 +46,7 @@ class PresentationManagerImport(SongImport):
             if self.stop_import_flag:
                 return
             self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=file_path.name))
-            try:
-                tree = etree.parse(str(file_path), parser=etree.XMLParser(recover=True))
-            except etree.XMLSyntaxError:
-                # Try to detect encoding and use it
-                encoding = get_file_encoding(file_path)
-                # Open file with detected encoding and remove encoding declaration
-                text = file_path.read_text(encoding=encoding)
-                text = re.sub(r'.+\?>\n', '', text)
-                try:
-                    tree = etree.fromstring(text, parser=etree.XMLParser(recover=True))
-                except ValueError:
-                    log.exception('XML syntax error in file {name}'.format(name=file_path))
-                    self.log_error(file_path,
-                                   translate('SongsPlugin.PresentationManagerImport',
-                                             'File is not in XML-format, which is the only format supported.'))
-                    continue
-            file_str = etree.tostring(tree)
-            if not file_str:
-                log.exception('Could not find XML in file {name}'.format(name=file_path))
-                self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
-                                                    'File is not in XML-format, which is the only format supported.'))
-                continue
-            root = objectify.fromstring(file_str)
-            try:
-                self.process_song(root, file_path)
-            except AttributeError:
-                log.exception('XML syntax error in file {name}'.format(name=file_path))
-                self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
-                                                    'File is not a valid PresentationManager XMl file.'))
+            self.process_xml(file_path)
 
     def _get_attr(self, elem, name):
         """
@@ -88,6 +60,48 @@ class PresentationManagerImport(SongImport):
             return str(getattr(elem, name))
         else:
             return ''
+
+    def process_xml(self, file_path, encoding=None):
+        if encoding is not None:
+            # Open file with detected encoding and remove encoding declaration
+            text = file_path.read_text(encoding=encoding)
+            text = re.sub(r'.+\?>\n', '', text)
+            try:
+                tree = etree.fromstring(text, parser=etree.XMLParser(recover=True))
+            except ValueError:
+                log.exception('XML syntax error in file {name}'.format(name=file_path))
+                self.log_error(file_path,
+                               translate('SongsPlugin.PresentationManagerImport',
+                                         'File is not in XML-format, which is the only format supported.'))
+                return
+        else:
+            try:
+                tree = etree.parse(str(file_path), parser=etree.XMLParser(recover=True))
+            except etree.XMLSyntaxError:
+                # Try to detect encoding and use it
+                self.process_xml(file_path, get_file_encoding(file_path))
+                return
+
+        file_str = etree.tostring(tree)
+        if not file_str:
+            log.exception('Could not find XML in file {name}'.format(name=file_path))
+            self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
+                                                'File is not in XML-format, which is the only format supported.'))
+            return
+        try:
+            root = objectify.fromstring(file_str)
+        except etree.XMLSyntaxError:
+            if encoding is None:
+                # Try to detect encoding and use it
+                self.process_xml(file_path, get_file_encoding(file_path))
+            return
+
+        try:
+            self.process_song(root, file_path)
+        except AttributeError:
+            log.exception('XML syntax error in file {name}'.format(name=file_path))
+            self.log_error(file_path, translate('SongsPlugin.PresentationManagerImport',
+                                                'File is not a valid PresentationManager XMl file.'))
 
     def process_song(self, root, file_path):
         """

@@ -1229,6 +1229,24 @@ def test_load_service_modified_cancel_save(registry):
     assert result is False, 'The method did not exit early'
 
 
+@patch('openlp.core.ui.servicemanager.FileDialog.getOpenFileName')
+def test_load_service_without_file_path_canceled(mocked_get_open_file_name, registry):
+    """Test that the load_service() method does nothing when no file is loaded and the load dialog is canceled"""
+    # GIVEN: A modified ServiceManager
+    mocked_settings = MagicMock()
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=False)
+    mocked_get_open_file_name.return_value = None, None
+
+    # WHEN: A service is loaded but not path specified, and the load dialog is canceled
+    result = service_manager.load_service(file_path=None)
+
+    # THEN: The result should be False
+    mocked_get_open_file_name.assert_called_once()
+    assert result is False
+
+
 def test_load_service_modified_saved_with_file_path(registry):
     """Test that the load_service() method saves the file and loads the specified file"""
     # GIVEN: A modified ServiceManager
@@ -1264,6 +1282,132 @@ def test_service_manager_load_file_str(MockPath, registry):
     assert result is False, 'ServiceManager.load_file should return false for a non-existant file'
     MockPath.assert_called_once_with('service.osz')
     MockPath.return_value.exists.assert_called_once()
+
+
+@patch('openlp.core.ui.servicemanager.QtWidgets.QMessageBox')
+def test_service_manager_delete_confirmation_dialog(MockMessageBox, registry):
+    """Test the _delete_confirmation_dialog() method"""
+    # GIVEN: A service manager and a mocked QMessageBox class
+    service_manager = ServiceManager(None)
+    mocked_message_box = MagicMock()
+    MockMessageBox.return_value = mocked_message_box
+    # Restore a couple of items for a more realistic situation
+    MockMessageBox.Question = QtWidgets.QMessageBox.Question
+    MockMessageBox.Close = QtWidgets.QMessageBox.Close
+    MockMessageBox.Cancel = QtWidgets.QMessageBox.Cancel
+    MockMessageBox.StandardButtons = QtWidgets.QMessageBox.StandardButtons
+
+    # WHEN: _delete_confirmation_dialog() is called
+    service_manager._delete_confirmation_dialog()
+
+    # THEN: All the correct things should have been called
+    MockMessageBox.assert_called_once_with(QtWidgets.QMessageBox.Question, 'Delete item from service',
+                                           'Are you sure you want to delete this item from the service?',
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close |
+                                                                                 QtWidgets.QMessageBox.Cancel),
+                                           service_manager)
+    mocked_message_box.button.assert_called_once_with(QtWidgets.QMessageBox.Close)
+    mocked_message_box.setDefaultButton.assert_called_once_with(QtWidgets.QMessageBox.Close)
+    mocked_message_box.exec.assert_called_once()
+
+
+@patch('openlp.core.ui.servicemanager.QtWidgets.QMessageBox.question')
+def test_service_manager_save_modified_service(mocked_question, registry):
+    """Test the save_modified_service() method"""
+    # GIVEN: A service manager and a mocked main window
+    mocked_main_window = MagicMock()
+    registry.register('main_window', mocked_main_window)
+    service_manager = ServiceManager(None)
+
+    # WHEN: save_modified_service() is called
+    service_manager.save_modified_service()
+
+    # THEN: All the correct things should have been called
+    mocked_question.assert_called_once_with(mocked_main_window, 'Modified Service',
+                                            'The current service has been modified. '
+                                            'Would you like to save this service?',
+                                            QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard |
+                                            QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Save)
+
+
+def test_service_manager_on_recent_service_clicked_cancel(registry):
+    """Test the on_recent_service_clicked() method"""
+    # GIVEN: A service manager with some methods mocked out
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = lambda: True
+    service_manager.save_modified_service = lambda: QtWidgets.QMessageBox.Cancel
+
+    # WHEN: on_recent_service_clicked() is called
+    result = service_manager.on_recent_service_clicked(True)
+
+    # THEN: The result should be False
+    assert result is False, 'on_recent_service_clicked() should have returned False'
+
+
+def test_service_manager_on_recent_service_clicked_save(registry):
+    """Test the on_recent_service_clicked() method"""
+    # GIVEN: A service manager with some methods mocked out
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = lambda: True
+    service_manager.save_modified_service = lambda: QtWidgets.QMessageBox.Save
+    service_manager.decide_save_method = lambda: None
+    service_manager.sender = lambda: MagicMock(**{'data.return_value': '/path/to/service'})
+    service_manager.load_file = MagicMock()
+
+    # WHEN: on_recent_service_clicked() is called
+    result = service_manager.on_recent_service_clicked(True)
+
+    # THEN: The result should be None
+    assert result is None, 'on_recent_service_clicked() should have returned None'
+    service_manager.load_file.assert_called_once_with(Path('/path/to/service'))
+
+
+def test_service_manager_decide_save_method_save(registry):
+    """Test the decide_save_method() method"""
+    # GIVEN: A service manager with some methods mocked out
+    service_manager = ServiceManager(None)
+    service_manager.file_name = lambda: 'filename.osz'
+    service_manager.save_file = MagicMock()
+    service_manager.save_file_as = MagicMock()
+
+    # WHEN: decide_save_method() is called
+    service_manager.decide_save_method()
+
+    # THEN: The correct methods should have been called
+    service_manager.save_file.assert_called_once()
+    assert service_manager.save_file_as.call_count == 0, 'The save_file_as method should not have been called'
+
+
+def test_service_manager_decide_save_method_save_as(registry):
+    """Test the decide_save_method() method"""
+    # GIVEN: A service manager with some methods mocked out
+    service_manager = ServiceManager(None)
+    service_manager.file_name = lambda: None
+    service_manager.save_file = MagicMock()
+    service_manager.save_file_as = MagicMock()
+
+    # WHEN: decide_save_method() is called
+    service_manager.decide_save_method()
+
+    # THEN: The correct methods should have been called
+    service_manager.save_file_as.assert_called_once()
+    assert service_manager.save_file.call_count == 0, 'The save_file method should not have been called'
+
+
+def test_load_last_file(registry):
+    """Test the load_last_file() method"""
+    # GIVEN: Mocked out settings and a ServiceManager
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = Path('filename.osz')
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.load_file = MagicMock()
+
+    # WHEN: load_last_file() is called
+    service_manager.load_last_file()
+
+    # THEN: The file should have been loaded
+    service_manager.load_file.assert_called_once_with(Path('filename.osz'))
 
 
 class TestServiceManager(TestCase, TestMixin):
