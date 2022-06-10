@@ -30,13 +30,13 @@ class FakeGridLayout(QtWidgets.QVBoxLayout):
     """
     Serves as a shim to allow Theme Widgets to both work in ThemeEditor and ThemeWizard.
     """
-    def addWidget(self, widget, row = None, column = None, rowSpan = None, columnSpan = None, alignment = None):
+    def addWidget(self, widget, row=None, column=None, rowSpan=None, columnSpan=None, alignment=None):
         super().addWidget(widget)
 
-    def addLayout(self, widget, row = None, column = None, rowSpan = None, columnSpan = None, alignment = None):
+    def addLayout(self, widget, row=None, column=None, rowSpan=None, columnSpan=None, alignment=None):
         super().addLayout(widget)
-    
-    def addItem(self, item, row = None, column = None, rowSpan = None, columnSpan = None, alignment = None):
+
+    def addItem(self, item, row=None, column=None, rowSpan=None, columnSpan=None, alignment=None):
         super().addItem(item)
 
 
@@ -50,7 +50,7 @@ class WidgetProxy(object):
         if type(self._widget) is not list:
             self._widget = [self._widget]
         return self._widget
-    
+
     def create_widgets(self):
         raise NotImplementedError("Must be implemented by inherited class.")
 
@@ -62,13 +62,12 @@ class WidgetProxy(object):
 
     def _get_widget_attribute(self, name):
         widgets = object.__getattribute__(self, '_get_widgets')()
-        for widget in widgets:        
+        for widget in widgets:
             try:
                 return getattr(widget, name)
             except AttributeError:
                 continue
         raise AttributeError()
-
 
     def __getattribute__(self, name: str):
         value_except = False
@@ -96,7 +95,7 @@ class WidgetProxy(object):
 
 
 class ThemeEditorWidget(QtWidgets.QWidget):
-    def __init__(self, parent, grid_layout = None):
+    def __init__(self, parent, grid_layout=None):
         QtWidgets.QWidget.__init__(self, parent)
         if grid_layout is not None:
             # Compatibility with GridLayoutPage
@@ -104,6 +103,7 @@ class ThemeEditorWidget(QtWidgets.QWidget):
             self.is_grid_layout = True
         else:
             self.main_layout = FakeGridLayout(self)
+            self.main_layout.setContentsMargins(0, 0, 0, 0)
             self.is_grid_layout = False
             self.main_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop or QtCore.Qt.AlignmentFlag.AlignLeft)
             # Only need to call this on constructor if instantiated as widget
@@ -122,7 +122,8 @@ class ThemeEditorWidget(QtWidgets.QWidget):
     def disconnect_signals(self):
         ...
 
-def create_label(widget, parent = None):
+
+def create_label(widget, parent=None):
     if widget.is_grid_layout:
         return FormLabel(parent if parent else widget)
     else:

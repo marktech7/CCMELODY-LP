@@ -57,8 +57,8 @@ class GridLayoutPage(QtWidgets.QWizardPage):
 
     def setup_ui(self):
         super(GridLayoutPage, self).setup_ui()
-        #raise NotImplementedError('Descendant pages need to implement setup_ui')
+        # raise NotImplementedError('Descendant pages need to implement setup_ui')
 
     def retranslate_ui(self):
         super(GridLayoutPage, self).retranslate_ui()
-#        raise NotImplementedError('Descendant pages need to implement retranslate_ui')
+        # raise NotImplementedError('Descendant pages need to implement retranslate_ui')

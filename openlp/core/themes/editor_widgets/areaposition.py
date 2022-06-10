@@ -19,7 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.themes.editor_widgets.areaposition` module contains the area position widget used in the theme editor
+The :mod:`~openlp.core.themes.editor_widgets.areaposition` module contains the area position widget used in the
+theme editor
 """
 from PyQt5 import QtWidgets, QtCore
 

@@ -19,7 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.themes.editor_widgets.fontselect` module contains the font selection widget used in the theme editor
+The :mod:`~openlp.core.themes.editor_widgets.fontselect` module contains the font selection widget used in the
+theme editor
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -27,6 +28,7 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.themes.editor_widgets import ThemeEditorWidget, create_label
+
 
 class FontSelectFeatures():
     Outline = 'outline'

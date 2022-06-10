@@ -24,7 +24,7 @@ The Create/Edit theme editor dialog
 from PyQt5 import QtCore, QtGui, QtWidgets
 from openlp.core.common.i18n import translate
 from openlp.core.display.render import ThemePreviewRenderer
-from openlp.core.lib.ui import create_button_box
+from openlp.core.lib.ui import create_button_box, create_separator
 from openlp.core.themes.editor_widgets.alignment import AlignmentWidget
 from openlp.core.themes.editor_widgets.areaposition import AreaPositionWidget
 from openlp.core.themes.editor_widgets.background import BackgroundWidget
@@ -45,7 +45,6 @@ class Ui_ThemeEditorDialog(object):
         Set up the UI
         """
         self.setMinimumSize(800, 600)
-        self.setWindowState(QtCore.Qt.WindowState.WindowMaximized)
         self.main_layout = QtWidgets.QVBoxLayout(theme_editor)
         theme_editor.setObjectName('OpenLP.ThemeEditor')
         theme_editor.setWindowIcon(UiIcons().main_icon)
@@ -88,19 +87,21 @@ class Ui_ThemeEditorDialog(object):
         self.background_widget = BackgroundWidget(theme_editor)
         self.background_widget.setObjectName('background_widget')
         self.background_section_layout.addWidget(self.background_section_label)
+        self.background_section_layout.addWidget(create_separator(self))
         self.background_section_layout.addWidget(self.background_widget)
         self.main_toolbox.addItem(self.background_section, UiIcons().picture, translate('OpenLP.ThemeEditor',
-                                                                                             'Background'))
+                                                                                        'Background'))
         # Main Area Section
         self.main_area_section = QtWidgets.QWidget(self.main_toolbox)
         self.main_area_section_layout = QtWidgets.QVBoxLayout(self.main_area_section)
         self.main_area_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
-                                                    or QtCore.Qt.AlignmentFlag.AlignLeft)
+                                                   | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.main_area_section_label = QtWidgets.QLabel(self.main_area_section)
         self.main_area_section_label.setWordWrap(True)
         self.main_area_widget = FontSelectWidget(theme_editor)
         self.main_area_widget.setObjectName('main_area_widget')
         self.main_area_section_layout.addWidget(self.main_area_section_label)
+        self.main_area_section_layout.addWidget(create_separator(self))
         self.main_area_section_layout.addWidget(self.main_area_widget)
         self.main_toolbox.addItem(self.main_area_section, UiIcons().text, translate('OpenLP.ThemeEditor',
                                                                                     'Main Area Font'))
@@ -108,40 +109,60 @@ class Ui_ThemeEditorDialog(object):
         self.footer_area_section = QtWidgets.QWidget(self.main_toolbox)
         self.footer_area_section_layout = QtWidgets.QVBoxLayout(self.footer_area_section)
         self.footer_area_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
-                                                      or QtCore.Qt.AlignmentFlag.AlignLeft)
+                                                     | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.footer_area_section_label = QtWidgets.QLabel(self.footer_area_section)
         self.footer_area_section_label.setWordWrap(True)
         self.footer_area_widget = FontSelectWidget(theme_editor)
         self.footer_area_widget.setObjectName('footer_area_widget')
         self.footer_area_widget.disable_features(FontSelectFeatures.Outline, FontSelectFeatures.Shadow,
-                                               FontSelectFeatures.LineSpacing)
+                                                 FontSelectFeatures.LineSpacing)
         self.footer_area_section_layout.addWidget(self.footer_area_section_label)
+        self.footer_area_section_layout.addWidget(create_separator(self))
         self.footer_area_section_layout.addWidget(self.footer_area_widget)
         self.main_toolbox.addItem(self.footer_area_section, UiIcons().text, translate('OpenLP.ThemeEditor',
                                                                                       'Footer Area Text'))
         # Alignment Widget
+        self.alignment_section = QtWidgets.QWidget(self.main_toolbox)
+        self.alignment_section_layout = QtWidgets.QVBoxLayout(self.alignment_section)
+        self.alignment_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
+                                                   | QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.alignment_section_label = QtWidgets.QLabel(self.alignment_section)
+        self.alignment_section_label.setWordWrap(True)
         self.alignment_widget = AlignmentWidget(theme_editor)
         self.alignment_widget.setObjectName('alignment_widget')
-        self.main_toolbox.addItem(self.alignment_widget, UiIcons().alignment, translate('OpenLP.ThemeEditor',
-                                                                                   'Alignment'))
+        self.alignment_section_layout.addWidget(self.alignment_section_label)
+        self.alignment_section_layout.addWidget(create_separator(self))
+        self.alignment_section_layout.addWidget(self.alignment_widget)
+        self.main_toolbox.addItem(self.alignment_section, UiIcons().alignment,
+                                  translate('OpenLP.ThemeEditor', 'Alignment'))
         # Area Position Widget
         self.area_position_section = QtWidgets.QWidget(self.main_toolbox)
         self.area_position_section_layout = QtWidgets.QVBoxLayout(self.area_position_section)
         self.area_position_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
-                                                        or QtCore.Qt.AlignmentFlag.AlignLeft)
+                                                       | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.area_position_section_label = QtWidgets.QLabel(self.area_position_section)
         self.area_position_section_label.setWordWrap(True)
         self.area_position_widget = AreaPositionWidget(theme_editor)
         self.area_position_widget.setObjectName('area_position_widget')
         self.area_position_section_layout.addWidget(self.area_position_section_label)
+        self.area_position_section_layout.addWidget(create_separator(self))
         self.area_position_section_layout.addWidget(self.area_position_widget)
         self.main_toolbox.addItem(self.area_position_section, UiIcons().position, translate('OpenLP.ThemeEditor',
                                                                                             'Position'))
         # Transition Widget
+        self.transition_section = QtWidgets.QWidget(self.main_toolbox)
+        self.transition_section_layout = QtWidgets.QVBoxLayout(self.transition_section)
+        self.transition_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
+                                                    | QtCore.Qt.AlignmentFlag.AlignLeft)
+        self.transition_section_label = QtWidgets.QLabel(self.transition_section)
+        self.transition_section_label.setWordWrap(True)
         self.transition_widget = TransitionWidget(theme_editor)
         self.transition_widget.setObjectName('transition_widget')
-        self.main_toolbox.addItem(self.transition_widget, UiIcons().transition, translate('OpenLP.ThemeEditor',
-                                                                                          'Transition'))
+        self.transition_section_layout.addWidget(self.transition_section_label)
+        self.transition_section_layout.addWidget(create_separator(self))
+        self.transition_section_layout.addWidget(self.transition_widget)
+        self.main_toolbox.addItem(self.transition_section, UiIcons().transition, translate('OpenLP.ThemeEditor',
+                                                                                           'Transition'))
         # Preview Pane
         screen_ratio = 16 / 9
         self.preview_area = QtWidgets.QWidget(self.main_splitter)
@@ -161,16 +182,16 @@ class Ui_ThemeEditorDialog(object):
         self.main_splitter.setCollapsible(0, False)
         self.main_splitter.setCollapsible(1, False)
         self.retranslate_ui()
-    
+
     def retranslate_ui(self):
-        #self.alignment_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Allows additional display '
-        #                                          'formatting information to be defined'))
         self.background_section_label.setText(translate('OpenLP.ThemeWizard', 'Set up your theme\'s background '
-                                                             'according to the parameters below.'))
+                                                        'according to the parameters below.'))
         self.main_area_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                        'characteristics for the Display text'))
         self.footer_area_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                          'characteristics for the Footer text'))
+        self.alignment_section_label.setText(translate('OpenLP.ThemeEditor', 'Define the text alignment.'))
         self.area_position_section_label.setText(translate('OpenLP.ThemeWizard', 'Allows you to change and move the'
                                                            ' Main and Footer areas.'))
+        self.transition_section_label.setText(translate('OpenLP.ThemeEditor', 'Define the slide transitions.'))
         self.theme_name_label.setText(translate('OpenLP.ThemeWizard', 'Theme name:'))

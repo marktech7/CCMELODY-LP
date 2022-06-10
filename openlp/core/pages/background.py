@@ -35,4 +35,3 @@ class BackgroundPage(GridLayoutPage, WidgetProxy):
 
     def create_widgets(self):
         return BackgroundWidget(self, self._layout)
-        

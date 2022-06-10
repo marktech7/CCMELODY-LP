@@ -160,7 +160,7 @@ class BackgroundWidget(ThemeEditorWidget):
         self.main_layout_spacer = QtWidgets.QSpacerItem(1, 1)
         self.main_layout.addItem(self.main_layout_spacer, 8, 0, 1, 4)
         # Force the first set of widgets to show
-        self._on_background_type_index_changed(0, emit = False)
+        self._on_background_type_index_changed(0, emit=False)
 
     def connect_signals(self):
         # Connect slots
@@ -181,8 +181,8 @@ class BackgroundWidget(ThemeEditorWidget):
             self.video_path_edit.pathChanged.connect(self._on_value_changed_emit)
             # Force the first set of widgets to show
             # Running after signal connect to ensure it's shown
-            self._on_background_type_index_changed(self.background_combo_box.currentIndex(), emit = False)
-    
+            self._on_background_type_index_changed(self.background_combo_box.currentIndex(), emit=False)
+
     def disconnect_signals(self):
         self.connected_signals = False
         self.background_combo_box.currentIndexChanged.disconnect(self._on_background_type_index_changed)
@@ -240,7 +240,7 @@ class BackgroundWidget(ThemeEditorWidget):
                                                            visible=visible_formats, actual=actual_formats)
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
 
-    def _on_background_type_index_changed(self, index, emit = True):
+    def _on_background_type_index_changed(self, index, emit=True):
         """
         Hide and show widgets based on index
         """

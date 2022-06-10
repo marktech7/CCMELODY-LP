@@ -21,7 +21,6 @@
 """
 The :mod:`~openlp.core.pages.areaposition` module contains the area position page used in the theme wizard
 """
-from openlp.core.common.i18n import translate
 from openlp.core.pages import GridLayoutPage
 from openlp.core.themes.editor_widgets import WidgetProxy
 from openlp.core.themes.editor_widgets.areaposition import AreaPositionWidget
@@ -31,7 +30,7 @@ class AreaPositionPage(GridLayoutPage, WidgetProxy):
     """
     A wizard page for the area positioning widgets in the theme wizard
     """
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         GridLayoutPage.__init__(self, parent)
 
     def create_widgets(self):

@@ -35,4 +35,3 @@ class FontSelectPage(GridLayoutPage, WidgetProxy):
 
     def create_widgets(self):
         return FontSelectWidget(self, self._layout)
-        

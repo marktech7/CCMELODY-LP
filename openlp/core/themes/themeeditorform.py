@@ -24,16 +24,14 @@ The Theme Editor Form
 import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
-
 from openlp.core.common import is_not_image_file
+
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
-from openlp.core.common.registry import Registry
 from openlp.core.lib.theme import BackgroundType
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.themes.themeeditordialog import Ui_ThemeEditorDialog
-from openlp.core.ui.themelayoutform import ThemeLayoutForm
 
 
 log = logging.getLogger(__name__)
@@ -51,7 +49,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         Instantiate the editor, and run any extra setup we need to.
         """
         super(ThemeEditorForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                        QtCore.Qt.WindowCloseButtonHint)
+                                              QtCore.Qt.WindowCloseButtonHint)
         self._setup()
 
     def _setup(self):
@@ -62,7 +60,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.display_aspect_ratio = 16 / 9
         self.setup_ui(self)
         self.preview_area.resizeEvent = self._preview_area_resize_event
-    
+
     def connect_events(self):
         self.background_widget.on_value_changed.connect(self.do_update)
         self.alignment_widget.on_value_changed.connect(self.do_update)
@@ -77,7 +75,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.connect_signals()
         self.transition_widget.connect_signals()
         self.area_position_widget.connect_signals()
-    
+
     def disconnect_events(self):
         self.background_widget.disconnect_signals()
         self.alignment_widget.disconnect_signals()
@@ -119,6 +117,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
             # Make sure we don't resize before the widgets are actually created
             if hasattr(self, 'preview_area_layout'):
                 self.preview_area_layout.set_aspect_ratio(self.display_aspect_ratio)
+                self.application.process_events()
 
     def _update_preview_box_scale(self):
         self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
@@ -223,7 +222,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.transition_direction = self.theme.display_slide_transition_direction
         self.transition_widget.is_transition_reverse_enabled = self.theme.display_slide_transition_reverse
 
-    def do_update(self, mark_as_changed = True):
+    def do_update(self, mark_as_changed=True):
         if mark_as_changed:
             self.has_changes = True
         self.update_theme()
@@ -306,6 +305,43 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme.display_slide_transition_direction = self.transition_widget.transition_direction
         self.theme.display_slide_transition_reverse = self.transition_widget.is_transition_reverse_enabled
 
+    def validate_fields(self):
+        """
+        Validate fields
+        """
+        if not self.theme.theme_name:
+            critical_error_message_box(
+                translate('OpenLP.ThemeWizard', 'Theme Name Missing'),
+                translate('OpenLP.ThemeWizard', 'There is no name for this theme. Please enter one.'))
+            return False
+        if self.theme.theme_name == '-1' or self.theme.theme_name == 'None':
+            critical_error_message_box(
+                translate('OpenLP.ThemeWizard', 'Theme Name Invalid'),
+                translate('OpenLP.ThemeWizard', 'Invalid theme name. Please enter one.'))
+            return False
+        background_image = BackgroundType.to_string(BackgroundType.Image)
+        background_video = BackgroundType.to_string(BackgroundType.Video)
+        background_stream = BackgroundType.to_string(BackgroundType.Stream)
+        if self.background_page.background_type == background_image and \
+                is_not_image_file(self.background_page.image_path):
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
+                                           translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                     'background image. Please select one before continuing.'))
+            return False
+        elif self.background_page.background_type == background_video and \
+                not self.background_page.video_path:
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Video Empty'),
+                                           translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                     'background video. Please select one before continuing.'))
+            return False
+        elif self.background_page.background_type == background_stream and \
+                not self.background_page.stream_mrl.strip():
+            QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Stream Empty'),
+                                           translate('OpenLP.ThemeWizard', 'You have not selected a '
+                                                     'background stream. Please select one before continuing.'))
+            return False
+        return True
+
     def keyPressEvent(self, event: QtGui.QKeyEvent):
         # Avoiding dialog accept when pressing Enter on input fields
         if event.key() != QtCore.Qt.Key.Key_Return:
@@ -318,13 +354,15 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         if self.has_changes:
             msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Warning,
                                             translate('OpenLP.ThemeEditor', 'Unsaved Changes'),
-                                            translate('OpenLP.ThemeEditor', 'Any changes made in this theme will be lost.'
-                                                                            ' Are you sure you want to cancel?'),
+                                            translate('OpenLP.ThemeEditor',
+                                                      'Any changes made in this theme will be lost.'
+                                                      ' Are you sure you want to cancel?'),
                                             QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                    QtWidgets.QMessageBox.No),
+                                                                                  QtWidgets.QMessageBox.No),
                                             self)
             if msg_box.exec() != QtWidgets.QMessageBox.Yes:
                 return
+        self.disconnect_events()
         self.unload()
         return super().reject()
 
@@ -332,19 +370,12 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         """
         Lets save the theme as Finish has been triggered
         """
-        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
         # Save the theme name
         self.theme.theme_name = self.theme_name_edit.text()
-        if not self.theme.theme_name:
-            critical_error_message_box(
-                translate('OpenLP.ThemeWizard', 'Theme Name Missing'),
-                translate('OpenLP.ThemeWizard', 'There is no name for this theme. Please enter one.'))
+        if not self.validate_fields():
             return
-        if self.theme.theme_name == '-1' or self.theme.theme_name == 'None':
-            critical_error_message_box(
-                translate('OpenLP.ThemeWizard', 'Theme Name Invalid'),
-                translate('OpenLP.ThemeWizard', 'Invalid theme name. Please enter one.'))
-            return
+        self.disconnect_events()
+        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
         self.setDisabled(True)
         destination_path = None
         if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or \
@@ -393,6 +424,5 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.do_update(False)
 
     def unload(self):
-        self.disconnect_events()
         self.has_changes = False
         self.preview_box.hide()

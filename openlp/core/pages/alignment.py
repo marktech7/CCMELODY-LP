@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.pages.alignment` module contains the alignment page used in the theme wizard
 """
-from PyQt5 import QtWidgets
+from openlp.core.lib.ui import create_separator
 
 from openlp.core.pages import GridLayoutPage
 from openlp.core.themes.editor_widgets import WidgetProxy
@@ -33,7 +33,7 @@ class AlignmentTransitionsPage(GridLayoutPage, WidgetProxy):
     """
     A widget containing the alignment and transitions options
     """
-    def __init__(self, parent = None):
+    def __init__(self, parent=None):
         GridLayoutPage.__init__(self, parent)
 
     def create_widgets(self):
@@ -48,10 +48,7 @@ class AlignmentTransitionsPage(GridLayoutPage, WidgetProxy):
         Set up the UI
         """
         AlignmentWidget.setup_ui(self)
-        self.line = QtWidgets.QFrame(self)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setObjectName('line')
-        self.main_layout.addWidget(self.line, 2, 0, 1, 4)
+        self.main_layout.addWidget(create_separator(self), 2, 0, 1, 4)
         TransitionWidget.setup_ui(self)
 
     def retranslate_ui(self):

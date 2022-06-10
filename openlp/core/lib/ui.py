@@ -310,7 +310,7 @@ def set_case_insensitive_completer(cache, widget):
     widget.setCompleter(completer)
 
 
-def create_valign_selection_widgets(parent, use_form_label = True):
+def create_valign_selection_widgets(parent, use_form_label=True):
     """
     Creates a standard label and combo box for asking users to select a vertical alignment.
 
@@ -337,3 +337,11 @@ def find_and_set_in_combo_box(combo_box, value_to_find, set_missing=True):
         # Not Found.
         index = 0 if set_missing else combo_box.currentIndex()
     combo_box.setCurrentIndex(index)
+
+
+def create_separator(parent, objectName='line', vertical=False):
+    separator = QtWidgets.QFrame(parent)
+    separator.setFrameShape(QtWidgets.QFrame.HLine if not vertical else QtWidgets.QFrame.VLine)
+    if objectName is not None:
+        separator.setObjectName(objectName)
+    return separator

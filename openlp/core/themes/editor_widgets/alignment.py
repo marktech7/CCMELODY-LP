@@ -56,14 +56,14 @@ class AlignmentWidget(ThemeEditorWidget):
         self.main_layout.addWidget(self.vertical_label, 1, 0)
         self.vertical_combo_box.setObjectName('vertical_combo_box')
         self.main_layout.addWidget(self.vertical_combo_box, 1, 1, 1, 3)
-    
+
     def connect_signals(self):
         # Connect signals to slots
         if not self.connected_signals:
             self.connected_signals = True
             self.horizontal_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
             self.vertical_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
-    
+
     def disconnect_signals(self):
         self.connected_signals = False
         self.horizontal_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
