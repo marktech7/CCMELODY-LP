@@ -128,6 +128,7 @@ class Ui_ThemeEditorDialog(object):
                                                    | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.alignment_section_label = QtWidgets.QLabel(self.alignment_section)
         self.alignment_section_label.setWordWrap(True)
+        self.alignment_section_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.alignment_widget = AlignmentWidget(theme_editor)
         self.alignment_widget.setObjectName('alignment_widget')
         self.alignment_section_layout.addWidget(self.alignment_section_label)
@@ -155,12 +156,17 @@ class Ui_ThemeEditorDialog(object):
         self.transition_section_layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignTop
                                                     | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.transition_section_label = QtWidgets.QLabel(self.transition_section)
+        self.transition_section_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.transition_section_label.setWordWrap(True)
         self.transition_widget = TransitionWidget(theme_editor)
         self.transition_widget.setObjectName('transition_widget')
+        self.transition_widget_play_button = QtWidgets.QPushButton(self.transition_section)
+        self.transition_widget_play_button.setText(translate('OpenLP.ThemeEditor', 'Play Transition'))
+        self.transition_widget_play_button.setIcon(UiIcons().play)
         self.transition_section_layout.addWidget(self.transition_section_label)
         self.transition_section_layout.addWidget(create_separator(self))
         self.transition_section_layout.addWidget(self.transition_widget)
+        self.transition_section_layout.addWidget(self.transition_widget_play_button)
         self.main_toolbox.addItem(self.transition_section, UiIcons().transition, translate('OpenLP.ThemeEditor',
                                                                                            'Transition'))
         # Preview Pane

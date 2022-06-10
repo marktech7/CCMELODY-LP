@@ -57,6 +57,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme = None
         self.can_update_theme = True
         self.temp_background_filename = None
+        self.use_extended_preview = False
         self.display_aspect_ratio = 16 / 9
         self.setup_ui(self)
         self.preview_area.resizeEvent = self._preview_area_resize_event
@@ -69,6 +70,8 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.on_value_changed.connect(self.do_update)
         self.area_position_widget.on_value_changed.connect(self.do_update)
         self.preview_area_layout.resize.connect(self._update_preview_box_scale)
+        self.main_toolbox.currentChanged.connect(self._on_toolbox_item_change)
+        self.transition_widget_play_button.clicked.connect(self.play_transition)
         self.background_widget.connect_signals()
         self.alignment_widget.connect_signals()
         self.main_area_widget.connect_signals()
@@ -90,6 +93,8 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.on_value_changed.disconnect(self.do_update)
         self.area_position_widget.on_value_changed.disconnect(self.do_update)
         self.preview_area_layout.resize.disconnect(self._update_preview_box_scale)
+        self.main_toolbox.currentChanged.connect(self._on_toolbox_item_change)
+        self.transition_widget_play_button.clicked.disconnect(self.play_transition)
 
     def provide_help(self):
         """
@@ -122,6 +127,21 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
     def _update_preview_box_scale(self):
         self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
         self.preview_box.reload_theme()
+
+    def _on_toolbox_item_change(self, index):
+        widget = self.main_toolbox.widget(index) if index > 0 else None
+        if widget == self.area_position_section:
+            self.preview_box.set_text_area_layout_borders(True)
+        else:
+            self.preview_box.set_text_area_layout_borders(False)
+        last_use_extended_preview = self.use_extended_preview
+        if widget == self.transition_section:
+            self.use_extended_preview = True
+        else:
+            self.use_extended_preview = False
+        if last_use_extended_preview != self.use_extended_preview:
+            self.preview_box.set_transitions_enabled(self.use_extended_preview)
+            self.generate_preview()
 
     def set_defaults(self):
         """
@@ -226,9 +246,16 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         if mark_as_changed:
             self.has_changes = True
         self.update_theme()
+        self.generate_preview()
+
+    def generate_preview(self):
         self.preview_box.clear_slides()
         self.preview_box.show()
-        self.preview_box.generate_preview(self.theme, False, False, False)
+        self.preview_box.generate_preview(self.theme, generate_screenshot=False, use_delay=False,
+                                          use_extended_preview=self.use_extended_preview)
+
+    def play_transition(self):
+        self.preview_box.play_transition()
 
     def update_theme(self):
         """
@@ -322,20 +349,20 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         background_image = BackgroundType.to_string(BackgroundType.Image)
         background_video = BackgroundType.to_string(BackgroundType.Video)
         background_stream = BackgroundType.to_string(BackgroundType.Stream)
-        if self.background_page.background_type == background_image and \
-                is_not_image_file(self.background_page.image_path):
+        if self.background_widget.background_type == background_image and \
+                is_not_image_file(self.background_widget.image_path):
             QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Image Empty'),
                                            translate('OpenLP.ThemeWizard', 'You have not selected a '
                                                      'background image. Please select one before continuing.'))
             return False
-        elif self.background_page.background_type == background_video and \
-                not self.background_page.video_path:
+        elif self.background_widget.background_type == background_video and \
+                not self.background_widget.video_path:
             QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Video Empty'),
                                            translate('OpenLP.ThemeWizard', 'You have not selected a '
                                                      'background video. Please select one before continuing.'))
             return False
-        elif self.background_page.background_type == background_stream and \
-                not self.background_page.stream_mrl.strip():
+        elif self.background_widget.background_type == background_stream and \
+                not self.background_widget.stream_mrl.strip():
             QtWidgets.QMessageBox.critical(self, translate('OpenLP.ThemeWizard', 'Background Stream Empty'),
                                            translate('OpenLP.ThemeWizard', 'You have not selected a '
                                                      'background stream. Please select one before continuing.'))
@@ -375,6 +402,8 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         if not self.validate_fields():
             return
         self.disconnect_events()
+        self.preview_box.set_text_area_layout_borders(False)
+        self.preview_box.set_transitions_enabled(False)
         self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
         self.setDisabled(True)
         destination_path = None
@@ -421,8 +450,10 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
     def showEvent(self, event):
         super().showEvent(event)
         self.connect_events()
+        self._on_toolbox_item_change(self.main_toolbox.currentIndex())
         self.do_update(False)
 
     def unload(self):
         self.has_changes = False
+        self.preview_box.set_text_area_layout_borders(False)
         self.preview_box.hide()

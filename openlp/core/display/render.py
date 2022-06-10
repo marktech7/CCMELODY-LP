@@ -570,26 +570,29 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             footer_html = 'Dummy footer text'
         return footer_html
 
-    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True, use_delay=True):
+    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True, use_delay=True,
+                         use_extended_preview=False):
         """
         Generate a preview of a theme.
 
         :param theme_data:  The theme to generated a preview for.
         :param force_page: Flag to tell message lines per page need to be generated.
         :param generate_screenshot: Do I need to generate a screen shot?
+        :param use_delay: Do I need to wait for a second before grab the screen shot?
+        :param use_extended_preview: Use a extended preview with two slides
         :rtype: QtGui.QPixmap
         """
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
             self.set_theme(theme_data, is_sync=True, service_item_type=ServiceItemType.Text)
-            slides = self.format_slide(VERSE, None)
-            verses = dict()
-            verses['title'] = TITLE
-            verses['text'] = render_tags(slides[0])
-            verses['verse'] = 'V1'
-            verses['footer'] = self.generate_footer()
-            self.load_verses([verses], is_sync=True)
+            verses = []
+            verseOne = self._generate_preview_slide()
+            verses.append(verseOne)
+            if use_extended_preview:
+                verseTwo = self._generate_preview_slide()
+                verses.append(verseTwo)
+            self.load_verses(verses, is_sync=True)
             if use_delay:
                 # Wait for a second
                 wait_for(lambda: False, timeout=1)
@@ -598,6 +601,15 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                 return self.grab()
         self.force_page = False
         return None
+
+    def _generate_preview_slide(self):
+        slides = self.format_slide(VERSE, None)
+        verse = dict()
+        verse['title'] = TITLE
+        verse['text'] = render_tags(slides[0])
+        verse['verse'] = 'V1'
+        verse['footer'] = self.generate_footer()
+        return verse
 
     def format_slide(self, text, item):
         """
@@ -856,6 +868,34 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             pixmap.save(fname, ext)
         else:
             return pixmap
+
+    def set_text_area_layout_borders(self, enabled=True):
+        """
+        Enables or disables the layout border area to aid user on the theme positioning tasks.
+
+        :param enabled: True to enable borders, False to disable them
+        """
+        self.run_javascript('Display.setTextAreaLayoutBorders(%s)' % ('true' if enabled else 'false'))
+
+    def set_transitions_enabled(self, enabled=True):
+        """
+        Enables or disables the slide transitions (disabled by default on ThemePreviewRenderer).
+
+        :param enabled: True to enable slide transitions, false to disable them
+        """
+        self.run_javascript('Display.setTransitionsEnabled(%s)' % ('true' if enabled else 'false'))
+
+    def play_transition(self):
+        """
+        Plays a sample transition.
+        """
+        self.run_javascript("""
+            Display.goToSlide(1);
+            clearTimeout(Display._preview_transition_handle);
+            Display._preview_transition_handle = setTimeout(function() {
+                Display.goToSlide(0);
+            }, 2000);
+        """)
 
 
 class Renderer(RegistryBase, ThemePreviewRenderer):

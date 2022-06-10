@@ -139,6 +139,15 @@ class AreaPositionWidget(ThemeEditorWidget):
             self.footer_y_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
             self.footer_width_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
             self.footer_height_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            # Re-checking after connecting signals
+            self.main_x_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_y_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_width_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_height_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.footer_x_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_y_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_width_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_height_spin_box.setDisabled(self.footer_position_check_box.isChecked())
 
     def disconnect_signals(self):
         self.connected_signals = False

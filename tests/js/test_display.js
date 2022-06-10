@@ -1148,3 +1148,18 @@ describe("Display.toggleVideoMute", function () {
     expect(mockVideo.muted).toEqual(false);
   });
 });
+
+describe("Display.setTextAreaLayoutBorders", function () {
+  it("should have layout-area-aid class when called with true", function () {
+    document.body.innerHTML = "";
+    document.body.classList = "";
+    Display.setTextAreaLayoutBorders(true)
+    expect(document.body.classList.contains('layout-area-aid')).toEqual(true);
+  });
+  it("should not have layout-area-aid class when called with false", function () {
+    document.body.innerHTML = "";
+    document.body.classList = "";
+    Display.setTextAreaLayoutBorders(false)
+    expect(document.body.classList.contains('layout-area-aid')).toEqual(false);
+  });
+});

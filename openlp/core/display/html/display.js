@@ -1366,6 +1366,23 @@ var Display = {
     value[1] = '/';
     value[2] = Object.keys(Display._slides).length;
     return value;
+  },
+  /**
+   * Enables or disables the layout border area to aid user on the theme positioning tasks.
+   */
+  setTextAreaLayoutBorders: function(enable) {
+    if (enable) {
+      document.body.classList.add('layout-area-aid');
+    } else {
+      document.body.classList.remove('layout-area-aid');
+    }
+  },
+  /**
+   * Enables or disables the slide transitions.
+   */
+  setTransitionsEnabled: function(enable) {
+    Display._doTransitions = enable;
+    Display.resetTheme();
   }
 };
 new QWebChannel(qt.webChannelTransport, function (channel) {
