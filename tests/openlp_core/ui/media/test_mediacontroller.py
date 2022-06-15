@@ -21,9 +21,10 @@
 """
 Package to test the openlp.core.ui.media package.
 """
-import pytest
-
+from pathlib import Path
 from unittest.mock import MagicMock, patch
+
+import pytest
 
 from openlp.core.common.registry import Registry
 from openlp.core.ui import DisplayControllerType, HideMode
@@ -324,23 +325,24 @@ def test_media_hide(media_env, registry):
     assert 'media player' in media_env.media_controller.current_media_players
 
 
-def test_media_length(media_env):
+@pytest.mark.parametrize('file_name,media_length', TEST_MEDIA)
+def test_media_length(file_name, media_length, media_env):
     """
     Check the duration of a few different files via MediaInfo
     """
-    for test_data in TEST_MEDIA:
-        # GIVEN: a media file
-        full_path = str(TEST_PATH / test_data[0])
+    # GIVEN: a media file
+    full_path = TEST_PATH / file_name
 
-        # WHEN the media data is retrieved
-        results = media_env.media_controller.media_length(full_path)
+    # WHEN the media data is retrieved
+    results = media_env.media_controller.media_length(full_path)
 
-        # THEN you can determine the run time
-        assert results == test_data[1], 'The correct duration is returned for ' + test_data[0]
+    # THEN you can determine the run time
+    assert results == media_length, f'The correct duration for {file_name} should be {media_length}, was {results}'
 
 
 @patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
-def test_media_length_duration_none(mocked_parse, media_env):
+@patch('openlp.core.ui.media.mediacontroller.Path')
+def test_media_length_duration_none(MockPath, mocked_parse, media_env):
     """
     Test that when MediaInfo doesn't give us a duration, we default to 0
     """
@@ -362,7 +364,7 @@ def test_media_length_no_can_parse(mocked_can_parse, media_env):
     """
     # GIVEN: A fake media file and a mocked MediaInfo.can_parse() function
     mocked_can_parse.return_value = False
-    file_path = 'path/to/fake/video.mkv'
+    file_path = Path('path/to/fake/video.mkv')
 
     # WHEN the media data is retrieved
     duration = media_env.media_controller.media_length(file_path)
