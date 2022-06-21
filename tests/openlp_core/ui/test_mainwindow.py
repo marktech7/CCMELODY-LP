@@ -754,3 +754,22 @@ def test_on_settings_import_item_clicked(mock_settings, mock_shutil, mock_dialog
     # THEN: The from_future should have been checked, but code should not have started to copy values
     settings_instance.from_future.assert_called_once_with()
     settings_instance.value.assert_not_called()
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+@patch('openlp.core.ui.mainwindow.add_actions')
+@patch('openlp.core.ui.mainwindow.create_action')
+def test_update_recent_files_menu(mocked_create_action, mocked_add_actions, MockPath, settings, registry,
+                                  main_window_reduced):
+    """Test that the update_recent_files_menu() method works correctly"""
+    # GIVEN: A mocked settings object, and some other fixtures
+    MockPath.return_value.is_file.side_effect = [False, True]
+    settings.setValue('advanced/recent file count', 5)
+    main_window_reduced.recent_files = [None, '/fake/path', '/path/to/real/file']
+    main_window_reduced.recent_files_menu = MagicMock()
+
+    # WHEN: update_recent_files_menu() is called
+    main_window_reduced.update_recent_files_menu()
+
+    # THEN: There should be no errors
+    assert mocked_create_action.call_count == 2

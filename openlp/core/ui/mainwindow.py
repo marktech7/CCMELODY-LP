@@ -1308,6 +1308,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.recent_files_menu.clear()
         count = 0
         for recent_path in self.recent_files:
+            if not recent_path:
+                continue
             recent_path = Path(recent_path)
             if not recent_path.is_file():
                 continue
