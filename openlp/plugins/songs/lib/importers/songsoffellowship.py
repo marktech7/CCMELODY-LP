@@ -28,7 +28,7 @@
 import logging
 import re
 
-from openlp.core.common import is_win
+from openlp.core.common.platform import is_win
 
 from .openoffice import OpenOfficeImport
 

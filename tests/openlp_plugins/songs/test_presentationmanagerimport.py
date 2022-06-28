@@ -21,9 +21,9 @@
 """
 This module contains tests for the PresentationManager song importer.
 """
-from unittest import skipIf
+import pytest
 
-from openlp.core.common import is_macosx
+from openlp.core.common.platform import is_macosx
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -31,7 +31,7 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'presentationmanager'
 
 
-@skipIf(is_macosx(), 'This test fails for an undetermined reason on macOS')
+@pytest.mark.skipif(is_macosx(), reason='This test fails for an undetermined reason on macOS')
 def test_presenter_manager(mock_settings):
 
     test_file_import = SongImportTestHelper('PresentationManagerImport', 'presentationmanager')

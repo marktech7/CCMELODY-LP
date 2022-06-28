@@ -22,16 +22,16 @@
 Package to test openlp.core.ui.mainwindow package.
 """
 import os
-import pytest
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 from shutil import rmtree
 from tempfile import mkdtemp
 
+import pytest
 from PyQt5 import QtCore, QtWidgets, QtGui
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import UiStrings
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.plugin import PluginStatus
@@ -197,15 +197,14 @@ def test_cmd_line_arg_other_args(main_window):
         mocked_load_file.assert_called_with(Path(service_file))
 
 
-@patch('openlp.core.ui.mainwindow.Path')
-def test_cmd_line_filename_with_spaces(MockPath, main_window):
+@patch('openlp.core.ui.mainwindow.resolve')
+def test_cmd_line_filename_with_spaces(mocked_resolve, main_window):
     """
     Test that a service file with spaces that split across arguments loads the file properly
     """
     # GIVEN a set of arguments with a file separated by spaces
     mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
-    MockPath.return_value.resolve.side_effect = [FileNotFoundError, FileNotFoundError,
-                                                 FileNotFoundError, mocked_path_is_file]
+    mocked_resolve.side_effect = [FileNotFoundError, FileNotFoundError, FileNotFoundError, mocked_path_is_file]
     args = ['Service', '2022-02-06.osz']
 
     # WHEN the argument is processed
@@ -213,19 +212,18 @@ def test_cmd_line_filename_with_spaces(MockPath, main_window):
         main_window.open_cmd_line_files(args)
 
         # THEN the file should be looked for
-        assert MockPath.return_value.resolve.call_count == 4
+        assert mocked_resolve.call_count == 4
         mocked_load_file.assert_called_with(mocked_path_is_file)
 
 
-@patch('openlp.core.ui.mainwindow.Path')
-def test_cmd_line_filename_with_spaces_and_security(MockPath, main_window):
+@patch('openlp.core.ui.mainwindow.resolve')
+def test_cmd_line_filename_with_spaces_and_security(mocked_resolve, main_window):
     """
     Test that passing a service file with spaces and a command line argument loads properly
     """
     # GIVEN a set of arguments with a file separated by spaces
     mocked_path_is_file = MagicMock(**{'is_file.return_value': True, 'suffix': '.osz'})
-    MockPath.return_value.resolve.side_effect = [FileNotFoundError, FileNotFoundError,
-                                                 FileNotFoundError, mocked_path_is_file]
+    mocked_resolve.side_effect = [FileNotFoundError, FileNotFoundError, FileNotFoundError, mocked_path_is_file]
     args = ['--disable-web-security', 'Service', '2022-02-06.osz']
 
     # WHEN the argument is processed
@@ -233,7 +231,7 @@ def test_cmd_line_filename_with_spaces_and_security(MockPath, main_window):
         main_window.open_cmd_line_files(args)
 
         # THEN the file should be looked for
-        assert MockPath.return_value.resolve.call_count == 4
+        assert mocked_resolve.call_count == 4
         mocked_load_file.assert_called_with(mocked_path_is_file)
 
 

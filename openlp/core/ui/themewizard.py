@@ -23,8 +23,8 @@ The Create/Edit theme wizard
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_macosx
 from openlp.core.display.render import ThemePreviewRenderer
 from openlp.core.lib.ui import add_welcome_page
 from openlp.core.pages.alignment import AlignmentTransitionsPage

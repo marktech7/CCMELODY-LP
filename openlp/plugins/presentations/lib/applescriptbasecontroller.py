@@ -30,7 +30,7 @@ except ImportError:
     APPLESCRIPT_AVAILABLE = False
 
 
-from openlp.core.common import is_macosx
+from openlp.core.common.platform import is_macosx
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
 

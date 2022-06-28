@@ -28,9 +28,9 @@ import re
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_linux
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_linux
 from openlp.core.ui.exceptiondialog import Ui_ExceptionDialog
 from openlp.core.version import get_library_versions, get_version
 from openlp.core.widgets.dialogs import FileDialog

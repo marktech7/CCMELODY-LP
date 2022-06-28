@@ -23,7 +23,8 @@ The UI widgets for the first time wizard.
 """
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import clean_button_text, is_macosx
+from openlp.core.common import clean_button_text
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import add_welcome_page
 from openlp.core.ui.icons import UiIcons

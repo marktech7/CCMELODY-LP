@@ -26,9 +26,9 @@ from pathlib import Path
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_win
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.widgets.layouts import AspectRatioLayout

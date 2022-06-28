@@ -38,11 +38,11 @@ from traceback import format_exception
 from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets  # noqa
 
 from openlp.core.api.deploy import check_for_remote_update
-from openlp.core.common import is_macosx, is_win
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin
-from openlp.core.common.path import create_paths
+from openlp.core.common.path import create_paths, resolve
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
@@ -418,7 +418,7 @@ def main():
                 portable_path = AppLocation.get_directory(AppLocation.AppDir) / '..' / args.portablepath
         else:
             portable_path = AppLocation.get_directory(AppLocation.AppDir) / '..' / '..'
-        portable_path = portable_path.resolve()
+        portable_path = resolve(portable_path)
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
         log.info('Running portable')

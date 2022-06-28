@@ -26,8 +26,9 @@ import pytest
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
-from openlp.core.common import ThemeLevel, is_win
+from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem

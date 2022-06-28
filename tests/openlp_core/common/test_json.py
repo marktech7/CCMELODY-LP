@@ -27,8 +27,8 @@ from pathlib import Path
 from unittest import TestCase
 from unittest.mock import patch
 
-from openlp.core.common import is_win
 from openlp.core.common.json import JSONMixin, OpenLPJSONDecoder, OpenLPJSONEncoder, PathSerializer, _registered_classes
+from openlp.core.common.platform import is_win
 
 
 class BaseTestClass(object):

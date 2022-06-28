@@ -32,14 +32,14 @@ except ImportError:
 
 from PyQt5 import QtCore
 
-from openlp.core.state import State
-from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
+from openlp.core.common.platform import is_linux, is_macosx
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path
 from openlp.core.ui.media.remote import register_views

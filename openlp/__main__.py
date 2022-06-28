@@ -29,9 +29,9 @@ import multiprocessing
 # from OpenGL import GL  # noqa
 
 from openlp.core.app import main
-from openlp.core.common import is_win
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
+from openlp.core.common.platform import is_win
 
 log = logging.getLogger(__name__)
 error_log_file = None

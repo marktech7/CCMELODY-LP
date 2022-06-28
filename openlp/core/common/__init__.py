@@ -25,7 +25,6 @@ OpenLP work.
 import hashlib
 import importlib
 import logging
-import os
 import re
 import sys
 import traceback
@@ -36,13 +35,6 @@ from PyQt5 import QtGui
 from PyQt5.QtCore import QCryptographicHash as QHash
 from PyQt5.QtNetwork import QAbstractSocket, QHostAddress, QNetworkInterface
 from chardet.universaldetector import UniversalDetector
-
-try:
-    from distro import id as distro_id
-except ImportError:
-    # The distro module is only valid for Linux, so if it doesn't exist, create a function that always returns False
-    def distro_id():
-        return False
 
 log = logging.getLogger(__name__ + '.__init__')
 
@@ -198,47 +190,6 @@ def de_hump(name):
     """
     sub_name = FIRST_CAMEL_REGEX.sub(r'\1_\2', name)
     return SECOND_CAMEL_REGEX.sub(r'\1_\2', sub_name).lower()
-
-
-def is_win():
-    """
-    Returns true if running on a system with a nt kernel e.g. Windows, Wine
-
-    :return: True if system is running a nt kernel false otherwise
-    """
-    return os.name.startswith('nt')
-
-
-def is_macosx():
-    """
-    Returns true if running on a system with a darwin kernel e.g. Mac OS X
-
-    :return: True if system is running a darwin kernel false otherwise
-    """
-    return sys.platform.startswith('darwin')
-
-
-def is_linux(distro=None):
-    """
-    Returns true if running on a system with a linux kernel e.g. Ubuntu, Debian, etc
-
-    :param distro: If not None, check if running that Linux distro
-    :return: True if system is running a linux kernel false otherwise
-    """
-    result = sys.platform.startswith('linux')
-    if result and distro:
-        result = result and distro == distro_id()
-    return result
-
-
-def is_64bit_instance():
-    """
-    Returns true if the python/OpenLP instance running is 64 bit. If running a 32 bit instance on
-    a 64 bit system this will return false.
-
-    :return: True if the python/OpenLP instance running is 64 bit, otherwise False.
-    """
-    return (sys.maxsize > 2**32)
 
 
 def verify_ipv4(addr):

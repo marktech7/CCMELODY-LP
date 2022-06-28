@@ -25,9 +25,9 @@ import logging
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import add_welcome_page
 from openlp.core.ui.icons import UiIcons

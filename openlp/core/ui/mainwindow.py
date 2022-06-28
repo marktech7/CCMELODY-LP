@@ -28,22 +28,23 @@ from tempfile import gettempdir
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.state import State
-from openlp.core.api.websockets import WebSocketServer
 from openlp.core.api.http.server import HttpServer
+from openlp.core.api.websockets import WebSocketServer
 from openlp.core.api.zeroconf import start_zeroconf
-from openlp.core.common import add_actions, is_macosx, is_win
+from openlp.core.common import add_actions
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
-from openlp.core.common.path import create_paths
+from openlp.core.common.path import create_paths, resolve
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.ui import create_action
 from openlp.core.projectors.manager import ProjectorManager
+from openlp.core.state import State
 from openlp.core.ui.aboutform import AboutForm
 from openlp.core.ui.firsttimeform import FirstTimeForm
 from openlp.core.ui.formattingtagform import FormattingTagForm
@@ -1339,7 +1340,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         max_recent_files = self.settings.value('advanced/max recent files')
         file_path = Path(filename)
         # Some cleanup to reduce duplication in the recent file list
-        file_path = file_path.resolve()
+        file_path = resolve(file_path)
         if file_path in self.recent_files:
             self.recent_files.remove(file_path)
         self.recent_files.insert(0, file_path)
@@ -1444,7 +1445,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         for arg in args:
             try:
                 # Resolve the file, and use strict mode to throw an exception if the file does not exist
-                file_path = Path(arg).resolve(strict=True)
+                file_path = resolve(Path(arg), is_strict=True)
                 # Check if this is actually a file
                 if file_path.is_file():
                     break
@@ -1458,7 +1459,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             for arg in args:
                 path_so_far.append(arg)
                 try:
-                    file_path = Path(' '.join(path_so_far)).resolve(strict=True)
+                    file_path = resolve(Path(' '.join(path_so_far)), is_strict=True)
                     if file_path.is_file():
                         break
                     else:

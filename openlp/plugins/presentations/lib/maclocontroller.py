@@ -22,10 +22,11 @@
 import logging
 from subprocess import Popen
 
-from openlp.core.common import delete_file, is_macosx
+from openlp.core.common import delete_file
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.path import Path
+from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument
