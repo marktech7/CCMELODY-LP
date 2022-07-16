@@ -263,10 +263,13 @@ def sha256_file_hash(filename):
     hash_obj = hashlib.sha256()
     if not filename.exists():
         return None
-    with filename.open('rb') as f:
-        for chunk in iter(lambda: f.read(65536), b''):
-            hash_obj.update(chunk)
-    return hash_obj.hexdigest()
+    try:
+        with filename.open('rb') as f:
+            for chunk in iter(lambda: f.read(65536), b''):
+                hash_obj.update(chunk)
+        return hash_obj.hexdigest()
+    except PermissionError:
+        return None
 
 
 def qmd5_hash(salt=None, data=None):

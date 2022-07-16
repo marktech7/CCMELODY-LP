@@ -24,7 +24,6 @@ This class contains the core default settings.
 import datetime
 import json
 import logging
-from openlp.core.ui.style import UiThemes
 import os
 from enum import IntEnum
 from pathlib import Path
@@ -38,6 +37,7 @@ from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, Im
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
 from openlp.core.common.platform import is_linux, is_win
+from openlp.core.ui.style import UiThemes
 
 
 log = logging.getLogger(__name__)
