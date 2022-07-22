@@ -35,10 +35,6 @@ from openlp.core.widgets.edits import PathEdit
 from openlp.core.widgets.labels import FormLabel
 from openlp.core.ui.media.vlcplayer import get_vlc
 
-if get_vlc() is not None:
-    from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
-    from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
-
 
 class BackgroundPage(GridLayoutPage):
     """
@@ -220,9 +216,12 @@ class BackgroundPage(GridLayoutPage):
         Open the Stream selection form.
         """
         if get_vlc():
+            # Only import this form if VLC is available.
+            from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
+
             stream_selector_form = StreamSelectorForm(self, self.set_stream, True)
             # prefill in the form any device stream already defined
-            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("devicestream"):
+            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith('devicestream'):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
@@ -235,9 +234,12 @@ class BackgroundPage(GridLayoutPage):
         Open the Stream selection form.
         """
         if get_vlc():
+            # Only import this form is VLC is available
+            from openlp.plugins.media.forms.networkstreamselectorform import NetworkStreamSelectorForm
+
             stream_selector_form = NetworkStreamSelectorForm(self, self.set_stream, True)
             # prefill in the form any network stream already defined
-            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith("networkstream"):
+            if self.stream_lineedit.text() and self.stream_lineedit.text().startswith('networkstream'):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
