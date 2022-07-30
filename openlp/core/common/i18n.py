@@ -28,8 +28,9 @@ from collections import namedtuple
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import Singleton, is_macosx, is_win
+from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__)

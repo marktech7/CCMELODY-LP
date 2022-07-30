@@ -29,8 +29,9 @@ from pathlib import Path
 import appdirs
 
 import openlp
-from openlp.core.common import get_frozen_path, is_macosx, is_win
-from openlp.core.common.path import create_paths
+from openlp.core.common import get_frozen_path
+from openlp.core.common.path import create_paths, resolve
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 
 
@@ -68,11 +69,7 @@ class AppLocation(object):
             path = get_frozen_path(FROZEN_APP_PATH, _get_os_dir_path(dir_type)) / 'i18n'
         else:
             path = _get_os_dir_path(dir_type)
-        # resolve() does not work on windows
-        if is_win():
-            return Path.cwd() / path
-        else:
-            return path.resolve()
+        return resolve(path)
 
     @staticmethod
     def get_data_path():
@@ -134,7 +131,7 @@ def _get_os_dir_path(dir_type):
     """
     # If running from source, return the language directory from the source directory
     if dir_type == AppLocation.LanguageDir:
-        directory = Path(openlp.__file__, '..', '..').resolve() / 'resources'
+        directory = resolve(Path(openlp.__file__, '..', '..')) / 'resources'
         if directory.exists():
             return directory
     if is_win():

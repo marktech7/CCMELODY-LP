@@ -21,19 +21,26 @@
 """
 Functional tests to test the LibreOffice Pyro server
 """
-from unittest import SkipTest
 from unittest.mock import MagicMock, patch, call
 
-from openlp.core.common import is_macosx
+import pytest
+
+from openlp.core.common.platform import is_macosx
 
 try:
     import Pyro4    # noqa: F401
+    has_pyro4 = True
 except ImportError:
-    raise SkipTest('Pyro4 is not installed, skipping testing the LibreOffice server')
-if not is_macosx():
-    raise SkipTest('Not on macOS, skipping testing the LibreOffice server')
+    has_pyro4 = False
 
-from openlp.plugins.presentations.lib.libreofficeserver import LibreOfficeServer, TextType, main
+if has_pyro4:
+    from openlp.plugins.presentations.lib.libreofficeserver import LibreOfficeServer, TextType, main
+
+
+pytestmark = [
+    pytest.mark.skipif(not has_pyro4, reason='Pyro4 is not installed, skipping testing the LibreOffice server'),
+    pytest.mark.skipif(not is_macosx(), reason='Not on macOS, skipping testing the LibreOffice server')
+]
 
 
 def test_constructor():

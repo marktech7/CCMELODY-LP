@@ -29,12 +29,12 @@ import re
 
 from PyQt5 import QtCore, QtWebChannel, QtWidgets
 
-from openlp.core.common import is_win, is_macosx
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
+from openlp.core.common.platform import is_win, is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList

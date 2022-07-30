@@ -32,7 +32,7 @@ from PyQt5 import QtCore, QtWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.app import parse_options, backup_if_version_changed, main as app_main
-from openlp.core.common import is_win
+from openlp.core.common.platform import is_win
 
 
 @pytest.fixture

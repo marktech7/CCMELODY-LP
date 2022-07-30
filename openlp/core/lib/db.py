@@ -687,4 +687,8 @@ class Manager(object):
         if self.is_dirty:
             engine = create_engine(self.db_url)
             if self.db_url.startswith('sqlite'):
-                engine.execute("vacuum")
+                try:
+                    engine.execute("vacuum")
+                except OperationalError:
+                    # Just ignore the operational error
+                    pass

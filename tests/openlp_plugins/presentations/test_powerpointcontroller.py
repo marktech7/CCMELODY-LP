@@ -24,7 +24,7 @@ Functional tests to test the PowerPointController class and related methods.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common import is_win
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument, \
     _get_text_from_shapes

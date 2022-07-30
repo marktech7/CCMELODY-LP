@@ -25,7 +25,7 @@ from subprocess import Popen, PIPE
 from enum import Enum
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from openlp.core.common import is_macosx, is_win
+from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 
 try:

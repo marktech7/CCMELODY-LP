@@ -32,7 +32,7 @@ from unittest.mock import MagicMock, patch
 from PyQt5 import QtWidgets
 
 from openlp.core.state import State
-from openlp.core.common import is_win
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.plugin import PluginStatus

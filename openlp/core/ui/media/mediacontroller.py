@@ -22,6 +22,7 @@
 The :mod:`~openlp.core.ui.media.mediacontroller` module is the control module for all media playing.
 """
 import logging
+from pathlib import Path
 
 try:
     from pymediainfo import MediaInfo
@@ -31,14 +32,14 @@ except ImportError:
 
 from PyQt5 import QtCore
 
-from openlp.core.state import State
-from openlp.core.common import is_linux, is_macosx
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import path_to_str
+from openlp.core.common.platform import is_linux, is_macosx
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path
 from openlp.core.ui.media.remote import register_views
@@ -252,7 +253,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 controller.media_info.media_type = MediaType.Stream
             elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
-                service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
+                service_item.media_length = self.media_length(service_item.video_file_name)
                 controller.media_info.is_looping_playback = True
                 controller.media_info.is_background = True
             else:
@@ -349,7 +350,10 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param media_path: The file path to be checked..
         """
         if MediaInfo.can_parse():
-            media_data = MediaInfo.parse(media_path)
+            # pymediainfo has an issue opening non-ascii file names, so pass it a file object instead
+            # See https://gitlab.com/openlp/openlp/-/issues/1041
+            with Path(media_path).open('rb') as media_file:
+                media_data = MediaInfo.parse(media_file)
             # duration returns in milli seconds
             return media_data.tracks[0].duration or 0
         return 0

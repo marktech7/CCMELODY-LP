@@ -32,8 +32,8 @@ import re
 from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
-from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.plugins.media.forms import VLCOptionsWidget
 
 # Copied from VLC source code: modules/access/v4l2/v4l2.c

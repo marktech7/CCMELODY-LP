@@ -26,8 +26,9 @@ This module is for controlling powerpoint. PPT API documentation:
 """
 import logging
 
-from openlp.core.common import is_win, trace_error_handler
+from openlp.core.common import trace_error_handler
 from openlp.core.common.i18n import UiStrings
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box, translate

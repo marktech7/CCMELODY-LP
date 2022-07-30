@@ -35,7 +35,8 @@ import time
 
 from PyQt5 import QtCore
 
-from openlp.core.common import delete_file, get_uno_command, get_uno_instance, is_win, trace_error_handler
+from openlp.core.common import delete_file, get_uno_command, get_uno_instance, trace_error_handler
+from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList

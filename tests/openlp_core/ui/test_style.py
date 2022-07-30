@@ -21,15 +21,16 @@
 """
 Package to test the :mod:`~openlp.core.ui.style` module.
 """
-from unittest import skipIf
 from unittest.mock import MagicMock, patch, call
+
+import pytest
 
 from openlp.core.ui.style import TOOLBOX_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, get_application_stylesheet, \
     get_library_stylesheet, has_ui_theme, is_ui_theme_dark, set_default_theme
 import openlp.core.ui.style
 
 
-@skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
+@pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')
 @patch('openlp.core.ui.style.HAS_DARK_THEME', True)
 @patch('openlp.core.ui.style.qdarkstyle')
 def test_get_application_stylesheet_qdarkstyle(mocked_qdarkstyle, mock_settings):
@@ -45,7 +46,7 @@ def test_get_application_stylesheet_qdarkstyle(mocked_qdarkstyle, mock_settings)
     assert result == 'dark_style'
 
 
-@skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
+@pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')
 @patch('openlp.core.ui.style.HAS_DARK_THEME', True)
 def test_has_ui_theme_qdarkstyle_true_when_available(mock_settings):
     """Test that the QDarkStyle UI theme exists when qdarkstyle is available """
@@ -179,7 +180,7 @@ def test_get_library_stylesheet_defaultdark_ui_theme(mock_settings):
     assert result == TOOLBOX_STYLE
 
 
-@skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
+@pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')
 @patch('openlp.core.ui.style.HAS_DARK_THEME', True)
 def test_get_library_stylesheet_qdarktheme_ui_theme(mock_settings):
     """Test that the media manager stylesheet is not returned for QDarkStyle UI theme"""
@@ -249,7 +250,7 @@ def test_is_ui_theme_dark_defaultdark_dark(mock_settings):
     assert result is True
 
 
-@skipIf(not hasattr(openlp.core.ui.style, 'qdarkstyle'), 'qdarkstyle is not installed')
+@pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')
 @patch('openlp.core.ui.style.HAS_DARK_THEME', True)
 def test_is_ui_theme_dark_qdarkstyle_dark(mock_settings):
     """Test that the QDarkStyle UI Theme is Dark"""

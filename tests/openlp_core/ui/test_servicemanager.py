@@ -1854,6 +1854,19 @@ class TestServiceManager(TestCase, TestMixin):
         # THEN the on_expand_selection function should have been called.
         self.service_manager.on_expand_selection.assert_called_once_with()
 
+    def test_on_expand_selection_item_none(self):
+        """
+        Test that on_expand_selection exits early when there is no item selected.
+        """
+        # GIVEN a mocked expand function
+        self.service_manager.service_manager_list = MagicMock(**{'currentItem.return_value': None})
+
+        # WHEN on_expand_selection is called
+        self.service_manager.on_expand_selection()
+
+        # THEN on_expand_selection should have exited early
+        self.service_manager.service_manager_list.isExpanded.assert_not_called()
+
     def test_collapse_selection_on_left_arrow(self):
         """
         Test that a left arrow key press event calls the on_collapse_selection function

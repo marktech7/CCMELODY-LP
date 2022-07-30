@@ -22,8 +22,10 @@
     Package to test the openlp.plugin.bible.lib.https package.
 """
 import os
-from unittest import TestCase, skipIf
+from unittest import TestCase
 from unittest.mock import MagicMock
+
+import pytest
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
@@ -32,7 +34,7 @@ from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExt
 IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
 
 
-@skipIf(IS_CI, 'Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
+@pytest.mark.skipif(IS_CI, reason='Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
 class TestBibleHTTP(TestCase):
 
     def setUp(self):

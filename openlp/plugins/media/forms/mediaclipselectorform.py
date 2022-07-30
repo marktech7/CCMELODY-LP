@@ -27,9 +27,9 @@ from time import sleep
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import is_linux, is_macosx, is_win
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media.vlcplayer import get_vlc

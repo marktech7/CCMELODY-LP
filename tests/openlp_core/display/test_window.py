@@ -34,7 +34,7 @@ from PyQt5 import QtCore
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.display.window import TRANSITION_END_EVENT_NAME, DisplayWindow, DisplayWatcher
-from openlp.core.common import is_win
+from openlp.core.common.platform import is_win
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.lib.theme import Theme
 from openlp.core.ui import HideMode

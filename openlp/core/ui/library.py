@@ -342,7 +342,7 @@ class FolderLibraryItem(MediaManagerItem):
             tree_item = self.load_item(item, is_initial_load)
             if not tree_item:
                 continue
-            elif not item.folder_id:
+            elif not item.folder_id or item.folder_id not in folder_items:
                 self.list_view.addTopLevelItem(tree_item)
             else:
                 folder_items[item.folder_id].addChild(tree_item)

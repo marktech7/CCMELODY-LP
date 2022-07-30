@@ -27,8 +27,8 @@ import logging
 
 from PyQt5 import QtCore, QtWidgets
 
-from openlp.core.common import is_macosx
 from openlp.core.common.i18n import translate
+from openlp.core.common.platform import is_macosx
 from openlp.core.lib import build_icon
 from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES, PJLINK_DEFAULT_SOURCES
 from openlp.core.projectors.db import ProjectorSource

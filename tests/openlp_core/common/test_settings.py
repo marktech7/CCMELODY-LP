@@ -26,7 +26,8 @@ from pathlib import Path
 from unittest.mock import call, patch
 
 from openlp.core.common import settings
-from openlp.core.common.settings import Settings, media_players_conv
+from openlp.core.common.settings import Settings, media_players_conv, upgrade_dark_theme_to_ui_theme
+from openlp.core.ui.style import UiThemes
 
 
 def test_media_players_conv():
@@ -79,6 +80,20 @@ def test_get_default_value():
 
     # WHEN: get_default_value() is called
     result = Settings().get_default_value('test/moo')
+
+    # THEN: The correct default value should be returned
+    assert result == 'baa'
+
+
+def test_get_default_value_with_group():
+    """Test that the default value for a setting is returned"""
+    # GIVEN: A Settings class with a default value
+    Settings.__default_settings__['test/moo'] = 'baa'
+
+    # WHEN: get_default_value() is called
+    settings = Settings()
+    settings.beginGroup('test')
+    result = settings.get_default_value('moo')
 
     # THEN: The correct default value should be returned
     assert result == 'baa'
@@ -300,3 +315,23 @@ def test_convert_value_setting_bool_str():
 
     # THEN: The result should be False
     assert result is False, 'The result should be False'
+
+
+def test_upgrade_dark_theme_to_ui_theme_true():
+    """Test that the upgrade_dark_theme_to_ui_theme function returns UiTheme.QDarkStyle for True"""
+    # GIVEN: The upgrade_dark_theme_to_ui_theme function
+    # WHEN: upgrade_dark_theme_to_ui_theme is called with True
+    result = upgrade_dark_theme_to_ui_theme(True)
+
+    # THEN: UiTheme.QDarkStyle should be returned
+    assert result == UiThemes.QDarkStyle
+
+
+def test_upgrade_dark_theme_to_ui_theme_false():
+    """Test that the upgrade_dark_theme_to_ui_theme function returns UiTheme.Automatic for False"""
+    # GIVEN: The upgrade_dark_theme_to_ui_theme function
+    # WHEN: upgrade_dark_theme_to_ui_theme is called with False
+    result = upgrade_dark_theme_to_ui_theme(False)
+
+    # THEN: UiTheme.QDarkStyle should be returned
+    assert result == UiThemes.Automatic

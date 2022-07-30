@@ -19,20 +19,18 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Functional tests to test the AppLocation class and related methods.
+Functional tests to test the :mod:`~openlp.core.common` module
 """
 import os
 from io import BytesIO
 from pathlib import Path
-from unittest import skipUnless
 from unittest.mock import MagicMock, PropertyMock, call, patch
 
 import pytest
 
 from openlp.core.common import Singleton, add_actions, clean_filename, clean_button_text, de_hump, delete_file, \
-    extension_loader, get_file_encoding, get_filesystem_encoding, get_uno_command, get_uno_instance, is_linux, \
-    is_macosx, is_win, is_64bit_instance, md5_hash, normalize_str, path_to_module, qmd5_hash, sha256_file_hash, \
-    trace_error_handler, verify_ip_address
+    extension_loader, get_file_encoding, get_filesystem_encoding, get_uno_command, get_uno_instance, md5_hash, \
+    normalize_str, path_to_module, qmd5_hash, sha256_file_hash, trace_error_handler, verify_ip_address
 
 from tests.resources.projector.data import TEST_HASH, TEST_PIN, TEST_SALT
 from tests.utils.constants import TEST_RESOURCES_PATH
@@ -231,93 +229,6 @@ def test_singleton_metaclass_multiple_classes():
     assert isinstance(s_c2, SingletonClass2)
 
 
-def test_is_win():
-    """
-    Test the is_win() function
-    """
-    # GIVEN: Mocked out objects
-    with patch('openlp.core.common.os') as mocked_os, patch('openlp.core.common.sys') as mocked_sys:
-
-        # WHEN: The mocked os.name and sys.platform are set to 'nt' and 'win32' repectivly
-        mocked_os.name = 'nt'
-        mocked_sys.platform = 'win32'
-
-        # THEN: The three platform functions should perform properly
-        assert is_win() is True, 'is_win() should return True'
-        assert is_macosx() is False, 'is_macosx() should return False'
-        assert is_linux() is False, 'is_linux() should return False'
-
-
-def test_is_macosx():
-    """
-    Test the is_macosx() function
-    """
-    # GIVEN: Mocked out objects
-    with patch('openlp.core.common.os') as mocked_os, patch('openlp.core.common.sys') as mocked_sys:
-
-        # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'darwin' repectivly
-        mocked_os.name = 'posix'
-        mocked_sys.platform = 'darwin'
-
-        # THEN: The three platform functions should perform properly
-        assert is_macosx() is True, 'is_macosx() should return True'
-        assert is_win() is False, 'is_win() should return False'
-        assert is_linux() is False, 'is_linux() should return False'
-
-
-def test_is_linux():
-    """
-    Test the is_linux() function
-    """
-    # GIVEN: Mocked out objects
-    with patch('openlp.core.common.os') as mocked_os, patch('openlp.core.common.sys') as mocked_sys:
-
-        # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'linux3' repectively
-        mocked_os.name = 'posix'
-        mocked_sys.platform = 'linux3'
-
-        # THEN: The three platform functions should perform properly
-        assert is_linux() is True, 'is_linux() should return True'
-        assert is_win() is False, 'is_win() should return False'
-        assert is_macosx() is False, 'is_macosx() should return False'
-
-
-@skipUnless(is_linux(), 'This can only run on Linux')
-def test_is_linux_distro():
-    """
-    Test the is_linux() function for a particular Linux distribution
-    """
-    # GIVEN: Mocked out objects
-    with patch('openlp.core.common.os') as mocked_os, \
-            patch('openlp.core.common.sys') as mocked_sys, \
-            patch('openlp.core.common.distro_id') as mocked_distro_id:
-
-        # WHEN: The mocked os.name and sys.platform are set to 'posix' and 'linux3' repectively
-        #       and the distro is Fedora
-        mocked_os.name = 'posix'
-        mocked_sys.platform = 'linux3'
-        mocked_distro_id.return_value = 'fedora'
-
-        # THEN: The three platform functions should perform properly
-        assert is_linux(distro='fedora') is True, 'is_linux(distro="fedora") should return True'
-        assert is_win() is False, 'is_win() should return False'
-        assert is_macosx() is False, 'is_macosx() should return False'
-
-
-def test_is_64bit_instance():
-    """
-    Test the is_64bit_instance() function
-    """
-    # GIVEN: Mocked out objects
-    with patch('openlp.core.common.sys') as mocked_sys:
-
-        # WHEN: The mocked sys.maxsize is set to 32-bit
-        mocked_sys.maxsize = 2**32
-
-        # THEN: The result should be False
-        assert is_64bit_instance() is False, 'is_64bit_instance() should return False'
-
-
 def test_normalize_str_leaves_newlines():
     # GIVEN: a string containing newlines
     string = 'something\nelse'
@@ -445,10 +356,10 @@ def test_sha256_file_hash():
     ppt_path = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.ppt')
     filename = Path(ppt_path)
 
-    # WHEN: Given a known salt+data
+    # WHEN: Generating a hash for the file
     result = sha256_file_hash(filename)
 
-    # THEN: Validate return has is same
+    # THEN: Validate that the hash is correct
     assert result == 'be6d7bdca25d1662d7faa1f856bfc224646dbad3b65ebff800d9ae70537968f9'
 
 
@@ -460,10 +371,25 @@ def test_sha256_file_hash_no_exist():
     mocked_path = MagicMock()
     mocked_path.exists.return_value = False
 
-    # WHEN: Given a known salt+data
+    # WHEN: A hash is generated on a non-existent file
     result = sha256_file_hash(mocked_path)
 
-    # THEN: Validate return has is same
+    # THEN: the result should be None
+    assert result is None
+
+
+def test_sha256_file_hash_permission_error():
+    """
+    Test SHA256 file hash when there is a permission error
+    """
+    # GIVEN: A mocked Path object
+    mocked_path = MagicMock()
+    mocked_path.open.side_effect = PermissionError
+
+    # WHEN: Generating a hash for the file
+    result = sha256_file_hash(mocked_path)
+
+    # THEN: The result should be None
     assert result is None
 
 
@@ -782,13 +708,15 @@ def test_delete_file_path_success():
     """
     Test the delete_file function when it successfully deletes a file
     """
-    # GIVEN: A mocked os which returns True when os.path.exists is called
-    with patch('openlp.core.common.os', **{'path.exists.return_value': False}):
+    # GIVEN: A patched 'exists' method which returns True when called
+    with patch.object(Path, 'exists', return_value=True), \
+            patch.object(Path, 'unlink') as mocked_unlink:
 
         # WHEN: Calling delete_file with a file path
         result = delete_file(Path('path', 'file.ext'))
 
         # THEN: delete_file should return True
+        assert mocked_unlink.called is True
         assert result is True, 'delete_file should return True when it successfully deletes a file'
 
 

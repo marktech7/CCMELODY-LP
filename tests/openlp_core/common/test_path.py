@@ -27,7 +27,8 @@ from pathlib import Path
 
 from unittest.mock import MagicMock, patch
 
-from openlp.core.common.path import create_paths, files_to_paths, path_to_str, replace_params, str_to_path, which
+from openlp.core.common.path import create_paths, files_to_paths, path_to_str, replace_params, str_to_path, which, \
+    resolve
 
 
 def test_replace_params_no_params():
@@ -242,3 +243,36 @@ def test_files_to_paths():
 
     # THEN: The result should be a list of Paths
     assert result == [Path('/tmp/openlp/file1.txt'), Path('/tmp/openlp/file2.txt')]
+
+
+@patch('openlp.core.common.path.is_win')
+def test_resolve_posix(mocked_is_win):
+    """Test the resolve() method correctly resolves POSIX paths"""
+    # GIVEN: A mocked PosixPath class
+    mocked_is_win.return_value = False
+    mocked_path = MagicMock()
+
+    # WHEN: resolve() is called
+    resolve(mocked_path)
+
+    # THEN: the Path.resolve() method should have been called
+    mocked_path.resolve.assert_called_once_with(strict=False)
+
+
+@patch('openlp.core.common.path.is_win')
+@patch('openlp.core.common.path.os.path.abspath')
+@patch('openlp.core.common.path.Path')
+def test_resolve_windows(MockPath, mocked_abspath, mocked_is_win):
+    """Test the resolve() method correctly resolves Windows paths"""
+    # GIVEN: A mocked WindowsPath class
+    mocked_is_win.return_value = True
+    mocked_path = MagicMock()
+    # Reuse the object, even though the code creates a new Path object
+    MockPath.return_value = mocked_path
+
+    # WHEN: resolve() is called
+    resolve(mocked_path, is_strict=True)
+
+    # THEN: the Path.resolve() method should have been called
+    mocked_abspath.assert_called_once_with(mocked_path)
+    mocked_path.lstat.assert_called_once_with()

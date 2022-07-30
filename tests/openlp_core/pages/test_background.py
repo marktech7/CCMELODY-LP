@@ -22,7 +22,7 @@
 Package to test the openlp.core.pages.background package.
 """
 from pathlib import Path
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 
 import pytest
 
@@ -371,3 +371,150 @@ def test_set_video_path(settings):
 
     # THEN: The result should be correct
     assert page.video_path_edit.path == Path('openlp')
+
+
+def test_get_stream_color(settings):
+    """
+    Test the stream_color getter
+    """
+    # GIVEN: A BackgroundPage instance with the stream_color edit set to a path
+    page = BackgroundPage()
+    page.stream_color_button.color = '#000'
+
+    # WHEN: The property is accessed
+    result = page.stream_color
+
+    # THEN: The result should be correct
+    assert result == '#000'
+
+
+def test_set_stream_color(settings):
+    """
+    Test the stream_color setter
+    """
+    # GIVEN: A BackgroundPage instance
+    page = BackgroundPage()
+
+    # WHEN: The property is set
+    page.stream_color = '#fff'
+
+    # THEN: The result should be correct
+    assert page.stream_color_button.color == '#fff'
+
+
+def test_get_stream_mrl(settings):
+    """
+    Test the stream_mrl getter
+    """
+    # GIVEN: A BackgroundPage instance with the stream_mrl edit set to a path
+    page = BackgroundPage()
+    page.stream_lineedit.setText('devicestream:/dev/vid2')
+
+    # WHEN: The property is accessed
+    result = page.stream_mrl
+
+    # THEN: The result should be correct
+    assert result == 'devicestream:/dev/vid2'
+
+
+def test_set_stream_mrl(settings):
+    """
+    Test the stream_mrl setter
+    """
+    # GIVEN: A BackgroundPage instance
+    page = BackgroundPage()
+
+    # WHEN: The property is set
+    page.stream_mrl = 'devicestream:/dev/vid3'
+
+    # THEN: The result should be correct
+    assert page.stream_lineedit.text() == 'devicestream:/dev/vid3'
+
+
+@patch('openlp.core.pages.background.get_vlc')
+@patch('openlp.plugins.media.forms.streamselectorform.StreamSelectorForm')
+def test_on_device_stream_select_button_triggered(MockStreamSelectorForm, mocked_get_vlc, settings):
+    """Test the device streaming selection
+
+    NOTE: Due to the inline import statement, the source of the form needs to be mocked, not the imported object
+    """
+    # GIVEN: A BackgroundPage object and some mocks
+    mocked_get_vlc.return_value = True
+    mocked_stream_selector_form = MagicMock()
+    MockStreamSelectorForm.return_value = mocked_stream_selector_form
+    page = BackgroundPage()
+    page.stream_lineedit = MagicMock(**{'text.return_value': 'devicestream:/dev/vid0'})
+
+    # WHEN: _on_device_stream_select_button_triggered() is called
+    page._on_device_stream_select_button_triggered()
+
+    # THEN: The error should have been shown
+    MockStreamSelectorForm.assert_called_once_with(page, page.set_stream, True)
+    mocked_stream_selector_form.set_mrl.assert_called_once_with('devicestream:/dev/vid0')
+    mocked_stream_selector_form.exec.assert_called_once_with()
+
+
+@patch('openlp.core.pages.background.get_vlc')
+@patch('openlp.core.pages.background.critical_error_message_box')
+def test_on_device_stream_select_button_triggered_no_vlc(mocked_critical_box, mocked_get_vlc, settings):
+    """Test that if VLC is not available, an error message is shown"""
+    # GIVEN: A BackgroundPage object and some mocks
+    mocked_get_vlc.return_value = None
+    page = BackgroundPage()
+
+    # WHEN: _on_device_stream_select_button_triggered() is called
+    page._on_device_stream_select_button_triggered()
+
+    # THEN: The error should have been shown
+    mocked_critical_box.assert_called_once_with('VLC is not available', 'Device streaming support requires VLC.')
+
+
+@patch('openlp.core.pages.background.get_vlc')
+@patch('openlp.plugins.media.forms.networkstreamselectorform.NetworkStreamSelectorForm')
+def test_on_network_stream_select_button_triggered(MockStreamSelectorForm, mocked_get_vlc, settings):
+    """Test the network streaming selection
+
+    NOTE: Due to the inline import statement, the source of the form needs to be mocked, not the imported object
+    """
+    # GIVEN: A BackgroundPage object and some mocks
+    mocked_get_vlc.return_value = True
+    mocked_stream_selector_form = MagicMock()
+    MockStreamSelectorForm.return_value = mocked_stream_selector_form
+    page = BackgroundPage()
+    page.stream_lineedit = MagicMock(**{'text.return_value': 'networkstream:/dev/vid0'})
+
+    # WHEN: _on_network_stream_select_button_triggered() is called
+    page._on_network_stream_select_button_triggered()
+
+    # THEN: The error should have been shown
+    MockStreamSelectorForm.assert_called_once_with(page, page.set_stream, True)
+    mocked_stream_selector_form.set_mrl.assert_called_once_with('networkstream:/dev/vid0')
+    mocked_stream_selector_form.exec.assert_called_once_with()
+
+
+@patch('openlp.core.pages.background.get_vlc')
+@patch('openlp.core.pages.background.critical_error_message_box')
+def test_on_network_stream_select_button_triggered_no_vlc(mocked_critical_box, mocked_get_vlc, settings):
+    """Test that if VLC is not available, an error message is shown"""
+    # GIVEN: A BackgroundPage object and some mocks
+    mocked_get_vlc.return_value = None
+    page = BackgroundPage()
+
+    # WHEN: _on_network_stream_select_button_triggered() is called
+    page._on_network_stream_select_button_triggered()
+
+    # THEN: The error should have been shown
+    mocked_critical_box.assert_called_once_with('VLC is not available', 'Network streaming support requires VLC.')
+
+
+def test_set_stream(settings):
+    """Test the set_stream() method"""
+    # GIVEN: A BackgroundPage object with a mocked stream_lineedit object
+    page = BackgroundPage()
+    page.stream_lineedit = MagicMock()
+
+    # WHEN: set_stream is called
+    page.set_stream('devicestream:/dev/vid1')
+
+    # THEN: The line edit should have been updated
+    page.stream_lineedit.setText.assert_called_once_with('devicestream:/dev/vid1')
