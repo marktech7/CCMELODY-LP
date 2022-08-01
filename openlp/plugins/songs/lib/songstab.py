@@ -257,6 +257,7 @@ class SongsTab(SettingsTab):
         self.tool_bar_active_check_box.setChecked(self.tool_bar)
         self.update_on_edit_check_box.setChecked(self.update_edit)
         self.add_from_service_check_box.setChecked(self.update_load)
+        self.auto_play_check_box.setChecked(self.auto_play)
         self.chords_group_box.setChecked(self.enable_chords)
         self.disable_chords_import_check_box.setChecked(self.disable_chords_import)
         self.song_key_warning_check_box.setChecked(self.song_key_warning)

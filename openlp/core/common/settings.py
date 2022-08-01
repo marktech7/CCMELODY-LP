@@ -24,7 +24,6 @@ This class contains the core default settings.
 import datetime
 import json
 import logging
-from openlp.core.ui.style import UiThemes
 import os
 from enum import IntEnum
 from pathlib import Path
@@ -38,6 +37,7 @@ from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, Im
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
 from openlp.core.common.platform import is_linux, is_win
+from openlp.core.ui.style import UiThemes
 
 
 log = logging.getLogger(__name__)
@@ -414,69 +414,70 @@ class Settings(QtCore.QSettings):
     ]
     # Settings upgrades for 3.0 (aka 2.6)
     __setting_upgrade_2__ = [
-        ('advanced/default color', 'core/logo background color', []),  # Default image renamed + moved to general > 2.4.
-        ('advanced/default image', 'core/logo file', []),  # Default image renamed + moved to general after 2.4.
-        ('remotes/https enabled', '', []),
-        ('remotes/https port', '', []),
-        ('remotes/twelve hour', 'api/twelve hour', []),
-        ('remotes/port', 'api/port', []),
-        ('remotes/websocket port', 'api/websocket port', []),
-        ('remotes/user id', 'api/user id', []),
-        ('remotes/password', 'api/password', []),
-        ('remotes/authentication enabled', 'api/authentication enabled', []),
-        ('remotes/ip address', 'api/ip address', []),
-        ('remotes/thumbnails', 'api/thumbnails', []),
-        ('shortcuts/escapeItem', '', []),  # Escape item was removed in 2.6.
-        ('shortcuts/desktopScreenEnable', '', []),
-        ('shortcuts/offlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
-        ('shortcuts/onlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
-        ('bibles/advanced bible', '', []),  # Common bible search widgets combined in 2.6
-        ('bibles/quick bible', 'bibles/primary bible', []),  # Common bible search widgets combined in 2.6
-        # Last search type was renamed to last used search type in 2.6 since Bible search value type changed in 2.6.
-        ('songs/last search type', 'songs/last used search type', []),
-        ('bibles/last search type', '', []),
-        ('custom/last search type', 'custom/last used search type', []),
         # The following changes are being made for the conversion to using Path objects made in 2.6 development
         ('advanced/data path', 'advanced/data path', [(lambda p: Path(p) if p is not None else None, None)]),
-        ('crashreport/last directory', 'crashreport/last directory', [(str_to_path, None)]),
-        ('servicemanager/last directory', 'servicemanager/last directory', [(str_to_path, None)]),
-        ('servicemanager/last file', 'servicemanager/last file', [(str_to_path, None)]),
-        ('themes/last directory', 'themes/last directory', [(str_to_path, None)]),
-        ('themes/last directory export', 'themes/last directory export', [(str_to_path, None)]),
-        ('themes/last directory import', 'themes/last directory import', [(str_to_path, None)]),
-        ('themes/wrap footer', '', []),
-        ('projector/last directory import', 'projector/last directory import', [(str_to_path, None)]),
-        ('projector/last directory export', 'projector/last directory export', [(str_to_path, None)]),
+        ('advanced/default color', 'core/logo background color', []),  # Default image renamed + moved to general > 2.4.
+        ('advanced/default image', 'core/logo file', []),  # Default image renamed + moved to general after 2.4.
+        ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])]),
+        ('bibles/advanced bible', '', []),  # Common bible search widgets combined in 2.6
         ('bibles/last directory import', 'bibles/last directory import', [(str_to_path, None)]),
-        ('presentations/enable_pdf_program', '', []),
-        ('presentations/pdf_program', '', []),
-        ('songs/last directory import', 'songs/last directory import', [(str_to_path, None)]),
-        ('songs/last directory export', 'songs/last directory export', [(str_to_path, None)]),
-        ('songusage/last directory export', 'songusage/last directory export', [(str_to_path, None)]),
-        ('core/recent files', 'core/recent files', [(files_to_paths, None)]),
-        ('media/media files', 'media/media files', [(files_to_paths, None)]),
-        ('presentations/presentations files', 'presentations/presentations files', [(files_to_paths, None)]),
+        ('bibles/last search type', '', []),
+        ('bibles/proxy address', '', []),
+        ('bibles/proxy name', '', []),  # Just remove these bible proxy settings. They weren't used in 2.4!
+        ('bibles/proxy password', '', []),
+        ('bibles/proxy username', '', []),
+        ('bibles/quick bible', 'bibles/primary bible', []),  # Common bible search widgets combined in 2.6
+        ('core/audio repeat list', '', []),
+        ('core/audio start paused', '', []),
         ('core/logo file', 'core/logo file', [(str_to_path, None)]),
-        ('presentations/last directory', 'presentations/last directory', [(str_to_path, None)]),
+        (['core/monitor', 'core/x position', 'core/y position', 'core/height', 'core/width', 'core/override position',
+          'core/display on monitor'], 'core/screens', [(upgrade_screens, [1, 0, 0, None, None, False, False])]),
+        ('core/recent files', 'core/recent files', [(files_to_paths, None)]),
+        ('core/save prompt', '', []),
+        ('crashreport/last directory', 'crashreport/last directory', [(str_to_path, None)]),
+        ('custom/last search type', 'custom/last used search type', []),
         ('images/background color', '', []),
         ('images/last directory', 'images/last directory', [(str_to_path, None)]),
         ('media/last directory', 'media/last directory', [(str_to_path, None)]),
-        ('songuasge/db password', 'songusage/db password', []),
-        ('songuasge/db hostname', 'songusage/db hostname', []),
-        ('songuasge/db database', 'songusage/db database', []),
-        ('presentations / Powerpoint Viewer', '', []),
-        (['core/monitor', 'core/x position', 'core/y position', 'core/height', 'core/width', 'core/override position',
-          'core/display on monitor'], 'core/screens', [(upgrade_screens, [1, 0, 0, None, None, False, False])]),
-        ('bibles/proxy name', '', []),  # Just remove these bible proxy settings. They weren't used in 2.4!
-        ('bibles/proxy address', '', []),
-        ('bibles/proxy username', '', []),
-        ('bibles/proxy password', '', []),
-        ('media/players', '', []),
+        ('media/media files', 'media/media files', [(files_to_paths, None)]),
         ('media/override player', '', []),
-        ('core/audio start paused', '', []),
-        ('core/audio repeat list', '', []),
-        ('core/save prompt', '', []),
-        ('advanced/use_dark_style', 'advanced/ui_theme_name', [(upgrade_dark_theme_to_ui_theme, [False])])
+        ('media/players', '', []),
+        ('presentations / Powerpoint Viewer', '', []),
+        ('presentations/enable_pdf_program', '', []),
+        ('presentations/last directory', 'presentations/last directory', [(str_to_path, None)]),
+        ('presentations/pdf_program', '', []),
+        ('presentations/presentations files', 'presentations/presentations files', [(files_to_paths, None)]),
+        ('projector/last directory export', 'projector/last directory export', [(str_to_path, None)]),
+        ('projector/last directory import', 'projector/last directory import', [(str_to_path, None)]),
+        ('remotes/authentication enabled', 'api/authentication enabled', []),
+        ('remotes/https enabled', '', []),
+        ('remotes/https port', '', []),
+        ('remotes/ip address', 'api/ip address', []),
+        ('remotes/password', 'api/password', []),
+        ('remotes/port', 'api/port', []),
+        ('remotes/thumbnails', 'api/thumbnails', []),
+        ('remotes/twelve hour', 'api/twelve hour', []),
+        ('remotes/user id', 'api/user id', []),
+        ('remotes/websocket port', 'api/websocket port', []),
+        ('servicemanager/last directory', 'servicemanager/last directory', [(str_to_path, None)]),
+        ('servicemanager/last file', 'servicemanager/last file', [(str_to_path, None)]),
+        ('shortcuts/desktopScreenEnable', '', []),
+        ('shortcuts/escapeItem', '', []),  # Escape item was removed in 2.6.
+        ('shortcuts/offlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
+        ('shortcuts/onlineHelpItem', 'shortcuts/userManualItem', []),  # Online and Offline help were combined in 2.6.
+        ('songs/auto play audio', 'songs/auto play audio', [(bool, None)]),
+        ('songs/last directory export', 'songs/last directory export', [(str_to_path, None)]),
+        ('songs/last directory import', 'songs/last directory import', [(str_to_path, None)]),
+        # Last search type was renamed to last used search type in 2.6 since Bible search value type changed in 2.6.
+        ('songs/last search type', 'songs/last used search type', []),
+        ('songuasge/db database', 'songusage/db database', []),
+        ('songuasge/db hostname', 'songusage/db hostname', []),
+        ('songuasge/db password', 'songusage/db password', []),
+        ('songusage/last directory export', 'songusage/last directory export', [(str_to_path, None)]),
+        ('themes/last directory export', 'themes/last directory export', [(str_to_path, None)]),
+        ('themes/last directory import', 'themes/last directory import', [(str_to_path, None)]),
+        ('themes/last directory', 'themes/last directory', [(str_to_path, None)]),
+        ('themes/wrap footer', '', []),
     ]
 
     @staticmethod

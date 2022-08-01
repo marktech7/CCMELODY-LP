@@ -22,14 +22,15 @@
 Package to test the openlp.core.lib package.
 """
 from pathlib import Path
-
+from sqlite3 import OperationalError as SQLiteOperationalError
 from unittest.mock import MagicMock, patch
 
 from sqlalchemy import MetaData
+from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
 from sqlalchemy.orm.scoping import ScopedSession
 from sqlalchemy.pool import NullPool
 
-from openlp.core.lib.db import delete_database, get_upgrade_op, init_db, upgrade_db
+from openlp.core.lib.db import Manager, delete_database, get_upgrade_op, init_db, upgrade_db
 
 
 def test_init_db_calls_correct_functions():
@@ -159,3 +160,50 @@ def test_skip_db_upgrade_with_no_database(temp_folder):
 
     # THEN: upgrade should NOT have been called
     assert mocked_upgrade.called is False, 'Database upgrade function should NOT have been called'
+
+
+@patch('openlp.core.lib.db.init_url')
+@patch('openlp.core.lib.db.create_engine')
+def test_manager_finalise_exception(mocked_create_engine, mocked_init_url, temp_folder, settings):
+    """Test that the finalise method silently fails on an exception"""
+    # GIVEN: A db Manager object
+    mocked_init_url.return_value = f'sqlite:///{temp_folder}/test_db.sqlite'
+    mocked_session = MagicMock()
+
+    def init_schema(url):
+        return mocked_session
+
+    mocked_create_engine.return_value.execute.side_effect = SQLAlchemyOperationalError(
+        statement='vacuum',
+        params=[],
+        orig=SQLiteOperationalError('database is locked')
+    )
+    manager = Manager('test', init_schema)
+    manager.is_dirty = True
+
+    # WHEN: finalise() is called
+    manager.finalise()
+
+    # THEN: vacuum should have been called on the database
+    mocked_create_engine.return_value.execute.assert_called_once_with('vacuum')
+
+
+@patch('openlp.core.lib.db.init_url')
+@patch('openlp.core.lib.db.create_engine')
+def test_manager_finalise(mocked_create_engine, mocked_init_url, temp_folder, settings):
+    """Test that the finalise method works correctly"""
+    # GIVEN: A db Manager object
+    mocked_init_url.return_value = f'sqlite:///{temp_folder}/test_db.sqlite'
+    mocked_session = MagicMock()
+
+    def init_schema(url):
+        return mocked_session
+
+    manager = Manager('test', init_schema)
+    manager.is_dirty = True
+
+    # WHEN: finalise() is called
+    manager.finalise()
+
+    # THEN: vacuum should have been called on the database
+    mocked_create_engine.return_value.execute.assert_called_once_with('vacuum')

@@ -50,7 +50,7 @@ class EasySlidesImport(SongImport):
         log.info('Importing EasySlides XML file {source}'.format(source=self.import_source))
         parser = etree.XMLParser(remove_blank_text=True, recover=True)
         try:
-            with self.import_source.open('r') as xml_file:
+            with self.import_source.open('r', encoding='utf-8-sig') as xml_file:
                 parsed_file = etree.parse(xml_file, parser)
         except etree.XMLSyntaxError:
             log.exception('XML syntax error in file {name}'.format(name=self.import_source))

@@ -635,7 +635,9 @@ class SongMediaItem(MediaManagerItem):
                 service_item.metadata.append('<em>{label}:</em> {media}'.
                                              format(label=translate('SongsPlugin.MediaItem', 'Media'),
                                                     media=service_item.background_audio))
-                service_item.will_auto_start = self.settings.value('songs/auto play audio') == QtCore.Qt.Checked
+                # In older versions of OpenLP, this setting may have been a Qt enum, so we typecast to bool
+                # TODO: Remove this after 3.0
+                service_item.will_auto_start = bool(self.settings.value('songs/auto play audio'))
         return True
 
     def generate_footer(self, item, song):

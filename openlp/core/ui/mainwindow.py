@@ -30,7 +30,6 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.api.http.server import HttpServer
 from openlp.core.api.websockets import WebSocketServer
-from openlp.core.api.zeroconf import start_zeroconf
 from openlp.core.common import add_actions
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
@@ -484,7 +483,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.ws_server = WebSocketServer()
         self.ws_server.start()
         self.http_server = HttpServer(self)
-        start_zeroconf()
         SettingsForm(self)
         self.formatting_tag_form = FormattingTagForm(self)
         self.shortcut_form = ShortcutListForm(self)

@@ -1181,7 +1181,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         item = self.service_manager_list.currentItem()
         # Since we only have 2 levels we find them by checking for children
-        if item.childCount():
+        if item and item.childCount():
             if not self.service_manager_list.isExpanded(self.service_manager_list.currentIndex()):
                 self.service_manager_list.expandItem(item)
                 self.service_manager.expanded(item)

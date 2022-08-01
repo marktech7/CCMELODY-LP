@@ -127,9 +127,30 @@ class AlertsPlugin(Plugin):
         AlertsManager(self)
         self.manager = Manager('alerts', init_schema)
         self.alert_form = AlertForm(self)
-        register_views()
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())
+
+    def initialise(self):
+        """
+        Initialise plugin
+        """
+        log.info('Alerts Initialising')
+        super(AlertsPlugin, self).initialise()
+        self.tools_alert_item.setVisible(True)
+        action_list = ActionList.get_instance()
+        action_list.add_action(self.tools_alert_item, UiStrings().Tools)
+        register_views()
+
+    def finalise(self):
+        """
+        Tidy up on exit
+        """
+        log.info('Alerts Finalising')
+        self.manager.finalise()
+        super(AlertsPlugin, self).finalise()
+        self.tools_alert_item.setVisible(False)
+        action_list = ActionList.get_instance()
+        action_list.remove_action(self.tools_alert_item, 'Tools')
 
     def add_tools_menu_item(self, tools_menu):
         """
@@ -144,27 +165,6 @@ class AlertsPlugin(Plugin):
                                               statustip=translate('AlertsPlugin', 'Show an alert message.'),
                                               visible=False, can_shortcuts=True, triggers=self.on_alerts_trigger)
         self.main_window.tools_menu.addAction(self.tools_alert_item)
-
-    def initialise(self):
-        """
-        Initialise plugin
-        """
-        log.info('Alerts Initialising')
-        super(AlertsPlugin, self).initialise()
-        self.tools_alert_item.setVisible(True)
-        action_list = ActionList.get_instance()
-        action_list.add_action(self.tools_alert_item, UiStrings().Tools)
-
-    def finalise(self):
-        """
-        Tidy up on exit
-        """
-        log.info('Alerts Finalising')
-        self.manager.finalise()
-        super(AlertsPlugin, self).finalise()
-        self.tools_alert_item.setVisible(False)
-        action_list = ActionList.get_instance()
-        action_list.remove_action(self.tools_alert_item, 'Tools')
 
     def toggle_alerts_state(self):
         """

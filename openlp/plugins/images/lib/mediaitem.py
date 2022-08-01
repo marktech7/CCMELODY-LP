@@ -347,7 +347,7 @@ class ImageMediaItem(MediaManagerItem):
         :rtype: Path
         """
         ext = image.file_path.suffix.lower()
-        return self.service_path / '{name:s}{ext}'.format(name=image.file_hash, ext=ext)
+        return self.service_path / '{name:s}{ext}'.format(name=image.file_hash or image.file_path.stem, ext=ext)
 
     def load_full_list(self, images, initial_load=False, open_group=None):
         """

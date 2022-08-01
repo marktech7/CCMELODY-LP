@@ -356,10 +356,10 @@ def test_sha256_file_hash():
     ppt_path = os.path.join(TEST_RESOURCES_PATH, 'presentations', 'test.ppt')
     filename = Path(ppt_path)
 
-    # WHEN: Given a known salt+data
+    # WHEN: Generating a hash for the file
     result = sha256_file_hash(filename)
 
-    # THEN: Validate return has is same
+    # THEN: Validate that the hash is correct
     assert result == 'be6d7bdca25d1662d7faa1f856bfc224646dbad3b65ebff800d9ae70537968f9'
 
 
@@ -371,10 +371,25 @@ def test_sha256_file_hash_no_exist():
     mocked_path = MagicMock()
     mocked_path.exists.return_value = False
 
-    # WHEN: Given a known salt+data
+    # WHEN: A hash is generated on a non-existent file
     result = sha256_file_hash(mocked_path)
 
-    # THEN: Validate return has is same
+    # THEN: the result should be None
+    assert result is None
+
+
+def test_sha256_file_hash_permission_error():
+    """
+    Test SHA256 file hash when there is a permission error
+    """
+    # GIVEN: A mocked Path object
+    mocked_path = MagicMock()
+    mocked_path.open.side_effect = PermissionError
+
+    # WHEN: Generating a hash for the file
+    result = sha256_file_hash(mocked_path)
+
+    # THEN: The result should be None
     assert result is None
 
 
