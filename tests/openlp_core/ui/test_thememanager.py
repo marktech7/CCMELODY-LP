@@ -484,9 +484,9 @@ def test_click_on_new_theme(theme_manager):
     assert mocked_event.call_count == 1, 'The on_add_theme method should have been called once'
 
 
-@patch('openlp.core.ui.themeform.ThemeForm._setup')
+@patch('openlp.core.themes.themeeditorform.ThemeEditorForm._setup')
 @patch('openlp.core.ui.filerenameform.FileRenameForm._setup')
-def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
+def test_bootstrap_post(mocked_rename_form, mocked_theme_editor_form, theme_manager):
     """
     Test the functions of bootstrap_post_setup are called.
     """
@@ -501,7 +501,7 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
 
     # THEN:
     assert theme_manager.progress_form is not None
-    assert theme_manager.theme_form is not None
+    assert theme_manager.theme_editor_form is not None
     assert theme_manager.file_rename_form is not None
     theme_manager.upgrade_themes.assert_called_once()
     theme_manager.load_themes.assert_called_once()

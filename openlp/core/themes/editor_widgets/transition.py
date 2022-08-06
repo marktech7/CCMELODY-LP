@@ -34,8 +34,8 @@ class TransitionWidget(ThemeEditorWidget):
     """
     A widget containing the transition options
     """
-    def __init__(self, parent, grid_layout=None):
-        super().__init__(parent, grid_layout)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.connected_signals = False
 
     def setup_ui(self):
@@ -45,31 +45,31 @@ class TransitionWidget(ThemeEditorWidget):
         # Transitions
         self.transitions_enabled_check_box = QtWidgets.QCheckBox(self)
         self.transitions_enabled_check_box.setObjectName('transitions_enabled_check_box')
-        self.main_layout.addWidget(self.transitions_enabled_check_box, 3, 1)
+        self.main_layout.addWidget(self.transitions_enabled_check_box)
         self.transition_effect_label = create_label(self)
         self.transition_effect_label.setObjectName('transition_effect_label')
-        self.main_layout.addWidget(self.transition_effect_label, 4, 0)
+        self.main_layout.addWidget(self.transition_effect_label)
         self.transition_effect_combo_box = QtWidgets.QComboBox(self)
         self.transition_effect_combo_box.setObjectName('transition_effect_combo_box')
         self.transition_effect_combo_box.addItems(['', '', '', '', ''])
-        self.main_layout.addWidget(self.transition_effect_combo_box, 4, 1)
+        self.main_layout.addWidget(self.transition_effect_combo_box)
         self.transition_speed_label = create_label(self)
         self.transition_speed_label.setObjectName('transition_speed_label')
-        self.main_layout.addWidget(self.transition_speed_label, 5, 0)
+        self.main_layout.addWidget(self.transition_speed_label)
         self.transition_speed_combo_box = QtWidgets.QComboBox(self)
         self.transition_speed_combo_box.setObjectName('transition_speed_combo_box')
         self.transition_speed_combo_box.addItems(['', '', ''])
-        self.main_layout.addWidget(self.transition_speed_combo_box, 5, 1)
+        self.main_layout.addWidget(self.transition_speed_combo_box)
         self.transition_direction_label = create_label(self)
         self.transition_direction_label.setObjectName('transition_direction_label')
-        self.main_layout.addWidget(self.transition_direction_label, 4, 2)
+        self.main_layout.addWidget(self.transition_direction_label)
         self.transition_direction_combo_box = QtWidgets.QComboBox(self)
         self.transition_direction_combo_box.setObjectName('transition_direction_combo_box')
         self.transition_direction_combo_box.addItems(['', ''])
-        self.main_layout.addWidget(self.transition_direction_combo_box, 4, 3)
+        self.main_layout.addWidget(self.transition_direction_combo_box)
         self.transition_reverse_check_box = QtWidgets.QCheckBox(self)
         self.transition_reverse_check_box.setObjectName('transition_reverse_check_box')
-        self.main_layout.addWidget(self.transition_reverse_check_box, 5, 3)
+        self.main_layout.addWidget(self.transition_reverse_check_box)
 
     def connect_signals(self):
         # Connect slots

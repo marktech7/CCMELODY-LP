@@ -19,5 +19,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.themes` module contains themes dialogs used by OpenLP.
+The :mod:`~openlp.core.themes` module contains themes dialogs and widgets used by OpenLP.
 """

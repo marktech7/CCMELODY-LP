@@ -19,28 +19,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.widgets.fontselect package.
+Package to test the openlp.core.themes.editor_widgets.fontselect package.
 """
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openlp.core.pages.fontselect import FontSelectPage
+from openlp.core.themes.editor_widgets.fontselect import FontSelectWidget
 
 
 def test_init_(settings):
     """
-    Test the initialisation of FontSelectPage
+    Test the initialisation of FontSelectWidget
     """
-    # GIVEN: The FontSelectPage class
-    # WHEN: Initialising FontSelectPage
+    # GIVEN: The FontSelectWidget class
+    # WHEN: Initialising FontSelectWidget
     # THEN: We should have an instance of the widget with no errors
-    FontSelectPage()
+    FontSelectWidget()
 
 
 def test_font_name_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "font_name_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "font_name_changed" signal
+    instance = FontSelectWidget()
     instance.font_name_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -51,8 +51,8 @@ def test_font_name_changed(settings):
 
 
 def test_font_name_changed_int(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "font_name_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "font_name_changed" signal
+    instance = FontSelectWidget()
     instance.font_name_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -63,8 +63,8 @@ def test_font_name_changed_int(settings):
 
 
 def test_font_color_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "font_color_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "font_color_changed" signal
+    instance = FontSelectWidget()
     instance.font_color_changed = MagicMock()
 
     # WHEN: The font color changes
@@ -75,8 +75,8 @@ def test_font_color_changed(settings):
 
 
 def test_is_bold_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "is_bold_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "is_bold_changed" signal
+    instance = FontSelectWidget()
     instance.is_bold_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -87,8 +87,8 @@ def test_is_bold_changed(settings):
 
 
 def test_is_italic_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "style_italic_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "style_italic_changed" signal
+    instance = FontSelectWidget()
     instance.is_italic_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -99,8 +99,8 @@ def test_is_italic_changed(settings):
 
 
 def test_font_size_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "font_size_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "font_size_changed" signal
+    instance = FontSelectWidget()
     instance.font_size_changed = MagicMock()
 
     # WHEN: The font size changes
@@ -111,8 +111,8 @@ def test_font_size_changed(settings):
 
 
 def test_line_spacing_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "line_spacing_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "line_spacing_changed" signal
+    instance = FontSelectWidget()
     instance.line_spacing_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -123,8 +123,8 @@ def test_line_spacing_changed(settings):
 
 
 def test_is_outline_enabled_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "outline_enabled_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "outline_enabled_changed" signal
+    instance = FontSelectWidget()
     instance.is_outline_enabled_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -135,8 +135,8 @@ def test_is_outline_enabled_changed(settings):
 
 
 def test_outline_color_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "outline_color_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "outline_color_changed" signal
+    instance = FontSelectWidget()
     instance.outline_color_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -147,8 +147,8 @@ def test_outline_color_changed(settings):
 
 
 def test_outline_size_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "outline_size_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "outline_size_changed" signal
+    instance = FontSelectWidget()
     instance.outline_size_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -159,8 +159,8 @@ def test_outline_size_changed(settings):
 
 
 def test_is_shadow_enabled_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "is_shadow_enabled_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "is_shadow_enabled_changed" signal
+    instance = FontSelectWidget()
     instance.is_shadow_enabled_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -171,8 +171,8 @@ def test_is_shadow_enabled_changed(settings):
 
 
 def test_shadow_color_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "shadow_color_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "shadow_color_changed" signal
+    instance = FontSelectWidget()
     instance.shadow_color_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -183,8 +183,8 @@ def test_shadow_color_changed(settings):
 
 
 def test_shadow_size_changed(settings):
-    # GIVEN: An instance of FontSelectPage with a mocked out "shadow_size_changed" signal
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with a mocked out "shadow_size_changed" signal
+    instance = FontSelectWidget()
     instance.shadow_size_changed = MagicMock()
 
     # WHEN: The font name changes
@@ -198,8 +198,8 @@ def test_enable_features(settings):
     """
     Test that the `enable_features` method correctly enables widgets based on features
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     mock_label = MagicMock()
     mock_control = MagicMock()
     instance.feature_widgets = {'test': [mock_label, mock_control]}
@@ -216,8 +216,8 @@ def test_enable_missing_features(settings):
     """
     Test that the `enable_features` method correctly raises an error on a non-existent feature
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     mock_label = MagicMock()
     mock_control = MagicMock()
     instance.feature_widgets = {'test1': [mock_label, mock_control]}
@@ -231,8 +231,8 @@ def test_disable_features(settings):
     """
     Test that the `disable_features` method correctly disables widgets based on features
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     mock_label = MagicMock()
     mock_control = MagicMock()
     instance.feature_widgets = {'test': [mock_label, mock_control]}
@@ -249,8 +249,8 @@ def test_disable_missing_features(settings):
     """
     Test that the `disable_features` method correctly raises an error on a non-existent feature
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     mock_label = MagicMock()
     mock_control = MagicMock()
     instance.feature_widgets = {'test1': [mock_label, mock_control]}
@@ -264,8 +264,8 @@ def test_get_font_name_property(settings):
     """
     Test the `font_name` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.font_name_combobox.currentFont = MagicMock(
         return_value=MagicMock(**{'family.return_value': 'Sans serif'}))
 
@@ -280,12 +280,12 @@ def test_set_font_name_property(settings):
     """
     Test setting the `font_name` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.font_name_combobox.setCurrentFont = MagicMock()
 
     # WHEN: The `font_name` property is set
-    with patch('openlp.core.pages.fontselect.QtGui.QFont') as MockFont:
+    with patch('openlp.core.themes.editor_widgets.fontselect.QtGui.QFont') as MockFont:
         mocked_font = MagicMock()
         MockFont.return_value = mocked_font
         instance.font_name = 'Serif'
@@ -299,8 +299,8 @@ def test_get_font_color_property(settings):
     """
     Test the `font_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.font_color_button.color = '#000'
 
     # WHEN: The `font_color` propert is accessed
@@ -314,8 +314,8 @@ def test_set_font_color_property(settings):
     """
     Test setting the `font_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
 
     # WHEN: The `font_color` property is set
     instance.font_color = '#fff'
@@ -328,8 +328,8 @@ def test_get_is_bold_property(settings):
     """
     Test the `is_bold` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.style_bold_button.isChecked = MagicMock(return_value=False)
 
     # WHEN: The `is_bold` propert is accessed
@@ -343,8 +343,8 @@ def test_set_is_bold_property(settings):
     """
     Test setting the `is_bold` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.style_bold_button.setChecked = MagicMock()
 
     # WHEN: The `is_bold` property is set
@@ -358,8 +358,8 @@ def test_get_is_italic_property(settings):
     """
     Test the `is_italic` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.style_italic_button.isChecked = MagicMock(return_value=True)
 
     # WHEN: The `is_italic` propert is accessed
@@ -373,8 +373,8 @@ def test_set_is_italic_property(settings):
     """
     Test setting the `is_italic` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.style_italic_button.setChecked = MagicMock()
 
     # WHEN: The `is_italic` property is set
@@ -388,8 +388,8 @@ def test_get_font_size_property(settings):
     """
     Test the `font_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.font_size_spinbox.value = MagicMock(return_value=16)
 
     # WHEN: The `font_size` propert is accessed
@@ -403,8 +403,8 @@ def test_set_font_size_property(settings):
     """
     Test setting the `font_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.font_size_spinbox.setValue = MagicMock()
 
     # WHEN: The `font_size` property is set
@@ -418,8 +418,8 @@ def test_get_line_spacing_property(settings):
     """
     Test the `line_spacing` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.line_spacing_spinbox.value = MagicMock(return_value=1)
 
     # WHEN: The `line_spacing` propert is accessed
@@ -433,8 +433,8 @@ def test_set_line_spacing_property(settings):
     """
     Test setting the `line_spacing` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.line_spacing_spinbox.setValue = MagicMock()
 
     # WHEN: The `line_spacing` property is set
@@ -448,8 +448,8 @@ def test_get_is_outline_enabled_property(settings):
     """
     Test the `is_outline_enabled` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.outline_groupbox.isChecked = MagicMock(return_value=True)
 
     # WHEN: The `is_outline_enabled` propert is accessed
@@ -463,8 +463,8 @@ def test_set_is_outline_enabled_property(settings):
     """
     Test setting the `is_outline_enabled` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.outline_groupbox.setChecked = MagicMock()
 
     # WHEN: The `is_outline_enabled` property is set
@@ -478,8 +478,8 @@ def test_get_outline_color_property(settings):
     """
     Test the `outline_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.outline_color_button.color = '#fff'
 
     # WHEN: The `outline_color` propert is accessed
@@ -493,8 +493,8 @@ def test_set_outline_color_property(settings):
     """
     Test setting the `outline_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
 
     # WHEN: The `outline_color` property is set
     instance.outline_color = '#000'
@@ -507,8 +507,8 @@ def test_get_outline_size_property(settings):
     """
     Test the `outline_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.outline_size_spinbox.value = MagicMock(return_value=2)
 
     # WHEN: The `outline_size` propert is accessed
@@ -522,8 +522,8 @@ def test_set_outline_size_property(settings):
     """
     Test setting the `outline_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.outline_size_spinbox.setValue = MagicMock()
 
     # WHEN: The `outline_size` property is set
@@ -537,8 +537,8 @@ def test_get_is_shadow_enabled_property(settings):
     """
     Test the `is_shadow_enabled` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.shadow_groupbox.isChecked = MagicMock(return_value=False)
 
     # WHEN: The `is_shadow_enabled` propert is accessed
@@ -552,8 +552,8 @@ def test_set_is_shadow_enabled_property(settings):
     """
     Test setting the `is_shadow_enabled` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.shadow_groupbox.setChecked = MagicMock()
 
     # WHEN: The `is_shadow_enabled` property is set
@@ -567,8 +567,8 @@ def test_get_shadow_color_property(settings):
     """
     Test the `shadow_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.shadow_color_button.color = '#000'
 
     # WHEN: The `shadow_color` propert is accessed
@@ -582,8 +582,8 @@ def test_set_shadow_color_property(settings):
     """
     Test setting the `shadow_color` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
 
     # WHEN: The `shadow_color` property is set
     instance.shadow_color = '#fff'
@@ -596,8 +596,8 @@ def test_get_shadow_size_property(settings):
     """
     Test the `shadow_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.shadow_size_spinbox.value = MagicMock(return_value=5)
 
     # WHEN: The `shadow_size` propert is accessed
@@ -611,8 +611,8 @@ def test_set_shadow_size_property(settings):
     """
     Test setting the `shadow_size` property
     """
-    # GIVEN: An instance of FontSelectPage with some mocks
-    instance = FontSelectPage()
+    # GIVEN: An instance of FontSelectWidget with some mocks
+    instance = FontSelectWidget()
     instance.shadow_size_spinbox.setValue = MagicMock()
 
     # WHEN: The `shadow_size` property is set

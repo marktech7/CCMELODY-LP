@@ -47,8 +47,8 @@ class BackgroundWidget(ThemeEditorWidget):
 
     on_value_changed = QtCore.pyqtSignal()
 
-    def __init__(self, parent, grid_layout=None):
-        super().__init__(parent, grid_layout)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.connected_signals = False
 
     def setup_ui(self):
@@ -58,75 +58,75 @@ class BackgroundWidget(ThemeEditorWidget):
         # background type
         self.background_label = create_label(self)
         self.background_label.setObjectName('background_label')
-        self.main_layout.addWidget(self.background_label, 0, 0)
+        self.main_layout.addWidget(self.background_label)
         self.background_combo_box = QtWidgets.QComboBox(self)
         self.background_combo_box.addItems(['', '', '', '', '', ''])
         self.background_combo_box.setObjectName('background_combo_box')
-        self.main_layout.addWidget(self.background_combo_box, 0, 1, 1, 3)
+        self.main_layout.addWidget(self.background_combo_box)
         # color
         self.color_label = create_label(self)
         self.color_label.setObjectName('color_label')
-        self.main_layout.addWidget(self.color_label, 1, 0)
+        self.main_layout.addWidget(self.color_label)
         self.color_button = ColorButton(self)
         self.color_button.setObjectName('color_button')
-        self.main_layout.addWidget(self.color_button, 1, 1)
+        self.main_layout.addWidget(self.color_button)
         self.color_widgets = [self.color_label, self.color_button]
         # gradient
         self.gradient_type_label = create_label(self)
         self.gradient_type_label.setObjectName('gradient_type_label')
-        self.main_layout.addWidget(self.gradient_type_label, 2, 0)
+        self.main_layout.addWidget(self.gradient_type_label)
         self.gradient_combo_box = QtWidgets.QComboBox(self)
         self.gradient_combo_box.setObjectName('gradient_combo_box')
         self.gradient_combo_box.addItems(['', '', '', '', ''])
-        self.main_layout.addWidget(self.gradient_combo_box, 2, 1, 1, 3)
+        self.main_layout.addWidget(self.gradient_combo_box)
         self.gradient_start_label = create_label(self)
         self.gradient_start_label.setObjectName('gradient_start_label')
-        self.main_layout.addWidget(self.gradient_start_label, 3, 0)
+        self.main_layout.addWidget(self.gradient_start_label)
         self.gradient_start_button = ColorButton(self)
         self.gradient_start_button.setObjectName('gradient_start_button')
-        self.main_layout.addWidget(self.gradient_start_button, 3, 1)
+        self.main_layout.addWidget(self.gradient_start_button)
         self.gradient_end_label = create_label(self)
         self.gradient_end_label.setObjectName('gradient_end_label')
-        self.main_layout.addWidget(self.gradient_end_label, 3, 2)
+        self.main_layout.addWidget(self.gradient_end_label)
         self.gradient_end_button = ColorButton(self)
         self.gradient_end_button.setObjectName('gradient_end_button')
-        self.main_layout.addWidget(self.gradient_end_button, 3, 3)
+        self.main_layout.addWidget(self.gradient_end_button)
         self.gradient_widgets = [self.gradient_type_label, self.gradient_combo_box, self.gradient_start_label,
                                  self.gradient_start_button, self.gradient_end_label, self.gradient_end_button]
         # image
         self.image_label = create_label(self)
         self.image_label.setObjectName('image_label')
-        self.main_layout.addWidget(self.image_label, 4, 0)
+        self.main_layout.addWidget(self.image_label)
         self.image_path_edit = PathEdit(self, dialog_caption=translate('OpenLP.ThemeWizard', 'Select Image'),
                                         show_revert=False)
-        self.main_layout.addWidget(self.image_path_edit, 4, 1, 1, 3)
+        self.main_layout.addWidget(self.image_path_edit)
         self.image_color_label = create_label(self)
         self.image_color_label.setObjectName('image_color_label')
-        self.main_layout.addWidget(self.image_color_label, 5, 0)
+        self.main_layout.addWidget(self.image_color_label)
         self.image_color_button = ColorButton(self)
         self.image_color_button.color = '#000000'
         self.image_color_button.setObjectName('image_color_button')
-        self.main_layout.addWidget(self.image_color_button, 5, 1)
+        self.main_layout.addWidget(self.image_color_button)
         self.image_widgets = [self.image_label, self.image_path_edit, self.image_color_label, self.image_color_button]
         # video
         self.video_label = create_label(self)
         self.video_label.setObjectName('video_label')
-        self.main_layout.addWidget(self.video_label, 6, 0)
+        self.main_layout.addWidget(self.video_label)
         self.video_path_edit = PathEdit(self, dialog_caption=translate('OpenLP.ThemeWizard', 'Select Video'),
                                         show_revert=False)
-        self.main_layout.addWidget(self.video_path_edit, 6, 1, 1, 3)
+        self.main_layout.addWidget(self.video_path_edit)
         self.video_color_label = create_label(self)
         self.video_color_label.setObjectName('video_color_label')
-        self.main_layout.addWidget(self.video_color_label, 7, 0)
+        self.main_layout.addWidget(self.video_color_label)
         self.video_color_button = ColorButton(self)
         self.video_color_button.color = '#000000'
         self.video_color_button.setObjectName('video_color_button')
-        self.main_layout.addWidget(self.video_color_button, 7, 1)
+        self.main_layout.addWidget(self.video_color_button)
         self.video_widgets = [self.video_label, self.video_path_edit, self.video_color_label, self.video_color_button]
         # streams
         self.stream_label = create_label(self)
         self.stream_label.setObjectName('stream_label')
-        self.main_layout.addWidget(self.stream_label, 6, 0)
+        self.main_layout.addWidget(self.stream_label)
         self.stream_main_layout = QtWidgets.QHBoxLayout()
         self.stream_lineedit = QtWidgets.QLineEdit(self)
         self.stream_lineedit.setObjectName('stream_lineedit')
@@ -142,19 +142,19 @@ class BackgroundWidget(ThemeEditorWidget):
         self.network_stream_select_button.setObjectName('network_stream_select_button')
         self.network_stream_select_button.setIcon(UiIcons().network_stream)
         self.stream_main_layout.addWidget(self.network_stream_select_button)
-        self.main_layout.addLayout(self.stream_main_layout, 6, 1, 1, 3)
+        self.main_layout.addLayout(self.stream_main_layout)
         self.stream_color_label = create_label(self)
         self.stream_color_label.setObjectName('stream_color_label')
-        self.main_layout.addWidget(self.stream_color_label, 7, 0)
+        self.main_layout.addWidget(self.stream_color_label)
         self.stream_color_button = ColorButton(self)
         self.stream_color_button.color = '#000000'
         self.stream_color_button.setObjectName('stream_color_button')
-        self.main_layout.addWidget(self.stream_color_button, 7, 1)
+        self.main_layout.addWidget(self.stream_color_button)
         self.stream_widgets = [self.stream_label, self.stream_lineedit, self.device_stream_select_button,
                                self.network_stream_select_button, self.stream_color_label, self.stream_color_button]
         # Force everything up
         self.main_layout_spacer = QtWidgets.QSpacerItem(1, 1)
-        self.main_layout.addItem(self.main_layout_spacer, 8, 0, 1, 4)
+        self.main_layout.addItem(self.main_layout_spacer)
         # Force the first set of widgets to show
         self._on_background_type_index_changed(0, emit=False)
 

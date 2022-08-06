@@ -19,28 +19,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.pages.alignment package.
+Package to test the openlp.core.themes.editor_widgets.areaposition package.
 """
 
-from openlp.core.pages.areaposition import AreaPositionPage
+from openlp.core.themes.editor_widgets.areaposition import AreaPositionWidget
 
 
 def test_init_(settings):
     """
-    Test the initialisation of AreaPositionPage
+    Test the initialisation of AreaPositionWidget
     """
-    # GIVEN: The AreaPositionPage class
-    # WHEN: Initialising AreaPositionPage
+    # GIVEN: The AreaPositionWidget class
+    # WHEN: Initialising AreaPositionWidget
     # THEN: We should have an instance of the widget with no errors
-    AreaPositionPage()
+    AreaPositionWidget()
 
 
 def test_get_use_main_default_location(settings):
     """
     Test the use_main_default_location getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to index 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to index 1
+    page = AreaPositionWidget()
     page.main_position_check_box.setChecked(False)
 
     # WHEN: The property is accessed
@@ -54,8 +54,8 @@ def test_set_use_main_default_location(settings):
     """
     Test the use_main_default_location setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.use_main_default_location = True
@@ -68,8 +68,8 @@ def test_get_main_x(settings):
     """
     Test the main_x getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to index 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to index 1
+    page = AreaPositionWidget()
     page.main_x_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -83,8 +83,8 @@ def test_set_main_x(settings):
     """
     Test the main_x setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.main_x = 20
@@ -97,8 +97,8 @@ def test_get_main_y(settings):
     """
     Test the main_y getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indey 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indey 1
+    page = AreaPositionWidget()
     page.main_y_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -112,8 +112,8 @@ def test_set_main_y(settings):
     """
     Test the main_y setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.main_y = 20
@@ -126,8 +126,8 @@ def test_get_main_width(settings):
     """
     Test the main_width getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indewidth 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indewidth 1
+    page = AreaPositionWidget()
     page.main_width_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -141,8 +141,8 @@ def test_set_main_width(settings):
     """
     Test the main_width setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.main_width = 20
@@ -155,8 +155,8 @@ def test_get_main_height(settings):
     """
     Test the main_height getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indeheight 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indeheight 1
+    page = AreaPositionWidget()
     page.main_height_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -170,8 +170,8 @@ def test_set_main_height(settings):
     """
     Test the main_height setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.main_height = 20
@@ -184,8 +184,8 @@ def test_get_footer_x(settings):
     """
     Test the footer_x getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to index 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to index 1
+    page = AreaPositionWidget()
     page.footer_x_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -199,8 +199,8 @@ def test_set_footer_x(settings):
     """
     Test the footer_x setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.footer_x = 20
@@ -213,8 +213,8 @@ def test_get_footer_y(settings):
     """
     Test the footer_y getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indey 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indey 1
+    page = AreaPositionWidget()
     page.footer_y_spin_box.setValue(10)
 
     # WHEN: The property is accessed
@@ -228,8 +228,8 @@ def test_set_footer_y(settings):
     """
     Test the footer_y setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.footer_y = 20
@@ -242,8 +242,8 @@ def test_get_footer_width(settings):
     """
     Test the footer_width getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indewidth 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indewidth 1
+    page = AreaPositionWidget()
     page.footer_width_spin_box.setValue(1900)
 
     # WHEN: The property is accessed
@@ -257,8 +257,8 @@ def test_set_footer_width(settings):
     """
     Test the footer_width setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.footer_width = 1900
@@ -271,8 +271,8 @@ def test_get_footer_height(settings):
     """
     Test the footer_height getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to indeheight 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to indeheight 1
+    page = AreaPositionWidget()
     page.footer_height_spin_box.setValue(1080)
 
     # WHEN: The property is accessed
@@ -286,8 +286,8 @@ def test_set_footer_height(settings):
     """
     Test the footer_height setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.footer_height = 1080
@@ -300,8 +300,8 @@ def test_get_use_footer_default_location(settings):
     """
     Test the use_footer_default_location getter
     """
-    # GIVEN: A AreaPositionPage instance with the combobox set to index 1
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance with the combobox set to index 1
+    page = AreaPositionWidget()
     page.footer_position_check_box.setChecked(False)
 
     # WHEN: The property is accessed
@@ -315,8 +315,8 @@ def test_set_use_footer_default_location(settings):
     """
     Test the use_footer_default_location setter with an int
     """
-    # GIVEN: A AreaPositionPage instance
-    page = AreaPositionPage()
+    # GIVEN: An AreaPositionWidget instance
+    page = AreaPositionWidget()
 
     # WHEN: The property is set
     page.use_footer_default_location = True

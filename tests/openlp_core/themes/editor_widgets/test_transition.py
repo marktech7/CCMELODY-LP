@@ -19,32 +19,32 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.pages.alignment package.
+Package to test the openlp.core.themes.editor_widgets.alignment package.
 """
 from unittest.mock import MagicMock
 
 import pytest
 
-from openlp.core.lib.theme import HorizontalType, VerticalType, TransitionType, TransitionSpeed, TransitionDirection
-from openlp.core.pages.alignment import AlignmentTransitionsPage
+from openlp.core.lib.theme import TransitionType, TransitionSpeed, TransitionDirection
+from openlp.core.themes.editor_widgets.transition import TransitionWidget
 
 
 def test_init_(settings):
     """
-    Test the initialisation of AlignmentTransitionsPage
+    Test the initialisation of TransitionWidget
     """
-    # GIVEN: The AlignmentTransitionsPage class
-    # WHEN: Initialising AlignmentTransitionsPage
+    # GIVEN: The TransitionWidget class
+    # WHEN: Initialising TransitionWidget
     # THEN: We should have an instance of the widget with no errors
-    AlignmentTransitionsPage()
+    TransitionWidget()
 
 
 def test_on_transition_enabled_changed(settings):
     """
     Test the _on_transition_enabled_changed() slot
     """
-    # GIVEN: And instance of AlignmentTransitionsPage and some mock widgets
-    page = AlignmentTransitionsPage()
+    # GIVEN: And instance of TransitionWidget and some mock widgets
+    page = TransitionWidget()
 
     # WHEN: _on_transition_enabled_changed
     page._on_transition_enabled_changed(True)
@@ -58,124 +58,12 @@ def test_on_transition_enabled_changed(settings):
     assert page.transition_reverse_check_box.isEnabled()
 
 
-def test_get_horizontal_align(settings):
-    """
-    Test the horizontal_align getter
-    """
-    # GIVEN: A AlignmentTransitionsPage instance with the combobox set to index 1
-    page = AlignmentTransitionsPage()
-    page.horizontal_combo_box.setCurrentIndex(1)
-
-    # WHEN: The property is accessed
-    result = page.horizontal_align
-
-    # THEN: The result should be correct
-    assert result == HorizontalType.Right
-
-
-def test_set_horizontal_align_int(settings):
-    """
-    Test the horizontal_align setter with an int
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    page.horizontal_align = HorizontalType.Center
-
-    # THEN: The combobox should be correct
-    assert page.horizontal_combo_box.currentIndex() == 2
-
-
-def test_set_horizontal_align_str(settings):
-    """
-    Test the horizontal_align setter with a str
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    page.horizontal_align = HorizontalType.to_string(HorizontalType.Justify)
-
-    # THEN: The combobox should be correct
-    assert page.horizontal_combo_box.currentIndex() == 3
-
-
-def test_set_horizontal_align_exception(settings):
-    """
-    Test the horizontal_align setter with something other than a str or int
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    # THEN: An exception is raised
-    with pytest.raises(TypeError, match='horizontal_align must either be a string or an int'):
-        page.horizontal_align = []
-
-
-def test_get_vertical_align(settings):
-    """
-    Test the vertical_align getter
-    """
-    # GIVEN: A AlignmentTransitionsPage instance with the combobox set to index 1
-    page = AlignmentTransitionsPage()
-    page.vertical_combo_box.setCurrentIndex(1)
-
-    # WHEN: The property is accessed
-    result = page.vertical_align
-
-    # THEN: The result should be correct
-    assert result == VerticalType.Middle
-
-
-def test_set_vertical_align_int(settings):
-    """
-    Test the vertical_align setter with an int
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    page.vertical_align = VerticalType.Bottom
-
-    # THEN: The combobox should be correct
-    assert page.vertical_combo_box.currentIndex() == 2
-
-
-def test_set_vertical_align_str(settings):
-    """
-    Test the vertical_align setter with a str
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    page.vertical_align = VerticalType.to_string(VerticalType.Top)
-
-    # THEN: The combobox should be correct
-    assert page.vertical_combo_box.currentIndex() == 0
-
-
-def test_set_vertical_align_exception(settings):
-    """
-    Test the vertical_align setter with something other than a str or int
-    """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
-
-    # WHEN: The property is set
-    # THEN: An exception is raised
-    with pytest.raises(TypeError, match='vertical_align must either be a string or an int'):
-        page.vertical_align = []
-
-
 def test_get_is_transition_enabled(settings):
     """
     Test the is_transition_enabled getter
     """
-    # GIVEN: A AlignmentTransitionsPage instance with the transitions enabled
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance with the transitions enabled
+    page = TransitionWidget()
     page.transitions_enabled_check_box.setChecked(False)
 
     # WHEN: The property is accessed
@@ -189,8 +77,8 @@ def test_set_is_transition_enabled(settings):
     """
     Test the is_transition_enabled setter
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
     page._on_transition_enabled_changed = MagicMock()
 
     # WHEN: The property is set
@@ -205,8 +93,8 @@ def test_get_transition_type(settings):
     """
     Test the transition_type getter
     """
-    # GIVEN: A AlignmentTransitionsPage instance with the combobox set to index 1
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance with the combobox set to index 1
+    page = TransitionWidget()
     page.transition_effect_combo_box.setCurrentIndex(1)
 
     # WHEN: The property is accessed
@@ -220,8 +108,8 @@ def test_set_transition_type_int(settings):
     """
     Test the transition_type setter with an int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_type = TransitionType.Concave
@@ -234,8 +122,8 @@ def test_set_transition_type_str(settings):
     """
     Test the transition_type setter with a str
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_type = TransitionType.to_string(TransitionType.Convex)
@@ -248,8 +136,8 @@ def test_set_transition_type_exception(settings):
     """
     Test the transition_type setter with something other than a str or int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     # THEN: An exception is raised
@@ -261,8 +149,8 @@ def test_get_transition_speed(settings):
     """
     Test the transition_speed getter
     """
-    # GIVEN: A AlignmentTransitionsPage instance with the combobox set to index 0
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance with the combobox set to index 0
+    page = TransitionWidget()
     page.transition_speed_combo_box.setCurrentIndex(0)
 
     # WHEN: The property is accessed
@@ -276,8 +164,8 @@ def test_set_transition_speed_int(settings):
     """
     Test the transition_speed setter with an int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_speed = TransitionSpeed.Fast
@@ -290,8 +178,8 @@ def test_set_transition_speed_str(settings):
     """
     Test the transition_speed setter with a str
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_speed = TransitionSpeed.to_string(TransitionSpeed.Slow)
@@ -304,8 +192,8 @@ def test_set_transition_speed_exception(settings):
     """
     Test the transition_speed setter with something other than a str or int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     # THEN: An exception is raised
@@ -317,8 +205,8 @@ def test_get_transition_direction(settings):
     """
     Test the transition_direction getter
     """
-    # GIVEN: A AlignmentTransitionsPage instance with the combobox set to index 0
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance with the combobox set to index 0
+    page = TransitionWidget()
     page.transition_direction_combo_box.setCurrentIndex(0)
 
     # WHEN: The property is accessed
@@ -332,8 +220,8 @@ def test_set_transition_direction_int(settings):
     """
     Test the transition_direction setter with an int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_direction = TransitionDirection.Horizontal
@@ -346,8 +234,8 @@ def test_set_transition_direction_str(settings):
     """
     Test the transition_direction setter with a str
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.transition_direction = TransitionDirection.to_string(TransitionDirection.Vertical)
@@ -360,8 +248,8 @@ def test_set_transition_direction_exception(settings):
     """
     Test the transition_direction setter with something other than a str or int
     """
-    # GIVEN: A AlignmentTransitionsPage instance
-    page = AlignmentTransitionsPage()
+    # GIVEN: A TransitionWidget instance
+    page = TransitionWidget()
 
     # WHEN: The property is set
     # THEN: An exception is raised
@@ -373,8 +261,8 @@ def test_on_transition_reverse_getter(settings):
     """
     Test the is_transition_reverse_enabled getter
     """
-    # GIVEN: And instance of AlignmentTransitionsPage and transition_reverse checked
-    page = AlignmentTransitionsPage()
+    # GIVEN: And instance of TransitionWidget and transition_reverse checked
+    page = TransitionWidget()
     page.transition_reverse_check_box.setChecked(True)
 
     # WHEN: The property is accessed
@@ -388,8 +276,8 @@ def test_on_transition_reverse_setter(settings):
     """
     Test the is_transition_reverse_enabled setter
     """
-    # GIVEN: And instance of AlignmentTransitionsPage and transition_reverse checked
-    page = AlignmentTransitionsPage()
+    # GIVEN: And instance of TransitionWidget and transition_reverse checked
+    page = TransitionWidget()
 
     # WHEN: The property is set
     page.is_transition_reverse_enabled = True

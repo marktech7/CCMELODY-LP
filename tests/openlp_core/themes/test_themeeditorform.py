@@ -19,19 +19,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.pages.fontselect` module contains the font selection page used in the theme wizard
+Test the ThemeEditorForm class and related methods.
 """
-from openlp.core.pages import GridLayoutPage
-from openlp.core.themes.editor_widgets import WidgetProxy
-from openlp.core.themes.editor_widgets.fontselect import FontSelectWidget
-
-
-class FontSelectPage(GridLayoutPage, WidgetProxy):
-    """
-    A font selection widget
-    """
-    def __init__(self, parent=None):
-        GridLayoutPage.__init__(self, parent)
-
-    def create_widgets(self):
-        return FontSelectWidget(self, self._layout)

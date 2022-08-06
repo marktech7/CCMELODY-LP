@@ -35,8 +35,8 @@ class AlignmentWidget(ThemeEditorWidget):
     """
     A widget containing the alignment options
     """
-    def __init__(self, parent, grid_layout=None):
-        super().__init__(parent, grid_layout)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.connected_signals = False
 
     def setup_ui(self):
@@ -46,16 +46,16 @@ class AlignmentWidget(ThemeEditorWidget):
         # Alignment
         self.horizontal_label = create_label(self)
         self.horizontal_label.setObjectName('horizontal_label')
-        self.main_layout.addWidget(self.horizontal_label, 0, 0)
+        self.main_layout.addWidget(self.horizontal_label)
         self.horizontal_combo_box = QtWidgets.QComboBox(self)
         self.horizontal_combo_box.addItems(['', '', '', ''])
         self.horizontal_combo_box.setObjectName('horizontal_combo_box')
-        self.main_layout.addWidget(self.horizontal_combo_box, 0, 1, 1, 3)
-        self.vertical_label, self.vertical_combo_box = create_valign_selection_widgets(self, self.is_grid_layout)
+        self.main_layout.addWidget(self.horizontal_combo_box)
+        self.vertical_label, self.vertical_combo_box = create_valign_selection_widgets(self, False)
         self.vertical_label.setObjectName('vertical_label')
-        self.main_layout.addWidget(self.vertical_label, 1, 0)
+        self.main_layout.addWidget(self.vertical_label)
         self.vertical_combo_box.setObjectName('vertical_combo_box')
-        self.main_layout.addWidget(self.vertical_combo_box, 1, 1, 1, 3)
+        self.main_layout.addWidget(self.vertical_combo_box)
 
     def connect_signals(self):
         # Connect signals to slots

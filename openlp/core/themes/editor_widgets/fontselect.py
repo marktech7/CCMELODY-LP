@@ -54,29 +54,29 @@ class FontSelectWidget(ThemeEditorWidget):
     shadow_size_changed = QtCore.pyqtSignal(int)
     on_value_changed = QtCore.pyqtSignal()
 
-    def __init__(self, parent, grid_layout=None):
-        super().__init__(parent, grid_layout)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.connected_signals = False
 
     def setup_ui(self):
         # Font name
         self.font_name_label = create_label(self)
         self.font_name_label.setObjectName('font_name_label')
-        self.main_layout.addWidget(self.font_name_label, 0, 0)
+        self.main_layout.addWidget(self.font_name_label)
         self.font_name_combobox = QtWidgets.QFontComboBox(self)
         self.font_name_combobox.setObjectName('font_name_combobox')
-        self.main_layout.addWidget(self.font_name_combobox, 0, 1, 1, 3)
+        self.main_layout.addWidget(self.font_name_combobox)
         # Font color
         self.font_color_label = create_label(self)
         self.font_color_label.setObjectName('font_color_label')
-        self.main_layout.addWidget(self.font_color_label, 1, 0)
+        self.main_layout.addWidget(self.font_color_label)
         self.font_color_button = ColorButton(self)
         self.font_color_button.setObjectName('font_color_button')
-        self.main_layout.addWidget(self.font_color_button, 1, 1)
+        self.main_layout.addWidget(self.font_color_button)
         # Font style
         self.font_style_label = create_label(self)
         self.font_style_label.setObjectName('font_style_label')
-        self.main_layout.addWidget(self.font_style_label, 1, 2)
+        self.main_layout.addWidget(self.font_style_label)
         self.style_layout = QtWidgets.QHBoxLayout()
         self.style_bold_button = QtWidgets.QToolButton(self)
         self.style_bold_button.setCheckable(True)
@@ -91,32 +91,32 @@ class FontSelectWidget(ThemeEditorWidget):
         self.style_italic_button.setObjectName('style_italic_button')
         self.style_layout.addWidget(self.style_italic_button)
         self.style_layout.addStretch(1)
-        self.main_layout.addLayout(self.style_layout, 1, 3)
+        self.main_layout.addLayout(self.style_layout)
         # Font size
         self.font_size_label = create_label(self)
         self.font_size_label.setObjectName('font_size_label')
-        self.main_layout.addWidget(self.font_size_label, 2, 0)
+        self.main_layout.addWidget(self.font_size_label)
         self.font_size_spinbox = QtWidgets.QSpinBox(self)
         self.font_size_spinbox.setMaximum(999)
         self.font_size_spinbox.setValue(16)
         self.font_size_spinbox.setObjectName('font_size_spinbox')
-        self.main_layout.addWidget(self.font_size_spinbox, 2, 1)
+        self.main_layout.addWidget(self.font_size_spinbox)
         # Line spacing
         self.line_spacing_label = create_label(self)
         self.line_spacing_label.setObjectName('line_spacing_label')
-        self.main_layout.addWidget(self.line_spacing_label, 2, 2)
+        self.main_layout.addWidget(self.line_spacing_label)
         self.line_spacing_spinbox = QtWidgets.QSpinBox(self)
         self.line_spacing_spinbox.setMinimum(-250)
         self.line_spacing_spinbox.setMaximum(250)
         self.line_spacing_spinbox.setObjectName('line_spacing_spinbox')
-        self.main_layout.addWidget(self.line_spacing_spinbox, 2, 3)
+        self.main_layout.addWidget(self.line_spacing_spinbox)
         # Outline
         self.outline_groupbox = QtWidgets.QGroupBox(self)
         self.outline_groupbox.setCheckable(True)
         self.outline_groupbox.setChecked(False)
         self.outline_groupbox.setObjectName('outline_groupbox')
         self.outline_layout = QtWidgets.QGridLayout(self.outline_groupbox)
-        self.main_layout.addWidget(self.outline_groupbox, 3, 0, 1, 2)
+        self.main_layout.addWidget(self.outline_groupbox)
         # Outline colour
         self.outline_color_label = create_label(self, self.outline_groupbox)
         self.outline_color_label.setObjectName('outline_color_label')
@@ -138,7 +138,7 @@ class FontSelectWidget(ThemeEditorWidget):
         self.shadow_groupbox.setChecked(False)
         self.shadow_groupbox.setObjectName('shadow_groupbox')
         self.shadow_layout = QtWidgets.QGridLayout(self.shadow_groupbox)
-        self.main_layout.addWidget(self.shadow_groupbox, 3, 2, 1, 2)
+        self.main_layout.addWidget(self.shadow_groupbox)
         # Shadow color
         self.shadow_color_label = create_label(self, self.shadow_groupbox)
         self.shadow_color_label.setObjectName('shadow_color_label')

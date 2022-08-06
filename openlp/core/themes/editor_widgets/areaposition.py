@@ -34,8 +34,8 @@ class AreaPositionWidget(ThemeEditorWidget):
     """
     A widget for the area positioning in the theme editor
     """
-    def __init__(self, parent, grid_layout=None):
-        super().__init__(parent, grid_layout)
+    def __init__(self, parent=None):
+        super().__init__(parent)
         self.connected_signals = False
 
     def setup_ui(self):
@@ -78,7 +78,7 @@ class AreaPositionWidget(ThemeEditorWidget):
         self.main_height_spin_box.setObjectName('main_height_spin_box')
         self.main_position_layout.addWidget(self.main_height_label, 4, 0)
         self.main_position_layout.addWidget(self.main_height_spin_box, 4, 1)
-        self.main_layout.addWidget(self.main_position_group_box, 0, 0)
+        self.main_layout.addWidget(self.main_position_group_box)
         # Footer area position
         self.footer_position_group_box = QtWidgets.QGroupBox(self)
         self.footer_position_group_box.setObjectName('footer_position_group_box')
@@ -115,7 +115,7 @@ class AreaPositionWidget(ThemeEditorWidget):
         self.footer_height_spin_box.setObjectName('footer_height_spin_box')
         self.footer_position_layout.addWidget(self.footer_height_label, 4, 0)
         self.footer_position_layout.addWidget(self.footer_height_spin_box, 4, 1)
-        self.main_layout.addWidget(self.footer_position_group_box, 0, 1)
+        self.main_layout.addWidget(self.footer_position_group_box)
 
     def connect_signals(self):
         # Connect signals to slots
