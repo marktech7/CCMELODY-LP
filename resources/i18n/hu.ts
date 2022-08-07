@@ -703,12 +703,12 @@ Folytatható?</translation>
         <translation>vége</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No Book Found</source>
         <translation>Nincs ilyen könyv</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
         <translation>A kért könyv nem található ebben a Bibliában. A könyv neve helyesen lett írva?</translation>
     </message>
@@ -1093,38 +1093,38 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="649"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="643"/>
         <source>Registering Bible and loading books...</source>
         <translation>Biblia regisztrálása és a könyvek betöltése…</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="665"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="659"/>
         <source>Registering Language...</source>
         <translation>Nyelv regisztrálása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="672"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="666"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>{book} importálása… </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>Download Error</source>
         <translation>Letöltési hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
         <translation>Probléma történt a kijelölt versek letöltésekor. Javasolt az internetkapcsolat ellenőrzése, továbbá, ha a hiba nem oldódik meg, a hiba bejelentése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>Parse Error</source>
         <translation>Feldolgozási hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
         <translation>Probléma történt a kijelölt versek kibontásakor. Ha a hiba nem oldódik meg, javasolt a hiba bejelentése.</translation>
     </message>
@@ -2489,7 +2489,7 @@ az OpenLP régi adatmappájáról?</translation>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
         <source>Downgrade</source>
-        <translation type="unfinished"/>
+        <translation>Visszafejlesztés</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
@@ -2498,34 +2498,40 @@ az OpenLP régi adatmappájáról?</translation>
 {data_folder_backup_path}
 
 Do you want to continue?</source>
-        <translation type="unfinished"/>
+        <translation>Az OpenLP olyan beállítófájlt talált, amely az OpenLP egy újabb verziójával készült. Az OpenLP friss telepítésként fog indulni, mivel az adatok visszafejlesztése nem támogatott. Minden meglévő adat ide lesz mentve:
+
+{data_folder_backup_path}
+
+Folytatható a telepítés?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings Backup</source>
-        <translation type="unfinished"/>
+        <translation>Beállítások biztonsági mentése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="350"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
-        <translation type="unfinished"/>
+        <translation>A beállítások frissítés alatt állnak. Biztonsági mentés készül ide: {settings_back_up_path}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
-        <translation type="unfinished"/>
+        <translation>A beállítások biztonsági mentése nem sikerült.
+
+Az OpenLP megkísérli a folytatást.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>OpenLP Backup</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP biztonsági mentés </translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>Backup of the data folder failed during downgrade.</source>
-        <translation type="unfinished"/>
+        <translation>Az adatmappa biztonsági mentése nem sikerült a visszafejlesztés közben.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/__init__.py" line="442"/>
@@ -2553,12 +2559,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>New version available!</source>
-        <translation type="unfinished"/>
+        <translation>Új verzió érhető el!</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>There&apos;s a new version of the web remote available.</source>
-        <translation type="unfinished"/>
+        <translation>Új verzió érhető el a webes távirányítóból.</translation>
     </message>
 </context>
 <context>
@@ -2902,27 +2908,27 @@ magassága a diakezelőben:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="259"/>
         <source>Interface Theme (needs restart):</source>
-        <translation type="unfinished"/>
+        <translation>Felülettéma (újraindítást igényel)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="260"/>
         <source>Use system theme</source>
-        <translation type="unfinished"/>
+        <translation>Rendszertéma alkalmazása</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="261"/>
         <source>Default Light</source>
-        <translation type="unfinished"/>
+        <translation>Alapértelmezett világos</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="262"/>
         <source>Default Dark</source>
-        <translation type="unfinished"/>
+        <translation>Alapértelmezett sötét</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="264"/>
         <source>QDarkStyle</source>
-        <translation type="unfinished"/>
+        <translation>QDarkStyle</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="265"/>
@@ -3730,7 +3736,7 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="131"/>
         <source>Hide content from Live/Preview</source>
-        <translation type="unfinished"/>
+        <translation>Tartalom elrejtése az élő adásról/előnézetről</translation>
     </message>
 </context>
 <context>
@@ -3861,7 +3867,7 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="213"/>
         <source>UpperCase</source>
-        <translation type="unfinished"/>
+        <translation>Nagybetűk</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="223"/>
@@ -3927,12 +3933,12 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>Permission Error</source>
-        <translation type="unfinished"/>
+        <translation>Jogosultsági hiba</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>There was a permissions error when trying to access {filename}</source>
-        <translation type="unfinished"/>
+        <translation>Jogosultsági hiba történt a fájl elérése közben: {filename}</translation>
     </message>
 </context>
 <context>
@@ -4434,7 +4440,7 @@ Hibás beállítások betöltése rendellenes működést okozhat, vagy akár az
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
-        <translation type="unfinished"/>
+        <translation>Az OpenLP nem tud beállításokat az OpenLP egy újabb verziójából importálni.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="902"/>
@@ -5528,7 +5534,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="208"/>
         <source>&amp;View Projector</source>
-        <translation type="unfinished"/>
+        <translation>Projektor &amp;megtekintése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="214"/>
@@ -5578,7 +5584,7 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="500"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
-        <translation type="unfinished"/>
+        <translation>Projektor törlése: ({projector.link.ip}) {projector.link.name}?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="502"/>
@@ -6169,17 +6175,17 @@ Az utótag nem támogatott</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
         <source>Delete item from service</source>
-        <translation type="unfinished"/>
+        <translation>Elem törlése a sorrendből</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
         <source>Are you sure you want to delete this item from the service?</source>
-        <translation type="unfinished"/>
+        <translation>Valóban törölhető ez az elem a sorrendből?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="372"/>
         <source>&amp;Delete item</source>
-        <translation type="unfinished"/>
+        <translation>Elem &amp;törlése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="395"/>
@@ -6473,12 +6479,12 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="202"/>
         <source>Service Editing</source>
-        <translation type="unfinished"/>
+        <translation>Sorrend szerkesztése</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="203"/>
         <source>Show confirmation box when deleting item from service</source>
-        <translation type="unfinished"/>
+        <translation>Megerősítés kérése elem sorrendből való törlése esetén</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="301"/>
@@ -8125,7 +8131,7 @@ Ez a példány bezáródik.</translation>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="457"/>
         <source>Continuous (whole verses)</source>
-        <translation type="unfinished"/>
+        <translation>Folytonos (teljes versek)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="458"/>
@@ -8523,7 +8529,15 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
   &lt;li&gt;Enter a description of your use case (eg. &quot;OpenLP Integration&quot;)&lt;/li&gt;
   &lt;li&gt;Copy and paste the provided Application ID and Secret values below.&lt;/li&gt;
 &lt;/ol&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Add meg a &lt;b&gt;Planning Center Online&lt;/b&gt; &lt;i&gt;személyes hozzáférési token&lt;/i&gt; részleteit az alábbi szövegmezőkbe.  Személyes hozzáférési token az alábbi módon hozható létre:
+&lt;ol&gt;
+  &lt;li&gt;Lépj be a Planning Center Online-ba a saját felhasználóddal:&lt;br&gt;
+      &lt;a href=https://api.planningcenteronline.com/oauth/applications&gt;
+      https://api.planningcenteronline.com/oauth/applications&lt;/a&gt;&lt;/li&gt;
+  &lt;li&gt;Kattints a „New Personal Access Token” gombra a képernyő alján.&lt;/li&gt;
+  &lt;li&gt;Add meg a felhasználás részleteit (pl. „OpenLP integráció”)&lt;/li&gt;
+  &lt;li&gt;Másold ki és illeszd be a létrehozott alkalmazás ID-t és az alatta lévő titkos értékeket.&lt;/li&gt;
+&lt;/ol&gt;</translation>
     </message>
 </context>
 <context>
@@ -8677,7 +8691,7 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="113"/>
         <source>Add new presentation</source>
-        <translation type="unfinished"/>
+        <translation>Új bemutató hozzáadása</translation>
     </message>
 </context>
 <context>
@@ -8740,7 +8754,7 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="221"/>
         <source>Scan the QR code to open the remote view on your mobile device</source>
-        <translation type="unfinished"/>
+        <translation>Olvasd be a QR-kódot a mobiloddal a webes távirányító megnyiításához</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="223"/>
@@ -8760,7 +8774,7 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="226"/>
         <source>Install</source>
-        <translation type="unfinished"/>
+        <translation>Telepítés</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="227"/>
@@ -8775,12 +8789,12 @@ Adjon hozzá néhány elemet és nyomja meg a Mentés gombot</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="229"/>
         <source>Installed version:</source>
-        <translation type="unfinished"/>
+        <translation>Telepített verzió</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="230"/>
         <source>(not installed)</source>
-        <translation type="unfinished"/>
+        <translation>(nincs telepítve)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="231"/>
@@ -10752,7 +10766,7 @@ Valóban importálható ez a dal?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="149"/>
         <source>Auto-play background audio</source>
-        <translation type="unfinished"/>
+        <translation>Háttérzene automatikus lejátszása</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="150"/>
@@ -10807,7 +10821,7 @@ Valóban importálható ez a dal?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="163"/>
         <source>Warn about missing song key</source>
-        <translation type="unfinished"/>
+        <translation>Figyelmeztetés hiányzó hangnem esetén</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="164"/>
@@ -10963,7 +10977,7 @@ Valóban importálható ez a dal?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
         <source>Song key warning</source>
-        <translation type="unfinished"/>
+        <translation>Figyelmeztetés dal hangnemre</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
@@ -10971,7 +10985,10 @@ Valóban importálható ez a dal?</translation>
 For an optimal chord experience, please include a song key at the beginning of the song. For example: [=G]
 
 You can disable this warning message in songs settings.</source>
-        <translation type="unfinished"/>
+        <translation>Ehhez a dalhoz nem található zenei hangnem, mely az első akkord előtt kellene elhelyezkedjen.
+Az optimális akkordélmény érdekében kérjük, hogy a dal elején add meg a hangnemet. Például: [=G]
+
+Ez a figyelmeztető üzenetet kikapcsolható a dalok beállításaiban.</translation>
     </message>
 </context>
 <context>

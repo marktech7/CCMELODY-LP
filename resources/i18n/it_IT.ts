@@ -703,12 +703,12 @@ Vuoi continuare ugualmente?</translation>
         <translation>fine</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No Book Found</source>
         <translation>Libro non trovato</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
         <translation>Nessun libro corrispondente è stato trovato in questa Bibbia. Verificare di aver digitato correttamente il nome del libro.</translation>
     </message>
@@ -1092,38 +1092,38 @@ Non è possibile personalizzare i nomi dei libri.</translation>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="649"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="643"/>
         <source>Registering Bible and loading books...</source>
         <translation>Registrazione della Bibbia e caricamento dei libri...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="665"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="659"/>
         <source>Registering Language...</source>
         <translation>Registrazione della lingua...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="672"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="666"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>Importazione di {book}...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>Download Error</source>
         <translation>Errore durante il download</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
         <translation>Si è verificato un problema durante il download dei versetti. Controlla la tua connessione ad Internet e se l&apos;errore persiste, considera la segnalazione del bug.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>Parse Error</source>
         <translation>Errore di analisi</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
         <translation>Si è verificato un problema durante l&apos;estrazione dei versetti selezionati. Se l&apos;errore persiste, considera la segnalazione del bug.</translation>
     </message>
@@ -2488,7 +2488,7 @@ un backup della vecchia cartella dei dati?</translation>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
         <source>Downgrade</source>
-        <translation type="unfinished"/>
+        <translation>Downgrade</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
@@ -2497,34 +2497,40 @@ un backup della vecchia cartella dei dati?</translation>
 {data_folder_backup_path}
 
 Do you want to continue?</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP ha trovato un file di configurazione creato da una versione più recente di OpenLP. OpenLP inizierà con una nuova installazione, poiché il downgrade dei dati non è supportato. Il backup dei dati esistenti verrà effettuato in:
+
+{data_folder_backup_path}.
+
+Si desidera continuare?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings Backup</source>
-        <translation type="unfinished"/>
+        <translation>Impostazioni di Backup</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="350"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
-        <translation type="unfinished"/>
+        <translation>Le tue impostazioni stanno per essere aggiornate. Verrà creato un backup in {settings_back_up_path}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
-        <translation type="unfinished"/>
+        <translation>Il backup delle impostazioni non è riuscito.
+
+OpenLP tenterà di continuare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>OpenLP Backup</source>
-        <translation type="unfinished"/>
+        <translation>Backup di OpenLP</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>Backup of the data folder failed during downgrade.</source>
-        <translation type="unfinished"/>
+        <translation>Il backup della cartella dati non è riuscito durante il downgrade.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/__init__.py" line="442"/>
@@ -2552,12 +2558,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>New version available!</source>
-        <translation type="unfinished"/>
+        <translation>Disponibile una nuova versione!</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>There&apos;s a new version of the web remote available.</source>
-        <translation type="unfinished"/>
+        <translation>È disponibile una nuova versione del telecomando web.</translation>
     </message>
 </context>
 <context>
@@ -2901,27 +2907,27 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="259"/>
         <source>Interface Theme (needs restart):</source>
-        <translation type="unfinished"/>
+        <translation>Tema dell&apos;interfaccia (è necessario il riavvio):</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="260"/>
         <source>Use system theme</source>
-        <translation type="unfinished"/>
+        <translation>Utilizza il tema di sistema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="261"/>
         <source>Default Light</source>
-        <translation type="unfinished"/>
+        <translation>Stile di default Chiaro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="262"/>
         <source>Default Dark</source>
-        <translation type="unfinished"/>
+        <translation>Stile di default Scuro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="264"/>
         <source>QDarkStyle</source>
-        <translation type="unfinished"/>
+        <translation>Stile Scuro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="265"/>
@@ -3729,7 +3735,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="131"/>
         <source>Hide content from Live/Preview</source>
-        <translation type="unfinished"/>
+        <translation>Nascondere il contenuto dal Live/Preview</translation>
     </message>
 </context>
 <context>
@@ -3860,7 +3866,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="213"/>
         <source>UpperCase</source>
-        <translation type="unfinished"/>
+        <translation>Maiuscolo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="223"/>
@@ -3926,12 +3932,12 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>Permission Error</source>
-        <translation type="unfinished"/>
+        <translation>Errore di Permessi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>There was a permissions error when trying to access {filename}</source>
-        <translation type="unfinished"/>
+        <translation>Si è verificato un errore di permessi durante il tentativo di accedere a {filename}</translation>
     </message>
 </context>
 <context>
@@ -4433,7 +4439,9 @@ L&apos;importazione di impostazioni errate può causare comportamenti irregolari
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP non può importare le impostazioni da una versione più recente di OpenLP.
+
+L&apos;elaborazione è terminata e non sono state apportate modifiche.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="902"/>
@@ -5527,7 +5535,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="208"/>
         <source>&amp;View Projector</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Visualizza il proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="214"/>
@@ -5577,7 +5585,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="500"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
-        <translation type="unfinished"/>
+        <translation>Eliminare il proiettore ({projector.link.ip}) {projector.link.name}?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="502"/>
@@ -6168,17 +6176,17 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
         <source>Delete item from service</source>
-        <translation type="unfinished"/>
+        <translation>Eliminare l&apos;elemento dal servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
         <source>Are you sure you want to delete this item from the service?</source>
-        <translation type="unfinished"/>
+        <translation>Sei sicuro di voler eliminare questo elemento dal servizio?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="372"/>
         <source>&amp;Delete item</source>
-        <translation type="unfinished"/>
+        <translation>&amp;Elimina l&apos;elemento</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="395"/>
@@ -6472,12 +6480,12 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="202"/>
         <source>Service Editing</source>
-        <translation type="unfinished"/>
+        <translation>Edita il servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="203"/>
         <source>Show confirmation box when deleting item from service</source>
-        <translation type="unfinished"/>
+        <translation>Mostra una casella di conferma quando si elimina un elemento dal servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="301"/>
@@ -8125,7 +8133,7 @@ Chiudere questa istanza</translation>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="457"/>
         <source>Continuous (whole verses)</source>
-        <translation type="unfinished"/>
+        <translation>Continuativo (versi interi)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="458"/>
@@ -8523,7 +8531,15 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
   &lt;li&gt;Enter a description of your use case (eg. &quot;OpenLP Integration&quot;)&lt;/li&gt;
   &lt;li&gt;Copy and paste the provided Application ID and Secret values below.&lt;/li&gt;
 &lt;/ol&gt;</source>
-        <translation type="unfinished"/>
+        <translation>Inserisci i dati del tuo &lt;b&gt;Token di accesso personale&lt;/b&gt; al &lt;i&gt;Planning Center Online&lt;/i&gt; nelle caselle di testo sottostanti. I Token di accesso personali si creano procedendo come segue:
+&lt;ol&gt;
+&lt;li&gt;Accedere al proprio account Planning Center Online all&apos;indirizzo&lt;br&gt;
+&lt;a href=https://api.planningcenteronline.com/oauth/applications&gt; 
+ https://api.planningcenteronline.com/oauth/applications&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Fai clic sul pulsante &quot;Nuovo token di accesso personale&quot; nella parte inferiore dello schermo.&lt;/li&gt;
+&lt;li&gt;Inserisci una descrizione del vostro tipo di uso (ad es. &quot;Integrazione OpenLP&quot;).&lt;/li&gt;
+&lt;li&gt;Copiare e incollare i valori Application ID e Secret forniti di seguito.&lt;/li&gt;
+&lt;/ol&gt;</translation>
     </message>
 </context>
 <context>
@@ -8678,7 +8694,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="113"/>
         <source>Add new presentation</source>
-        <translation type="unfinished"/>
+        <translation>Aggiungi una nuova presentazione.</translation>
     </message>
 </context>
 <context>
@@ -8741,7 +8757,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="221"/>
         <source>Scan the QR code to open the remote view on your mobile device</source>
-        <translation type="unfinished"/>
+        <translation>Scansiona il codice QR per aprire la visualizzazione remota sul tuo dispositivo mobile.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="223"/>
@@ -8761,7 +8777,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="226"/>
         <source>Install</source>
-        <translation type="unfinished"/>
+        <translation>Installa</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="227"/>
@@ -8776,12 +8792,12 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="229"/>
         <source>Installed version:</source>
-        <translation type="unfinished"/>
+        <translation>Versione installata:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="230"/>
         <source>(not installed)</source>
-        <translation type="unfinished"/>
+        <translation>(non installato)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="231"/>
@@ -10757,7 +10773,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="149"/>
         <source>Auto-play background audio</source>
-        <translation type="unfinished"/>
+        <translation>Riproduzione automatica dell&apos;audio di sottofondo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="150"/>
@@ -10812,7 +10828,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="163"/>
         <source>Warn about missing song key</source>
-        <translation type="unfinished"/>
+        <translation>Avviso assenza chiave del brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="164"/>
@@ -10968,7 +10984,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
         <source>Song key warning</source>
-        <translation type="unfinished"/>
+        <translation>Avviso chiave brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
@@ -10976,7 +10992,10 @@ Sei sicuro di voler importare questo brano?</translation>
 For an optimal chord experience, please include a song key at the beginning of the song. For example: [=G]
 
 You can disable this warning message in songs settings.</source>
-        <translation type="unfinished"/>
+        <translation>Per questo brano non è stata rilevata alcuna chiave musicale, che deve essere collocata prima del primo accordo.
+Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale all&apos;inizio del brano. Ad esempio: [=SOL]
+
+È possibile disattivare questo messaggio di avviso nelle impostazioni dei brani.</translation>
     </message>
 </context>
 <context>

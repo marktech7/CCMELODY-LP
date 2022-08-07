@@ -9,7 +9,7 @@
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="141"/>
         <source>Show an alert message.</source>
-        <translation>Prikaži opozorilo</translation>
+        <translation>Prikaži opozorilo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="190"/>
@@ -50,7 +50,7 @@
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="95"/>
         <source>&amp;Parameter:</source>
-        <translation>&amp;Parameter:</translation>
+        <translation>&amp;Določilka:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="96"/>
@@ -81,32 +81,32 @@
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="108"/>
         <source>You haven't specified any text for your alert. 
 Please type in some text before clicking New.</source>
-        <translation>Vnesli niste nobenega besedila za opozorilo.
-Vnesite besedilo predek kliknete na Novo.</translation>
+        <translation>Za opozorilo niste vnesli niste nobenega besedila.
+Prede kliknete na Novo, vtipkajte nekaj besedila.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="179"/>
         <source>No Parameter Found</source>
-        <translation>Ne najdem parametrov.</translation>
+        <translation>Nobene določilke ni mogoče najti.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="179"/>
         <source>You have not entered a parameter to be replaced.
 Do you want to continue anyway?</source>
-        <translation>Niste vnesli zamenjave parametra.
+        <translation>Niste vnesli določilke za zamenjavo.
 Želite vseeno nadaljevati?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="190"/>
         <source>No Placeholder Found</source>
-        <translation>Ne najdem označbe mesta.</translation>
+        <translation>Prostornika ni mogoče najti.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="190"/>
         <source>The alert text does not contain '&lt;&gt;'.
 Do you want to continue anyway?</source>
         <translation>Besedilo opozorila ne vsebuje  &apos;&lt;&gt;&apos;.
-Ali naj vseeno nadaljujem?</translation>
+Ali želite vseeno nadaljevati?</translation>
     </message>
 </context>
 <context>
@@ -114,7 +114,7 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="118"/>
         <source>Font Settings</source>
-        <translation type="unfinished"/>
+        <translation>Nastavitve pisave</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="119"/>
@@ -134,12 +134,12 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="124"/>
         <source>Background Settings</source>
-        <translation type="unfinished"/>
+        <translation>Nastavitve ozadja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="125"/>
         <source>Other Settings</source>
-        <translation type="unfinished"/>
+        <translation>Druge nastavitve</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="126"/>
@@ -149,12 +149,12 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="128"/>
         <source>Repeat (no. of times):</source>
-        <translation type="unfinished"/>
+        <translation>Ponovitve (št. ponovitev):</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="129"/>
         <source>Enable Scrolling</source>
-        <translation type="unfinished"/>
+        <translation>Omogoči listanje zaslona</translation>
     </message>
 </context>
 <context>
@@ -167,7 +167,7 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="110"/>
         <source>&lt;strong&gt;Bible Plugin&lt;/strong&gt;&lt;br /&gt;The Bible plugin provides the ability to display Bible verses from different sources during the service.</source>
-        <translation>&lt;strong&gt;Vtičnik za Sveto pismo&lt;/strong&gt;&lt;br /&gt;Vtičnik za Sveto pismo omogoča prikaz odlomkov iz različnih virov med Sporedom.</translation>
+        <translation>&lt;strong&gt;Vtičnik za Sveto pismo&lt;/strong&gt;&lt;br /&gt;Vtičnik za Sveto pismo omogoča prikaz odlomkov iz različnih virov med sporedom.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="143"/>
@@ -179,13 +179,13 @@ Ali naj vseeno nadaljujem?</translation>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="144"/>
         <source>Bibles</source>
         <comment>name plural</comment>
-        <translation>Sveto pismo</translation>
+        <translation>Sveta pisma</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="148"/>
         <source>Bibles</source>
         <comment>container title</comment>
-        <translation>Sveto pismo</translation>
+        <translation>Sveta pisma</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="153"/>
@@ -240,7 +240,7 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="51"/>
         <source>Numbers</source>
-        <translation>Številke</translation>
+        <translation>Numeri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="52"/>
@@ -255,7 +255,7 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="54"/>
         <source>Judges</source>
-        <translation>Judje</translation>
+        <translation>Sodniki</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="55"/>
@@ -664,13 +664,13 @@ Ali naj vseeno nadaljujem?</translation>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="140"/>
         <source>verse</source>
         <comment>Verse identifier e.g. Genesis 1 verse 1 = Genesis Chapter 1 Verse 1</comment>
-        <translation>verz</translation>
+        <translation>vrstica</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="140"/>
         <source>verses</source>
         <comment>Verse identifier e.g. Genesis 1 verses 1 - 2 = Genesis Chapter 1 Verses 1 to 2</comment>
-        <translation>verzi</translation>
+        <translation>vrstice</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="147"/>
@@ -703,24 +703,24 @@ Ali naj vseeno nadaljujem?</translation>
         <translation>konec</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No Book Found</source>
-        <translation>Ne najdem knjige</translation>
+        <translation>Nobene knjige ni mogoče najti</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="715"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
-        <translation>Ne najdem knjige v tem Svetem pismu. Preverite pravilnost zapisa knjige.</translation>
+        <translation>V tem Svetem pismu ni nobene odgovarjajoče knjige. Preverite pravilnost zapisa knjige.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="65"/>
         <source>The proxy server {proxy} was found in the bible {name}.&lt;br&gt;Would you like to set it as the proxy for OpenLP?</source>
-        <translation type="unfinished"/>
+        <translation>V Svetem pismu {name} je bil najden posredniški strežnik {proxy} .&lt;br&gt;Ali ga želite nastaviti kot OpenLP-jev posredniški strežnik?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="70"/>
         <source>both</source>
-        <translation type="unfinished"/>
+        <translation>oboje</translation>
     </message>
 </context>
 <context>
@@ -728,12 +728,12 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="162"/>
         <source>You need to specify a version name for your Bible.</source>
-        <translation>Prosim, določite ime različice Svetega pisma</translation>
+        <translation>Določite ime različice Svetega pisma</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="168"/>
         <source>You need to set a copyright for your Bible. Bibles in the Public Domain need to be marked as such.</source>
-        <translation>Prosim, določite avtorske pravice za Sveto pismo. Sveta pisma v javni domeni morajo biti kot taka označena.</translation>
+        <translation>Določite avtorske pravice za Sveto pismo. Sveta pisma v javni domeni morajo biti kot taka označena.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="176"/>
@@ -743,21 +743,21 @@ Ali naj vseeno nadaljujem?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="176"/>
         <source>This Bible already exists. Please import a different Bible or first delete the existing one.</source>
-        <translation>To Sveto pismo že obstaja. Prosim odstranite obstoječe ali uvozite drugo Sveto pismo.</translation>
+        <translation>To Sveto pismo že obstaja. Odstranite najprej obstoječe ali uvozite drugo Sveto pismo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="190"/>
         <source>You need to specify a book name for &quot;{text}&quot;.</source>
-        <translation>Vneski morate ime knjige za &quot;{text}&quot;.</translation>
+        <translation>Vnesti morate ime knjige za &quot;{text}&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="197"/>
         <source>The book name &quot;{name}&quot; is not correct.
 Numbers can only be used at the beginning and must
 be followed by one or more non-numeric characters.</source>
-        <translation>Ime knjige &quot;{name}&quot; ni pravilno.
-Številke se lahko uporabijo samo na začetku,
-sledi en ali več ne-številčnih znakov.</translation>
+        <translation>Ime knjige &quot;{name}&quot; je napačno.
+Številke se lahko uporabi le na začetku,
+slediti pa mora en ali več ne-številčnih znakov.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="210"/>
@@ -775,7 +775,7 @@ sledi en ali več ne-številčnih znakov.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="53"/>
         <source>The file &quot;{file}&quot; you supplied is compressed. You must decompress it before import.</source>
-        <translation>Datoteka &quot;{file}&quot;, ki ste jo priložili, je skrčena. Pred uvozom jo morate razširiti.</translation>
+        <translation>Datoteka &quot;{file}&quot;, ki ste jo priložili, je stisnjena. Pred uvažanjem jo morate razširiti.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="224"/>
@@ -797,15 +797,15 @@ sledi en ali več ne-številčnih znakov.</translation>
 Please use the Scripture Reference Search instead.
 
 This means that the currently selected Bible is a Web Bible.</source>
-        <translation>Tekstovno iskanje v spletnih biblijah ni na voljo.
-Prosim uporabite iskanje mesta.
+        <translation>Besedilno iskanje v spletnih Svetih pismih ni na voljo.
+Namesto tega uporabite navedbo vrstice.
 
-To pomeni, da je trenutno izbrana biblija, spletna biblija.</translation>
+To pomeni, da je trenutno izbrano sploetno Sveto pismo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="798"/>
         <source>Scripture Reference Error</source>
-        <translation>Napaka oznake citata.</translation>
+        <translation>Napaka oznake navedka.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="798"/>
@@ -818,17 +818,17 @@ To pomeni, da je trenutno izbrana biblija, spletna biblija.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="177"/>
         <source>Verse Display</source>
-        <translation>Prikaz verzov</translation>
+        <translation>Prikaz vrstic</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="178"/>
         <source>Show verse numbers</source>
-        <translation>Prikaži številke verzov</translation>
+        <translation>Prikaži številke vrstic</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="179"/>
         <source>Only show new chapter numbers</source>
-        <translation>Prikaži samo številke novih poglavij</translation>
+        <translation>Prikaži le številke novih poglavij</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="182"/>
@@ -858,12 +858,12 @@ To pomeni, da je trenutno izbrana biblija, spletna biblija.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="195"/>
         <source>Note: Changes do not affect verses in the Service</source>
-        <translation>Opomba: spremembe ne vplivajo na vrstice na Sporedu</translation>
+        <translation>Opomba: spremembe ne vplivajo na vrstice v sporedu</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="197"/>
         <source>Display second Bible verses</source>
-        <translation>Prikaži sekundarne Svetopisemske verze</translation>
+        <translation>Prikaži sekundarne Svetopisemske vrstice</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="198"/>
@@ -895,9 +895,9 @@ To pomeni, da je trenutno izbrana biblija, spletna biblija.</translation>
         <source>Multiple alternative verse separators may be defined.
 They have to be separated by a vertical bar &quot;|&quot;.
 Please clear this edit line to use the default value.</source>
-        <translation>Multiple alternative verse separators may be defined.
-They have to be separated by a vertical bar &quot;|&quot;.
-Please clear this edit line to use the default value.</translation>
+        <translation>Določenih je lahko več alternativnih ločil vrstic.
+Ločena morajo biti s pokončno črto &quot;|&quot;.
+Če želite privzete vrednosti, izpraznite to polje.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="210"/>
@@ -908,7 +908,8 @@ Please clear this edit line to use the default value.</translation>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="211"/>
         <source>Book name language in search field,
 search results and on display:</source>
-        <translation type="unfinished"/>
+        <translation>Jezik imena knjige v iskalnem polju
+v izpisu iskanja in na zaslonu:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="213"/>
@@ -938,14 +939,14 @@ search results and on display:</source>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="223"/>
         <source>Don&apos;t show error if nothing is found in &quot;Text or Scripture Reference&quot;</source>
-        <translation>Ne prikazuj napake kadar iskanje ne vrne zadetkov v &quot;Besedilno in iskanje mesta&quot;</translation>
+        <translation>Ne prikazuj napake kadar iskanje ne vrne zadetkov v &quot;Besedilnem iskanju in iskanju mesta&quot;</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="226"/>
         <source>Search automatically while typing (Text search must contain a
 minimum of {count} characters and a space for performance reasons)</source>
-        <translation>Išči samodejno med vnašanjem (Besedilno iskanje mora vsebovati
-vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
+        <translation>Samodejno iskanje med vnašanjem (Besedilno iskanje mora vsebovati
+vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     </message>
 </context>
 <context>
@@ -958,7 +959,7 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="85"/>
         <source>The following book name cannot be matched up internally. Please select the corresponding name from the list.</source>
-        <translation type="unfinished"/>
+        <translation>Naslednjemu imenu knjige ni mogoče najti ustreznika. Izberite odgovarjajoče ime s seznama. </translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="88"/>
@@ -1023,7 +1024,7 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="137"/>
         <source>License Details</source>
-        <translation>Podrobnosti o licencah</translation>
+        <translation>Podrobnosti o dovoljenjih</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="138"/>
@@ -1033,7 +1034,7 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="139"/>
         <source>Copyright:</source>
-        <translation>Copyright:</translation>
+        <translation>Ustvarjalčeve pravice:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="140"/>
@@ -1043,7 +1044,7 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="141"/>
         <source>Full license:</source>
-        <translation>Polna licenca:</translation>
+        <translation>Polno dovoljenje:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="142"/>
@@ -1053,7 +1054,7 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="143"/>
         <source>Book name language in search field, search results and on display:</source>
-        <translation type="unfinished"/>
+        <translation>Jezik imena knjig v iskalnem polju, v izpisu zadetkov in na zaslonu:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="146"/>
@@ -1079,52 +1080,53 @@ vsaj {count} znakov in presledek zaradi učinkovitosti).</translation>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="93"/>
         <source>This is a Web Download Bible.
 It is not possible to customize the Book Names.</source>
-        <translation>This is a Web Download Bible.
-It is not possible to customize the Book Names.</translation>
+        <translation>To je Sveto pismo s spleta.
+Imen knjig ni mogoče prilagajati.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="98"/>
         <source>To use the customized book names, &quot;Bible language&quot; must be selected on the Meta Data tab or, if &quot;Global settings&quot; is selected, on the Bible page in Configure OpenLP.</source>
-        <translation>To use the customized book names, &quot;Bible language&quot; must be selected on the Meta Data tab or, if &quot;Global settings&quot; is selected, on the Bible page in Configure OpenLP.</translation>
+        <translation>Če želite prilagajati imena knjig, mora biti &quot;Jezik Svetega pisma&quot; izbran v zavihku Metapodatki oz. na strani Sveto pismo v &quot;Nastavi OpenLP&quot;, če so izbrane &quot;Splošne nastavitve&quot;.</translation>
     </message>
 </context>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="649"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="643"/>
         <source>Registering Bible and loading books...</source>
         <translation>Registriram SP in nalagam knjige...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="665"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="659"/>
         <source>Registering Language...</source>
         <translation>Registriram jezik ...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="672"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="666"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>Uvažanje {book} ...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>Download Error</source>
         <translation>Napaka pri prenosu</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
-        <translation type="unfinished"/>
+        <translation>Pri prenosu vašega izbora vrstic je prišlo do napake.
+Preverite vašo medmrežno povezavo, če pa do te napake še vedno prihaja, predlagamo prijavo hrošča.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>Parse Error</source>
         <translation>Napaka pri razčlenjevanju</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="821"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
-        <translation>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</translation>
+        <translation>Pri pridobivanju vašega izbora vrstic je prišlo do težave. Če se ta napaka še naprej pojavlja, predlagamo prijavo hrošča.</translation>
     </message>
 </context>
 <context>
@@ -1142,42 +1144,42 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="375"/>
         <source>This wizard will help you to import Bibles from a variety of formats. Click the next button below to start the process by selecting a format to import from.</source>
-        <translation>This wizard will help you to import Bibles from a variety of formats. Click the next button below to start the process by selecting a format to import from.</translation>
+        <translation>Ta čarovnik vam bo v pomoč pri uvažanju Svetih pisem iz različnih zapisov. Za pričetek postopka z izbiranje zapisa, ki ga želite uvoziti, spodaj kliknite gum Naprej.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="387"/>
         <source>Web Download</source>
-        <translation>Web Download</translation>
+        <translation>Medmrežni prenos</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="397"/>
         <source>Bible file:</source>
-        <translation>Bible file:</translation>
+        <translation>Datoteka Svetega pisma:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="392"/>
         <source>Books file:</source>
-        <translation>Books file:</translation>
+        <translation>Datoteka knjige:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="393"/>
         <source>Verses file:</source>
-        <translation>Verses file:</translation>
+        <translation>Datoteka vrstic:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="395"/>
         <source>Location:</source>
-        <translation>Lokacija:</translation>
+        <translation>Mesto:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="398"/>
         <source>Click to download bible list</source>
-        <translation>Kliknite za prenos seznama biblij</translation>
+        <translation>Kliknite za prenos seznama Svetih pisem</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="399"/>
         <source>Download bible list</source>
-        <translation>Prenesi seznam biblij</translation>
+        <translation>Prenesi seznam Svetih pisem</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="400"/>
@@ -1202,7 +1204,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="410"/>
         <source>Bibles:</source>
-        <translation>Biblije:</translation>
+        <translation>Sveta pisma:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="408"/>
@@ -1227,17 +1229,17 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="418"/>
         <source>To import SWORD bibles the pysword python module must be installed. Please read the manual for instructions.</source>
-        <translation>Za uvoz SWORD biblij, mora biti nameščen modul pysword python. Za več informacij prosim preberite navodila.</translation>
+        <translation>Za uvoz SWORD Svetih pisem, mora biti nameščen modul pysword python. Za več informacij si preberite navodila.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="421"/>
         <source>License Details</source>
-        <translation>Podrobnosti o licencah</translation>
+        <translation>Podrobnosti o dovoljenjih</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="423"/>
         <source>Set up the Bible&apos;s license details.</source>
-        <translation>Set up the Bible&apos;s license details.</translation>
+        <translation>Nastavi podrobnosti o dovoljenju Svetega pisma.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="425"/>
@@ -1247,7 +1249,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="426"/>
         <source>Copyright:</source>
-        <translation>Copyright:</translation>
+        <translation>Ustvarjalčeve pravice:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="427"/>
@@ -1257,32 +1259,32 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="428"/>
         <source>Full license:</source>
-        <translation>Polna licenca:</translation>
+        <translation>Polno dovoljenje:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="430"/>
         <source>Please wait while your Bible is imported.</source>
-        <translation>Počakajte da se uvoz SP zaključi.</translation>
+        <translation>Počakajte, da se uvoz SP zaključi.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="462"/>
         <source>You need to specify a file with books of the Bible to use in the import.</source>
-        <translation>You need to specify a file with books of the Bible to use in the import.</translation>
+        <translation>Določiti morate datoteko s knjigami Svetega pisma, ki jo želite uporabiti pri uvozu.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="469"/>
         <source>You need to specify a file of Bible verses to import.</source>
-        <translation>You need to specify a file of Bible verses to import.</translation>
+        <translation>Določiti morate datoteko svetopisemskih vrstic, ki jo želite uvoziti.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="532"/>
         <source>You need to specify a version name for your Bible.</source>
-        <translation>You need to specify a version name for your Bible.</translation>
+        <translation>Določiti morate različico vašega Svetega pisma.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="538"/>
         <source>You need to set a copyright for your Bible. Bibles in the Public Domain need to be marked as such.</source>
-        <translation>You need to set a copyright for your Bible. Bibles in the Public Domain need to be marked as such.</translation>
+        <translation>Določiti morate ustvarjalčeve pravice za vaše Sveto pismo. Sveta pisma, ki so javno dobro, morajo biti kot taka tudi označena.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="553"/>
@@ -1292,7 +1294,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="553"/>
         <source>This Bible already exists. Please import a different Bible or first delete the existing one.</source>
-        <translation>This Bible already exists. Please import a different Bible or first delete the existing one.</translation>
+        <translation>To Sveto pismo že obstaja. Odstranite najprej obstoječe ali uvozite drugo Sveto pismo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="594"/>
@@ -1302,7 +1304,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="594"/>
         <source>An error occurred while downloading the list of bibles from %s.</source>
-        <translation>Prišlo je do napake med prenosom seznama biblij z %s.</translation>
+        <translation>Prišlo je do napake med prenosom seznama Svetih pisem z %s.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="695"/>
@@ -1317,7 +1319,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="771"/>
         <source>Your Bible import failed.</source>
-        <translation>Prenos SP je bil neuspešen.</translation>
+        <translation>Prenos SP je spodletel.</translation>
     </message>
 </context>
 <context>
@@ -1330,7 +1332,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="68"/>
         <source>OpenLP is unable to determine the language of this translation of the Bible. Please select the language from the list below.</source>
-        <translation>OpenLP is unable to determine the language of this translation of the Bible. Please select the language from the list below.</translation>
+        <translation>OpenLP ne more določiti jezika tega prevoda Svetega pisma. Izberite jezik s spodnjega seznama.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="72"/>
@@ -1366,7 +1368,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="168"/>
         <source>Sort bible books alphabetically.</source>
-        <translation>Razvrsti Svetopisemske knjige po abecedi.</translation>
+        <translation>Razvrsti svetopisemske knjige po abecedi.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="170"/>
@@ -1406,12 +1408,12 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="269"/>
         <source>Clear the results on the current tab.</source>
-        <translation>Počisti rezultat na trenutnem zavihku.</translation>
+        <translation>Počisti zadetke na trenutnem zavihku.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="270"/>
         <source>Add the search results to the saved list.</source>
-        <translation>Rezultat iskanja dodaj na seznam shranjenih.</translation>
+        <translation>Zadetke iskanja dodaj na seznam shranjenih.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
@@ -1426,7 +1428,7 @@ It is not possible to customize the Book Names.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
         <source>Scripture Reference</source>
-        <translation>Scripture Reference</translation>
+        <translation>Sklic mesta</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
@@ -1448,7 +1450,7 @@ It is not possible to customize the Book Names.</translation>
         <source>Are you sure you want to completely delete &quot;{bible}&quot; Bible from OpenLP?
 
 You will need to re-import this Bible to use it again.</source>
-        <translation>Ste prepričani, da želite povsem odstraniti &quot;{bible}&quot; Sveto pismo iz OpenLP?
+        <translation>Ali ste prepričani, da želite povsem odstraniti Sveto pismo &quot;{bible}&quot; iz OpenLP?
 
 Za ponovno uporabo, ga boste morali ponovno uvoziti.</translation>
     </message>
@@ -1475,7 +1477,7 @@ Za ponovno uporabo, ga boste morali ponovno uvoziti.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="772"/>
         <source>Verses not found</source>
-        <translation>Nobena vrstica ni najdena</translation>
+        <translation>Nobene vrstice ni bilo mogoče najti</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="772"/>
@@ -1483,7 +1485,10 @@ Za ponovno uporabo, ga boste morali ponovno uvoziti.</translation>
 Only verses found in both Bibles will be shown.
 
 {count:d} verses have not been included in the results.</source>
-        <translation type="unfinished"/>
+        <translation>Drugotno Sveto pismo &quot;{second_name}&quot;  ne vsebuje vseh vrstic, ki so v glavnem Svetem pismu &quot;{name}&quot;.
+Prikazane bodo le vrstice, ki so v obesh Svetih pismih.
+
+{count:d} vrstic ni bilo zajetih v zadetkih.</translation>
     </message>
 </context>
 <context>
@@ -1513,7 +1518,7 @@ Only verses found in both Bibles will be shown.
         <location filename="../../openlp/plugins/bibles/lib/importers/sword.py" line="93"/>
         <source>An unexpected error happened while importing the SWORD bible, please report this to the OpenLP developers.
 {error}</source>
-        <translation>Med uvozom SWORD biblije je prišlo do nepričakovane napake. Prosimo pošljite poročilo OpenLP razvijalcem.
+        <translation>Med uvozom Svetega psima SWORD je prišlo do nepričakovane napake. Pošljite poročilo OpenLP razvijalcem.
 {error}</translation>
     </message>
 </context>
@@ -1522,12 +1527,12 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/wordproject.py" line="60"/>
         <source>Incorrect Bible file type, not a Zip file.</source>
-        <translation type="unfinished"/>
+        <translation>Napačna vrsta zapisa Svetega pisma, ni ZIP datoteka.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/wordproject.py" line="75"/>
         <source>Incorrect Bible file type, files are missing.</source>
-        <translation type="unfinished"/>
+        <translation>Napačna vrsta datoteke Svetega pisma, datoteke manjkajo.</translation>
     </message>
 </context>
 <context>
@@ -1535,12 +1540,12 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="59"/>
         <source>Incorrect Bible file type. Expected data is missing.</source>
-        <translation type="unfinished"/>
+        <translation>Napačna vrsta datoteke Svetega pisma. Pričakovani podatki manjkajo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="95"/>
         <source>Incorrect Bible file type supplied. Zefania Bibles may be compressed. You must decompress them before import.</source>
-        <translation type="unfinished"/>
+        <translation>Napačna vrsta Svetega pisma. Zefania Bibles je lahko stisnjena. Pred uvozom jo je namreč treba razširiti.</translation>
     </message>
 </context>
 <context>
@@ -1556,65 +1561,65 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="62"/>
         <source>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
-        <translation>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</translation>
+        <translation>&lt;strong&gt;Vtičnik prosojnice po meri&lt;/strong&gt;&lt;br /&gt;Vtičnik prosojnice po meri omogoča postavitev besedilnih prosojnic po meri, ki se lahko prikazujejo na zaslonu kot se pesmi. Ta vtičnik vam omogoča prostejše roke, kot pesemski vtičnik.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="100"/>
         <source>Custom Slide</source>
         <comment>name singular</comment>
-        <translation>Diapozitiv po meri</translation>
+        <translation>Prosojnica po meri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="101"/>
         <source>Custom Slides</source>
         <comment>name plural</comment>
-        <translation>Diapozitivi po meri</translation>
+        <translation>Prosojnice po meri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
         <source>Custom Slides</source>
         <comment>container title</comment>
-        <translation>Diapozitivi po meri</translation>
+        <translation>Prosojnice po meri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
         <source>Load a new custom slide.</source>
-        <translation>Naloži nov diapozitiv po meri.</translation>
+        <translation>Naloži novo prosojnico po meri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="110"/>
         <source>Import a custom slide.</source>
-        <translation>Uvozi diapozitiv po meri.</translation>
+        <translation>Uvozi prosojnico po meri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="111"/>
         <source>Add a new custom slide.</source>
-        <translation>Dodaj nov diapozitiv po meri.</translation>
+        <translation>Dodaj novo prosojnico po meri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="112"/>
         <source>Edit the selected custom slide.</source>
-        <translation>Uredi izbrani diapozitiv po meri.</translation>
+        <translation>Uredi izbrano prosojnico po meri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="113"/>
         <source>Delete the selected custom slide.</source>
-        <translation>Izbriši izbrani diapozitiv po meri.</translation>
+        <translation>Izbriši izbrano prosojnico po meri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="114"/>
         <source>Preview the selected custom slide.</source>
-        <translation>Predogled izbranega diapozitiva.</translation>
+        <translation>Predogled izbrane prosojnice.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="115"/>
         <source>Send the selected custom slide live.</source>
-        <translation>Prikaži izbrani diapozitiv v živo.</translation>
+        <translation>Prikaži izbrano prosojnico v živo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="116"/>
         <source>Add the selected custom slide to the service.</source>
-        <translation>Dodaj izbran diapozitiv na Spored.</translation>
+        <translation>Dodaj izbrano prosojnico na spored.</translation>
     </message>
 </context>
 <context>
@@ -1632,7 +1637,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/lib/customtab.py" line="57"/>
         <source>Import missing custom slides from service files</source>
-        <translation>Uvoz manjkajočih &quot;diapozitivov po meri&quot; iz datoteke Spored</translation>
+        <translation>Uvoz manjkajočih &quot;prosojnic po meri&quot; iz datoteke sporeda</translation>
     </message>
 </context>
 <context>
@@ -1640,7 +1645,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="104"/>
         <source>Edit Custom Slides</source>
-        <translation>Uredi diapozitive po meri</translation>
+        <translation>Uredi prosojnice po meri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="105"/>
@@ -1650,12 +1655,12 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="107"/>
         <source>Add a new slide at bottom.</source>
-        <translation>Dodaj diapozitiv na konec.</translation>
+        <translation>Dodaj novo prosojnico na konec.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="109"/>
         <source>Edit the selected slide.</source>
-        <translation>Uredi izbrani diapozitiv.</translation>
+        <translation>Uredi izbrano prosojnico.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="110"/>
@@ -1665,7 +1670,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="111"/>
         <source>Edit all the slides at once.</source>
-        <translation>Uredi vse diapozitive naenkrat.</translation>
+        <translation>Uredi vse prosojnice naenkrat.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="112"/>
@@ -1675,7 +1680,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="113"/>
         <source>&amp;Credits:</source>
-        <translation>&amp;Credits:</translation>
+        <translation>&amp;Zasluge:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="239"/>
@@ -1685,17 +1690,17 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomform.py" line="243"/>
         <source>You need to add at least one slide.</source>
-        <translation>Vstaviti morate vsaj en diapozitiv.</translation>
+        <translation>Vstaviti morate vsaj ene prosojnico.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomslidedialog.py" line="50"/>
         <source>Insert Slide</source>
-        <translation>Vstavi diapozitiv</translation>
+        <translation>Vstavi prosojnico</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomslidedialog.py" line="51"/>
         <source>Split a slide into two by inserting a slide splitter.</source>
-        <translation>Razdeli diapozitiv na dva z vstavitvijo delilnika.</translation>
+        <translation>Razdeli prosojnico na dve z vstavitvijo delilnika.</translation>
     </message>
 </context>
 <context>
@@ -1703,7 +1708,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomslidedialog.py" line="47"/>
         <source>Edit Slide</source>
-        <translation>Uredi diapozitiv</translation>
+        <translation>Uredi prosojnico</translation>
     </message>
 </context>
 <context>
@@ -1711,13 +1716,13 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="192"/>
         <source>Are you sure you want to delete the &quot;{items:d}&quot; selected custom slide(s)?</source>
-        <translation>Ste prepričani, da želite izbrisati &quot;{items:d}&quot; izbrane &quot;diapozitive po meri&quot;?</translation>
+        <translation>Ali ste prepričani, da želite izbrisati &quot;{items:d}&quot; izbrane prosojnice po meri?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/lib/mediaitem.py" line="254"/>
         <source>copy</source>
         <comment>For item cloning</comment>
-        <translation type="unfinished"/>
+        <translation>kopiraj</translation>
     </message>
 </context>
 <context>
@@ -1725,8 +1730,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="53"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
-        <translation>Untranslated string
-&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</translation>
+        <translation>&lt;strong&gt;Slikovni vtičnik&lt;/strong&gt;Slikovni vtičnik omogoča prikazovanje slik.&lt;br /&gt;Ena izmed odlik tega vtičnika je zmožnost združevanja večih slik v urejevalniku sporeda, kar omogoča lažje prikazovanje večih slik. Ta vtičnik lahko z OpenLP-jevim &quot;časovnim zankanjem&quot; doseže samodejno predstavitev s prosojnicami. Dodatno se lahko slike z vtičnika uporabijo tudi namesto ozadja trenutne teme, ki izrisuje besedilne predmete kot npr. pesmi z izbrano sliko v ozadju namesto ozadja iz teme.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="78"/>
@@ -1779,7 +1783,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="92"/>
         <source>Add the selected image to the service.</source>
-        <translation>Dodaj izbrano sliko na Spored.</translation>
+        <translation>Dodaj izbrano sliko v spored.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="192"/>
@@ -1812,7 +1816,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="663"/>
         <source>Could not add the new group.</source>
-        <translation>Ni mogoče dodati novo skupino.</translation>
+        <translation>Ni mogoče dodati nove skupine.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="666"/>
@@ -1825,7 +1829,7 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="82"/>
         <source>Select Image Group</source>
-        <translation>Select Image Group</translation>
+        <translation>Izberite skupino slik</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="83"/>
@@ -1866,12 +1870,12 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="82"/>
         <source>Select Image(s)</source>
-        <translation>Izberi sliko(e)</translation>
+        <translation>Izberi slike</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="244"/>
         <source>You must select an image or group to delete.</source>
-        <translation>Izbrati morate sliko ali skupino, ki bo izbrisana.</translation>
+        <translation>Izbrati morate sliko ali skupino, ki jo želite izbrisati.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="261"/>
@@ -1891,19 +1895,19 @@ Only verses found in both Bibles will be shown.
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="604"/>
         <source>The following image(s) no longer exist: {names}</source>
-        <translation>Sledeča(e) slika(e) ne obstaja(jo) več: {names}</translation>
+        <translation>Naslednja(e) slika(e) ne obstaja(jo) več: {names}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="610"/>
         <source>The following image(s) no longer exist: {names}
 Do you want to add the other images anyway?</source>
-        <translation>Sledeča(e) slika(e) ne obstaja(jo) več: {names}
+        <translation>Naslednja(e) slika(e) ne obstaja(jo) več: {names}
 Ali želite vseeno dodati druge slike?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="687"/>
         <source>You must select an image to replace the background with.</source>
-        <translation>Izberi sliko katero želiš postaviti za ozadje.</translation>
+        <translation>Izberite sliko s katero želiš zamenjati ozadje.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="700"/>
@@ -1916,22 +1920,22 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="69"/>
         <source>Image Background</source>
-        <translation type="unfinished"/>
+        <translation>Slikovno ozadje</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="70"/>
         <source>Use blank theme</source>
-        <translation type="unfinished"/>
+        <translation>Uporabi črno temo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="71"/>
         <source>Custom theme</source>
-        <translation type="unfinished"/>
+        <translation>Tema po meri</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="72"/>
         <source>Theme:</source>
-        <translation type="unfinished"/>
+        <translation>Tema:</translation>
     </message>
 </context>
 <context>
@@ -1939,65 +1943,65 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="135"/>
         <source>Add new media</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj novo predstavnost</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="101"/>
         <source>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt;The media plugin provides playback of audio and video.</source>
-        <translation>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt;The media plugin provides playback of audio and vid</translation>
+        <translation>&lt;strong&gt;Predstavnostni vtičnik&lt;/strong&gt;&lt;br /&gt;Predstavnostni vtičnik predvaja video in zvočne posnetke.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="111"/>
         <source>Media</source>
         <comment>name singular</comment>
-        <translation>Media</translation>
+        <translation>Predstavnost</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="112"/>
         <source>Media</source>
         <comment>name plural</comment>
-        <translation>Media</translation>
+        <translation>Predstavnost</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="116"/>
         <source>Media</source>
         <comment>container title</comment>
-        <translation>Media</translation>
+        <translation>Predstavnost</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="120"/>
         <source>Load new media.</source>
-        <translation>Load new media.</translation>
+        <translation>Naloži novo predstavnost.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="122"/>
         <source>Add new media.</source>
-        <translation>Add new media.</translation>
+        <translation>Dodaj novo predstavnost.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="123"/>
         <source>Edit the selected media.</source>
-        <translation>Edit the selected media.</translation>
+        <translation>Uredi izbrano predstavnost.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="124"/>
         <source>Delete the selected media.</source>
-        <translation>Delete the selected media.</translation>
+        <translation>Izbriši izbrano predstavnost.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="125"/>
         <source>Preview the selected media.</source>
-        <translation>Preview the selected media.</translation>
+        <translation>Predogled izbrane predstavnosti.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="126"/>
         <source>Send the selected media live.</source>
-        <translation>Send the selected media live.</translation>
+        <translation>Prikaži izbrano predstavnost v živo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="127"/>
         <source>Add the selected media to the service.</source>
-        <translation>Dodaj izbran posnetek na Spored.</translation>
+        <translation>Dodaj izbrano predstavnost v spored.</translation>
     </message>
 </context>
 <context>
@@ -2015,7 +2019,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="186"/>
         <source>Media path:</source>
-        <translation>Pot do posnetka:</translation>
+        <translation>Pot do predstavnosti:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="187"/>
@@ -2025,7 +2029,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="189"/>
         <source>Load disc</source>
-        <translation>Vstavite disk</translation>
+        <translation>Vstavite plošček</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="190"/>
@@ -2040,17 +2044,17 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="192"/>
         <source>Audio track:</source>
-        <translation>Zvočna sled:</translation>
+        <translation>Zvočni posnetek:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="193"/>
         <source>Subtitle track:</source>
-        <translation>Sled podnapisa:</translation>
+        <translation>Podnaslov posnetka:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="201"/>
         <source>HH:mm:ss.z</source>
-        <translation>HH:mm:ss.z</translation>
+        <translation>uu:mm:ss.z</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="195"/>
@@ -2098,7 +2102,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="201"/>
         <source>Given path does not exist</source>
-        <translation type="unfinished"/>
+        <translation>Navedena pot ne obstaja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="218"/>
@@ -2113,12 +2117,12 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="569"/>
         <source>CD not loaded correctly</source>
-        <translation>CD ni pravilno naložen</translation>
+        <translation>Zgoščenka ni pravilno naložena</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="569"/>
         <source>The CD was not loaded correctly, please re-load and try again.</source>
-        <translation>CD ni pravilno naložen. Prosimo ponovno naložite in spet poskusite.</translation>
+        <translation>Zgoščenka ni pravilno naložena. Ponovno naložite in spet poskusite.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="582"/>
@@ -2128,7 +2132,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="582"/>
         <source>The DVD was not loaded correctly, please re-load and try again.</source>
-        <translation>DVD ni pravilno naložen. Prosimo ponovno naložite in spet poskusite.</translation>
+        <translation>DVD ni pravilno naložen. Ponovno naložite in spet poskusite.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="593"/>
@@ -2161,17 +2165,17 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="413"/>
         <source>VLC is not available</source>
-        <translation type="unfinished"/>
+        <translation>VLC ni na voljo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="393"/>
         <source>Device streaming support requires VLC.</source>
-        <translation type="unfinished"/>
+        <translation>Za podporo pretočni napravi potrebujete VLC.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="413"/>
         <source>Network streaming support requires VLC.</source>
-        <translation type="unfinished"/>
+        <translation>Za podporo spletnemu pretakanju potrebujete VLC.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediacontroller.py" line="335"/>
@@ -2181,12 +2185,12 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="72"/>
         <source>Select Media</source>
-        <translation>Izberi posnetek</translation>
+        <translation>Izberite posnetek</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="148"/>
         <source>Load CD/DVD</source>
-        <translation type="unfinished"/>
+        <translation>Naloži zgoščenko/DVD</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="155"/>
@@ -2201,27 +2205,27 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="228"/>
         <source>Missing Media File</source>
-        <translation>Manjka večpredstavnostna datoteka</translation>
+        <translation>Manjka predstavnostna datoteka</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="204"/>
         <source>The optical disc {name} is no longer available.</source>
-        <translation type="unfinished"/>
+        <translation>Optični plošček {name} ni več na voljo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="228"/>
         <source>The file {name} no longer exists.</source>
-        <translation type="unfinished"/>
+        <translation>Datoteka {name} ne obstaja več.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="254"/>
         <source>Videos ({video});;Audio ({audio});;{files} (*)</source>
-        <translation type="unfinished"/>
+        <translation>Videoposnetki ({video});;Zvočni posnetki ({audio});;{files} (*)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="373"/>
         <source>Optical device support requires VLC.</source>
-        <translation type="unfinished"/>
+        <translation>Podpori optične naprave je potreben VLC.</translation>
     </message>
 </context>
 <context>
@@ -2229,22 +2233,22 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="83"/>
         <source>Live Media</source>
-        <translation type="unfinished"/>
+        <translation>Predstavnosti v živo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="84"/>
         <source>VLC (requires restart)</source>
-        <translation type="unfinished"/>
+        <translation>VLC (potreben ponoven zagon)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="85"/>
         <source>Extra arguments:</source>
-        <translation type="unfinished"/>
+        <translation>Dodatni argumenti:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="86"/>
         <source>Start Live items automatically</source>
-        <translation type="unfinished"/>
+        <translation>Predmete v živo zaženi samodejno</translation>
     </message>
 </context>
 <context>
@@ -2252,7 +2256,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="81"/>
         <source>A Stream name is needed.</source>
-        <translation type="unfinished"/>
+        <translation>Potrebno je ime pretakanja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="88"/>
@@ -2262,12 +2266,12 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="163"/>
         <source>More options</source>
-        <translation type="unfinished"/>
+        <translation>Več možnosti</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="164"/>
         <source>Caching</source>
-        <translation type="unfinished"/>
+        <translation>Predpomnenje</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="165"/>
@@ -2277,27 +2281,27 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="166"/>
         <source>VLC options</source>
-        <translation type="unfinished"/>
+        <translation>Možnosti VLC-ja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/networkstreamselectorform.py" line="77"/>
         <source>Insert Input Stream</source>
-        <translation type="unfinished"/>
+        <translation>Vstavite vhodno pretakanje</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="730"/>
         <source>Stream name</source>
-        <translation type="unfinished"/>
+        <translation>Ime pretakanja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/networkstreamselectorform.py" line="80"/>
         <source>Network URL</source>
-        <translation type="unfinished"/>
+        <translation>Spletni naslov omrežja</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="113"/>
         <source>Device Selection</source>
-        <translation type="unfinished"/>
+        <translation>Izbor naprave</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="114"/>
@@ -2307,12 +2311,12 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="171"/>
         <source>Video device name</source>
-        <translation type="unfinished"/>
+        <translation>Ime videonaprave</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="172"/>
         <source>Audio device name</source>
-        <translation type="unfinished"/>
+        <translation>Ime zvočne naprave</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="269"/>
@@ -2322,7 +2326,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="270"/>
         <source>Frequency</source>
-        <translation type="unfinished"/>
+        <translation>Frekvenca</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="468"/>
@@ -2362,37 +2366,37 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="508"/>
         <source>Auto connection</source>
-        <translation type="unfinished"/>
+        <translation>Samodejna povezava</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="518"/>
         <source>Selected ports</source>
-        <translation type="unfinished"/>
+        <translation>Izbrana vrata</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="519"/>
         <source>Channels</source>
-        <translation type="unfinished"/>
+        <translation>Kanali</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="619"/>
         <source>Video size</source>
-        <translation type="unfinished"/>
+        <translation>Velikost videa</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="674"/>
         <source>DirectShow</source>
-        <translation type="unfinished"/>
+        <translation>DirectShow</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="679"/>
         <source>Video Camera</source>
-        <translation type="unfinished"/>
+        <translation>Videokamera</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="683"/>
         <source>TV - analog</source>
-        <translation type="unfinished"/>
+        <translation>Analogna TV</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="689"/>
@@ -2402,17 +2406,17 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="695"/>
         <source>TV - digital</source>
-        <translation type="unfinished"/>
+        <translation>Digitalna TV</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="700"/>
         <source>Input devices</source>
-        <translation type="unfinished"/>
+        <translation>Vhodna naprave</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="728"/>
         <source>Select Input Stream</source>
-        <translation type="unfinished"/>
+        <translation>Izberite vhodno pretakanje</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="731"/>
@@ -2425,7 +2429,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/vlcplayer.py" line="127"/>
         <source>The VLC arguments are invalid.</source>
-        <translation type="unfinished"/>
+        <translation>VLC-jevi argumenti so neveljavni.</translation>
     </message>
 </context>
 <context>
@@ -2433,7 +2437,7 @@ Ali želite vseeno dodati druge slike?</translation>
     <message>
         <location filename="../../openlp/core/app.py" line="167"/>
         <source>Data Directory Error</source>
-        <translation type="unfinished"/>
+        <translation>Napaka podatkovne mape</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="167"/>
@@ -2446,12 +2450,20 @@ The location of the data folder was previously changed from the OpenLP's default
 You may reset the data location back to the default location, or you can try to make the current location available.
 
 Do you want to reset to the default data location? If not, OpenLP will be closed so you can try to fix the problem.</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP-jeve podatkovne map ni mogočen najti na:
+
+{path}
+
+Mesto podatkovne mape je bilo predhodno spremenjeno glede na privzeto mesto. Če so podatki shranjeni na odstranljivi napravi, jo morate priključiti.
+
+Mesto podatkovne mape lahko ponastavite na privzeto pot, lahko pa poskusite omogočiti trenutno mest.
+
+Ali želite ponastaviti na privzeto mesto podatkov? Če ne, se bo OpenLP zaprl, da boste skušali odpraviti težavo.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="243"/>
         <source>Backup</source>
-        <translation type="unfinished"/>
+        <translation>Varnostni dvojnik</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="226"/>
@@ -2463,7 +2475,7 @@ varnostno kopijo stare mape s podatki?</translation>
     <message>
         <location filename="../../openlp/core/app.py" line="237"/>
         <source>Backup of the data folder failed!</source>
-        <translation type="unfinished"/>
+        <translation>Varnostno kopiranje podatkovne mape je spodletelo!</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="240"/>
@@ -2477,7 +2489,7 @@ varnostno kopijo stare mape s podatki?</translation>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
         <source>Downgrade</source>
-        <translation type="unfinished"/>
+        <translation>Vrnitev na prejšnjo različico</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="333"/>
@@ -2486,34 +2498,40 @@ varnostno kopijo stare mape s podatki?</translation>
 {data_folder_backup_path}
 
 Do you want to continue?</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP je našel nastavitveno datoteko, narejeno z novejšo različico OpenLP-ja. OpenLP se bo zagnal z novo namestitvijo, saj vrnitev na starejšo različico ni podprta. Vsi obstoječi podatki bodo varnostno kopirani v: 
+
+{data_folder_backup_path}
+
+Ali želite nadaljevati?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings Backup</source>
-        <translation type="unfinished"/>
+        <translation>Varnostna kopija nastavitev</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="350"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
-        <translation type="unfinished"/>
+        <translation>Vaše nastavitve bodo posodobljene. Varnostna kopija bo ustvarjena v {settings_back_up_path}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="358"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
-        <translation type="unfinished"/>
+        <translation>Varnostno kopiranje nastavitev spodletelo.
+
+OpenLP bo poskusil nadaljevati.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>OpenLP Backup</source>
-        <translation type="unfinished"/>
+        <translation>Varnostna kopija OpenLP-ja</translation>
     </message>
     <message>
         <location filename="../../openlp/core/app.py" line="369"/>
         <source>Backup of the data folder failed during downgrade.</source>
-        <translation type="unfinished"/>
+        <translation>Varnostno kopiranje podatkovne mape med vrnitvijo v starejšo različico je spodletelo.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/__init__.py" line="442"/>
@@ -2523,12 +2541,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="201"/>
         <source>Video Files</source>
-        <translation type="unfinished"/>
+        <translation>Video datoteke</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="667"/>
         <source>Open</source>
-        <translation type="unfinished"/>
+        <translation>Odpri</translation>
     </message>
 </context>
 <context>
@@ -2541,12 +2559,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>New version available!</source>
-        <translation type="unfinished"/>
+        <translation>Na voljo je nova različica!</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="413"/>
         <source>There&apos;s a new version of the web remote available.</source>
-        <translation type="unfinished"/>
+        <translation>Na voljo je nova različica spletnega daljinca.</translation>
     </message>
 </context>
 <context>
@@ -2559,12 +2577,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="118"/>
         <source>OpenLP is written and maintained by volunteers all over the world in their spare time. If you would like to see this project succeed, please consider contributing to it by clicking the &quot;contribute&quot; button below.</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP v svojem prostem času pišejo in vzdržujejo prostovoljci z vsega sveta. Če želite, da bi ta projekti bil še boljši, lahko prispevate s pritiskom na spodnji gumb &quot;Prispevaj&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="122"/>
         <source>OpenLP would not be possible without the following software libraries:</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP ne bi mogel delovati brez naslednjih programskih knjižnic:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="155"/>
@@ -2574,22 +2592,22 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="164"/>
         <source>Credits</source>
-        <translation>Credits</translation>
+        <translation>Zasluge</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="744"/>
         <source>License</source>
-        <translation>Licenca</translation>
+        <translation>Dovoljenje</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="746"/>
         <source>Contribute</source>
-        <translation type="unfinished"/>
+        <translation>Prispevaj</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutform.py" line="57"/>
         <source> build {version}</source>
-        <translation> gradnja {version}</translation>
+        <translation>različica {version}</translation>
     </message>
 </context>
 <context>
@@ -2597,32 +2615,32 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="91"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj mapo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="92"/>
         <source>Parent folder:</source>
-        <translation type="unfinished"/>
+        <translation>Nadrejena mapa:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="93"/>
         <source>Folder name:</source>
-        <translation type="unfinished"/>
+        <translation>Ime mape:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="109"/>
         <source>-- Top-level folder --</source>
-        <translation type="unfinished"/>
+        <translation>-- Krovna mapa --</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="122"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Vtipkati morate ime mape.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="127"/>
         <source>This folder already exists, please use a different name.</source>
-        <translation type="unfinished"/>
+        <translation>Ta mapa že obstaja, uporabite drugo ime.</translation>
     </message>
 </context>
 <context>
@@ -2635,12 +2653,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="121"/>
         <source>Data Location</source>
-        <translation type="unfinished"/>
+        <translation>Mesto podatkov</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="122"/>
         <source>Path:</source>
-        <translation type="unfinished"/>
+        <translation>Pot:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="123"/>
@@ -2650,32 +2668,32 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="124"/>
         <source>Cancel OpenLP data directory location change.</source>
-        <translation type="unfinished"/>
+        <translation>Prekliči spremembo mesta podatkovne mape OpenLP-ja.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="126"/>
         <source>Copy data to new location.</source>
-        <translation type="unfinished"/>
+        <translation>Kopiraj podatke na novo mesto.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="127"/>
         <source>Copy the OpenLP data files to the new location.</source>
-        <translation type="unfinished"/>
+        <translation>Kopiraj OpenLP-je podatkovne datoteke na novo mesto.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="129"/>
         <source>&lt;strong&gt;WARNING:&lt;/strong&gt; New data directory location contains OpenLP data files.  These files WILL be replaced during a copy.</source>
-        <translation>&lt;strong&gt;WARNING:&lt;/strong&gt; New data directory location contains OpenLP data files. These files WILL be replaced during a copy.</translation>
+        <translation>&lt;strong&gt;OPOZORILO:&lt;/strong&gt; Novo mesto podatkovne mape vsebuje OpenLP-jeve podatkovne datoteke. Pri kopiranju BODO te datoteke nadomeščene z novimi.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="132"/>
         <source>Display Workarounds</source>
-        <translation type="unfinished"/>
+        <translation>Prikaži obvode</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="133"/>
         <source>Ignore Aspect Ratio</source>
-        <translation type="unfinished"/>
+        <translation>Prezri razmerje stranic</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="134"/>
@@ -2685,12 +2703,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="135"/>
         <source>Use alternating row colours in lists</source>
-        <translation type="unfinished"/>
+        <translation>V seznamu uporabi izmenjujoče se barve vrstic</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="136"/>
         <source>Disable display transparency</source>
-        <translation type="unfinished"/>
+        <translation>Onemogoči prosojnost zaslona</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="191"/>
@@ -2699,7 +2717,11 @@ OpenLP will attempt to continue.</source>
 {path}
 
 Existing files in this directory could be overwritten. The data directory will be changed when OpenLP is closed.</source>
-        <translation type="unfinished"/>
+        <translation>Ali ste prepričani, da želite spremeniti mesto OpenLP-jeve podatkovne datoteke na:
+
+{path}
+
+Obstoječe datoteke v tej mapi bodo lako povožene. Podatkovna mapa bo spremenjena ob zaustavitvi OpenLP-ja.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="197"/>
@@ -2708,17 +2730,21 @@ Existing files in this directory could be overwritten. The data directory will b
 {path}
 
 The data directory will be changed when OpenLP is closed.</source>
-        <translation type="unfinished"/>
+        <translation>Ali ste prepričani, da želite spremeniti mesto OpenLP-jeve podatkovne datoteke na:
+
+{path}
+
+Podatkovna mapa bo spremenjena ob zaustavitvi OpenLP-ja.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="201"/>
         <source>Confirm Data Directory Change</source>
-        <translation type="unfinished"/>
+        <translation>Potrdi spremembo podatkovne mape</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="231"/>
         <source>Overwrite Existing Data</source>
-        <translation type="unfinished"/>
+        <translation>Prepiši obstoječe podatke</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="231"/>
@@ -2729,22 +2755,28 @@ The location you have selected
 {path}
 
 appears to contain OpenLP data files. Do you wish to replace these files with the current data files?</source>
-        <translation type="unfinished"/>
+        <translation>OPOZORILO:
+
+Kaže, da mesto, ki ste ga izbrali,
+
+{path}
+
+že vsebuje OpenLP-je podatkovne datoteke. Ali jih želite nadomestiti s trenutnimi podatkovnimi datotekami?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="271"/>
         <source>Restart Required</source>
-        <translation type="unfinished"/>
+        <translation>Potreben ponoven zagon</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="271"/>
         <source>This change will only take effect once OpenLP has been restarted.</source>
-        <translation type="unfinished"/>
+        <translation>Te spremembe stopijo v veljavo po ponovnem zagonu OpenLP-ja.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="209"/>
         <source>Select Logo File</source>
-        <translation type="unfinished"/>
+        <translation>Izberite datoteko znaka.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="213"/>
@@ -2754,27 +2786,27 @@ appears to contain OpenLP data files. Do you wish to replace these files with th
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="214"/>
         <source>Number of recent service files to display:</source>
-        <translation type="unfinished"/>
+        <translation>Št. zadnjih datotek za prikaz:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="215"/>
         <source>Open the last used Library tab on startup</source>
-        <translation type="unfinished"/>
+        <translation>Ob zagonu odpri zadnje uporabljeni zavihek knjižnic</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="217"/>
         <source>Double-click to send items straight to Live</source>
-        <translation type="unfinished"/>
+        <translation>Dvokliknite, če želite predmet prikazati neposredno v živo.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="219"/>
         <source>Preview items when clicked in Library</source>
-        <translation type="unfinished"/>
+        <translation>Predoglej predmete ob kliku nanje v knjižnici</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="221"/>
         <source>Preview items when clicked in Service</source>
-        <translation type="unfinished"/>
+        <translation>Predoglej predmete ob kliku nanje v sporedu</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="223"/>
@@ -2875,27 +2907,27 @@ in slide controller:</source>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="259"/>
         <source>Interface Theme (needs restart):</source>
-        <translation type="unfinished"/>
+        <translation>Tema vmesnika (potreben ponoven zagon)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="260"/>
         <source>Use system theme</source>
-        <translation type="unfinished"/>
+        <translation>Uporabi temo sistema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="261"/>
         <source>Default Light</source>
-        <translation type="unfinished"/>
+        <translation>Privzeta svetla</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="262"/>
         <source>Default Dark</source>
-        <translation type="unfinished"/>
+        <translation>Privzeta temna</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="264"/>
         <source>QDarkStyle</source>
-        <translation type="unfinished"/>
+        <translation>Q temen slog</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="265"/>
@@ -2933,7 +2965,7 @@ in slide controller:</source>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="256"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Vtipkati morate ime mape.</translation>
     </message>
 </context>
 <context>
@@ -3692,7 +3724,7 @@ If you click the &apos;{finish_button}&apos; button you can download the data at
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="131"/>
         <source>Hide content from Live/Preview</source>
-        <translation type="unfinished"/>
+        <translation>Skrij vsebino na V živo / Predogled</translation>
     </message>
 </context>
 <context>
@@ -3823,7 +3855,7 @@ If you click the &apos;{finish_button}&apos; button you can download the data at
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="213"/>
         <source>UpperCase</source>
-        <translation type="unfinished"/>
+        <translation>Velike črke</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="223"/>
@@ -3889,12 +3921,12 @@ If you click the &apos;{finish_button}&apos; button you can download the data at
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>Permission Error</source>
-        <translation type="unfinished"/>
+        <translation>Napaka dovoljenja</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>There was a permissions error when trying to access {filename}</source>
-        <translation type="unfinished"/>
+        <translation>Pri poskusu dostopanja do datoteke {filename} je prišlo do napake dovoljenja</translation>
     </message>
 </context>
 <context>
@@ -4387,7 +4419,9 @@ Re-running this wizard may make changes to your current OpenLP configuration and
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
-        <translation type="unfinished"/>
+        <translation>OpenLP ne more uvozii nastavitev iz novejše različice OpenLP.
+
+Postopek je bil prekinjen in ni prišlodo nobenih sprememb.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="902"/>
@@ -5246,7 +5280,7 @@ File extension not supported</source>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="487"/>
         <source>OK</source>
-        <translation type="unfinished"/>
+        <translation>V redu</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="488"/>
@@ -5522,7 +5556,7 @@ File extension not supported</source>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="500"/>
         <source>Delete projector ({projector.link.ip}) {projector.link.name}?</source>
-        <translation type="unfinished"/>
+        <translation>Želite izbrisati naslikovalnik ({projector.link.ip}) {projector.link.name}?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="502"/>
@@ -5792,12 +5826,12 @@ File extension not supported</source>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="366"/>
         <source>Restart Required</source>
-        <translation type="unfinished"/>
+        <translation>Potreben ponoven zagon</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="366"/>
         <source>This change will only take effect once OpenLP has been restarted.</source>
-        <translation type="unfinished"/>
+        <translation>Te spremembe stopijo v veljavo po ponovnem zagonu OpenLP-ja.</translation>
     </message>
 </context>
 <context>
@@ -7491,7 +7525,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="339"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Dodaj mapo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="340"/>
@@ -10210,7 +10244,7 @@ Please correct these tags before continuing.</source>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="525"/>
         <source>copy</source>
         <comment>For song cloning</comment>
-        <translation type="unfinished"/>
+        <translation>kopiraj</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="634"/>
