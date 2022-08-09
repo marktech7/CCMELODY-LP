@@ -36,6 +36,9 @@ class FontSelectFeatures():
     LineSpacing = 'line_spacing'
 
 
+DEBOUNCE_TIME = 200
+
+
 class FontSelectWidget(ThemeEditorWidget):
     """
     A font selection widget
@@ -384,7 +387,7 @@ class FontSelectWidget(ThemeEditorWidget):
     def _on_value_changed_emit_debounce(self):
         if not hasattr(self, 'debounce_timer'):
             self.debounce_timer = QtCore.QTimer(self)
-            self.debounce_timer.setInterval(200)
+            self.debounce_timer.setInterval(DEBOUNCE_TIME)
             self.debounce_timer.setSingleShot(True)
             self.debounce_timer.timeout.connect(self._on_value_changed_emit)
         self.debounce_timer.start()

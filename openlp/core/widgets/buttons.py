@@ -75,7 +75,10 @@ class ColorButton(QtWidgets.QPushButton):
         """
         Handle the PushButton clicked signal, showing the ColorDialog and validating the input
         """
-        new_color = QtWidgets.QColorDialog.getColor(QtGui.QColor(self._color), self.parent)
+        new_color = self.pick_color(QtGui.QColor(self._color), self.parent)
         if new_color.isValid() and self._color != new_color.name():
             self.change_color(new_color.name())
             self.colorChanged.emit(new_color.name())
+
+    def pick_color(self, color, parent):
+        return QtWidgets.QColorDialog.getColor(color, parent)

@@ -21,6 +21,7 @@
 """
 Package to test the openlp.core.themes.editor_widgets.alignment package.
 """
+from unittest.mock import MagicMock
 import pytest
 
 from openlp.core.lib.theme import HorizontalType, VerticalType
@@ -147,3 +148,35 @@ def test_set_vertical_align_exception(settings):
     # THEN: An exception is raised
     with pytest.raises(TypeError, match='vertical_align must either be a string or an int'):
         page.vertical_align = []
+
+
+def test_horizontal_combo_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the horizontal_combo_box value is changed
+    """
+    # GIVEN: An instance of AlignmentWidget
+    widget = AlignmentWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: The combobox is changed
+    widget.horizontal_combo_box.setCurrentIndex(1)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_vertical_combo_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the vertical_combo_box value is changed
+    """
+    # GIVEN: An instance of AlignmentWidget
+    widget = AlignmentWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: The combobox is changed
+    widget.vertical_combo_box.setCurrentIndex(1)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()

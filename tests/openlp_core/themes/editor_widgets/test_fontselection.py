@@ -25,7 +25,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from openlp.core.themes.editor_widgets.fontselect import FontSelectWidget
+from openlp.core.themes.editor_widgets.fontselect import DEBOUNCE_TIME, FontSelectWidget
+from PyQt5 import QtGui
 
 
 def test_init_(settings):
@@ -620,3 +621,253 @@ def test_set_shadow_size_property(settings):
 
     # THEN: The correct value should be set
     instance.shadow_size_spinbox.setValue.assert_called_once_with(10)
+
+
+def test_font_name_combobox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the font_name_combobox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget and a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.font_name_combobox.setCurrentFont(QtGui.QFont('Test Family Sans'))
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_font_color_button_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the font_color_button value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler and a mocked pick_color
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.font_color_button.pick_color = MagicMock()
+    widget.font_color_button.pick_color.return_value = MagicMock(
+        **{'isValid.return_value': True, 'name.return_value': '#ab0123'})
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.font_color_button.on_clicked()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_style_bold_button_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the style_bold_button value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.style_bold_button.toggle()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_style_italic_button_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the style_italic_button value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.style_italic_button.toggle()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_font_size_spinbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the font_size_spinbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.font_size_spinbox.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_line_spacing_spinbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the line_spacing_spinbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.line_spacing_spinbox.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_outline_groupbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the outline_groupbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.outline_groupbox.setChecked(True)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_outline_color_button_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the outline_color_button value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler and a mocked pick_color
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.outline_color_button.pick_color = MagicMock()
+    widget.outline_color_button.pick_color.return_value = MagicMock(
+        **{'isValid.return_value': True, 'name.return_value': '#ab0123'})
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.outline_color_button.on_clicked()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_outline_size_spinbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the outline_size_spinbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.outline_size_spinbox.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_shadow_groupbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the shadow_groupbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.shadow_groupbox.setChecked(True)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_shadow_color_button_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the shadow_color_button value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler and a mocked pick_color
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.shadow_color_button.pick_color = MagicMock()
+    widget.shadow_color_button.pick_color.return_value = MagicMock(
+        **{'isValid.return_value': True, 'name.return_value': '#ab0123'})
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.shadow_color_button.on_clicked()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_shadow_size_spinbox_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the shadow_size_spinbox value is changed
+    """
+    # GIVEN: An instance of FontSelectWidget, a mocked debounce handler
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.shadow_size_spinbox.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+@patch('openlp.core.themes.editor_widgets.areaposition.QtCore.QTimer')
+def test_on_value_changed_debouncer(mocked_QTimer, settings):
+    """
+    Test if on_value_changed debouncer is constructed with DEBOUNCE_TIME
+    """
+    # GIVEN: An instance of AreaPositionWidget
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: Some value is changed
+    widget.font_size_spinbox.setValue(2)
+
+    # THEN: The debounce timer should be fired after DEBOUNCE_TIME
+    mocked_QTimer.assert_called_once()
+    widget.debounce_timer.setInterval.assert_called_with(DEBOUNCE_TIME)
+
+
+@patch('openlp.core.themes.editor_widgets.areaposition.QtCore.QTimer')
+def test_on_value_changed_debouncer_after_started(mocked_QTimer, settings):
+    """
+    Test if on_value_changed debouncer is triggered on second time being invoked
+    """
+    # GIVEN: An instance of AreaPositionWidget
+    widget = FontSelectWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: Some value is changed twice
+    widget.font_size_spinbox.setValue(2)
+    widget.font_size_spinbox.setValue(3)
+
+    # THEN: An on_value_changed event should be constructed once and started twice
+    mocked_QTimer.assert_called_once()
+    assert widget.debounce_timer.start.call_count == 2

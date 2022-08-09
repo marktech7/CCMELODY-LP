@@ -22,7 +22,8 @@
 Package to test the openlp.core.themes.editor_widgets.areaposition package.
 """
 
-from openlp.core.themes.editor_widgets.areaposition import AreaPositionWidget
+from unittest.mock import MagicMock, patch
+from openlp.core.themes.editor_widgets.areaposition import DEBOUNCE_TIME, AreaPositionWidget
 
 
 def test_init_(settings):
@@ -323,3 +324,210 @@ def test_set_use_footer_default_location(settings):
 
     # THEN: The combobox should be correct
     assert page.footer_position_check_box.isChecked() is True
+
+
+def test_main_position_check_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the main_position_check_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.main_position_check_box.toggle()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_footer_position_check_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the footer_position_check_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.footer_position_check_box.toggle()
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_main_x_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the main_x_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.main_x_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_main_y_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the main_y_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.main_y_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_main_width_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the main_width_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.main_width_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_main_height_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the main_height_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.main_height_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_footer_x_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the footer_x_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.footer_x_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_footer_y_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the footer_y_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.footer_y_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_footer_width_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the footer_width_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.footer_width_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+def test_footer_height_spin_box_triggers_on_value_changed(settings):
+    """
+    Test if on_value_changed signal is triggered when the footer_height_spin_box value is changed
+    """
+    # GIVEN: An instance of AreaPositionWidget and a mocked debounce handler
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget._on_value_changed_emit_debounce = MagicMock(side_effect=lambda _: widget.on_value_changed.emit())
+    widget.connect_signals()
+
+    # WHEN: The value is changed
+    widget.footer_height_spin_box.setValue(2)
+
+    # THEN: An on_value_changed event should be emitted
+    widget.on_value_changed.emit.assert_called_once()
+
+
+@patch('openlp.core.themes.editor_widgets.areaposition.QtCore.QTimer')
+def test_on_value_changed_debouncer(mocked_QTimer, settings):
+    """
+    Test if on_value_changed debouncer is constructed with DEBOUNCE_TIME
+    """
+    # GIVEN: An instance of AreaPositionWidget
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: Some value is changed
+    widget.footer_height_spin_box.setValue(2)
+
+    # THEN: The debounce timer should be fired after DEBOUNCE_TIME
+    mocked_QTimer.assert_called_once()
+    widget.debounce_timer.setInterval.assert_called_with(DEBOUNCE_TIME)
+
+
+@patch('openlp.core.themes.editor_widgets.areaposition.QtCore.QTimer')
+def test_on_value_changed_debouncer_after_started(mocked_QTimer, settings):
+    """
+    Test if on_value_changed debouncer is triggered on second time being invoked
+    """
+    # GIVEN: An instance of AreaPositionWidget
+    widget = AreaPositionWidget()
+    widget.on_value_changed = MagicMock()
+    widget.connect_signals()
+
+    # WHEN: Some value is changed twice
+    widget.footer_height_spin_box.setValue(2)
+    widget.footer_height_spin_box.setValue(3)
+
+    # THEN: An on_value_changed event should be constructed once and started twice
+    mocked_QTimer.assert_called_once()
+    assert widget.debounce_timer.start.call_count == 2

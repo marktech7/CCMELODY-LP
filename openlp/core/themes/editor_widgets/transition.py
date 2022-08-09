@@ -80,6 +80,7 @@ class TransitionWidget(ThemeEditorWidget):
             self.transition_speed_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
             self.transition_effect_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
             self.transition_direction_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.transition_reverse_check_box.stateChanged.connect(self._on_value_changed_emit)
 
     def disconnect_signals(self):
         self.connected_signals = False
@@ -88,6 +89,7 @@ class TransitionWidget(ThemeEditorWidget):
         self.transition_speed_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
         self.transition_effect_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
         self.transition_direction_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.transition_reverse_check_box.stateChanged.disconnect(self._on_value_changed_emit)
 
     def retranslate_ui(self):
         """
