@@ -57,7 +57,7 @@ body {
 
 body.disable-transitions *,
 body.disable-transitions.transition,
-body.disable-transitions.transition .reveal .slides, 
+body.disable-transitions.transition .reveal .slides,
 body.disable-transitions.transition .reveal .footer {
   transition: none !important;
 }
@@ -107,6 +107,10 @@ body.transition .reveal .slide-background {
 
 .reveal .slides > section p {
   margin: 0;
+}
+
+section.text-slides.stack.present {
+  text-align-last: unset !important;
 }
 
 #global-background {
