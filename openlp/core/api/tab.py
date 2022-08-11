@@ -405,7 +405,13 @@ class ApiTab(SettingsTab):
         app.process_events()
         version_info = download_version_info()
         app.process_events()
-        self.available_version = version_info['latest']['version']
+        if not version_info:
+            Registry().get('main_window').error_message(
+                translate('OpenLP.APITab', 'Error fetching version'),
+                translate('OpenLP.APITab', 'There was a problem fetching the latest version of the remote')
+            )
+        else:
+            self.available_version = version_info['latest']['version']
         app.process_events()
         app.set_normal_cursor()
         app.process_events()

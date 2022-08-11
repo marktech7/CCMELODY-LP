@@ -305,6 +305,34 @@ def test_on_check_for_updates_button_clicked(mocked_download_version_info, mocke
     assert api_tab.available_version == '0.9.5'
 
 
+@patch('openlp.core.api.tab.download_version_info')
+def test_on_check_for_updates_error(mocked_download_version_info, mocked_qapp, registry, settings, api_tab):
+    """Test that an error message is shown when the remote version cannot be downloaded"""
+    # GIVEN: An API tab and a couple of mocks
+    mocked_download_version_info.return_value = None
+    mocked_main_window = MagicMock()
+    registry.register('main_window', mocked_main_window)
+    registry.remove('application')
+    registry.register('application', mocked_qapp)
+
+    # WHEN: The Check for Updates button is clicked
+    with patch.object(api_tab, 'can_enable_install_button') as mocked_can_enable_install_button:
+        mocked_can_enable_install_button.return_value = False
+        api_tab.on_check_for_updates_button_clicked()
+        assert mocked_can_enable_install_button.call_count == 1
+
+    # THEN: The correct methods were called
+    mocked_qapp.set_busy_cursor.assert_called_once()
+    assert mocked_qapp.process_events.call_count == 4
+    mocked_qapp.set_normal_cursor.assert_called_once()
+    mocked_download_version_info.assert_called_once()
+    mocked_main_window.error_message.assert_called_once_with(
+        'Error fetching version', 'There was a problem fetching the latest version of the remote'
+    )
+    mocked_main_window.information_message.assert_not_called()
+    assert api_tab.available_version is None
+
+
 @patch('openlp.core.api.tab.DownloadProgressDialog')
 @patch('openlp.core.api.tab.download_and_install')
 @patch('openlp.core.api.tab.sleep')
