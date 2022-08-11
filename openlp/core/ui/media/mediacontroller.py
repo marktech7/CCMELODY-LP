@@ -22,6 +22,7 @@
 The :mod:`~openlp.core.ui.media.mediacontroller` module is the control module for all media playing.
 """
 import logging
+from pathlib import Path
 
 try:
     from pymediainfo import MediaInfo
@@ -252,7 +253,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 controller.media_info.media_type = MediaType.Stream
             elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
-                service_item.media_length = self.media_length(path_to_str(service_item.video_file_name))
+                service_item.media_length = self.media_length(service_item.video_file_name)
                 controller.media_info.is_looping_playback = True
                 controller.media_info.is_background = True
             else:
@@ -349,7 +350,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param media_path: The file path to be checked..
         """
         if MediaInfo.can_parse():
-            media_data = MediaInfo.parse(media_path)
+            with Path(media_path).open('rb') as media_file:
+                media_data = MediaInfo.parse(media_file)
             # duration returns in milli seconds
             return media_data.tracks[0].duration or 0
         return 0

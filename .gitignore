@@ -50,3 +50,5 @@ tags
 test
 openlp-test-projectordb.sqlite
 */test-results.xml
+.DS_Store
+OpenLP.spec
