@@ -35,7 +35,7 @@ install:
   - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword qrcode pillow
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
-  - cmd: choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
+  - cmd: choco install vlc %CHOCO_VLC_ARG% --no-progress --limit-output
   # Mac only dependencies
   - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
   - sh: brew install --cask vlc
