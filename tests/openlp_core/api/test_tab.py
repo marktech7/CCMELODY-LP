@@ -243,7 +243,6 @@ def test_set_server_states_up(mock_is_thread_finished, registry, settings, api_t
     # THEN: The servers should all be "up"
     assert api_tab.server_http_state.text() == 'Active'
     assert api_tab.server_websocket_state.text() == 'Active'
-    assert api_tab.server_zeroconf_state.text() == 'Active'
 
 
 @patch('openlp.core.api.tab.is_thread_finished')
@@ -259,7 +258,6 @@ def test_set_server_states_disabled(mock_is_thread_finished, registry, settings,
     # THEN: The servers should all be "up"
     assert api_tab.server_http_state.text() == 'Disabled'
     assert api_tab.server_websocket_state.text() == 'Disabled'
-    assert api_tab.server_zeroconf_state.text() == 'Disabled'
 
 
 @patch('openlp.core.api.tab.is_thread_finished')
@@ -275,7 +273,6 @@ def test_set_server_states_down(mock_is_thread_finished, registry, settings, api
     # THEN: The servers should all be "up"
     assert api_tab.server_http_state.text() == 'Failed'
     assert api_tab.server_websocket_state.text() == 'Failed'
-    assert api_tab.server_zeroconf_state.text() == 'Failed'
 
 
 @patch('openlp.core.api.tab.download_version_info')

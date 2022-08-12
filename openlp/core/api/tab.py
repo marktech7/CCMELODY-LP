@@ -188,11 +188,6 @@ class ApiTab(SettingsTab):
         self.server_websocket_state = QtWidgets.QLabel(self.server_state_group_box)
         self.server_websocket_state.setObjectName('server_websocket_state')
         self.server_state_layout.addRow(self.server_websocket_state_title, self.server_websocket_state)
-        self.server_zeroconf_state_title = QtWidgets.QLabel(self.server_state_group_box)
-        self.server_zeroconf_state_title.setObjectName('server_zeroconf_state_title')
-        self.server_zeroconf_state = QtWidgets.QLabel(self.server_state_group_box)
-        self.server_zeroconf_state.setObjectName('server_zeroconf_state')
-        self.server_state_layout.addRow(self.server_zeroconf_state_title, self.server_zeroconf_state)
         self.left_layout.addStretch()
         self.right_layout.addStretch()
 
@@ -233,7 +228,6 @@ class ApiTab(SettingsTab):
         self.server_state_group_box.setTitle(translate('RemotePlugin.RemoteTab', 'Server Status'))
         self.server_http_state_title.setText(translate('RemotePlugin.RemoteTab', 'HTTP Server:'))
         self.server_websocket_state_title.setText(translate('RemotePlugin.RemoteTab', 'Websocket Server:'))
-        self.server_zeroconf_state_title.setText(translate('RemotePlugin.RemoteTab', 'Zeroconf Server:'))
         self._server_up = translate('RemotePlugin.RemoteTab', 'Active', 'Server is active')
         self._server_down = translate('RemotePlugin.RemoteTab', 'Failed', 'Server failed')
         self._server_disabled = translate('RemotePlugin.RemoteTab', 'Disabled', 'Server is disabled')
@@ -315,13 +309,6 @@ class ApiTab(SettingsTab):
             self.server_websocket_state.setText(self._server_disabled)
         else:
             self.server_websocket_state.setText(self._server_down)
-
-        if not is_thread_finished('api_zeroconf'):
-            self.server_zeroconf_state.setText(self._server_up)
-        elif Registry().get_flag('no_web_server'):
-            self.server_zeroconf_state.setText(self._server_disabled)
-        else:
-            self.server_zeroconf_state.setText(self._server_down)
 
     def get_ip_address(self, ip_address):
         """
