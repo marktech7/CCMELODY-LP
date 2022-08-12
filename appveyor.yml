@@ -22,9 +22,11 @@ environment:
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
+      HOMEBREW_FORCE_BREWED_CURL: 1
+      HOMEBREW_NO_AUTO_UPDATE: 1
 
 init:
-  - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
+- cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
 
 install:
   # Update pip
@@ -33,8 +35,10 @@ install:
   - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword qrcode pillow
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
+  - cmd: choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
   # Mac only dependencies
   - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
+  - sh: brew install --cask vlc
 
 build: off
 
@@ -80,10 +84,6 @@ after_test:
             # install dmgbuild tool
             python -m pip install --no-warn-script-location dmgbuild
             # use brew to build enchant, needed for pyenchant
-            # Setting HOMEBREW_FORCE_BREWED_CURL since the native curl on macos mojave (10.14) has issues downloading from certain servers
-            $env:HOMEBREW_FORCE_BREWED_CURL=1
-            # Skip auto updating
-            $env:HOMEBREW_NO_AUTO_UPDATE=1
             brew install enchant
           }
           # Get the packaging code
