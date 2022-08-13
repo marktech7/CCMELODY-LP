@@ -378,3 +378,33 @@ def test_validate_and_load_group(mocked_load_list, media_item):
     #       the directory should have been saved to the settings
     mocked_load_list.assert_called_once_with(file_list, 'group')
     Registry().get('settings').setValue.assert_called_once_with(ANY, Path('path1'))
+
+
+def test_generate_thumbnail_path_hash(media_item):
+    """
+    Test that the thumbnail path is correctly generated with the file hash
+    """
+    # GIVEN: A media item and an Image object
+    mocked_image = MagicMock(file_path=Path('myimage.jpg'), file_hash='c3986a0bd8e1ec9da406df142950c67e7d435410')
+    media_item.service_path = Path('.')
+
+    # WHEN: generate_thumbnail_path() is called
+    result = media_item.generate_thumbnail_path(mocked_image)
+
+    # THEN: The path should be correct
+    assert result == Path('.') / 'c3986a0bd8e1ec9da406df142950c67e7d435410.jpg'
+
+
+def test_generate_thumbnail_path_filename(media_item):
+    """
+    Test that the thumbnail path is correctly generated with the file name
+    """
+    # GIVEN: A media item and an Image object
+    mocked_image = MagicMock(file_path=Path('myimage.jpg'), file_hash=None)
+    media_item.service_path = Path('.')
+
+    # WHEN: generate_thumbnail_path() is called
+    result = media_item.generate_thumbnail_path(mocked_image)
+
+    # THEN: The path should be correct
+    assert result == Path('.') / 'myimage.jpg'
