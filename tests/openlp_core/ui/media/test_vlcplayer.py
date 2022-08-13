@@ -28,10 +28,9 @@ from unittest.mock import MagicMock, call, patch, ANY
 
 import pytest
 
-from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
-from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
+from openlp.core.ui.media.vlcplayer import VlcPlayer
 from tests.helpers import MockDateTime
 
 
@@ -44,23 +43,6 @@ def vlc_env():
         del sys.modules['openlp.core.ui.media.vendor.vlc']
     yield
     MockDateTime.revert()
-
-
-@pytest.mark.skipif(is_macosx(), reason='Test doesn\'t apply to macOS')
-@patch.dict(os.environ)
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
-def test_not_osx_fix_vlc_22_plugin_path(mocked_is_macosx):
-    """
-    Test that on Linux or some other non-OS X we do not set the VLC plugin path
-    """
-    # GIVEN: We're not on OS X and we don't have the VLC plugin path set
-    mocked_is_macosx.return_value = False
-
-    # WHEN: An checking if the player is available
-    get_vlc()
-
-    # THEN: The extra environment variable should NOT be there
-    assert 'VLC_PLUGIN_PATH' not in os.environ, 'The plugin path should NOT be in the environment variables'
 
 
 def test_init(mock_settings):
