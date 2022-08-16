@@ -185,29 +185,103 @@ def test_on_split_button_clicked(edit_verse_form):
 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
-def test_on_transpose_up_button_clicked(mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_up_button_clicked_key_warning(mocked_show_key_warning, edit_verse_form):
     """
     Test that transpose button will transpose the chords and warn about missing song key
     """
     # GIVEN some input values
     edit_verse_form.verse_text_edit.setPlainText('Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+
     # WHEN the method is called
     edit_verse_form.on_transpose_up_button_clicked()
-    mocked_show_key_warning.assert_called_once_with(edit_verse_form)
+
     # THEN chords should be transposed up
+    mocked_show_key_warning.assert_called_once_with(edit_verse_form)
     assert 'Am[Ab]azing gr[Ab/C]ace, how sw[C#]eet the s[Ab]ound' == edit_verse_form.verse_text_edit.toPlainText()
 
 
-def test_on_transpose_down_button_clicked(edit_verse_form):
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+def test_on_transpose_up_button_clicked_no_key_warning(mocked_show_key_warning, edit_verse_form):
+    """
+    Test that transpose button will transpose the chords but won't show a key error
+    """
+    # GIVEN some input values
+    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+
+    # WHEN the method is called
+    edit_verse_form.on_transpose_up_button_clicked()
+
+    # THEN chords should be transposed up
+    mocked_show_key_warning.assert_not_called()
+    assert '[=Ab]Am[Ab]azing gr[Ab/C]ace, how sw[Db]eet the s[Ab]ound' == edit_verse_form.verse_text_edit.toPlainText()
+
+
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+@patch('openlp.plugins.songs.forms.editverseform.critical_error_message_box')
+def test_on_transpose_up_button_clicked_with_keyerror(mocked_critical_error, mocked_show_key_warning, edit_verse_form):
+    """
+    Test that transpose button will transpose the chords and warn about missing song key
+    """
+    # GIVEN some input values annd a hacked show_key_warning to throw an exception
+    edit_verse_form.verse_text_edit.setPlainText('Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    mocked_show_key_warning.side_effect = KeyError('"A" not found in "chords"')
+
+    # WHEN the method is called
+    edit_verse_form.on_transpose_up_button_clicked()
+
+    # THEN An error message should have been shown
+    mocked_critical_error.assert_called_once_with(title='Transposing failed', message='Transposing failed because of '
+                                                  'invalid chord:\n\'"A" not found in "chords"\'')
+
+
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+def test_on_transpose_down_button_clicked_key_warning(mocked_show_key_warning, edit_verse_form):
     """
     Test that transpose button will transpose the chords and warn about missing song key
     """
     # GIVEN some input values
-    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    edit_verse_form.verse_text_edit.setPlainText('Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+
     # WHEN the method is called
     edit_verse_form.on_transpose_down_button_clicked()
+
     # THEN chords should be transposed up
+    mocked_show_key_warning.assert_called_once_with(edit_verse_form)
+    assert 'Am[F#]azing gr[F#/A#]ace, how sw[B]eet the s[F#]ound' == edit_verse_form.verse_text_edit.toPlainText()
+
+
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+def test_on_transpose_down_button_clicked_no_key_warning(mocked_show_key_warning, edit_verse_form):
+    """
+    Test that transpose button will transpose the chords but won't show a message about the key
+    """
+    # GIVEN some input values
+    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+
+    # WHEN the method is called
+    edit_verse_form.on_transpose_down_button_clicked()
+
+    # THEN chords should be transposed up
+    mocked_show_key_warning.assert_not_called()
     assert '[=F#]Am[F#]azing gr[F#/A#]ace, how sw[B]eet the s[F#]ound' == edit_verse_form.verse_text_edit.toPlainText()
+
+
+@patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
+@patch('openlp.plugins.songs.forms.editverseform.critical_error_message_box')
+def test_on_transpose_down_button_clicked_keyerror(mocked_critical_error, mocked_show_key_warning, edit_verse_form):
+    """
+    Test that transpose button shows an error message when there is an invalid chord
+    """
+    # GIVEN some input values
+    edit_verse_form.verse_text_edit.setPlainText('Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    mocked_show_key_warning.side_effect = KeyError('"A" not found in "chords"')
+
+    # WHEN the method is called
+    edit_verse_form.on_transpose_down_button_clicked()
+
+    # THEN An error message should have been shown
+    mocked_critical_error.assert_called_once_with(title='Transposing failed', message='Transposing failed because of '
+                                                  'invalid chord:\n\'"A" not found in "chords"\'')
 
 
 def test_set_verse_single(settings, edit_verse_form):
@@ -258,3 +332,115 @@ def test_set_verse_multiple(settings, edit_verse_form):
         mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
         mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+
+
+def test_set_verse_multiple_chords_disabled(settings, edit_verse_form):
+    """
+    Test the set_verse() method of the EditVerseForm for multiple verses when chords are disabled
+    """
+    # GIVEN: An EditVerseForm instance, with some stuff mocked out, and chords enabled
+    settings.setValue('songs/enable chords', False)
+
+    with patch.object(edit_verse_form, 'verse_type_combo_box') as mocked_verse_type_combo, \
+            patch.object(edit_verse_form, 'verse_number_box') as mocked_verse_number_box, \
+            patch.object(edit_verse_form, 'insert_button') as mocked_insert_button, \
+            patch.object(edit_verse_form, 'transpose_widget') as mocked_transpose_widget, \
+            patch.object(edit_verse_form, 'verse_text_edit') as mocked_verse_text_edit:
+        # WHEN: set_verse() is called
+        edit_verse_form.set_verse(None)
+
+        # THEN: The right things should have been done
+        mocked_verse_type_combo.setCurrentIndex.assert_called_once_with(0)
+        mocked_verse_number_box.setValue.assert_called_once_with(1)
+        mocked_insert_button.setVisible.assert_called_once_with(True)
+        mocked_transpose_widget.setVisible.assert_not_called()
+        mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
+        mocked_verse_text_edit.setFocus.assert_called_once_with()
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+
+
+def test_add_splitter_to_text(edit_verse_form):
+    """
+    Test the _add_splitter_to_text() method
+    """
+    # GIVEN: An EditVerseForm instance, with some stuff mocked out
+    with patch.object(edit_verse_form, 'verse_text_edit') as mocked_verse_text_edit:
+        mocked_verse_text_edit.toPlainText.return_value = 'this is a verse'
+        mocked_verse_text_edit.textCursor.return_value.position.return_value = 1
+
+        # WHEN: _add_splitter_to_text() is called
+        edit_verse_form._add_splitter_to_text('another line to add')
+
+        # THEN: The correct things should have been done
+        mocked_verse_text_edit.insertPlainText.assert_called_once_with('\nanother line to add\n')
+        mocked_verse_text_edit.setFocus.assert_called_once_with()
+
+
+def test_get_verse(edit_verse_form):
+    """
+    Test getting the verse via get_verse()
+    """
+    # GIVEN: An EditVerseForm with some text
+    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    edit_verse_form.verse_type_combo_box.setCurrentIndex(0)
+    edit_verse_form.verse_number_box.setValue(2)
+
+    # WHEN: get_verse() is called
+    result = edit_verse_form.get_verse()
+
+    # THEN: We should get the right verse back
+    assert result == ('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound', 'v', '2')
+
+
+def test_get_all_verses(edit_verse_form):
+    """
+    Test getting all the verses via get_all_verses()
+    """
+    # GIVEN: An EditVerseForm with some text
+    edit_verse_form.verse_text_edit.setPlainText('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound')
+    edit_verse_form.verse_type_combo_box.setCurrentIndex(0)
+    edit_verse_form.verse_number_box.setValue(1)
+
+    # WHEN: get_verse() is called
+    result = edit_verse_form.get_all_verses()
+
+    # THEN: We should get the right verse back
+    assert result == '---[Verse:1]---\n[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound'
+
+
+@patch('openlp.plugins.songs.forms.editverseform.VERSE_REGEX')
+def test_update_suggested_verse_number_no_end_part(mocked_verse_regex, edit_verse_form):
+    """
+    Test the update_suggested_verse_number() method when a verse tag doesn't  contain its end
+    """
+    # GIVEN: An EditVerseForm with a malformed "--[Verse:1]---" separator
+    verse_text = '---[Verse:1\nAmazing grace, how sweet the sound'
+    edit_verse_form.verse_text_edit.setPlainText(verse_text)
+
+    with patch.object(edit_verse_form.verse_text_edit, 'textCursor') as mocked_text_cursor:
+        mocked_text_cursor.return_value.position.return_value = len(verse_text)
+
+        # WHEN: update_suggested_verse_number() is called
+        edit_verse_form.update_suggested_verse_number()
+
+        # THEN: The method should have exited early
+        mocked_verse_regex.match.assert_not_called()
+
+
+def test_update_suggested_verse_number_no_match(edit_verse_form):
+    """
+    Test the update_suggested_verse_number() method when a verse tag doesn't  contain its end
+    """
+    # GIVEN: An EditVerseForm with a malformed "--[Verse:1]---" separator
+    verse_text = '---[Verse:X]---\nAmazing grace, how sweet the sound'
+    edit_verse_form.verse_text_edit.setPlainText(verse_text)
+
+    with patch.object(edit_verse_form.verse_text_edit, 'textCursor') as mocked_text_cursor, \
+            patch.object(edit_verse_form, 'verse_number_box') as mocked_verse_number_box:
+        mocked_text_cursor.return_value.position.return_value = len(verse_text)
+
+        # WHEN: update_suggested_verse_number() is called
+        edit_verse_form.update_suggested_verse_number()
+
+        # THEN: The method should have exited early
+        mocked_verse_number_box.setValue.assert_called_once_with(1)
