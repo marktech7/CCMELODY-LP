@@ -21,12 +21,8 @@
 """
 Functional tests to test the AppLocation class and related methods.
 """
-import os
-import sys
 from pathlib import Path
 from unittest.mock import patch
-
-import pytest
 
 from openlp.core.common import get_frozen_path
 from openlp.core.common.applocation import AppLocation
@@ -144,18 +140,15 @@ def test_get_directory_for_app_dir(mocked_get_frozen_path):
     assert directory == Path.cwd() / Path('app', 'dir'), 'Directory should be "app/dir"'
 
 
-@pytest.mark.skipif(sys.version_info < (3, 10), reason="Python 3.10 version of this test")
 @patch('openlp.core.common.applocation.get_frozen_path')
-@patch('openlp.core.common.applocation.os.path.abspath')
-@patch('openlp.core.common.applocation.os.path.split')
+@patch('openlp.core.common.applocation.resolve')
 @patch('openlp.core.common.applocation.sys')
-def test_get_directory_for_plugins_dir_py310(mocked_sys, mocked_split, mocked_abspath, mocked_get_frozen_path):
+def test_get_directory_for_plugins_dir(mocked_sys, mocked_resolve, mocked_get_frozen_path):
     """
     Test the AppLocation.get_directory() method for AppLocation.PluginsDir
     """
     # GIVEN: _get_frozen_path, abspath, split and sys are mocked out
-    mocked_abspath.return_value = os.path.join('dir', 'plugins')
-    mocked_split.return_value = ['openlp']
+    mocked_resolve.return_value = Path('dir/plugins')
     mocked_get_frozen_path.return_value = Path('dir')
     mocked_sys.frozen = 1
     mocked_sys.argv = ['openlp']
@@ -165,29 +158,7 @@ def test_get_directory_for_plugins_dir_py310(mocked_sys, mocked_split, mocked_ab
 
     # THEN: The correct directory should be returned
     assert directory == Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
-
-
-@pytest.mark.skipif(sys.version_info >= (3, 10), reason="Python 3.9 version of this test")
-@patch('openlp.core.common.applocation.get_frozen_path')
-@patch('openlp.core.common.applocation.os.path.abspath')
-@patch('openlp.core.common.applocation.os.path.split')
-@patch('openlp.core.common.applocation.sys')
-def test_get_directory_for_plugins_dir_py39(mocked_sys, mocked_split, mocked_abspath, mocked_get_frozen_path):
-    """
-    Test the AppLocation.get_directory() method for AppLocation.PluginsDir
-    """
-    # GIVEN: _get_frozen_path, abspath, split and sys are mocked out
-    mocked_abspath.return_value = os.path.join('plugins', 'dir')
-    mocked_split.return_value = ['openlp']
-    mocked_get_frozen_path.return_value = Path('dir')
-    mocked_sys.frozen = 1
-    mocked_sys.argv = ['openlp']
-
-    # WHEN: We call AppLocation.get_directory
-    directory = AppLocation.get_directory(AppLocation.PluginsDir)
-
-    # THEN: The correct directory should be returned
-    assert directory == Path.cwd() / Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
+    mocked_resolve.assert_called_once_with(Path('dir', 'plugins'))
 
 
 @patch('openlp.core.common.sys')

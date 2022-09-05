@@ -77,10 +77,12 @@ def test_alerts_initialise(plugin_env):
     plugin = plugin_env[0]
     plugin.tools_alert_item = MagicMock()
     # WHEN: I request the form
-    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist:
+    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist, \
+            patch('openlp.plugins.alerts.alertsplugin.register_views') as mocked_register_views:
         plugin.initialise()
         # THEN: the form is loaded
         mocked_actionlist.instance.add_action.assert_called_once()
+        mocked_register_views.assert_called_once_with()
         plugin.tools_alert_item.setVisible.assert_called_once_with(True)
 
 

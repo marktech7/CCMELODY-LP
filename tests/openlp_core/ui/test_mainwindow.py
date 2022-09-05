@@ -99,7 +99,6 @@ def main_window_reduced(settings, state):
             patch('openlp.core.ui.mainwindow.ProjectorManager'), \
             patch('openlp.core.ui.mainwindow.HttpServer'), \
             patch('openlp.core.ui.mainwindow.WebSocketServer'), \
-            patch('openlp.core.ui.mainwindow.start_zeroconf'), \
             patch('openlp.core.ui.mainwindow.PluginForm'):
         return MainWindow()
 
