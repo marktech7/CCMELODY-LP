@@ -60,7 +60,6 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.use_extended_preview = False
         self.display_aspect_ratio = 16 / 9
         self.setup_ui(self)
-        self.preview_area.resizeEvent = self._preview_area_resize_event
 
     def connect_events(self):
         self.background_widget.on_value_changed.connect(self.do_update)
@@ -78,6 +77,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.connect_signals()
         self.transition_widget.connect_signals()
         self.area_position_widget.connect_signals()
+        self.preview_area.resizeEvent = self._preview_area_resize_event
 
     def disconnect_events(self):
         self.background_widget.disconnect_signals()
@@ -93,7 +93,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.transition_widget.on_value_changed.disconnect(self.do_update)
         self.area_position_widget.on_value_changed.disconnect(self.do_update)
         self.preview_area_layout.resize.disconnect(self._update_preview_box_scale)
-        self.main_toolbox.currentChanged.connect(self._on_toolbox_item_change)
+        self.main_toolbox.currentChanged.disconnect(self._on_toolbox_item_change)
         self.transition_widget_play_button.clicked.disconnect(self.play_transition)
 
     def provide_help(self):
@@ -263,7 +263,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         when the are changed.
         """
         if not self.can_update_theme:
-            return
+            return False
         log.debug('update_theme')
         # background widget
         self.theme.background_type = self.background_widget.background_type
@@ -331,6 +331,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme.display_slide_transition_speed = self.transition_widget.transition_speed
         self.theme.display_slide_transition_direction = self.transition_widget.transition_direction
         self.theme.display_slide_transition_reverse = self.transition_widget.is_transition_reverse_enabled
+        return True
 
     def validate_fields(self):
         """
