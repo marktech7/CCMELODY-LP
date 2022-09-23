@@ -45,7 +45,6 @@ def wait_for(check_func, error_message='Timed out waiting for completion', timeo
             log.error(error_message)
             success = False
             break
-        time.sleep(0.001)
         app.process_events()
     return success
 
