@@ -27,6 +27,7 @@ from unittest.mock import MagicMock, patch
 from openlp.core.display.render import compare_chord_lyric_width, find_formatting_tags, remove_tags, render_chords, \
     render_chords_for_printing, render_tags, ThemePreviewRenderer
 from openlp.core.lib.formattingtags import FormattingTags
+from openlp.core.lib.theme import WrapStyle
 
 
 @pytest.fixture
@@ -282,7 +283,7 @@ def test_format_slide_no_split(settings, display_window_env):
     assert formatted_slides == ['line one<br>line two']
 
 
-def test_format_slide_line_split(settings, display_window_env):
+def test_format_slide_line_split_even(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
@@ -299,13 +300,13 @@ def test_format_slide_line_split(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics)
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['super duper long line that', 'will hopefully get split']
 
 
-def test_format_slide_line_split_odd_spacing(settings, display_window_env):
+def test_format_slide_even_line_split_odd_spacing(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
@@ -322,13 +323,13 @@ def test_format_slide_line_split_odd_spacing(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics)
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['l o t s o f s p', 'a c e tight space']
 
 
-def test_format_slide_triple_line_split(settings, display_window_env):
+def test_format_slide_triple_line_split_even(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
@@ -341,17 +342,17 @@ def test_format_slide_triple_line_split(settings, display_window_env):
     preview_renderer.log_debug = MagicMock()
     preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
     preview_renderer._lines_fit_on_slide = MagicMock(
-        side_effect=lambda a: [True if (len(line) < 4) else False for line in a])
+        side_effect=lambda a: [True if (len(line) < 0) else False for line in a])
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics)
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['triple', 'split', 'line']
 
 
-def test_format_slide_manual_line_split(settings, display_window_env):
+def test_format_slide_manual_line_split_even(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
@@ -368,13 +369,13 @@ def test_format_slide_manual_line_split(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics)
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['an awesome', 'uncentered line split thing, yay']
 
 
-def test_format_slide_comma_line_split(settings, display_window_env):
+def test_format_slide_comma_line_split_even(settings, display_window_env):
     """
     Test that the format_slide function doesn't split a slide that fits
     """
@@ -391,7 +392,7 @@ def test_format_slide_comma_line_split(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics)
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
     assert formatted_slides == ['an awesome', 'uncentered line split thing yay']
