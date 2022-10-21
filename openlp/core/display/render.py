@@ -717,6 +717,9 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         max_segments = len(segments)
         if (max_segments == 1):
             return [False, None]
+        # Keep track of best attempt
+        smallest_attempt = []
+        smallest_attempt_largest_segment_size = 10000000
         # Cache the length of the string after each possible split
         split_spots = []
         current_length = 0
@@ -754,7 +757,14 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             if all(self._lines_fit_on_slide(new_segments)):
                 return [True, new_segments]
             else:
-                return [False, new_segments]
+                # Save this attempt if it has the smallest segment size yet
+                # (rough estimate as letters are different sizes)
+                # Without this, a large word that can't be split, could cause each word to be split individually.
+                largest_segment = max(map(lambda s: len(s), new_segments))
+                if largest_segment < smallest_attempt_largest_segment_size:
+                    smallest_attempt = new_segments
+        # couldn't fit at all, return the best attempt
+        return [False, smallest_attempt]
 
     def _calculate_optional_splits(self, text, line_end):
         pages = []
