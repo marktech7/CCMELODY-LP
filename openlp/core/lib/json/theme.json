@@ -16,7 +16,7 @@
         "slide_transition_direction": 0,
         "slide_transition_reverse": false,
         "vertical_align": 0,
-        "wrap_style": 0
+        "wrap_style": 1
     },
     "font": {
         "footer": {
