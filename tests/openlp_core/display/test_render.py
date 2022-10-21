@@ -285,7 +285,7 @@ def test_format_slide_no_split(settings, display_window_env):
 
 def test_format_slide_line_split_even(settings, display_window_env):
     """
-    Test that the format_slide function doesn't split a slide that fits
+    Test that the format_slide function (using even method) splits a line in the right spot given a max line length
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
     # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
@@ -306,9 +306,32 @@ def test_format_slide_line_split_even(settings, display_window_env):
     assert formatted_slides == ['super duper long line that', 'will hopefully get split']
 
 
+def test_format_slide_line_split_greedy(settings, display_window_env):
+    """
+    Test that the format_slide function (using greedy method) splits a line in the right spot given a max line length
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'super duper long line that will hopefully get split'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 40 else False for line in a])
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Greedy)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['super duper long line that will', 'hopefully get split']
+
+
 def test_format_slide_even_line_split_odd_spacing(settings, display_window_env):
     """
-    Test that the format_slide function doesn't split a slide that fits
+    Test that the format_slide function (using even method) splits a line with uneven spacing correctly
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
     # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
@@ -329,9 +352,32 @@ def test_format_slide_even_line_split_odd_spacing(settings, display_window_env):
     assert formatted_slides == ['l o t s o f s p', 'a c e tight space']
 
 
+def test_format_slide_greedy_line_split_odd_spacing(settings, display_window_env):
+    """
+    Test that the format_slide function (using greedy method) splits a line with uneven spacing correctly
+    """
+    # GIVEN: Renderer where no text fits on screen (force one line per slide)
+    # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
+    # init_fn.return_value = None
+    preview_renderer = ThemePreviewRenderer()
+    lyrics = 'l o t s o f s p a c e tight space'
+    preview_renderer._is_initialised = True
+    preview_renderer.log_debug = MagicMock()
+    preview_renderer._text_fits_on_slide = MagicMock(return_value=True)
+    preview_renderer._lines_fit_on_slide = MagicMock(
+        side_effect=lambda a: [True if len(line) < 20 else False for line in a])
+    preview_renderer.force_page = False
+
+    # WHEN: _break_line is run
+    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Greedy)
+
+    # THEN: The formatted slides should have all the text and no blank slides
+    assert formatted_slides == ['l o t s o f s p a c', 'e tight space']
+
+
 def test_format_slide_triple_line_split_even(settings, display_window_env):
     """
-    Test that the format_slide function doesn't split a slide that fits
+    Test that the format_slide function can split one line into three segments
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
     # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
@@ -346,15 +392,17 @@ def test_format_slide_triple_line_split_even(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
+    formatted_slides_greedy = preview_renderer._break_line(lyrics, WrapStyle.Greedy)
+    formatted_slides_even = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
-    assert formatted_slides == ['triple', 'split', 'line']
+    assert formatted_slides_greedy == ['triple', 'split', 'line']
+    assert formatted_slides_greedy == formatted_slides_even
 
 
-def test_format_slide_manual_line_split_even(settings, display_window_env):
+def test_format_slide_manual_line_split(settings, display_window_env):
     """
-    Test that the format_slide function doesn't split a slide that fits
+    Test that the format_slide function prioritises optional list splits
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
     # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
@@ -369,15 +417,17 @@ def test_format_slide_manual_line_split_even(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
+    formatted_slides_greedy = preview_renderer._break_line(lyrics, WrapStyle.Greedy)
+    formatted_slides_even = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
-    assert formatted_slides == ['an awesome', 'uncentered line split thing, yay']
+    assert formatted_slides_greedy == ['an awesome', 'uncentered line split thing, yay']
+    assert formatted_slides_greedy == formatted_slides_even
 
 
-def test_format_slide_comma_line_split_even(settings, display_window_env):
+def test_format_slide_comma_line_split(settings, display_window_env):
     """
-    Test that the format_slide function doesn't split a slide that fits
+    Test that the format_slide function prioritises commas to split lines
     """
     # GIVEN: Renderer where no text fits on screen (force one line per slide)
     # with patch('openlp.core.display.render.ThemePreviewRenderer') as init_fn:
@@ -392,7 +442,9 @@ def test_format_slide_comma_line_split_even(settings, display_window_env):
     preview_renderer.force_page = False
 
     # WHEN: _break_line is run
-    formatted_slides = preview_renderer._break_line(lyrics, WrapStyle.Even)
+    formatted_slides_greedy = preview_renderer._break_line(lyrics, WrapStyle.Greedy)
+    formatted_slides_even = preview_renderer._break_line(lyrics, WrapStyle.Even)
 
     # THEN: The formatted slides should have all the text and no blank slides
-    assert formatted_slides == ['an awesome', 'uncentered line split thing yay']
+    assert formatted_slides_greedy == ['an awesome', 'uncentered line split thing yay']
+    assert formatted_slides_greedy == formatted_slides_even
