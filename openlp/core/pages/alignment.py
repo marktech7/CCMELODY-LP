@@ -106,7 +106,7 @@ class AlignmentTransitionsPage(GridLayoutPage):
         self.horizontal_combo_box.setItemText(HorizontalType.Justify, translate('OpenLP.ThemeWizard', 'Justify'))
         self.wrap_label.setText(translate('OpenLP.ThemeWizard', 'Line Wrap:'))
         self.wrap_combo_box.setItemText(WrapStyle.Even, translate('OpenLP.ThemeWizard', 'Balanced'))
-        self.wrap_combo_box.setItemText(WrapStyle.Greedy, translate('OpenLP.ThemeWizard', 'Greedy'))
+        self.wrap_combo_box.setItemText(WrapStyle.Greedy, translate('OpenLP.ThemeWizard', 'Overflow'))
         self.transitions_enabled_check_box.setText(translate('OpenLP.ThemeWizard', 'Enable transitions'))
         self.transition_effect_label.setText(translate('OpenLP.ThemeWizard', 'Effect:'))
         self.transition_effect_combo_box.setItemText(TransitionType.Fade, translate('OpenLP.ThemeWizard', 'Fade'))
