@@ -338,8 +338,8 @@ def backup_if_version_changed(settings):
         close_result = QtWidgets.QMessageBox.warning(
             None, translate('OpenLP', 'Downgrade'),
             translate('OpenLP', 'OpenLP has found a configuration file created by a newer version of OpenLP. '
-                                'OpenLP will start with a fresh install as downgrading data is not supported. Any existing data '
-                                'will be backed up to:\n\n{data_folder_backup_path}\n\n'
+                                'OpenLP will start with a fresh install as downgrading data is not supported. '
+                                'Any existing data will be backed up to:\n\n{data_folder_backup_path}\n\n'
                                 'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
             QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
             QtWidgets.QMessageBox.No)
