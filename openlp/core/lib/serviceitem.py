@@ -224,7 +224,7 @@ class ServiceItem(RegistryProperties):
                 rendered_slide = {
                     'title': raw_slide['title'],
                     'text': render_tags(page),
-                    'chords': render_tags(page, can_render_chords=True),
+                    'chords': page,
                     'verse': index,
                     'footer': self.footer_html
                 }
@@ -379,7 +379,7 @@ class ServiceItem(RegistryProperties):
             'start_time': self.start_time,
             'end_time': self.end_time,
             'media_length': self.media_length,
-            'background_audio': self.background_audio,
+            'background_audio': [],
             'theme_overwritten': self.theme_overwritten,
             'will_auto_start': self.will_auto_start,
             'processor': self.processor,
@@ -387,6 +387,14 @@ class ServiceItem(RegistryProperties):
             'sha256_file_hash': self.sha256_file_hash,
             'stored_filename': stored_filename
         }
+        for file_path, file_hash in self.background_audio:
+            if lite_save:
+                path_str = str(file_path)
+            else:
+                # a side-effect of this is that if the song is imported from the service created from this, the
+                # background audio filename shown in the ui will be the file_hash + the suffix.
+                path_str = '{hash}{suffix}'.format(hash=file_hash, suffix=file_path.suffix)
+            service_header['background_audio'].append(path_str)
         service_data = []
         if self.service_item_type == ServiceItemType.Text:
             for slide in self.slides:
@@ -481,7 +489,9 @@ class ServiceItem(RegistryProperties):
         self.stored_filename = header.get('stored_filename', None)
         if 'background_audio' in header and State().check_preconditions('media'):
             self.background_audio = []
-            for file_path in header['background_audio']:
+            for file_str in header['background_audio']:
+                file_path = Path(file_str)
+                file_hash = None
                 # In OpenLP 3.0 we switched to storing Path objects in JSON files
                 if version >= 3:
                     if path:
@@ -490,7 +500,9 @@ class ServiceItem(RegistryProperties):
                     # Handle service files prior to OpenLP 3.0
                     # Windows can handle both forward and backward slashes, so we use ntpath to get the basename
                     file_path = path / ntpath.basename(file_path)
-                self.background_audio.append(file_path)
+                if not file_hash:
+                    file_hash = sha256_file_hash(file_path)
+                self.background_audio.append((file_path, file_hash))
         self.theme_overwritten = header.get('theme_overwritten', False)
         if self.service_item_type == ServiceItemType.Text:
             for slide in service_item['serviceitem']['data']:
@@ -887,7 +899,7 @@ class ServiceItem(RegistryProperties):
             'data': self.data_string or {},
             'fromPlugin': self.from_plugin,
             'capabilities': self.capabilities,
-            'backgroundAudio': [str(file_path) for file_path in self.background_audio],
+            'backgroundAudio': self.background_audio,
             'isThemeOverwritten': self.theme_overwritten,
             'slides': []
         }

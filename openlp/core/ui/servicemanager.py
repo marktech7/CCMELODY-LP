@@ -571,8 +571,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Get a list of files used in the service and files that are missing.
 
-        :return: A list of files used in the service that exist, and a list of files that don't.
-        :rtype: (list[Path], list[str])
+        :return: A list of tuples with files used in the service that exist and their sha256-based name in the
+                 servicefile, and a list of files that doesn't exists.
+        :rtype: (list[(Path,str)], list[str])
         """
         write_list = []
         missing_list = []
@@ -589,7 +590,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     if item['service_item'].stored_filename:
                         sha256_file_name = Path(item['service_item'].stored_filename)
                     else:
-                        sha256_file_name = Path(sha256_file_hash(frame_path)) / frame_path.suffix
+                        sha256_file_name = Path(sha256_file_hash(frame_path) + frame_path.suffix)
                     bundle = (frame_path, sha256_file_name)
                     if bundle in write_list or str(frame_path) in missing_list:
                         continue
@@ -626,8 +627,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                 if path_from_tuple in write_list:
                                     continue
                                 write_list.append(path_from_tuple)
-            for audio_path in item['service_item'].background_audio:
-                service_path = sha256_file_hash(audio_path) + os.path.splitext(audio_path)[1]
+            for (audio_path, audio_file_hash) in item['service_item'].background_audio:
+                service_path = audio_file_hash + audio_path.suffix
                 audio_path_tuple = (audio_path, service_path)
                 if audio_path_tuple in write_list:
                     continue

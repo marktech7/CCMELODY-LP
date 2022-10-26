@@ -241,7 +241,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.media_info.volume = self.settings.value('media/preview volume')
         # background will always loop video.
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
-            controller.media_info.file_info = service_item.background_audio
+            controller.media_info.file_info = [file_path for (file_path, file_hash) in service_item.background_audio]
             controller.media_info.media_type = MediaType.Audio
             # is_background indicates we shouldn't override the normal display
             controller.media_info.is_background = True

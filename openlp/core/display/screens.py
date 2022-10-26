@@ -32,7 +32,6 @@ from openlp.core.common import Singleton
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 
-
 log = logging.getLogger(__name__)
 
 
@@ -40,6 +39,7 @@ class Screen(object):
     """
     A Python representation of a screen
     """
+
     def __init__(self, number=None, geometry=None, custom_geometry=None, is_primary=False, is_display=False):
         """
         Set up the screen object
@@ -241,6 +241,10 @@ class ScreenList(metaclass=Singleton):
         If more than 1 screen, set first non-primary screen to display, otherwise just set the available screen as
         display.
         """
+        # Reset first, so we end up with just one display at most
+        for screen in self:
+            screen.is_display = False
+
         if len(self) > 1:
             for screen in self:
                 if not screen.is_primary:
@@ -349,6 +353,7 @@ class ScreenList(metaclass=Singleton):
         """
         Update the list of screens
         """
+
         def _screen_compare(this, other):
             """
             Compare screens. Can't use a key here because of the nested property and method to be called
@@ -364,6 +369,7 @@ class ScreenList(metaclass=Singleton):
                     return 1
                 else:
                     return 0
+
         self.screens = []
         os_screens = self.application.screens()
         os_screens.sort(key=cmp_to_key(_screen_compare))
@@ -379,8 +385,16 @@ class ScreenList(metaclass=Singleton):
         :param changed_screen: The screen which has been plugged.
         """
         number = len(self.screens)
+
+        # Ensure we have only one primary screen in the list.
+        is_primary = self.application.primaryScreen() == changed_screen
+        if is_primary:
+            for screen in self.screens:
+                screen.is_primary = False
+
         self.screens.append(Screen(number, changed_screen.geometry(),
                                    is_primary=self.application.primaryScreen() == changed_screen))
+        self.find_new_display_screen()
         changed_screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
         Registry().execute('config_screen_changed')
 
@@ -411,4 +425,6 @@ class ScreenList(metaclass=Singleton):
         """
         for screen in self.screens:
             screen.is_primary = self.application.primaryScreen().geometry() == screen.geometry
+        self.find_new_display_screen()
+
         Registry().execute('config_screen_changed')

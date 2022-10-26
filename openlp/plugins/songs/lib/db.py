@@ -103,6 +103,13 @@ class Book(BaseModel):
     """
     Book model
     """
+    @property
+    def songs(self):
+        """
+        A property to return the songs associated with this book.
+        """
+        return [sbe.song for sbe in self.entries]
+
     def __repr__(self):
         return '<Book id="{myid:d}" name="{name}" publisher="{publisher}" />'.format(myid=self.id,
                                                                                      name=self.name,
@@ -237,8 +244,10 @@ def init_schema(url):
 
     **media_files Table**
         * id
-        * _file_path
+        * file_path
+        * file_hash
         * type
+        * weight
 
     **song_books Table**
         The *song_books* table holds a list of books that a congregation gets
@@ -305,6 +314,7 @@ def init_schema(url):
         Column('id', types.Integer(), primary_key=True),
         Column('song_id', types.Integer(), ForeignKey('songs.id'), default=None),
         Column('file_path', PathType, nullable=False),
+        Column('file_hash', types.Unicode(128), nullable=False),
         Column('type', types.Unicode(64), nullable=False, default='audio'),
         Column('weight', types.Integer(), default=0)
     )
@@ -383,7 +393,7 @@ def init_schema(url):
         class_mapper(SongBookEntry)
     except UnmappedClassError:
         mapper(SongBookEntry, songs_songbooks_table, properties={
-            'songbook': relation(Book)
+            'songbook': relation(Book, backref='entries')
         })
     try:
         class_mapper(Book)

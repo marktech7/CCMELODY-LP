@@ -24,7 +24,7 @@ Package to test the openlp.plugins.songs.forms.songmaintenanceform package.
 import pytest
 import os
 
-from unittest.mock import MagicMock, call, patch, ANY
+from unittest.mock import MagicMock, call, create_autospec, patch, ANY
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -208,8 +208,41 @@ def test_delete_item(mocked_critical_error_message_box, form_env):
     mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
     mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
     mocked_critical_error_message_box.assert_called_once_with(dialog_title, delete_text, form, True)
-    mocked_manager.delete_object(mocked_item_class, 1)
+    mocked_manager.delete_object.assert_called_once_with(mocked_item_class, 1)
     mocked_reset_func.assert_called_once_with()
+
+
+@patch('openlp.plugins.songs.forms.songmaintenanceform.critical_error_message_box')
+def test_delete_book_assigned(mocked_critical_error_message_box, form_env):
+    """
+    Test the _delete_item() method
+    """
+    # GIVEN: Some mocked items
+    form = form_env[0]
+    mocked_manager = form_env[1]
+    mocked_item = create_autospec(Book, spec_set=True)
+    mocked_item.id = 1
+    mocked_manager.get_object.return_value = mocked_item
+    mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.Yes
+    mocked_item_class = MagicMock()
+    mocked_list_widget = MagicMock()
+    mocked_reset_func = MagicMock()
+    dialog_title = 'Delete Book'
+    delete_text = 'Are you sure you want to delete the selected book?'
+    error_text = 'This book cannot be deleted, it is currenty assigned to at least one song.'
+
+    # WHEN: _delete_item() is called
+    with patch.object(form, '_get_current_item_id') as mocked_get_current_item_id:
+        mocked_get_current_item_id.return_value = 1
+        form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
+                          error_text)
+
+    # THEN: The right things should have been called
+    mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
+    mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
+    mocked_critical_error_message_box.assert_called_once_with(dialog_title, error_text)
+    mocked_manager.delete_object.assert_not_called()
+    mocked_reset_func.assert_not_called()
 
 
 @patch('openlp.plugins.songs.forms.songmaintenanceform.QtWidgets.QListWidgetItem')

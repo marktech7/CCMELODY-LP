@@ -86,7 +86,7 @@ def projector_manager_mtdb(settings):
 def fake_pjlink():
     faker = FakePJLink()
     yield faker
-    del(faker)
+    del faker
 
 
 @pytest.fixture()

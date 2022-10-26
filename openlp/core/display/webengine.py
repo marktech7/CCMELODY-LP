@@ -77,6 +77,7 @@ class WebEngineView(QtWebEngineWidgets.QWebEngineView):
         self.page().settings().setAttribute(QtWebEngineWidgets.QWebEngineSettings.LocalStorageEnabled, True)
         self.page().settings().setAttribute(QtWebEngineWidgets.QWebEngineSettings.LocalContentCanAccessFileUrls, True)
         self.page().settings().setAttribute(QtWebEngineWidgets.QWebEngineSettings.LocalContentCanAccessRemoteUrls, True)
+        self.setContextMenuPolicy(QtCore.Qt.PreventContextMenu)
 
     def eventFilter(self, obj, ev):
         """

@@ -29,14 +29,15 @@ from pathlib import Path
 from sqlalchemy import Column, ForeignKey, Table, types
 from sqlalchemy.sql.expression import false, func, null, text
 
+from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.db import drop_columns
-from openlp.core.common.json import OpenLPJSONEncoder
+from openlp.core.common.json import OpenLPJSONEncoder, OpenLPJSONDecoder
 from openlp.core.lib.db import PathType, get_upgrade_op
 
 
 log = logging.getLogger(__name__)
-__version__ = 7
+__version__ = 8
 
 
 # TODO: When removing an upgrade path the ftw-data needs updating to the minimum supported version
@@ -190,3 +191,28 @@ def upgrade_7(session, metadata):
         else:
             op.drop_constraint('media_files', 'foreignkey')
             op.drop_column('media_files', 'filenames')
+
+
+def upgrade_8(session, metadata):
+    """
+    Version 8 upgrade - add sha256 hash to media
+    """
+    log.debug('Starting upgrade_8 for adding sha256 hashes')
+    old_table = Table('media_files', metadata, autoload=True)
+    if 'file_hash' not in [col.name for col in old_table.c.values()]:
+        op = get_upgrade_op(session)
+        op.add_column('media_files', Column('file_hash', types.Unicode(128)))
+        conn = op.get_bind()
+        results = conn.execute('SELECT * FROM media_files')
+        data_path = AppLocation.get_data_path()
+        for row in results.fetchall():
+            file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
+            full_file_path = data_path / file_path
+            if full_file_path.exists():
+                hash = sha256_file_hash(full_file_path)
+            else:
+                log.warning('{audio} does not exists, so no sha256 hash added.'.format(audio=str(file_path)))
+                # set a fake "hash" to allow for the upgrade to go through. The image will be marked as invalid
+                hash = 'NONE'
+            sql = 'UPDATE media_files SET file_hash = :hash WHERE id = :id'
+            conn.execute(sql, {'hash': hash, 'id': row.id})

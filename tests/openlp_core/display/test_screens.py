@@ -88,9 +88,11 @@ def test_create_screen_list(mocked_screens, settings):
     assert screen_list.screens[0].number == 0
     assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
     assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
     assert screen_list.screens[1].number == 1
     assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
     assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
 
 
 @patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
@@ -415,3 +417,183 @@ def test_screen_repr():
 
     # THEN: The string should be correct (screens are 0-based)
     assert screen_str == '<Screen 2 (primary)>'
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_screen_removed(mocked_screens, settings):
+    """Test that the screen list is correct after a new screen is removed"""
+    # GIVEN: A screenlist of a mocked application with two screens
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    screen_list = ScreenList.create(mocked_application)
+
+    # WHEN: Screen 2 is removed from the application
+    mocked_application.screens.return_value = [mocked_screen1]
+    screen_list.on_screen_removed(mocked_screen2)
+
+    # THEN: We have 1 primary screen left in the list
+    assert len(screen_list.screens) == 1
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is True
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_screen_added(mocked_screens, settings):
+    """Test that the screen list is correct after a screen is added"""
+    # GIVEN: A screenlist of a mocked application with one screen
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    screen_list = ScreenList.create(mocked_application)
+
+    # WHEN: Screen 2 is added to the application
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    screen_list.on_screen_added(mocked_screen2)
+
+    # THEN: We have 2 screens, one primary, one display
+    assert len(screen_list.screens) == 2
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_screen_removed_added(mocked_screens, settings):
+    """
+    Test that the screen list is correct after a screen disappears and reappears again.
+    This is a common scenario when a secondary screen (possibly a projector) is turned on and off, goes into standby
+    or has a unstable connection. When the secondary screen returns it should also be marked display as before.
+    """
+    # GIVEN: A screenlist of a mocked application with two screens
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    # Create the screenlist with both screens present
+    screen_list = ScreenList.create(mocked_application)
+
+    # WHEN: Screen 2 is removed and added again
+    # Remove screen 2
+    mocked_application.screens.return_value = [mocked_screen1]
+    screen_list.on_screen_removed(mocked_screen2)
+    # Add screen 2
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    screen_list.on_screen_added(mocked_screen2)
+
+    # THEN: We have 2 screens, one primary, one display
+    assert len(screen_list.screens) == 2
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_third_screen_added(mocked_screens, settings):
+    """Test that the screen list is correct after a third screen is added"""
+    # GIVEN: A screenlist of a mocked application with one screen
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    screen_list = ScreenList.create(mocked_application)
+
+    # WHEN: Screen 2 is added to the application
+    mocked_screen3 = MagicMock(**{'geometry.return_value': QtCore.QRect(2048, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2, mocked_screen3]
+    screen_list.on_screen_added(mocked_screen3)
+
+    # THEN: We have 3 screens, one primary, one display, one that is neither.
+    assert len(screen_list.screens) == 3
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
+    assert screen_list.screens[2].number == 2
+    assert screen_list.screens[2].geometry == QtCore.QRect(2048, 0, 1024, 768)
+    assert screen_list.screens[2].is_primary is False
+    assert screen_list.screens[2].is_display is False
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_third_screen_removed(mocked_screens, settings):
+    """Test that the screen list is correct after a third screen is removed"""
+    # GIVEN: A screenlist of a mocked application with one screen
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_screen3 = MagicMock(**{'geometry.return_value': QtCore.QRect(2048, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2, mocked_screen3]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    screen_list = ScreenList.create(mocked_application)
+
+    # WHEN: Screen 2 is added to the application
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    screen_list.on_screen_removed(mocked_screen3)
+
+    # THEN: We have 3 screens, one primary, one display, one that is neither.
+    assert len(screen_list.screens) == 2
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is True
+    assert screen_list.screens[0].is_display is False
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is False
+    assert screen_list.screens[1].is_display is True
+
+
+@patch('openlp.core.display.screens.QtWidgets.QApplication.screens')
+def test_swap_primary_screen(mocked_screens, settings):
+    """Test that the screen list is correct after a different screen becomes a primary screen"""
+    # GIVEN: A screenlist of a mocked application with two screens
+    mocked_application = MagicMock()
+    mocked_screen1 = MagicMock(**{'geometry.return_value': QtCore.QRect(0, 0, 1024, 768)})
+    mocked_screen2 = MagicMock(**{'geometry.return_value': QtCore.QRect(1024, 0, 1024, 768)})
+    mocked_application.screens.return_value = [mocked_screen1, mocked_screen2]
+    mocked_application.primaryScreen.return_value = mocked_screen1
+
+    # Create the screenlist with the initial state
+    screen_list = ScreenList.create(mocked_application)
+
+    # THEN: Make screen 2 the primary screen
+    mocked_application.primaryScreen.return_value = mocked_screen2
+    screen_list.on_primary_screen_changed()
+
+    # THEN: The second screen is now primary
+    assert len(screen_list.screens) == 2
+    assert screen_list.screens[0].number == 0
+    assert screen_list.screens[0].geometry == QtCore.QRect(0, 0, 1024, 768)
+    assert screen_list.screens[0].is_primary is False
+    assert screen_list.screens[0].is_display is True
+    assert screen_list.screens[1].number == 1
+    assert screen_list.screens[1].geometry == QtCore.QRect(1024, 0, 1024, 768)
+    assert screen_list.screens[1].is_primary is True
+    assert screen_list.screens[1].is_display is False

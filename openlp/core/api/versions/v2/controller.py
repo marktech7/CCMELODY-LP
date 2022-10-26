@@ -40,6 +40,7 @@ def controller_live_items():
     if current_item:
         live_item = current_item.to_dict()
         live_item['slides'][live_controller.selected_row]['selected'] = True
+        live_item['id'] = str(current_item.unique_identifier)
     return jsonify(live_item)
 
 
@@ -51,6 +52,7 @@ def controller_live_item():
     live_item = {}
     if current_item:
         live_item = current_item.to_dict(True, live_controller.selected_row)
+        live_item['id'] = str(current_item.unique_identifier)
     return jsonify(live_item)
 
 

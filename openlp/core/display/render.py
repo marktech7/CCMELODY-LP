@@ -828,7 +828,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             check_string = separator.join(html_list[index + 1:]).strip()
             if self._text_fits_on_slide(html_tags + check_string):
                 previous_html = html_tags + check_string + line_end
-                previous_raw = raw_tags + check_string + line_end
+                check_string_raw = separator.join(raw_list[index + 1:]).strip()
+                previous_raw = raw_tags + check_string_raw + line_end
                 break
             else:
                 # The remaining elements do not fit, thus reset the indexes, create a new list and continue.

@@ -28,7 +28,6 @@ from openlp.core.common import Singleton, md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.lib import create_thumb
 
 
@@ -147,7 +146,7 @@ class PresentationDocument(object):
         #       get_temp_folder and PresentationPluginapp_startup is removed
         if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
-        elif Settings().value('presentations/thumbnail_scheme') == 'sha256file':
+        elif self.settings.value('presentations/thumbnail_scheme') == 'sha256file':
             if self._sha256_file_hash:
                 folder = self._sha256_file_hash
             else:
@@ -170,7 +169,7 @@ class PresentationDocument(object):
         #       get_thumbnail_folder and PresentationPluginapp_startup is removed
         if self.settings.value('presentations/thumbnail_scheme') == 'md5':
             folder = md5_hash(bytes(self.file_path))
-        elif Settings().value('presentations/thumbnail_scheme') == 'sha256file':
+        elif self.settings.value('presentations/thumbnail_scheme') == 'sha256file':
             if self._sha256_file_hash:
                 folder = self._sha256_file_hash
             else:

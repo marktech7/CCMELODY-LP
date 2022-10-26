@@ -277,7 +277,7 @@ class Ui_MainWindow(object):
         self.settings_configure_item = create_action(main_window, 'settingsConfigureItem',
                                                      icon=UiIcons().settings, can_shortcuts=True,
                                                      category=UiStrings().Settings)
-        # Give QT Extra Hint that this is the Preferences Menu Item
+        # Give Qt Extra Hint that this is the Preferences Menu Item
         self.settings_configure_item.setMenuRole(QtWidgets.QAction.PreferencesRole)
         self.settings_import_item = create_action(main_window, 'settingsImportItem',
                                                   category=UiStrings().Import, can_shortcuts=True)
@@ -287,7 +287,7 @@ class Ui_MainWindow(object):
         self.about_item = create_action(main_window, 'aboutItem', icon=UiIcons().info,
                                         can_shortcuts=True, category=UiStrings().Help,
                                         triggers=self.on_about_item_clicked)
-        # Give QT Extra Hint that this is an About Menu Item
+        # Give Qt Extra Hint that this is an About Menu Item
         self.about_item.setMenuRole(QtWidgets.QAction.AboutRole)
         if is_win():
             self.local_help_file = AppLocation.get_directory(AppLocation.AppDir) / 'OpenLP.chm'
@@ -495,10 +495,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.update_recent_files_menu()
         self.plugin_form = PluginForm(self)
         # Set up signals and slots
-        self.media_manager_dock.visibilityChanged.connect(self.view_media_manager_item.setChecked)
-        self.service_manager_dock.visibilityChanged.connect(self.view_service_manager_item.setChecked)
-        self.theme_manager_dock.visibilityChanged.connect(self.view_theme_manager_item.setChecked)
-        self.projector_manager_dock.visibilityChanged.connect(self.view_projector_manager_item.setChecked)
+        self.media_manager_dock.visibilityChanged.connect(self.toggle_media_manager)
+        self.service_manager_dock.visibilityChanged.connect(self.toggle_service_manager)
+        self.theme_manager_dock.visibilityChanged.connect(self.toggle_theme_manager)
+        self.projector_manager_dock.visibilityChanged.connect(self.toggle_projector_manager)
         self.import_theme_item.triggered.connect(self.theme_manager_contents.on_import_theme)
         self.export_theme_item.triggered.connect(self.theme_manager_contents.on_export_theme)
         self.web_site_item.triggered.connect(self.on_help_web_site_clicked)
@@ -661,10 +661,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.set_view_mode(False, True, False, False, True, True)
                 self.mode_live_item.setChecked(True)
         else:
-            self.set_view_mode(True, True, True,
-                               self.settings.value('user interface/preview panel'),
-                               self.settings.value('user interface/live panel'),
-                               True)
+            self.set_view_mode(
+                self.settings.value('user interface/show library'),
+                self.settings.value('user interface/show service'),
+                self.settings.value('user interface/show themes'),
+                self.settings.value('user interface/preview panel'),
+                self.settings.value('user interface/live panel'),
+                self.settings.value('user interface/show projectors')
+            )
 
     def first_time(self):
         """
@@ -1154,15 +1158,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Toggle the visibility of the media manager
         """
-        self.media_manager_dock.setVisible(not self.media_manager_dock.isVisible())
+        if self.sender() is self.view_media_manager_item:
+            self.media_manager_dock.setVisible(not self.media_manager_dock.isVisible())
+        self.view_media_manager_item.setChecked(self.media_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show library', self.media_manager_dock.isVisible())
 
     def toggle_projector_manager(self):
         """
         Toggle visibility of the projector manager
         """
-        self.projector_manager_dock.setVisible(not self.projector_manager_dock.isVisible())
+        if self.sender() is self.view_projector_manager_item:
+            self.projector_manager_dock.setVisible(not self.projector_manager_dock.isVisible())
+        self.view_projector_manager_item.setChecked(self.projector_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show projectors', self.projector_manager_dock.isVisible())
         # Check/uncheck checkbox on First time wizard based on visibility of this panel.
         if not self.settings.value('projector/show after wizard'):
             self.settings.setValue('projector/show after wizard', True)
@@ -1173,15 +1183,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Toggle the visibility of the service manager
         """
-        self.service_manager_dock.setVisible(not self.service_manager_dock.isVisible())
+        if self.sender() is self.view_service_manager_item:
+            self.service_manager_dock.setVisible(not self.service_manager_dock.isVisible())
+        self.view_service_manager_item.setChecked(self.service_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show service', self.service_manager_dock.isVisible())
 
     def toggle_theme_manager(self):
         """
         Toggle the visibility of the theme manager
         """
-        self.theme_manager_dock.setVisible(not self.theme_manager_dock.isVisible())
+        if self.sender() is self.view_theme_manager_item:
+            self.theme_manager_dock.setVisible(not self.theme_manager_dock.isVisible())
+        self.view_theme_manager_item.setChecked(self.theme_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show themes', self.theme_manager_dock.isVisible())
 
     def set_preview_panel_visibility(self, visible):
         """

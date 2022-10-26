@@ -233,17 +233,17 @@ def test_format_slide(settings):
     with patch('openlp.core.display.render.ThemePreviewRenderer.__init__') as init_fn:
         init_fn.return_value = None
         preview_renderer = ThemePreviewRenderer()
-    lyrics = 'hello {st}test{/st}\nline two\n[---]\nline after optional split'
+    lyrics = 'hello {st}test{/st}\nline two line after a {st}nice{/st} new line'
     preview_renderer._is_initialised = True
     preview_renderer.log_debug = MagicMock()
-    preview_renderer._text_fits_on_slide = MagicMock(side_effect=lambda a: a == '')
+    preview_renderer._text_fits_on_slide = MagicMock(side_effect=lambda a: len(a) < 80)
     preview_renderer.force_page = False
 
     # WHEN: format_slide is run
     formatted_slides = preview_renderer.format_slide(lyrics, None)
 
-    # THEN: The formatted slides should have all the text and no blank slides
-    assert formatted_slides == ['hello {st}test{/st}', 'line two', 'line after optional split']
+    # THEN: The formatted slides should have all the text, no blank slides and formatting tags should still be there
+    assert formatted_slides == ['hello {st}test{/st}', 'line two line after a {st}nice{/st} new line']
 
 
 def test_format_slide_no_split(settings):
