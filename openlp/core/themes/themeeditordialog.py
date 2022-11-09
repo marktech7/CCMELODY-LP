@@ -70,7 +70,7 @@ class Ui_ThemeEditorDialog(object):
         self.main_toolbox.setObjectName('theme_editor_tool_box')
         self.main_toolbox.setMaximumWidth(750)
         self.main_toolbox.setMinimumWidth(300)
-        self.main_toolbox.setStyleSheet(get_library_stylesheet())
+        self.main_toolbox_container.setStyleSheet(get_library_stylesheet())
         self.main_toolbox_layout.addWidget(self.main_toolbox)
         self.main_toolbox_container.setLayout(self.main_toolbox_layout)
         self.main_splitter.insertWidget(0, self.main_toolbox_container)
