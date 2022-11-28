@@ -124,12 +124,12 @@ def test_connect_events(mocked_setup, settings):
     theme_editor_form.transition_widget.on_value_changed.connect.assert_called_once_with(theme_editor_form.do_update)
     theme_editor_form.area_position_widget.on_value_changed.connect.assert_called_once_with(theme_editor_form.do_update)
     theme_editor_form.preview_area_layout.resize.connect \
-                     .assert_called_once_with(theme_editor_form._update_preview_box_scale)
+                     .assert_called_once_with(theme_editor_form._update_preview_renderer_scale)
     theme_editor_form.main_toolbox.currentChanged.connect \
                      .assert_called_once_with(theme_editor_form._on_toolbox_item_change)
     theme_editor_form.transition_widget_play_button.clicked.connect \
                      .assert_called_once_with(theme_editor_form.play_transition)
-    assert theme_editor_form.preview_area.resizeEvent == theme_editor_form \
+    assert theme_editor_form.preview_area.resizeEventHandler == theme_editor_form \
         ._preview_area_resize_event
 
 
@@ -174,7 +174,7 @@ def test_disconnect_events(mocked_setup, settings):
     theme_editor_form.area_position_widget.on_value_changed.disconnect \
                      .assert_called_once_with(theme_editor_form.do_update)
     theme_editor_form.preview_area_layout.resize.disconnect \
-                     .assert_called_once_with(theme_editor_form._update_preview_box_scale)
+                     .assert_called_once_with(theme_editor_form._update_preview_renderer_scale)
     theme_editor_form.main_toolbox.currentChanged.disconnect \
                      .assert_called_once_with(theme_editor_form._on_toolbox_item_change)
     theme_editor_form.transition_widget_play_button.clicked.disconnect \
@@ -210,7 +210,7 @@ def test_set_defaults(mocked_setup, settings):
 @patch('openlp.core.themes.themeeditorform.ThemeEditorForm.setup_ui')
 def test_preview_resize_event_connected(mocked_setup_ui, settings):
     """
-    Test that the update_preview_box_scale is registered on preview_area_layout resize event
+    Test that the update_preview_renderer_scale is registered on preview_area_layout resize event
     """
     # GIVEN: A ThemeEditorForm instance with a number of mocked methods
     def init_preview_area(theme_editor_form):
@@ -231,9 +231,9 @@ def test_preview_resize_event_connected(mocked_setup_ui, settings):
     # WHEN: connected_events is called
     theme_editor_form.connect_events()
 
-    # THEN: The update_preview_box_scale should be assigned in preview_area_layout resize event
+    # THEN: The update_preview_renderer_scale should be assigned in preview_area_layout resize event
     theme_editor_form.preview_area_layout.resize.connect \
-                     .assert_called_once_with(theme_editor_form._update_preview_box_scale)
+                     .assert_called_once_with(theme_editor_form._update_preview_renderer_scale)
 
 
 @patch('openlp.core.themes.themeeditorform.QtWidgets.QWidget.resizeEvent')
@@ -247,7 +247,7 @@ def test_preview_resize_event(mocked_setup_ui, MockResizeEvent, mocked_resizeEve
     def init_preview_area(theme_editor_form):
         theme_editor_form.preview_area = MagicMock()
         theme_editor_form.preview_area_layout = MagicMock()
-        theme_editor_form.preview_box = MagicMock(**{'width.return_value': 300})
+        theme_editor_form.preview_renderer = MagicMock(**{'width.return_value': 300})
 
     mocked_event = MagicMock()
     MockResizeEvent.return_value = mocked_event
@@ -288,7 +288,7 @@ def test_preview_resize_event_dbze(mocked_setup_ui, MockResizeEvent, mocked_resi
     def init_preview_area(theme_editor_form):
         theme_editor_form.preview_area = MagicMock()
         theme_editor_form.preview_area_layout = MagicMock()
-        theme_editor_form.preview_box = MagicMock(**{'width.return_value': 300})
+        theme_editor_form.preview_renderer = MagicMock(**{'width.return_value': 300})
 
     mocked_event = MagicMock()
     MockResizeEvent.return_value = mocked_event

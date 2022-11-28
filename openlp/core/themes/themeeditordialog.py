@@ -40,7 +40,7 @@ from openlp.core.widgets.layouts import AspectRatioLayout
 # cannot be changed/patched on Qt's native classes without subclassing)
 class QResizeHandlerWidget(QtWidgets.QWidget):
     def resizeEvent(self, event):
-        if hasattr(self, 'resizeEventHandler'):
+        if hasattr(self, 'resizeEventHandler') and self.resizeEventHandler:
             return self.resizeEventHandler(event)
         return super().resizeEvent(event)
 

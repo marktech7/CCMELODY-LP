@@ -77,7 +77,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.connect_signals()
         self.transition_widget.connect_signals()
         self.area_position_widget.connect_signals()
-        self.preview_area.resizeEventHandler = lambda event: self._preview_area_resize_event(event)
+        self.preview_area.resizeEventHandler = self._preview_area_resize_event
 
     def disconnect_events(self):
         self.background_widget.disconnect_signals()
@@ -95,6 +95,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.preview_area_layout.resize.disconnect(self._update_preview_renderer_scale)
         self.main_toolbox.currentChanged.disconnect(self._on_toolbox_item_change)
         self.transition_widget_play_button.clicked.disconnect(self.play_transition)
+        self.preview_area.resizeEventHandler = None
 
     def provide_help(self):
         """
