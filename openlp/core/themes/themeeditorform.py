@@ -68,7 +68,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.on_value_changed.connect(self.do_update)
         self.transition_widget.on_value_changed.connect(self.do_update)
         self.area_position_widget.on_value_changed.connect(self.do_update)
-        self.preview_area_layout.resize.connect(self._update_preview_box_scale)
+        self.preview_area_layout.resize.connect(self._update_preview_renderer_scale)
         self.main_toolbox.currentChanged.connect(self._on_toolbox_item_change)
         self.transition_widget_play_button.clicked.connect(self.play_transition)
         self.background_widget.connect_signals()
@@ -77,7 +77,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.connect_signals()
         self.transition_widget.connect_signals()
         self.area_position_widget.connect_signals()
-        self.preview_area.resizeEvent = self._preview_area_resize_event
+        self.preview_area.resizeEventHandler = lambda event: self._preview_area_resize_event(event)
 
     def disconnect_events(self):
         self.background_widget.disconnect_signals()
@@ -92,7 +92,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.on_value_changed.disconnect(self.do_update)
         self.transition_widget.on_value_changed.disconnect(self.do_update)
         self.area_position_widget.on_value_changed.disconnect(self.do_update)
-        self.preview_area_layout.resize.disconnect(self._update_preview_box_scale)
+        self.preview_area_layout.resize.disconnect(self._update_preview_renderer_scale)
         self.main_toolbox.currentChanged.disconnect(self._on_toolbox_item_change)
         self.transition_widget_play_button.clicked.disconnect(self.play_transition)
 
@@ -109,9 +109,9 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         if not event:
             event = QtGui.QResizeEvent(self.size(), self.size())
         QtWidgets.QWidget.resizeEvent(self.preview_area, event)
-        self.update_aspect_ratio()
+        self._update_preview_area_scale()
 
-    def update_aspect_ratio(self):
+    def _update_preview_area_scale(self):
         try:
             display_aspect_ratio = self.renderer.width() / self.renderer.height()
         except ZeroDivisionError:
@@ -124,23 +124,26 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
                 self.preview_area_layout.set_aspect_ratio(self.display_aspect_ratio)
                 self.application.process_events()
 
-    def _update_preview_box_scale(self):
-        self.preview_box.set_scale(float(self.preview_box.width()) / self.renderer.width())
-        self.preview_box.reload_theme()
+    def _update_preview_renderer_scale(self):
+        display_aspect_ratio = float(self.preview_renderer.width()) / self.renderer.width()
+        if display_aspect_ratio != self.display_aspect_ratio:
+            self.display_aspect_ratio = display_aspect_ratio
+            self.preview_renderer.set_scale(display_aspect_ratio)
+            self.preview_renderer.reload_theme()
 
     def _on_toolbox_item_change(self, index):
         widget = self.main_toolbox.widget(index) if index > 0 else None
         if widget == self.area_position_section:
-            self.preview_box.set_text_area_layout_borders(True)
+            self.preview_renderer.set_text_area_layout_borders(True)
         else:
-            self.preview_box.set_text_area_layout_borders(False)
+            self.preview_renderer.set_text_area_layout_borders(False)
         last_use_extended_preview = self.use_extended_preview
         if widget == self.transition_section:
             self.use_extended_preview = True
         else:
             self.use_extended_preview = False
         if last_use_extended_preview != self.use_extended_preview:
-            self.preview_box.set_transitions_enabled(self.use_extended_preview)
+            self.preview_renderer.set_transitions_enabled(self.use_extended_preview)
             self.generate_preview()
 
     def set_defaults(self):
@@ -247,15 +250,16 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
             self.has_changes = True
         self.update_theme()
         self.generate_preview()
+        self._update_preview_area_scale()
 
     def generate_preview(self):
-        self.preview_box.clear_slides()
-        self.preview_box.show()
-        self.preview_box.generate_preview(self.theme, generate_screenshot=False, use_delay=False,
-                                          use_extended_preview=self.use_extended_preview)
+        self.preview_renderer.clear_slides()
+        self.preview_renderer.show()
+        self.preview_renderer.generate_preview(self.theme, generate_screenshot=False, use_delay=False,
+                                               use_extended_preview=self.use_extended_preview)
 
     def play_transition(self):
-        self.preview_box.play_transition()
+        self.preview_renderer.play_transition()
 
     def update_theme(self):
         """
@@ -403,9 +407,9 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         if not self.validate_fields():
             return
         self.disconnect_events()
-        self.preview_box.set_text_area_layout_borders(False)
-        self.preview_box.set_transitions_enabled(False)
-        self.preview_box.set_theme(self.theme, service_item_type=ServiceItemType.Text)
+        self.preview_renderer.set_text_area_layout_borders(False)
+        self.preview_renderer.set_transitions_enabled(False)
+        self.preview_renderer.set_theme(self.theme, service_item_type=ServiceItemType.Text)
         self.setDisabled(True)
         destination_path = None
         if self.theme.background_type == BackgroundType.to_string(BackgroundType.Image) or \
@@ -419,7 +423,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         # Set the theme background to the cache location
         self.theme.background_filename = destination_path
         self.theme_manager.save_theme(self.theme)
-        self.theme_manager.save_preview(self.theme.theme_name, self.preview_box.save_screenshot())
+        self.theme_manager.save_preview(self.theme.theme_name, self.preview_renderer.save_screenshot())
         self.unload()
         return super().accept()
 
@@ -456,5 +460,5 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
 
     def unload(self):
         self.has_changes = False
-        self.preview_box.set_text_area_layout_borders(False)
-        self.preview_box.hide()
+        self.preview_renderer.set_text_area_layout_borders(False)
+        self.preview_renderer.hide()

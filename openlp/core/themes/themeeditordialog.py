@@ -36,6 +36,15 @@ from openlp.core.ui.style import get_library_stylesheet
 from openlp.core.widgets.layouts import AspectRatioLayout
 
 
+# Utility class to allow the resizeEvent to be overriden (needed due to PyQt internals behavior, as resizeEvent
+# cannot be changed/patched on Qt's native classes without subclassing)
+class QResizeHandlerWidget(QtWidgets.QWidget):
+    def resizeEvent(self, event):
+        if hasattr(self, 'resizeEventHandler'):
+            return self.resizeEventHandler(event)
+        return super().resizeEvent(event)
+
+
 class Ui_ThemeEditorDialog(object):
     """
     The Create/Edit theme editor dialog
@@ -171,16 +180,16 @@ class Ui_ThemeEditorDialog(object):
                                                                                            'Transition'))
         # Preview Pane
         screen_ratio = 16 / 9
-        self.preview_area = QtWidgets.QWidget(self.main_splitter)
+        self.preview_area = QResizeHandlerWidget(self.main_splitter)
         self.preview_area.setObjectName('PreviewArea')
         self.preview_area.setContentsMargins(8, 0, 0, 0)
         self.preview_area_layout = AspectRatioLayout(self.preview_area, screen_ratio)
         self.preview_area_layout.margin = 0
         self.preview_area_layout.setSpacing(0)
         self.preview_area_layout.setObjectName('preview_web_layout')
-        self.preview_box = ThemePreviewRenderer(self)
-        self.preview_box.setObjectName('preview_box')
-        self.preview_area_layout.addWidget(self.preview_box)
+        self.preview_renderer = ThemePreviewRenderer(self)
+        self.preview_renderer.setObjectName('preview_box')
+        self.preview_area_layout.addWidget(self.preview_renderer)
         self.preview_area.setLayout(self.preview_area_layout)
         self.main_splitter.insertWidget(1, self.preview_area)
         self.main_splitter.setStretchFactor(0, 0)
