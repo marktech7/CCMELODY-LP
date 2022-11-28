@@ -116,7 +116,11 @@ class WordProjectBible(BibleImport):
         header_div = soup.find('div', 'textHeader')
         chapters_p = header_div.find('p')
         if not chapters_p:
-            chapters_p = soup.p
+            log.debug('Corrupted header, searching for span instead of a p')
+            chapters_p = header_div.find('span')
+            if not chapters_p:
+                log.debug('Cannot find chapters, using all p instead')
+                chapters_p = soup.p
         log.debug(chapters_p)
         for item in chapters_p.contents:
             if self.stop_import_flag:

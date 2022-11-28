@@ -31,6 +31,7 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'bibles'
 INDEX_PAGE = (TEST_PATH / 'wordproject_index.htm').read_bytes().decode()
 CHAPTER_PAGE = (TEST_PATH / 'wordproject_chapter.htm').read_bytes().decode()
+CORRUPTED_CHAPTER_PAGE = (TEST_PATH / 'wordproject_chapter_corrupted.htm').read_bytes().decode()
 
 
 @patch.object(Path, 'read_text')
@@ -73,6 +74,35 @@ def test_process_chapters(mocked_read_text, settings):
     importer.stop_import_flag = False
     importer.language_id = 'en'
     mocked_read_text.return_value = CHAPTER_PAGE
+    mocked_db_book = MagicMock()
+    mocked_db_book.name = 'Genesis'
+    book_id = 1
+    book_link = '01/1.htm'
+
+    # WHEN: process_chapters() is called
+    with patch.object(importer, 'set_current_chapter') as mocked_set_current_chapter, \
+            patch.object(importer, 'process_verses') as mocked_process_verses:
+        importer.process_chapters(mocked_db_book, book_id, book_link)
+
+    # THEN: The right methods should have been called
+    expected_set_current_chapter_calls = [call('Genesis', ch) for ch in range(1, 51)]
+    expected_process_verses_calls = [call(mocked_db_book, 1, ch) for ch in range(1, 51)]
+    mocked_read_text.assert_called_once_with(encoding='utf-8', errors='ignore')
+    assert mocked_set_current_chapter.call_args_list == expected_set_current_chapter_calls
+    assert mocked_process_verses.call_args_list == expected_process_verses_calls
+
+
+@patch.object(Path, 'read_text')
+def test_process_chapters_corrupted_header(mocked_read_text, settings):
+    """
+    Test the process_chapters() method when there's a "corrupted" header with a span instead of a p
+    """
+    # GIVEN: A WordProject importer and a bunch of mocked things
+    importer = WordProjectBible(MagicMock(), path='.', name='.', file_path=Path('kj.zip'))
+    importer.base_path = Path()
+    importer.stop_import_flag = False
+    importer.language_id = 'en'
+    mocked_read_text.return_value = CORRUPTED_CHAPTER_PAGE
     mocked_db_book = MagicMock()
     mocked_db_book.name = 'Genesis'
     book_id = 1

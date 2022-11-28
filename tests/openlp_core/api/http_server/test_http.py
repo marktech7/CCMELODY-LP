@@ -21,6 +21,7 @@
 """
 Functional tests to test the Http Server Class.
 """
+from pathlib import Path
 from unittest.mock import patch
 
 from openlp.core.api.http.server import HttpServer
@@ -29,14 +30,17 @@ from openlp.core.common.registry import Registry
 
 @patch('openlp.core.api.http.server.HttpWorker')
 @patch('openlp.core.api.http.server.run_thread')
-def test_server_start(mocked_run_thread, MockHttpWorker, registry):
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_server_start(mocked_get_section_data_path, mocked_run_thread, MockHttpWorker, registry):
     """
     Test the starting of the Waitress Server with the disable flag set off
     """
-    # GIVEN: A new httpserver
+    # GIVEN: A new httpserver and mocked get_section_data_path
+    mocked_get_section_data_path.return_value = Path('.')
     # WHEN: I start the server
     Registry().set_flag('no_web_server', False)
-    HttpServer()
+    server = HttpServer()
+    server.bootstrap_post_set_up()
 
     # THEN: the api environment should have been created
     assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
@@ -45,14 +49,18 @@ def test_server_start(mocked_run_thread, MockHttpWorker, registry):
 
 @patch('openlp.core.api.http.server.HttpWorker')
 @patch('openlp.core.api.http.server.run_thread')
-def test_server_start_not_required(mocked_run_thread, MockHttpWorker, registry):
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_server_start_not_required(mocked_get_section_data_path, mocked_run_thread, MockHttpWorker, registry):
     """
     Test the starting of the Waitress Server with the disable flag set off
     """
-    # GIVEN: A new httpserver
+    # GIVEN: A new httpserver and mocked get_section_data_path
+    mocked_get_section_data_path.return_value = Path('.')
+
     # WHEN: I start the server
     Registry().set_flag('no_web_server', True)
-    HttpServer()
+    server = HttpServer()
+    server.bootstrap_post_set_up()
 
     # THEN: the api environment should have been created
     assert mocked_run_thread.call_count == 0, 'The qthread should not have have been called'

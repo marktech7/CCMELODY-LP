@@ -114,7 +114,12 @@ class MacLOController(PresentationController, LogMixin):
         Called at system exit to clean up any running presentations.
         """
         log.debug('Kill LibreOffice')
-        self.client.shutdown()
+        try:
+            # Some people like to close LibreOffice themselves, let's just catch any errors so that OpenLP fails
+            # silently
+            self.client.shutdown()
+        except Exception:
+            pass
         self.server_process.kill()
 
 

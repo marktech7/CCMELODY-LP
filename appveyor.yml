@@ -60,7 +60,7 @@ after_test:
           $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
           # Install PyInstaller
-          python -m pip install --no-warn-script-location pyinstaller
+          python -m pip install --no-warn-script-location pyinstaller==4.9
           # Some windows only stuff...
           If ($isWindows) {
             # Disabled portable installers - can't figure out how to make them silent

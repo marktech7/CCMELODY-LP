@@ -181,11 +181,21 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.close_displays()
         for screen in self.screens:
             if screen.is_display:
-                display = DisplayWindow(self, screen)
+                will_start_hidden = self._current_hide_mode == HideMode.Screen
+                display = DisplayWindow(self, screen, start_hidden=will_start_hidden,
+                                        after_loaded_callback=self._display_after_loaded_callback)
                 self.displays.append(display)
                 self._reset_blank(False)
         if self.display:
             self.__add_actions_to_widget(self.display)
+
+    def _display_after_loaded_callback(self):
+        # As the display was reloaded, we'll need to process current item again
+        if self.service_item:
+            self._process_item(self.service_item, self.selected_row, is_reloading=True)
+        # Restoring last hide mode
+        if self._current_hide_mode:
+            self.display.hide_display(self._current_hide_mode)
 
     def close_displays(self):
         """
@@ -929,12 +939,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         for display in self.displays:
             display.set_theme(theme_data, service_item_type=service_item.service_item_type)
 
-    def _process_item(self, service_item, slide_no):
+    def _process_item(self, service_item, slide_no, is_reloading=False):
         """
         Loads a ServiceItem into the system from ServiceManager. Display the slide number passed.
 
         :param service_item: The current service item
         :param slide_no: The slide number to select
+        :param is_reloading: If the controller is reloading the current item, due to a display update (for example).
         """
         self.log_debug('_process_item start')
         self.on_stop_loop()
@@ -1044,7 +1055,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.application.process_events()
             self.ignore_toolbar_resize_events = False
             self.on_controller_size_changed()
-            if self.settings.value('core/auto unblank'):
+            if not is_reloading and self.settings.value('core/auto unblank'):
                 self.set_hide_mode(None)
         self.log_debug('_process_item end')
 

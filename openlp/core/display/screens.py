@@ -163,7 +163,7 @@ class Screen(object):
         Callback function for when the screens geometry changes
         """
         self.geometry = geometry
-        Registry().execute('config_screen_changed')
+        ConfigScreenChangedEmitter().emit()
 
 
 class ScreenList(metaclass=Singleton):
@@ -396,7 +396,7 @@ class ScreenList(metaclass=Singleton):
                                    is_primary=self.application.primaryScreen() == changed_screen))
         self.find_new_display_screen()
         changed_screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
-        Registry().execute('config_screen_changed')
+        ConfigScreenChangedEmitter().emit()
 
     def on_screen_removed(self, removed_screen):
         """
@@ -417,7 +417,7 @@ class ScreenList(metaclass=Singleton):
         self.screens.pop(removed_screen_number)
         if removed_screen_is_display:
             self.find_new_display_screen()
-        Registry().execute('config_screen_changed')
+        ConfigScreenChangedEmitter().emit()
 
     def on_primary_screen_changed(self):
         """
@@ -426,5 +426,21 @@ class ScreenList(metaclass=Singleton):
         for screen in self.screens:
             screen.is_primary = self.application.primaryScreen().geometry() == screen.geometry
         self.find_new_display_screen()
+        ConfigScreenChangedEmitter().emit()
 
+
+SCREEN_CHANGED_DEBOUNCE_TIMEOUT = 350
+
+
+class ConfigScreenChangedEmitter(metaclass=Singleton):
+    def __init__(self):
+        self.timer = QtCore.QTimer(None)
+        self.timer.setInterval(SCREEN_CHANGED_DEBOUNCE_TIMEOUT)
+        self.timer.setSingleShot(True)
+        self.timer.timeout.connect(self.__do_emit_config_screen_changed)
+
+    def emit(self):
+        self.timer.start()
+
+    def __do_emit_config_screen_changed(self):
         Registry().execute('config_screen_changed')

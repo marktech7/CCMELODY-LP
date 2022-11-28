@@ -23,6 +23,8 @@ This module contains tests for the ZionWorx song importer.
 """
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.importers.zionworx import ZionWorxImport
 from tests.helpers.songfileimport import SongImportTestHelper
@@ -47,10 +49,11 @@ def test_create_importer(registry):
         assert isinstance(importer, SongImport)
 
 
-def test_zion_wrox(mock_settings):
-
+@pytest.mark.parametrize('filebase', ['zionworx', 'amazing-grace-arabic'])
+def test_zion_wrox(filebase, mock_settings):
+    """Test that the ZionWorx importer correctly imports songs"""
     test_file_import = SongImportTestHelper('ZionWorxImport', 'zionworx')
     test_file_import.setUp()
-    test_file_import.file_import(TEST_PATH / 'zionworx.csv',
-                                 test_file_import.load_external_result_data(TEST_PATH / 'zionworx.json'))
+    test_file_import.file_import(TEST_PATH / f'{filebase}.csv',
+                                 test_file_import.load_external_result_data(TEST_PATH / f'{filebase}.json'))
     test_file_import.tearDown()
