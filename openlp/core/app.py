@@ -58,9 +58,7 @@ from openlp.core.ui.splashscreen import SplashScreen
 from openlp.core.ui.style import get_application_stylesheet, set_default_theme
 from openlp.core.version import check_for_update, get_version
 
-
 __all__ = ['OpenLP', 'main']
-
 
 log = logging.getLogger()
 
@@ -284,6 +282,8 @@ def parse_options():
                         help='Disable the error notification form.')
     parser.add_argument('-l', '--log-level', dest='loglevel', default='warning', metavar='LEVEL',
                         help='Set logging to LEVEL level. Valid values are "debug", "info", "warning".')
+    parser.add_argument('-v', '--verbose', dest='verbose', action='store_true',
+                        help='Print logging output to the console.')
     parser.add_argument('-p', '--portable', dest='portable', action='store_true',
                         help='Specify if this should be run as a portable app, ')
     parser.add_argument('-pp', '--portable-path', dest='portablepath', default=None,
@@ -296,7 +296,7 @@ def parse_options():
     return parser.parse_args()
 
 
-def set_up_logging(log_path):
+def set_up_logging(log_path, enable_console):
     """
     Setup our logging using log_path
 
@@ -309,6 +309,11 @@ def set_up_logging(log_path):
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
     print(f'Logging to: {file_path} and level {log.level}')
+
+    if enable_console:
+        console_log = logging.StreamHandler(sys.stdout)
+        console_log.setFormatter(logging.Formatter('%(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
+        log.addHandler(console_log)
 
 
 def backup_if_version_changed(settings):
@@ -333,9 +338,9 @@ def backup_if_version_changed(settings):
         close_result = QtWidgets.QMessageBox.warning(
             None, translate('OpenLP', 'Downgrade'),
             translate('OpenLP', 'OpenLP has found a configuration file created by a newer version of OpenLP. '
-                      'OpenLP will start with a fresh install as downgrading data is not supported. Any existing data '
-                      'will be backed up to:\n\n{data_folder_backup_path}\n\n'
-                      'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
+                                'OpenLP will start with a fresh install as downgrading data is not supported. '
+                                'Any existing data will be backed up to:\n\n{data_folder_backup_path}\n\n'
+                                'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
             QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes | QtWidgets.QMessageBox.No),
             QtWidgets.QMessageBox.No)
         if close_result == QtWidgets.QMessageBox.No:
@@ -420,7 +425,7 @@ def main():
             portable_path = AppLocation.get_directory(AppLocation.AppDir) / '..' / '..'
         portable_path = resolve(portable_path)
         data_path = portable_path / 'Data'
-        set_up_logging(portable_path / 'Other')
+        set_up_logging(portable_path / 'Other', args.verbose)
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
@@ -435,7 +440,7 @@ def main():
         portable_settings.sync()
     else:
         application.setApplicationName('OpenLP')
-        set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
+        set_up_logging(AppLocation.get_directory(AppLocation.CacheDir), args.verbose)
     # Set the libvlc environment variable if we're frozen
     if getattr(sys, 'frozen', False) and is_win():
         # Path to libvlc and the plugins
