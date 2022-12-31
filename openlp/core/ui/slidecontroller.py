@@ -212,6 +212,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
     def display(self):
         return self.displays[0] if self.displays else None
 
+    @property
+    def current_hide_mode(self):
+        return self._current_hide_mode
+
     def setup_ui(self):
         """
         Initialise the UI elements of the controller
@@ -833,14 +837,15 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # See bug #791050
         self.toolbar.show()
 
-    def refresh_service_item(self):
+    def refresh_service_item(self, service_item=None):
         """
-        Method to update the service item if the screen has changed
+        Method to update the current service item
         """
-        if self.service_item.is_text() or self.service_item.is_image():
-            item = self.service_item
-            item.render()
-            self._process_item(item, self.selected_row)
+        selected_row = self.selected_row
+        if not service_item:
+            service_item = self.service_item
+        self._process_item(service_item, selected_row, True)
+        self.slide_selected()
 
     def add_service_item(self, item):
         """
@@ -1018,8 +1023,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         # Tidy up aspects associated with the old item
         if old_item:
+            new_item_has_background_video = self.service_item.is_capable(ItemCapabilities.HasBackgroundVideo) or \
+                self.service_item.is_capable(ItemCapabilities.HasBackgroundStream)
+            # Media Manager cannot play background videos on preview pane yet
+            is_unsupported_preview_background = not self.is_live and new_item_has_background_video
             # Close the old item if it's not to be used by the new service item
-            if not self.service_item.is_media() and not self.service_item.requires_media():
+            if not self.service_item.is_media() and (not self.service_item.requires_media() or
+                                                     is_unsupported_preview_background):
                 self.on_media_close()
             if old_item.is_command() and not old_item.is_media():
                 Registry().execute('{name}_stop'.format(name=old_item.name.lower()), [old_item, self.is_live])

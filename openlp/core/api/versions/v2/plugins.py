@@ -153,20 +153,14 @@ def transpose(transpose_value):
         # make sure an service item is currently displayed and that it is a song
         if not current_item or current_item.name != 'songs':
             abort(400)
-        previous_pages = {}
+        live_item = current_item.to_dict()
+        live_item['id'] = str(current_item.unique_identifier)
         chord_song_text = ''
-        # re-create the song lyrics with OpenLP verse-tags to be able to transpose in one go so any keys are used
-        for raw_slide in current_item.slides:
-            verse_tag = raw_slide['verse']
-            if verse_tag in previous_pages and previous_pages[verse_tag][0] == raw_slide:
-                pages = previous_pages[verse_tag][1]
-            else:
-                pages = current_item.renderer.format_slide(raw_slide['text'], current_item)
-                previous_pages[verse_tag] = (raw_slide, pages)
-            for page in pages:
-                chord_song_text += '---[Verse:{verse_tag}]---\n'.format(verse_tag=verse_tag)
-                chord_song_text += page
-                chord_song_text += '\n'
+        verse_index = 1
+        for item in live_item['slides']:
+            chord_song_text += ('---[Verse:%d]---' % verse_index) + '\n'
+            chord_song_text += item['chords'] + '\n'
+            verse_index += 1
         # transpose
         transposed_lyrics = transpose_lyrics(chord_song_text, transpose_value)
         # re-split into verses

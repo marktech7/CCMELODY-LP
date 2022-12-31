@@ -22,9 +22,11 @@ import logging
 
 from openlp.core.api.lib import login_required
 from openlp.core.common import ThemeLevel
+from openlp.core.common.json import OpenLPJSONEncoder
 from openlp.core.common.registry import Registry
 from openlp.core.lib import image_to_data_uri
 
+import json
 from flask import jsonify, request, abort, Blueprint, Response
 
 controller_views = Blueprint('controller', __name__)
@@ -41,7 +43,8 @@ def controller_live_items():
         live_item = current_item.to_dict()
         live_item['slides'][live_controller.selected_row]['selected'] = True
         live_item['id'] = str(current_item.unique_identifier)
-    return jsonify(live_item)
+    json_live_item = json.dumps(live_item, cls=OpenLPJSONEncoder)
+    return Response(json_live_item, mimetype='application/json')
 
 
 @controller_views.route('/live-item')
@@ -53,7 +56,8 @@ def controller_live_item():
     if current_item:
         live_item = current_item.to_dict(True, live_controller.selected_row)
         live_item['id'] = str(current_item.unique_identifier)
-    return jsonify(live_item)
+    json_live_item = json.dumps(live_item, cls=OpenLPJSONEncoder)
+    return Response(json_live_item, mimetype='application/json')
 
 
 @controller_views.route('/show', methods=['POST'])

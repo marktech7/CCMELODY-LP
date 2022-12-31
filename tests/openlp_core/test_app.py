@@ -306,7 +306,9 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
 @patch('openlp.core.app.OpenLP')
 @patch('openlp.core.app.sys')
 @patch('openlp.core.app.backup_if_version_changed')
-def test_main(mock_backup, mock_sys, mock_openlp, app_main_env):
+@patch('openlp.core.app.set_up_web_engine_cache')
+@patch('openlp.core.app.set_up_logging')
+def test_main(mock_logging, mock_web_cache, mock_backup, mock_sys, mock_openlp, app_main_env):
     """
     Test the main method performs primary actions
     """
@@ -319,8 +321,10 @@ def test_main(mock_backup, mock_sys, mock_openlp, app_main_env):
     # WHEN: the main method is run
     app_main()
 
-    # THEN: Check the application is run and exited
+    # THEN: Check the application is run and exited with logging and web cache path set
     openlp_instance.run.assert_called_once()
+    mock_logging.assert_called_once()
+    mock_web_cache.assert_called_once()
     mock_sys.exit.assert_called_once()
 
 

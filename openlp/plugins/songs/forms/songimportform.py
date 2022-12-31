@@ -348,8 +348,9 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
 
         :rtype: None
         """
-        file_path, filter_used = FileDialog.getSaveFileName(
-            self, self.settings.value('songs/last directory import'))
+        file_path, filter_used = FileDialog.getSaveFileName(self,
+                                                            translate('SongPlugin.SongImporter', 'Save Error File'),
+                                                            self.settings.value('songs/last directory import'))
         if file_path is None:
             return
         file_path.write_text(self.error_report_text_edit.toPlainText(), encoding='utf-8')

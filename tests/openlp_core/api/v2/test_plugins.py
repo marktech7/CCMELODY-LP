@@ -18,10 +18,16 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from pathlib import Path
 from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.enum import PluginStatus
+from openlp.core.display.render import Renderer
+from openlp.core.lib.serviceitem import ServiceItem
+from openlp.core.state import State
+from tests.openlp_core.lib.test_serviceitem import TEST_PATH as SERVICEITEM_TEST_PATH
+from tests.utils import convert_file_service_item
 
 
 # Search options tests
@@ -88,3 +94,53 @@ def test_plugin_set_search_option_returns_plugin_exception(flask_client, setting
     Registry().register('plugin_manager', MagicMock())
     res = flask_client.post('/api/v2/plugins/songs/search-options', json=dict(option=''))
     assert res.status_code == 400
+
+
+def test_plugin_songs_transpose_returns_plugin_exception(flask_client, settings):
+    Registry().register('plugin_manager', MagicMock())
+    res = flask_client.get('/api/v2/plugins/songs/transpose-live-item/test')
+    assert res.status_code == 400
+
+
+def test_plugin_songs_transpose_wont_call_renderer(flask_client, settings):
+    """
+    Tests whether the transpose endpoint won't tries to use any Renderer method; the endpoint needs to operate using
+    already-primed caches (as that's what the /live-item endpoint does); also using Renderer from outside the Qt loop
+    causes it to crash.
+
+    See https://gitlab.com/openlp/openlp/-/merge_requests/516 for some background on this.
+    """
+    # GIVEN: A mocked plugin_manager, live_controller, renderer and a real service item with the internal slide cache
+    # filled
+    Registry().register('plugin_manager', MagicMock())
+    renderer_mock = MagicMock()
+    # Mocking every Renderer attribute with a shared mock so we can know whether any property of it was called
+    renderer_mock_any_attr = MagicMock(name='Renderer attribute/call')
+    for name in dir(Renderer):
+        # Mocking every Renderer property
+        # skipping dunder/hide methods
+        if not name.startswith('_'):
+            setattr(renderer_mock, name, renderer_mock_any_attr)
+    # Mocking format_slides to return the correct data to ServiceItem
+    renderer_mock.format_slide.side_effect = lambda text, item: text
+    Registry().register('renderer', renderer_mock)
+    service_item = ServiceItem()
+    live_controller_mock = MagicMock()
+    live_controller_mock.service_item = service_item
+    Registry().register('live_controller', live_controller_mock)
+    # Using a real item to test this
+    line = convert_file_service_item(SERVICEITEM_TEST_PATH, 'serviceitem-song-linked-audio.osj')
+    State().load_settings()  # needed to make the below method not fail
+    service_item.set_from_service(line, Path('/test/'))
+    # Trying to retrive the slides to trigger the cache prime process (as it's primed when using the service item first
+    # time in OpenLP)
+    service_item.rendered_slides
+    # Resetting the mocks to correctly compute illegal calls
+    renderer_mock_any_attr.reset_mock()
+    renderer_mock.format_slides.reset_mock()
+
+    # WHEN: The endpoint is called
+    flask_client.get('/api/v2/plugins/songs/transpose-live-item/-1')
+
+    # THEN: The renderer should not be called
+    renderer_mock_any_attr.assert_not_called()

@@ -107,8 +107,8 @@ class VlcPlayer(MediaPlayer):
         """
         vlc = get_vlc()
         if controller.is_live:
-            controller.vlc_widget = QtWidgets.QFrame()
-            controller.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool |
+            controller.vlc_widget = QtWidgets.QFrame(controller)
+            controller.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowType.Tool |
                                                  QtCore.Qt.WindowStaysOnTopHint)
         else:
             controller.vlc_widget = QtWidgets.QFrame(display)

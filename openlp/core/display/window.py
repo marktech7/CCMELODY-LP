@@ -141,6 +141,9 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
+        else:
+            # This helps the window not being hidden by KDE's "Hide utility windows for inactive applications" option
+            self.setAttribute(QtCore.Qt.WidgetAttribute.WA_X11NetWmWindowTypeDialog)
         if is_macosx():
             self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
         # Need to import this inline to get around a QtWebEngine issue

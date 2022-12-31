@@ -26,7 +26,7 @@ import os
 import sys
 from pathlib import Path
 
-import appdirs
+from appdirs import AppDirs
 
 import openlp
 from openlp.core.common import get_frozen_path
@@ -142,7 +142,7 @@ def _get_os_dir_path(dir_type):
             return Path(openlp.__file__).parent
         return openlp_folder_path
 
-    dirs = appdirs.AppDirs('openlp', multipath=True)
+    dirs = AppDirs('openlp', multipath=True)
     if is_macosx():
         openlp_folder_path = Path(dirs.user_data_dir)
         if dir_type == AppLocation.DataDir:
@@ -153,10 +153,13 @@ def _get_os_dir_path(dir_type):
     else:
         if dir_type == AppLocation.LanguageDir:
             site_dirs = dirs.site_data_dir.split(os.pathsep)
-            directory = Path(site_dirs[0])
-            if directory.exists():
-                return directory
-            return Path(site_dirs[1])
+            for site_dir in site_dirs:
+                if 'share/openlp' not in site_dir:
+                    continue
+                directory = Path(site_dir)
+                if directory.exists():
+                    return directory
+            return Path(site_dirs[0])
         if dir_type == AppLocation.DataDir:
             return Path(dirs.user_data_dir)
         elif dir_type == AppLocation.CacheDir:

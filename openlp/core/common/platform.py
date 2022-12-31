@@ -73,3 +73,12 @@ def is_64bit_instance():
     :return: True if the python/OpenLP instance running is 64 bit, otherwise False.
     """
     return (sys.maxsize > 2**32)
+
+
+def is_xorg_server():
+    """
+    Returns true if the Qt is running on X.org/XWayland display server (Linux/*nix)
+    :return: True if the Qt is running on X.org/XWayland display server (Linux/*nix), otherwise False.
+    """
+    from PyQt5 import QtGui
+    return QtGui.QGuiApplication.platformName() == 'xcb'

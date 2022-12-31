@@ -21,8 +21,9 @@
 """
 Functional tests to test the AppLocation class and related methods.
 """
+import os
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from openlp.core.common import get_frozen_path
 from openlp.core.common.applocation import AppLocation
@@ -159,6 +160,96 @@ def test_get_directory_for_plugins_dir(mocked_sys, mocked_resolve, mocked_get_fr
     # THEN: The correct directory should be returned
     assert directory == Path('dir', 'plugins'), 'Directory should be "dir/plugins"'
     mocked_resolve.assert_called_once_with(Path('dir', 'plugins'))
+
+
+def test_get_directory_for_language_dir_from_source():
+    """
+    Test the AppLocation.get_directory() method for AppLocation.LanguageDir
+    """
+    # GIVEN: OpenLP is running from source (the default)
+    import openlp
+    openlp_resource_path = Path(openlp.__file__, '..', '..').resolve() / 'resources' / 'i18n'
+
+    # WHEN: We call AppLocation.get_directory
+    directory = AppLocation.get_directory(AppLocation.LanguageDir)
+
+    # THEN: The correct directory should be returned
+    assert directory == openlp_resource_path
+
+
+@patch('openlp.core.common.applocation.resolve')
+@patch('openlp.core.common.applocation.is_win')
+@patch('openlp.core.common.applocation.os.getenv')
+def test_get_directory_for_language_dir_from_windows(mocked_getenv, mocked_is_win, mocked_resolve):
+    """
+    Test the AppLocation.get_directory() method for AppLocation.LanguageDir
+    """
+    # GIVEN: OpenLP is running standalone
+    import openlp
+    openlp_i18n_path = Path(openlp.__file__).parent.resolve() / 'i18n'
+    mocked_resolve.side_effect = [Path('tmp'), openlp_i18n_path]
+    mocked_is_win.return_value = True
+    mocked_getenv.return_value = 'fake/path'
+
+    # WHEN: We call AppLocation.get_directory
+    directory = AppLocation.get_directory(AppLocation.LanguageDir)
+
+    # THEN: The correct directory should be returned
+    mocked_resolve.assert_called_with(openlp_i18n_path)
+    assert directory == openlp_i18n_path
+
+
+@patch('openlp.core.common.applocation.resolve')
+@patch('openlp.core.common.applocation.is_win')
+@patch('openlp.core.common.applocation.is_macosx')
+@patch('openlp.core.common.applocation.os.getenv')
+def test_get_directory_for_language_dir_from_macosx(mocked_getenv, mocked_is_macosx, mocked_is_win, mocked_resolve):
+    """
+    Test the AppLocation.get_directory() method for AppLocation.LanguageDir
+    """
+    # GIVEN: OpenLP is running standalone
+    import openlp
+    openlp_i18n_path = Path(openlp.__file__).parent.resolve() / 'i18n'
+    mocked_resolve.side_effect = [Path('tmp'), openlp_i18n_path]
+    mocked_is_win.return_value = False
+    mocked_is_macosx.return_value = True
+    mocked_getenv.return_value = 'fake/path'
+
+    # WHEN: We call AppLocation.get_directory
+    directory = AppLocation.get_directory(AppLocation.LanguageDir)
+
+    # THEN: The correct directory should be returned
+    mocked_resolve.assert_called_with(openlp_i18n_path)
+    assert directory == openlp_i18n_path
+
+
+@patch('openlp.core.common.applocation.resolve')
+@patch('openlp.core.common.applocation.is_win')
+@patch('openlp.core.common.applocation.is_macosx')
+@patch('openlp.core.common.applocation.AppDirs')
+@patch('openlp.core.common.applocation.Path')
+def test_get_directory_for_language_dir_from_linux(MockPath, MockAppDirs, mocked_is_macosx, mocked_is_win,
+                                                   mocked_resolve):
+    """
+    Test the AppLocation.get_directory() method for AppLocation.LanguageDir
+    """
+    # GIVEN: OpenLP is running standalone
+    openlp_i18n_path = Path('/usr/share/openlp/i18n')
+    mocked_resolve.return_value = openlp_i18n_path
+    mocked_is_win.return_value = False
+    mocked_is_macosx.return_value = False
+    mocked_dirs = MagicMock(site_data_dir=os.pathsep.join(['/usr/share/gnome/openlp', '/usr/local/share/openlp',
+                                                           '/usr/share/openlp']))
+    MockAppDirs.return_value = mocked_dirs
+    mocked_path = MagicMock(**{'exists.return_value': True, '__truediv__.return_value': openlp_i18n_path})
+    MockPath.side_effect = [MagicMock(**{'exists.return_value': False}), mocked_path]
+
+    # WHEN: We call AppLocation.get_directory
+    directory = AppLocation.get_directory(AppLocation.LanguageDir)
+
+    # THEN: The correct directory should be returned
+    mocked_resolve.assert_called_with(openlp_i18n_path)
+    assert directory == openlp_i18n_path
 
 
 @patch('openlp.core.common.sys')

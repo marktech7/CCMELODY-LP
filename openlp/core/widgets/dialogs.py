@@ -102,7 +102,6 @@ class FileDialog(QtWidgets.QFileDialog):
         :rtype: tuple[pathlib.Path | None, str]
         """
         args, kwargs = replace_params(args, kwargs, ((2, 'directory', path_to_str),))
-
         file_name, selected_filter = super().getSaveFileName(*args, **kwargs)
 
         # getSaveFileName returns a tuple. The first item represents the path as a str. The string is empty if the user

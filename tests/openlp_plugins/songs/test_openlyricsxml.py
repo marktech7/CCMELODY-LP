@@ -45,6 +45,7 @@ VERSE_LINES_08_XML = '<lines>\
                         Amazing grace, how sweet the sound<br/>\
                         That saved a wretch like me\
                       </lines>'
+VERSE_LINES_EMPTY_XML = '<lines/>'
 AUTHOR_XML = '<properties>\
                   <authors>\
                       <author type="words">Test Author1</author>\
@@ -102,6 +103,21 @@ def test_process_verse_lines_v08():
     # THEN: The results should be correct
     assert result == '                        Amazing grace, how sweet the sound'\
                      '                        That saved a wretch like me                      '
+
+
+def test_process_empty_verse_lines():
+    """
+    Test that _process_verse_lines() correctly handles empty verse lines
+    """
+    # GIVEN: An empty lines object with additional content
+    open_lyrics = OpenLyrics(MagicMock())
+    lines = objectify.fromstring(VERSE_LINES_EMPTY_XML)
+
+    # WHEN: The lyrics of a verse are processed
+    result = open_lyrics._process_verse_lines(lines, '0.8')
+
+    # THEN: The results should be correct
+    assert result == ''
 
 
 def test_process_formatting_tags(settings):

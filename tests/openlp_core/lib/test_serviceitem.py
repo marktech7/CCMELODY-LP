@@ -21,6 +21,7 @@
 """
 Package to test the openlp.core.lib package.
 """
+import json
 import os
 import pytest
 from pathlib import Path
@@ -28,6 +29,7 @@ from unittest.mock import Mock, MagicMock, patch
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
+from openlp.core.common.json import OpenLPJSONEncoder
 from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
@@ -440,6 +442,26 @@ def test_service_item_load_song_and_audio_from_service(mock_sha256_file_hash, st
         '"’Twas grace that taught my hea" has been returned as the title'
     assert (Path('/test/amazing_grace.mp3'), 'abcd') == service_item.background_audio[0], \
         'The tuple ("/test/abcd.mp3", "abcd") should be in the background_audio list'
+
+
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_service_item_to_dict_is_valid_json(mock_sha256_file_hash, state_media, settings, service_item_env):
+    """
+    Test the Service Item - Converting to to_dict response to json
+    """
+    # GIVEN: A new service item with song slide
+    service_item = ServiceItem(None)
+    service_item.add_icon = MagicMock()
+    FormattingTags.load_tags()
+    mock_sha256_file_hash.return_value = 'abcd'
+    line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
+    service_item.set_from_service(line, Path('/test/'))
+
+    # WHEN: Generating a service item
+    service_dict = service_item.to_dict()
+
+    # THEN: We should get back a valid json object
+    assert json.dumps(service_dict, cls=OpenLPJSONEncoder) is not None
 
 
 def test_service_item_get_theme_data_global_level(settings):

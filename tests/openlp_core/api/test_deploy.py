@@ -177,13 +177,13 @@ def test_get_installed_version_not_installed(mocked_get_section_data_path):
 
 
 @patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
-def test_get_installed_version_no_version(mocked_get_section_data_path):
-    """Test that if there is no matching version number, None is returned"""
+def test_get_installed_version_no_valid_version(mocked_get_section_data_path):
+    """Test that if there is no valid version number, None is returned"""
     # GIVEN: A mocked AppLocation and no file installed
     mocked_version_file = MagicMock()
     mocked_version_file.__truediv__.return_value = mocked_version_file
     mocked_version_file.exists.return_value = True
-    mocked_version_file.read.return_value = 'let app_version = 0.9.7;'
+    mocked_version_file.read_text.return_value = 'let app_version = 0.9.7;'
     mocked_get_section_data_path.return_value = mocked_version_file
 
     # WHEN: get_installed_version() is called but there is no version in the file
@@ -200,11 +200,28 @@ def test_get_installed_version(mocked_get_section_data_path):
     mocked_version_file = MagicMock()
     mocked_version_file.__truediv__.return_value = mocked_version_file
     mocked_version_file.exists.return_value = True
-    mocked_version_file.read.return_value = 'let appVersion = \'0.9.7\';'
+    mocked_version_file.read_text.return_value = 'let appVersion = \'0.9.7\';'
     mocked_get_section_data_path.return_value = mocked_version_file
 
-    # WHEN: get_installed_version() is called but there is no version file
+    # WHEN: get_installed_version() is called
     result = get_installed_version()
 
-    # THEN: The result should be None
+    # THEN: The result should be 0.9.7
+    assert result == '0.9.7'
+
+
+@patch('openlp.core.api.deploy.AppLocation.get_section_data_path')
+def test_get_installed_version_nondefault_syntax(mocked_get_section_data_path):
+    """Test that get_installed_version accepts double quotes and no trailing semicolon in version file"""
+    # GIVEN: A mocked AppLocation and no file installed
+    mocked_version_file = MagicMock()
+    mocked_version_file.__truediv__.return_value = mocked_version_file
+    mocked_version_file.exists.return_value = True
+    mocked_version_file.read_text.return_value = 'let appVersion = "0.9.7"'
+    mocked_get_section_data_path.return_value = mocked_version_file
+
+    # WHEN: get_installed_version() is called
+    result = get_installed_version()
+
+    # THEN: The result should be 0.9.7
     assert result == '0.9.7'

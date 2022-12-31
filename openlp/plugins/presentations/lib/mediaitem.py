@@ -29,7 +29,7 @@ from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext, build_icon, create_thumb, validate_thumb
-from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, create_widget_action, critical_error_message_box
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.library import FolderLibraryItem
@@ -301,7 +301,9 @@ class PresentationMediaItem(FolderLibraryItem):
         items = [self.list_view.itemFromIndex(item) if isinstance(item, QtCore.QModelIndex) else item
                  for item in items]
         # If this is a folder, show an error message and return
-        if items and isinstance(items[0].data(0, QtCore.Qt.UserRole), Folder):
+        is_folder = items and not isinstance(items[0], ServiceItem) and isinstance(items[0].data(0, QtCore.Qt.UserRole),
+                                                                                   Folder)
+        if is_folder:
             return False
         if file_path is None:
             file_path = Path(items[0].data(0, QtCore.Qt.UserRole).file_path)

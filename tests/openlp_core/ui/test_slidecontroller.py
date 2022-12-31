@@ -567,67 +567,19 @@ def test_refresh_service_item_text(settings):
     mocked_service_item.is_text.return_value = True
     mocked_service_item.is_image.return_value = False
     mocked_process_item = MagicMock()
+    mocked_slide_selected = MagicMock()
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_service_item
     slide_controller._process_item = mocked_process_item
+    slide_controller.slide_selected = mocked_slide_selected
     slide_controller.selected_row = 5
 
     # WHEN: The refresh_service_item method() is called
     slide_controller.refresh_service_item()
 
     # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    assert 0 == mocked_service_item.is_image.call_count, 'is_image should not have been called'
-    mocked_service_item.render.assert_called_once_with()
-    mocked_process_item.assert_called_once_with(mocked_service_item, 5)
-
-
-def test_refresh_service_item_image(settings):
-    """
-    Test that the refresh_service_item() method refreshes a image service item
-    """
-    # GIVEN: A mock service item and a fresh slide controller
-    mocked_service_item = MagicMock()
-    mocked_service_item.is_text.return_value = False
-    mocked_service_item.is_image.return_value = True
-    mocked_process_item = MagicMock()
-    slide_controller = SlideController(None)
-    slide_controller.service_item = mocked_service_item
-    slide_controller._process_item = mocked_process_item
-    slide_controller.selected_row = 5
-
-    # WHEN: The refresh_service_item method() is called
-    slide_controller.refresh_service_item()
-
-    # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    mocked_service_item.is_image.assert_called_once_with()
-    mocked_service_item.render.assert_called_once_with()
-    mocked_process_item.assert_called_once_with(mocked_service_item, 5)
-
-
-def test_refresh_service_item_not_image_or_text(settings):
-    """
-    Test that the refresh_service_item() method does not refresh a service item if it's neither text or an image
-    """
-    # GIVEN: A mock service item and a fresh slide controller
-    mocked_service_item = MagicMock()
-    mocked_service_item.is_text.return_value = False
-    mocked_service_item.is_image.return_value = False
-    mocked_process_item = MagicMock()
-    slide_controller = SlideController(None)
-    slide_controller.service_item = mocked_service_item
-    slide_controller._process_item = mocked_process_item
-    slide_controller.selected_row = 5
-
-    # WHEN: The refresh_service_item method() is called
-    slide_controller.refresh_service_item()
-
-    # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    mocked_service_item.is_image.assert_called_once_with()
-    assert 0 == mocked_service_item.render.call_count, 'The render() method should not have been called'
-    assert 0 == mocked_process_item.call_count, 'The mocked_process_item() method should not have been called'
+    slide_controller._process_item.assert_called_once_with(mocked_service_item, 5, True)
+    slide_controller.slide_selected.assert_called_once()
 
 
 def test_add_service_item_with_song_edit(settings):

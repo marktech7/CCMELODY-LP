@@ -87,7 +87,7 @@ def test_load_video(media_env, settings):
     #       The controls should have been made visible
     media_env.media_controller.media_reset.assert_called_once_with(mocked_slide_controller)
     assert mocked_slide_controller.media_info.volume == 1
-    media_env.media_controller.media_play.assert_called_once_with(mocked_slide_controller)
+    media_env.media_controller.media_play.assert_called_once_with(mocked_slide_controller, False)
     media_env.media_controller.set_controls_visible.assert_called_once_with(mocked_slide_controller, True)
 
 
@@ -355,6 +355,47 @@ def test_media_length_duration_none(MockPath, mocked_parse, media_env):
 
     # THEN you can determine the run time
     assert duration == 0, 'The duration should be 0'
+
+
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
+def test_media_length_duration_old_version(mocked_parse, media_env):
+    """
+    Test that when a version of MediaInfo < 4.3 is installed, a file name is passed directly to the parse method
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
+    from openlp.core.ui.media import mediacontroller
+    mediacontroller.pymediainfo_version = '4.0.1'
+    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=10)])
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    mocked_parse.assert_called_once_with('path/to/fake/video.mkv')
+    assert duration == 10, 'The duration should be 10'
+
+
+@patch('openlp.core.ui.media.mediacontroller.Path')
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
+def test_media_length_duration_new_version(mocked_parse, MockPath, media_env):
+    """
+    Test that when a version of MediaInfo > 4.3 is installed, a file OBJECT is passed to the parse method
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
+    from openlp.core.ui.media import mediacontroller
+    mediacontroller.pymediainfo_version = '5.0.3'
+    mocked_file = MagicMock()
+    MockPath.return_value.open.return_value.__enter__.return_value = mocked_file
+    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=8)])
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    mocked_parse.assert_called_once_with(mocked_file)
+    assert duration == 8, 'The duration should be 8'
 
 
 @patch('openlp.core.ui.media.mediacontroller.MediaInfo.can_parse')

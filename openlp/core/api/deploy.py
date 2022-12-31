@@ -35,7 +35,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.threading import ThreadWorker, run_thread
 
 REMOTE_URL = 'https://get.openlp.org/remote/'
-LOCAL_VERSION = re.compile(r'appVersion.*=.*\'(.*?)\';')
+LOCAL_VERSION = re.compile(r'appVersion.*=.*[\'"](.*?)[\'"];?')
 
 log = logging.getLogger(__name__)
 
@@ -162,8 +162,9 @@ def get_installed_version():
     version_file = AppLocation.get_section_data_path('remotes') / 'assets' / 'version.js'
     if not version_file.exists():
         return None
-    version_read = version_file.read()
-    print(version_read)
+    version_read = version_file.read_text()
+    if not version_read:
+        return None
     match = LOCAL_VERSION.search(version_read)
     if not match:
         return None
