@@ -123,7 +123,7 @@ class AspectRatioLayout(QtWidgets.QLayout):
         """
         Overridden Qt method
         """
-        return QtCore.Qt.Horizontal | QtCore.Qt.Vertical
+        return QtCore.Qt.Orientation.Horizontal | QtCore.Qt.Orientation.Vertical
 
     def hasHeightForWidth(self):
         """
@@ -152,17 +152,17 @@ class AspectRatioLayout(QtWidgets.QLayout):
             if width > available_width:
                 width = available_width
                 height = width / self._aspect_ratio
-                if self._item.alignment() & QtCore.Qt.AlignTop:
+                if self._item.alignment() & QtCore.Qt.AlignmentFlag.AlignTop:
                     y = self.margin
-                elif self._item.alignment() & QtCore.Qt.AlignBottom:
+                elif self._item.alignment() & QtCore.Qt.AlignmentFlag.AlignBottom:
                     y = rect.height() - self.margin - height
                 else:
                     y = self.margin + (available_height - height) / 2
                 widget.setGeometry(int(rect.x() + self.margin), int(rect.y() + y), int(width), int(height))
             else:
-                if self._item.alignment() & QtCore.Qt.AlignLeft:
+                if self._item.alignment() & QtCore.Qt.AlignmentFlag.AlignLeft:
                     x = self.margin
-                elif self._item.alignment() & QtCore.Qt.AlignRight:
+                elif self._item.alignment() & QtCore.Qt.AlignmentFlag.AlignRight:
                     x = rect.width() - self.margin - width
                 else:
                     x = self.margin + (available_width - width) / 2

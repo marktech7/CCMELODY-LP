@@ -34,8 +34,8 @@ class AuthorsForm(QtWidgets.QDialog, Ui_AuthorsDialog):
         """
         Set up the screen and common data
         """
-        super(AuthorsForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                          QtCore.Qt.WindowCloseButtonHint)
+        super(AuthorsForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                          QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.auto_display_name = False
         self.first_name_edit.textEdited.connect(self.on_first_name_edited)
@@ -102,7 +102,7 @@ class AuthorsForm(QtWidgets.QDialog, Ui_AuthorsDialog):
             if critical_error_message_box(
                 message=translate('SongsPlugin.AuthorsForm',
                                   'You have not set a display name for the author, combine the first and last names?'),
-                    parent=self, question=True) == QtWidgets.QMessageBox.Yes:
+                    parent=self, question=True) == QtWidgets.QMessageBox.StandardButton.Yes:
                 self.display_edit.setText(self.first_name_edit.text() + ' ' + self.last_name_edit.text())
                 return QtWidgets.QDialog.accept(self)
             else:

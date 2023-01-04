@@ -111,11 +111,11 @@ class VlcPlayer(MediaPlayer, LogMixin):
         vlc = get_vlc()
         if controller.is_live:
             controller.vlc_widget = QtWidgets.QFrame(controller)
-            controller.vlc_widget.setWindowFlags(QtCore.Qt.FramelessWindowHint | QtCore.Qt.WindowType.Tool |
-                                                 QtCore.Qt.WindowStaysOnTopHint)
+            controller.vlc_widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.WindowType.Tool |
+                                                 QtCore.Qt.WindowType.WindowStaysOnTopHint)
         else:
             controller.vlc_widget = QtWidgets.QFrame(display)
-        controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.NoFrame)
+        controller.vlc_widget.setFrameStyle(QtWidgets.QFrame.Shape.NoFrame)
         # creating a basic vlc instance
         command_line_options = '--no-video-title-show --input-repeat=99999999 '
         if self.settings.value('advanced/hide mouse') and controller.is_live:

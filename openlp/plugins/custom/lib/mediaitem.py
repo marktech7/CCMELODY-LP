@@ -124,7 +124,7 @@ class CustomMediaItem(MediaManagerItem):
         custom_slides.sort()
         for custom_slide in custom_slides:
             custom_name = QtWidgets.QListWidgetItem(custom_slide.title)
-            custom_name.setData(QtCore.Qt.UserRole, custom_slide.id)
+            custom_name.setData(QtCore.Qt.ItemDataRole.UserRole, custom_slide.id)
             self.list_view.addItem(custom_name)
             # Auto-select the custom.
             if custom_slide.id == self.auto_select_id:
@@ -155,7 +155,7 @@ class CustomMediaItem(MediaManagerItem):
         valid = self.plugin.db_manager.get_object(CustomSlide, custom_id)
         if valid:
             self.edit_custom_form.load_custom(custom_id, preview)
-            if self.edit_custom_form.exec() == QtWidgets.QDialog.Accepted:
+            if self.edit_custom_form.exec() == QtWidgets.QDialog.DialogCode.Accepted:
                 self.remote_triggered = True
                 self.remote_custom = custom_id
                 self.auto_select_id = -1
@@ -177,7 +177,7 @@ class CustomMediaItem(MediaManagerItem):
         """
         if check_item_selected(self.list_view, UiStrings().SelectEdit):
             item = self.list_view.currentItem()
-            item_id = item.data(QtCore.Qt.UserRole)
+            item_id = item.data(QtCore.Qt.ItemDataRole.UserRole)
             self.edit_custom_form.load_custom(item_id, False)
             self.edit_custom_form.exec()
             self.auto_select_id = -1
@@ -194,11 +194,11 @@ class CustomMediaItem(MediaManagerItem):
                     translate('CustomPlugin.MediaItem',
                               'Are you sure you want to delete the "{items:d}" '
                               'selected custom slide(s)?').format(items=len(items)),
-                    defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.No:
+                    defaultButton=QtWidgets.QMessageBox.StandardButton.Yes) == QtWidgets.QMessageBox.StandardButton.No:
                 return
             row_list = [item.row() for item in self.list_view.selectedIndexes()]
             row_list.sort(reverse=True)
-            id_list = [(item.data(QtCore.Qt.UserRole)) for item in self.list_view.selectedIndexes()]
+            id_list = [(item.data(QtCore.Qt.ItemDataRole.UserRole)) for item in self.list_view.selectedIndexes()]
             for id in id_list:
                 self.plugin.db_manager.delete_object(CustomSlide, id)
             self.on_search_text_button_clicked()
@@ -248,7 +248,7 @@ class CustomMediaItem(MediaManagerItem):
         Clone the selected Custom item
         """
         item = self.list_view.currentItem()
-        item_id = item.data(QtCore.Qt.UserRole)
+        item_id = item.data(QtCore.Qt.ItemDataRole.UserRole)
         old_custom_slide = self.plugin.db_manager.get_object(CustomSlide, item_id)
         new_custom_slide = CustomSlide(title='{title} <{text}>'.format(title=old_custom_slide.title,
                                                                        text=translate('CustomPlugin.MediaItem',

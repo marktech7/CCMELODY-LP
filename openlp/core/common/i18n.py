@@ -232,7 +232,7 @@ class LanguageManager(object):
         app_translator.load(language, lang_path)
         # A translator for buttons and other default strings provided by Qt.
         if not is_win() and not is_macosx():
-            lang_path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.TranslationsPath)
+            lang_path = QtCore.QLibraryInfo.location(QtCore.QLibraryInfo.LibraryPath.TranslationsPath)
         # As of Qt6, the core translations come in 2 files per language
         default_translator = QtCore.QTranslator()
         default_translator.load('qt_%s' % language, lang_path)
@@ -247,7 +247,7 @@ class LanguageManager(object):
         """
         log.debug('Translation files: {files}'.format(files=AppLocation.get_directory(AppLocation.LanguageDir)))
         trans_dir = QtCore.QDir(str(AppLocation.get_directory(AppLocation.LanguageDir)))
-        file_names = trans_dir.entryList(['*.qm'], QtCore.QDir.Filter.Files, QtCore.QDir.Name)
+        file_names = trans_dir.entryList(['*.qm'], QtCore.QDir.Filter.Files, QtCore.QDir.SortFlag.Name)
         # Remove qm files from the list which start with "qt".
         file_names = [file_ for file_ in file_names if not file_.startswith('qt')]
         return list(map(trans_dir.filePath, file_names))

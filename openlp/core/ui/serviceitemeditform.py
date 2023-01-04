@@ -36,8 +36,8 @@ class ServiceItemEditForm(QtWidgets.QDialog, Ui_ServiceItemEditDialog, RegistryP
         """
         Constructor
         """
-        super(ServiceItemEditForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowSystemMenuHint |
-                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(ServiceItemEditForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                  QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.item_list = []
         self.list_widget.currentRowChanged.connect(self.on_current_row_changed)

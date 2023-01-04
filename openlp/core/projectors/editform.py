@@ -179,7 +179,7 @@ class Ui_ProjectorEditForm(object):
         self.notes_label.setObjectName('projector_edit_notes_label')
         self.notes_text = QtWidgets.QPlainTextEdit(edit_projector_dialog)
         self.notes_text.setObjectName('projector_edit_notes_text')
-        self.dialog_layout.addWidget(self.notes_label, _row, 0, alignment=QtCore.Qt.AlignTop)
+        self.dialog_layout.addWidget(self.notes_label, _row, 0, alignment=QtCore.Qt.AlignmentFlag.AlignTop)
         self.dialog_layout.addWidget(self.notes_text, _row, 1)
         # Time for the buttons
         self.button_box_edit = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Help |
@@ -230,9 +230,9 @@ class ProjectorEditForm(QtWidgets.QDialog, Ui_ProjectorEditForm):
         self.projectordb = projectordb
         self.new_projector = False
         super(ProjectorEditForm, self).__init__(parent,
-                                                QtCore.Qt.WindowSystemMenuHint |
-                                                QtCore.Qt.WindowTitleHint |
-                                                QtCore.Qt.WindowCloseButtonHint)
+                                                QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                QtCore.Qt.WindowType.WindowTitleHint |
+                                                QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.button_box_edit.accepted.connect(self.accept_me)
         self.button_box_edit.helpRequested.connect(self.help_me)

@@ -416,7 +416,7 @@ def test_press_clear_button(search_edit: SearchEdit):
     QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key.Key_A)
 
     # WHEN: Press the clear button.
-    QtTest.QTest.mouseClick(search_edit.clear_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(search_edit.clear_button, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The search edit text should be cleared and the button be hidden.
     assert not search_edit.text(), "The search edit should not have any text."

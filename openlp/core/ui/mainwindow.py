@@ -87,7 +87,7 @@ class Ui_MainWindow(object):
         self.main_content_layout.setObjectName('main_content_layout')
         main_window.setCentralWidget(self.main_content)
         self.control_splitter = QtWidgets.QSplitter(self.main_content)
-        self.control_splitter.setOrientation(QtCore.Qt.Horizontal)
+        self.control_splitter.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.control_splitter.setObjectName('control_splitter')
         self.main_content_layout.addWidget(self.control_splitter)
         preview_visible = self.settings.value('user interface/preview panel')
@@ -145,20 +145,20 @@ class Ui_MainWindow(object):
         self.media_tool_box = QtWidgets.QToolBox(self.media_manager_dock)
         self.media_tool_box.setObjectName('media_tool_box')
         self.media_manager_dock.setWidget(self.media_tool_box)
-        main_window.addDockWidget(QtCore.Qt.LeftDockWidgetArea, self.media_manager_dock)
+        main_window.addDockWidget(QtCore.Qt.DockWidgetArea.LeftDockWidgetArea, self.media_manager_dock)
         # Create the service manager
         self.service_manager_dock = OpenLPDockWidget(main_window, 'service_manager_dock',
                                                      UiIcons().live)
         self.service_manager_contents = ServiceManager(self.service_manager_dock)
         self.service_manager_dock.setWidget(self.service_manager_contents)
-        main_window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.service_manager_dock)
+        main_window.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.service_manager_dock)
         # Create the theme manager
         self.theme_manager_dock = OpenLPDockWidget(main_window, 'theme_manager_dock',
                                                    UiIcons().theme)
         self.theme_manager_contents = ThemeManager(self.theme_manager_dock)
         self.theme_manager_contents.setObjectName('theme_manager_contents')
         self.theme_manager_dock.setWidget(self.theme_manager_contents)
-        main_window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.theme_manager_dock)
+        main_window.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.theme_manager_dock)
         # Create the projector manager
         self.projector_manager_dock = OpenLPDockWidget(parent=main_window,
                                                        name='projector_manager_dock',
@@ -167,7 +167,7 @@ class Ui_MainWindow(object):
         self.projector_manager_contents.setObjectName('projector_manager_contents')
         self.projector_manager_dock.setWidget(self.projector_manager_contents)
         self.projector_manager_dock.setVisible(False)
-        main_window.addDockWidget(QtCore.Qt.RightDockWidgetArea, self.projector_manager_dock)
+        main_window.addDockWidget(QtCore.Qt.DockWidgetArea.RightDockWidgetArea, self.projector_manager_dock)
         # Create the menu items
         action_list = ActionList.get_instance()
         action_list.add_category(UiStrings().File, CategoryOrder.standard_menu)
@@ -542,9 +542,9 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             # Display a progress dialog with a message
             wait_dialog = QtWidgets.QProgressDialog(message, '', 0, 0, self)
             wait_dialog.setWindowTitle(title)
-            for window_flag in [QtCore.Qt.WindowContextHelpButtonHint]:
+            for window_flag in [QtCore.Qt.WindowType.WindowContextHelpButtonHint]:
                 wait_dialog.setWindowFlag(window_flag, False)
-            wait_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            wait_dialog.setWindowModality(QtCore.Qt.WindowModality.WindowModal)
             wait_dialog.setAutoClose(False)
             wait_dialog.setCancelButton(None)
             wait_dialog.show()
@@ -717,14 +717,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                          'Time Wizard?\n\nRe-running this wizard may make changes to '
                                                          'your current OpenLP configuration and possibly add songs to '
                                                          'your existing songs list and change your default theme.'),
-                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                     QtWidgets.QMessageBox.No),
-                                               QtWidgets.QMessageBox.No)
-        if answer == QtWidgets.QMessageBox.No:
+                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                                                     QtWidgets.QMessageBox.StandardButton.No),
+                                               QtWidgets.QMessageBox.StandardButton.No)
+        if answer == QtWidgets.QMessageBox.StandardButton.No:
             return
         first_run_wizard = FirstTimeForm(self)
         first_run_wizard.initialize(ScreenList())
-        if first_run_wizard.exec() == QtWidgets.QDialog.Rejected:
+        if first_run_wizard.exec() == QtWidgets.QDialog.DialogCode.Rejected:
             return
         self.application.set_busy_cursor()
         self.first_time()
@@ -863,10 +863,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                                'incorrect settings may cause erratic '
                                                                                'behaviour or OpenLP to terminate '
                                                                                'abnormally.'),
-                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                      QtWidgets.QMessageBox.No),
-                                                QtWidgets.QMessageBox.No)
-        if answer == QtWidgets.QMessageBox.No:
+                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                                                      QtWidgets.QMessageBox.StandardButton.No),
+                                                QtWidgets.QMessageBox.StandardButton.No)
+        if answer == QtWidgets.QMessageBox.StandardButton.No:
             return
         import_file_path, filter_used = FileDialog.getOpenFileName(
             self,
@@ -906,7 +906,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                           'from a newer version of OpenLP.\n\n'
                                                                           'Processing has terminated and '
                                                                           'no changes have been made.'),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
             return
         # Upgrade settings to prepare the import.
         if import_settings.version_mismatched():
@@ -919,7 +919,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                           'to be a valid OpenLP settings file.\n\n'
                                                                           'Processing has terminated and '
                                                                           'no changes have been made.'),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
             return
         import_keys = import_settings.allKeys()
         for section_key in import_keys:
@@ -983,7 +983,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                            translate('OpenLP.MainWindow',
                                                      'An error occurred while exporting the settings: {err}'
                                                      ).format(err=ose.strerror),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
 
     def on_mode_default_item_clicked(self):
         """
@@ -1040,7 +1040,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                             'The screen setup has changed. OpenLP will try to '
                                                             'automatically select a display screen, but '
                                                             'you should consider updating the screen settings.'),
-                                                  QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                                                  QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
                 self.screen_change_timestamp = datetime.now()
             self.application.set_busy_cursor()
             self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
@@ -1068,12 +1068,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             return
         if self.service_manager_contents.is_modified():
             ret = self.service_manager_contents.save_modified_service()
-            if ret == QtWidgets.QMessageBox.Save:
+            if ret == QtWidgets.QMessageBox.StandardButton.Save:
                 if self.service_manager_contents.decide_save_method():
                     event.accept()
                 else:
                     event.ignore()
-            elif ret == QtWidgets.QMessageBox.Discard:
+            elif ret == QtWidgets.QMessageBox.StandardButton.Discard:
                 event.accept()
             else:
                 event.ignore()
@@ -1082,13 +1082,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,
                                                 translate('OpenLP.MainWindow', 'Exit OpenLP'),
                                                 translate('OpenLP.MainWindow', 'Are you sure you want to exit OpenLP?'),
-                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close |
-                                                                                      QtWidgets.QMessageBox.Cancel),
+                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Close |
+                                                                                      QtWidgets.QMessageBox.StandardButton.Cancel),
                                                 self)
-                close_button = msg_box.button(QtWidgets.QMessageBox.Close)
+                close_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
                 close_button.setText(translate('OpenLP.MainWindow', '&Exit OpenLP'))
-                msg_box.setDefaultButton(QtWidgets.QMessageBox.Close)
-                if msg_box.exec() == QtWidgets.QMessageBox.Close:
+                msg_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Close)
+                if msg_box.exec() == QtWidgets.QMessageBox.StandardButton.Close:
                     event.accept()
                 else:
                     event.ignore()
@@ -1103,7 +1103,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.clean_up(save_settings=not self.settings_imported)
 
     def eventFilter(self, obj, event: QtCore.QEvent):
-        if event.type() == QtCore.QEvent.FileOpen:
+        if event.type() == QtCore.QEvent.Type.FileOpen:
             file_name = event.file()
             self.log_debug('Got open file event for {name}!'.format(name=file_name))
             self.application.args.insert(0, file_name)
@@ -1112,13 +1112,13 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # in the Dock bar. However, OpenLP consists of multiple windows and this
         # does not work. This workaround fixes that.
         # The main OpenLP window is restored when it was previously minimized.
-        elif event.type() == QtCore.QEvent.ApplicationActivate:
+        elif event.type() == QtCore.QEvent.Type.ApplicationActivate:
             if is_macosx() and hasattr(self, 'main_window'):
                 if self.main_window.isMinimized():
                     # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
                     # while preserving its maximized and/or full-screen state.
-                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowMinimized |
-                                                    QtCore.Qt.WindowActive)
+                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowState.WindowMinimized |
+                                                    QtCore.Qt.WindowState.WindowActive)
                     return True
 
         return super(MainWindow, self).eventFilter(obj, event)
@@ -1471,7 +1471,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                      'OpenLP Data directory copy failed\n\n{err}').format(err=str(why))
                 QtWidgets.QMessageBox.critical(self, translate('OpenLP.MainWindow', 'New Data Directory Error'),
                                                err_text,
-                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
                 return False
         else:
             self.log_info('No data copy requested')

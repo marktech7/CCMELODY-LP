@@ -50,8 +50,8 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
         """
         Constructor
         """
-        super(FormattingTagForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                                QtCore.Qt.WindowCloseButtonHint)
+        super(FormattingTagForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                                QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self._setup()
 
@@ -101,7 +101,7 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
         hiddencheckbox = QtWidgets.QCheckBox()
         hiddenlayout = QtWidgets.QHBoxLayout()
         hiddenlayout.addWidget(hiddencheckbox)
-        hiddenlayout.setAlignment(QtCore.Qt.AlignCenter)
+        hiddenlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         hiddenlayout.setContentsMargins(0, 0, 0, 0)
         hiddenwidget.setLayout(hiddenlayout)
         hiddencheckbox.setCheckState(QtCore.Qt.CheckState.Unchecked)
@@ -171,7 +171,7 @@ class FormattingTagForm(QtWidgets.QDialog, Ui_FormattingTagDialog, FormattingTag
                 hiddencheckbox = QtWidgets.QCheckBox()
                 hiddenlayout = QtWidgets.QHBoxLayout()
                 hiddenlayout.addWidget(hiddencheckbox)
-                hiddenlayout.setAlignment(QtCore.Qt.AlignCenter)
+                hiddenlayout.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 hiddenlayout.setContentsMargins(0, 0, 0, 0)
                 hiddenwidget.setLayout(hiddenlayout)
                 hiddencheckbox.setCheckState(QtCore.Qt.CheckState.Checked if html['hidden']

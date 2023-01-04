@@ -78,7 +78,7 @@ class BiblesTab(SettingsTab):
         self.bible_theme_label.setObjectName('BibleTheme_label')
         self.bible_theme_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
         self.bible_theme_combo_box.setSizeAdjustPolicy(
-            QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+            QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.bible_theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
                                                  QtWidgets.QSizePolicy.Policy.Fixed)
         self.bible_theme_combo_box.addItem('')

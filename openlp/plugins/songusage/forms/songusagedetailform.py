@@ -45,8 +45,8 @@ class SongUsageDetailForm(QtWidgets.QDialog, Ui_SongUsageDetailDialog, RegistryP
         """
         Initialise the form
         """
-        super(SongUsageDetailForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                                  QtCore.Qt.WindowCloseButtonHint)
+        super(SongUsageDetailForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                                  QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.plugin = plugin
         self.setup_ui(self)
 

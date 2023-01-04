@@ -114,7 +114,7 @@ class ServiceManagerList(QtWidgets.QTreeWidget):
         move just tell it what plugin to call
         :param event:
         """
-        if event.buttons() != QtCore.Qt.LeftButton:
+        if event.buttons() != QtCore.Qt.MouseButton.LeftButton:
             event.ignore()
             return
         if not self.itemAt(self.mapFromGlobal(QtGui.QCursor.pos())):
@@ -124,7 +124,7 @@ class ServiceManagerList(QtWidgets.QTreeWidget):
         mime_data = QtCore.QMimeData()
         drag.setMimeData(mime_data)
         mime_data.setText('ServiceManager')
-        drag.exec(QtCore.Qt.CopyAction)
+        drag.exec(QtCore.Qt.DropAction.CopyAction)
 
 
 class Ui_ServiceManager(object):
@@ -159,7 +159,7 @@ class Ui_ServiceManager(object):
         self.toolbar.add_toolbar_widget(self.theme_label)
         self.theme_combo_box = QtWidgets.QComboBox(self.toolbar)
         self.theme_combo_box.setToolTip(translate('OpenLP.ServiceManager', 'Select a theme for the service.'))
-        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.theme_combo_box.setObjectName('theme_combo_box')
         self.toolbar.add_toolbar_widget(self.theme_combo_box)
@@ -171,7 +171,7 @@ class Ui_ServiceManager(object):
             QtWidgets.QAbstractItemView.EditTrigger.CurrentChanged |
             QtWidgets.QAbstractItemView.EditTrigger.DoubleClicked |
             QtWidgets.QAbstractItemView.EditTrigger.EditKeyPressed)
-        self.service_manager_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.service_manager_list.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.service_manager_list.customContextMenuRequested.connect(self.context_menu)
         self.service_manager_list.setObjectName('service_manager_list')
         # enable drop
@@ -374,10 +374,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                         translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
                                                   'this item from the service?'),
                                         QtWidgets.QMessageBox.StandardButtons(
-                                            QtWidgets.QMessageBox.Close | QtWidgets.QMessageBox.Cancel), self)
-        del_button = msg_box.button(QtWidgets.QMessageBox.Close)
+                                            QtWidgets.QMessageBox.StandardButton.Close | QtWidgets.QMessageBox.StandardButton.Cancel), self)
+        del_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
         del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
-        msg_box.setDefaultButton(QtWidgets.QMessageBox.Close)
+        msg_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Close)
         return msg_box.exec()
 
     def add_media_suffixes(self):
@@ -468,9 +468,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         if self.is_modified():
             result = self.save_modified_service()
-            if result == QtWidgets.QMessageBox.Cancel:
+            if result == QtWidgets.QMessageBox.StandardButton.Cancel:
                 return False
-            elif result == QtWidgets.QMessageBox.Save:
+            elif result == QtWidgets.QMessageBox.StandardButton.Save:
                 if not self.decide_save_method():
                     return False
         if not self.service_items and self.settings.value('advanced/new service message'):
@@ -479,7 +479,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                                 translate('OpenLP.Ui', 'Create a new service.'),
                                                 translate('OpenLP.Ui', 'You already have a blank new service.\n'
                                                                        'Add some items to it then press Save'),
-                                                QtWidgets.QMessageBox.Ok,
+                                                QtWidgets.QMessageBox.StandardButton.Ok,
                                                 self)
             message_box.setCheckBox(do_not_show_again)
             message_box.exec()
@@ -504,9 +504,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         if self.is_modified():
             result = self.save_modified_service()
-            if result == QtWidgets.QMessageBox.Cancel:
+            if result == QtWidgets.QMessageBox.StandardButton.Cancel:
                 return False
-            elif result == QtWidgets.QMessageBox.Save:
+            elif result == QtWidgets.QMessageBox.StandardButton.Save:
                 self.decide_save_method()
         if not file_path:
             file_path, filter_used = FileDialog.getOpenFileName(
@@ -528,8 +528,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                               translate('OpenLP.ServiceManager',
                                                         'The current service has been modified. Would you like to save '
                                                         'this service?'),
-                                              QtWidgets.QMessageBox.Save | QtWidgets.QMessageBox.Discard |
-                                              QtWidgets.QMessageBox.Cancel, QtWidgets.QMessageBox.Save)
+                                              QtWidgets.QMessageBox.StandardButton.Save | QtWidgets.QMessageBox.StandardButton.Discard |
+                                              QtWidgets.QMessageBox.StandardButton.Cancel, QtWidgets.QMessageBox.StandardButton.Save)
 
     def on_recent_service_clicked(self, checked):
         """
@@ -539,9 +539,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         if self.is_modified():
             result = self.save_modified_service()
-            if result == QtWidgets.QMessageBox.Cancel:
+            if result == QtWidgets.QMessageBox.StandardButton.Cancel:
                 return False
-            elif result == QtWidgets.QMessageBox.Save:
+            elif result == QtWidgets.QMessageBox.StandardButton.Save:
                 self.decide_save_method()
         sender = self.sender()
         self.load_file(Path(sender.data()))
@@ -678,8 +678,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                     ).format(name='\n\t'.join(missing_list))
                 answer = QtWidgets.QMessageBox.critical(self, title, message,
                                                         QtWidgets.QMessageBox.StandardButtons(
-                                                            QtWidgets.QMessageBox.Ok | QtWidgets.QMessageBox.Cancel))
-                if answer == QtWidgets.QMessageBox.Cancel:
+                                                            QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel))
+                if answer == QtWidgets.QMessageBox.StandardButton.Cancel:
                     return False
         # Check if item contains a missing file.
         for item in list(self.service_items):
@@ -923,9 +923,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         if item is None:
             return
         if item.parent():
-            pos = item.parent().data(0, QtCore.Qt.UserRole)
+            pos = item.parent().data(0, QtCore.Qt.ItemDataRole.UserRole)
         else:
-            pos = item.data(0, QtCore.Qt.UserRole)
+            pos = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         service_item = self.service_items[pos - 1]
         self.edit_action.setVisible(False)
         self.rename_action.setVisible(False)
@@ -1127,7 +1127,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             if service_iterator.value() == selected:
                 if last_slide and prev_item_last_slide:
                     # Go to the last slide of the previous service item
-                    pos = prev_item.data(0, QtCore.Qt.UserRole)
+                    pos = prev_item.data(0, QtCore.Qt.ItemDataRole.UserRole)
                     check_expanded = self.service_items[pos - 1]['expanded']
                     self.service_manager_list.setCurrentItem(prev_item_last_slide)
                     if not check_expanded:
@@ -1244,7 +1244,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param item: The service item to be checked
         """
-        pos = item.data(0, QtCore.Qt.UserRole)
+        pos = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         # Only set root items as collapsed, and since we only have 2 levels we find them by checking for children
         if item.childCount():
             self.service_items[pos - 1]['expanded'] = False
@@ -1263,7 +1263,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
 
         :param item: The service item to be checked
         """
-        pos = item.data(0, QtCore.Qt.UserRole)
+        pos = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         # Only set root items as expanded, and since we only have 2 levels we find them by checking for children
         if item.childCount():
             self.service_items[pos - 1]['expanded'] = True
@@ -1322,7 +1322,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         item = self.find_service_item()[0]
         if item != -1 and (not self.settings.value('advanced/delete service item confirmation') or
-                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.Close):
+                           self._delete_confirmation_dialog() == QtWidgets.QMessageBox.StandardButton.Close):
             self.service_items.remove(self.service_items[item])
             self.repaint_service_list(item - 1, -1)
             self.set_modified()
@@ -1400,17 +1400,17 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             self.tree_widget_items.append(tree_widget_item)
             if service_item_from_item.is_valid:
                 icon = service_item_from_item.icon.pixmap(80, 80).toImage()
-                icon = icon.scaled(80, 80, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+                icon = icon.scaled(80, 80, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
                 if service_item_from_item.notes:
                     overlay = UiIcons().notes.pixmap(40, 40).toImage()
-                    overlay = overlay.scaled(40, 40, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
                     painter = QtGui.QPainter(icon)
                     painter.drawImage(0, 0, overlay)
                     painter.end()
                     tree_widget_item.setIcon(0, build_icon(icon))
                 elif service_item_from_item.temporary_edit:
                     overlay = QtGui.QImage(UiIcons().upload)
-                    overlay = overlay.scaled(40, 40, QtCore.Qt.KeepAspectRatio, QtCore.Qt.SmoothTransformation)
+                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
                     painter = QtGui.QPainter(icon)
                     painter.drawImage(40, 0, overlay)
                     painter.end()
@@ -1439,7 +1439,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 for meta in item['service_item'].metadata:
                     tips.append(meta)
             tree_widget_item.setToolTip(0, '<br>'.join(tips))
-            tree_widget_item.setData(0, QtCore.Qt.UserRole, item['order'])
+            tree_widget_item.setData(0, QtCore.Qt.ItemDataRole.UserRole, item['order'])
             tree_widget_item.setSelected(item['selected'])
             # Add the children to their parent tree_widget_item.
             for slide_index, slide in enumerate(service_item_from_item.get_frames()):
@@ -1452,7 +1452,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     else:
                         text = service_item_from_item.get_rendered_frame(slide_index, clean=True)
                     child.setText(0, text[:40])
-                    child.setData(0, QtCore.Qt.UserRole, slide_index)
+                    child.setData(0, QtCore.Qt.ItemDataRole.UserRole, slide_index)
                 except RuntimeError:
                     # it's probably a "wrapped C/C++ object of type QTreeWidgetItem has been deleted" due to
                     # consecutive/parallel repaint_service_list execution. We've added some mitigation to avoid this
@@ -1527,9 +1527,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 service_iterator += 1
             if selected_item is not None:
                 if selected_item.parent() is None:
-                    pos = selected_item.data(0, QtCore.Qt.UserRole)
+                    pos = selected_item.data(0, QtCore.Qt.ItemDataRole.UserRole)
                 else:
-                    pos = selected_item.parent().data(0, QtCore.Qt.UserRole)
+                    pos = selected_item.parent().data(0, QtCore.Qt.ItemDataRole.UserRole)
                 self.service_items[pos - 1]['selected'] = True
             temp_service_items = self.service_items
             self.service_manager_list.clear()
@@ -1742,10 +1742,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         for item in items:
             parent_item = item.parent()
             if parent_item is None:
-                service_item = item.data(0, QtCore.Qt.UserRole)
+                service_item = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
             else:
-                service_item = parent_item.data(0, QtCore.Qt.UserRole)
-                service_item_child = item.data(0, QtCore.Qt.UserRole)
+                service_item = parent_item.data(0, QtCore.Qt.ItemDataRole.UserRole)
+                service_item_child = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
             # Adjust for zero based arrays.
             service_item -= 1
             # Only process the first item on the list for this method.
@@ -1761,7 +1761,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         link = event.mimeData()
         if link.hasUrls():
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
             for url in link.urls():
                 file_path = Path(url.toLocalFile())
@@ -1882,6 +1882,6 @@ def get_parent_item_data(item):
     """
     parent_item = item.parent()
     if parent_item is None:
-        return item.data(0, QtCore.Qt.UserRole)
+        return item.data(0, QtCore.Qt.ItemDataRole.UserRole)
     else:
-        return parent_item.data(0, QtCore.Qt.UserRole)
+        return parent_item.data(0, QtCore.Qt.ItemDataRole.UserRole)

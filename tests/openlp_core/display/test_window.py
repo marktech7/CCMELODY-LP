@@ -76,8 +76,8 @@ def test_x11_override_on(display_window_env, mock_settings):
     display_window = DisplayWindow()
 
     # THEN: The x11 override flag should be set
-    x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
-    assert x11_bit == QtCore.Qt.X11BypassWindowManagerHint
+    x11_bit = display_window.windowFlags() & QtCore.Qt.WindowType.X11BypassWindowManagerHint
+    assert x11_bit == QtCore.Qt.WindowType.X11BypassWindowManagerHint
 
 
 def test_x11_override_off(display_window_env, mock_settings):
@@ -91,14 +91,14 @@ def test_x11_override_off(display_window_env, mock_settings):
     display_window = DisplayWindow()
 
     # THEN: The x11 override flag should not be set
-    x11_bit = display_window.windowFlags() & QtCore.Qt.X11BypassWindowManagerHint
-    assert x11_bit != QtCore.Qt.X11BypassWindowManagerHint
+    x11_bit = display_window.windowFlags() & QtCore.Qt.WindowType.X11BypassWindowManagerHint
+    assert x11_bit != QtCore.Qt.WindowType.X11BypassWindowManagerHint
 
 
 @patch('openlp.core.display.window.is_macosx')
 def test_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
     """
-    Test that on macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is set
+    Test that on macOS, the Qt.WindowType.WindowType.WidgetAttribute.WA_MacAlwaysShowToolWindow attribute is set
     """
     # GIVEN: We're on macOS
     mocked_is_macosx.return_value = True
@@ -107,13 +107,13 @@ def test_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display
     display_window = DisplayWindow()
 
     # THEN: The attribute is set
-    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is True
+    assert display_window.testAttribute(QtCore.Qt.WindowType.WindowType.WidgetAttribute.WA_MacAlwaysShowToolWindow) is True
 
 
 @patch('openlp.core.display.window.is_macosx')
 def test_not_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, display_window_env):
     """
-    Test that on systems other than macOS, the Qt.WA_MacAlwaysShowToolWindow attribute is NOT set
+    Test that on systems other than macOS, the Qt.WindowType.WindowType.WidgetAttribute.WA_MacAlwaysShowToolWindow attribute is NOT set
     """
     # GIVEN: We're on macOS
     mocked_is_macosx.return_value = False
@@ -122,7 +122,7 @@ def test_not_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, dis
     display_window = DisplayWindow()
 
     # THEN: The attribute is set
-    assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is False
+    assert display_window.testAttribute(QtCore.Qt.WindowType.WindowType.WidgetAttribute.WA_MacAlwaysShowToolWindow) is False
 
 
 @patch.object(DisplayWindow, 'show')

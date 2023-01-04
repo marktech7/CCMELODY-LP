@@ -119,8 +119,8 @@ def test_critical_error_question(mocked_critical):
 
     # THEN: The error_message() method on the main window should be called
     mocked_critical.assert_called_once_with(mocked_parent, 'Error', 'This is a question',
-                                            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                  QtWidgets.QMessageBox.No))
+                                            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                                                  QtWidgets.QMessageBox.StandardButton.No))
 
 
 def test_create_horizontal_adjusting_combo_box():
@@ -355,7 +355,7 @@ def test_multiple_view_mode_list(settings):
     list = MultipleViewModeList(None)
 
     # THEN: It's should be build sucessfully, with default ListMode
-    list.viewMode() == QtWidgets.QListWidget.ViewMode.ListMode
+    assert list.viewMode() == QtWidgets.QListWidget.ViewMode.ListMode
 
 
 def test_multiple_view_mode_list_set_icon_size_by_view_mode_icon_mode(settings):

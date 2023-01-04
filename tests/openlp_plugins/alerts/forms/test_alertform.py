@@ -41,7 +41,7 @@ def test_help(mocked_help: MagicMock, settings: Settings, registry: Registry):
 
     # WHEN: The Help button is clicked
     QtTest.QTest.mouseClick(alert_form.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Help),
-                            QtCore.Qt.LeftButton)
+                            QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()

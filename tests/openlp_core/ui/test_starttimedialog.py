@@ -76,7 +76,7 @@ def test_time_display(form: StartTimeForm):
     with patch('PyQt6.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Ok)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following input values are returned
     assert form.hour_spin_box.value() == 0
@@ -91,7 +91,7 @@ def test_time_display(form: StartTimeForm):
     form.minute_spin_box.setValue(2)
     form.second_spin_box.setValue(3)
     ok_widget = form.button_box.button(form.button_box.Ok)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following values are returned
     assert form.hour_spin_box.value() == 0

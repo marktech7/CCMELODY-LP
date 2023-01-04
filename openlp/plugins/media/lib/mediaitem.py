@@ -195,7 +195,7 @@ class MediaMediaItem(FolderLibraryItem):
                 return False
         if isinstance(item, QtCore.QModelIndex):
             item = self.list_view.itemFromIndex(item)
-        media_item = item.data(0, QtCore.Qt.UserRole)
+        media_item = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         if not isinstance(media_item, Item):
             return False
         filename = media_item.file_path
@@ -321,7 +321,7 @@ class MediaMediaItem(FolderLibraryItem):
                 tree_item.setIcon(0, UiIcons().video)
             tree_item.setToolTip(0, track_str)
         if tree_item:
-            tree_item.setData(0, QtCore.Qt.UserRole, item)
+            tree_item.setData(0, QtCore.Qt.ItemDataRole.UserRole, item)
         return tree_item
 
     def delete_item(self, item):

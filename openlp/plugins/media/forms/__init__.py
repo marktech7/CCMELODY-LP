@@ -37,8 +37,8 @@ class StreamSelectorFormBase(QtWidgets.QDialog):
         """
         Constructor
         """
-        super(StreamSelectorFormBase, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
-                                                     QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(StreamSelectorFormBase, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                     QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.callback = callback
         self.theme_stream = theme_stream
         self.setup_base_ui()
@@ -141,7 +141,7 @@ class VLCOptionsWidget(QtWidgets.QGroupBox):
         self.caching_label = QtWidgets.QLabel(self)
         self.caching_label.setObjectName('caching_label')
         self.caching = QtWidgets.QSpinBox(self)
-        self.caching.setAlignment(QtCore.Qt.AlignRight)
+        self.caching.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.caching.setSuffix(' ms')
         self.caching.setSingleStep(100)
         self.caching.setMaximum(65535)

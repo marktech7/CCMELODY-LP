@@ -493,7 +493,7 @@ def test_help(mocked_help, settings):
     frw = FirstTimeForm(None)
 
     # WHEN: The Help button is clicked
-    QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.WizardButton.HelpButton), QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.WizardButton.HelpButton), QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()

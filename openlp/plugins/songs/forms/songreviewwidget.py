@@ -163,9 +163,9 @@ class SongReviewWidget(QtWidgets.QWidget):
         self.song_info_verse_list_widget.horizontalHeader().setVisible(False)
         self.song_info_verse_list_widget.setObjectName('song_info_verse_list_widget')
         self.song_info_verse_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.NoSelection)
-        self.song_info_verse_list_widget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.song_info_verse_list_widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
-        self.song_info_verse_list_widget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.song_info_verse_list_widget.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.song_info_verse_list_widget.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        self.song_info_verse_list_widget.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.song_info_verse_list_widget.setAlternatingRowColors(True)
         song_xml = SongXML()
         verses = song_xml.get_verses(self.song.lyrics)
@@ -206,7 +206,7 @@ class SongReviewWidget(QtWidgets.QWidget):
         self.song_remove_button.setObjectName('song_remove_button')
         self.song_remove_button.setIcon(UiIcons().delete)
         self.song_remove_button.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
-        self.song_vertical_layout.addWidget(self.song_remove_button, alignment=QtCore.Qt.AlignHCenter)
+        self.song_vertical_layout.addWidget(self.song_remove_button, alignment=QtCore.Qt.AlignmentFlag.AlignHCenter)
 
     def retranslate_ui(self):
         self.song_remove_button.setText('Remove')

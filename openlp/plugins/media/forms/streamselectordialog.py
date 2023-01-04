@@ -256,7 +256,7 @@ class CaptureAnalogTVWidget(CaptureVideoLinuxWidget):
         self.freq_label = QtWidgets.QLabel(self)
         self.freq_label.setObjectName('freq_label')
         self.freq = QtWidgets.QSpinBox(self)
-        self.freq.setAlignment(QtCore.Qt.AlignRight)
+        self.freq.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.freq.setSuffix(' kHz')
         self.freq.setSingleStep(1)
         self.freq.setMaximum(2147483647)  # Max value
@@ -308,7 +308,7 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.tuner_card_label.setObjectName('tuner_card_label')
         self.tuner_card = QtWidgets.QSpinBox(self)
         self.tuner_card.setObjectName('tuner_card')
-        self.tuner_card.setAlignment(QtCore.Qt.AlignRight)
+        self.tuner_card.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         if is_linux():
             self.tuner_card.setPrefix('/dev/dvb/adapter')
         self.device_group_layout.addRow(self.tuner_card_label, self.tuner_card)
@@ -325,7 +325,7 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.dvb_freq_label = QtWidgets.QLabel(self)
         self.dvb_freq_label.setObjectName('dvb_freq_label')
         self.dvb_freq = QtWidgets.QSpinBox(self)
-        self.dvb_freq.setAlignment(QtCore.Qt.AlignRight)
+        self.dvb_freq.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.dvb_freq.setSuffix(' kHz')
         self.dvb_freq.setSingleStep(1000)
         self.dvb_freq.setMaximum(2147483647)  # Max value
@@ -359,7 +359,7 @@ class CaptureDigitalTVWidget(CaptureModeWidget):
         self.dvbs_rate_label.setObjectName('dvbs_rate_label')
         self.dvbs_rate = QtWidgets.QSpinBox(self)
         self.dvbs_rate.setObjectName('dvbs_rate')
-        self.dvbs_rate.setAlignment(QtCore.Qt.AlignRight)
+        self.dvbs_rate.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.dvbs_rate.setSuffix(' bauds')
         self.options_group_layout.addRow(self.dvbs_rate_label, self.dvbs_rate)
         # connect
@@ -492,7 +492,7 @@ class JackAudioKitWidget(CaptureModeWidget):
         self.ports = QtWidgets.QLineEdit(self)
         self.ports.setText('.*')
         self.ports.setObjectName('ports')
-        self.ports.setAlignment(QtCore.Qt.AlignRight)
+        self.ports.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.device_group_layout.addRow(self.ports_label, self.ports)
         # channels
         self.channels_label = QtWidgets.QLabel(self)
@@ -501,7 +501,7 @@ class JackAudioKitWidget(CaptureModeWidget):
         self.channels.setObjectName('channels')
         self.channels.setMaximum(255)
         self.channels.setValue(2)
-        self.channels.setAlignment(QtCore.Qt.AlignRight)
+        self.channels.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight)
         self.device_group_layout.addRow(self.channels_label, self.channels)
         # Options
         self.jack_pace = QtWidgets.QCheckBox(translate('MediaPlugin.StreamSelector', 'Use VLC pace'))

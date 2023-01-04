@@ -100,7 +100,7 @@ class Ui_EditBibleDialog(object):
         self.scroll_area = QtWidgets.QScrollArea(self.book_name_tab)
         self.scroll_area.setWidgetResizable(True)
         self.scroll_area.setObjectName('scroll_area')
-        self.scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.scroll_area.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.book_name_widget = QtWidgets.QWidget(self.scroll_area)
         self.book_name_widget.setObjectName('book_name_widget')
         self.book_name_widget_layout = QtWidgets.QFormLayout(self.book_name_widget)

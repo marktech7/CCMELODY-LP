@@ -586,17 +586,17 @@ class Settings(QtCore.QSettings):
             'shortcuts/listViewPresentationsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewPresentationsPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Return),
                                                            QtGui.QKeySequence(QtCore.Qt.Key.Key_Enter)],
-            'shortcuts/listViewPresentationsLiveItem': [QtGui.QKeySequence(QtCore.Qt.Key_Shift +
+            'shortcuts/listViewPresentationsLiveItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift +
                                                                            QtCore.Qt.Key.Key_Return),
-                                                        QtGui.QKeySequence(QtCore.Qt.Key_Shift +
+                                                        QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift +
                                                                            QtCore.Qt.Key.Key_Enter)],
             'shortcuts/listViewPresentationsServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Plus),
                                                            QtGui.QKeySequence(QtCore.Qt.Key.Key_Equal)],
             'shortcuts/listViewSongsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewSongsPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Return),
                                                    QtGui.QKeySequence(QtCore.Qt.Key.Key_Enter)],
-            'shortcuts/listViewSongsLiveItem': [QtGui.QKeySequence(QtCore.Qt.Key_Shift + QtCore.Qt.Key.Key_Return),
-                                                QtGui.QKeySequence(QtCore.Qt.Key_Shift + QtCore.Qt.Key.Key_Enter)],
+            'shortcuts/listViewSongsLiveItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift + QtCore.Qt.Key.Key_Return),
+                                                QtGui.QKeySequence(QtCore.Qt.Key.Key_Shift + QtCore.Qt.Key.Key_Enter)],
             'shortcuts/listViewSongsServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key.Key_Plus),
                                                    QtGui.QKeySequence(QtCore.Qt.Key.Key_Equal)],
             'shortcuts/lockPanel': [],

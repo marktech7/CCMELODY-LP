@@ -118,8 +118,8 @@ def critical_error_message_box(title=None, message=None, parent=None, question=F
     """
     if question:
         return QtWidgets.QMessageBox.critical(parent, UiStrings().Error, message,
-                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                    QtWidgets.QMessageBox.No))
+                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                                                    QtWidgets.QMessageBox.StandardButton.No))
     # If used before the main window is created, fall back to direct use of QMessageBox
     main_window = Registry().get('main_window')
     if main_window:
@@ -153,7 +153,7 @@ def create_horizontal_adjusting_combo_box(parent, name):
     """
     combo = QtWidgets.QComboBox(parent)
     combo.setObjectName(name)
-    combo.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+    combo.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
     combo.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
     return combo
 
@@ -307,9 +307,9 @@ def create_action(parent, name, **kwargs):
 def create_widget_action(parent, name='', **kwargs):
     """
     Return a new QAction by calling ``create_action(parent, name, **kwargs)``. The shortcut context defaults to
-    ``QtCore.Qt.WidgetShortcut`` and the action is added to the parents action list.
+    ``QtCore.Qt.ShortcutContext.WidgetShortcut`` and the action is added to the parents action list.
     """
-    kwargs.setdefault('context', QtCore.Qt.WidgetShortcut)
+    kwargs.setdefault('context', QtCore.Qt.ShortcutContext.WidgetShortcut)
     action = create_action(parent, name, **kwargs)
     parent.addAction(action)
     return action
@@ -323,7 +323,7 @@ def set_case_insensitive_completer(cache, widget):
     :param widget: A widget to set the completer (QComboBox or QLineEdit instance)
     """
     completer = QtWidgets.QCompleter(cache)
-    completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+    completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
     widget.setCompleter(completer)
 
 
@@ -349,7 +349,7 @@ def find_and_set_in_combo_box(combo_box, value_to_find, set_missing=True):
     :param value_to_find: The value to find
     :param set_missing: if not found leave value as current
     """
-    index = combo_box.findText(value_to_find, QtCore.Qt.MatchExactly)
+    index = combo_box.findText(value_to_find, QtCore.Qt.MatchFlag.MatchExactly)
     if index == -1:
         # Not Found.
         index = 0 if set_missing else combo_box.currentIndex()

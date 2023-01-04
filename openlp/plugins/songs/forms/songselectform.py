@@ -67,8 +67,8 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
     """
 
     def __init__(self, parent=None, plugin=None, db_manager=None):
-        QtWidgets.QDialog.__init__(self, parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                   QtCore.Qt.WindowCloseButtonHint)
+        QtWidgets.QDialog.__init__(self, parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                   QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.plugin = plugin
         self.db_manager = db_manager
         self.setup_ui(self)
@@ -217,7 +217,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                 self, translate('SongsPlugin.SongSelectForm', 'Incomplete song'),
                 translate('SongsPlugin.SongSelectForm', 'This song is missing some information, like the lyrics, '
                                                         'and cannot be imported.'),
-                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok), QtWidgets.QMessageBox.Ok)
+                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok), QtWidgets.QMessageBox.StandardButton.Ok)
             return
         # Clear up the UI
         self.author_list_widget.clear()
@@ -232,8 +232,8 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         for counter, verse in enumerate(self.song['verses']):
             self.lyrics_table_widget.setRowCount(self.lyrics_table_widget.rowCount() + 1)
             item = QtWidgets.QTableWidgetItem(verse['lyrics'])
-            item.setData(QtCore.Qt.UserRole, verse['label'])
-            item.setFlags(item.flags() ^ QtCore.Qt.ItemIsEditable)
+            item.setData(QtCore.Qt.ItemDataRole.UserRole, verse['label'])
+            item.setFlags(item.flags() ^ QtCore.Qt.ItemFlag.ItemIsEditable)
             self.lyrics_table_widget.setItem(counter, 0, item)
         self.lyrics_table_widget.setVerticalHeaderLabels([verse['label'] for verse in self.song['verses']])
         self.lyrics_table_widget.resizeRowsToContents()
@@ -277,7 +277,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                                                                        'A song with the same CCLI number is already in '
                                                                        'your database.\n\n'
                                                                        'Are you sure you want to import this song?'),
-                                                             defaultButton=QtWidgets.QMessageBox.No)
-            if continue_import == QtWidgets.QMessageBox.No:
+                                                             defaultButton=QtWidgets.QMessageBox.StandardButton.No)
+            if continue_import == QtWidgets.QMessageBox.StandardButton.No:
                 return False
         return True

@@ -188,7 +188,7 @@ class UiProjectorManager(object):
         self.projector_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.projector_list_widget.setAlternatingRowColors(True)
         self.projector_list_widget.setIconSize(QtCore.QSize(90, 50))
-        self.projector_list_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.projector_list_widget.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         self.projector_list_widget.setObjectName('projector_list_widget')
         self.layout.addWidget(self.projector_list_widget)
         self.projector_list_widget.customContextMenuRequested.connect(self.context_menu)
@@ -388,7 +388,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         item = self.projector_list_widget.itemAt(point)
         if item is None:
             return
-        real_projector = item.data(QtCore.Qt.UserRole)
+        real_projector = item.data(QtCore.Qt.ItemDataRole.UserRole)
         projector_name = str(item.text())
         visible = real_projector.link.status_connect >= S_CONNECTED
         log.debug(f'({projector_name}) Building menu - visible = {visible}')
@@ -421,7 +421,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         self.get_settings()  # In case the dialog interface setting was changed
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
-        projector = list_item.data(QtCore.Qt.UserRole)
+        projector = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         # QTabwidget for source select
         source = 100
         while source > 99:
@@ -457,7 +457,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         if hasattr(item, 'pjlink'):
             return item.pjlink.set_shutter_closed()
         for list_item in self.projector_list_widget.selectedItems():
-            list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_closed()
+            list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.set_shutter_closed()
 
     def on_doubleclick_item(self, item):
         """
@@ -465,7 +465,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
 
         :param item: List widget item for connection.
         """
-        projector = item.data(QtCore.Qt.UserRole)
+        projector = item.data(QtCore.Qt.ItemDataRole.UserRole)
         if QSOCKET_STATE[projector.link.state()] == S_CONNECTED:
             log.debug(f'ProjectorManager: "{projector.pjlink.name}" already connected - skipping')
         else:
@@ -484,7 +484,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             return item.pjlink.connect_to_host()
         else:
             for list_item in self.projector_list_widget.selectedItems():
-                list_item.data(QtCore.Qt.UserRole).pjlink.connect_to_host()
+                list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.connect_to_host()
 
     def on_delete_projector(self, opt=None):
         """
@@ -495,7 +495,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
         if list_item is None:
             return
-        projector = list_item.data(QtCore.Qt.UserRole)
+        projector = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         msg = QtWidgets.QMessageBox()
         msg.setText(translate('OpenLP.ProjectorManager',
                               f'Delete projector ({projector.link.ip}) {projector.link.name}?'))
@@ -561,7 +561,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             return item.pjlink.disconnect_from_host()
         else:
             for list_item in self.projector_list_widget.selectedItems():
-                list_item.data(QtCore.Qt.UserRole).pjlink.disconnect_from_host()
+                list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.disconnect_from_host()
 
     def on_edit_projector(self, opt=None):
         """
@@ -570,7 +570,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param opt: Needed by PyQt6
         """
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
-        projector = list_item.data(QtCore.Qt.UserRole)
+        projector = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         if projector is None:
             return
         self.old_projector = projector
@@ -589,7 +589,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             return item.pjlink.set_power_off()
         else:
             for list_item in self.projector_list_widget.selectedItems():
-                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_off()
+                list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.set_power_off()
 
     def on_poweron_projector(self, item=None, opt=None):
         """
@@ -602,7 +602,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             return item.pjlink.set_power_on()
         else:
             for list_item in self.projector_list_widget.selectedItems():
-                list_item.data(QtCore.Qt.UserRole).pjlink.set_power_on()
+                list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.set_power_on()
 
     def on_show_projector(self, item=None, opt=None):
         """
@@ -615,7 +615,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             return item.pjlink.set_shutter_open()
         else:
             for list_item in self.projector_list_widget.selectedItems():
-                list_item.data(QtCore.Qt.UserRole).pjlink.set_shutter_open()
+                list_item.data(QtCore.Qt.ItemDataRole.UserRole).pjlink.set_shutter_open()
 
     def on_status_projector(self, opt=None):
         """
@@ -624,7 +624,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param opt: Needed by PyQt6
         """
         lwi = self.projector_list_widget.item(self.projector_list_widget.currentRow())
-        projector = lwi.data(QtCore.Qt.UserRole)
+        projector = lwi.data(QtCore.Qt.ItemDataRole.UserRole)
         message = '<b>{title}</b>: {data}<BR />'.format(title=translate('OpenLP.ProjectorManager', 'Name'),
                                                         data=projector.link.name)
         message += '<b>{title}</b>: {data}<br />'.format(title=translate('OpenLP.ProjectorManager', 'IP'),
@@ -704,7 +704,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         :param opt: Needed by PyQt6
         """
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
-        projector = list_item.data(QtCore.Qt.UserRole)
+        projector = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
         if projector is None:
             return
         self.old_projector = projector
@@ -737,7 +737,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                                            item.pjlink.name,
                                            self.projector_list_widget
                                            )
-        widget.setData(QtCore.Qt.UserRole, item)
+        widget.setData(QtCore.Qt.ItemDataRole.UserRole, item)
         item.pjlink.db_item = item.db_item
         item.widget = widget
         item.pjlink.projectorChangeStatus.connect(self.update_status)
@@ -873,7 +873,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
             self.get_toolbar_item('show_projector_multiple', hidden=True)
         elif count == 1:
             log.debug('update_icons(): Found one item selected')
-            projector = self.projector_list_widget.selectedItems()[0].data(QtCore.Qt.UserRole)
+            projector = self.projector_list_widget.selectedItems()[0].data(QtCore.Qt.ItemDataRole.UserRole)
             connected = QSOCKET_STATE[projector.link.state()] == S_CONNECTED
             power = projector.link.power == S_ON
             self.get_toolbar_item('connect_projector_multiple', hidden=True)

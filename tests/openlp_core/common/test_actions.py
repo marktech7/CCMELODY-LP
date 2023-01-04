@@ -159,7 +159,7 @@ def test_action_list_remove():
 def test_add_action_same_parent(action_list):
     """
     ActionList test - Tests the add_action method. The actions have the same parent, the same shortcuts and both
-    have the QtCore.Qt.WindowShortcut shortcut context set.
+    have the QtCore.Qt.ShortcutContext.WindowShortcut shortcut context set.
     """
     # GIVEN: Two actions with the same shortcuts.
     parent = QtCore.QObject()
@@ -190,7 +190,7 @@ def test_add_action_same_parent(action_list):
 def test_add_action_different_parent(action_list):
     """
     ActionList test - Tests the add_action method. The actions have the different parent, the same shortcuts and
-    both have the QtCore.Qt.WindowShortcut shortcut context set.
+    both have the QtCore.Qt.ShortcutContext.WindowShortcut shortcut context set.
     """
     # GIVEN: Two actions with the same shortcuts.
     parent = QtCore.QObject()
@@ -222,17 +222,17 @@ def test_add_action_different_parent(action_list):
 def test_add_action_different_context(action_list):
     """
     ActionList test - Tests the add_action method. The actions have the different parent, the same shortcuts and
-    both have the QtCore.Qt.WidgetShortcut shortcut context set.
+    both have the QtCore.Qt.ShortcutContext.WidgetShortcut shortcut context set.
     """
     # GIVEN: Two actions with the same shortcuts.
     parent = QtCore.QObject()
     action3 = QtGui.QAction(parent)
     action3.setObjectName('action3')
-    action3.setShortcutContext(QtCore.Qt.WidgetShortcut)
+    action3.setShortcutContext(QtCore.Qt.ShortcutContext.WidgetShortcut)
     second_parent = QtCore.QObject()
     action_with_same_shortcuts3 = QtGui.QAction(second_parent)
     action_with_same_shortcuts3.setObjectName('action_with_same_shortcuts3')
-    action_with_same_shortcuts3.setShortcutContext(QtCore.Qt.WidgetShortcut)
+    action_with_same_shortcuts3.setShortcutContext(QtCore.Qt.ShortcutContext.WidgetShortcut)
     # Add default shortcuts to Settings class.
     default_shortcuts = {
         'shortcuts/action3': [QtGui.QKeySequence(QtCore.Qt.Key.Key_E), QtGui.QKeySequence(QtCore.Qt.Key.Key_F)],

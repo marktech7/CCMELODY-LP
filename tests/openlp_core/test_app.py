@@ -197,13 +197,13 @@ def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_cr
     """
     # GIVEN: An OpenLP app and some mocks
     MockedStandardButtons.return_value = 0
-    mocked_critical.return_value = QtWidgets.QMessageBox.Yes
+    mocked_critical.return_value = QtWidgets.QMessageBox.StandardButton.Yes
 
     # WHEN: is_already_running() is called
     qapp.is_already_running()
 
     # THEN: The result should be false
-    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.Ok)
+    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Ok)
     mocked_critical.assert_called_once_with(None, 'Error',
                                             'OpenLP is already running on this machine. \nClosing this instance', 0)
 
@@ -232,7 +232,7 @@ def test_set_busy_cursor(mocked_processEvents, mocked_setOverrideCursor, qapp):
     qapp.set_busy_cursor()
 
     # THEN: The cursor should have been set
-    mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.BusyCursor)
+    mocked_setOverrideCursor.assert_called_once_with(QtCore.Qt.CursorShape.BusyCursor)
     mocked_processEvents.assert_called_once_with()
 
 
@@ -266,7 +266,7 @@ def test_backup_on_upgrade_first_install(mocked_question, mocked_get_version, qa
     }
     settings.setValue('core/application version', '2.4.0')
     mocked_get_version.return_value = MOCKED_VERSION
-    mocked_question.return_value = QtWidgets.QMessageBox.No
+    mocked_question.return_value = QtWidgets.QMessageBox.StandardButton.No
 
     # WHEN: We check if a backup should be created
     qapp.backup_on_upgrade(old_install, False)
@@ -293,7 +293,7 @@ def test_backup_on_upgrade(mocked_question, mocked_get_version, qapp, settings):
     qapp.splash = MagicMock()
     qapp.splash.isVisible.return_value = True
     mocked_get_version.return_value = MOCKED_VERSION
-    mocked_question.return_value = QtWidgets.QMessageBox.No
+    mocked_question.return_value = QtWidgets.QMessageBox.StandardButton.No
 
     # WHEN: We check if a backup should be created
     qapp.backup_on_upgrade(old_install, True)
@@ -344,7 +344,7 @@ def test_main_future_settings(mock_move: MagicMock, mock_get_path: MagicMock, mo
     settings.version_mismatched = MagicMock(return_value=True)
     settings.clear = MagicMock()
     settings.setValue('core/application version', '3.0.1')
-    mock_warn.return_value = QtWidgets.QMessageBox.Yes
+    mock_warn.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     MOCKED_VERSION = {
         'full': '2.9.3',
         'version': '2.9.3',

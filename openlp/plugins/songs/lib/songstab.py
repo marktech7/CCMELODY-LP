@@ -325,8 +325,8 @@ class SongsTab(SettingsTab):
                 translate('SongsPlugin.SongsTab', 'WARNING: Saving your SongSelect password is INSECURE, '
                                                   'your password is stored in PLAIN TEXT. Click Yes to save '
                                                   'your password or No to cancel this.'),
-                defaultButton=QtWidgets.QMessageBox.No)
-            if answer == QtWidgets.QMessageBox.Yes:
+                defaultButton=QtWidgets.QMessageBox.StandardButton.No)
+            if answer == QtWidgets.QMessageBox.StandardButton.Yes:
                 self.settings.setValue('songs/songselect password', self.ccli_password.text())
         # Only save footer template if it has been changed. This allows future updates
         if self.footer_edit_box.toPlainText() != self.settings.value('songs/footer template'):

@@ -124,7 +124,7 @@ def test_display_results_song(media_item):
     """
     # GIVEN: Search results, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = []
         mock_song = MagicMock()
         mock_song.id = 1
@@ -166,7 +166,7 @@ def test_display_results_author(media_item):
     """
     # GIVEN: Search results grouped by author, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = []
         mock_author = MagicMock()
         mock_song = MagicMock()
@@ -208,7 +208,7 @@ def test_display_results_book(media_item):
     """
     # GIVEN: Search results grouped by book and entry, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = [('1', 'My Book', 'My Song', 1)]
         mock_qlist_widget = MagicMock()
         MockedQListWidgetItem.return_value = mock_qlist_widget
@@ -252,7 +252,7 @@ def test_display_results_topic(media_item):
     """
     # GIVEN: Search results grouped by topic, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = []
         mock_topic = MagicMock()
         mock_song = MagicMock()
@@ -289,7 +289,7 @@ def test_display_results_themes(media_item):
     """
     # GIVEN: Search results sorted by theme, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = []
         mock_song = MagicMock()
         mock_song_temp = MagicMock()
@@ -324,7 +324,7 @@ def test_display_results_cclinumber(media_item):
     """
     # GIVEN: Search results sorted by CCLI number, plus a mocked QtListWidgetItem
     with patch('openlp.core.lib.QtWidgets.QListWidgetItem') as MockedQListWidgetItem, \
-            patch('openlp.core.lib.QtCore.Qt.UserRole') as MockedUserRole:
+            patch('openlp.core.lib.QtCore.Qt.ItemDataRole.UserRole') as MockedUserRole:
         mock_search_results = []
         mock_song = MagicMock()
         mock_song_temp = MagicMock()

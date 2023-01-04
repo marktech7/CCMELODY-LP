@@ -53,8 +53,8 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         """
         Registry().register('settings_form', self)
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
-        super(SettingsForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                           QtCore.Qt.WindowCloseButtonHint)
+        super(SettingsForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                           QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.processes = []
         self.setup_ui(self)
         self.setting_list_widget.currentRowChanged.connect(self.list_item_changed)
@@ -109,7 +109,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         self.stacked_layout.addWidget(tab_widget)
         if is_visible:
             list_item = QtWidgets.QListWidgetItem(build_icon(tab_widget.icon_path), tab_widget.tab_title_visible)
-            list_item.setData(QtCore.Qt.UserRole, tab_widget.tab_title)
+            list_item.setData(QtCore.Qt.ItemDataRole.UserRole, tab_widget.tab_title)
             self.setting_list_widget.addItem(list_item)
             tab_widget.load()
 
@@ -127,7 +127,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
             if not list_item:
                 continue
             # Now figure out if there's a tab for it, and save the tab.
-            plugin_name = list_item.data(QtCore.Qt.UserRole)
+            plugin_name = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
             for tab_index in range(self.stacked_layout.count()):
                 tab_widget = self.stacked_layout.widget(tab_index)
                 if tab_widget.tab_title == plugin_name:
@@ -149,7 +149,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
             if not list_item:
                 continue
             # Now figure out if there's a tab for it, and save the tab.
-            plugin_name = list_item.data(QtCore.Qt.UserRole)
+            plugin_name = list_item.data(QtCore.Qt.ItemDataRole.UserRole)
             for tab_index in range(self.stacked_layout.count()):
                 tab_widget = self.stacked_layout.widget(tab_index)
                 if tab_widget.tab_title == plugin_name:
@@ -196,7 +196,7 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
             # Get the widget
             tab_widget = self.stacked_layout.itemAt(tab_index).widget()
             # Check that the title of the tab (i.e. plugin name) is the same as the data in the list item
-            if tab_widget.tab_title == list_item.data(QtCore.Qt.UserRole):
+            if tab_widget.tab_title == list_item.data(QtCore.Qt.ItemDataRole.UserRole):
                 # Make the matching tab visible
                 tab_widget.tab_visited = True
                 self.stacked_layout.setCurrentIndex(tab_index)

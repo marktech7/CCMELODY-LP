@@ -142,14 +142,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         super(DisplayWindow, self).__init__(parent)
         self.after_loaded_callback = after_loaded_callback
         # Gather all flags for the display window
-        flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
+        flags = QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool | QtCore.Qt.WindowType.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
-            flags |= QtCore.Qt.X11BypassWindowManagerHint
+            flags |= QtCore.Qt.WindowType.X11BypassWindowManagerHint
         else:
             # This helps the window not being hidden by KDE's "Hide utility windows for inactive applications" option
             self.setAttribute(QtCore.Qt.WidgetAttribute.WA_X11NetWmWindowTypeDialog)
         if is_macosx():
-            self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
+            self.setAttribute(QtCore.Qt.WidgetAttribute.WA_MacAlwaysShowToolWindow, True)
         self._is_initialised = False
         self._is_manual_close = False
         self._can_show_startup_screen = can_show_startup_screen
@@ -157,14 +157,14 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         self.window_title = window_title
         self.setWindowTitle(translate('OpenLP.DisplayWindow', 'Display Window'))
         self.setWindowFlags(flags)
-        self.setAttribute(QtCore.Qt.WA_TranslucentBackground)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
         self.setAutoFillBackground(True)
-        self.setAttribute(QtCore.Qt.WA_DeleteOnClose)
+        self.setAttribute(QtCore.Qt.WidgetAttribute.WA_DeleteOnClose)
         self.layout = QtWidgets.QVBoxLayout(self)
         self.layout.setContentsMargins(0, 0, 0, 0)
         self.webview = self.init_webengine()
-        self.webview.setAttribute(QtCore.Qt.WA_TranslucentBackground)
-        self.webview.page().setBackgroundColor(QtCore.Qt.transparent)
+        self.webview.setAttribute(QtCore.Qt.WidgetAttribute.WA_TranslucentBackground)
+        self.webview.page().setBackgroundColor(QtCore.Qt.GlobalColor.transparent)
         self.webview.display_clicked = self.disable_display
         self.layout.addWidget(self.webview)
         self.webview.loadFinished.connect(self.after_loaded)

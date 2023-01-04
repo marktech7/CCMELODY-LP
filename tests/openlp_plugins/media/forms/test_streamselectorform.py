@@ -307,7 +307,7 @@ def test_win_set_stream_call(stream_selector_form_win):
     # increment caching value
     QtTest.QTest.keyClick(stream_selector_form_win.more_options_group.caching, QtCore.Qt.Key.Key_Up)
     # click on Save
-    QtTest.QTest.mouseClick(stream_selector_form_win.save_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(stream_selector_form_win.save_button, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The callback function should be called with the correct values
 
@@ -333,7 +333,7 @@ def test_linux_set_stream_call(stream_selector_form_linux):
     # increment transponder / multiplexer frequency
     QtTest.QTest.keyClick(stream_selector_form_linux.stacked_modes_layout.widget(3).dvb_freq, QtCore.Qt.Key.Key_Up)
     # click on Save
-    QtTest.QTest.mouseClick(stream_selector_form_linux.save_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(stream_selector_form_linux.save_button, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The callback function should be called with the correct values
 

@@ -321,7 +321,7 @@ def test_save_theme_special_char_name(registry, temp_folder):
         'Theme with special characters should have been created!'
 
 
-@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.Yes)
+@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.StandardButton.Yes)
 @patch('openlp.core.ui.thememanager.translate')
 def test_over_write_message_box_yes(mocked_translate, mocked_qmessagebox_question, registry):
     """
@@ -341,7 +341,7 @@ def test_over_write_message_box_yes(mocked_translate, mocked_qmessagebox_questio
         defaultButton=ANY)
 
 
-@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.No)
+@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.StandardButton.No)
 @patch('openlp.core.ui.thememanager.translate')
 def test_over_write_message_box_no(mocked_translate, mocked_qmessagebox_question, registry):
     """

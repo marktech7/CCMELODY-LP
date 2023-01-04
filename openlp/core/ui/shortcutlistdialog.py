@@ -127,7 +127,7 @@ class Ui_ShortcutListDialog(object):
         self.details_layout.addWidget(self.alternate_label, 0, 2, 1, 1)
         self.shortcut_list_layout.addLayout(self.details_layout)
         self.button_box = create_button_box(shortcutListDialog, 'button_box', ['cancel', 'ok', 'defaults'])
-        self.button_box.setOrientation(QtCore.Qt.Horizontal)
+        self.button_box.setOrientation(QtCore.Qt.Orientation.Horizontal)
         self.shortcut_list_layout.addWidget(self.button_box)
         self.retranslate_ui(shortcutListDialog)
 

@@ -91,8 +91,8 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         self.setColumnWidth(0, self.parent().width())
         self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
-        self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
-        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
+        self.setEditTriggers(QtWidgets.QAbstractItemView.EditTrigger.NoEditTriggers)
+        self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
         self.setAlternatingRowColors(True)
         # Initialize variables.
         self.service_item = ServiceItem()
@@ -198,7 +198,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
             else:
                 label = QtWidgets.QLabel()
                 label.setContentsMargins(4, 4, 4, 4)
-                label.setAlignment(QtCore.Qt.AlignCenter)
+                label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
                 if not self.service_item.is_media():
                     label.setScaledContents(True)
                 if self.service_item.is_command():
@@ -295,7 +295,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         self.setSpacing(1)
         self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setAlternatingRowColors(True)
-        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
 
     def activateDnD(self):
         """
@@ -323,7 +323,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         Drag and drop event does not care what data is selected as the recipient will use events to request the data
         move just tell it what plugin to call
         """
-        if event.buttons() != QtCore.Qt.LeftButton:
+        if event.buttons() != QtCore.Qt.MouseButton.LeftButton:
             event.ignore()
             return
         if not self.selectedItems():
@@ -333,7 +333,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         mime_data = QtCore.QMimeData()
         drag.setMimeData(mime_data)
         mime_data.setText(self.mime_data_text)
-        drag.exec(QtCore.Qt.CopyAction)
+        drag.exec(QtCore.Qt.DropAction.CopyAction)
 
     def dragEnterEvent(self, event):
         """
@@ -349,7 +349,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         Make an object droppable, and set it to copy the contents of the object, not move it.
         """
         if event.mimeData().hasUrls():
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
         else:
             event.ignore()
@@ -361,7 +361,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         :param event:  Handle of the event pint passed
         """
         if event.mimeData().hasUrls():
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
             file_paths = handle_mime_data_urls(event.mimeData())
             Registry().execute('{mime_data}_dnd'.format(mime_data=self.mime_data_text),
@@ -393,7 +393,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
             font.setItalic(True)
             painter.setFont(font)
             painter.drawText(QtCore.QRect(0, 0, viewport.width(), viewport.height()),
-                             (QtCore.Qt.AlignHCenter | QtCore.Qt.TextWordWrap), self.no_results_text)
+                             (QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.TextFlag.TextWordWrap), self.no_results_text)
 
 
 class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
@@ -428,7 +428,7 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
 
         :param event: The event that occurred
         """
-        if event.buttons() != QtCore.Qt.LeftButton:
+        if event.buttons() != QtCore.Qt.MouseButton.LeftButton:
             event.ignore()
             return
         if not self.selectedItems():
@@ -438,7 +438,7 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         mime_data = QtCore.QMimeData()
         drag.setMimeData(mime_data)
         mime_data.setText(self.mime_data_text)
-        drag.exec(QtCore.Qt.CopyAction)
+        drag.exec(QtCore.Qt.DropAction.CopyAction)
 
     def dragEnterEvent(self, event):
         """
@@ -461,10 +461,10 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         """
         QtWidgets.QTreeWidget.dragMoveEvent(self, event)
         if event.mimeData().hasUrls():
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
         elif self.allow_internal_dnd:
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
         else:
             event.ignore()
@@ -478,16 +478,16 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         # If we are on Windows, OpenLP window will not be set on top. For example, user can drag images to Library and
         # the folder stays on top of the group creation box. This piece of code fixes this issue.
         if is_win():
-            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowMinimized | QtCore.Qt.WindowActive)
-            self.setWindowState(QtCore.Qt.WindowNoState)
+            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowType.WindowState.WindowMinimized | QtCore.Qt.WindowType.WindowState.WindowActive)
+            self.setWindowState(QtCore.Qt.WindowType.WindowState.WindowNoState)
         if event.mimeData().hasUrls():
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
             file_paths = handle_mime_data_urls(event.mimeData())
             Registry().execute('%s_dnd' % self.mime_data_text,
                                {'file_paths': file_paths, 'target': self.itemAt(event.pos())})
         elif self.allow_internal_dnd:
-            event.setDropAction(QtCore.Qt.CopyAction)
+            event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
             Registry().execute('%s_dnd_internal' % self.mime_data_text, self.itemAt(event.pos()))
         else:

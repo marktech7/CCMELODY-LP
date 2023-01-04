@@ -36,7 +36,7 @@ class Ui_MediaFilesDialog(object):
         """
         media_files_dialog.setObjectName('media_files_dialog')
         media_files_dialog.setWindowIcon(UiIcons().main_icon)
-        media_files_dialog.setWindowModality(QtCore.Qt.ApplicationModal)
+        media_files_dialog.setWindowModality(QtCore.Qt.WindowType.WindowModality.ApplicationModal)
         media_files_dialog.resize(400, 300)
         media_files_dialog.setModal(True)
         self.files_vertical_layout = QtWidgets.QVBoxLayout(media_files_dialog)

@@ -52,7 +52,7 @@ def test_provided_group_is_selected(form):
     Tests preselected group initialization
     """
     # GIVEN: There are some existing groups
-    QtWidgets.QDialog.exec = MagicMock(return_value=QtWidgets.QDialog.Accepted)
+    QtWidgets.QDialog.exec = MagicMock(return_value=QtWidgets.QDialog.DialogCode.Accepted)
     form.group_combobox.addItem('Group 1', 0)
     form.group_combobox.addItem('Group 2', 1)
 

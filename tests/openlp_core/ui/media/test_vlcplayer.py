@@ -77,7 +77,7 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     mock_settings.value.return_value = ''
     mocked_qframe = MagicMock()
     mocked_qframe.winId.return_value = 2
-    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.Shape.NoFrame = 1
     MockedQtWidgets.QFrame.return_value = mocked_qframe
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()
@@ -124,7 +124,7 @@ def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mock
     mock_settings.value.return_value = ''
     mocked_qframe = MagicMock()
     mocked_qframe.winId.return_value = 2
-    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.Shape.NoFrame = 1
     MockedQtWidgets.QFrame.return_value = mocked_qframe
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()
@@ -159,7 +159,7 @@ def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, 
     mock_settings.value.return_value = ''
     mocked_qframe = MagicMock()
     mocked_qframe.winId.return_value = 2
-    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.Shape.NoFrame = 1
     MockedQtWidgets.QFrame.return_value = mocked_qframe
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()
@@ -194,7 +194,7 @@ def test_setup_windows(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked
     mock_settings.value.return_value = False
     mocked_qframe = MagicMock()
     mocked_qframe.winId.return_value = 2
-    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.Shape.NoFrame = 1
     MockedQtWidgets.QFrame.return_value = mocked_qframe
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()
@@ -229,7 +229,7 @@ def test_setup_osx(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_
     mock_settings.value.return_value = False
     mocked_qframe = MagicMock()
     mocked_qframe.winId.return_value = 2
-    MockedQtWidgets.QFrame.NoFrame = 1
+    MockedQtWidgets.QFrame.Shape.NoFrame = 1
     MockedQtWidgets.QFrame.return_value = mocked_qframe
     mocked_media_player_new = MagicMock()
     mocked_instance = MagicMock()

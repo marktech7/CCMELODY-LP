@@ -45,7 +45,7 @@ def test_basic_display(form: ServiceItemEditForm):
     with patch('openlp.core.ui.serviceitemeditform.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Save)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: Everything should be fine
     assert form.item_list == [], 'The item list should be empty'

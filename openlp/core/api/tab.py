@@ -165,7 +165,7 @@ class ApiTab(SettingsTab):
         self.app_qr_layout.setObjectName('app_qr_layout')
         self.app_qr_code_label = QtWidgets.QLabel(self.app_group_box)
         self.app_qr_code_label.setPixmap(QtGui.QPixmap(':/remotes/app_qr.svg'))
-        self.app_qr_code_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.app_qr_code_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.app_qr_code_label.setObjectName('app_qr_code_label')
         self.app_qr_layout.addWidget(self.app_qr_code_label)
         self.app_qr_description_label = QtWidgets.QLabel(self.app_group_box)

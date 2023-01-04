@@ -59,11 +59,11 @@ class FolderLibraryItem(MediaManagerItem):
         selected_folder = None
         if selected_items:
             selected_item = selected_items[0]
-            if isinstance(selected_item.data(0, QtCore.Qt.UserRole), self.item_class):
+            if isinstance(selected_item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.item_class):
                 selected_item = selected_item.parent()
             if isinstance(selected_item, QtWidgets.QTreeWidgetItem) and \
-                    isinstance(selected_item.data(0, QtCore.Qt.UserRole), self.folder_class):
-                selected_folder = selected_item.data(0, QtCore.Qt.UserRole)
+                    isinstance(selected_item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.folder_class):
+                selected_folder = selected_item.data(0, QtCore.Qt.ItemDataRole.UserRole)
         return selected_folder
 
     def retranslate_ui(self):
@@ -87,7 +87,7 @@ class FolderLibraryItem(MediaManagerItem):
         else:
             item_data = item_id
         item = QtWidgets.QTreeWidgetItem()
-        item.setData(0, QtCore.Qt.UserRole, item_data)
+        item.setData(0, QtCore.Qt.ItemDataRole.UserRole, item_data)
         return item
 
     def on_add_folder_click(self):
@@ -124,7 +124,7 @@ class FolderLibraryItem(MediaManagerItem):
                 if not tree_item:
                     self.main_window.increment_progress_bar()
                     continue
-                item = tree_item.data(0, QtCore.Qt.UserRole)
+                item = tree_item.data(0, QtCore.Qt.ItemDataRole.UserRole)
                 if isinstance(item, Item):
                     self.delete_item(item)
                     if not item.folder_id or not tree_item.parent():
@@ -139,7 +139,7 @@ class FolderLibraryItem(MediaManagerItem):
                             translate('OpenLP.FolderLibraryItem',
                                       'Are you sure you want to remove "{name}" and everything in it?'
                                       ).format(name=item.name)
-                    ) == QtWidgets.QMessageBox.Yes:
+                    ) == QtWidgets.QMessageBox.StandardButton.Yes:
                         self.recursively_delete_folder(item)
                         self.manager.delete_object(Folder, item.id)
                         if item.parent_id is None:
@@ -161,7 +161,7 @@ class FolderLibraryItem(MediaManagerItem):
         # Add to pageLayout
         self.page_layout.addWidget(self.list_view)
         # define and add the context menu
-        self.list_view.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.list_view.setContextMenuPolicy(QtCore.Qt.ContextMenuPolicy.CustomContextMenu)
         if self.has_edit_icon:
             create_widget_action(
                 self.list_view,
@@ -247,7 +247,7 @@ class FolderLibraryItem(MediaManagerItem):
         for folder in folders:
             folder_item = QtWidgets.QTreeWidgetItem()
             folder_item.setText(0, folder.name)
-            folder_item.setData(0, QtCore.Qt.UserRole, folder)
+            folder_item.setData(0, QtCore.Qt.ItemDataRole.UserRole, folder)
             folder_item.setIcon(0, folder_icon)
             if parent_id is None:
                 self.list_view.addTopLevelItem(folder_item)
@@ -271,8 +271,8 @@ class FolderLibraryItem(MediaManagerItem):
             if self.expand_folder(folder_id, child):
                 child.setExpanded(True)
                 return_value = True
-        if isinstance(root_item.data(0, QtCore.Qt.UserRole), self.folder_class):
-            if root_item.data(0, QtCore.Qt.UserRole).id == folder_id:
+        if isinstance(root_item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.folder_class):
+            if root_item.data(0, QtCore.Qt.ItemDataRole.UserRole).id == folder_id:
                 return True
         return return_value
 
@@ -391,10 +391,10 @@ class FolderLibraryItem(MediaManagerItem):
         """
         self.application.set_normal_cursor()
         if target_folder:
-            target_folder = target_folder.data(0, QtCore.Qt.UserRole)
+            target_folder = target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole)
         elif self.current_folder:
             target_folder = self.current_folder
-        if not target_folder and self.choose_folder_form.exec() == QtWidgets.QDialog.Accepted:
+        if not target_folder and self.choose_folder_form.exec() == QtWidgets.QDialog.DialogCode.Accepted:
             target_folder = self.choose_folder_form.folder
             if self.choose_folder_form.is_new_folder:
                 self.manager.save_object(target_folder)
@@ -430,25 +430,25 @@ class FolderLibraryItem(MediaManagerItem):
         items_to_move = self.list_view.selectedItems()
         # Determine group to move images to
         target_folder = target
-        if target_folder is not None and isinstance(target_folder.data(0, QtCore.Qt.UserRole), self.item_class):
+        if target_folder is not None and isinstance(target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole), self.item_class):
             target_folder = target.parent()
         # Move to toplevel
         if target_folder is None:
             target_folder = self.list_view.invisibleRootItem()
-            target_folder.setData(0, QtCore.Qt.UserRole, self.folder_class())
-            target_folder.data(0, QtCore.Qt.UserRole).id = 0
+            target_folder.setData(0, QtCore.Qt.ItemDataRole.UserRole, self.folder_class())
+            target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole).id = 0
         # Move images in the treeview
         items_to_save = []
         for item in items_to_move:
-            if isinstance(item.data(0, QtCore.Qt.UserRole), self.item_class):
+            if isinstance(item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.item_class):
                 if isinstance(item.parent(), QtWidgets.QTreeWidgetItem):
                     item.parent().removeChild(item)
                 else:
                     self.list_view.invisibleRootItem().removeChild(item)
                 target_folder.addChild(item)
                 item.setSelected(True)
-                item_data = item.data(0, QtCore.Qt.UserRole)
-                item_data.folder_id = target_folder.data(0, QtCore.Qt.UserRole).id
+                item_data = item.data(0, QtCore.Qt.ItemDataRole.UserRole)
+                item_data.folder_id = target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole).id
                 items_to_save.append(item_data)
         target_folder.setExpanded(True)
         # Update the folder ID's of the items in the database
@@ -457,9 +457,9 @@ class FolderLibraryItem(MediaManagerItem):
         sort_folders = []
         sort_items = []
         for item in target_folder.takeChildren():
-            if isinstance(item.data(0, QtCore.Qt.UserRole), self.folder_class):
+            if isinstance(item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.folder_class):
                 sort_folders.append(item)
-            if isinstance(item.data(0, QtCore.Qt.UserRole), self.item_class):
+            if isinstance(item.data(0, QtCore.Qt.ItemDataRole.UserRole), self.item_class):
                 sort_items.append(item)
         sort_folders.sort(key=lambda item: get_natural_key(item.text(0)))
         target_folder.addChildren(sort_folders)

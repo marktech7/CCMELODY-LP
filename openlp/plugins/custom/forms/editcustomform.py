@@ -44,8 +44,8 @@ class EditCustomForm(QtWidgets.QDialog, Ui_CustomEditDialog):
         """
         Constructor
         """
-        super(EditCustomForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                             QtCore.Qt.WindowCloseButtonHint)
+        super(EditCustomForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                             QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.manager = manager
         self.media_item = media_item
         self.setup_ui(self)

@@ -658,10 +658,10 @@ def test_on_delete_click_response_no(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects no from the message box
     """
-    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.No
+    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.No
     media_item.bible = MagicMock()
     with patch('openlp.plugins.bibles.lib.mediaitem.QtWidgets.QMessageBox.question',
-               return_value=QtWidgets.QMessageBox.No) as mocked_qmessage_box:
+               return_value=QtWidgets.QMessageBox.StandardButton.No) as mocked_qmessage_box:
 
         # WHEN: on_delete_click is called
         media_item.on_delete_click()
@@ -675,10 +675,10 @@ def test_on_delete_click_response_yes(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects yes from the message box
     """
-    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.Yes
+    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.Yes
     media_item.bible = MagicMock()
     with patch('openlp.plugins.bibles.lib.mediaitem.QtWidgets.QMessageBox.question',
-               return_value=QtWidgets.QMessageBox.Yes) as mocked_qmessage_box, \
+               return_value=QtWidgets.QMessageBox.StandardButton.Yes) as mocked_qmessage_box, \
             patch.object(media_item, 'reload_bibles'):
 
         # WHEN: on_delete_click is called
@@ -882,7 +882,7 @@ def test_on_second_combo_box_index_changed_single_to_dual_user_abort(media_item:
     media_item.select_book_combo_box = MagicMock()
     with patch.object(media_item, 'initialise_advanced_bible'), \
             patch('openlp.plugins.bibles.lib.mediaitem.critical_error_message_box',
-                  return_value=QtWidgets.QMessageBox.No) as mocked_critical_error_message_box:
+                  return_value=QtWidgets.QMessageBox.StandardButton.No) as mocked_critical_error_message_box:
 
         # WHEN: The previously selected bible is None and the new selection is a bible and the user selects yes
         #       to the dialog box
@@ -912,7 +912,7 @@ def test_on_second_combo_box_index_changed_single_to_dual(media_item: BibleMedia
     with patch.object(media_item, 'initialise_advanced_bible') as mocked_initialise_advanced_bible, \
             patch.object(media_item, 'display_results'), \
             patch('openlp.plugins.bibles.lib.mediaitem.critical_error_message_box',
-                  return_value=QtWidgets.QMessageBox.Yes) as mocked_critical_error_message_box:
+                  return_value=QtWidgets.QMessageBox.StandardButton.Yes) as mocked_critical_error_message_box:
 
         # WHEN: The previously selected bible is None and the new selection is a bible and the user selects yes
         #       to the dialog box
@@ -942,7 +942,7 @@ def test_on_second_combo_box_index_changed_dual_to_single(media_item: BibleMedia
     with patch.object(media_item, 'initialise_advanced_bible') as mocked_initialise_advanced_bible, \
             patch.object(media_item, 'display_results'), \
             patch('openlp.plugins.bibles.lib.mediaitem.critical_error_message_box',
-                  return_value=QtWidgets.QMessageBox.Yes) as mocked_critical_error_message_box:
+                  return_value=QtWidgets.QMessageBox.StandardButton.Yes) as mocked_critical_error_message_box:
         # WHEN: The previously is a bible new selection is None and the user selects yes
         #       to the dialog box
         media_item.second_bible = mocked_bible_1

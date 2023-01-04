@@ -238,7 +238,7 @@ class SongsPlugin(Plugin):
         progress_dialog = QtWidgets.QProgressDialog(
             translate('SongsPlugin', 'Reindexing songs...'), UiStrings().Cancel, 0, max_songs, self.main_window)
         progress_dialog.setWindowTitle(translate('SongsPlugin', 'Reindexing songs'))
-        progress_dialog.setWindowModality(QtCore.Qt.WindowModal)
+        progress_dialog.setWindowModality(QtCore.Qt.WindowType.WindowModality.WindowModal)
         songs = self.manager.get_all_objects(Song)
         for number, song in enumerate(songs):
             clean_song(self.manager, song)
@@ -361,7 +361,7 @@ class SongsPlugin(Plugin):
             return
         self.application.process_events()
         progress = QtWidgets.QProgressDialog(self.main_window)
-        progress.setWindowModality(QtCore.Qt.WindowModal)
+        progress.setWindowModality(QtCore.Qt.WindowType.WindowModality.WindowModal)
         progress.setWindowTitle(translate('SongsPlugin', 'Importing Songs'))
         progress.setLabelText(UiStrings().StartingImport)
         progress.setCancelButton(None)

@@ -462,7 +462,7 @@ class BibleMediaItem(MediaManagerItem):
                 translate('BiblesPlugin.MediaItem',
                           'Are you sure you want to completely delete "{bible}" Bible from OpenLP?\n\n'
                           'You will need to re-import this Bible to use it again.').format(bible=self.bible.name),
-                    defaultButton=QtWidgets.QMessageBox.No) == QtWidgets.QMessageBox.No:
+                    defaultButton=QtWidgets.QMessageBox.StandardButton.No) == QtWidgets.QMessageBox.StandardButton.No:
                 return
             self.plugin.manager.delete_bible(self.bible.name)
             self.reload_bibles()
@@ -534,7 +534,7 @@ class BibleMediaItem(MediaManagerItem):
         current_index = self.results_view_tab.currentIndex()
         for item in self.list_view.selectedItems():
             self.list_view.takeItem(self.list_view.row(item))
-        results = [item.data(QtCore.Qt.UserRole) for item in self.list_view.allItems()]
+        results = [item.data(QtCore.Qt.ItemDataRole.UserRole) for item in self.list_view.allItems()]
         if current_index == ResultsTab.Saved:
             self.saved_results = results
         elif current_index == ResultsTab.Search:
@@ -548,7 +548,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         for verse in self.list_view.selectedItems():
-            self.saved_results.append(verse.data(QtCore.Qt.UserRole))
+            self.saved_results.append(verse.data(QtCore.Qt.ItemDataRole.UserRole))
         self.on_results_view_tab_total_update(ResultsTab.Saved)
 
     def on_style_combo_box_index_changed(self, index):
@@ -591,7 +591,7 @@ class BibleMediaItem(MediaManagerItem):
                     message=translate('BiblesPlugin.MediaItem',
                                       'OpenLP cannot combine single and dual Bible verse search results. '
                                       'Do you want to clear your saved results?'),
-                        parent=self, question=True) == QtWidgets.QMessageBox.Yes:
+                        parent=self, question=True) == QtWidgets.QMessageBox.StandardButton.Yes:
                     self.saved_results = []
                     self.on_results_view_tab_total_update(ResultsTab.Saved)
                 else:
@@ -914,7 +914,7 @@ class BibleMediaItem(MediaManagerItem):
         list_widget_items = []
         for data in items:
             bible_verse = QtWidgets.QListWidgetItem(data['item_title'])
-            bible_verse.setData(QtCore.Qt.UserRole, data)
+            bible_verse.setData(QtCore.Qt.ItemDataRole.UserRole, data)
             list_widget_items.append(bible_verse)
         return list_widget_items
 
@@ -941,7 +941,7 @@ class BibleMediaItem(MediaManagerItem):
         raw_slides = []
         verses = VerseReferenceList()
         for bitem in items:
-            data = bitem.data(QtCore.Qt.UserRole)
+            data = bitem.data(QtCore.Qt.ItemDataRole.UserRole)
             verses.add(
                 data['book'], data['chapter'], data['verse'], data['version'], data['copyright'], data['permissions'])
             verse_text = self.format_verse(old_chapter, data['chapter'], data['verse'])

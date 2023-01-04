@@ -60,7 +60,7 @@ def test_confirmation_form_yes_button(mocked_reject, mocked_accept, settings):
     buttons = form.findChildren(QtWidgets.QPushButton)
     for button in buttons:
         if 'Yes' in button.text():
-            QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(button, QtCore.Qt.MouseButton.LeftButton)
             break
 
     # THEN: accept is called
@@ -83,7 +83,7 @@ def test_confirmation_form_no_button(mocked_reject, mocked_accept, settings):
     buttons = form.findChildren(QtWidgets.QPushButton)
     for button in buttons:
         if 'No' in button.text():
-            QtTest.QTest.mouseClick(button, QtCore.Qt.LeftButton)
+            QtTest.QTest.mouseClick(button, QtCore.Qt.MouseButton.LeftButton)
             break
 
     # THEN: reject is called

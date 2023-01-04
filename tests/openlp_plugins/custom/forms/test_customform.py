@@ -73,7 +73,7 @@ def test_on_add_button_clicked(form):
     # GIVEN: A mocked QDialog.exec() method
     with patch('PyQt6.QtWidgets.QDialog.exec'):
         # WHEN: Add a new slide.
-        QtTest.QTest.mouseClick(form.add_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.add_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: One slide should be added.
         assert form.slide_list_view.count() == 1, 'There should be one slide added.'
@@ -145,7 +145,7 @@ def test_help(mocked_help, settings):
 
     # WHEN: The Help button is clicked
     QtTest.QTest.mouseClick(custom_form.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Help),
-                            QtCore.Qt.LeftButton)
+                            QtCore.Qt.MouseButton.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()

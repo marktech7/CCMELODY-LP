@@ -36,8 +36,8 @@ class SongUsageDeleteForm(QtWidgets.QDialog, Ui_SongUsageDeleteDialog, RegistryP
         Constructor
         """
         self.manager = manager
-        super(SongUsageDeleteForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint |
-                                                  QtCore.Qt.WindowTitleHint | QtCore.Qt.WindowCloseButtonHint)
+        super(SongUsageDeleteForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                  QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.button_box.clicked.connect(self.on_button_box_clicked)
 
@@ -54,7 +54,7 @@ class SongUsageDeleteForm(QtWidgets.QDialog, Ui_SongUsageDeleteDialog, RegistryP
                                                  translate('SongUsagePlugin.SongUsageDeleteForm',
                                                            'Are you sure you want to delete selected Song Usage data?'),
                                                  defaultButton=QtWidgets.QMessageBox.StandardButton.No)
-            if ret == QtWidgets.QMessageBox.Yes:
+            if ret == QtWidgets.QMessageBox.StandardButton.Yes:
                 delete_date = self.delete_calendar.selectedDate().toPyDate()
                 self.manager.delete_all_objects(SongUsageItem, SongUsageItem.usagedate <= delete_date)
                 self.main_window.information_message(

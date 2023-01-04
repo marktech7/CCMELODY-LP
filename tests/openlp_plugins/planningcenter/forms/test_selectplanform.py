@@ -182,7 +182,7 @@ def test_settings_tab_displayed_when_edit_auth_button_clicked(mocked_settings_fo
     SettingsForm()
     form.exec()
     # WHEN: the edit_auth_button is clicked
-    QtTest.QTest.mouseClick(form.edit_auth_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.edit_auth_button, QtCore.Qt.MouseButton.LeftButton)
     mocked_settings_form_exec.assert_called_once()
 
 
@@ -200,7 +200,7 @@ def test_import_function_called_when_import_button_clicked(mocked_do_import: Mag
     # to index 1 and the "Import New" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
     form.plan_selection_combo_box.setCurrentIndex(4)
-    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN: The on_import_as_new_button_cliced function is called
     mocked_do_import.assert_called_with(update=False)
 
@@ -234,7 +234,7 @@ def test_service_imported_when_import_button_clicked(mocked_date: MagicMock, moc
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is set to
     # index 1 and the "Import New" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN: There should be 5 service items added, 1 song, 3 custom slides (one is a bible
     # title slide), and 1 bible verse
     mocked_finish.assert_called_once()
@@ -272,7 +272,7 @@ def test_service_refreshed_when_refresh_button_clicked(mocked_date: MagicMock, m
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box is
     # set to index 1 and the "Update" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.update_existing_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.update_existing_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN: There should be 5 service items added, 1 song, 3 custom slides (one is a bible
     # title slide), and 1 bible verse
     mocked_finish.assert_called_once()
@@ -310,7 +310,7 @@ def test_other_bible_is_used_when_bible_gui_form_is_blank(mocked_date: MagicMock
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
     # is set to index 1 and the "Import New" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN: There should be 2 bible verse parse attempts
     assert mocked_parse_reference.call_count == 2, '2 bible verses submitted for parsing'
     assert mocked_warning_box.call_count == 0, 'No warnings triggered'
@@ -345,7 +345,7 @@ def test_warning_importing_bible_with_no_bible_available(mocked_date: MagicMock,
     # WHEN: The Service Type combo is set to index 1 and the Select Plan combo box
     # is set to index 1 and the "Import New" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN: There should be 2 bible verse parse attempts
     assert mocked_parse_reference.call_count == 0, '0 bible verses submitted for parsing'
     assert mocked_warning_box.call_count == 2, '2 warnings should be triggered'
@@ -396,7 +396,7 @@ def test_less_mocking_service_refreshed_when_refresh_button_clicked(mocked_date:
     # WHEN:
     # The Service Type combo is set to index 1 and "Import New" button is clicked
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.import_as_new_button, QtCore.Qt.MouseButton.LeftButton)
     # make changes to the now imported service items
     # first, for serviceitem[0] update last_updated in xml_string and change "sweet" to "sublime"
     old_match = re.search('modifiedDate="(.+?)Z*"',
@@ -416,7 +416,7 @@ def test_less_mocking_service_refreshed_when_refresh_button_clicked(mocked_date:
     # last, draw the form again and request refresh
     form.exec()
     form.service_type_combo_box.setCurrentIndex(1)
-    QtTest.QTest.mouseClick(form.update_existing_button, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.update_existing_button, QtCore.Qt.MouseButton.LeftButton)
     # THEN:
     # There should be 4 service items added
     assert len(service_manager.service_items) == 5, '5 items should be in the ServiceManager'

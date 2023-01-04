@@ -277,7 +277,7 @@ def test_accept_no_display_name_no_combine(mocked_critical_error, form):
     Test the accept() method with no display name and no combining
     """
     # GIVEN: A form and no text in the display name edit
-    mocked_critical_error.return_value = QtWidgets.QMessageBox.No
+    mocked_critical_error.return_value = QtWidgets.QMessageBox.StandardButton.No
     with patch.object(form.first_name_edit, 'text') as mocked_first_name_edit_text, \
             patch.object(form.last_name_edit, 'text') as mocked_last_name_edit_text, \
             patch.object(form.display_edit, 'text') as mocked_display_edit_text, \
@@ -308,7 +308,7 @@ def test_accept_no_display_name(mocked_accept, mocked_critical_error, form):
     """
     # GIVEN: A form and no text in the display name edit
     mocked_accept.return_value = True
-    mocked_critical_error.return_value = QtWidgets.QMessageBox.Yes
+    mocked_critical_error.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     with patch.object(form.first_name_edit, 'text') as mocked_first_name_edit_text, \
             patch.object(form.last_name_edit, 'text') as mocked_last_name_edit_text, \
             patch.object(form.display_edit, 'text') as mocked_display_edit_text, \

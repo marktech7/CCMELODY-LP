@@ -144,7 +144,7 @@ def test_password_change(mocked_settings_set_val, mocked_question, form):
     """
     # GIVEN: Warning is accepted and new password set
     form.ccli_password.setText('new_password')
-    mocked_question.return_value = QtWidgets.QMessageBox.Yes
+    mocked_question.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)
@@ -160,7 +160,7 @@ def test_password_change_cancelled(mocked_settings_set_val, mocked_question, for
     """
     # GIVEN: Warning is not accepted and new password set
     form.ccli_password.setText('new_password')
-    mocked_question.return_value = QtWidgets.QMessageBox.No
+    mocked_question.return_value = QtWidgets.QMessageBox.StandardButton.No
     # WHEN: save is invoked
     form.save()
     # THEN: footer should not have been saved (one less call than the change test below)

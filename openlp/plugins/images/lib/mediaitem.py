@@ -151,7 +151,7 @@ class ImageMediaItem(FolderLibraryItem):
         if not file_path.exists():
             tree_item = QtWidgets.QTreeWidgetItem([file_name])
             tree_item.setIcon(0, UiIcons().delete)
-            tree_item.setData(0, QtCore.Qt.UserRole, item)
+            tree_item.setData(0, QtCore.Qt.ItemDataRole.UserRole, item)
             tree_item.setToolTip(0, str(file_path))
         else:
             log.debug('Loading image: {name}'.format(name=item.file_path))
@@ -161,7 +161,7 @@ class ImageMediaItem(FolderLibraryItem):
             else:
                 icon = create_thumb(file_path, thumbnail_path)
             tree_item = QtWidgets.QTreeWidgetItem([file_name])
-            tree_item.setData(0, QtCore.Qt.UserRole, item)
+            tree_item.setData(0, QtCore.Qt.ItemDataRole.UserRole, item)
             tree_item.setIcon(0, icon)
             tree_item.setToolTip(0, str(file_path))
         return tree_item
@@ -197,7 +197,7 @@ class ImageMediaItem(FolderLibraryItem):
             if not items:
                 return False
         # Determine service item title
-        image_item = items[0].data(0, QtCore.Qt.UserRole)
+        image_item = items[0].data(0, QtCore.Qt.ItemDataRole.UserRole)
         if isinstance(image_item, Folder) or len(items) == 1:
             service_item.title = items[0].text(0)
             if not service_item.title:
@@ -224,12 +224,12 @@ class ImageMediaItem(FolderLibraryItem):
         existing_images = []
         # Expand groups to images
         for bitem in items:
-            if isinstance(bitem.data(0, QtCore.Qt.UserRole), Folder) or bitem.data(0, QtCore.Qt.UserRole) is None:
+            if isinstance(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole), Folder) or bitem.data(0, QtCore.Qt.ItemDataRole.UserRole) is None:
                 for index in range(0, bitem.childCount()):
-                    if isinstance(bitem.child(index).data(0, QtCore.Qt.UserRole), Item):
-                        images.append(bitem.child(index).data(0, QtCore.Qt.UserRole))
-            elif isinstance(bitem.data(0, QtCore.Qt.UserRole), Item):
-                images.append(bitem.data(0, QtCore.Qt.UserRole))
+                    if isinstance(bitem.child(index).data(0, QtCore.Qt.ItemDataRole.UserRole), Item):
+                        images.append(bitem.child(index).data(0, QtCore.Qt.ItemDataRole.UserRole))
+            elif isinstance(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole), Item):
+                images.append(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole))
         # Don't try to display empty groups
         if not images:
             return False
@@ -253,7 +253,7 @@ class ImageMediaItem(FolderLibraryItem):
                 translate('ImagePlugin.MediaItem', 'The following image(s) no longer exist: {names}\n'
                           'Do you want to add the other images anyway?'
                           ).format(names='\n'.join(missing_items_file_names))) == \
-                QtWidgets.QMessageBox.No:
+                QtWidgets.QMessageBox.StandardButton.No:
             return False
         # Continue with the existing images.
         for image in existing_images:
@@ -285,10 +285,10 @@ class ImageMediaItem(FolderLibraryItem):
                 self.list_view,
                 translate('ImagePlugin.MediaItem', 'You must select an image to replace the background with.')):
             bitem = self.list_view.selectedItems()[0]
-            if not isinstance(bitem.data(0, QtCore.Qt.UserRole), Item):
+            if not isinstance(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole), Item):
                 # Only continue when an image is selected.
                 return
-            file_path = Path(bitem.data(0, QtCore.Qt.UserRole).file_path)
+            file_path = Path(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole).file_path)
             if file_path.exists():
                 self.live_controller.set_background_image(file_path)
                 self.reset_action.setVisible(True)

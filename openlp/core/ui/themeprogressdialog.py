@@ -54,7 +54,7 @@ class UiThemeProgressDialog(object):
         self.theme_preview_layout.addWidget(self.theme_display)
         self.theme_progress_layout.addWidget(self.preview_area)
         self.label = QtWidgets.QLabel(theme_progress_dialog)
-        self.label.setAlignment(QtCore.Qt.AlignCenter)
+        self.label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.label.setObjectName('label')
         self.theme_progress_layout.addWidget(self.label)
         self.progress_bar = QtWidgets.QProgressBar(theme_progress_dialog)

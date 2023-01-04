@@ -49,7 +49,7 @@ def test_basic_display(form: ServiceNoteForm):
     with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Save)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following input text is returned
     assert form.text_edit.toPlainText() == '', 'The returned text should be empty'
@@ -60,7 +60,7 @@ def test_basic_display(form: ServiceNoteForm):
     with patch('openlp.core.ui.servicenoteform.QtWidgets.QDialog.exec'):
         form.exec()
     ok_widget = form.button_box.button(form.button_box.Save)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following text is returned
     assert form.text_edit.toPlainText() == text, 'The text originally entered should still be there'
@@ -71,7 +71,7 @@ def test_basic_display(form: ServiceNoteForm):
         form.exec()
         form.text_edit.setPlainText(text)
     ok_widget = form.button_box.button(form.button_box.Save)
-    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.MouseButton.LeftButton)
 
     # THEN the following text is returned
     assert form.text_edit.toPlainText() == text, 'The new text should be returned'

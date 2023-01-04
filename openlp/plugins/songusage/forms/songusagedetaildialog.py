@@ -55,7 +55,7 @@ class Ui_SongUsageDetailDialog(object):
         self.date_horizontal_layout.addWidget(self.from_date_calendar)
         self.to_label = QtWidgets.QLabel(self.date_range_group_box)
         self.to_label.setScaledContents(False)
-        self.to_label.setAlignment(QtCore.Qt.AlignCenter)
+        self.to_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignCenter)
         self.to_label.setObjectName('to_label')
         self.date_horizontal_layout.addWidget(self.to_label)
         self.to_date_calendar = QtWidgets.QCalendarWidget(self.date_range_group_box)

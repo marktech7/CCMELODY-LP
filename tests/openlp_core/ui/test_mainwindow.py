@@ -418,7 +418,7 @@ def test_on_search_shortcut_triggered_focuses_widget(main_window):
 def test_on_first_time_wizard_clicked_show_projectors_after(mocked_warning, MockWizard, main_window):
     """Test that the projector manager is shown after the FTW is run"""
     # GIVEN: Main_window, patched things, patched "Yes" as confirmation to re-run wizard, settings to True.
-    mocked_warning.return_value = QtWidgets.QMessageBox.Yes
+    mocked_warning.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     MockWizard.return_value.was_cancelled = False
     main_window.settings.setValue('projector/show after wizard', True)
 
@@ -436,7 +436,7 @@ def test_on_first_time_wizard_clicked_show_projectors_after(mocked_warning, Mock
 def test_on_first_time_wizard_clicked_hide_projectors_after(mocked_warning, MockWizard, main_window):
     """Test that the projector manager is hidden after the FTW is run"""
     # GIVEN: Main_window, patched things, patched "Yes" as confirmation to re-run wizard, settings to False.
-    mocked_warning.return_value = QtWidgets.QMessageBox.Yes
+    mocked_warning.return_value = QtWidgets.QMessageBox.StandardButton.Yes
     MockWizard.return_value.was_cancelled = False
     main_window.settings.setValue('projector/show after wizard', False)
 
@@ -485,7 +485,7 @@ def test_eventFilter(main_window):
     # GIVEN: A file path and a QEvent.
     file_path = str(RESOURCE_PATH / 'church.jpg')
     mocked_file_method = MagicMock(return_value=file_path)
-    event = QtCore.QEvent(QtCore.QEvent.FileOpen)
+    event = QtCore.QEvent(QtCore.QEvent.Type.FileOpen)
     event.file = mocked_file_method
 
     # WHEN: Call the vent method.
@@ -504,7 +504,7 @@ def test_application_activate_event(mocked_is_macosx, main_window):
     """
     # GIVEN: Mac OS X and an ApplicationActivate event
     mocked_is_macosx.return_value = True
-    event = QtCore.QEvent(QtCore.QEvent.ApplicationActivate)
+    event = QtCore.QEvent(QtCore.QEvent.Type.ApplicationActivate)
     main_window.showMinimized()
 
     # WHEN: The icon in the dock is clicked

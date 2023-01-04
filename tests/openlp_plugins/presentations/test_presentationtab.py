@@ -57,9 +57,9 @@ def test_check_boxes(settings):
     form = PresentationTab(None, 'Presentations', None, Mocked_Controllers(True, True), None)
 
     # WHEN: The presentations tab checkboxes are checked and the form saved
-    QtTest.QTest.mouseClick(form.ppt_slide_click_check_box, QtCore.Qt.LeftButton)
-    QtTest.QTest.mouseClick(form.ppt_window_check_box, QtCore.Qt.LeftButton)
-    QtTest.QTest.mouseClick(form.odp_display_check_box, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.ppt_slide_click_check_box, QtCore.Qt.MouseButton.LeftButton)
+    QtTest.QTest.mouseClick(form.ppt_window_check_box, QtCore.Qt.MouseButton.LeftButton)
+    QtTest.QTest.mouseClick(form.odp_display_check_box, QtCore.Qt.MouseButton.LeftButton)
     form.activated = True
     form.save()
     # THEN: The updated values should be stored in the settings
@@ -78,9 +78,9 @@ def test_check_boxes_when_controllers_unavailable(settings):
     form = PresentationTab(None, 'Presentations', None, Mocked_Controllers(False, False), None)
 
     # WHEN: The presentations tab checkboxes are checked and the form saved
-    QtTest.QTest.mouseClick(form.ppt_slide_click_check_box, QtCore.Qt.LeftButton)
-    QtTest.QTest.mouseClick(form.ppt_window_check_box, QtCore.Qt.LeftButton)
-    QtTest.QTest.mouseClick(form.odp_display_check_box, QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(form.ppt_slide_click_check_box, QtCore.Qt.MouseButton.LeftButton)
+    QtTest.QTest.mouseClick(form.ppt_window_check_box, QtCore.Qt.MouseButton.LeftButton)
+    QtTest.QTest.mouseClick(form.odp_display_check_box, QtCore.Qt.MouseButton.LeftButton)
     form.activated = True
     form.save()
     # THEN: The updated values should be unchanged

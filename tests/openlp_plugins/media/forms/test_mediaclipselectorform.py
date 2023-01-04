@@ -85,7 +85,7 @@ def test_click_load_button(form):
         form.exec()
 
         # WHEN: The load button is clicked with no path set
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         mocked_critical_error_message_box.assert_called_with(message='No path was given')
@@ -94,7 +94,7 @@ def test_click_load_button(form):
         mocked_os_path_exists.return_value = False
         form.media_path_combobox.insertItem(0, '/non-existing/test-path.test')
         form.media_path_combobox.setCurrentIndex(0)
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         assert form.media_path_combobox.currentText() == '/non-existing/test-path.test',\
@@ -107,7 +107,7 @@ def test_click_load_button(form):
         form.vlc_media_player.play.return_value = -1
         form.media_path_combobox.insertItem(0, '/existing/test-path.test')
         form.media_path_combobox.setCurrentIndex(0)
-        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.LeftButton)
+        QtTest.QTest.mouseClick(form.load_disc_button, QtCore.Qt.MouseButton.LeftButton)
 
         # THEN: we should get an error
         assert form.media_path_combobox.currentText() == '/existing/test-path.test',\

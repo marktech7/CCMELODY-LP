@@ -38,5 +38,5 @@ def test_splashscreen():
     assert ss.objectName() == 'splashScreen', 'The ObjectName should have be ' \
         'splashScreen'
     assert ss.frameSize() == QtCore.QSize(370, 370), 'The frameSize should be (370, 370)'
-    assert ss.contextMenuPolicy() == QtCore.Qt.PreventContextMenu, 'The ContextMenuPolicy ' \
-        'should have been QtCore.Qt.PreventContextMenu or 4'
+    assert ss.contextMenuPolicy() == QtCore.Qt.ContextMenuPolicy.PreventContextMenu, 'The ContextMenuPolicy ' \
+        'should have been QtCore.Qt.ContextMenuPolicy.PreventContextMenu or 4'

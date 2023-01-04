@@ -191,9 +191,9 @@ class FingerTabBarWidget(QtWidgets.QTabBar):
             self.initStyleOption(option, index)
             tabRect = self.tabRect(index)
             tabRect.moveLeft(10)
-            painter.drawControl(QtWidgets.QStyle.CE_TabBarTabShape, option)
-            painter.drawText(tabRect, QtCore.Qt.AlignVCenter |
-                             QtCore.Qt.TextDontClip,
+            painter.drawControl(QtWidgets.QStyle.ControlElement.CE_TabBarTabShape, option)
+            painter.drawText(tabRect, QtCore.Qt.AlignmentFlag.AlignVCenter |
+                             QtCore.Qt.TextFlag.TextDontClip,
                              self.tabText(index))
         painter.end()
 
@@ -234,8 +234,8 @@ class SourceSelectTabs(QtWidgets.QDialog):
         :param projectordb: ProjectorDB session to use
         """
         log.debug('Initializing SourceSelectTabs()')
-        super(SourceSelectTabs, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                               QtCore.Qt.WindowCloseButtonHint)
+        super(SourceSelectTabs, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                               QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setMinimumWidth(350)
         self.projectordb = projectordb
         self.edit = edit
@@ -390,8 +390,8 @@ class SourceSelectSingle(QtWidgets.QDialog):
         """
         log.debug('Initializing SourceSelectSingle()')
         self.projectordb = projectordb
-        super(SourceSelectSingle, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                                 QtCore.Qt.WindowCloseButtonHint)
+        super(SourceSelectSingle, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+                                                 QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.edit = edit
         if self.edit:
             self.title = translate('OpenLP.SourceSelectForm', 'Edit Projector Source Text')

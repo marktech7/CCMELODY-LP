@@ -53,7 +53,7 @@ class AlignmentTransitionsPage(GridLayoutPage):
         self.layout.addWidget(self.vertical_combo_box, 1, 1, 1, 3)
         # Line
         self.line = QtWidgets.QFrame(self)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
+        self.line.setFrameShape(QtWidgets.QFrame.Shape.HLine)
         self.line.setObjectName('line')
         self.layout.addWidget(self.line, 2, 0, 1, 4)
         # Transitions

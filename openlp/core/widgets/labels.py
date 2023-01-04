@@ -30,4 +30,4 @@ class FormLabel(QtWidgets.QLabel):
     """
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
