@@ -21,7 +21,7 @@
 """
 The :mod:`ui` module provides the core user interface for OpenLP
 """
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 
 class HideMode(object):

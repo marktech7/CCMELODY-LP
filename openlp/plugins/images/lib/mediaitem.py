@@ -22,7 +22,7 @@
 import logging
 from pathlib import Path
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common import delete_file, get_images_filter
 from openlp.core.common.applocation import AppLocation

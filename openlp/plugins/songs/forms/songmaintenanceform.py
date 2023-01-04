@@ -20,7 +20,7 @@
 ##########################################################################
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from sqlalchemy.sql import and_
 
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate

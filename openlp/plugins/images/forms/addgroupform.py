@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2023 OpenLP Developers                              #
+# Copyright (c) 2008-2022 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -18,48 +18,54 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-"""
-This module contains the song book form
-"""
 
 from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.plugins.songs.forms.songbookdialog import Ui_SongBookDialog
+from openlp.plugins.images.forms.addgroupdialog import Ui_AddGroupDialog
 
 
-class SongBookForm(QtWidgets.QDialog, Ui_SongBookDialog):
+class AddGroupForm(QtWidgets.QDialog, Ui_AddGroupDialog):
     """
-    Class documentation goes here.
+    This class implements the 'Add group' form for the Images plugin.
     """
     def __init__(self, parent=None):
         """
         Constructor
         """
-        super(SongBookForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+        super(AddGroupForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
                                            QtCore.Qt.WindowCloseButtonHint)
         self.setup_ui(self)
 
-    def exec(self, clear=True):
+    def exec(self, clear=True, show_top_level_group=False, selected_group=None):
         """
-        Execute the song book form.
+        Show the form.
 
-        :param clear: Clear the fields on the form before displaying it.
+        :param clear:  Set to False if the text input box should not be cleared when showing the dialog (default: True).
+        :param show_top_level_group:  Set to True when "-- Top level group --" should be showed as first item
+            (default: False).
+        :param selected_group: The ID of the group that should be selected by default when showing the dialog.
         """
         if clear:
             self.name_edit.clear()
-            self.publisher_edit.clear()
         self.name_edit.setFocus()
+        if show_top_level_group and not self.parent_group_combobox.top_level_group_added:
+            self.parent_group_combobox.insertItem(0, translate('ImagePlugin.MediaItem', '-- Top-level group --'), 0)
+            self.parent_group_combobox.top_level_group_added = True
+        if selected_group is not None:
+            for i in range(self.parent_group_combobox.count()):
+                if self.parent_group_combobox.itemData(i) == selected_group:
+                    self.parent_group_combobox.setCurrentIndex(i)
         return QtWidgets.QDialog.exec(self)
 
     def accept(self):
         """
-        Override the inherited method to check that the name of the book has been typed in.
+        Override the accept() method from QDialog to make sure something is entered in the text input box.
         """
         if not self.name_edit.text():
-            critical_error_message_box(
-                message=translate('SongsPlugin.SongBookForm', 'You need to type in a name for the book.'))
+            critical_error_message_box(message=translate('ImagePlugin.AddGroupForm',
+                                                         'You need to type in a group name.'))
             self.name_edit.setFocus()
             return False
         else:

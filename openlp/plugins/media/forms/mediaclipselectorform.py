@@ -25,7 +25,7 @@ from datetime import datetime
 from pathlib import Path
 from time import sleep
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
@@ -129,7 +129,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
         if is_win():
             self.vlc_media_player.set_hwnd(win_id)
         elif is_macosx():
-            # We have to use 'set_nsobject' since Qt5 on OSX uses Cocoa
+            # We have to use 'set_nsobject' since Qt6 on OSX uses Cocoa
             # framework and not the old Carbon.
             self.vlc_media_player.set_nsobject(win_id)
         else:

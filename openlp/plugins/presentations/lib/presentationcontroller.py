@@ -22,7 +22,7 @@ import logging
 import shutil
 from pathlib import Path
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.common import Singleton, md5_hash, sha256_file_hash
 from openlp.core.common.applocation import AppLocation
@@ -521,7 +521,7 @@ class PresentationController(object):
         """
         Return whether the controller is currently enabled
         """
-        if Registry().get('settings').value('presentations/' + self.name) == QtCore.Qt.Checked:
+        if Registry().get('settings').value('presentations/' + self.name) == QtCore.Qt.CheckState.Checked:
             return self.is_available()
         else:
             return False

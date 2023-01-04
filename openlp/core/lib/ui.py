@@ -23,7 +23,7 @@ The :mod:`ui` module provides standard UI components for OpenLP.
 """
 import logging
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
@@ -268,7 +268,7 @@ def create_action(parent, name, **kwargs):
     ``triggers``
         A slot which is connected to the actions ``triggered()`` slot.
     """
-    action = QtWidgets.QAction(parent)
+    action = QtGui.QAction(parent)
     action.setObjectName(name)
     if is_macosx():
         action.setIconVisibleInMenu(False)

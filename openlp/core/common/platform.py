@@ -110,7 +110,7 @@ def is_xorg_platform():
 
     :return: True if the Qt is running on X.org/XWayland display server (Linux/*nix), otherwise False.
     """
-    from PyQt5 import QtGui
+    from PyQt6 import QtGui
     return QtGui.QGuiApplication.platformName() == 'xcb'
 
 

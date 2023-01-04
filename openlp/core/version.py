@@ -27,7 +27,7 @@ import sys
 from collections import OrderedDict
 from datetime import date
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import get_web_page
@@ -42,7 +42,7 @@ CONNECTION_TIMEOUT = 30
 CONNECTION_RETRIES = 2
 LIBRARIES = OrderedDict([
     ('Python', ('platform', 'python_version')),
-    ('PyQt5', ('PyQt5.Qt', 'PYQT_VERSION_STR')),
+    ('PyQt6', ('PyQt6.Qt', 'PYQT_VERSION_STR')),
     ('SQLAlchemy', ('sqlalchemy',)),
     ('Alembic', ('alembic',)),
     ('BeautifulSoup', ('bs4',)),

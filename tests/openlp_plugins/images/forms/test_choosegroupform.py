@@ -24,7 +24,7 @@ Tests for choosegroupform from the openlp.plugins.images.forms package.
 import pytest
 from unittest.mock import MagicMock
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.images.forms.choosegroupform import ChooseGroupForm

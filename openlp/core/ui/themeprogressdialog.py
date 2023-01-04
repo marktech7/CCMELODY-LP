@@ -18,7 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.display.render import ThemePreviewRenderer

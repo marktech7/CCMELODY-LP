@@ -28,7 +28,7 @@ It is implemented as a QDialog containing:
 After instantiating a ConfirmationForm object the calling code must call exec() on the instance.
 This runs the Qt dialog, which returns the usual 0 (for No) or 1 (for Yes)
 """
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.ui.confirmationdialog import Ui_ConfirmationDialog
 

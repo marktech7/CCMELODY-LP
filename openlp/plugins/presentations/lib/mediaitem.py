@@ -22,7 +22,7 @@ import logging
 import os
 import shutil
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from pathlib import Path
 
 from openlp.core.common import sha256_file_hash
@@ -168,7 +168,7 @@ class PresentationMediaItem(FolderLibraryItem):
         if self.display_type_combo_box.count() > 1:
             self.display_type_combo_box.insertItem(0, self.automatic, userData='automatic')
             self.display_type_combo_box.setCurrentIndex(0)
-        if self.settings.value('presentations/override app') == QtCore.Qt.Checked:
+        if self.settings.value('presentations/override app') == QtCore.Qt.CheckState.Checked:
             self.presentation_widget.show()
         else:
             self.presentation_widget.hide()

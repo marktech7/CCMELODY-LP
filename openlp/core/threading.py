@@ -21,7 +21,7 @@
 """
 The :mod:`openlp.core.threading` module contains some common threading code
 """
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry

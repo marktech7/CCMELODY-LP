@@ -24,7 +24,7 @@ import re
 from enum import IntEnum, unique
 from typing import Any
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.enum import BibleSearch, DisplayStyle, LayoutStyle
 from openlp.core.common.i18n import UiStrings, get_locale_key, translate

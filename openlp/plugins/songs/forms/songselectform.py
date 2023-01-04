@@ -24,7 +24,7 @@ The :mod:`~openlp.plugins.songs.forms.songselectform` module contains the GUI fo
 import logging
 import re
 
-from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
+from PyQt6 import QtCore, QtWidgets, QtWebEngineWidgets
 from sqlalchemy.sql import and_
 from tempfile import TemporaryDirectory
 

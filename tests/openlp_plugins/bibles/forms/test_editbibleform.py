@@ -23,7 +23,7 @@ Package to test the openlp.plugins.bibles.forms.editbibleform package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets, QtTest, QtCore
+from PyQt6 import QtWidgets, QtTest, QtCore
 
 from openlp.plugins.bibles.forms.editbibleform import EditBibleForm
 

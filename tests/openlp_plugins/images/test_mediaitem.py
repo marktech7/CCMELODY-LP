@@ -25,7 +25,7 @@ from pathlib import Path
 from unittest.mock import ANY, MagicMock, patch
 
 import pytest
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.enum import ImageThemeMode

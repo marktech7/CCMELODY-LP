@@ -27,7 +27,7 @@ import re
 from datetime import date
 from zipfile import ZipFile
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.httputils import download_file, get_web_page, get_openlp_user_agent

@@ -21,7 +21,7 @@
 """
 Package to test the openlp.core.ui package.
 """
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.ui.splashscreen import SplashScreen
 

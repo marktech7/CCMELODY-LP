@@ -24,7 +24,7 @@ This module contains tests for the lib submodule of the Songs plugin.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from openlp.core.common.enum import SongFirstSlideMode
 
 from openlp.core.common.registry import Registry
@@ -86,12 +86,12 @@ def test_save_check_box_settings(form):
     Test check box options are correctly saved
     """
     # GIVEN: A arrangement of enabled/disabled check boxes
-    form.on_search_as_type_check_box_changed(QtCore.Qt.Unchecked)
-    form.on_tool_bar_active_check_box_changed(QtCore.Qt.Checked)
-    form.on_update_on_edit_check_box_changed(QtCore.Qt.Unchecked)
-    form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
-    form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
-    form.on_auto_play_check_box_changed(QtCore.Qt.Checked)
+    form.on_search_as_type_check_box_changed(QtCore.Qt.CheckState.Unchecked)
+    form.on_tool_bar_active_check_box_changed(QtCore.Qt.CheckState.Checked)
+    form.on_update_on_edit_check_box_changed(QtCore.Qt.CheckState.Unchecked)
+    form.on_add_from_service_check_box_changed(QtCore.Qt.CheckState.Checked)
+    form.on_disable_chords_import_check_box_changed(QtCore.Qt.CheckState.Unchecked)
+    form.on_auto_play_check_box_changed(QtCore.Qt.CheckState.Checked)
     # WHEN: Save is invoked
     form.save()
     # THEN: The correct values should be stored in the settings

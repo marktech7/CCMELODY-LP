@@ -21,7 +21,7 @@
 """
 The list of shortcuts within a dialog.
 """
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box
@@ -44,7 +44,7 @@ class CaptureShortcutButton(QtWidgets.QPushButton):
         Block the ``Key_Space`` key, so that the button will not change the
         checked state.
         """
-        if event.key() == QtCore.Qt.Key_Space and self.isChecked():
+        if event.key() == QtCore.Qt.Key.Key_Space and self.isChecked():
             # Ignore the event, so that the parent can take care of this.
             event.ignore()
 

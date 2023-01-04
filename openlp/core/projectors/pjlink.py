@@ -49,7 +49,7 @@ import logging
 from codecs import decode
 from copy import copy
 
-from PyQt5 import QtCore, QtNetwork
+from PyQt6 import QtCore, QtNetwork
 
 from openlp.core.common import qmd5_hash
 from openlp.core.common.i18n import translate

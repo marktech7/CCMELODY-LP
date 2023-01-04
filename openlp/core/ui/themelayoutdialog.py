@@ -21,7 +21,7 @@
 """
 The layout of the theme
 """
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import create_button_box

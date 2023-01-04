@@ -43,14 +43,14 @@ exceptionform.VLC_VERSION = 'VLC Test'
 MAIL_ITEM_TEXT = ('**OpenLP Bug Report**\nVersion: Trunk Test\n\n--- Details of the Exception. ---\n\n'
                   'Description Test\n\n --- Exception Traceback ---\nopenlp: Traceback Test\n'
                   '--- System information ---\nPlatform: Nose Test\n\n--- Library Versions ---\n'
-                  'Python: Python Test\nQt5: Qt5 Test\nPyQt5: PyQt5 Test\n'
+                  'Python: Python Test\nQt6: Qt6 Test\nPyQt6: PyQt6 Test\n'
                   'SQLAlchemy: SQLAlchemy Test\nAlembic: Alembic Test\nBeautifulSoup: BeautifulSoup Test\n'
                   'lxml: ETree Test\nChardet: Chardet Test\nPyEnchant: PyEnchant Test\nMako: Mako Test\n'
                   'pyICU: pyICU Test\nVLC: VLC Test\nPyUNO: UNO Bridge Test\n')
 LIBRARY_VERSIONS = OrderedDict([
     ('Python', 'Python Test'),
-    ('Qt5', 'Qt5 Test'),
-    ('PyQt5', 'PyQt5 Test'),
+    ('Qt6', 'Qt6 Test'),
+    ('PyQt6', 'PyQt6 Test'),
     ('SQLAlchemy', 'SQLAlchemy Test'),
     ('Alembic', 'Alembic Test'),
     ('BeautifulSoup', 'BeautifulSoup Test'),

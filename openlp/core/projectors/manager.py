@@ -26,7 +26,7 @@ Provides the functions for the display/control of Projectors.
 
 import logging
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
@@ -417,7 +417,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         Builds menu for 'Select Input' option, then calls the selected projector
         item to change input source.
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         self.get_settings()  # In case the dialog interface setting was changed
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
@@ -443,7 +443,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         Calls edit dialog to add a new projector to the database
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         self.projector_form.exec()
 
@@ -490,7 +490,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         Deletes a projector from the list and the database
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
         if list_item is None:
@@ -567,7 +567,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         Calls edit dialog with selected projector to edit information
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
         projector = list_item.data(QtCore.Qt.UserRole)
@@ -621,7 +621,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         Builds message box with projector status information
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         lwi = self.projector_list_widget.item(self.projector_list_widget.currentRow())
         projector = lwi.data(QtCore.Qt.UserRole)
@@ -701,7 +701,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         """
         Calls edit dialog as readonly with selected projector to show information
 
-        :param opt: Needed by PyQt5
+        :param opt: Needed by PyQt6
         """
         list_item = self.projector_list_widget.item(self.projector_list_widget.currentRow())
         projector = list_item.data(QtCore.Qt.UserRole)
@@ -758,7 +758,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         Add a projector from the edit dialog
 
         :param ip: IP address of new record item to find
-        :param opts: Needed by PyQt5
+        :param opts: Needed by PyQt6
         """
         log.debug(f'add_projector_from_wizard(ip={ip})')
         item = self.projectordb.get_projector_by_ip(ip)
@@ -839,7 +839,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
         return self.update_icons()
 
     def get_toolbar_item(self, name, enabled=False, hidden=False):
-        item = self.one_toolbar.findChild(QtWidgets.QAction, name)
+        item = self.one_toolbar.findChild(QtGui.QAction, name)
         if item == 0:
             log.debug(f'No item found with name "{name}"')
             return

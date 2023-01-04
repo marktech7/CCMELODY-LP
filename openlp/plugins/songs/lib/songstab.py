@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.enum import SongFirstSlideMode
@@ -236,28 +236,28 @@ class SongsTab(SettingsTab):
         self.footer_reset_button.setText(translate('SongsPlugin.SongsTab', 'Reset Template'))
 
     def on_search_as_type_check_box_changed(self, check_state):
-        self.song_search = (check_state == QtCore.Qt.Checked)
+        self.song_search = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_tool_bar_active_check_box_changed(self, check_state):
-        self.tool_bar = (check_state == QtCore.Qt.Checked)
+        self.tool_bar = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_update_on_edit_check_box_changed(self, check_state):
-        self.update_edit = (check_state == QtCore.Qt.Checked)
+        self.update_edit = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_add_from_service_check_box_changed(self, check_state):
-        self.update_load = (check_state == QtCore.Qt.Checked)
+        self.update_load = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_first_slide_mode_combo_box_changed(self, index):
         self.first_slide_mode = SongFirstSlideMode(index)
 
     def on_auto_play_check_box_changed(self, check_state):
-        self.auto_play = (check_state == QtCore.Qt.Checked)
+        self.auto_play = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_disable_chords_import_check_box_changed(self, check_state):
-        self.disable_chords_import = (check_state == QtCore.Qt.Checked)
+        self.disable_chords_import = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_song_key_warning_check_box_changed(self, check_state):
-        self.song_key_warning = (check_state == QtCore.Qt.Checked)
+        self.song_key_warning = (check_state == QtCore.Qt.CheckState.Checked)
 
     def on_english_notation_button_clicked(self):
         self.chord_notation = 'english'

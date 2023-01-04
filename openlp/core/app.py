@@ -35,7 +35,7 @@ from pathlib import Path
 from shutil import copytree, move
 from traceback import format_exception
 
-from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets  # noqa
+from PyQt6 import QtCore, QtWebEngineCore, QtWidgets  # noqa
 
 from openlp.core.api.deploy import check_for_remote_update
 from openlp.core.common.applocation import AppLocation
@@ -327,7 +327,7 @@ def set_up_web_engine_cache(web_cache_path):
     :param Path web_cache_path: The folder for the web engine files
     :rtype: None
     """
-    web_engine_profile = QtWebEngineWidgets.QWebEngineProfile.defaultProfile()
+    web_engine_profile = QtWebEngineCore.QWebEngineProfile.defaultProfile()
     web_engine_profile.setCachePath(str(web_cache_path))
     web_engine_profile.setPersistentStoragePath(str(web_cache_path))
 
@@ -408,8 +408,6 @@ def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
                 qt_args[platform_index + 1] += ' windows:dpiawareness=0'
             except ValueError:
                 qt_args.extend(['-platform', 'windows:dpiawareness=0'])
-    else:
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
     if hidpi_mode == HiDPIMode.Default:
         no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                          and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
@@ -438,8 +436,6 @@ def apply_dpi_adjustments_stage_application(hidpi_mode: HiDPIMode, application: 
             font = application.font()
             font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
             application.setFont(font)
-    if hidpi_mode != HiDPIMode.Windows_Unaware:
-        application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 
 def setup_portable_settings(portable_path: Path | str | None) -> Settings:
@@ -514,7 +510,7 @@ def main():
     # Instantiating QCoreApplication
     init_webview_custom_schemes()
     application = QtWidgets.QApplication(qt_args)
-    application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
+    application.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DontCreateNativeWidgetSiblings, True)
     # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
     apply_dpi_adjustments_stage_application(hidpi_mode, application)
     if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):

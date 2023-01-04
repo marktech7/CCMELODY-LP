@@ -30,7 +30,7 @@ from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel, delete_file, sha256_file_hash
 from openlp.core.common.actions import ActionList, CategoryOrder
@@ -89,19 +89,19 @@ class ServiceManagerList(QtWidgets.QTreeWidget):
         """
         if isinstance(event, QtGui.QKeyEvent):
             # here accept the event and do something
-            if event.key() == QtCore.Qt.Key_Up:
+            if event.key() == QtCore.Qt.Key.Key_Up:
                 self.service_manager.on_move_selection_up()
                 event.accept()
-            elif event.key() == QtCore.Qt.Key_Down:
+            elif event.key() == QtCore.Qt.Key.Key_Down:
                 self.service_manager.on_move_selection_down()
                 event.accept()
-            elif event.key() == QtCore.Qt.Key_Right:
+            elif event.key() == QtCore.Qt.Key.Key_Right:
                 self.service_manager.on_expand_selection()
                 event.accept()
-            elif event.key() == QtCore.Qt.Key_Left:
+            elif event.key() == QtCore.Qt.Key.Key_Left:
                 self.service_manager.on_collapse_selection()
                 event.accept()
-            elif event.key() == QtCore.Qt.Key_Delete:
+            elif event.key() == QtCore.Qt.Key.Key_Delete:
                 self.service_manager.on_delete_from_service()
                 event.accept()
             event.ignore()
@@ -270,7 +270,7 @@ class Ui_ServiceManager(object):
         # Add AutoPlay menu actions
         self.auto_play_slides_menu = QtWidgets.QMenu(translate('OpenLP.ServiceManager', '&Auto play slides'))
         self.menu.addMenu(self.auto_play_slides_menu)
-        auto_play_slides_group = QtWidgets.QActionGroup(self.auto_play_slides_menu)
+        auto_play_slides_group = QtGui.QActionGroup(self.auto_play_slides_menu)
         auto_play_slides_group.setExclusive(True)
         self.auto_play_slides_loop = create_widget_action(self.auto_play_slides_menu,
                                                           text=translate('OpenLP.ServiceManager', 'Auto play slides '
@@ -981,7 +981,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             if service_item['service_item'].theme is None:
                 theme_action = self.theme_menu.defaultAction()
             else:
-                theme_action = self.theme_menu.findChild(QtWidgets.QAction, service_item['service_item'].theme)
+                theme_action = self.theme_menu.findChild(QtGui.QAction, service_item['service_item'].theme)
             if theme_action is not None:
                 theme_action.setChecked(True)
         self.menu.exec(self.service_manager_list.mapToGlobal(point))
@@ -1824,7 +1824,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.theme_combo_box.clear()
         self.theme_menu.clear()
         self.theme_combo_box.addItem('')
-        theme_group = QtWidgets.QActionGroup(self.theme_menu)
+        theme_group = QtGui.QActionGroup(self.theme_menu)
         theme_group.setExclusive(True)
         theme_group.setObjectName('theme_group')
         # Create a "Default" theme, which allows the user to reset the item's theme to the service theme or global

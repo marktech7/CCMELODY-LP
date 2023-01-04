@@ -23,7 +23,7 @@ The Theme wizard
 """
 import logging
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import is_not_image_file
 from openlp.core.common.enum import ServiceItemType

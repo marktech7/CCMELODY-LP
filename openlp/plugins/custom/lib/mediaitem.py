@@ -21,7 +21,7 @@
 import logging
 from typing import Any
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, func, or_
 
 from openlp.core.common.enum import CustomSearch

@@ -28,7 +28,7 @@ import base64
 from enum import IntEnum
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 

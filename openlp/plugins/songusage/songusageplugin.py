@@ -22,7 +22,7 @@
 import logging
 from datetime import datetime
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.state import State
 from openlp.core.common.actions import ActionList

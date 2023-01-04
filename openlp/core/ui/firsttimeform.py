@@ -30,7 +30,7 @@ import urllib.request
 from pathlib import Path
 from tempfile import gettempdir
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.api.deploy import get_latest_size, download_and_install
 from openlp.core.common import trace_error_handler
@@ -209,7 +209,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
                 self.application.process_events()
                 item = QtWidgets.QListWidgetItem(song['title'], self.songs_list_widget)
                 item.setData(QtCore.Qt.UserRole, (song['file_name'], song['sha256']))
-                item.setCheckState(QtCore.Qt.Unchecked)
+                item.setCheckState(QtCore.Qt.CheckState.Unchecked)
                 item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
             for lang in config['bibles'].values():
                 self.application.process_events()
@@ -218,7 +218,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
                     self.application.process_events()
                     item = QtWidgets.QTreeWidgetItem(lang_item, [translation['title']])
                     item.setData(0, QtCore.Qt.UserRole, (translation['file_name'], translation['sha256']))
-                    item.setCheckState(0, QtCore.Qt.Unchecked)
+                    item.setCheckState(0, QtCore.Qt.CheckState.Unchecked)
                     item.setFlags(item.flags() | QtCore.Qt.ItemIsUserCheckable)
             self.bibles_tree_widget.expandAll()
             self.application.process_events()
@@ -415,7 +415,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             for i in range(self.songs_list_widget.count()):
                 self.application.process_events()
                 item = self.songs_list_widget.item(i)
-                if item.checkState() == QtCore.Qt.Checked:
+                if item.checkState() == QtCore.Qt.CheckState.Checked:
                     filename, sha256 = item.data(QtCore.Qt.UserRole)
                     size = get_url_file_size('{path}{name}'.format(path=self.songs_url, name=filename))
                     self.max_progress += size
@@ -424,7 +424,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             while iterator.value():
                 self.application.process_events()
                 item = iterator.value()
-                if item.parent() and item.checkState(0) == QtCore.Qt.Checked:
+                if item.parent() and item.checkState(0) == QtCore.Qt.CheckState.Checked:
                     filename, sha256 = item.data(0, QtCore.Qt.UserRole)
                     size = get_url_file_size('{path}{name}'.format(path=self.bibles_url, name=filename))
                     self.max_progress += size
@@ -508,7 +508,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         # Download songs
         for i in range(self.songs_list_widget.count()):
             item = self.songs_list_widget.item(i)
-            if item.checkState() == QtCore.Qt.Checked:
+            if item.checkState() == QtCore.Qt.CheckState.Checked:
                 filename, sha256 = item.data(QtCore.Qt.UserRole)
                 self._increment_progress_bar(self.downloading.format(name=filename), 0)
                 self.previous_size = 0
@@ -520,7 +520,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         bibles_iterator = QtWidgets.QTreeWidgetItemIterator(self.bibles_tree_widget)
         while bibles_iterator.value():
             item = bibles_iterator.value()
-            if item.parent() and item.checkState(0) == QtCore.Qt.Checked:
+            if item.parent() and item.checkState(0) == QtCore.Qt.CheckState.Checked:
                 bible, sha256 = item.data(0, QtCore.Qt.UserRole)
                 self._increment_progress_bar(self.downloading.format(name=bible), 0)
                 self.previous_size = 0
@@ -563,5 +563,5 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Set the status of a plugin.
         """
-        status = PluginStatus.Active if field.checkState() == QtCore.Qt.Checked else PluginStatus.Inactive
+        status = PluginStatus.Active if field.checkState() == QtCore.Qt.CheckState.Checked else PluginStatus.Inactive
         self.settings.setValue(tag, status)

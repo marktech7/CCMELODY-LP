@@ -26,7 +26,7 @@ import logging
 import re
 from shutil import copyfile
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
@@ -345,7 +345,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
 
         :param event: A QtWidgets.QKeyEvent event.
         """
-        if event.key() in (QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return):
+        if event.key() in (QtCore.Qt.Key.Key_Enter, QtCore.Qt.Key.Key_Return):
             if self.authors_combo_box.hasFocus() and self.authors_combo_box.currentText():
                 self.on_author_add_button_clicked()
                 return

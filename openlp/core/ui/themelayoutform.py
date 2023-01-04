@@ -21,7 +21,7 @@
 """
 The form layout
 """
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from .themelayoutdialog import Ui_ThemeLayoutDialog
 

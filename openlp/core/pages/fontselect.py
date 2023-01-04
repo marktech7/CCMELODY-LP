@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.pages.fontselect` module contains the font selection page used in the theme wizard
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.pages import GridLayoutPage

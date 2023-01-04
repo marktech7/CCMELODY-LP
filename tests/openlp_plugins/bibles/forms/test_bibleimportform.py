@@ -24,7 +24,7 @@ Package to test the openlp.plugins.bibles.forms.bibleimportform package.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt5 import QtWidgets, QtTest, QtCore
+from PyQt6 import QtWidgets, QtTest, QtCore
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings

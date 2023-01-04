@@ -22,7 +22,7 @@
 This module contains the topic edit form.
 """
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib.ui import critical_error_message_box

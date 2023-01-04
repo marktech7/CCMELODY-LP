@@ -23,7 +23,7 @@ Package to test the openlp.core.lib.ui package.
 """
 from unittest.mock import MagicMock, call, patch
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.ui import MultipleViewModeList, add_list_view_mode_items_to_toolbar, add_welcome_page, \
@@ -189,7 +189,7 @@ def test_create_action(mocked_log):
                            tooltip='my tooltip', statustip='my statustip', test=1)
 
     # THEN: These properties should be set
-    assert isinstance(action, QtWidgets.QAction)
+    assert isinstance(action, QtGui.QAction)
     assert action.objectName() == 'my_action'
     assert action.text() == 'my text'
     assert isinstance(action.icon(), QtGui.QIcon)
@@ -204,7 +204,7 @@ def test_create_action_on_mac_osx():
     """
     # GIVEN: A dialog and a mocked out is_macosx() method to always return True
     with patch('openlp.core.lib.ui.is_macosx') as mocked_is_macosx, \
-            patch('openlp.core.lib.ui.QtWidgets.QAction') as MockedQAction:
+            patch('openlp.core.lib.ui.QtGui.QAction') as MockedQAction:
         mocked_is_macosx.return_value = True
         mocked_action = MagicMock()
         MockedQAction.return_value = mocked_action
@@ -223,7 +223,7 @@ def test_create_action_not_on_mac_osx():
     """
     # GIVEN: A dialog and a mocked out is_macosx() method to always return True
     with patch('openlp.core.lib.ui.is_macosx') as mocked_is_macosx, \
-            patch('openlp.core.lib.ui.QtWidgets.QAction') as MockedQAction:
+            patch('openlp.core.lib.ui.QtGui.QAction') as MockedQAction:
         mocked_is_macosx.return_value = False
         mocked_action = MagicMock()
         MockedQAction.return_value = mocked_action
@@ -324,7 +324,7 @@ def test_create_widget_action():
     action = create_widget_action(button, 'some action')
 
     # THEN: The action should be returned
-    assert isinstance(action, QtWidgets.QAction)
+    assert isinstance(action, QtGui.QAction)
     assert action.objectName() == 'some action'
 
 

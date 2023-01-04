@@ -23,7 +23,7 @@ import logging
 import os
 from pathlib import Path
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from sqlalchemy.sql.expression import or_
 
 from openlp.core.common import delete_file

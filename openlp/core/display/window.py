@@ -27,7 +27,7 @@ import os
 import copy
 import re
 
-from PyQt5 import QtCore, QtWebChannel, QtWidgets
+from PyQt6 import QtCore, QtWebChannel, QtWidgets
 
 from openlp.core.common.enum import ServiceItemType
 from openlp.core.common.i18n import translate

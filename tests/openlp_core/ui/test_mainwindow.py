@@ -28,7 +28,7 @@ from shutil import rmtree
 from tempfile import mkdtemp
 
 import pytest
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.platform import is_macosx
@@ -48,7 +48,7 @@ def _create_mock_action(parent, name, **kwargs):
     """
     Create a fake action with some "real" attributes
     """
-    action = QtWidgets.QAction(parent)
+    action = QtGui.QAction(parent)
     action.setObjectName(name)
     if kwargs.get('triggers'):
         action.triggered.connect(kwargs.pop('triggers'))

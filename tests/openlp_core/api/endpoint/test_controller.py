@@ -21,13 +21,10 @@
 import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.api import app as flask_app
 from openlp.core.state import State
-
-# Mock QtWebEngineWidgets
-# sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ServiceItem

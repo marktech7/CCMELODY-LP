@@ -30,7 +30,7 @@ from dataclasses import asdict, dataclass
 from typing import Optional, Union
 
 import time
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 from websockets import serve
 
 from openlp.core.common.mixins import LogMixin, RegistryProperties

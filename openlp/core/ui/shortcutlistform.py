@@ -24,7 +24,7 @@ The :mod:`~openlp.core.ui.shortcutlistform` module contains the form class
 import logging
 import re
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import translate
@@ -66,11 +66,11 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         """
         Respond to certain key presses
         """
-        if event.key() == QtCore.Qt.Key_Space:
+        if event.key() == QtCore.Qt.Key.Key_Space:
             self.keyReleaseEvent(event)
         elif self.primary_push_button.isChecked() or self.alternate_push_button.isChecked():
             self.keyReleaseEvent(event)
-        elif event.key() == QtCore.Qt.Key_Escape:
+        elif event.key() == QtCore.Qt.Key.Key_Escape:
             event.accept()
             self.close()
 
@@ -81,11 +81,12 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         if not self.primary_push_button.isChecked() and not self.alternate_push_button.isChecked():
             return
         # Do not continue, as the event is for the dialog (close it).
-        if self.dialog_was_shown and event.key() in (QtCore.Qt.Key_Escape, QtCore.Qt.Key_Enter, QtCore.Qt.Key_Return):
+        if self.dialog_was_shown and event.key() in (QtCore.Qt.Key.Key_Escape, QtCore.Qt.Key.Key_Enter,
+                                                     QtCore.Qt.Key.Key_Return):
             self.dialog_was_shown = False
             return
         key = event.key()
-        if key in (QtCore.Qt.Key_Shift, QtCore.Qt.Key_Control, QtCore.Qt.Key_Meta, QtCore.Qt.Key_Alt):
+        if key in (QtCore.Qt.Key.Key_Shift, QtCore.Qt.Key.Key_Control, QtCore.Qt.Key.Key_Meta, QtCore.Qt.Key.Key_Alt):
             return
         key_string = QtGui.QKeySequence(key).toString()
         if event.modifiers() & QtCore.Qt.ControlModifier == QtCore.Qt.ControlModifier:

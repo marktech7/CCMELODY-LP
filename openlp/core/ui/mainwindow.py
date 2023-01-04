@@ -30,7 +30,7 @@ from pathlib import Path
 from tempfile import gettempdir
 from threading import Lock
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.api.http.server import HttpServer
 from openlp.core.api.websockets import WebSocketServer
@@ -190,7 +190,7 @@ class Ui_MainWindow(object):
                                             can_shortcuts=True,
                                             category=UiStrings().File, triggers=main_window.close)
         # Give QT Extra Hint that this is the Exit Menu Item
-        self.file_exit_item.setMenuRole(QtWidgets.QAction.MenuRole.QuitRole)
+        self.file_exit_item.setMenuRole(QtGui.QAction.MenuRole.QuitRole)
         action_list.add_category(UiStrings().Import, CategoryOrder.standard_menu)
         self.import_theme_item = create_action(main_window, 'importThemeItem', category=UiStrings().Import,
                                                can_shortcuts=True)
@@ -237,7 +237,7 @@ class Ui_MainWindow(object):
                                              can_shortcuts=True)
         self.mode_live_item = create_action(main_window, 'modeLiveItem', checked=True, category=UiStrings().ViewMode,
                                             can_shortcuts=True)
-        self.mode_group = QtWidgets.QActionGroup(main_window)
+        self.mode_group = QtGui.QActionGroup(main_window)
         self.mode_group.addAction(self.mode_default_item)
         self.mode_group.addAction(self.mode_setup_item)
         self.mode_group.addAction(self.mode_live_item)
@@ -263,7 +263,7 @@ class Ui_MainWindow(object):
                                                        triggers=self.on_plugin_item_clicked)
         # i18n Language Items
         self.auto_language_item = create_action(main_window, 'autoLanguageItem', checked=LanguageManager.auto_language)
-        self.language_group = QtWidgets.QActionGroup(main_window)
+        self.language_group = QtGui.QActionGroup(main_window)
         self.language_group.setExclusive(True)
         self.language_group.setObjectName('languageGroup')
         add_actions(self.language_group, [self.auto_language_item])
@@ -283,7 +283,7 @@ class Ui_MainWindow(object):
                                                      icon=UiIcons().settings, can_shortcuts=True,
                                                      category=UiStrings().Settings)
         # Give Qt Extra Hint that this is the Preferences Menu Item
-        self.settings_configure_item.setMenuRole(QtWidgets.QAction.MenuRole.PreferencesRole)
+        self.settings_configure_item.setMenuRole(QtGui.QAction.MenuRole.PreferencesRole)
         self.settings_import_item = create_action(main_window, 'settingsImportItem',
                                                   category=UiStrings().Import, can_shortcuts=True)
         self.settings_export_item = create_action(main_window, 'settingsExportItem',
@@ -293,7 +293,7 @@ class Ui_MainWindow(object):
                                         can_shortcuts=True, category=UiStrings().Help,
                                         triggers=self.on_about_item_clicked)
         # Give Qt Extra Hint that this is an About Menu Item
-        self.about_item.setMenuRole(QtWidgets.QAction.MenuRole.AboutRole)
+        self.about_item.setMenuRole(QtGui.QAction.MenuRole.AboutRole)
         if is_win():
             self.local_help_file = AppLocation.get_directory(AppLocation.AppDir) / 'OpenLP.chm'
         elif is_macosx():
@@ -331,8 +331,8 @@ class Ui_MainWindow(object):
         # menu. If we are running on Mac OS X the menu items whose title contains those keywords but don't belong in the
         # main menu need to be marked as such with QAction.MenuRole.NoRole.
         if is_macosx():
-            self.settings_shortcuts_item.setMenuRole(QtWidgets.QAction.MenuRole.NoRole)
-            self.formatting_tag_item.setMenuRole(QtWidgets.QAction.MenuRole.NoRole)
+            self.settings_shortcuts_item.setMenuRole(QtGui.QAction.MenuRole.NoRole)
+            self.formatting_tag_item.setMenuRole(QtGui.QAction.MenuRole.NoRole)
         add_actions(self.settings_menu, (self.settings_plugin_list_item, self.settings_language_menu.menuAction(),
                     None, self.formatting_tag_item, self.settings_shortcuts_item, self.settings_configure_item))
         add_actions(self.tools_menu, (self.tools_add_tool_item, None))

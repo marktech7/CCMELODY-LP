@@ -23,7 +23,7 @@ Package to test the openlp.plugins.songusage.forms.songusagedeleteform package.
 """
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets, QtTest, QtCore
+from PyQt6 import QtWidgets, QtTest, QtCore
 
 from openlp.plugins.songusage.forms.songusagedeleteform import SongUsageDeleteForm
 

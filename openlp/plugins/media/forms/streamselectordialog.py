@@ -29,8 +29,8 @@
 
 import glob
 import re
-from PyQt5 import QtCore, QtWidgets
-from PyQt5.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
+from PyQt6 import QtCore, QtWidgets
+from PyQt6.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_linux, is_macosx, is_win

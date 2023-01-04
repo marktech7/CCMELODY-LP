@@ -24,7 +24,7 @@ Package to test the openlp.plugins.planningcenter.lib.planningcentertab package.
 from unittest.mock import MagicMock, patch
 
 import pytest
-from PyQt5 import QtCore, QtTest, QtWidgets
+from PyQt6 import QtCore, QtTest, QtWidgets
 
 from openlp.core.state import State
 from openlp.core.common.registry import Registry

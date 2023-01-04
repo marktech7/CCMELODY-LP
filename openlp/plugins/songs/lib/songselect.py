@@ -23,7 +23,7 @@ The :mod:`~openlp.plugins.songs.lib.songselect` module contains the SongSelect i
 """
 import logging
 import re
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Song, Author, Topic

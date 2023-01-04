@@ -24,7 +24,7 @@ Package to test the openlp.core.lib.settingsform package.
 import pytest
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtTest
+from PyQt6 import QtCore, QtTest
 
 from openlp.core.ui.settingsform import SettingsForm
 
@@ -47,7 +47,7 @@ def test_basic_cancel(form):
     # GIVEN: An initial form
 
     # WHEN displaying the UI and pressing cancel
-    with patch('PyQt5.QtWidgets.QDialog.reject') as mocked_reject:
+    with patch('PyQt6.QtWidgets.QDialog.reject') as mocked_reject:
         cancel_widget = form.button_box.button(form.button_box.Cancel)
         QtTest.QTest.mouseClick(cancel_widget, QtCore.Qt.LeftButton)
 
@@ -62,7 +62,7 @@ def test_basic_accept(form):
     # GIVEN: An initial form
 
     # WHEN displaying the UI and pressing Ok
-    with patch('PyQt5.QtWidgets.QDialog.accept') as mocked_accept:
+    with patch('PyQt6.QtWidgets.QDialog.accept') as mocked_accept:
         ok_widget = form.button_box.button(form.button_box.Ok)
         QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 
@@ -78,7 +78,7 @@ def test_basic_register(form):
     form.register_post_process('function1')
 
     # WHEN displaying the UI and pressing Ok
-    with patch('PyQt5.QtWidgets.QDialog.accept'):
+    with patch('PyQt6.QtWidgets.QDialog.accept'):
         ok_widget = form.button_box.button(form.button_box.Ok)
         QtTest.QTest.mouseClick(ok_widget, QtCore.Qt.LeftButton)
 

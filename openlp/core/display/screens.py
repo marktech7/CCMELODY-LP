@@ -26,7 +26,7 @@ import logging
 import copy
 from functools import cmp_to_key
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.i18n import translate

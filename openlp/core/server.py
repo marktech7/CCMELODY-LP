@@ -21,7 +21,7 @@
 from pathlib import Path
 from typing import Optional
 
-from PyQt5 import QtCore, QtNetwork
+from PyQt6 import QtCore, QtNetwork
 
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry

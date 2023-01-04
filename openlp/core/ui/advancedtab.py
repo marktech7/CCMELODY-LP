@@ -23,7 +23,7 @@ The :mod:`advancedtab` provides an advanced settings facility.
 """
 import logging
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate

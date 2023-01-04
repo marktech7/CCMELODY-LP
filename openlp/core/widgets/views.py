@@ -24,7 +24,7 @@ It is based on a QTableWidget but represents its contents in list form.
 """
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.mixins import RegistryProperties

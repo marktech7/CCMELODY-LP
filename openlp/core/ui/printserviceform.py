@@ -25,7 +25,7 @@ import datetime
 import html
 
 import lxml.html
-from PyQt5 import QtCore, QtGui, QtPrintSupport, QtWidgets
+from PyQt6 import QtCore, QtGui, QtPrintSupport, QtWidgets
 
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, translate
@@ -374,7 +374,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         """
         Called when html copy check box is selected.
         """
-        if value == QtCore.Qt.Checked:
+        if value == QtCore.Qt.CheckState.Checked:
             self.copyTextButton.setText(UiStrings().CopyToHtml)
         else:
             self.copyTextButton.setText(UiStrings().CopyToText)
@@ -384,7 +384,7 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
         Disable or enable the ``page_break_after_text`` checkbox  as it should only
         be enabled, when the ``slide_text_check_box`` is enabled.
         """
-        self.page_break_after_text.setDisabled(state == QtCore.Qt.Unchecked)
+        self.page_break_after_text.setDisabled(state == QtCore.Qt.CheckState.Unchecked)
 
     def save_options(self):
         """

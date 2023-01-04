@@ -24,7 +24,7 @@ This module contains tests for the editverseform of the Songs plugin.
 from unittest.mock import MagicMock, call, patch
 
 import pytest
-from PyQt5 import QtCore, QtTest, QtGui, QtWidgets
+from PyQt6 import QtCore, QtTest, QtGui, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
@@ -148,7 +148,7 @@ def test_insert_verse_up_click(edit_verse_form: EditVerseForm):
     """
     # GIVEN: An instance of the EditVerseForm
     # WHEN: The spin button and then the Insert button are clicked
-    QtTest.QTest.keyClick(edit_verse_form.verse_number_box, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(edit_verse_form.verse_number_box, QtCore.Qt.Key.Key_Up)
     QtTest.QTest.mouseClick(edit_verse_form.insert_button, QtCore.Qt.LeftButton)
 
     # THEN: The verse text edit should have a Verse:1 in it
@@ -162,7 +162,7 @@ def test_insert_chorus(edit_verse_form: EditVerseForm):
     """
     # GIVEN: An instance of the EditVerseForm
     # WHEN: The verse type combo box and then the Insert button are clicked
-    QtTest.QTest.keyClick(edit_verse_form.verse_type_combo_box, QtCore.Qt.Key_Down)
+    QtTest.QTest.keyClick(edit_verse_form.verse_type_combo_box, QtCore.Qt.Key.Key_Down)
     QtTest.QTest.mouseClick(edit_verse_form.insert_button, QtCore.Qt.LeftButton)
 
     # THEN: The verse text edit should have a Chorus:1 in it

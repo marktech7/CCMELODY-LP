@@ -26,10 +26,10 @@ from tempfile import mkdtemp
 
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
-# Mock QtWebEngineWidgets
-sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
+# Mock QtWebEngineCore
+sys.modules['PyQt6.QtWebEngineCore'] = MagicMock()
 
 from openlp.core.app import parse_options, backup_if_version_changed, main as app_main, setup_portable_settings
 from openlp.core.common.platform import is_win

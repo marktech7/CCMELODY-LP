@@ -24,7 +24,7 @@ OpenLyrics format.
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
@@ -227,7 +227,7 @@ class SongExportForm(OpenLPWizard):
             item = QtWidgets.QListWidgetItem(title)
             item.setData(QtCore.Qt.UserRole, song)
             item.setFlags(QtCore.Qt.ItemIsSelectable | QtCore.Qt.ItemIsUserCheckable | QtCore.Qt.ItemIsEnabled)
-            item.setCheckState(QtCore.Qt.Unchecked)
+            item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             self.available_list_widget.addItem(item)
         self.application.set_normal_cursor()
 
@@ -280,7 +280,7 @@ class SongExportForm(OpenLPWizard):
         for row in range(self.available_list_widget.count()):
             item = self.available_list_widget.item(row)
             if not item.isHidden():
-                item.setCheckState(QtCore.Qt.Unchecked)
+                item.setCheckState(QtCore.Qt.CheckState.Unchecked)
 
     def on_check_button_clicked(self):
         """
@@ -289,7 +289,7 @@ class SongExportForm(OpenLPWizard):
         for row in range(self.available_list_widget.count()):
             item = self.available_list_widget.item(row)
             if not item.isHidden():
-                item.setCheckState(QtCore.Qt.Checked)
+                item.setCheckState(QtCore.Qt.CheckState.Checked)
 
     def provide_help(self):
         """
@@ -318,4 +318,4 @@ def on_item_activated(item):
 
     :param item:  The *QListWidgetItem* which was triggered.
     """
-    item.setCheckState(QtCore.Qt.Unchecked if item.checkState() else QtCore.Qt.Checked)
+    item.setCheckState(QtCore.Qt.CheckState.Unchecked if item.checkState() else QtCore.Qt.CheckState.Checked)

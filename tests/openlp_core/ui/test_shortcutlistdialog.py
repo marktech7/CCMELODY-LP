@@ -23,7 +23,7 @@ Package to test the openlp.core.ui.shortcutlistdialog package.
 """
 from unittest.mock import MagicMock
 
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.ui.shortcutlistdialog import CaptureShortcutButton, ShortcutTreeWidget
 
@@ -36,7 +36,7 @@ def test_key_press_event():
     button = CaptureShortcutButton()
     button.setChecked(True)
     mocked_event = MagicMock()
-    mocked_event.key.return_value = QtCore.Qt.Key_Space
+    mocked_event.key.return_value = QtCore.Qt.Key.Key_Space
 
     # WHEN: keyPressEvent is called with an event that should be ignored
     button.keyPressEvent(mocked_event)

@@ -25,7 +25,7 @@ Provides the dialog window for selecting video source for projector.
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_macosx

@@ -30,7 +30,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytestqt.qt_compat import qt_api
 
-from PyQt5 import QtCore  # noqa
+from PyQt6 import QtCore  # noqa
 
 from openlp.core.app import OpenLP
 from openlp.core.state import State

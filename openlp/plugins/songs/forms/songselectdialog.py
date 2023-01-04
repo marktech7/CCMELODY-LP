@@ -22,7 +22,7 @@
 The :mod:`~openlp.plugins.songs.forms.songselectdialog` module contains the user interface code for the dialog
 """
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.ui import SingleColumnTableWidget

@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.widgets.widgets` module contains custom widgets used in OpenLP
 """
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry

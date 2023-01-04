@@ -30,7 +30,7 @@ from random import randint
 from tempfile import gettempdir
 
 import requests
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.common import trace_error_handler
 from openlp.core.common.registry import Registry

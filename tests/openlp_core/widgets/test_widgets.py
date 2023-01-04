@@ -26,7 +26,7 @@ import pytest
 
 from unittest.mock import MagicMock, call, patch
 
-from PyQt5 import QtCore, QtWidgets, QtTest
+from PyQt6 import QtCore, QtWidgets, QtTest
 
 from openlp.core.common.settings import ProxyMode
 from openlp.core.display.screens import Screen
@@ -92,10 +92,10 @@ def test_spinboxes_no_previous_custom_geometry(mocked_screenList, form):
     # WHEN: When I go into screen settings for the display screen and set the custom geometry
     ScreenSelectionWidget.load(form)
     QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
-    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
-    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
+    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key.Key_Up)
+    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key.Key_Up)
+    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key.Key_Down)
+    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key.Key_Down)
 
     # THEN: The spin boxes should show the correct values
     assert form.left_spin_box.value() == 1
@@ -118,10 +118,10 @@ def test_spinboxes_with_previous_custom_geometry(mocked_screenList, form):
     # WHEN: When I go into screen settings for the display screen and update the custom geometry
     ScreenSelectionWidget.load(form)
     QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
-    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Up)
-    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Down)
-    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Down)
+    QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key.Key_Up)
+    QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key.Key_Up)
+    QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key.Key_Down)
+    QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key.Key_Down)
 
     # THEN: The spin boxes should show the updated values
     assert form.left_spin_box.value() == 2
@@ -146,10 +146,10 @@ def test_spinboxes_going_outside_screen_geometry(mocked_screenList, form):
     ScreenSelectionWidget.load(form)
     QtTest.QTest.mouseClick(form.custom_geometry_button, QtCore.Qt.LeftButton)
     for _ in range(2):
-        QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key_Down)
-        QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key_Down)
-        QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key_Up)
-        QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key_Up)
+        QtTest.QTest.keyClick(form.left_spin_box, QtCore.Qt.Key.Key_Down)
+        QtTest.QTest.keyClick(form.top_spin_box, QtCore.Qt.Key.Key_Down)
+        QtTest.QTest.keyClick(form.width_spin_box, QtCore.Qt.Key.Key_Up)
+        QtTest.QTest.keyClick(form.height_spin_box, QtCore.Qt.Key.Key_Up)
 
     # THEN: The spin boxes should show the updated values
     assert form.left_spin_box.value() == -1

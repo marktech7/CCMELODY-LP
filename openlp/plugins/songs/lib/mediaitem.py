@@ -25,7 +25,7 @@ import os
 from shutil import copyfile
 from typing import Any
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State

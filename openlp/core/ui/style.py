@@ -23,7 +23,7 @@ The :mod:`~openlp.core.ui.dark` module looks for and loads a dark theme
 """
 from subprocess import Popen, PIPE
 from enum import Enum
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
@@ -238,7 +238,7 @@ def get_application_stylesheet():
     """
     stylesheet = ''
     if is_ui_theme(UiThemes.QDarkStyle):
-        stylesheet = qdarkstyle.load_stylesheet_pyqt5()
+        stylesheet = qdarkstyle.load_stylesheet_PyQt6()
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
             base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.ColorGroup.Active,

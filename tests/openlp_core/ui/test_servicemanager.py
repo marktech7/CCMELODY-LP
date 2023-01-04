@@ -30,7 +30,7 @@ from unittest.mock import Mock, MagicMock, call, patch
 from zipfile import BadZipFile
 
 import pytest
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.registry import Registry
@@ -970,7 +970,7 @@ def test_theme_change_song(mocked_regenerate_service_items: MagicMock, settings:
         'The visibility should be True'
 
 
-@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+@patch('PyQt6.QtWidgets.QTreeWidgetItemIterator')
 def test_regenerate_service_items(mocked_tree: MagicMock, settings: Settings):
     """
     test that an unmodified service item that is regenerated is still unmodified
@@ -998,7 +998,7 @@ def test_regenerate_service_items(mocked_tree: MagicMock, settings: Settings):
     service_manager.repaint_service_list.assert_called_once()
 
 
-@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+@patch('PyQt6.QtWidgets.QTreeWidgetItemIterator')
 def test_regenerate_service_items_modified(mocked_tree: MagicMock, settings: Settings):
     """
     test that an unmodified service item that is regenerated is still unmodified
@@ -1026,7 +1026,7 @@ def test_regenerate_service_items_modified(mocked_tree: MagicMock, settings: Set
     service_manager.repaint_service_list.assert_called_once()
 
 
-@patch('PyQt5.QtWidgets.QTreeWidgetItemIterator')
+@patch('PyQt6.QtWidgets.QTreeWidgetItemIterator')
 def test_regenerate_service_items_set_modified(mocked_tree: MagicMock, settings: Settings):
     """
     test that a service item that is regenerated with the modified argument becomes modified
@@ -2276,7 +2276,7 @@ def test_expand_selection_on_right_arrow(service_manager: ServiceManager):
 
     # WHEN the right arrow key event is called
     service_manager.setup_ui(service_manager)
-    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Right, QtCore.Qt.NoModifier)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Right, QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_expand_selection function should have been called.
@@ -2305,7 +2305,8 @@ def test_collapse_selection_on_left_arrow(service_manager: ServiceManager):
     service_manager.on_collapse_selection = MagicMock()
 
     # WHEN the left arrow key event is called
-    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Left, QtCore.Qt.NoModifier)
+    service_manager.setup_ui(service_manager)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Left, QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_collapse_selection function should have been called.
@@ -2320,7 +2321,8 @@ def test_move_selection_down_on_down_arrow(service_manager: ServiceManager):
     service_manager.on_move_selection_down = MagicMock()
 
     # WHEN the down arrow key event is called
-    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Down, QtCore.Qt.NoModifier)
+    service_manager.setup_ui(service_manager)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Down, QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_move_selection_down function should have been called.
@@ -2335,7 +2337,8 @@ def test_move_selection_up_on_up_arrow(service_manager: ServiceManager):
     service_manager.on_move_selection_up = MagicMock()
 
     # WHEN the up arrow key event is called
-    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Up, QtCore.Qt.NoModifier)
+    service_manager.setup_ui(service_manager)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Up, QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_move_selection_up function should have been called.
@@ -2350,7 +2353,8 @@ def test_delete_selection_on_delete_key(service_manager: ServiceManager):
     service_manager.on_delete_from_service = MagicMock()
 
     # WHEN the delete key event is called
-    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Delete, QtCore.Qt.NoModifier)
+    service_manager.setup_ui(service_manager)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Delete, QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_delete_from_service function should have been called.

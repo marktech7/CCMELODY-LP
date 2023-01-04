@@ -24,7 +24,7 @@ by the shortcuts system.
 """
 import logging
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui
 
 from openlp.core.common.registry import Registry
 
@@ -356,7 +356,7 @@ class ActionList(object):
         affected_actions = []
         if global_context:
             affected_actions = [a for a in self.get_all_child_objects(action.parent()) if isinstance(a,
-                                                                                                     QtWidgets.QAction)]
+                                                                                                     QtGui.QAction)]
         for existing_action in existing_actions:
             if action is existing_action:
                 continue

@@ -27,7 +27,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, patch, call
 from typing import Any
 
-from PyQt5 import QtCore, QtGui, QtTest, QtWidgets
+from PyQt6 import QtCore, QtGui, QtTest, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.widgets.dialogs import FileDialog
@@ -400,8 +400,8 @@ def test_clear_button_visibility(search_edit: SearchEdit):
     assert search_edit.clear_button.isHidden(), "Pre condition not met. Button should be hidden."
 
     # WHEN: Type something in the search edit.
-    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key_A)
-    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key_A)
+    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key.Key_A)
+    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key.Key_A)
 
     # THEN: The clear button should not be hidden any more.
     assert not search_edit.clear_button.isHidden(), "The clear button should be visible."
@@ -412,8 +412,8 @@ def test_press_clear_button(search_edit: SearchEdit):
     Check if the search edit behaves correctly when pressing the clear button.
     """
     # GIVEN: A search edit with text.
-    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key_A)
-    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key_A)
+    QtTest.QTest.keyPress(search_edit, QtCore.Qt.Key.Key_A)
+    QtTest.QTest.keyRelease(search_edit, QtCore.Qt.Key.Key_A)
 
     # WHEN: Press the clear button.
     QtTest.QTest.mouseClick(search_edit.clear_button, QtCore.Qt.LeftButton)

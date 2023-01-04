@@ -23,15 +23,15 @@ This module contains tests for the settings tab for the Presentations plugin.
 """
 from unittest.mock import MagicMock
 
-from PyQt5 import QtCore, QtTest
+from PyQt6 import QtCore, QtTest
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.presentationtab import PresentationTab
 
 __default_settings__ = {
-    'presentations/powerpoint slide click advance': QtCore.Qt.Unchecked,
-    'presentations/powerpoint control window': QtCore.Qt.Unchecked,
-    'presentations/impress use display setting': QtCore.Qt.Unchecked
+    'presentations/powerpoint slide click advance': QtCore.Qt.CheckState.Unchecked,
+    'presentations/powerpoint control window': QtCore.Qt.CheckState.Unchecked,
+    'presentations/impress use display setting': QtCore.Qt.CheckState.Unchecked
 }
 
 
@@ -63,9 +63,9 @@ def test_check_boxes(settings):
     form.activated = True
     form.save()
     # THEN: The updated values should be stored in the settings
-    assert form.settings.value('presentations/powerpoint slide click advance') == QtCore.Qt.Checked
-    assert form.settings.value('presentations/powerpoint control window') == QtCore.Qt.Checked
-    assert form.settings.value('presentations/impress use display setting') == QtCore.Qt.Checked
+    assert form.settings.value('presentations/powerpoint slide click advance') == QtCore.Qt.CheckState.Checked
+    assert form.settings.value('presentations/powerpoint control window') == QtCore.Qt.CheckState.Checked
+    assert form.settings.value('presentations/impress use display setting') == QtCore.Qt.CheckState.Checked
 
 
 def test_check_boxes_when_controllers_unavailable(settings):
@@ -84,6 +84,6 @@ def test_check_boxes_when_controllers_unavailable(settings):
     form.activated = True
     form.save()
     # THEN: The updated values should be unchanged
-    assert form.settings.value('presentations/powerpoint slide click advance') == QtCore.Qt.Unchecked
-    assert form.settings.value('presentations/powerpoint control window') == QtCore.Qt.Unchecked
-    assert form.settings.value('presentations/impress use display setting') == QtCore.Qt.Unchecked
+    assert form.settings.value('presentations/powerpoint slide click advance') == QtCore.Qt.CheckState.Unchecked
+    assert form.settings.value('presentations/powerpoint control window') == QtCore.Qt.CheckState.Unchecked
+    assert form.settings.value('presentations/impress use display setting') == QtCore.Qt.CheckState.Unchecked

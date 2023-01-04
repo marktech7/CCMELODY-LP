@@ -23,7 +23,7 @@ The :mod:``wizard`` module provides generic wizard tools for OpenLP.
 """
 import logging
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties

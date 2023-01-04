@@ -26,7 +26,7 @@ import logging
 
 import openlp.core.projectors.pjlink
 
-from PyQt5 import QtNetwork
+from PyQt6 import QtNetwork
 from unittest.mock import DEFAULT, MagicMock, patch
 
 from openlp.core.projectors.constants import QSOCKET_STATE, STATUS_CODE, STATUS_MSG, \

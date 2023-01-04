@@ -22,7 +22,7 @@
 """
 Provide a custom widget based on QPushButton for the selection of colors
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import translate
 

@@ -24,7 +24,7 @@ displaying of alerts.
 """
 import json
 
-from PyQt5 import QtCore, QtGui
+from PyQt6 import QtCore, QtGui
 
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry, RegistryBase

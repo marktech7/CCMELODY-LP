@@ -20,7 +20,7 @@
 ##########################################################################
 import datetime
 
-from PyQt5 import QtGui, QtWidgets
+from PyQt6 import QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.ui import create_button, create_button_box
@@ -123,8 +123,8 @@ class UiAboutDialog(object):
                                'libraries:')
         build_tech = ('<ul>'
                       '<li><a href="https://www.python.org/">Python</a> (PSFL)</li>'
-                      '<li><a href="https://www.qt.io">Qt5</a> (GPL3/LGPL3)</li>'
-                      '<li><a href="https://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt5</a> (GPL3)</li>'
+                      '<li><a href="https://www.qt.io">Qt6</a> (GPL3/LGPL3)</li>'
+                      '<li><a href="https://www.riverbankcomputing.co.uk/software/pyqt/intro">PyQt6</a> (GPL3)</li>'
                       '<li><a href="https://github.com/ActiveState/appdirs">appdirs</a> (MIT)</li>'
                       '<li><a href="https://alembic.sqlalchemy.org/en/latest/">Alembic</a> (MIT)</li>'
                       '<li><a href="https://www.crummy.com/software/BeautifulSoup/">BeautifulSoup 4</a> (MIT)</li>'

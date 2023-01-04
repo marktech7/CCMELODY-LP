@@ -24,7 +24,7 @@ The :mod:`languages` module provides a list of icons.
 import logging
 
 import qtawesome as qta
-from PyQt5 import QtGui, QtWidgets
+from PyQt6 import QtGui, QtWidgets
 
 from openlp.core.common import Singleton
 from openlp.core.common.applocation import AppLocation

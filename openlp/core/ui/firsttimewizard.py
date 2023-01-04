@@ -21,7 +21,7 @@
 """
 The UI widgets for the first time wizard.
 """
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import clean_button_text
 from openlp.core.common.platform import is_macosx

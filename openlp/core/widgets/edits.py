@@ -25,7 +25,7 @@ import logging
 import re
 from pathlib import Path
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import CONTROL_CHARS
 from openlp.core.common.i18n import UiStrings, translate
@@ -170,7 +170,7 @@ class SearchEdit(QtWidgets.QLineEdit):
         Internally implemented slot to react to when the text in the line edit has changed so that we can show or hide
         the clear button.
 
-        :param text: A :class:`~PyQt5.QtCore.QString` instance which represents the text in the line edit.
+        :param text: A :class:`~PyQt6.QtCore.QString` instance which represents the text in the line edit.
         """
         self.clear_button.setVisible(bool(text))
 
@@ -516,7 +516,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
                 self.setFormat(word_object.start(), word_object.end() - word_object.start(), char_format)
 
 
-class SpellAction(QtWidgets.QAction):
+class SpellAction(QtGui.QAction):
     """
     A special QAction that returns the text in a signal.
     """
@@ -558,7 +558,7 @@ class HistoryComboBox(QtWidgets.QComboBox):
         :param event: The keyboard event
         """
         # Handle Enter and Return ourselves
-        if event.key() == QtCore.Qt.Key_Enter or event.key() == QtCore.Qt.Key_Return:
+        if event.key() == QtCore.Qt.Key.Key_Enter or event.key() == QtCore.Qt.Key.Key_Return:
             # Emit the returnPressed signal
             self.returnPressed.emit()
             # Save the current text to the dropdown list

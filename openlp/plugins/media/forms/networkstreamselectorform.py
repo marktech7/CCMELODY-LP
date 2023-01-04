@@ -22,7 +22,7 @@
 import logging
 import re
 
-from PyQt5 import QtWidgets
+from PyQt6 import QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.plugins.media.forms import StreamSelectorFormBase, VLCOptionsWidget

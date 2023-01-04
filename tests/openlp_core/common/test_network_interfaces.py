@@ -24,8 +24,8 @@ Functional tests to test calls for network interfaces.
 from unittest.mock import MagicMock, call, patch
 
 import pytest
-from PyQt5.QtCore import QObject
-from PyQt5.QtNetwork import QHostAddress, QNetworkAddressEntry, QNetworkInterface
+from PyQt6.QtCore import QObject
+from PyQt6.QtNetwork import QHostAddress, QNetworkAddressEntry, QNetworkInterface
 
 # import openlp.core.common
 from openlp.core.common import get_network_interfaces

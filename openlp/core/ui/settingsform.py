@@ -23,7 +23,7 @@ The :mod:`settingsform` provides a user interface for the OpenLP settings
 """
 import logging
 
-from PyQt5 import QtCore, QtWidgets, QtGui
+from PyQt6 import QtCore, QtWidgets, QtGui
 
 from openlp.core.state import State
 from openlp.core.api.tab import ApiTab

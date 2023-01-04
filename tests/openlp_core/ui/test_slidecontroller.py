@@ -26,7 +26,7 @@ import datetime
 
 from unittest.mock import MagicMock, patch, sentinel
 
-from PyQt5 import QtCore, QtGui
+from PyQt6 import QtCore, QtGui
 from pytest import mark
 
 from openlp.core.state import State
@@ -1266,7 +1266,7 @@ def test_on_preview_double_click_add_to_service(mock_settings: MagicMock):
     assert 1 == slide_controller.on_preview_add_to_service.call_count, 'Should have been called once.'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
+@patch(u'PyQt6.QtCore.QTimer.singleShot')
 def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with a screen grab for live service items
@@ -1304,7 +1304,7 @@ def test_update_preview_live(mocked_singleShot: MagicMock, registry: Registry):
     assert 2 == mocked_singleShot.call_count, 'Timer to display_maindisplay should have been called 2 times'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
+@patch(u'PyQt6.QtCore.QTimer.singleShot')
 def test_update_preview_pres(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for presentation service items
@@ -1341,7 +1341,7 @@ def test_update_preview_pres(mocked_singleShot: MagicMock, registry: Registry):
     assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
+@patch(u'PyQt6.QtCore.QTimer.singleShot')
 def test_update_preview_media(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for media service items
@@ -1379,7 +1379,7 @@ def test_update_preview_media(mocked_singleShot: MagicMock, registry: Registry):
     assert 0 == mocked_singleShot.call_count, 'Timer to display_maindisplay should not be called'
 
 
-@patch(u'PyQt5.QtCore.QTimer.singleShot')
+@patch(u'PyQt6.QtCore.QTimer.singleShot')
 def test_update_preview_image(mocked_singleShot: MagicMock, registry: Registry):
     """
     Test that the preview screen is updated with the correct preview for image service items

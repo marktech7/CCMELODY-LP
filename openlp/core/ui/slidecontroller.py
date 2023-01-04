@@ -27,7 +27,7 @@ from collections import deque
 from pathlib import Path
 from threading import Lock
 
-from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt6 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder

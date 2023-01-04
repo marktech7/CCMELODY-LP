@@ -21,7 +21,7 @@
 """
 The :mod:`~openlp.core.widgets.layouts` module contains customised layout classes
 """
-from PyQt5 import QtCore, QtWidgets
+from PyQt6 import QtCore, QtWidgets
 
 
 class AspectRatioLayout(QtWidgets.QLayout):

@@ -25,7 +25,7 @@ import pytest
 
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtCore, QtTest, QtWidgets
+from PyQt6 import QtCore, QtTest, QtWidgets
 
 from openlp.plugins.media.forms.streamselectorform import StreamSelectorForm
 from openlp.plugins.media.forms.streamselectordialog import CaptureVideoDirectShowWidget, CaptureDigitalTVWidget, \
@@ -305,7 +305,7 @@ def test_win_set_stream_call(stream_selector_form_win):
     # choose camera 2
     stream_selector_form_win.stacked_modes_layout.widget(0).video_devices_combo_box.setCurrentIndex(2)
     # increment caching value
-    QtTest.QTest.keyClick(stream_selector_form_win.more_options_group.caching, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(stream_selector_form_win.more_options_group.caching, QtCore.Qt.Key.Key_Up)
     # click on Save
     QtTest.QTest.mouseClick(stream_selector_form_win.save_button, QtCore.Qt.LeftButton)
 
@@ -331,7 +331,7 @@ def test_linux_set_stream_call(stream_selector_form_linux):
     stream_selector_form_linux.stacked_modes_layout.widget(3).delivery_system_combo_box.setCurrentIndex(
         stream_selector_form_linux.stacked_modes_layout.widget(3).delivery_system_combo_box.findText('ATSC'))
     # increment transponder / multiplexer frequency
-    QtTest.QTest.keyClick(stream_selector_form_linux.stacked_modes_layout.widget(3).dvb_freq, QtCore.Qt.Key_Up)
+    QtTest.QTest.keyClick(stream_selector_form_linux.stacked_modes_layout.widget(3).dvb_freq, QtCore.Qt.Key.Key_Up)
     # click on Save
     QtTest.QTest.mouseClick(stream_selector_form_linux.save_button, QtCore.Qt.LeftButton)
 
