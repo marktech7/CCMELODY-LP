@@ -265,7 +265,8 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         if scroll_to_slide >= self.slide_count():
             scroll_to_slide = self.slide_count() - 1
         # Scroll to item if possible.
-        self.scrollToItem(self.item(scroll_to_slide, 0), auto_scrolling['pos'])
+        # TODO: auto_scrolling['pos'] should be a scroll hint not a int; and `middle` and `bottom` might be switched in qt6
+        self.scrollToItem(self.item(scroll_to_slide, 0), QtWidgets.QAbstractItemView.ScrollHint.EnsureVisible)
         self.selectRow(slide)
 
     def current_slide_number(self):
@@ -478,8 +479,8 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         # If we are on Windows, OpenLP window will not be set on top. For example, user can drag images to Library and
         # the folder stays on top of the group creation box. This piece of code fixes this issue.
         if is_win():
-            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowType.WindowState.WindowMinimized | QtCore.Qt.WindowType.WindowState.WindowActive)
-            self.setWindowState(QtCore.Qt.WindowType.WindowState.WindowNoState)
+            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowState.WindowMinimized | QtCore.Qt.WindowState.WindowActive)
+            self.setWindowState(QtCore.Qt.WindowState.WindowNoState)
         if event.mimeData().hasUrls():
             event.setDropAction(QtCore.Qt.DropAction.CopyAction)
             event.accept()
