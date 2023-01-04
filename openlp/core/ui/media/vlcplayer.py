@@ -111,7 +111,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
         vlc = get_vlc()
         if controller.is_live:
             controller.vlc_widget = QtWidgets.QFrame(controller)
-            controller.vlc_widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.WindowType.Tool |
+            controller.vlc_widget.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool |
                                                  QtCore.Qt.WindowType.WindowStaysOnTopHint)
         else:
             controller.vlc_widget = QtWidgets.QFrame(display)

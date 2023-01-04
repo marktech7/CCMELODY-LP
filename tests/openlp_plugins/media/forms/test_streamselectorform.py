@@ -60,9 +60,9 @@ def stream_selector_form_win(settings):
     with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=True), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=False), \
-            patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
+            patch('openlp.plugins.media.forms.streamselectordialog.QMediaDevices.videoInputs',
                   return_value=[camera1, camera2]), \
-            patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
+            patch('openlp.plugins.media.forms.streamselectordialog.QMediaDevices.audioInputs',
                   return_value=[audio1, audio2]):
         form = StreamSelectorForm(main_window, setstream)
 
@@ -124,9 +124,9 @@ def stream_selector_form_mac(settings):
     with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_macosx', return_value=True), \
-            patch('openlp.plugins.media.forms.streamselectordialog.QCameraInfo.availableCameras',
+            patch('openlp.plugins.media.forms.streamselectordialog.QMediaDevices.videoInputs',
                   return_value=[camera1, camera2]), \
-            patch('openlp.plugins.media.forms.streamselectordialog.QAudioDeviceInfo.availableDevices',
+            patch('openlp.plugins.media.forms.streamselectordialog.QMediaDevices.audioInputs',
                   return_value=[audio1, audio2]):
         form = StreamSelectorForm(main_window, setstream)
 

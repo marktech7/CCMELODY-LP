@@ -30,7 +30,7 @@
 import glob
 import re
 from PyQt6 import QtCore, QtWidgets
-from PyQt6.QtMultimedia import QCameraInfo, QAudioDeviceInfo, QAudio
+from PyQt6.QtMultimedia import QMediaDevices, QAudioDevice, QAudio
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_linux, is_macosx, is_win
@@ -556,10 +556,10 @@ class CaptureVideoQtDetectWidget(CaptureVideoWidget):
         """
         Insert devices detected by Qt
         """
-        for cam in QCameraInfo.availableCameras():
-            self.video_devices_combo_box.addItem(cam.description(), cam.deviceName())
-        for au in QAudioDeviceInfo.availableDevices(QAudio.AudioInput):
-            self.audio_devices_combo_box.addItem(au.deviceName())
+        for cam in QMediaDevices.videoInputs():
+            self.video_devices_combo_box.addItem(cam.description())
+        for au in QMediaDevices.audioInputs():
+            self.audio_devices_combo_box.addItem(au.description())
 
 
 class MacInputWidget(CaptureVideoQtDetectWidget):

@@ -136,7 +136,7 @@ def test_create_horizontal_adjusting_combo_box():
     # THEN: We should get a ComboBox
     assert isinstance(combo, QtWidgets.QComboBox)
     assert combo.objectName() == 'combo1'
-    assert QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength == combo.sizeAdjustPolicy()
+    assert QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon == combo.sizeAdjustPolicy()
 
 
 @patch('openlp.core.lib.ui.log')

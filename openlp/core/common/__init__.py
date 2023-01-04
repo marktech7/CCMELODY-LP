@@ -66,21 +66,20 @@ def get_network_interfaces():
             log.debug('Filtering out interfaces we don\'t care about: {name}'.format(name=interface_name))
             continue
         log.debug('Checking for isValid and flags == IsUP | IsRunning')
-        if not interface.isValid() or not (interface.flags() & (QNetworkInterface.IsUp | QNetworkInterface.IsRunning)):
+        if not interface.isValid() or not (interface.flags() & (QNetworkInterface.InterfaceFlag.IsUp | QNetworkInterface.InterfaceFlag.IsRunning)):
             continue
         log.debug('Checking address(es) protocol')
         for address in interface.addressEntries():
             ip = address.ip()
             log.debug('Checking for protocol == IPv4Protocol')
-            if ip.protocol() == QAbstractSocket.IPv4Protocol:
+            if ip.protocol() == QAbstractSocket.NetworkLayerProtocol.IPv4Protocol:
                 log.debug('Getting interface information')
                 interfaces[interface_name] = {
                     'ip': ip.toString(),
                     'broadcast': address.broadcast().toString(),
                     'netmask': address.netmask().toString(),
                     'prefix': address.prefixLength(),
-                    'localnet': QHostAddress(address.netmask().toIPv4Address() &
-                                             ip.toIPv4Address()).toString()
+                    'localnet': QHostAddress(str([mask & ip_segment for mask, ip_segment in (address.netmask().toIPv4Address(), ip.toIPv4Address())])).toString()
                 }
                 log.debug('Adding {interface} to active list'.format(interface=interface.name()))
     if len(interfaces) == 0:

@@ -37,7 +37,7 @@ class Ui_SongMaintenanceDialog(object):
         """
         song_maintenance_dialog.setObjectName('song_maintenance_dialog')
         song_maintenance_dialog.setWindowIcon(UiIcons().main_icon)
-        song_maintenance_dialog.setWindowModality(QtCore.Qt.WindowType.WindowModality.ApplicationModal)
+        song_maintenance_dialog.setWindowModality(QtCore.Qt.WindowModality.ApplicationModal)
         song_maintenance_dialog.resize(600, 600)
         self.dialog_layout = QtWidgets.QGridLayout(song_maintenance_dialog)
         self.dialog_layout.setObjectName('dialog_layout')

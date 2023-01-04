@@ -70,7 +70,7 @@ class FakeIP4InterfaceEntry(QObject):
         """
         Return a QFlags enum with IsUp and IsRunning
         """
-        return QNetworkInterface.IsUp | QNetworkInterface.IsRunning
+        return QNetworkInterface.InterfaceFlag.IsUp | QNetworkInterface.InterfaceFlag.IsRunning
 
     def name(self):
         return self.my_name
