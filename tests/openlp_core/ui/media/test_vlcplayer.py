@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,7 @@ from unittest.mock import MagicMock, call, patch, ANY
 import pytest
 
 from openlp.core.common.registry import Registry
-from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
+from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType, VlCState
 from openlp.core.ui.media.vlcplayer import VlcPlayer
 from tests.helpers import MockDateTime
 
@@ -523,14 +523,14 @@ def test_media_state_wait(mocked_get_vlc):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 2
+    mocked_controller.vlc_media.get_state.return_value = VlCState.Buffering
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_controller, 2)
+    result = vlc_player.media_state_wait(mocked_controller, VlCState.Buffering)
 
     # THEN: The results should be True
     assert result is True
@@ -547,14 +547,14 @@ def test_media_state_wait_error(mocked_get_vlc, vlc_env):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 1
+    mocked_controller.vlc_media.get_state.return_value = VlCState.Error
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_controller, 2)
+    result = vlc_player.media_state_wait(mocked_controller, VlCState.Buffering)
 
     # THEN: The results should be True
     assert result is False
@@ -573,14 +573,14 @@ def test_media_state_wait_times_out(mocked_get_vlc, vlc_env):
     mocked_vlc.State.Error = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
-    mocked_controller.vlc_media.get_state.return_value = 2
+    mocked_controller.vlc_media.get_state.return_value = VlCState.Buffering
     Registry.create()
     mocked_application = MagicMock()
     Registry().register('application', mocked_application)
     vlc_player = VlcPlayer(None)
 
     # WHEN: media_state_wait() is called
-    result = vlc_player.media_state_wait(mocked_controller, 3)
+    result = vlc_player.media_state_wait(mocked_controller, VlCState.Playing)
 
     # THEN: The results should be True
     assert result is False
@@ -672,11 +672,11 @@ def test_pause(mocked_get_vlc):
     """
     # GIVEN: A mocked out get_vlc method
     mocked_vlc = MagicMock()
-    mocked_vlc.State.Playing = 1
-    mocked_vlc.State.Paused = 2
+    mocked_vlc.State.Playing = VlCState.Playing
+    mocked_vlc.State.Paused = VlCState.Paused
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 1
+    mocked_display.vlc_media.get_state.return_value = VlCState.Playing
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
@@ -687,7 +687,7 @@ def test_pause(mocked_get_vlc):
     # THEN: The pause method should exit early
     mocked_display.vlc_media.get_state.assert_called_with()
     mocked_display.vlc_media_player.pause.assert_called_with()
-    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    mocked_media_state_wait.assert_called_with(mocked_display, VlCState.Paused)
     assert MediaState.Paused == vlc_player.get_live_state()
 
 
@@ -701,7 +701,7 @@ def test_pause_not_playing(mocked_get_vlc):
     mocked_vlc.State.Playing = 1
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 2
+    mocked_display.vlc_media.get_state.return_value = VlCState.Paused
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
@@ -723,7 +723,7 @@ def test_pause_fail(mocked_get_vlc):
     mocked_vlc.State.Paused = 2
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
-    mocked_display.vlc_media.get_state.return_value = 1
+    mocked_display.vlc_media.get_state.return_value = VlCState.Playing
     vlc_player = VlcPlayer(None)
 
     # WHEN: The media is paused
@@ -734,7 +734,7 @@ def test_pause_fail(mocked_get_vlc):
     # THEN: The pause method should exit early
     mocked_display.vlc_media.get_state.assert_called_with()
     mocked_display.vlc_media_player.pause.assert_called_with()
-    mocked_media_state_wait.assert_called_with(mocked_display, 2)
+    mocked_media_state_wait.assert_called_with(mocked_display, VlCState.Paused)
     assert MediaState.Paused is not vlc_player.state
 
 

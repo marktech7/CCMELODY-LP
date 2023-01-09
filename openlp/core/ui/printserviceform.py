@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -214,13 +214,14 @@ class PrintServiceForm(QtWidgets.QDialog, Ui_PrintServiceDialog, RegistryPropert
                 verse_def = None
                 verse_html = None
                 for slide in item.print_slides:
-                    if not verse_def or verse_def != slide['verse'] or verse_html == slide['text']:
+                    slide_text = slide['text'].replace('\n', '<br>')
+                    if not verse_def or verse_def != slide['verse'] or verse_html == slide_text:
                         text_div = self._add_element('div', parent=div, class_id='itemText')
-                    elif 'chordspacing' not in slide['text']:
+                    elif 'chordspacing' not in slide_text:
                         self._add_element('br', parent=text_div)
-                    self._add_element('span', slide['text'], text_div)
+                    self._add_element('span', slide_text, text_div)
                     verse_def = slide['verse']
-                    verse_html = slide['text']
+                    verse_html = slide_text
                 # Break the page before the div element.
                 if index != 0 and self.page_break_after_text.isChecked():
                     div.set('class', 'item newPage')

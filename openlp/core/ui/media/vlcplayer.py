@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,12 +35,15 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.ui.media import MediaState, MediaType
+from openlp.core.ui.media import MediaState, MediaType, VlCState
 from openlp.core.ui.media.mediaplayer import MediaPlayer
 
 log = logging.getLogger(__name__)
 
 # Audio and video extensions copied from 'include/vlc_interface.h' from vlc 2.2.0 source
+
+
+STATE_WAIT_TIME = 60
 
 
 def get_vlc():
@@ -171,7 +174,6 @@ class VlcPlayer(MediaPlayer):
         """
         if not controller.vlc_instance:
             return False
-        vlc = get_vlc()
         log.debug('load video in VLC Controller')
         path = None
         if file and not controller.media_info.media_type == MediaType.Stream:
@@ -184,7 +186,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_media_player.set_media(controller.vlc_media)
             controller.vlc_media_player.play()
             # Wait for media to start playing. In this case VLC actually returns an error.
-            self.media_state_wait(controller, vlc.State.Playing)
+            self.media_state_wait(controller, VlCState.Playing)
             # If subitems exists, this is a CD
             audio_cd_tracks = controller.vlc_media.subitems()
             if not audio_cd_tracks or audio_cd_tracks.count() < 1:
@@ -207,7 +209,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_media_player.set_media(controller.vlc_media)
             controller.vlc_media_player.play()
             # Wait for media to start playing. In this case VLC returns an error.
-            self.media_state_wait(controller, vlc.State.Playing)
+            self.media_state_wait(controller, VlCState.Playing)
             if controller.media_info.audio_track > 0:
                 res = controller.vlc_media_player.audio_set_track(controller.media_info.audio_track)
                 log.debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track) + ' ' + str(res))
@@ -239,14 +241,13 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller where the media is
         :return:
         """
-        vlc = get_vlc()
         start = datetime.now()
         while media_state != controller.vlc_media.get_state():
             sleep(0.1)
-            if controller.vlc_media.get_state() == vlc.State.Error:
+            if controller.vlc_media.get_state() == VlCState.Error:
                 return False
             self.application.process_events()
-            if (datetime.now() - start).seconds > 60:
+            if (datetime.now() - start).seconds > STATE_WAIT_TIME:
                 return False
         return True
 
@@ -270,10 +271,9 @@ class VlcPlayer(MediaPlayer):
         :param output_display: The display where the media is
         :return:
         """
-        vlc = get_vlc()
         log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
         threading.Thread(target=controller.vlc_media_player.play).start()
-        if not self.media_state_wait(controller, vlc.State.Playing):
+        if not self.media_state_wait(controller, VlCState.Playing):
             return False
         self.volume(controller, controller.media_info.volume)
         self.set_state(MediaState.Playing, controller)
@@ -286,11 +286,10 @@ class VlcPlayer(MediaPlayer):
         :param controller: The controller which is managing the display
         :return:
         """
-        vlc = get_vlc()
-        if controller.vlc_media.get_state() != vlc.State.Playing:
+        if controller.vlc_media.get_state() != VlCState.Playing:
             return
         controller.vlc_media_player.pause()
-        if self.media_state_wait(controller, vlc.State.Paused):
+        if self.media_state_wait(controller, VlCState.Paused):
             self.set_state(MediaState.Paused, controller)
 
     def stop(self, controller):
