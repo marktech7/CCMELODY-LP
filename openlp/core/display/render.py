@@ -55,13 +55,20 @@ FIRST_CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
 NO_CHORD_TEMPLATE = '<span class="nochordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
-VERSE = 'The Lord said to {r}Noah{/r}: \n' \
+VERSE_1 = 'The Lord said to {r}Noah{/r}: \n' \
     'There\'s gonna be a {su}floody{/su}, {sb}floody{/sb}\n' \
     'The Lord said to {g}Noah{/g}:\n' \
     'There\'s gonna be a {st}floody{/st}, {it}floody{/it}\n' \
     'Get those children out of the muddy, muddy \n' \
     '{r}C{/r}{b}h{/b}{bl}i{/bl}{y}l{/y}{g}d{/g}{pk}' \
     'r{/pk}{o}e{/o}{pp}n{/pp} of the Lord\n'
+VERSE_2 = 'The Lord told Noah\n' \
+    'To build him an arky, arky\n' \
+    'Lord told Noah to build him an arky, arky\n' \
+    'Build it out of gopher barky, barky,\n' \
+    '{r}C{/r}{b}h{/b}{bl}i{/bl}{y}l{/y}{g}d{/g}{pk}' \
+    'r{/pk}{o}e{/o}{pp}n{/pp} of the Lord\n'
+VERSES = [VERSE_1, VERSE_2]
 VERSE_FOR_LINE_COUNT = '\n'.join(map(str, range(100)))
 TITLE = 'Arky Arky'
 AUTHOR = 'John Doe'
@@ -590,7 +597,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             verseOne = self._generate_preview_slide()
             verses.append(verseOne)
             if use_extended_preview:
-                verseTwo = self._generate_preview_slide()
+                verseTwo = self._generate_preview_slide(1)
                 verses.append(verseTwo)
             self.load_verses(verses, is_sync=True)
             if use_delay:
@@ -602,8 +609,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         self.force_page = False
         return None
 
-    def _generate_preview_slide(self):
-        slides = self.format_slide(VERSE, None)
+    def _generate_preview_slide(self, number=0):
+        slides = self.format_slide(VERSES[number], None)
         verse = dict()
         verse['title'] = TITLE
         verse['text'] = render_tags(slides[0])

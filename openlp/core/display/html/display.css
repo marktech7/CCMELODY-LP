@@ -68,14 +68,21 @@ body.is-desktop .pause-overlay {
 }
 
 body.layout-area-aid .footer {
-  outline: 5px dashed red;
+  outline: 4px dashed red;
   outline-color: -webkit-linear-gradient(180deg, rgba(255,0,0,1) 0%, rgba(247,255,0,1) 100%);
   box-shadow: 0 0 10px black;
 }
 
 body.layout-area-aid .text-slides {
-  outline: 5px dashed blue;
+  outline: 4px dashed blue;
   box-shadow: 0 0 10px black;
+}
+
+@media screen and (min-width: 768px) {
+  body.layout-area-aid .footer,
+  body.layout-area-aid .text-slides {
+    outline-width: 3px;
+  }
 }
 
 .reveal .slide-background {
