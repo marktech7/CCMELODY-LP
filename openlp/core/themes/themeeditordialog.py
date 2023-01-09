@@ -152,6 +152,7 @@ class Ui_ThemeEditorDialog(object):
                                                        | QtCore.Qt.AlignmentFlag.AlignLeft)
         self.area_position_section_label = QtWidgets.QLabel(self.area_position_section)
         self.area_position_section_label.setWordWrap(True)
+        self.area_position_section_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         self.area_position_widget = AreaPositionWidget(theme_editor)
         self.area_position_widget.setObjectName('area_position_widget')
         self.area_position_section_layout.addWidget(self.area_position_section_label)
@@ -199,14 +200,12 @@ class Ui_ThemeEditorDialog(object):
         self.retranslate_ui()
 
     def retranslate_ui(self):
-        self.background_section_label.setText(translate('OpenLP.ThemeWizard', 'Set up your theme\'s background '
-                                                        'according to the parameters below.'))
+        self.background_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the background\'s appearance.'))
         self.main_area_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                        'characteristics for the Display text'))
         self.footer_area_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the font and display '
                                                          'characteristics for the Footer text'))
         self.alignment_section_label.setText(translate('OpenLP.ThemeEditor', 'Define the text alignment.'))
-        self.area_position_section_label.setText(translate('OpenLP.ThemeWizard', 'Allows you to change and move the'
-                                                           ' Main and Footer areas.'))
+        self.area_position_section_label.setText(translate('OpenLP.ThemeWizard', 'Define the Main and Footer areas.'))
         self.transition_section_label.setText(translate('OpenLP.ThemeEditor', 'Define the slide transitions.'))
         self.theme_name_label.setText(translate('OpenLP.ThemeWizard', 'Theme name:'))
