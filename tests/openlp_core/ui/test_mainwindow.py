@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -72,6 +72,7 @@ def main_window(state, settings, mocked_qapp):
     mocked_qapp.primaryScreen.return_value = mocked_screen
     ScreenList.create(mocked_qapp)
     mainwindow = MainWindow()
+    mainwindow.activateWindow = MagicMock()
     yield mainwindow
     del mainwindow
     renderer_patcher.stop()
@@ -348,10 +349,10 @@ def test_mainwindow_configuration(main_window):
     # WHEN: you check the started functions
 
     # THEN: the following registry functions should have been registered
-    expected_service_list = ['settings', 'settings_thread', 'application', 'main_window', 'http_server',
-                             'authentication_token', 'settings_form', 'service_manager', 'theme_manager',
-                             'projector_manager']
-    expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
+    expected_service_list = ['settings', 'settings_thread', 'application', 'main_window', 'settings_form',
+                             'service_manager', 'theme_manager', 'projector_manager', 'http_server',
+                             'authentication_token', 'web_socket_server']
+    expected_functions_list = ['bootstrap_post_set_up', 'bootstrap_initialise', 'bootstrap_completion',
                                'config_screen_changed', 'theme_change_global']
     assert list(Registry().service_list.keys()) == expected_service_list, \
         'The service list should have been {}'.format(Registry().service_list.keys())
@@ -579,8 +580,63 @@ def test_projector_manager_dock_unlocked(main_window_reduced):
     projector_dock.setFeatures.assert_called_with(7)
 
 
+@patch('openlp.core.ui.mainwindow.MainWindow.open_cmd_line_files')
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_default_mode(mocked_view_mode, main_window, settings):
+def test_show_cmd_line_args(mocked_view_mode, mocked_open_cmd_line_files, main_window, settings):
+    """Test that command line arguments are loaded on show"""
+    # GIVEN: A newly opened OpenLP instance with some command line arguments
+    main_window.application.args = ['-disable-web-security', 'new_file_name.osz']
+
+    # WHEN: MainWindow.show() is called
+    main_window.show()
+
+    # THEN: The command line arguments are searched for a file name
+    mocked_open_cmd_line_files.assert_called_once_with(main_window.application.args)
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_show_load_last_file(mocked_view_mode, main_window, settings):
+    """Test that the last file opened is loaded on show"""
+    # GIVEN: A newly opened OpenLP instance with some command line arguments
+    main_window.service_manager_contents.load_last_file = MagicMock()
+    main_window.settings.setValue('core/auto open', True)
+
+    # WHEN: MainWindow.show() is called
+    main_window.show()
+
+    # THEN: The command line arguments are searched for a file name
+    main_window.service_manager_contents.load_last_file.assert_called_once_with()
+
+
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_custom_layout(mocked_view_mode, main_window, settings):
+    """Test that the view mode is called with the correct parameters for default mode"""
+    # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
+    # mock out some other calls in load_settings()
+    main_window.control_splitter = MagicMock()
+    main_window._live_controller = MagicMock()
+    main_window._preview_controller = MagicMock()
+    main_window.activateWindow = MagicMock()
+    main_window.settings.setValue('core/view mode', 'default')
+    main_window.settings.setValue('user interface/is preset layout', False)
+    main_window.settings.setValue('user interface/show library', True)
+    main_window.settings.setValue('user interface/show service', False)
+    main_window.settings.setValue('user interface/show themes', True)
+    main_window.settings.setValue('user interface/show projectors', False)
+    main_window.settings.setValue('user interface/live panel', True)
+    main_window.settings.setValue('user interface/preview panel', False)
+
+    # WHEN: we call to show method
+    main_window.show()
+
+    # THEN:
+    # The default mode should have been called.
+    mocked_view_mode.assert_called_with(True, True, True, False, True, False)
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QWidget.show')
+@patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
+def test_load_settings_view_mode_default_mode(mocked_view_mode, mocked_show, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for default mode
     """
@@ -589,10 +645,11 @@ def test_load_settings_view_mode_default_mode(mocked_view_mode, main_window, set
     main_window.control_splitter = MagicMock()
     main_window._live_controller = MagicMock()
     main_window._preview_controller = MagicMock()
+    main_window.activateWindow = MagicMock()
     main_window.settings.setValue('core/view mode', 'default')
     main_window.settings.setValue('user interface/is preset layout', True)
 
-    # WHENL we call to show method
+    # WHEN: we call to show method
     main_window.show()
 
     # THEN:
@@ -600,10 +657,14 @@ def test_load_settings_view_mode_default_mode(mocked_view_mode, main_window, set
     mocked_view_mode.assert_called_with(True, True, True, True, True, True)
 
 
+@patch('openlp.core.ui.mainwindow.QtWidgets.QWidget.show')
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_setup_mode(mocked_view_mode, main_window, settings):
+def test_load_settings_view_mode_setup_mode(mocked_view_mode, mocked_show, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for setup mode
+
+    Note: for some reason, only when the test is running, the QWidget.show() method resets the layout setting,
+          so this is mocked out to prevent it from interferring in the loading of the view layout
     """
     # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
     # mock out some other calls in load_settings()
@@ -613,7 +674,7 @@ def test_load_settings_view_mode_setup_mode(mocked_view_mode, main_window, setti
     main_window.settings.setValue('core/view mode', 'setup')
     main_window.settings.setValue('user interface/is preset layout', True)
 
-    # WHENL we call to show method
+    # WHEN: we call to show method
     main_window.show()
 
     # THEN:
@@ -621,10 +682,14 @@ def test_load_settings_view_mode_setup_mode(mocked_view_mode, main_window, setti
     mocked_view_mode.assert_called_with(True, True, False, True, False, True)
 
 
+@patch('openlp.core.ui.mainwindow.QtWidgets.QWidget.show')
 @patch('openlp.core.ui.mainwindow.MainWindow.set_view_mode')
-def test_load_settings_view_mode_live_mode(mocked_view_mode, main_window, settings):
+def test_load_settings_view_mode_live_mode(mocked_view_mode, mocked_show, main_window, settings):
     """
     Test that the view mode is called with the correct parameters for live mode
+
+    Note: for some reason, only when the test is running, the QWidget.show() method resets the layout setting,
+          so this is mocked out to prevent it from interferring in the loading of the view layout
     """
     # GIVEN a newly opened OpenLP instance, mocked screens and settings for a valid window position
     # mock out some other calls in load_settings()
@@ -634,7 +699,7 @@ def test_load_settings_view_mode_live_mode(mocked_view_mode, main_window, settin
     main_window.settings.setValue('core/view mode', 'live')
     main_window.settings.setValue('user interface/is preset layout', True)
 
-    # WHENL we call to show method
+    # WHEN: we call to show method
     main_window.show()
 
     # THEN:
@@ -652,11 +717,12 @@ def test_load_settings_view_mode_preview(mocked_view_mode, main_window, settings
     main_window.control_splitter = MagicMock()
     main_window._live_controller = MagicMock()
     main_window._preview_controller = MagicMock()
+    main_window.activateWindow = MagicMock()
     main_window.settings.setValue('core/view mode', 'default')
     main_window.settings.setValue('user interface/is preset layout', False)
     main_window.settings.setValue('user interface/preview panel', False)
 
-    # WHENL we call to show method
+    # WHEN: we call to show method
     main_window.show()
 
     # THEN:
@@ -674,11 +740,12 @@ def test_load_settings_view_mode_live(mocked_view_mode, main_window, settings):
     main_window.control_splitter = MagicMock()
     main_window._live_controller = MagicMock()
     main_window._preview_controller = MagicMock()
+    main_window.activateWindow = MagicMock()
     main_window.settings.setValue('core/view mode', 'default')
     main_window.settings.setValue('user interface/is preset layout', False)
     main_window.settings.setValue('user interface/live panel', False)
 
-    # WHENL we call to show method
+    # WHEN: we call to show method
     main_window.show()
 
     # THEN:
@@ -704,9 +771,9 @@ def test_screen_changed_modal(mocked_warning, main_window):
 
 
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.warning')
-def test_screen_changed_modal_sets_timestamp_before_blocking_on_modal(mocked_warning, main_window):
+def test_screen_changed_modal_sets_timestamp_after_blocking_on_modal(mocked_warning, main_window):
     """
-    Test that the screen changed modal latest shown timestamp is set before showing warning message, so
+    Test that the screen changed modal latest shown timestamp is set after showing warning message, so
     that duplicate modals due to event spamming on 'config_screen_changed' in less than 5 seconds is mitigated.
     """
     # GIVEN: a newly opened OpenLP instance, mocked screens, renderer and an special QMessageBox warning handler
@@ -714,19 +781,13 @@ def test_screen_changed_modal_sets_timestamp_before_blocking_on_modal(mocked_war
     main_window._preview_controller = MagicMock()
     main_window._renderer = MagicMock()
 
-    def resets_timestamp(*args, **kwargs):
-        nonlocal main_window
-        main_window.screen_change_timestamp = None
-
-    mocked_warning.side_effect = resets_timestamp
-
     # WHEN: we trigger a 'config_screen_changed' event
     Registry().execute('config_screen_changed')
 
-    # THEN: main_window.screen_change_timestamp should be "None", indicating that timestamp is set before
+    # THEN: main_window.screen_change_timestamp should have a timestamp, indicating that timestamp is set after
     # the blocking modal is shown.
     mocked_warning.assert_called_once()
-    assert main_window.screen_change_timestamp is None
+    assert main_window.screen_change_timestamp is not None
 
 
 @patch('openlp.core.ui.mainwindow.QtWidgets.QMessageBox.critical')

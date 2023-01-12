@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -181,11 +181,21 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.close_displays()
         for screen in self.screens:
             if screen.is_display:
-                display = DisplayWindow(self, screen)
+                will_start_hidden = self._current_hide_mode == HideMode.Screen
+                display = DisplayWindow(self, screen, start_hidden=will_start_hidden,
+                                        after_loaded_callback=self._display_after_loaded_callback)
                 self.displays.append(display)
                 self._reset_blank(False)
         if self.display:
             self.__add_actions_to_widget(self.display)
+
+    def _display_after_loaded_callback(self):
+        # As the display was reloaded, we'll need to process current item again
+        if self.service_item:
+            self._process_item(self.service_item, self.selected_row, is_reloading=True)
+        # Restoring last hide mode
+        if self._current_hide_mode:
+            self.display.hide_display(self._current_hide_mode)
 
     def close_displays(self):
         """
@@ -201,6 +211,10 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
     @property
     def display(self):
         return self.displays[0] if self.displays else None
+
+    @property
+    def current_hide_mode(self):
+        return self._current_hide_mode
 
     def setup_ui(self):
         """
@@ -823,14 +837,15 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # See bug #791050
         self.toolbar.show()
 
-    def refresh_service_item(self):
+    def refresh_service_item(self, service_item=None):
         """
-        Method to update the service item if the screen has changed
+        Method to update the current service item
         """
-        if self.service_item.is_text() or self.service_item.is_image():
-            item = self.service_item
-            item.render()
-            self._process_item(item, self.selected_row)
+        selected_row = self.selected_row
+        if not service_item:
+            service_item = self.service_item
+        self._process_item(service_item, selected_row, True)
+        self.slide_selected()
 
     def add_service_item(self, item):
         """
@@ -929,12 +944,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         for display in self.displays:
             display.set_theme(theme_data, service_item_type=service_item.service_item_type)
 
-    def _process_item(self, service_item, slide_no):
+    def _process_item(self, service_item, slide_no, is_reloading=False):
         """
         Loads a ServiceItem into the system from ServiceManager. Display the slide number passed.
 
         :param service_item: The current service item
         :param slide_no: The slide number to select
+        :param is_reloading: If the controller is reloading the current item, due to a display update (for example).
         """
         self.log_debug('_process_item start')
         self.on_stop_loop()
@@ -955,6 +971,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             Registry().execute(
                 '{text}_start'.format(text=self.service_item.name.lower()),
                 [self.service_item, self.is_live, self._current_hide_mode, slide_no])
+            if self.service_item.is_capable(ItemCapabilities.ProvidesOwnTheme):
+                self._set_theme(self.service_item)
         else:
             self._set_theme(self.service_item)
         self.info_label.setText(self.service_item.title)
@@ -1007,8 +1025,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.preview_widget.replace_service_item(self.service_item, width, slide_no)
         # Tidy up aspects associated with the old item
         if old_item:
+            new_item_has_background_video = self.service_item.is_capable(ItemCapabilities.HasBackgroundVideo) or \
+                self.service_item.is_capable(ItemCapabilities.HasBackgroundStream)
+            # Media Manager cannot play background videos on preview pane yet
+            is_unsupported_preview_background = not self.is_live and new_item_has_background_video
             # Close the old item if it's not to be used by the new service item
-            if not self.service_item.is_media() and not self.service_item.requires_media():
+            if not self.service_item.is_media() and (not self.service_item.requires_media() or
+                                                     is_unsupported_preview_background):
                 self.on_media_close()
             if old_item.is_command() and not old_item.is_media():
                 Registry().execute('{name}_stop'.format(name=old_item.name.lower()), [old_item, self.is_live])
@@ -1044,7 +1067,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self.application.process_events()
             self.ignore_toolbar_resize_events = False
             self.on_controller_size_changed()
-            if self.settings.value('core/auto unblank'):
+            if not is_reloading and self.settings.value('core/auto unblank'):
                 self.set_hide_mode(None)
         self.log_debug('_process_item end')
 

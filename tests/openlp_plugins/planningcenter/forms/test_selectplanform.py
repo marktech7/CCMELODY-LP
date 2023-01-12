@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -111,8 +111,8 @@ class TestSelectPlanForm(TestCase, TestMixin):
                          'The service_type_combo_box defaults to "gbf"')
         # the selected plan is today (the mocked date is a Sunday). Set to lowercase beacuse in some locales
         # months is not capitalized.
-        self.assertEqual(self.form.plan_selection_combo_box.currentText().lower(),
-                         date.strftime(mock_date.today.return_value, '%B %d, %Y').lower(),
+        self.assertEqual(self.form.plan_selection_combo_box.currentText(),
+                         'September 29, 2019',
                          'Incorrect default date selected for Plan Date')
         # count the number of themes listed and make sure it matches expected value
         self.assertEqual(self.form.song_theme_selection_combo_box.count(),

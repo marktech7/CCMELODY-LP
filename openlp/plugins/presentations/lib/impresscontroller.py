@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,7 +38,6 @@ from PyQt5 import QtCore
 from openlp.core.common import delete_file, get_uno_command, get_uno_instance, trace_error_handler
 from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
 from openlp.plugins.presentations.lib.presentationcontroller import PresentationController, PresentationDocument, \
     TextType
@@ -333,7 +332,7 @@ class ImpressDocument(PresentationDocument):
         # but OpenLP sets screen numbers based on screen coordinates (geometry)
         # so we work out what OpenOffice display to use based on which of the openlp screens is primary
         # unless the user has defined in Settings to use the impress Slide Show setting for presentation display
-        if not Settings().value('presentations/impress use display setting'):
+        if not self.settings.value('presentations/impress use display setting'):
             public_display_screen_number = ScreenList().current.number
             screens = list(ScreenList())
             if screens[public_display_screen_number].is_primary:

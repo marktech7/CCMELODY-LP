@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -33,7 +33,7 @@ import time
 from websockets import serve
 
 from openlp.core.common.mixins import LogMixin, RegistryProperties
-from openlp.core.common.registry import Registry
+from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.threading import ThreadWorker, run_thread
 from openlp.core.api.websocketspoll import WebSocketPoller
 
@@ -165,7 +165,7 @@ class WebSocketWorker(ThreadWorker, RegistryProperties, LogMixin):
             self.event_loop.call_soon_threadsafe(queue.put_nowait, state)
 
 
-class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
+class WebSocketServer(RegistryBase, RegistryProperties, QtCore.QObject, LogMixin):
     """
     Wrapper round a server instance
     """
@@ -175,6 +175,9 @@ class WebSocketServer(RegistryProperties, QtCore.QObject, LogMixin):
         """
         super(WebSocketServer, self).__init__()
         self.worker = None
+
+    def bootstrap_post_set_up(self):
+        self.start()
 
     def start(self):
         """

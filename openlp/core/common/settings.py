@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -291,6 +291,8 @@ class Settings(QtCore.QSettings):
         'media/vlc arguments': '',
         'media/live volume': 50,
         'media/preview volume': 0,
+        'media/live loop': False,
+        'media/preview loop': False,
         'media/db type': 'sqlite',
         'media/db username': '',
         'media/db password': '',
@@ -365,6 +367,7 @@ class Settings(QtCore.QSettings):
         'themes/theme level': ThemeLevel.Global,
         'themes/item transitions': False,
         'themes/hot reload': False,
+        'user interface/is preset layout': False,
         'user interface/live panel': True,
         'user interface/live splitter geometry': QtCore.QByteArray(),
         'user interface/lock panel': True,
@@ -374,7 +377,10 @@ class Settings(QtCore.QSettings):
         'user interface/main window state': QtCore.QByteArray(),
         'user interface/preview panel': True,
         'user interface/preview splitter geometry': QtCore.QByteArray(),
-        'user interface/is preset layout': False,
+        'user interface/show library': True,
+        'user interface/show projectors': True,
+        'user interface/show service': True,
+        'user interface/show themes': True,
         'projector/show after wizard': False,
         'projector/db type': 'sqlite',
         'projector/db username': '',

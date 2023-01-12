@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,7 +24,7 @@ presentations from a variety of document formats.
 """
 import logging
 import os
-
+from pathlib import Path
 
 from openlp.core.common import extension_loader, sha256_file_hash
 from openlp.core.common.i18n import translate
@@ -84,7 +84,9 @@ class PresentationPlugin(Plugin):
             has_old_scheme = True
         # Migrate each file
         presentation_paths = self.settings.value('presentations/presentations files') or []
-        for path in presentation_paths:
+        for presentation_path in presentation_paths:
+            # Typecast to Path object
+            path = Path(presentation_path)
             # check to see if the file exists before trying to process it.
             if not path.exists():
                 continue

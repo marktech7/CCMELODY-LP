@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,6 +32,7 @@ from PyQt5 import QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
+from openlp.core.lib.theme import Theme
 from openlp.core.ui.thememanager import ThemeManager
 from tests.utils.constants import RESOURCE_PATH
 
@@ -265,7 +266,7 @@ def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning,
     theme_manager.save_theme(mocked_theme)
 
     # THEN: A warning should have happened due to attempting to copy a missing file
-    mocked_log_warning.assert_called_once_with('Background does not exist, retaining cached background')
+    mocked_log_warning.assert_called_once_with('Background source does not exist, retaining cached background')
 
 
 @patch('openlp.core.ui.thememanager.shutil')
@@ -292,7 +293,7 @@ def test_save_theme_background_override(mocked_paths, mocked_delete, mocked_shut
     override_background = MagicMock()
 
     # WHEN: Calling save_theme with a background override
-    theme_manager.save_theme(mocked_theme, background_override=override_background)
+    theme_manager.save_theme(mocked_theme, background_file=override_background)
 
     # THEN: The override_background should have been copied rather than the background_source
     mocked_shutil.copyfile.assert_called_once_with(override_background, mocked_theme.background_filename)
@@ -505,3 +506,27 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     assert theme_manager.file_rename_form is not None
     theme_manager.upgrade_themes.assert_called_once()
     theme_manager.load_themes.assert_called_once()
+
+
+def test_clone_theme_data(theme_manager):
+    """Test that cloning the theme data works correctly"""
+    # GIVEN: A theme manager, a theme (without a background source) and a new theme name
+    existing_theme = Theme()
+    existing_theme.theme_name = 'Existing Theme'
+    existing_theme.background_type = 'image'
+    existing_theme.background_filename = Path('Existing Theme', 'background.jpg')
+
+    theme_manager.theme_path = Path('openlp', 'themes')
+    theme_manager.save_theme = MagicMock()
+    theme_manager.update_preview_images = MagicMock()
+    theme_manager.load_themes = MagicMock()
+
+    # WHEN: The theme is cloned
+    theme_manager.clone_theme_data(existing_theme, 'New Theme')
+
+    # THEN: The theme data should have been updated
+    assert existing_theme.theme_name == 'New Theme'
+    theme_manager.save_theme.assert_called_once_with(existing_theme, background_file=Path('Existing Theme',
+                                                                                          'background.jpg'))
+    theme_manager.update_preview_images.assert_called_once_with(['New Theme'])
+    theme_manager.load_themes.assert_called_once_with()

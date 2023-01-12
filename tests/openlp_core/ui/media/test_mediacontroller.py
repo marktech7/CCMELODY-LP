@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,14 +22,18 @@
 Package to test the openlp.core.ui.media package.
 """
 from pathlib import Path
+
+from unittest import skipUnless
 from unittest.mock import MagicMock, patch
 
 import pytest
 
+from openlp.core.state import State
+from openlp.core.common.platform import is_linux, is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.media.mediacontroller import MediaController
-from openlp.core.ui.media import ItemMediaInfo, MediaState
+from openlp.core.ui.media import ItemMediaInfo, MediaState, MediaType
 
 from tests.utils.constants import RESOURCE_PATH
 
@@ -44,6 +48,216 @@ def media_env(registry):
     Registry().register('service_manager', MagicMock())
     media_controller = MediaController()
     yield media_controller
+
+
+@patch('openlp.core.ui.media.mediacontroller.register_views')
+def test_setup(mocked_register_views, media_env):
+    """
+    Test that the setup method is called correctly
+    """
+    # GIVEN: A media controller, and function list
+    expected_functions_list = ['bootstrap_initialise', 'bootstrap_post_set_up', 'bootstrap_completion',
+                               'playbackPlay', 'playbackPause', 'playbackStop', 'playbackLoop', 'seek_slider',
+                               'volume_slider', 'media_hide', 'media_blank', 'media_unblank', 'songs_hide',
+                               'songs_blank', 'songs_unblank']
+    # WHEN: Setup is called
+    media_env.setup()
+    # THEN: the functions should be defined along with the api blueprint
+    assert list(Registry().functions_list.keys()) == expected_functions_list, \
+        f'The function list should have been {(Registry().functions_list.keys())}'
+    mocked_register_views.called_once(), 'The media blueprint has not been registered'
+
+
+def test_initialise_good(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly
+    """
+    # GIVEN: a mocked setup
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup:
+        # THEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+
+
+def test_initialise_missing_vlc(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly with no VLC
+    """
+    # GIVEN: a mocked setup and no VLC
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup, \
+         patch('openlp.core.ui.media.mediacontroller.get_vlc', return_value=False):
+        # THEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+    text = State().get_text()
+    if not is_macosx():
+        assert text.find("python3-vlc") > 0, "VLC should not be missing"
+
+
+@patch('openlp.core.ui.media.mediacontroller.pymediainfo_available', False)
+def test_initialise_missing_pymedia(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly with no pymediainfo
+    """
+    # GIVEN: a mocked setup and no pymedia
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup:
+        # THEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+    text = State().get_text()
+    if not is_macosx():
+        assert text.find("python3-pymediainfo") > 0, "PyMedia should not be missing"
+
+
+@skipUnless(is_linux(), "Linux only")
+def test_initialise_missing_pymedia_fedora(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly with no VLC
+    """
+    # GIVEN: a mocked setup and no VLC
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup, \
+         patch('openlp.core.ui.media.mediacontroller.get_vlc', return_value=False), \
+         patch('openlp.core.ui.media.mediacontroller.is_linux', return_value=True):
+        # WHEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+    text = State().get_text()
+    assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
+    assert text.find("python3-vlc") > 0, "VLC should not be missing"
+    assert text.find("rpmfusion") > 0, "RPMFusion should provide the modules"
+
+
+@skipUnless(is_linux(), "Linux only")
+def test_initialise_missing_pymedia_not_fedora(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly with no VLC
+    """
+    # GIVEN: a mocked setup and no VLC
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup, \
+         patch('openlp.core.ui.media.mediacontroller.get_vlc', return_value=False), \
+         patch('openlp.core.ui.media.mediacontroller.is_linux', return_value=False):
+        # WHEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+    text = State().get_text()
+    assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
+    assert text.find("python3-vlc") > 0, "VLC should not be missing"
+    assert text.find("rpmfusion") == -1, "RPMFusion should not provide the modules"
+
+
+def test_initialise_missing_pymedia_mac_os(media_env, state_media):
+    """
+    Test that the bootstrap initialise method is called correctly with no VLC
+    """
+    # GIVEN: a mocked setup and no VLC
+    with patch.object(media_env.media_controller, u'setup') as mocked_setup, \
+         patch('openlp.core.ui.media.mediacontroller.get_vlc', return_value=False), \
+         patch('openlp.core.ui.media.mediacontroller.is_macosx', return_value=True):
+        # WHEN: The underlying method is called
+        media_env.media_controller.bootstrap_initialise()
+    # THEN: The following should have happened
+    mocked_setup.called_once(), 'The setup function has been called'
+    text = State().get_text()
+    assert text.find("python3-pymediainfo") == -1, "PyMedia should be missing"
+    assert text.find("python3-vlc") == -1, "PyMedia should be missing"
+    assert text.find("videolan") > 0, "VideoLAN should provide the modules"
+
+
+def test_post_set_up_good(media_env, state_media):
+    """
+    Test the Bootstrap post set up assuming all functions are good
+    """
+    # GIVEN: A working  environment
+    media_env.vlc_live_media_stop = MagicMock()
+    media_env.vlc_preview_media_stop = MagicMock()
+    media_env.vlc_live_media_tick = MagicMock()
+    media_env.vlc_preview_media_tick = MagicMock()
+    State().add_service("mediacontroller", 0)
+    State().update_pre_conditions("mediacontroller", True)
+    # WHEN: I call the function
+    with patch.object(media_env.media_controller, u'setup_display') as mocked_display:
+        media_env.bootstrap_post_set_up()
+    # THEN: the environment is set up correctly
+    assert mocked_display.call_count == 2, "Should have been called twice"
+    text = State().get_text()
+    assert text.find("No Displays") == -1, "No Displays have been disable"
+    assert mocked_display.has_calls(None, False)  # Live Controller
+    assert mocked_display.has_calls(None, True)  # Preview Controller
+
+
+def test_media_state_live(media_env, state_media):
+    """
+    Test the Bootstrap post set up assuming all functions are good
+    """
+    # GIVEN: A working  environment
+    media_env.vlc_live_media_stop = MagicMock()
+    media_env.vlc_preview_media_stop = MagicMock()
+    media_env.vlc_preview_media_tick = MagicMock()
+    mocked_live_controller = MagicMock()
+    mocked_live_controller.is_live = True
+    mocked_live_controller.media_info.media_type = MediaType.Audio
+    Registry().register('live_controller', mocked_live_controller)
+    media_env.media_controller.vlc_player = MagicMock()
+    media_env.media_controller._display_controllers = MagicMock(return_value=mocked_live_controller)
+    # WHEN: I call the function
+    with patch.object(media_env.media_controller, u'setup_display') as mocked_display:
+        media_env.bootstrap_post_set_up()
+    # THEN: the environment is set up correctly
+    text = State().get_text()
+    assert text.find("No Displays") == -1, "No Displays have been disable"
+    assert mocked_display.has_calls(None, False)  # Live Controller
+    assert mocked_display.has_calls(None, True)  # Preview Controller
+
+
+def test_post_set_up_no_controller(media_env, state_media):
+    """
+    Test the Bootstrap post set up assuming all functions are good
+    """
+    # GIVEN: A working environment
+    media_env.vlc_live_media_stop = MagicMock()
+    media_env.vlc_preview_media_stop = MagicMock()
+    media_env.vlc_live_media_tick = MagicMock()
+    media_env.vlc_preview_media_tick = MagicMock()
+    State().add_service("mediacontroller", 0)
+    State().update_pre_conditions("mediacontroller", False)
+    # WHEN: I call the function
+    with patch.object(media_env.media_controller, u'setup_display') as mocked_display:
+        media_env.bootstrap_post_set_up()
+    # THEN: the environment is set up correctly
+    assert mocked_display.call_count == 0, "Should have not have been called twice"
+    text = State().get_text()
+    assert text.find("No Displays") == -1, "No Displays have been disable"
+
+
+def test_post_set_up_controller_exception(media_env, state_media):
+    """
+    Test the Bootstrap post set up assuming all functions are good
+    """
+    # GIVEN: A working environment
+    media_env.vlc_live_media_stop = MagicMock()
+    media_env.vlc_preview_media_stop = MagicMock()
+    media_env.vlc_live_media_tick = MagicMock()
+    media_env.vlc_preview_media_tick = MagicMock()
+    State().add_service("mediacontroller", 0)
+    State().update_pre_conditions("mediacontroller", True)
+    State().add_service("media_live", 0)
+    State().update_pre_conditions("media_live", True)
+    # WHEN: I call the function
+    with patch.object(media_env.media_controller, u'setup_display') as mocked_display:
+        mocked_display.side_effect = AttributeError()
+        try:
+            media_env.bootstrap_post_set_up()
+        except AttributeError:
+            pass
+    # THEN: the environment is set up correctly
+    text = State().get_text()
+    assert text.find("Displays") > 0, "Displays have been disable"
+    assert mocked_display.call_count == 2, "Should have been called twice"
 
 
 def test_resize(media_env):
@@ -86,8 +300,7 @@ def test_load_video(media_env, settings):
     #       The video should have autoplayed
     #       The controls should have been made visible
     media_env.media_controller.media_reset.assert_called_once_with(mocked_slide_controller)
-    assert mocked_slide_controller.media_info.volume == 1
-    media_env.media_controller.media_play.assert_called_once_with(mocked_slide_controller)
+    media_env.media_controller.media_play.assert_called_once_with(mocked_slide_controller, False)
     media_env.media_controller.set_controls_visible.assert_called_once_with(mocked_slide_controller, True)
 
 
@@ -355,6 +568,47 @@ def test_media_length_duration_none(MockPath, mocked_parse, media_env):
 
     # THEN you can determine the run time
     assert duration == 0, 'The duration should be 0'
+
+
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
+def test_media_length_duration_old_version(mocked_parse, media_env):
+    """
+    Test that when a version of MediaInfo < 4.3 is installed, a file name is passed directly to the parse method
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
+    from openlp.core.ui.media import mediacontroller
+    mediacontroller.pymediainfo_version = '4.0.1'
+    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=10)])
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    mocked_parse.assert_called_once_with('path/to/fake/video.mkv')
+    assert duration == 10, 'The duration should be 10'
+
+
+@patch('openlp.core.ui.media.mediacontroller.Path')
+@patch('openlp.core.ui.media.mediacontroller.MediaInfo.parse')
+def test_media_length_duration_new_version(mocked_parse, MockPath, media_env):
+    """
+    Test that when a version of MediaInfo > 4.3 is installed, a file OBJECT is passed to the parse method
+    """
+    # GIVEN: A fake media file and a mocked MediaInfo.parse() function
+    from openlp.core.ui.media import mediacontroller
+    mediacontroller.pymediainfo_version = '5.0.3'
+    mocked_file = MagicMock()
+    MockPath.return_value.open.return_value.__enter__.return_value = mocked_file
+    mocked_parse.return_value = MagicMock(tracks=[MagicMock(duration=8)])
+    file_path = 'path/to/fake/video.mkv'
+
+    # WHEN the media data is retrieved
+    duration = media_env.media_controller.media_length(file_path)
+
+    # THEN you can determine the run time
+    mocked_parse.assert_called_once_with(mocked_file)
+    assert duration == 8, 'The duration should be 8'
 
 
 @patch('openlp.core.ui.media.mediacontroller.MediaInfo.can_parse')

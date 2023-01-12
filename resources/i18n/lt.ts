@@ -2,12 +2,12 @@
 <context>
     <name>AlertsPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="141"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="162"/>
         <source>&amp;Alert</source>
         <translation>Į&amp;spėjimas</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="141"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="162"/>
         <source>Show an alert message.</source>
         <translation>Rodyti įspėjamąjį pranešimą.</translation>
     </message>
@@ -2435,12 +2435,12 @@ Ar vis tiek norite pridėti kitus paveikslus?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="167"/>
+        <location filename="../../openlp/core/app.py" line="168"/>
         <source>Data Directory Error</source>
         <translation>Duomenų katalogo klaida</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="167"/>
+        <location filename="../../openlp/core/app.py" line="168"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2461,24 +2461,24 @@ Jūs galite atstatyti duomenų vietą atgal į numatytąją arba pabandyti padar
 Ar norite atstatyti numatytąją duomenų vietą? Jei ne, OpenLP bus užverta, kad galėtumėte pataisyti iškilusią problemą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="243"/>
+        <location filename="../../openlp/core/app.py" line="244"/>
         <source>Backup</source>
         <translation>Atsarginė kopija</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="226"/>
+        <location filename="../../openlp/core/app.py" line="227"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP buvo atnaujinta, ar norite sukurti atsarginę
 senojo duomenų aplanko kopiją?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="237"/>
+        <location filename="../../openlp/core/app.py" line="238"/>
         <source>Backup of the data folder failed!</source>
         <translation>Nepavyko sukurti duomenų aplanko atsarginę kopiją!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="240"/>
+        <location filename="../../openlp/core/app.py" line="241"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
@@ -2487,12 +2487,12 @@ senojo duomenų aplanko kopiją?</translation>
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="333"/>
+        <location filename="../../openlp/core/app.py" line="334"/>
         <source>Downgrade</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="333"/>
+        <location filename="../../openlp/core/app.py" line="334"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
@@ -2501,29 +2501,29 @@ Do you want to continue?</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="358"/>
+        <location filename="../../openlp/core/app.py" line="359"/>
         <source>Settings Backup</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="350"/>
+        <location filename="../../openlp/core/app.py" line="351"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="358"/>
+        <location filename="../../openlp/core/app.py" line="359"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="369"/>
+        <location filename="../../openlp/core/app.py" line="370"/>
         <source>OpenLP Backup</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="369"/>
+        <location filename="../../openlp/core/app.py" line="370"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation type="unfinished"/>
     </message>
@@ -2551,22 +2551,22 @@ OpenLP will attempt to continue.</source>
         <translation>API</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="409"/>
+        <location filename="../../openlp/core/api/tab.py" line="396"/>
         <source>Error fetching version</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="409"/>
+        <location filename="../../openlp/core/api/tab.py" line="396"/>
         <source>There was a problem fetching the latest version of the remote</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="419"/>
+        <location filename="../../openlp/core/api/tab.py" line="406"/>
         <source>New version available!</source>
-        <translation type="unfinished"/>
+        <translation>Yra prieinama nauja versija!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="419"/>
+        <location filename="../../openlp/core/api/tab.py" line="406"/>
         <source>There&apos;s a new version of the web remote available.</source>
         <translation type="unfinished"/>
     </message>
@@ -2619,7 +2619,7 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="91"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Pridėti aplanką</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="92"/>
@@ -2639,12 +2639,12 @@ OpenLP will attempt to continue.</source>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="122"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Turite įrašyti aplanko pavadinimą.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="127"/>
         <source>This folder already exists, please use a different name.</source>
-        <translation type="unfinished"/>
+        <translation>Šis aplankas jau yra, naudokite kitokį pavadinimą.</translation>
     </message>
 </context>
 <context>
@@ -2961,12 +2961,12 @@ aukštis skaidrių valdiklyje:</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="231"/>
         <source>New folder</source>
-        <translation type="unfinished"/>
+        <translation>Naujas aplankas</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="256"/>
         <source>You need to type in a folder name.</source>
-        <translation type="unfinished"/>
+        <translation>Turite įrašyti aplanko pavadinimą.</translation>
     </message>
 </context>
 <context>
@@ -3620,7 +3620,7 @@ Jei spustelėsite ant mygtuko &quot;{finish_button}&quot;, vėliau galėsite ats
     <message>
         <location filename="../../openlp/core/ui/library.py" line="105"/>
         <source>Could not add the new folder.</source>
-        <translation type="unfinished"/>
+        <translation>Nepavyko pridėti naujo aplanko.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="117"/>
@@ -3630,7 +3630,7 @@ Jei spustelėsite ant mygtuko &quot;{finish_button}&quot;, vėliau galėsite ats
     <message>
         <location filename="../../openlp/core/ui/library.py" line="135"/>
         <source>Remove folder</source>
-        <translation type="unfinished"/>
+        <translation>Šalinti aplanką</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="135"/>
@@ -3645,7 +3645,7 @@ Jei spustelėsite ant mygtuko &quot;{finish_button}&quot;, vėliau galėsite ats
     <message>
         <location filename="../../openlp/core/ui/library.py" line="399"/>
         <source>An item with that filename already exists.</source>
-        <translation type="unfinished"/>
+        <translation>Elementas tokiu failo pavadinimu jau yra.</translation>
     </message>
 </context>
 <context>
@@ -3963,402 +3963,402 @@ Jei spustelėsite ant mygtuko &quot;{finish_button}&quot;, vėliau galėsite ats
         <translation>Lithuanian</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="302"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="301"/>
         <source>General</source>
         <translation>Bendra</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="359"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="358"/>
         <source>&amp;File</source>
         <translation>&amp;Failas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="359"/>
         <source>&amp;Import</source>
         <translation>I&amp;mportuoti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
         <source>&amp;Export</source>
         <translation>&amp;Eksportuoti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
         <source>&amp;Recent Services</source>
         <translation>Paskiausiai naudotos pamaldų p&amp;rogramos</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
         <source>&amp;View</source>
         <translation>&amp;Rodinys</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
         <source>&amp;Layout Presets</source>
         <translation>Iša&amp;nkstinės išdėstymo parinktys</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
         <source>&amp;Tools</source>
         <translation>Įr&amp;ankiai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="366"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
         <source>&amp;Settings</source>
         <translation>&amp;Nustatymai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
         <source>&amp;Language</source>
         <translation>Ka&amp;lba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="368"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="367"/>
         <source>&amp;Help</source>
         <translation>&amp;Pagalba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="368"/>
         <source>Library</source>
         <translation>Biblioteka</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
         <source>Service</source>
         <translation>Pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
         <source>Themes</source>
         <translation>Apipavidalinimai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
         <source>Projector Controller</source>
         <translation>Projektoriaus valdiklis</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="373"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
         <source>&amp;New Service</source>
         <translation>&amp;Nauja pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="376"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="375"/>
         <source>&amp;Open Service</source>
         <translation>Atverti pamaldų pr&amp;ogramą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="378"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="377"/>
         <source>Open an existing service.</source>
         <translation>Atverti esamą pamaldų programą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="379"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="378"/>
         <source>&amp;Save Service</source>
         <translation>Į&amp;rašyti pamaldų programą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="381"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="380"/>
         <source>Save the current service to disk.</source>
         <translation>Įrašyti dabartinę pamaldų programą į diską.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="382"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="381"/>
         <source>Save Service &amp;As...</source>
         <translation>Įraš&amp;yti pamaldų programą kaip...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="383"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="382"/>
         <source>Save Service As</source>
         <translation>Įrašyti pamaldų programą kaip</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="384"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="383"/>
         <source>Save the current service under a new name.</source>
         <translation>Įrašyti dabartinę pamaldų programą nauju pavadinimu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="386"/>
         <source>Print the current service.</source>
         <translation>Spausdinti dabartinę pamaldų programą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
         <source>E&amp;xit</source>
         <translation>&amp;Išeiti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
         <source>Close OpenLP - Shut down the program.</source>
         <translation>Užverti OpenLP - Išjungti programą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="391"/>
         <source>&amp;Theme</source>
         <translation>&amp;Apipavidalinimą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
         <source>Configure &amp;Shortcuts...</source>
         <translation>Konfigūruoti &amp;sparčiuosius klavišus...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
         <source>Configure &amp;Formatting Tags...</source>
         <translation>Konfigūruoti &amp;formatavimo žymes</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
         <source>&amp;Configure OpenLP...</source>
         <translation>&amp;Konfigūruoti OpenLP...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
         <source>Export settings to a *.config file.</source>
         <translation>Eksportuoti nustatymus į *.config failą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="403"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="402"/>
         <source>Settings</source>
         <translation>Nustatymus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="400"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="399"/>
         <source>Import settings from a *.config file previously exported from this or another machine.</source>
         <translation>Importuoti nustatymus iš *.config failo, kuris anksčiau buvo eksportuotas šiame ar kitame kompiuteryje.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="403"/>
         <source>&amp;Projector Controller</source>
         <translation>&amp;Projektoriaus valdiklis</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
         <source>Hide or show Projectors.</source>
         <translation>Slėpti ar rodyti projektorius.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
         <source>Toggle visibility of the Projectors.</source>
         <translation>Perjungti projektorių matomumą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="408"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="407"/>
         <source>L&amp;ibrary</source>
         <translation>B&amp;iblioteka</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="408"/>
         <source>Hide or show the Library.</source>
         <translation>Slėpti ar rodyti biblioteką.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
         <source>Toggle the visibility of the Library.</source>
         <translation>Perjungti bibliotekos matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="412"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
         <source>&amp;Themes</source>
         <translation>&amp;Apipavidalinimai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="412"/>
         <source>Hide or show themes</source>
         <translation>Slėpti ar rodyti apipavidalinimus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="414"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
         <source>Toggle visibility of the Themes.</source>
         <translation>Perjungti apipavidalinimų matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
         <source>&amp;Service</source>
         <translation>&amp;Pamaldų programa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
         <source>Hide or show Service.</source>
         <translation>Slėpti ar rodyti pamaldų programą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="418"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
         <source>Toggle visibility of the Service.</source>
         <translation>Perjungti pamaldų programos matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="419"/>
         <source>&amp;Preview</source>
         <translation>&amp;Peržiūra</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
         <source>Hide or show Preview.</source>
         <translation>Slėpti ar rodyti peržiūrą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
         <source>Toggle visibility of the Preview.</source>
         <translation>Perjungti peržiūros matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
         <source>Li&amp;ve</source>
         <translation>Gy&amp;vai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
         <source>Hide or show Live</source>
         <translation>Slėpti ar rodyti rodinį Gyvai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
         <source>L&amp;ock visibility of the panels</source>
         <translation>Užr&amp;akinti skydelių matomumą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
         <source>Lock visibility of the panels.</source>
         <translation>Užrakinti skydelių matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
         <source>Toggle visibility of the Live.</source>
         <translation>Perjungti rodinio Gyvai matomumą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
         <source>&amp;Manage Plugins</source>
         <translation>&amp;Tvarkyti papildinius</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="430"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
         <source>You can enable and disable plugins from here.</source>
         <translation>Čia galite išjungti ir įjungti papildinius.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
         <source>&amp;About</source>
         <translation>&amp;Apie</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
         <source>More information about OpenLP.</source>
         <translation>Daugiau informacijos apie OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="434"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Naudotojo žinynas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="436"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
         <source>Jump to the search box of the current active plugin.</source>
         <translation>Pereiti prie dabartinio aktyvaus papildinio paieškos lango.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="438"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="437"/>
         <source>&amp;Web Site</source>
         <translation>&amp;Tinklalapis</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="441"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="440"/>
         <source>Set the interface language to {name}</source>
         <translation>Nustatyti sąsajos kalbą į {name}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="443"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="442"/>
         <source>&amp;Autodetect</source>
         <translation>&amp;Aptikti automatiškai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="443"/>
         <source>Use the system language, if available.</source>
         <translation>Jei įmanoma, naudoti sistemos kalbą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
         <source>Add &amp;Tool...</source>
         <translation>Pridėti į&amp;rankį...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="446"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
         <source>Add an application to the list of tools.</source>
         <translation>Pridėti programą į įrankų sąrašą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="447"/>
         <source>Open &amp;Data Folder...</source>
         <translation>Atverti &amp;duomenų aplanką....</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
         <source>Open the folder where songs, bibles and other data resides.</source>
         <translation>Atverti aplanką, kuriame yra giesmės, Biblijos bei kiti duomenys.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="450"/>
         <source>Re-run First Time Wizard</source>
         <translation>Iš naujo paleisti pirmojo karto vediklį</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
         <source>Re-run the First Time Wizard, importing songs, Bibles and themes.</source>
         <translation>Iš naujo paleisti pirmojo karto vediklį, giesmių, Biblijų ir apipavidalinimų importavimui.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
         <source>Update Theme Images</source>
         <translation>Atnaujinti apipavidalinimo paveikslus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
         <source>Update the preview images for all themes.</source>
         <translation>Atnaujinti visų apipavidalinimų peržiūros paveikslus.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
         <source>&amp;Show all</source>
         <translation>&amp;Rodyti visus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
         <source>Reset the interface back to the default layout and show all the panels.</source>
         <translation>Atstatyti sąsają atgal į numatytąjį išdėstymą ir rodyti visus skydelius.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="460"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
         <source>&amp;Setup</source>
         <translation>&amp;Parengimo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="461"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="460"/>
         <source>Use layout that focuses on setting up the Service.</source>
         <translation>Naudoti išdėstymą, kuris susitelkia ties pamaldų programos sudarymu.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="463"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
         <source>&amp;Live</source>
         <translation>&amp;Gyvo rodymo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="464"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="463"/>
         <source>Use layout that focuses on Live.</source>
         <translation>Naudoti išdėstymą, kuris susitelkia ties rodymu Gyvai.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="537"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="535"/>
         <source>Waiting for some things to finish...</source>
         <translation>Laukiama, kol kai kurie dalykai pabags darbą...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="539"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="537"/>
         <source>Please Wait</source>
         <translation>Palaukite</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="618"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="616"/>
         <source>Version {new} of OpenLP is now available for download (you are currently running version {current}). 
 
 You can download the latest version from https://openlp.org/.</source>
@@ -4367,29 +4367,29 @@ You can download the latest version from https://openlp.org/.</source>
 Galite atsisiųsti naujausią versiją iš https://openlp.org/.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="621"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="619"/>
         <source>OpenLP Version Updated</source>
         <translation>OpenLP versija atnaujinta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="632"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="630"/>
         <source>Version {version} of the web remote is now available for download.
 To download this version, go to the Remote settings and click the Upgrade button.</source>
         <translation>Dabar yra prieinama atsisiųsti internetinio nuotolinio valdymo pulto versija {version}.
 Norėdami atsisiųsti šią versiją, pereikite į nuotolinio valdymo pulto nustatymus ir spustelėkite mygtuką Naujinti.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="635"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="633"/>
         <source>New Web Remote Version Available</source>
         <translation>Yra prieinama nauja internetinio nuotolinio valdymo pulto versija</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="694"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="692"/>
         <source>Re-run First Time Wizard?</source>
         <translation>Paleisti pirmojo karto vediklį iš naujo?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="694"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="692"/>
         <source>Are you sure you want to re-run the First Time Wizard?
 
 Re-running this wizard may make changes to your current OpenLP configuration and possibly add songs to your existing songs list and change your default theme.</source>
@@ -4398,22 +4398,22 @@ Re-running this wizard may make changes to your current OpenLP configuration and
 Šio vediklio paleidimas iš naujo, gali pakeisti jūsų dabartinę OpenLP konfigūraciją ir, galbūt, į esančių giesmių sąrašą, pridėti giesmių bei pakeisti jūsų numatytąjį apipavidalinimą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="739"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="737"/>
         <source>OpenLP Main Display Blanked</source>
         <translation>OpenLP pagrindinis ekranas uždengtas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="739"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="737"/>
         <source>The Main Display has been blanked out</source>
         <translation>Pagrindinis ekranas buvo uždengtas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="844"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="842"/>
         <source>Import settings?</source>
         <translation>Importuoti nustatymus?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="844"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="842"/>
         <source>Are you sure you want to import settings?
 
  Importing settings will make permanent changes to your current OpenLP configuration.
@@ -4426,24 +4426,24 @@ Nustatymų importavimas padarys pastovius pakeitimus jūsų dabartinei OpenLP ko
 Neteisingų nustatymų importavimas gali sukelti nepastovią elgseną arba nenormalius OpenLP darbo trikdžius.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="943"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
         <source>Import settings</source>
         <translation>Importavimo nustatymai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="955"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="953"/>
         <source>OpenLP Settings (*.conf)</source>
         <translation>OpenLP nustatymai (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="890"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="888"/>
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="903"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="901"/>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
@@ -4452,73 +4452,73 @@ Processing has terminated and no changes have been made.</source>
 Apdorojimas buvo nutrauktas ir nepadaryta jokių pokyčių.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="943"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
         <source>OpenLP will now close.  Imported settings will be applied the next time you start OpenLP.</source>
         <translation>OpenLP dabar bus užverta. Importuoti nustatymai bus pritaikyti kitą kartą, paleidus OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="955"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="953"/>
         <source>Export Settings File</source>
         <translation>Eksportuoti nustatymų failą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="968"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="966"/>
         <source>Export setting error</source>
         <translation>Nustatymų eksportavimo klaida</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="968"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="966"/>
         <source>An error occurred while exporting the settings: {err}</source>
         <translation>Eksportuojant nustatymus, įvyko klaida: {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1029"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1027"/>
         <source>Screen setup has changed</source>
         <translation>Pasikeitė ekranų sąranka</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1029"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1027"/>
         <source>The screen setup has changed. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
         <translation>Ekranų sąranka pasikeitė. OpenLP bandys automatiškai pasirinkti rodymo ekraną, bet turėtumėte apsvarstyti galimybę atnaujinti ekrano nustatymus.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1058"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1056"/>
         <source>Exit OpenLP</source>
         <translation>Išeiti iš OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1058"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1056"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Ar tikrai norite išeiti iš OpenLP?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1065"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1063"/>
         <source>&amp;Exit OpenLP</source>
         <translation>Iš&amp;eiti iš OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1152"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1150"/>
         <source>Default Theme: {theme}</source>
         <translation>Numatytasis apipavidalinimas: {theme}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1326"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1324"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Išvalyti sąrašą</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1326"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1324"/>
         <source>Clear the list of recent files.</source>
         <translation>Išvalyti paskiausiai naudotų failų sąrašą.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1407"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
         <source>Copying OpenLP data to new data directory location - {path} - Please wait for copy to finish</source>
         <translation>OpenLP duomenys kopijuojami į naują duomenų katalogo vietą - {path} - Prašome palaukti, kol bus užbaigtas kopijavimas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
         <source>OpenLP Data directory copy failed
 
 {err}</source>
@@ -4527,7 +4527,7 @@ Apdorojimas buvo nutrauktas ir nepadaryta jokių pokyčių.</translation>
 {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1417"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
         <source>New Data Directory Error</source>
         <translation>Naujo duomenų katalogo klaida</translation>
     </message>
@@ -5852,12 +5852,12 @@ Failo prievardis nėra palaikomas</translation>
 <context>
     <name>OpenLP.RemoteTab</name>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="366"/>
+        <location filename="../../openlp/core/api/tab.py" line="353"/>
         <source>Restart Required</source>
         <translation>Reikalingas paleidimas iš naujo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="366"/>
+        <location filename="../../openlp/core/api/tab.py" line="353"/>
         <source>This change will only take effect once OpenLP has been restarted.</source>
         <translation>Šis pakeitimas įsigalios tik tada, kai OpenLP bus paleista iš naujo.</translation>
     </message>
@@ -5880,7 +5880,7 @@ Failo prievardis nėra palaikomas</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="194"/>
         <source>({screen.geometry.width()} x {screen.geometry.height()} pixels)</source>
-        <translation type="unfinished"/>
+        <translation>({screen.geometry.width()} x {screen.geometry.height()} pikselių)</translation>
     </message>
 </context>
 <context>
@@ -6185,7 +6185,7 @@ Failo prievardis nėra palaikomas</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="372"/>
         <source>&amp;Delete item</source>
-        <translation type="unfinished"/>
+        <translation>Iš&amp;trinti elementą</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="395"/>
@@ -6332,9 +6332,9 @@ Jei tęsite įrašymą, šie failai bus pašalinti.</translation>
 <context>
     <name>OpenLP.ServiceTab</name>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="211"/>
+        <location filename="../../openlp/core/api/tab.py" line="206"/>
         <source>Revert to default IP address.</source>
-        <translation type="unfinished"/>
+        <translation>Sugrąžinti į numatytąjį IP adresą.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="165"/>
@@ -7562,7 +7562,7 @@ Failas yra pažeistas, neprieinamas arba tai nėra tinkamas apipavidalinimas.</t
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="340"/>
         <source>Add folder</source>
-        <translation type="unfinished"/>
+        <translation>Pridėti aplanką</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="341"/>
@@ -8202,7 +8202,7 @@ Užveriamas šis egzempliorius</translation>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
         <source>Do not show this message again</source>
-        <translation type="unfinished"/>
+        <translation>Daugiau neberodyti šio pranešimo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
@@ -8685,155 +8685,150 @@ esančias Windows 8 ir 10)</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="113"/>
         <source>Add new presentation</source>
-        <translation type="unfinished"/>
+        <translation>Pridėti naują pateiktį</translation>
     </message>
 </context>
 <context>
     <name>RemotePlugin.RemoteTab</name>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="207"/>
+        <location filename="../../openlp/core/api/tab.py" line="202"/>
         <source>Remote Interface</source>
         <translation>Nuotolinė sąsaja</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="208"/>
+        <location filename="../../openlp/core/api/tab.py" line="203"/>
         <source>Server Settings</source>
         <translation>Serverio nustatymai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="209"/>
+        <location filename="../../openlp/core/api/tab.py" line="204"/>
         <source>Listen IP address (0.0.0.0 matches all addresses):</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="212"/>
+        <location filename="../../openlp/core/api/tab.py" line="207"/>
         <source>Port number:</source>
         <translation>Prievado numeris:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="213"/>
+        <location filename="../../openlp/core/api/tab.py" line="208"/>
         <source>Remote URL:</source>
         <translation>Nuotolinis URL:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="214"/>
+        <location filename="../../openlp/core/api/tab.py" line="209"/>
         <source>Stage view URL:</source>
         <translation>Scenos rodinio URL:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="215"/>
+        <location filename="../../openlp/core/api/tab.py" line="210"/>
         <source>Live view URL:</source>
         <translation>Gyvo rodinio URL:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="216"/>
+        <location filename="../../openlp/core/api/tab.py" line="211"/>
         <source>Chords view URL:</source>
         <translation>Akordų rodinio URL:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="217"/>
+        <location filename="../../openlp/core/api/tab.py" line="212"/>
         <source>Display stage time in 12h format</source>
         <translation>Rodyti scenos laiką 12 valandų formatu</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="218"/>
+        <location filename="../../openlp/core/api/tab.py" line="213"/>
         <source>Show thumbnails of non-text slides in remote and stage view.</source>
         <translation>Rodyti netekstinių skaidrių miniatiūras nuotoliniame ir scenos rodinyje.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="220"/>
+        <location filename="../../openlp/core/api/tab.py" line="215"/>
         <source>Remote App</source>
         <translation>Nuotolinio valdymo programėlė</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="221"/>
+        <location filename="../../openlp/core/api/tab.py" line="216"/>
         <source>Scan the QR code to open the remote view on your mobile device</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="223"/>
+        <location filename="../../openlp/core/api/tab.py" line="218"/>
         <source>User Authentication</source>
         <translation>Naudotojo tapatybės nustatymas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="224"/>
+        <location filename="../../openlp/core/api/tab.py" line="219"/>
         <source>Web Remote</source>
         <translation>Internetinis nuotolinio valdymo pultas</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="225"/>
+        <location filename="../../openlp/core/api/tab.py" line="220"/>
         <source>Check for Updates</source>
         <translation>Tikrinti, ar yra atnaujinimų</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="226"/>
+        <location filename="../../openlp/core/api/tab.py" line="221"/>
         <source>Install</source>
         <translation>Įdiegti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="227"/>
+        <location filename="../../openlp/core/api/tab.py" line="222"/>
         <source>User id:</source>
         <translation>Naudotojo id:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="228"/>
+        <location filename="../../openlp/core/api/tab.py" line="223"/>
         <source>Password:</source>
         <translation>Slaptažodis:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="229"/>
+        <location filename="../../openlp/core/api/tab.py" line="224"/>
         <source>Installed version:</source>
         <translation>Įdiegta versija:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="230"/>
+        <location filename="../../openlp/core/api/tab.py" line="225"/>
         <source>(not installed)</source>
         <translation>(neįdiegta)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="231"/>
+        <location filename="../../openlp/core/api/tab.py" line="226"/>
         <source>Latest version:</source>
         <translation>Naujausia versija:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="232"/>
+        <location filename="../../openlp/core/api/tab.py" line="227"/>
         <source>(unknown)</source>
         <translation>(nežinoma)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="233"/>
+        <location filename="../../openlp/core/api/tab.py" line="228"/>
         <source>Server Status</source>
         <translation>Serverio būsena</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="234"/>
+        <location filename="../../openlp/core/api/tab.py" line="229"/>
         <source>HTTP Server:</source>
         <translation>HTTP serveris:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="235"/>
+        <location filename="../../openlp/core/api/tab.py" line="230"/>
         <source>Websocket Server:</source>
         <translation type="unfinished"/>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="236"/>
-        <source>Zeroconf Server:</source>
-        <translation type="unfinished"/>
-    </message>
-    <message>
-        <location filename="../../openlp/core/api/tab.py" line="237"/>
+        <location filename="../../openlp/core/api/tab.py" line="231"/>
         <source>Active</source>
         <comment>Server is active</comment>
         <translation>Aktyvus</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="238"/>
+        <location filename="../../openlp/core/api/tab.py" line="232"/>
         <source>Failed</source>
         <comment>Server failed</comment>
         <translation>Nepavyko</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/api/tab.py" line="239"/>
+        <location filename="../../openlp/core/api/tab.py" line="233"/>
         <source>Disabled</source>
         <comment>Server is disabled</comment>
         <translation>Išjungta</translation>
@@ -9778,7 +9773,7 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
         <translation>Transponavimas nepavyko</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editverseform.py" line="252"/>
+        <location filename="../../openlp/plugins/songs/forms/editverseform.py" line="254"/>
         <source>Invalid Chord</source>
         <translation>Neteisingas akordas</translation>
     </message>
@@ -9884,7 +9879,7 @@ Prieš tęsiant, prašome ištaisyti šias žymes.</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="255"/>
         <source>Include slide number in footer</source>
-        <translation type="unfinished"/>
+        <translation>Įterpti į poraštę skaidrės numerį</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="258"/>
@@ -10764,7 +10759,7 @@ Ar tikrai norite importuoti šią giesmę?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="149"/>
         <source>Auto-play background audio</source>
-        <translation type="unfinished"/>
+        <translation>Automatiškai atkurti foninį garso įrašą</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="150"/>

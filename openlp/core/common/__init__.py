@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -100,6 +100,25 @@ def trace_error_handler(logger):
     logger.error(log_string)
 
 
+def path_to_module(path):
+    """
+    Convert a path to a module name (i.e openlp.core.common)
+
+    :param pathlib.Path path: The path to convert to a module name.
+    :return: The module name.
+    :rtype: str
+    """
+    module_path = path.with_suffix('')
+    return 'openlp.' + '.'.join(module_path.parts)
+
+
+def import_openlp_module(module_name):
+    """
+    Refactor module import out for testability. In Python 3.11, mock.patch and import_module do not play along nicely.
+    """
+    importlib.import_module(module_name)
+
+
 def extension_loader(glob_pattern, excluded_files=None):
     """
     A utility function to find and load OpenLP extensions, such as plugins, presentation and media controllers and
@@ -119,23 +138,11 @@ def extension_loader(glob_pattern, excluded_files=None):
         log.debug('Attempting to import %s', extension_path)
         module_name = path_to_module(extension_path)
         try:
-            importlib.import_module(module_name)
+            import_openlp_module(module_name)
         except (ImportError, OSError):
             # On some platforms importing vlc.py might cause OSError exceptions. (e.g. Mac OS X)
             log.exception('Failed to import {module_name} on path {extension_path}'
                           .format(module_name=module_name, extension_path=extension_path))
-
-
-def path_to_module(path):
-    """
-    Convert a path to a module name (i.e openlp.core.common)
-
-    :param pathlib.Path path: The path to convert to a module name.
-    :return: The module name.
-    :rtype: str
-    """
-    module_path = path.with_suffix('')
-    return 'openlp.' + '.'.join(module_path.parts)
 
 
 def get_frozen_path(frozen_option, non_frozen_option):

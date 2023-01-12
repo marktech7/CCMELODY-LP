@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -73,3 +73,12 @@ def is_64bit_instance():
     :return: True if the python/OpenLP instance running is 64 bit, otherwise False.
     """
     return (sys.maxsize > 2**32)
+
+
+def is_xorg_server():
+    """
+    Returns true if the Qt is running on X.org/XWayland display server (Linux/*nix)
+    :return: True if the Qt is running on X.org/XWayland display server (Linux/*nix), otherwise False.
+    """
+    from PyQt5 import QtGui
+    return QtGui.QGuiApplication.platformName() == 'xcb'

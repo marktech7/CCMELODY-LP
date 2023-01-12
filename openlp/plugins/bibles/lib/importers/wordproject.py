@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -116,7 +116,11 @@ class WordProjectBible(BibleImport):
         header_div = soup.find('div', 'textHeader')
         chapters_p = header_div.find('p')
         if not chapters_p:
-            chapters_p = soup.p
+            log.debug('Corrupted header, searching for span instead of a p')
+            chapters_p = header_div.find('span')
+            if not chapters_p:
+                log.debug('Cannot find chapters, using all p instead')
+                chapters_p = soup.p
         log.debug(chapters_p)
         for item in chapters_p.contents:
             if self.stop_import_flag:

@@ -4,7 +4,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,16 +21,20 @@
 ##########################################################################
 import logging
 
+import re
 from flask import abort, request, Blueprint, jsonify
 
-from openlp.core.api.lib import login_required
+from openlp.core.api.lib import login_required, extract_request, old_success_response, old_auth
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.common.registry import Registry
+from openlp.plugins.songs.lib import transpose_lyrics
 
 log = logging.getLogger(__name__)
 
 
 plugins = Blueprint('v2-plugins', __name__)
+alert_1_views = Blueprint('v1-alert-plugin', __name__)
+alert_2_views = Blueprint('v2-alert-plugin', __name__)
 
 
 def search(plugin_name, text):
@@ -134,3 +138,63 @@ def set_search_option(plugin):
     else:
         log.error('Invalid option or value')
         return '', 400
+
+
+@plugins.route('/songs/transpose-live-item/<transpose_value>', methods=['GET'])
+@login_required
+def transpose(transpose_value):
+    log.debug('songs/transpose-live-item called')
+    if transpose_value:
+        try:
+            transpose_value = int(transpose_value)
+        except ValueError:
+            abort(400)
+        # Get lyrics from the live serviceitem in the live-controller and transpose it
+        live_controller = Registry().get('live_controller')
+        current_item = live_controller.service_item
+        # make sure an service item is currently displayed and that it is a song
+        if not current_item or current_item.name != 'songs':
+            abort(400)
+        live_item = current_item.to_dict()
+        live_item['id'] = str(current_item.unique_identifier)
+        chord_song_text = ''
+        verse_index = 1
+        for item in live_item['slides']:
+            chord_song_text += ('---[Verse:%d]---' % verse_index) + '\n'
+            chord_song_text += item['chords'] + '\n'
+            verse_index += 1
+        # transpose
+        transposed_lyrics = transpose_lyrics(chord_song_text, transpose_value)
+        # re-split into verses
+        chord_slides = []
+        verse_list = re.split(r'---\[Verse:(.+?)\]---', transposed_lyrics)
+        # remove first blank entry
+        verse_list = verse_list[1:]
+        for i in range(0, len(verse_list), 2):
+            chord_slides.append({'chords': verse_list[i + 1].strip(), 'verse': verse_list[i]})
+        return jsonify(chord_slides), 200
+    abort(400)
+
+
+@alert_2_views.route('', methods=['POST'])
+@login_required
+def alert():
+    data = request.json
+    if not data:
+        abort(400)
+    alert = data.get('text', '')
+    if alert:
+        if Registry().get('plugin_manager').get_plugin_by_name('alerts').status == PluginStatus.Active:
+            Registry().get('alerts_manager').alerts_text.emit([alert])
+            return '', 204
+    abort(400)
+
+
+@alert_1_views.route('')
+@old_auth
+def old_alert():
+    alert = extract_request(request.args.get('data', ''), 'text')
+    if alert:
+        if Registry().get('plugin_manager').get_plugin_by_name('alerts').status == PluginStatus.Active:
+            Registry().get('alerts_manager').alerts_text.emit([alert])
+    return old_success_response()

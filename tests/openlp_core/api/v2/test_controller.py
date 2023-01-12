@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,6 +32,7 @@ def test_retrieve_live_items(flask_client, settings):
     fake_live_controller = MagicMock()
     fake_live_controller.service_item = MagicMock()
     fake_live_controller.selected_row = 0
+    fake_live_controller.service_item.unique_identifier = 42
     fake_live_controller.service_item.to_dict.return_value = {'slides': [{'selected': False}]}
     Registry().register('live_controller', fake_live_controller)
 
@@ -39,7 +40,7 @@ def test_retrieve_live_items(flask_client, settings):
     res = flask_client.get('/api/v2/controller/live-items').get_json()
 
     # THEN: The correct item data should be returned
-    assert res == {'slides': [{'selected': True}]}
+    assert res == {'slides': [{'selected': True}], 'id': '42'}
 
 
 def test_controller_set_requires_login(settings, flask_client):

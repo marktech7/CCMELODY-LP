@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -311,6 +311,18 @@ def set_up_logging(log_path):
     print(f'Logging to: {file_path} and level {log.level}')
 
 
+def set_up_web_engine_cache(web_cache_path):
+    """
+    Setup path for the qt web engine to dump it's files
+
+    :param Path web_cache_path: The folder for the web engine files
+    :rtype: None
+    """
+    web_engine_profile = QtWebEngineWidgets.QWebEngineProfile.defaultProfile()
+    web_engine_profile.setCachePath(str(web_cache_path))
+    web_engine_profile.setPersistentStoragePath(str(web_cache_path))
+
+
 def backup_if_version_changed(settings):
     """
     Check version of settings and the application version and backup if the version is different.
@@ -421,6 +433,7 @@ def main():
         portable_path = resolve(portable_path)
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
+        set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
@@ -436,6 +449,7 @@ def main():
     else:
         application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
+        set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     # Set the libvlc environment variable if we're frozen
     if getattr(sys, 'frozen', False) and is_win():
         # Path to libvlc and the plugins

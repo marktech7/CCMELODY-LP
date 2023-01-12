@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -26,10 +26,11 @@ import datetime
 from unittest.mock import MagicMock, patch, sentinel
 
 from PyQt5 import QtCore, QtGui
+from openlp.core.lib.serviceitem import ServiceItem
 
 from openlp.core.state import State
 from openlp.core.common.registry import Registry
-from openlp.core.lib import ServiceItemAction
+from openlp.core.lib import ItemCapabilities, ServiceItemAction
 from openlp.core.ui import HideMode
 from openlp.core.ui.slidecontroller import NON_TEXT_MENU, WIDE_MENU, NARROW_MENU, InfoLabel, LiveController, \
     PreviewController, SlideController
@@ -567,67 +568,19 @@ def test_refresh_service_item_text(settings):
     mocked_service_item.is_text.return_value = True
     mocked_service_item.is_image.return_value = False
     mocked_process_item = MagicMock()
+    mocked_slide_selected = MagicMock()
     slide_controller = SlideController(None)
     slide_controller.service_item = mocked_service_item
     slide_controller._process_item = mocked_process_item
+    slide_controller.slide_selected = mocked_slide_selected
     slide_controller.selected_row = 5
 
     # WHEN: The refresh_service_item method() is called
     slide_controller.refresh_service_item()
 
     # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    assert 0 == mocked_service_item.is_image.call_count, 'is_image should not have been called'
-    mocked_service_item.render.assert_called_once_with()
-    mocked_process_item.assert_called_once_with(mocked_service_item, 5)
-
-
-def test_refresh_service_item_image(settings):
-    """
-    Test that the refresh_service_item() method refreshes a image service item
-    """
-    # GIVEN: A mock service item and a fresh slide controller
-    mocked_service_item = MagicMock()
-    mocked_service_item.is_text.return_value = False
-    mocked_service_item.is_image.return_value = True
-    mocked_process_item = MagicMock()
-    slide_controller = SlideController(None)
-    slide_controller.service_item = mocked_service_item
-    slide_controller._process_item = mocked_process_item
-    slide_controller.selected_row = 5
-
-    # WHEN: The refresh_service_item method() is called
-    slide_controller.refresh_service_item()
-
-    # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    mocked_service_item.is_image.assert_called_once_with()
-    mocked_service_item.render.assert_called_once_with()
-    mocked_process_item.assert_called_once_with(mocked_service_item, 5)
-
-
-def test_refresh_service_item_not_image_or_text(settings):
-    """
-    Test that the refresh_service_item() method does not refresh a service item if it's neither text or an image
-    """
-    # GIVEN: A mock service item and a fresh slide controller
-    mocked_service_item = MagicMock()
-    mocked_service_item.is_text.return_value = False
-    mocked_service_item.is_image.return_value = False
-    mocked_process_item = MagicMock()
-    slide_controller = SlideController(None)
-    slide_controller.service_item = mocked_service_item
-    slide_controller._process_item = mocked_process_item
-    slide_controller.selected_row = 5
-
-    # WHEN: The refresh_service_item method() is called
-    slide_controller.refresh_service_item()
-
-    # THEN: The item should be re-processed
-    mocked_service_item.is_text.assert_called_once_with()
-    mocked_service_item.is_image.assert_called_once_with()
-    assert 0 == mocked_service_item.render.call_count, 'The render() method should not have been called'
-    assert 0 == mocked_process_item.call_count, 'The mocked_process_item() method should not have been called'
+    slide_controller._process_item.assert_called_once_with(mocked_service_item, 5, True)
+    slide_controller.slide_selected.assert_called_once()
 
 
 def test_add_service_item_with_song_edit(settings):
@@ -1132,6 +1085,109 @@ def test_process_item_song_no_vlc(mocked_execute, registry, state_media):
     # THEN: Registry.execute should have been called to stop the presentation
     assert 0 == slide_controller.media_controller.load_video.call_count, ' Load_video should have been called 0 times'
     assert 2 == slide_controller.preview_display.load_verses.call_count, 'Execute should have been called 2 times'
+
+
+@patch.object(Registry, 'execute')
+def test_process_item_is_reloading_wont_change_display_hide_mode(mocked_execute, registry, state_media):
+    """
+    Test if the display's hide mode is not changed when using is_reloading parameter
+    """
+    # GIVEN: A mocked presentation service item, a mocked media service item, a mocked Registry.execute
+    #        and a slide controller with many mocks.
+    #        and the setting 'themes/item transitions' = True
+    mocked_media_item = MagicMock()
+    mocked_media_item.name = 'mocked_media_item'
+    mocked_media_item.get_transition_delay.return_value = 0
+    mocked_media_item.is_text.return_value = True
+    mocked_media_item.is_command.return_value = False
+    mocked_media_item.is_media.return_value = False
+    mocked_media_item.requires_media.return_value = False
+    mocked_media_item.is_image.return_value = False
+    mocked_media_item.from_service = False
+    mocked_media_item.get_frames.return_value = []
+    mocked_media_item.display_slides = [{'verse': 'Verse name'}]
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = True
+    mocked_main_window = MagicMock()
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('media_controller', MagicMock())
+    Registry().register('application', MagicMock())
+    Registry().register('settings', mocked_settings)
+    slide_controller = SlideController(None)
+    slide_controller.service_item = None
+    slide_controller.is_live = True
+    slide_controller._reset_blank = MagicMock()
+    slide_controller.preview_widget = MagicMock()
+    slide_controller.preview_display = MagicMock()
+    slide_controller.enable_tool_bar = MagicMock()
+    slide_controller.on_controller_size_changed = MagicMock()
+    slide_controller.on_media_start = MagicMock()
+    slide_controller.on_media_close = MagicMock()
+    slide_controller.slide_selected = MagicMock()
+    slide_controller.set_hide_mode = MagicMock()
+    slide_controller.new_song_menu = MagicMock()
+    slide_controller.on_stop_loop = MagicMock()
+    slide_controller.info_label = MagicMock()
+    slide_controller.song_menu = MagicMock()
+    slide_controller.displays = [MagicMock()]
+    slide_controller.toolbar = MagicMock()
+    slide_controller.split = 0
+    slide_controller.type_prefix = 'test'
+    slide_controller.screen_capture = 'old_capture'
+
+    # WHEN: _process_item is called with is_reloading=True
+    slide_controller._process_item(mocked_media_item, 0, is_reloading=True)
+
+    # THEN: set_hide_mode should not be called
+    slide_controller.set_hide_mode.assert_not_called()
+
+
+@patch.object(Registry, 'execute')
+def test_process_item_provides_own_theme(mocked_execute, registry, state_media):
+    """
+    Test that media theme is set when media item is flagged with ProvidesOwnTheme
+    """
+    # GIVEN: A mocked presentation service item that provides it's own theme, a mocked Registry.execute
+    #        and a slide controller with many mocks.
+    mocked_pres_item = MagicMock()
+    mocked_pres_item.name = 'mocked_presentation_item'
+    mocked_pres_item.is_command.return_value = True
+    mocked_pres_item.is_media.return_value = False
+    mocked_pres_item.requires_media.return_value = False
+    mocked_pres_item.is_image.return_value = False
+    mocked_pres_item.is_text.return_value = False
+    # Needed to perform the capability checks
+    mocked_pres_item.is_capable = lambda param: ServiceItem.is_capable(mocked_pres_item, param)
+    mocked_pres_item.from_service = False
+    mocked_pres_item.capabilities = [ItemCapabilities.ProvidesOwnTheme]
+    mocked_pres_item.get_frames.return_value = []
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = True
+    mocked_main_window = MagicMock()
+    Registry().register('settings', mocked_settings)
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('media_controller', MagicMock())
+    Registry().register('application', MagicMock())
+    slide_controller = SlideController(None)
+    slide_controller.service_item = mocked_pres_item
+    slide_controller.is_live = False
+    slide_controller.preview_widget = MagicMock()
+    slide_controller.preview_display = MagicMock()
+    slide_controller.enable_tool_bar = MagicMock()
+    slide_controller.slide_selected = MagicMock()
+    slide_controller.on_stop_loop = MagicMock()
+    slide_controller.info_label = MagicMock()
+    slide_controller._set_theme = MagicMock()
+    slide_controller.displays = [MagicMock()]
+    slide_controller.split = 0
+    slide_controller.type_prefix = 'test'
+    slide_controller._current_hide_mode = None
+
+    # WHEN: _process_item is called
+    slide_controller._process_item(mocked_pres_item, 0)
+
+    # THEN: _set_theme should be called once
+    slide_controller._set_theme.assert_called_once()
 
 
 def test_live_stolen_focus_shortcuts(settings):

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -571,8 +571,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         Get a list of files used in the service and files that are missing.
 
-        :return: A list of files used in the service that exist, and a list of files that don't.
-        :rtype: (list[Path], list[str])
+        :return: A list of tuples with files used in the service that exist and their sha256-based name in the
+                 servicefile, and a list of files that doesn't exists.
+        :rtype: (list[(Path,str)], list[str])
         """
         write_list = []
         missing_list = []
@@ -589,7 +590,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     if item['service_item'].stored_filename:
                         sha256_file_name = Path(item['service_item'].stored_filename)
                     else:
-                        sha256_file_name = Path(sha256_file_hash(frame_path)) / frame_path.suffix
+                        sha256_file_name = Path(sha256_file_hash(frame_path) + frame_path.suffix)
                     bundle = (frame_path, sha256_file_name)
                     if bundle in write_list or str(frame_path) in missing_list:
                         continue
@@ -626,8 +627,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                 if path_from_tuple in write_list:
                                     continue
                                 write_list.append(path_from_tuple)
-            for audio_path in item['service_item'].background_audio:
-                service_path = sha256_file_hash(audio_path) + os.path.splitext(audio_path)[1]
+            for (audio_path, audio_file_hash) in item['service_item'].background_audio:
+                if not audio_file_hash:
+                    audio_file_hash = sha256_file_hash(audio_path)
+                service_path = audio_file_hash + audio_path.suffix
                 audio_path_tuple = (audio_path, service_path)
                 if audio_path_tuple in write_list:
                     continue
@@ -1774,8 +1777,14 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         if not theme:
             theme = None
         item = self.find_service_item()[0]
-        self.service_items[item]['service_item'].update_theme(theme)
-        self.regenerate_service_items(True)
+        service_item = self.service_items[item]['service_item']
+        # Needs to be checked before updating theme on service, as it generates a new identifier
+        is_selected_item_live = self.live_controller.service_item and \
+            service_item.unique_identifier == self.live_controller.service_item.unique_identifier
+        service_item.update_theme(theme)
+        # self.regenerate_service_items(True)
+        if self.settings.value('themes/hot reload') and is_selected_item_live:
+            self.live_controller.refresh_service_item(service_item)
 
     def on_make_live_action_triggered(self, checked):
         """

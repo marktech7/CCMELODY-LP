@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -1265,6 +1265,83 @@ def test_load_service_modified_saved_with_file_path(registry):
     service_manager.decide_save_method.assert_called_once_with()
     mocked_settings.setValue.assert_called_once_with('servicemanager/last directory', Path.home())
     service_manager.load_file.assert_called_once_with(Path.home() / 'service.osz')
+
+
+@patch('openlp.core.ui.servicemanager.FileDialog.getOpenFileName')
+def test_load_service_no_file_path_passed_or_selected(mocked_get_open_file_name, mock_settings):
+    """Test that the load_service() method exits early when no file is passed and no file is selected in the dialog"""
+    # GIVEN: A modified ServiceManager
+    service_manager = ServiceManager(None)
+    mocked_get_open_file_name.return_value = (None, None)
+
+    # WHEN: A service is loaded
+    result = service_manager.load_service()
+
+    # THEN: The result should be False because of an early exit
+    assert result is False, 'The method did not exit early'
+
+
+@patch('openlp.core.ui.servicemanager.FileDialog.getOpenFileName')
+def test_load_service_no_file_path_passed_file_selected(mocked_get_open_file_name, mock_settings):
+    """Test that the load_service() method loads a file chosen in the dialog when no file is passed"""
+    # GIVEN: A modified ServiceManager
+    service_manager = ServiceManager(None)
+    mocked_get_open_file_name.return_value = (Path.home() / 'service.osz', None)
+    service_manager.load_file = MagicMock()
+
+    # WHEN: A service is loaded
+    service_manager.load_service()
+
+    # THEN: The service should be loaded
+    service_manager.load_file.assert_called_once_with(Path.home() / 'service.osz')
+
+
+def test_on_recent_service_clicked_modified_cancel_save(registry):
+    """Test that the on_recent_service_clicked() method exits early when the service is modified,
+    but the save is canceled"""
+    # GIVEN: A modified ServiceManager
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Cancel)
+
+    # WHEN: on_recent_service_clicked is called
+    result = service_manager.on_recent_service_clicked(True)
+
+    # THEN: The result should be False because of an early exit
+    assert result is False, 'The method did not exit early'
+
+
+def test_on_recent_service_clicked_modified_saved_with_file_path(registry):
+    """Test that the on_recent_service_clicked() method saves the file and loads the file"""
+    # GIVEN: A modified ServiceManager
+    mocked_settings = MagicMock()
+    registry.register('settings', mocked_settings)
+    service_manager = ServiceManager(None)
+    service_manager.is_modified = MagicMock(return_value=True)
+    service_manager.save_modified_service = MagicMock(return_value=QtWidgets.QMessageBox.Save)
+    service_manager.decide_save_method = MagicMock()
+    service_manager.load_file = MagicMock()
+    service_manager.sender = MagicMock(return_value=MagicMock())
+
+    # WHEN: on_recent_service_clicked is called
+    service_manager.on_recent_service_clicked(True)
+
+    # THEN: The recent service should be loaded
+    service_manager.decide_save_method.assert_called_once_with()
+    service_manager.load_file.assert_called_once()
+
+
+def test_on_recent_service_clicked_unmodified(registry):
+    # GIVEN: A modified ServiceManager
+    service_manager = ServiceManager(None)
+    service_manager.load_file = MagicMock()
+    service_manager.sender = MagicMock(return_value=MagicMock())
+
+    # WHEN: on_recent_service_clicked is called
+    service_manager.on_recent_service_clicked(True)
+
+    # THEN: The recent service should be loaded
+    service_manager.load_file.assert_called_once()
 
 
 @patch('openlp.core.ui.servicemanager.Path', autospec=True)

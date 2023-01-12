@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,7 +21,14 @@
 """
 This module contains tests for the plugin class Presentation plugin.
 """
+from pathlib import Path
+from unittest.mock import MagicMock, patch
+
 from openlp.plugins.presentations.presentationplugin import PresentationPlugin
+from openlp.plugins.presentations.lib.presentationtab import PresentationTab
+
+
+TEST_RESOURCES_PATH = Path(__file__) / '..' / '..' / '..' / 'resources'
 
 
 def test_plugin_about():
@@ -34,3 +41,33 @@ def test_plugin_about():
         'programs. The choice of available presentation programs is '
         'available to the user in a drop down box.'
     )
+
+
+def test_creaste_settings_tab(qapp, state, registry, settings):
+    """Test creating the settings tab"""
+    # GIVEN: A Presentations plugin
+    presentations_plugin = PresentationPlugin()
+
+    # WHEN: create_settings_tab is run
+    presentations_plugin.create_settings_tab(None)
+
+    # THEN: A settings tab should have been created
+    assert isinstance(presentations_plugin.settings_tab, PresentationTab)
+
+
+@patch('openlp.plugins.presentations.presentationplugin.Manager')
+def test_initialise(MockedManager, state, registry, mock_settings):
+    """Test that initialising the plugin works correctly"""
+    # GIVEN: Some initial values needed for intialisation and a presentations plugin
+    mock_settings.setValue.side_effect = [None, [str(TEST_RESOURCES_PATH / 'presentations' / 'test.ppt')]]
+    mocked_main_window = MagicMock()
+    registry.register('main_window', mocked_main_window)
+    presentations_plugin = PresentationPlugin()
+    presentations_plugin.media_item = MagicMock()
+
+    # WHEN: initialise() is called
+    presentations_plugin.initialise()
+
+    # THEN: Nothing should break, and everything should be called
+    mock_settings.setValue.assert_called_with('presentations/thumbnail_scheme', 'sha256file')
+    mock_settings.remove.assert_called_once_with('presentations/presentations files')

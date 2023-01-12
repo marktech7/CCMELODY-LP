@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -21,6 +21,7 @@
 """
 Package to test the openlp.core.lib package.
 """
+import json
 import os
 import pytest
 from pathlib import Path
@@ -28,6 +29,7 @@ from unittest.mock import Mock, MagicMock, patch
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.enum import ServiceItemType
+from openlp.core.common.json import OpenLPJSONEncoder
 from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
@@ -412,7 +414,8 @@ def test_service_item_load_optical_media_from_service(state_media):
     assert service_item.media_length == 17.694, 'Media length should be 17.694'
 
 
-def test_service_item_load_song_and_audio_from_service(state_media, settings, service_item_env):
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_service_item_load_song_and_audio_from_service(mock_sha256_file_hash, state_media, settings, service_item_env):
     """
     Test the Service Item - adding a song slide from a saved service
     """
@@ -420,6 +423,7 @@ def test_service_item_load_song_and_audio_from_service(state_media, settings, se
     service_item = ServiceItem(None)
     service_item.add_icon = MagicMock()
     FormattingTags.load_tags()
+    mock_sha256_file_hash.return_value = 'abcd'
 
     # WHEN: We add a custom from a saved service
     line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
@@ -436,8 +440,28 @@ def test_service_item_load_song_and_audio_from_service(state_media, settings, se
         '"Amazing Grace! how sweet the s" has been returned as the title'
     assert '’Twas grace that taught my hea' == service_item.get_frame_title(1), \
         '"’Twas grace that taught my hea" has been returned as the title'
-    assert Path('/test/amazing_grace.mp3') == service_item.background_audio[0], \
-        '"/test/amazing_grace.mp3" should be in the background_audio list'
+    assert (Path('/test/amazing_grace.mp3'), 'abcd') == service_item.background_audio[0], \
+        'The tuple ("/test/abcd.mp3", "abcd") should be in the background_audio list'
+
+
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_service_item_to_dict_is_valid_json(mock_sha256_file_hash, state_media, settings, service_item_env):
+    """
+    Test the Service Item - Converting to to_dict response to json
+    """
+    # GIVEN: A new service item with song slide
+    service_item = ServiceItem(None)
+    service_item.add_icon = MagicMock()
+    FormattingTags.load_tags()
+    mock_sha256_file_hash.return_value = 'abcd'
+    line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
+    service_item.set_from_service(line, Path('/test/'))
+
+    # WHEN: Generating a service item
+    service_dict = service_item.to_dict()
+
+    # THEN: We should get back a valid json object
+    assert json.dumps(service_dict, cls=OpenLPJSONEncoder) is not None
 
 
 def test_service_item_get_theme_data_global_level(settings):
@@ -692,7 +716,8 @@ def test_get_transition_delay_slow(settings):
     assert delay == 2
 
 
-def test_to_dict_text_item(state_media, settings, service_item_env):
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_to_dict_text_item(mocked_sha256_file_hash, state_media, settings, service_item_env):
     """
     Test that the to_dict() method returns the correct data for the service item
     """
@@ -701,6 +726,7 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
     mocked_plugin.name = 'songs'
     service_item = ServiceItem(mocked_plugin)
     service_item.add_icon = MagicMock()
+    mocked_sha256_file_hash.return_value = 'abcd'
     FormattingTags.load_tags()
     line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
     if is_win():
@@ -713,11 +739,11 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
     result = service_item.to_dict()
 
     # THEN: The correct dictionary should be returned
-    expected_fake_path = str(fake_path / 'amazing_grace.mp3')
+    expected_fake_path = fake_path / 'amazing_grace.mp3'
     expected_dict = {
 
         'audit': ['Amazing Grace', ['John Newton'], '', ''],
-        'backgroundAudio': [expected_fake_path],
+        'backgroundAudio': [(expected_fake_path, 'abcd')],
         'capabilities': [2, 1, 5, 8, 9, 13, 15],
         'footer': ['Amazing Grace', 'Written by: John Newton'],
         'fromPlugin': False,
@@ -726,11 +752,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
         'notes': '',
         'slides': [
             {
-                'chords': '<span class="nochordline">'
-                          'Amazing Grace! how sweet the sound\n'
+                'chords': 'Amazing Grace! how sweet the sound\n'
                           'That saved a wretch like me;\n'
                           'I once was lost, but now am found,\n'
-                          'Was blind, but now I see.</span>',
+                          'Was blind, but now I see.',
                 'html': 'Amazing Grace! how sweet the sound\n'
                         'That saved a wretch like me;\n'
                         'I once was lost, but now am found,\n'
@@ -745,11 +770,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '<span class="nochordline">'
-                          '’Twas grace that taught my heart to fear,\n'
+                'chords': '’Twas grace that taught my heart to fear,\n'
                           'And grace my fears relieved;\n'
                           'How precious did that grace appear,\n'
-                          'The hour I first believed!</span>',
+                          'The hour I first believed!',
                 'html': '’Twas grace that taught my heart to fear,\n'
                         'And grace my fears relieved;\n'
                         'How precious did that grace appear,\n'
@@ -764,11 +788,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '<span class="nochordline">'
-                          'Through many dangers, toils and snares\n'
+                'chords': 'Through many dangers, toils and snares\n'
                           'I have already come;\n'
                           '’Tis grace that brought me safe thus far,\n'
-                          'And grace will lead me home.</span>',
+                          'And grace will lead me home.',
                 'html': 'Through many dangers, toils and snares\n'
                         'I have already come;\n'
                         '’Tis grace that brought me safe thus far,\n'
@@ -783,11 +806,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '<span class="nochordline">'
-                          'The Lord has promised good to me,\n'
+                'chords': 'The Lord has promised good to me,\n'
                           'His word my hope secures;\n'
                           'He will my shield and portion be\n'
-                          'As long as life endures.</span>',
+                          'As long as life endures.',
                 'html': 'The Lord has promised good to me,\n'
                         'His word my hope secures;\n'
                         'He will my shield and portion be\n'
@@ -802,11 +824,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '<span class="nochordline">'
-                          'Yes, when this heart and flesh shall fail,\n'
+                'chords': 'Yes, when this heart and flesh shall fail,\n'
                           'And mortal life shall cease,\n'
                           'I shall possess within the veil\n'
-                          'A life of joy and peace.</span>',
+                          'A life of joy and peace.',
                 'html': 'Yes, when this heart and flesh shall fail,\n'
                         'And mortal life shall cease,\n'
                         'I shall possess within the veil\n'
@@ -821,11 +842,10 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
                 'footer': 'Amazing Grace<br>Written by: John Newton'
             },
             {
-                'chords': '<span class="nochordline">'
-                          'When we’ve been there a thousand years,\n'
+                'chords': 'When we’ve been there a thousand years,\n'
                           'Bright shining as the sun,\n'
                           'We’ve no less days to sing God’s praise\n'
-                          'Than when we first begun.</span>',
+                          'Than when we first begun.',
                 'html': 'When we’ve been there a thousand years,\n'
                         'Bright shining as the sun,\n'
                         'We’ve no less days to sing God’s praise\n'
@@ -842,7 +862,7 @@ def test_to_dict_text_item(state_media, settings, service_item_env):
         ],
         'theme': None,
         'title': 'Amazing Grace',
-        'type': 'ServiceItemType.Text',
+        'type': ServiceItemType.Text,
         'data': {'authors': 'John Newton', 'title': 'amazing grace@'}
     }
     assert result == expected_dict
@@ -885,7 +905,7 @@ def test_to_dict_image_item(state_media, settings, service_item_env):
         ],
         'theme': -1,
         'title': 'Images',
-        'type': 'ServiceItemType.Image',
+        'type': ServiceItemType.Image,
         'data': {}
     }
     assert result == expected_dict
@@ -941,7 +961,7 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
         ],
         'theme': None,
         'title': '',
-        'type': 'ServiceItemType.Command',
+        'type': ServiceItemType.Command,
         'data': {}
     }
     assert result == expected_dict

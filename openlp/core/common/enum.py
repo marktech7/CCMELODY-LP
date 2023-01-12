@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -111,6 +111,15 @@ class ServiceItemType(IntEnum):
     Text = 1
     Image = 2
     Command = 3
+
+    @staticmethod
+    def parse(value):
+        if value in [1, '1', 'Text', 'ServiceItemType.Text']:
+            return ServiceItemType.Text
+        elif value in [2, '2', 'Image', 'ServiceItemType.Image']:
+            return ServiceItemType.Image
+        elif value in [3, '3', 'Command', 'ServiceItemType.Command']:
+            return ServiceItemType.Command
 
 
 @unique

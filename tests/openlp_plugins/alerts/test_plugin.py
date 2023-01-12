@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -32,8 +32,7 @@ from openlp.plugins.alerts.alertsplugin import AlertsPlugin
 def plugin_env(mocked_manager, settings, state, registry):
     """An instance of the AlertsPlugin"""
     mocked_manager.return_value = MagicMock()
-    with patch('openlp.plugins.alerts.alertsplugin.register_views'):
-        return AlertsPlugin(), settings
+    return AlertsPlugin(), settings
 
 
 def test_plugin_about():
@@ -77,12 +76,10 @@ def test_alerts_initialise(plugin_env):
     plugin = plugin_env[0]
     plugin.tools_alert_item = MagicMock()
     # WHEN: I request the form
-    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist, \
-            patch('openlp.plugins.alerts.alertsplugin.register_views') as mocked_register_views:
+    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist:
         plugin.initialise()
         # THEN: the form is loaded
         mocked_actionlist.instance.add_action.assert_called_once()
-        mocked_register_views.assert_called_once_with()
         plugin.tools_alert_item.setVisible.assert_called_once_with(True)
 
 

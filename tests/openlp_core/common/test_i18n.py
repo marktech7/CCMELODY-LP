@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -140,6 +140,16 @@ def test_get_natural_key():
 
         # THEN: We get a properly sorted list
         assert sorted_list == ['1st item', 'item 3b', 'item 10a'], 'Numbers should be sorted naturally'
+
+        # GIVEN: The language is still English (a language, which sorts digits before letters)
+        mocked_get_language.return_value = 'en'
+        unsorted_list = ['1 songname', '100 songname', '2 songname']
+
+        # WHEN: We sort the list and use get_natural_key() to generate the sorting keys
+        sorted_list = sorted(unsorted_list, key=get_natural_key)
+
+        # THEN: We get a properly sorted list
+        assert sorted_list == ['1 songname', '2 songname', '100 songname'], 'Numbers should be sorted naturally'
 
 
 def test_check_same_instance():

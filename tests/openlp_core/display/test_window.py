@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,6 +29,7 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
+from openlp.core.display.screens import Screen
 
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
@@ -121,6 +122,48 @@ def test_not_macos_toolwindow_attribute_set(mocked_is_macosx, mock_settings, dis
 
     # THEN: The attribute is set
     assert display_window.testAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow) is False
+
+
+@patch.object(DisplayWindow, 'show')
+def test_not_shown_if_start_hidden_is_set(mocked_show, display_window_env, mock_settings):
+    """
+    Tests if DisplayWindow's .show() method is not called on constructor if constructed with start_hidden=True
+    """
+
+    # GIVEN: A mocked DisplayWindow's show method, a fake screen and relevant settings
+    settings = {
+        'advanced/x11 bypass wm': False,
+        'core/display on monitor': True
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+    screen = Screen(1, QtCore.QRect(0, 0, 800, 600), is_display=True)
+
+    # WHEN: A DisplayWindow is created with start_hidden=True
+    DisplayWindow(screen=screen, start_hidden=True)
+
+    # THEN: Window is not shown
+    mocked_show.assert_not_called()
+
+
+@patch.object(DisplayWindow, 'show')
+def test_shown_if_start_hidden_is_not_set(mocked_show, display_window_env, mock_settings):
+    """
+    Tests if DisplayWindow's .show() method is called on constructor if constructed with start_hidden=False
+    """
+
+    # GIVEN: A mocked DisplayWindow's show method, a fake screen and relevant settings
+    settings = {
+        'advanced/x11 bypass wm': False,
+        'core/display on monitor': True
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+    screen = Screen(1, QtCore.QRect(0, 0, 800, 600), is_display=True)
+
+    # WHEN: A DisplayWindow is created with start_hidden=True
+    DisplayWindow(screen=screen, start_hidden=False)
+
+    # THEN: Window is shown
+    mocked_show.assert_called()
 
 
 def test_set_scale_not_initialised(display_window_env, mock_settings):
@@ -264,7 +307,7 @@ def test_set_startup_screen_hide(display_window_env, mock_settings):
         'Display.setStartupSplashScreen("orange", "");')
 
 
-def test_after_loaded(display_window_env, mock_settings):
+def test_after_loaded(display_window_env, mock_settings, registry):
     """
     Test the correct steps are taken when the webview is loaded
     """
@@ -292,7 +335,7 @@ def test_after_loaded(display_window_env, mock_settings):
     display_window.set_startup_screen.assert_called_once()
 
 
-def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
+def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings, registry):
     """
     Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
     """
@@ -316,6 +359,27 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
                                                           'slideNumbersInFooter: true,'
                                                           'hideMouse: false'
                                                           '});')
+
+
+def test_after_loaded_callback(display_window_env, mock_settings, registry):
+    """
+    Test if the __ is loaded on after_loaded() method correctly
+    """
+    # GIVEN: An initialised display window and settings for item transitions and hide mouse returns true
+    mocked_after_loaded_callback = MagicMock()
+    display_window = DisplayWindow(after_loaded_callback=mocked_after_loaded_callback)
+    display_window.is_display = True
+    mock_settings.value.return_value = True
+    display_window._is_initialised = True
+    display_window.run_javascript = MagicMock()
+    display_window.set_scale = MagicMock()
+    display_window.set_startup_screen = MagicMock()
+
+    # WHEN: after_loaded is run
+    display_window.after_loaded()
+
+    # THEN: The after_loaded_callback should be called
+    mocked_after_loaded_callback.assert_called_once()
 
 
 @patch.object(time, 'time')
@@ -398,7 +462,7 @@ def test_fix_font_bold_not_windows(mocked_is_win, display_window_env, mock_setti
 
 
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings):
+def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings, registry):
     """
     Test that a font with a foundry name in it has the foundry removed
     """

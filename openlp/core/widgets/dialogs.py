@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -102,7 +102,6 @@ class FileDialog(QtWidgets.QFileDialog):
         :rtype: tuple[pathlib.Path | None, str]
         """
         args, kwargs = replace_params(args, kwargs, ((2, 'directory', path_to_str),))
-
         file_name, selected_filter = super().getSaveFileName(*args, **kwargs)
 
         # getSaveFileName returns a tuple. The first item represents the path as a str. The string is empty if the user

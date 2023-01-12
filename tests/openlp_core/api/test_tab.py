@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -35,15 +35,38 @@ from openlp.core.common.registry import Registry
 ZERO_URL = '0.0.0.0'
 
 
+@pytest.fixture(scope="module")
+def mocked_get_installed_version():
+    setup_patcher = patch('openlp.core.api.tab.get_installed_version')
+    mocked_setup_patcher = setup_patcher.start()
+    mocked_setup_patcher.return_value = None
+    yield mocked_setup_patcher
+    setup_patcher.stop()
+
+
 @pytest.fixture
-def api_tab(settings):
-    Registry().set_flag('website_version', '00-00-0000')
-    Registry().set_flag('no_web_server', False)
+def api_tab_instantiate(mocked_get_installed_version, settings):
+    forms = []
     parent = QtWidgets.QMainWindow()
-    form = ApiTab(parent)
-    yield form
+
+    def _create_api_tab():
+        nonlocal forms, parent
+        Registry().set_flag('website_version', '00-00-0000')
+        Registry().set_flag('no_web_server', False)
+        form = ApiTab(parent)
+        forms.append(form)
+        return form
+
+    yield _create_api_tab
     del parent
-    del form
+    for form in forms:
+        del form
+    mocked_get_installed_version.return_value = None
+
+
+@pytest.fixture
+def api_tab(api_tab_instantiate):
+    yield api_tab_instantiate()
 
 
 def test_get_ip_address_default(api_tab):
@@ -183,9 +206,12 @@ def test_available_version_property_set_none(api_tab):
     assert api_tab.available_version_value.text() == '(unknown)'
 
 
-def test_installed_version_property_get_none(api_tab):
+def test_installed_version_property_get_none(mocked_get_installed_version, api_tab_instantiate, settings):
     """Test that the installed version property is None on init"""
     # GIVEN: An uninitialised API tab
+    mocked_get_installed_version.return_value = None
+    settings.setValue('api/download_version', None)
+    api_tab = api_tab_instantiate()
 
     # WHEN: the installed version is GET'ed
     result = api_tab.installed_version

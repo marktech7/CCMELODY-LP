@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,10 +25,11 @@ import logging
 from pathlib import Path
 
 try:
-    from pymediainfo import MediaInfo
+    from pymediainfo import MediaInfo, __version__ as pymediainfo_version
     pymediainfo_available = True
 except ImportError:
     pymediainfo_available = False
+    pymediainfo_version = '0.0'
 
 from PyQt5 import QtCore
 
@@ -41,7 +42,8 @@ from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.state import State
 from openlp.core.ui import DisplayControllerType, HideMode
-from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path
+from openlp.core.ui.media import MediaState, ItemMediaInfo, MediaType, parse_optical_path, parse_stream_path, \
+    get_volume, toggle_looping_playback, is_looping_playback, save_volume
 from openlp.core.ui.media.remote import register_views
 from openlp.core.ui.media.vlcplayer import VlcPlayer, get_vlc
 
@@ -235,13 +237,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         self.media_reset(controller)
         controller.media_info = ItemMediaInfo()
         controller.media_info.media_type = MediaType.Video
-        if controller.is_live:
-            controller.media_info.volume = self.settings.value('media/live volume')
-        else:
-            controller.media_info.volume = self.settings.value('media/preview volume')
         # background will always loop video.
         if service_item.is_capable(ItemCapabilities.HasBackgroundAudio):
-            controller.media_info.file_info = service_item.background_audio
+            controller.media_info.file_info = [file_path for (file_path, file_hash) in service_item.background_audio]
             controller.media_info.media_type = MediaType.Audio
             # is_background indicates we shouldn't override the normal display
             controller.media_info.is_background = True
@@ -254,7 +252,6 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             elif service_item.is_capable(ItemCapabilities.HasBackgroundVideo):
                 controller.media_info.file_info = [service_item.video_file_name]
                 service_item.media_length = self.media_length(service_item.video_file_name)
-                controller.media_info.is_looping_playback = True
                 controller.media_info.is_background = True
             else:
                 controller.media_info.file_info = [service_item.get_frame_path()]
@@ -332,7 +329,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if self.is_theme_background:
             self.is_autoplay = True
         if self.is_autoplay:
-            if not self.media_play(controller):
+            start_hidden = self.is_theme_background and controller.is_live and \
+                (controller.current_hide_mode == HideMode.Blank or controller.current_hide_mode == HideMode.Screen)
+            if not self.media_play(controller, start_hidden):
                 critical_error_message_box(translate('MediaPlugin.MediaItem', 'Unsupported File'),
                                            translate('MediaPlugin.MediaItem', 'Unsupported File'))
                 return False
@@ -350,11 +349,16 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param media_path: The file path to be checked..
         """
         if MediaInfo.can_parse():
-            # pymediainfo has an issue opening non-ascii file names, so pass it a file object instead
-            # See https://gitlab.com/openlp/openlp/-/issues/1041
-            with Path(media_path).open('rb') as media_file:
-                media_data = MediaInfo.parse(media_file)
-            # duration returns in milli seconds
+            if pymediainfo_version < '4.3':
+                # pymediainfo only introduced file objects in 4.3, so if this is an older version, we'll have to use
+                # the old method. See https://gitlab.com/openlp/openlp/-/issues/1187
+                media_data = MediaInfo.parse(str(media_path))
+            else:
+                # pymediainfo has an issue opening non-ascii file names, so pass it a file object instead
+                # See https://gitlab.com/openlp/openlp/-/issues/1041
+                with Path(media_path).open('rb') as media_file:
+                    media_data = MediaInfo.parse(media_file)
+                # duration returns in milli seconds
             return media_data.tracks[0].duration or 0
         return 0
 
@@ -434,11 +438,12 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         """
         return self.media_play(self.live_controller)
 
-    def media_play(self, controller):
+    def media_play(self, controller, start_hidden=False):
         """
         Responds to the request to play a loaded video
 
         :param controller: The controller to be played
+        :param start_hidden: Whether to play the video without showing the controller
         """
         self.log_debug(f'media_play is_live:{controller.is_live}')
         controller.seek_slider.blockSignals(True)
@@ -448,12 +453,13 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             controller.seek_slider.blockSignals(False)
             controller.volume_slider.blockSignals(False)
             return False
-        self.media_volume(controller, controller.media_info.volume)
-        self._media_set_visibility(controller, True)
+        self.media_volume(controller, get_volume(controller))
+        if not start_hidden:
+            self._media_set_visibility(controller, True)
         controller.mediabar.actions['playbackPlay'].setVisible(False)
         controller.mediabar.actions['playbackPause'].setVisible(True)
         controller.mediabar.actions['playbackStop'].setDisabled(False)
-        controller.mediabar.actions['playbackLoop'].setChecked(controller.media_info.is_looping_playback)
+        controller.mediabar.actions['playbackLoop'].setChecked(is_looping_playback(controller))
         controller.mediabar.actions['playbackStop'].setVisible(not controller.media_info.is_background or
                                                                controller.media_info.media_type is MediaType.Audio)
         controller.mediabar.actions['playbackLoop'].setVisible((not controller.media_info.is_background and
@@ -491,7 +497,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.media_info.is_playing and controller.media_info.length > 0:
             controller.media_info.timer += TICK_TIME
             if controller.media_info.timer >= controller.media_info.start_time + controller.media_info.length:
-                if controller.media_info.is_looping_playback:
+                if is_looping_playback(controller):
                     start_again = True
                 else:
                     self.media_stop(controller)
@@ -512,8 +518,11 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         end_seconds = controller.media_info.end_time // 1000
         end_minutes = end_seconds // 60
         end_seconds %= 60
-        controller.position_label.setText(' %02d:%02d / %02d:%02d' %
-                                          (minutes, seconds, end_minutes, end_seconds))
+        if end_minutes == 0 and end_seconds == 0:
+            controller.position_label.setText('')
+        else:
+            controller.position_label.setText(' %02d:%02d / %02d:%02d' %
+                                              (minutes, seconds, end_minutes, end_seconds))
 
     def media_pause_msg(self, msg):
         """
@@ -563,8 +572,8 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
 
         :param controller: The controller that needs to be stopped
         """
-        controller.media_info.is_looping_playback = not controller.media_info.is_looping_playback
-        controller.mediabar.actions['playbackLoop'].setChecked(controller.media_info.is_looping_playback)
+        toggle_looping_playback(controller)
+        controller.mediabar.actions['playbackLoop'].setChecked(is_looping_playback(controller))
 
     def media_stop_msg(self, msg):
         """
@@ -628,11 +637,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         :param volume: The volume to be set
         """
         self.log_debug(f'media_volume {volume}')
-        if controller.is_live:
-            self.settings.setValue('media/live volume', volume)
-        else:
-            self.settings.setValue('media/preview volume', volume)
-        controller.media_info.volume = volume
+        save_volume(controller, volume)
         self.current_media_players[controller.controller_type].volume(controller, volume)
         controller.volume_slider.setValue(volume)
 
@@ -722,6 +727,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             self.live_hide_timer.stop()
         visible = visible and controller.media_info.media_type is not MediaType.Audio
         self.current_media_players[controller.controller_type].set_visible(controller, visible)
+        if controller.is_live and visible:
+            display = self._define_display(controller)
+            display.raise_()
 
     def media_blank(self, msg):
         """
@@ -750,7 +758,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
             else:
                 self.live_hide_timer.stop()
         else:
-            if playing:
+            if playing and not self.is_theme_background:
                 self.media_pause(self.live_controller)
             self._media_set_visibility(self.live_controller, False)
 

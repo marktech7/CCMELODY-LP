@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -81,10 +81,10 @@ class SongMediaItem(MediaManagerItem):
         song.media_files = []
         for i, bga in enumerate(item.background_audio):
             dest_path =\
-                AppLocation.get_section_data_path(self.plugin.name) / 'audio' / str(song.id) / os.path.split(bga)[1]
+                AppLocation.get_section_data_path(self.plugin.name) / 'audio' / str(song.id) / os.path.split(bga[0])[1]
             create_paths(dest_path.parent)
-            copyfile(AppLocation.get_section_data_path('servicemanager') / bga, dest_path)
-            song.media_files.append(MediaFile.populate(weight=i, file_path=dest_path))
+            copyfile(AppLocation.get_section_data_path('servicemanager') / bga[0], dest_path)
+            song.media_files.append(MediaFile.populate(weight=i, file_path=dest_path, file_hash=bga[1]))
         self.plugin.manager.save_object(song, True)
 
     def add_middle_header_bar(self):
@@ -535,6 +535,7 @@ class SongMediaItem(MediaManagerItem):
                     copyfile(media_file.file_path, new_media_file_path)
                     new_media_file = MediaFile()
                     new_media_file.file_path = new_media_file_path
+                    new_media_file.file_hash = media_file.file_hash
                     new_media_file.type = media_file.type
                     new_media_file.weight = media_file.weight
                     new_song.media_files.append(new_media_file)
@@ -630,7 +631,7 @@ class SongMediaItem(MediaManagerItem):
                 total_length = 0
                 for m in song.media_files:
                     total_length += self.media_controller.media_length(m.file_path)
-                service_item.background_audio = [m.file_path for m in song.media_files]
+                service_item.background_audio = [(m.file_path, m.file_hash) for m in song.media_files]
                 service_item.set_media_length(total_length)
                 service_item.metadata.append('<em>{label}:</em> {media}'.
                                              format(label=translate('SongsPlugin.MediaItem', 'Media'),

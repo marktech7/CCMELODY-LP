@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -114,7 +114,12 @@ class MacLOController(PresentationController, LogMixin):
         Called at system exit to clean up any running presentations.
         """
         log.debug('Kill LibreOffice')
-        self.client.shutdown()
+        try:
+            # Some people like to close LibreOffice themselves, let's just catch any errors so that OpenLP fails
+            # silently
+            self.client.shutdown()
+        except Exception:
+            pass
         self.server_process.kill()
 
 

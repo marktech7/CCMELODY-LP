@@ -11,6 +11,7 @@ indent_style = space
 
 [*.py]
 indent_size = 4
+continuation_indent_size = 8
 max_line_length = 120
 
 [*.{html,js,json,yaml,yml}]

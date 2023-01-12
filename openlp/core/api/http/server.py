@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -78,9 +78,6 @@ class HttpServer(RegistryBase, RegistryProperties, LogMixin):
         """
         super(HttpServer, self).__init__(parent)
         Registry().register('authentication_token', token_hex())
-        if not Registry().get_flag('no_web_server'):
-            worker = HttpWorker()
-            run_thread(worker, 'http_server')
 
     def bootstrap_post_set_up(self):
         """
@@ -89,3 +86,6 @@ class HttpServer(RegistryBase, RegistryProperties, LogMixin):
         create_paths(AppLocation.get_section_data_path('remotes'))
         self.poller = Poller()
         Registry().register('poller', self.poller)
+        if not Registry().get_flag('no_web_server'):
+            worker = HttpWorker()
+            run_thread(worker, 'http_server')

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,8 +24,11 @@ This module contains tests for the lib submodule of the Presentations plugin.
 from pathlib import Path
 from unittest.mock import MagicMock, PropertyMock, call, patch
 
+from PyQt5 import QtCore, QtWidgets
+
 from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.plugins.presentations.lib.db import Folder, Item
 from openlp.plugins.presentations.lib.mediaitem import PresentationMediaItem
 
 
@@ -128,7 +131,60 @@ def test_clean_up_thumbnails_missing_file(media_item):
     mocked_doc.assert_has_calls([call.get_thumbnail_path(1, True), call.presentation_deleted()], True)
 
 
-def test_pdf_generate_slide_data(media_item):
+def test_generate_slide_data_from_folder(media_item):
+    """
+    Test that the generate slide data function exits early when the item is a Folder instead of an Item
+    """
+    # GIVEN: A Folder instance
+    media_item.list_view = MagicMock()
+    mocked_service_item = MagicMock()
+    folder = Folder(id=1, name='Mock folder')
+    list_item = QtWidgets.QTreeWidgetItem(None)
+    list_item.setData(0, QtCore.Qt.UserRole, folder)
+
+    # WHEN: generate_slide_data is called
+    result = media_item.generate_slide_data(mocked_service_item, item=list_item)
+
+    # THEN: The result should be false
+    assert result is False
+
+
+def test_generate_slide_data_from_list_view(media_item):
+    """
+    Test that the generate slide data function exits early when there are more than 1 items selected
+    """
+    # GIVEN: A Folder instance
+    mocked_service_item = MagicMock()
+    list_item = QtWidgets.QTreeWidgetItem(None)
+    media_item.list_view = MagicMock(selectedItems=MagicMock(return_value=[list_item, list_item]))
+
+    # WHEN: generate_slide_data is called
+    result = media_item.generate_slide_data(mocked_service_item)
+
+    # THEN: The result should be false
+    assert result is False
+
+
+def test_generate_slide_data_with_file_path_from_item(media_item):
+    """
+    Test that the generate slide data function exits early when there is no display type combobox text
+    """
+    # GIVEN: A Folder instance
+    media_item.list_view = MagicMock()
+    media_item.display_type_combo_box = MagicMock(currentText=MagicMock(return_value=''))
+    mocked_service_item = MagicMock()
+    item = Item(id=1, file_path='path/to/presentation.odp')
+    list_item = QtWidgets.QTreeWidgetItem(None)
+    list_item.setData(0, QtCore.Qt.UserRole, item)
+
+    # WHEN: generate_slide_data is called
+    result = media_item.generate_slide_data(mocked_service_item, item=list_item)
+
+    # THEN: The result should be false
+    assert result is False
+
+
+def test_generate_slide_data_from_pdf(media_item):
     """
     Test that the generate slide data function makes the correct ajustments to a pdf service item.
     """

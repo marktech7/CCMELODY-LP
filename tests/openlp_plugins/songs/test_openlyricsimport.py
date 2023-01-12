@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -179,3 +179,25 @@ class TestOpenLyricsImport(TestCase, TestMixin):
 
         # THEN: The last call of the xml_to_song() method should have got the same XML content as its first call
         importer.open_lyrics.xml_to_song.assert_called_with(no_whitespaces_xml)
+
+    def test_chord_leading_space_is_not_removed(self):
+        """
+        Test if chords' leading space aren't removed when importing music.
+        """
+        # GIVEN: One OpenLyrics XML with the <lines> tag (Amazing_Grace_3_chords.xml)
+        mocked_manager = MagicMock()
+        mocked_import_wizard = MagicMock()
+        importer = OpenLyricsImport(mocked_manager, file_paths=[])
+        importer.import_wizard = mocked_import_wizard
+        expected_content_file = TEST_PATH / 'Amazing_Grace_3_chords_result.xml'
+        expected_content = expected_content_file.read_text()
+
+        # WHEN: Importing the file not having those whitespaces...
+        importer.import_source = [TEST_PATH / 'Amazing_Grace_3_chords.xml']
+        importer.open_lyrics = MagicMock()
+        importer.open_lyrics.xml_to_song = MagicMock()
+        importer.do_import()
+
+        # THEN: The song should preserve spaces before chords
+        import_content = importer.open_lyrics.xml_to_song.call_args[0][0]
+        assert import_content == expected_content

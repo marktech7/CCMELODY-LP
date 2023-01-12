@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -67,8 +67,8 @@ class OpenLyricsImport(SongImport):
                 for elem in root.iter('{*}lines'):
                     self._strip_whitespace(elem)
                     for subelem in elem.iter('{*}br'):
-                        self._strip_whitespace(subelem)
-
+                        next_subelem = subelem.getnext()
+                        self._strip_whitespace(subelem, next_subelem)
                 xml = etree.tostring(root).decode()
                 self.open_lyrics.xml_to_song(xml)
             except etree.XMLSyntaxError:
@@ -80,11 +80,15 @@ class OpenLyricsImport(SongImport):
                                                                                             text=exception.log_message))
                 self.log_error(file_path, exception.display_message)
 
-    def _strip_whitespace(self, elem):
+    def _strip_whitespace(self, elem, next_subelem=None):
         """
         Remove leading and trailing whitespace from the 'text' and 'tail' attributes of an etree._Element object
         """
+        is_chord_after_tail = False
+        if next_subelem is not None:
+            if next_subelem.tag.endswith('chord'):
+                is_chord_after_tail = True
         if elem.text is not None:
             elem.text = elem.text.strip()
-        if elem.tail is not None:
+        if elem.tail is not None and not is_chord_after_tail:
             elem.tail = elem.tail.strip()

@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -180,23 +180,24 @@ class LibreOfficeServer(object):
         if hasattr(self, '_docs'):
             while self._docs:
                 self._docs[0].close_presentation()
-        docs = self.desktop.getComponents()
-        count = 0
-        if docs.hasElements():
-            list_elements = docs.createEnumeration()
-            while list_elements.hasMoreElements():
-                doc = list_elements.nextElement()
-                if doc.getImplementationName() != 'com.sun.star.comp.framework.BackingComp':
-                    count += 1
-        if count > 0:
-            log.debug('LibreOffice not terminated as docs are still open')
-            can_kill = False
-        else:
-            try:
-                self.desktop.terminate()
-                log.debug('LibreOffice killed')
-            except Exception:
-                log.exception('Failed to terminate LibreOffice')
+        if self.desktop:
+            docs = self.desktop.getComponents()
+            count = 0
+            if docs.hasElements():
+                list_elements = docs.createEnumeration()
+                while list_elements.hasMoreElements():
+                    doc = list_elements.nextElement()
+                    if doc.getImplementationName() != 'com.sun.star.comp.framework.BackingComp':
+                        count += 1
+            if count > 0:
+                log.debug('LibreOffice not terminated as docs are still open')
+                can_kill = False
+            else:
+                try:
+                    self.desktop.terminate()
+                    log.debug('LibreOffice killed')
+                except Exception:
+                    log.exception('Failed to terminate LibreOffice')
         if getattr(self, '_process') and can_kill:
             self._process.kill()
 

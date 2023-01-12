@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -130,15 +130,20 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
     """
     This is a window to show the output
     """
-    def __init__(self, parent=None, screen=None, can_show_startup_screen=True):
+    def __init__(self, parent=None, screen=None, can_show_startup_screen=True, start_hidden=False,
+                 after_loaded_callback=None):
         """
         Create the display window
         """
         super(DisplayWindow, self).__init__(parent)
+        self.after_loaded_callback = after_loaded_callback
         # Gather all flags for the display window
         flags = QtCore.Qt.FramelessWindowHint | QtCore.Qt.Tool | QtCore.Qt.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.X11BypassWindowManagerHint
+        else:
+            # This helps the window not being hidden by KDE's "Hide utility windows for inactive applications" option
+            self.setAttribute(QtCore.Qt.WidgetAttribute.WA_X11NetWmWindowTypeDialog)
         if is_macosx():
             self.setAttribute(QtCore.Qt.WA_MacAlwaysShowToolWindow, True)
         # Need to import this inline to get around a QtWebEngine issue
@@ -183,7 +188,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             self.update_from_screen(screen)
             self.is_display = True
             # Only make visible on single monitor setup if setting enabled.
-            if len(ScreenList()) > 1 or self.settings.value('core/display on monitor'):
+            if not start_hidden and (len(ScreenList()) > 1 or self.settings.value('core/display on monitor')):
                 self.show()
 
     def closeEvent(self, event):
@@ -303,6 +308,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             self.set_scale(self.scale)
         if self._can_show_startup_screen:
             self.set_startup_screen()
+        if self.after_loaded_callback:
+            self.after_loaded_callback()
 
     def run_javascript(self, script, is_sync=False):
         """

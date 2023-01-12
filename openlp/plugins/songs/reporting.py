@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -52,7 +52,7 @@ def report_song_list():
     report_file_path.with_suffix('.csv')
     Registry().get('application').set_busy_cursor()
     try:
-        with report_file_path.open('wt') as export_file:
+        with report_file_path.open('wt', encoding='utf8') as export_file:
             fieldnames = ('Title', 'Alternative Title', 'Copyright', 'Author(s)', 'Song Book', 'Topic')
             writer = csv.DictWriter(export_file, fieldnames=fieldnames, quoting=csv.QUOTE_ALL)
             headers = dict((n, n) for n in fieldnames)

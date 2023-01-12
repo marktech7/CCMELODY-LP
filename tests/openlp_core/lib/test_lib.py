@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -273,7 +273,7 @@ def test_image_to_byte_base_64():
         assert 'byte_array base64ified' == result, 'The result should be the return value of the mocked base64 method'
 
 
-def test_create_thumb_with_size():
+def test_create_thumb_with_size(registry):
     """
     Test the create_thumb() function with a given size.
     """
@@ -308,7 +308,7 @@ def test_create_thumb_with_size():
         pass
 
 
-def test_create_thumb_no_size():
+def test_create_thumb_no_size(registry):
     """
     Test the create_thumb() function with no size specified.
     """
@@ -343,7 +343,7 @@ def test_create_thumb_no_size():
         pass
 
 
-def test_create_thumb_invalid_size():
+def test_create_thumb_invalid_size(registry):
     """
     Test the create_thumb() function with invalid size specified.
     """
@@ -379,7 +379,7 @@ def test_create_thumb_invalid_size():
         pass
 
 
-def test_create_thumb_width_only():
+def test_create_thumb_width_only(registry):
     """
     Test the create_thumb() function with a size of only width specified.
     """
@@ -415,7 +415,7 @@ def test_create_thumb_width_only():
         pass
 
 
-def test_create_thumb_height_only():
+def test_create_thumb_height_only(registry):
     """
     Test the create_thumb() function with a size of only height specified.
     """
@@ -451,7 +451,7 @@ def test_create_thumb_height_only():
         pass
 
 
-def test_create_thumb_empty_img():
+def test_create_thumb_empty_img(registry):
     """
     Test the create_thumb() function with a size of only height specified.
     """
@@ -502,7 +502,7 @@ def test_create_thumb_empty_img():
 
 @patch('openlp.core.lib.QtGui.QImageReader')
 @patch('openlp.core.lib.build_icon')
-def test_create_thumb_path_fails(mocked_build_icon, MockQImageReader):
+def test_create_thumb_path_fails(mocked_build_icon, MockQImageReader, registry):
     """
     Test that build_icon() is run against the image_path when the thumbnail fails to be created
     """
@@ -537,7 +537,7 @@ def test_check_item_selected_true():
     assert result is True, 'The result should be True'
 
 
-def test_check_item_selected_false():
+def test_check_item_selected_false(registry):
     """
     Test that the check_item_selected() function returns False when there are no selected indexes.
     """
@@ -608,7 +608,7 @@ def test_validate_thumb_file_exists_and_older():
     assert result is False, 'The result should be False'
 
 
-def test_resize_thumb():
+def test_resize_thumb(registry):
     """
     Test the resize_thumb() function
     """
@@ -630,7 +630,7 @@ def test_resize_thumb():
     assert image.pixel(0, 0) == wanted_background_rgb, 'The background should be white.'
 
 
-def test_resize_thumb_ignoring_aspect_ratio():
+def test_resize_thumb_ignoring_aspect_ratio(registry):
     """
     Test the resize_thumb() function ignoring aspect ratio
     """
@@ -652,7 +652,7 @@ def test_resize_thumb_ignoring_aspect_ratio():
     assert image.pixel(0, 0) == wanted_background_rgb, 'The background should be white.'
 
 
-def test_resize_thumb_width_aspect_ratio():
+def test_resize_thumb_width_aspect_ratio(registry):
     """
     Test the resize_thumb() function using the image's width as the reference
     """
@@ -670,7 +670,7 @@ def test_resize_thumb_width_aspect_ratio():
     assert wanted_width == result_size.width(), 'The image should have the requested width.'
 
 
-def test_resize_thumb_same_aspect_ratio():
+def test_resize_thumb_same_aspect_ratio(registry):
     """
     Test the resize_thumb() function when the image and the wanted aspect ratio are the same
     """

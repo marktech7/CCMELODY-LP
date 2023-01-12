@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -38,6 +38,7 @@ exceptionform.MIGRATE_VERSION = 'Migrate Test'
 exceptionform.CHARDET_VERSION = 'CHARDET Test'
 exceptionform.ENCHANT_VERSION = 'Enchant Test'
 exceptionform.MAKO_VERSION = 'Mako Test'
+exceptionform.ICU_VERSION = 'ICU Test'
 exceptionform.VLC_VERSION = 'VLC Test'
 
 MAIL_ITEM_TEXT = ('**OpenLP Bug Report**\nVersion: Trunk Test\n\n--- Details of the Exception. ---\n\n'

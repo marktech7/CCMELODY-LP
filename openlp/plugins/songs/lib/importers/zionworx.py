@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -24,6 +24,7 @@ The :mod:`zionworx` module provides the functionality for importing ZionWorx son
 import csv
 import logging
 
+from openlp.core.common import get_file_encoding
 from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 
@@ -72,8 +73,10 @@ class ZionWorxImport(SongImport):
         """
         Receive a CSV file (from a ZionWorx database dump) to import.
         """
-        # Encoding should always be ISO-8859-1
-        with self.import_source.open('rt', encoding='ISO-8859-1') as songs_file:
+        # Try to detect encoding, fall back to UTF-8 / ISO-8859-1
+        encoding = get_file_encoding(self.import_source)
+        log.info(f'Encoding: {encoding}')
+        with self.import_source.open('rt', encoding=encoding) as songs_file:
             field_names = ['SongNum', 'Title1', 'Title2', 'Lyrics', 'Writer', 'Copyright', 'Keywords',
                            'DefaultStyle']
             songs_reader = csv.DictReader(songs_file, field_names)

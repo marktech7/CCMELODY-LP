@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -22,6 +22,8 @@
 The :mod:`~openlp.core.ui.media` module contains classes and objects for media player integration.
 """
 import logging
+
+from openlp.core.common.registry import Registry
 
 log = logging.getLogger(__name__ + '.__init__')
 
@@ -50,6 +52,21 @@ class MediaState(object):
     Stopped = 4
 
 
+class VlCState(object):
+    """
+    A copy of the VLC States to allow for readable code
+    From https://www.olivieraubert.net/vlc/python-ctypes/doc/vlc.State-class.html
+    """
+    NothingSpecial = 0
+    Opening = 1
+    Buffering = 2
+    Playing = 3
+    Paused = 4
+    Stopped = 5
+    Ended = 6
+    Error = 7
+
+
 class MediaType(object):
     """
     An enumeration of possible Media Types
@@ -68,9 +85,7 @@ class ItemMediaInfo(object):
     This class hold the media related info
     """
     file_info = None
-    volume = 100
     is_background = False
-    is_looping_playback = False
     length = 0
     start_time = 0
     end_time = 0
@@ -80,6 +95,57 @@ class ItemMediaInfo(object):
     audio_track = 0
     subtitle_track = 0
     media_type = MediaType()
+
+
+def get_volume(controller) -> int:
+    """
+    The volume needs to be retrieved
+
+    :param controller: the controller in use
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').value('media/live volume')
+    else:
+        return Registry().get('settings').value('media/preview volume')
+
+
+def save_volume(controller, volume: int) -> None:
+    """
+    The volume needs to be saved
+
+    :param controller: the controller in use
+    :param volume: The volume to use and save
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').setValue('media/live volume', volume)
+    else:
+        return Registry().get('settings').setValue('media/preview volume', volume)
+
+
+def is_looping_playback(controller) -> bool:
+    """
+    :param controller: the controller in use
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').value('media/live loop')
+    else:
+        return Registry().get('settings').value('media/preview loop')
+
+
+def toggle_looping_playback(controller) -> None:
+    """
+
+    :param controller: the controller in use
+    :return: None
+    """
+    if controller.is_live:
+        Registry().get('settings').setValue('media/live loop', not Registry().get('settings').value('media/live loop'))
+    else:
+        Registry().get('settings').setValue('media/preview loop',
+                                            not Registry().get('settings').value('media/preview loop'))
 
 
 def parse_optical_path(input_string):

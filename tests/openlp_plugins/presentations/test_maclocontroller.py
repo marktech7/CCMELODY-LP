@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -150,6 +150,23 @@ class TestMacLOController(TestCase, TestMixin):
         # GIVEN: A controller and a client
         controller = MacLOController(plugin=self.mock_plugin)
         controller._client = MagicMock()
+        controller.server_process = MagicMock()
+
+        # WHEN: start_process() is called
+        controller.kill()
+
+        # THEN: The client's start_process() should have been called
+        controller._client.shutdown.assert_called_once_with()
+        controller.server_process.kill.assert_called_once_with()
+
+    @patch('openlp.plugins.presentations.lib.maclocontroller.MacLOController._start_server')
+    def test_kill_client_already_closed(self, mocked_start_server):
+        """
+        Test the kill() method when the client is already closed
+        """
+        # GIVEN: A controller and a client
+        controller = MacLOController(plugin=self.mock_plugin)
+        controller._client = MagicMock(**{'shutdown.side_effect': Exception})
         controller.server_process = MagicMock()
 
         # WHEN: start_process() is called

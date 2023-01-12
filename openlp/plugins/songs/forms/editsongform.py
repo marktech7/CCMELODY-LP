@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -28,6 +28,7 @@ from shutil import copyfile
 
 from PyQt5 import QtCore, QtWidgets, QtGui
 
+from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.mixins import RegistryProperties
@@ -1095,6 +1096,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             file_paths.append(file_path)
             media_file = MediaFile()
             media_file.file_path = file_path
+            media_file.file_hash = sha256_file_hash(file_path)
             media_file.type = 'audio'
             media_file.weight = row
             self.song.media_files.append(media_file)

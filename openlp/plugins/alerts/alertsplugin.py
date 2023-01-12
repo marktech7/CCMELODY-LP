@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -29,7 +29,6 @@ from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
-from openlp.plugins.alerts.remote import register_views
 from openlp.plugins.alerts.forms.alertform import AlertForm
 from openlp.plugins.alerts.lib.alertsmanager import AlertsManager
 from openlp.plugins.alerts.lib.alertstab import AlertsTab
@@ -139,7 +138,6 @@ class AlertsPlugin(Plugin):
         self.tools_alert_item.setVisible(True)
         action_list = ActionList.get_instance()
         action_list.add_action(self.tools_alert_item, UiStrings().Tools)
-        register_views()
 
     def finalise(self):
         """

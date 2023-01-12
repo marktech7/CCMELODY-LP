@@ -3,7 +3,7 @@
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
-# Copyright (c) 2008-2022 OpenLP Developers                              #
+# Copyright (c) 2008-2023 OpenLP Developers                              #
 # ---------------------------------------------------------------------- #
 # This program is free software: you can redistribute it and/or modify   #
 # it under the terms of the GNU General Public License as published by   #
@@ -25,6 +25,7 @@ import shutil
 from datetime import datetime, date
 from pathlib import Path
 from tempfile import gettempdir
+from threading import Lock
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -277,7 +278,7 @@ class Ui_MainWindow(object):
         self.settings_configure_item = create_action(main_window, 'settingsConfigureItem',
                                                      icon=UiIcons().settings, can_shortcuts=True,
                                                      category=UiStrings().Settings)
-        # Give QT Extra Hint that this is the Preferences Menu Item
+        # Give Qt Extra Hint that this is the Preferences Menu Item
         self.settings_configure_item.setMenuRole(QtWidgets.QAction.PreferencesRole)
         self.settings_import_item = create_action(main_window, 'settingsImportItem',
                                                   category=UiStrings().Import, can_shortcuts=True)
@@ -287,7 +288,7 @@ class Ui_MainWindow(object):
         self.about_item = create_action(main_window, 'aboutItem', icon=UiIcons().info,
                                         can_shortcuts=True, category=UiStrings().Help,
                                         triggers=self.on_about_item_clicked)
-        # Give QT Extra Hint that this is an About Menu Item
+        # Give Qt Extra Hint that this is an About Menu Item
         self.about_item.setMenuRole(QtWidgets.QAction.AboutRole)
         if is_win():
             self.local_help_file = AppLocation.get_directory(AppLocation.AppDir) / 'OpenLP.chm'
@@ -480,9 +481,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.copy_data = False
         self.settings.set_up_default_values()
         self.about_form = AboutForm(self)
-        self.ws_server = WebSocketServer()
-        self.ws_server.start()
-        self.http_server = HttpServer(self)
         SettingsForm(self)
         self.formatting_tag_form = FormattingTagForm(self)
         self.shortcut_form = ShortcutListForm(self)
@@ -495,10 +493,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.update_recent_files_menu()
         self.plugin_form = PluginForm(self)
         # Set up signals and slots
-        self.media_manager_dock.visibilityChanged.connect(self.view_media_manager_item.setChecked)
-        self.service_manager_dock.visibilityChanged.connect(self.view_service_manager_item.setChecked)
-        self.theme_manager_dock.visibilityChanged.connect(self.view_theme_manager_item.setChecked)
-        self.projector_manager_dock.visibilityChanged.connect(self.view_projector_manager_item.setChecked)
+        self.media_manager_dock.visibilityChanged.connect(self.toggle_media_manager)
+        self.service_manager_dock.visibilityChanged.connect(self.toggle_service_manager)
+        self.theme_manager_dock.visibilityChanged.connect(self.toggle_theme_manager)
+        self.projector_manager_dock.visibilityChanged.connect(self.toggle_projector_manager)
         self.import_theme_item.triggered.connect(self.theme_manager_contents.on_import_theme)
         self.export_theme_item.triggered.connect(self.theme_manager_contents.on_export_theme)
         self.web_site_item.triggered.connect(self.on_help_web_site_clicked)
@@ -526,6 +524,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
         # Reset the cursor
         self.application.set_normal_cursor()
+        # Starting up web services
+        self.http_server = HttpServer(self)
+        self.ws_server = WebSocketServer()
+        self.screen_updating_lock = Lock()
 
     def _wait_for_threads(self):
         """
@@ -661,10 +663,14 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 self.set_view_mode(False, True, False, False, True, True)
                 self.mode_live_item.setChecked(True)
         else:
-            self.set_view_mode(True, True, True,
-                               self.settings.value('user interface/preview panel'),
-                               self.settings.value('user interface/live panel'),
-                               True)
+            self.set_view_mode(
+                self.settings.value('user interface/show library'),
+                self.settings.value('user interface/show service'),
+                self.settings.value('user interface/show themes'),
+                self.settings.value('user interface/preview panel'),
+                self.settings.value('user interface/live panel'),
+                self.settings.value('user interface/show projectors')
+            )
 
     def first_time(self):
         """
@@ -1011,25 +1017,35 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         The screen has changed so we have to update components such as the renderer.
         """
-        self.application.set_busy_cursor()
-        self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
-        self.preview_controller.screen_size_changed()
-        self.live_controller.setup_displays()
-        self.live_controller.screen_size_changed()
-        self.setFocus()
-        self.activateWindow()
-        self.application.set_normal_cursor()
-        # if a warning has been shown within the last 5 seconds, skip showing again to avoid spamming user,
-        # also do not show if the settings window is visible
-        if not self.settings_form.isVisible() and not self.screen_change_timestamp or \
-                self.screen_change_timestamp and (datetime.now() - self.screen_change_timestamp).seconds > 5:
-            self.screen_change_timestamp = datetime.now()
-            QtWidgets.QMessageBox.warning(self, translate('OpenLP.MainWindow', 'Screen setup has changed'),
-                                          translate('OpenLP.MainWindow',
-                                                    'The screen setup has changed. '
-                                                    'OpenLP will try to automatically select a display screen, but '
-                                                    'you should consider updating the screen settings.'),
-                                          QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+        try:
+            self.screen_updating_lock.acquire()
+            # if a warning has been shown within the last 5 seconds, skip showing again to avoid spamming user,
+            # also do not show if the settings window is visible
+            has_shown_messagebox_recently = self.screen_change_timestamp \
+                and (datetime.now() - self.screen_change_timestamp).seconds < 5
+            should_show_messagebox = self.settings_form.isHidden() and not has_shown_messagebox_recently
+            if should_show_messagebox:
+                QtWidgets.QMessageBox.warning(self, translate('OpenLP.MainWindow', 'Screen setup has changed'),
+                                              translate('OpenLP.MainWindow',
+                                                        'The screen setup has changed. '
+                                                        'OpenLP will try to automatically select a display screen, but '
+                                                        'you should consider updating the screen settings.'),
+                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                self.screen_change_timestamp = datetime.now()
+            self.application.set_busy_cursor()
+            self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
+            self.preview_controller.screen_size_changed()
+            self.live_controller.setup_displays()
+            self.live_controller.screen_size_changed()
+            self.setFocus()
+            self.activateWindow()
+            self.application.set_normal_cursor()
+            # Forcing application to process events to trigger display update
+            # We need to wait a little of time as it would otherwise need a mouse move
+            # to process the screen change, for example
+            QtCore.QTimer.singleShot(150, lambda: self.application.process_events())
+        finally:
+            self.screen_updating_lock.release()
 
     def closeEvent(self, event):
         """
@@ -1154,15 +1170,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Toggle the visibility of the media manager
         """
-        self.media_manager_dock.setVisible(not self.media_manager_dock.isVisible())
+        if self.sender() is self.view_media_manager_item:
+            self.media_manager_dock.setVisible(not self.media_manager_dock.isVisible())
+        self.view_media_manager_item.setChecked(self.media_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show library', self.media_manager_dock.isVisible())
 
     def toggle_projector_manager(self):
         """
         Toggle visibility of the projector manager
         """
-        self.projector_manager_dock.setVisible(not self.projector_manager_dock.isVisible())
+        if self.sender() is self.view_projector_manager_item:
+            self.projector_manager_dock.setVisible(not self.projector_manager_dock.isVisible())
+        self.view_projector_manager_item.setChecked(self.projector_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show projectors', self.projector_manager_dock.isVisible())
         # Check/uncheck checkbox on First time wizard based on visibility of this panel.
         if not self.settings.value('projector/show after wizard'):
             self.settings.setValue('projector/show after wizard', True)
@@ -1173,15 +1195,21 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Toggle the visibility of the service manager
         """
-        self.service_manager_dock.setVisible(not self.service_manager_dock.isVisible())
+        if self.sender() is self.view_service_manager_item:
+            self.service_manager_dock.setVisible(not self.service_manager_dock.isVisible())
+        self.view_service_manager_item.setChecked(self.service_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show service', self.service_manager_dock.isVisible())
 
     def toggle_theme_manager(self):
         """
         Toggle the visibility of the theme manager
         """
-        self.theme_manager_dock.setVisible(not self.theme_manager_dock.isVisible())
+        if self.sender() is self.view_theme_manager_item:
+            self.theme_manager_dock.setVisible(not self.theme_manager_dock.isVisible())
+        self.view_theme_manager_item.setChecked(self.theme_manager_dock.isVisible())
         self.settings.setValue('user interface/is preset layout', False)
+        self.settings.setValue('user interface/show themes', self.theme_manager_dock.isVisible())
 
     def set_preview_panel_visibility(self, visible):
         """
