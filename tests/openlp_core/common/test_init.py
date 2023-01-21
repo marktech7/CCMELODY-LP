@@ -77,7 +77,7 @@ def test_extension_loader_files_found():
                 Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file2.py'),
                 Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file3.py'),
                 Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file4.py')]), \
-            patch('openlp.core.common.importlib.import_module') as mocked_import_module:
+            patch('openlp.core.common.import_openlp_module') as mocked_import_module:
 
         # WHEN: Calling `extension_loader` with a list of files to exclude
         extension_loader('glob', ['file2.py', 'file3.py'])
@@ -97,7 +97,7 @@ def test_extension_loader_import_error():
                return_value=Path('/', 'app', 'dir', 'openlp')), \
             patch.object(Path, 'glob', return_value=[
                 Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file1.py')]), \
-            patch('openlp.core.common.importlib.import_module', side_effect=ImportError()), \
+            patch('openlp.core.common.import_openlp_module', side_effect=ImportError()), \
             patch('openlp.core.common.log') as mocked_logger:
 
         # WHEN: Calling `extension_loader`
@@ -116,7 +116,7 @@ def test_extension_loader_os_error():
                return_value=Path('/', 'app', 'dir', 'openlp')), \
             patch.object(Path, 'glob', return_value=[
                 Path('/', 'app', 'dir', 'openlp', 'import_dir', 'file1.py')]), \
-            patch('openlp.core.common.importlib.import_module', side_effect=OSError()), \
+            patch('openlp.core.common.import_openlp_module', side_effect=OSError()), \
             patch('openlp.core.common.log') as mocked_logger:
 
         # WHEN: Calling `extension_loader`

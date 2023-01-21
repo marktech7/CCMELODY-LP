@@ -23,6 +23,8 @@ The :mod:`~openlp.core.ui.media` module contains classes and objects for media p
 """
 import logging
 
+from openlp.core.common.registry import Registry
+
 log = logging.getLogger(__name__ + '.__init__')
 
 # Audio and video extensions copied from 'include/vlc_interface.h' from vlc 2.2.0 source
@@ -83,9 +85,7 @@ class ItemMediaInfo(object):
     This class hold the media related info
     """
     file_info = None
-    volume = 100
     is_background = False
-    is_looping_playback = False
     length = 0
     start_time = 0
     end_time = 0
@@ -95,6 +95,57 @@ class ItemMediaInfo(object):
     audio_track = 0
     subtitle_track = 0
     media_type = MediaType()
+
+
+def get_volume(controller) -> int:
+    """
+    The volume needs to be retrieved
+
+    :param controller: the controller in use
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').value('media/live volume')
+    else:
+        return Registry().get('settings').value('media/preview volume')
+
+
+def save_volume(controller, volume: int) -> None:
+    """
+    The volume needs to be saved
+
+    :param controller: the controller in use
+    :param volume: The volume to use and save
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').setValue('media/live volume', volume)
+    else:
+        return Registry().get('settings').setValue('media/preview volume', volume)
+
+
+def is_looping_playback(controller) -> bool:
+    """
+    :param controller: the controller in use
+    :return: Are we looping
+    """
+    if controller.is_live:
+        return Registry().get('settings').value('media/live loop')
+    else:
+        return Registry().get('settings').value('media/preview loop')
+
+
+def toggle_looping_playback(controller) -> None:
+    """
+
+    :param controller: the controller in use
+    :return: None
+    """
+    if controller.is_live:
+        Registry().get('settings').setValue('media/live loop', not Registry().get('settings').value('media/live loop'))
+    else:
+        Registry().get('settings').setValue('media/preview loop',
+                                            not Registry().get('settings').value('media/preview loop'))
 
 
 def parse_optical_path(input_string):

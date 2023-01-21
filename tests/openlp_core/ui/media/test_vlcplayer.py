@@ -283,7 +283,7 @@ def test_check_not_available(mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load(mocked_normcase, mocked_get_vlc):
+def test_load(mocked_normcase, mocked_get_vlc, settings):
     """
     Test loading a video into VLC
     """
@@ -294,7 +294,6 @@ def test_load(mocked_normcase, mocked_get_vlc):
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.media_info.media_type = MediaType.Video
     mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
     mocked_vlc_media = MagicMock()
@@ -305,8 +304,7 @@ def test_load(mocked_normcase, mocked_get_vlc):
     vlc_player = VlcPlayer(None)
 
     # WHEN: A video is loaded into VLC
-    with patch.object(vlc_player, 'volume') as mocked_volume:
-        result = vlc_player.load(mocked_controller, mocked_display, media_path)
+    result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
     mocked_normcase.assert_called_with(media_path)
@@ -314,14 +312,13 @@ def test_load(mocked_normcase, mocked_get_vlc):
     assert mocked_vlc_media == mocked_controller.vlc_media
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
-    mocked_volume.assert_called_with(mocked_controller, 100)
     assert result is True
 
 
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win, settings):
     """
     Test loading an audio CD into VLC
     """
@@ -333,7 +330,6 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.media_info.media_type = MediaType.CD
     mocked_controller.media_info.title_track = 1
     mocked_vlc_media = MagicMock()
@@ -351,8 +347,7 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     vlc_player = VlcPlayer(None)
 
     # WHEN: An audio CD is loaded into VLC
-    with patch.object(vlc_player, 'volume') as mocked_volume, \
-            patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -361,7 +356,6 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     assert mocked_vlc_media == mocked_controller.vlc_media
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
-    mocked_volume.assert_called_with(mocked_controller, 100)
     mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
     mocked_controller.seek_slider.setMinimum.assert_called_with(20000)
     mocked_controller.seek_slider.setMaximum.assert_called_with(30000)
@@ -371,7 +365,7 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win):
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win, settings):
     """
     Test loading an audio CD into VLC on Windows
     """
@@ -383,7 +377,6 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.media_info.media_type = MediaType.CD
     mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
     mocked_controller.media_info.title_track = 1
@@ -400,8 +393,7 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     vlc_player = VlcPlayer(None)
 
     # WHEN: An audio CD is loaded into VLC
-    with patch.object(vlc_player, 'volume') as mocked_volume, \
-            patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -410,7 +402,6 @@ def test_load_audio_cd_on_windows(mocked_normcase, mocked_get_vlc, mocked_is_win
     assert mocked_vlc_media == mocked_controller.vlc_media
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
-    mocked_volume.assert_called_with(mocked_controller, 100)
     mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
     assert result is True
 
@@ -449,7 +440,7 @@ def test_load_audio_cd_no_tracks(mocked_normcase, mocked_get_vlc, mocked_is_win)
     vlc_player = VlcPlayer(None)
 
     # WHEN: An audio CD is loaded into VLC
-    with patch.object(vlc_player, 'volume'), patch.object(vlc_player, 'media_state_wait'):
+    with patch.object(vlc_player, 'media_state_wait'):
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -465,7 +456,7 @@ def test_load_audio_cd_no_tracks(mocked_normcase, mocked_get_vlc, mocked_is_win)
 @patch('openlp.core.ui.media.vlcplayer.is_win')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
+def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win, settings):
     """
     Test loading a DVD into VLC
     """
@@ -477,14 +468,12 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.media_info.media_type = MediaType.DVD
     mocked_controller.media_info.title_track = '2'
     mocked_controller.media_info.audio_track = 2
     mocked_controller.media_info.subtitle_track = 4
     mocked_vlc_media = MagicMock()
     mocked_media = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.media_info.start_time = 20000
     mocked_controller.media_info.end_time = 30000
     mocked_controller.media_info.length = 10000
@@ -493,8 +482,7 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     vlc_player = VlcPlayer(None)
 
     # WHEN: A DVD clip is loaded into VLC
-    with patch.object(vlc_player, 'volume') as mocked_volume, \
-            patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         result = vlc_player.load(mocked_controller, mocked_display, media_path)
 
     # THEN: The video should be loaded
@@ -505,7 +493,6 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win):
     mocked_controller.vlc_media_player.audio_set_track.assert_called_with(2)
     mocked_controller.vlc_media_player.video_set_spu.assert_called_with(4)
     mocked_vlc_media.parse.assert_called_with()
-    mocked_volume.assert_called_with(mocked_controller, 100)
     mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
     mocked_controller.seek_slider.setMinimum.assert_called_with(20000)
     mocked_controller.seek_slider.setMaximum.assert_called_with(30000)
@@ -606,7 +593,7 @@ def test_resize():
 
 @patch('openlp.core.ui.media.vlcplayer.threading')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
-def test_play(mocked_get_vlc, mocked_threading):
+def test_play(mocked_get_vlc, mocked_threading, settings):
     """
     Test the play() method
     """
@@ -618,21 +605,17 @@ def test_play(mocked_get_vlc, mocked_threading):
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
     mocked_media = MagicMock()
-    mocked_controller.media_info.volume = 100
     mocked_controller.vlc_media_player.get_media.return_value = mocked_media
     vlc_player = VlcPlayer(None)
     vlc_player.set_state(MediaState.Paused, mocked_controller)
 
     # WHEN: play() is called
-    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait, \
-            patch.object(vlc_player, 'volume') as mocked_volume:
+    with patch.object(vlc_player, 'media_state_wait') as mocked_media_state_wait:
         mocked_media_state_wait.return_value = True
         result = vlc_player.play(mocked_controller, mocked_display)
 
     # THEN: A bunch of things should happen to play the media
     mocked_thread.start.assert_called_with()
-    mocked_volume.assert_called_with(mocked_controller, 100)
-
     assert MediaState.Playing == vlc_player.get_live_state()
     assert result is True, 'The value returned from play() should be True'
 

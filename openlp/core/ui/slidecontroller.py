@@ -971,6 +971,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             Registry().execute(
                 '{text}_start'.format(text=self.service_item.name.lower()),
                 [self.service_item, self.is_live, self._current_hide_mode, slide_no])
+            if self.service_item.is_capable(ItemCapabilities.ProvidesOwnTheme):
+                self._set_theme(self.service_item)
         else:
             self._set_theme(self.service_item)
         self.info_label.setText(self.service_item.title)

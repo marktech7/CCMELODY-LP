@@ -307,7 +307,7 @@ def test_set_startup_screen_hide(display_window_env, mock_settings):
         'Display.setStartupSplashScreen("orange", "");')
 
 
-def test_after_loaded(display_window_env, mock_settings):
+def test_after_loaded(display_window_env, mock_settings, registry):
     """
     Test the correct steps are taken when the webview is loaded
     """
@@ -335,7 +335,7 @@ def test_after_loaded(display_window_env, mock_settings):
     display_window.set_startup_screen.assert_called_once()
 
 
-def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
+def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings, registry):
     """
     Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
     """
@@ -361,7 +361,7 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
                                                           '});')
 
 
-def test_after_loaded_callback(display_window_env, mock_settings):
+def test_after_loaded_callback(display_window_env, mock_settings, registry):
     """
     Test if the __ is loaded on after_loaded() method correctly
     """
@@ -462,7 +462,7 @@ def test_fix_font_bold_not_windows(mocked_is_win, display_window_env, mock_setti
 
 
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings):
+def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings, registry):
     """
     Test that a font with a foundry name in it has the foundry removed
     """

@@ -862,7 +862,7 @@ def test_to_dict_text_item(mocked_sha256_file_hash, state_media, settings, servi
         ],
         'theme': None,
         'title': 'Amazing Grace',
-        'type': 'ServiceItemType.Text',
+        'type': ServiceItemType.Text,
         'data': {'authors': 'John Newton', 'title': 'amazing grace@'}
     }
     assert result == expected_dict
@@ -905,7 +905,7 @@ def test_to_dict_image_item(state_media, settings, service_item_env):
         ],
         'theme': -1,
         'title': 'Images',
-        'type': 'ServiceItemType.Image',
+        'type': ServiceItemType.Image,
         'data': {}
     }
     assert result == expected_dict
@@ -961,7 +961,7 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
         ],
         'theme': None,
         'title': '',
-        'type': 'ServiceItemType.Command',
+        'type': ServiceItemType.Command,
         'data': {}
     }
     assert result == expected_dict

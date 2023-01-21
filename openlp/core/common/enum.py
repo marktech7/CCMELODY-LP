@@ -112,6 +112,15 @@ class ServiceItemType(IntEnum):
     Image = 2
     Command = 3
 
+    @staticmethod
+    def parse(value):
+        if value in [1, '1', 'Text', 'ServiceItemType.Text']:
+            return ServiceItemType.Text
+        elif value in [2, '2', 'Image', 'ServiceItemType.Image']:
+            return ServiceItemType.Image
+        elif value in [3, '3', 'Command', 'ServiceItemType.Command']:
+            return ServiceItemType.Command
+
 
 @unique
 class PluginStatus(IntEnum):

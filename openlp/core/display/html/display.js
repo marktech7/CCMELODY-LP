@@ -474,7 +474,7 @@ var Display = {
     img.setAttribute("style", "height: 100%; width: 100%");
     section.appendChild(img);
     Display._slides['0'] = 0;
-    Display.replaceSlides(parentSection);
+    Display.replaceSlides(section);
   },
   /**
    * Set fullscreen image from base64 data
@@ -932,7 +932,7 @@ var Display = {
       /*
         Disabling all transitions (except body) to allow the Webview to attain the
         transparent state before it gets hidden by Qt.
-      */    
+      */
       document.body.classList.add('disable-transitions');
       document.body.classList.add('is-desktop');
       Display._slidesContainer.style.opacity = 0;

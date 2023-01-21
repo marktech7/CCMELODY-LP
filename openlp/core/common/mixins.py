@@ -30,7 +30,7 @@ from openlp.core.common.registry import Registry
 
 
 DO_NOT_TRACE_EVENTS = ['timerEvent', 'paintEvent', 'drag_enter_event', 'drop_event', 'on_controller_size_changed',
-                       'preview_size_changed', 'resizeEvent', 'eventFilter', 'tick']
+                       'preview_size_changed', 'resizeEvent', 'eventFilter', 'tick', 'resize', 'update_ui']
 
 
 class LogMixin(object):

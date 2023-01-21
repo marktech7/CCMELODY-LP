@@ -52,6 +52,7 @@ WIN32_MODULES = [
     'win32com',
     'win32ui',
     'pywintypes',
+    'icu',
 ]
 
 LINUX_MODULES = [

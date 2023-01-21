@@ -63,7 +63,7 @@ def mocked_qapp():
 
 
 @pytest.fixture
-def registry():
+def registry(autouse=True):
     """An instance of the Registry"""
     yield Registry.create()
     Registry._instances = {}
@@ -78,14 +78,14 @@ def settings(qapp, registry):
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
-    Registry().register('settings', sets)
-    Registry().register('settings_thread', sets)
-    Registry().register('application', qapp)
+    registry.register('settings', sets)
+    registry.register('settings_thread', sets)
+    registry.register('application', qapp)
     qapp.settings = sets
     yield sets
     del sets
-    Registry().remove('settings')
-    Registry().remove('settings_thread')
+    registry.remove('settings')
+    registry.remove('settings_thread')
     os.close(fd)
     os.unlink(Settings().fileName())
 
@@ -95,12 +95,12 @@ def mock_settings(qapp, registry):
     """A Mock Settings() instance"""
     # Create and register a mock settings object to work with
     mk_settings = MagicMock()
-    Registry().register('settings', mk_settings)
-    Registry().register('application', qapp)
-    Registry().register('settings_thread', mk_settings)
+    registry.register('settings', mk_settings)
+    registry.register('application', qapp)
+    registry.register('settings_thread', mk_settings)
     yield mk_settings
-    Registry().remove('settings')
-    Registry().remove('settings_thread')
+    registry.remove('settings')
+    registry.remove('settings_thread')
     del mk_settings
 
 

@@ -463,7 +463,7 @@ class ServiceItem(RegistryProperties):
         header = service_item['serviceitem']['header']
         self.title = header['title']
         self.name = header['name']
-        self.service_item_type = header['type']
+        self.service_item_type = ServiceItemType.parse(header['type'])
         self.theme = header['theme']
         self.add_icon()
         self.raw_footer = header['footer']
@@ -891,7 +891,7 @@ class ServiceItem(RegistryProperties):
         data_dict = {
             'title': self.title,
             'name': self.name,
-            'type': str(self.service_item_type),
+            'type': self.service_item_type,
             'theme': self.theme,
             'footer': self.raw_footer,
             'audit': self.audit,

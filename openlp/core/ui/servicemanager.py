@@ -29,7 +29,6 @@ import zipfile
 from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -690,8 +689,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.log_debug('ServiceManager.save_file - ZIP contents size is %i bytes' % total_size)
         self.main_window.display_progress_bar(1000)
         try:
-            with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
-                    zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            tmp_file_path = str(file_path) + ".saving"
+            with zipfile.ZipFile(tmp_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
@@ -701,11 +700,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     self.main_window.increment_progress_bar(local_file_item.stat().st_size / total_size * 1000)
                 with suppress(FileNotFoundError):
                     file_path.unlink()
-                # Try to link rather than copy to prevent writing another file
-                try:
-                    os.link(temp_file.name, file_path)
-                except OSError:
-                    shutil.copyfile(temp_file.name, file_path)
+            # Move rather than copy to prevent writing another file if possible
+            shutil.move(tmp_file_path, file_path)
             self.settings.setValue('servicemanager/last directory', file_path.parent)
         except (PermissionError, OSError) as error:
             self.log_exception('Failed to save service to disk: {name}'.format(name=file_path))

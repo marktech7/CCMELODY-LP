@@ -95,7 +95,9 @@ def test_report_song_list_error_reading(mock_file_dialog, mock_log, registry):
     Test that report song list sends an exception if the selected file location is not writable
     """
     # GIVEN: A mocked file that returns a os error on open
-    def raise_os_error(x):
+    def raise_os_error(mode, encoding):
+        assert mode == 'wt'
+        assert encoding == 'utf8'
         raise OSError
     mock_file = MagicMock()
     mock_file.open.side_effect = raise_os_error

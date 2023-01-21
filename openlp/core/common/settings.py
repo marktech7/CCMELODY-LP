@@ -291,6 +291,8 @@ class Settings(QtCore.QSettings):
         'media/vlc arguments': '',
         'media/live volume': 50,
         'media/preview volume': 0,
+        'media/live loop': False,
+        'media/preview loop': False,
         'media/db type': 'sqlite',
         'media/db username': '',
         'media/db password': '',

@@ -13,11 +13,13 @@ environment:
       CHOCO_VLC_ARG:
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
+      PYICU_PACK: PyICU-2.9-cp38-cp38-win_amd64.whl
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
       PY_DIR: C:\\Python38
       CHOCO_VLC_ARG: --forcex86
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
+      PYICU_PACK: PyICU-2.9-cp38-cp38-win32.whl
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
@@ -36,9 +38,13 @@ install:
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   - cmd: choco install vlc %CHOCO_VLC_ARG% --no-progress --limit-output
+  # Download and install pyicu for windows (originally from http://www.lfd.uci.edu/~gohlke/pythonlibs/)
+  - cmd: python -m pip install https://get.openlp.org/win-sdk/%PYICU_PACK%
   # Mac only dependencies
-  - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
   - sh: brew install --cask vlc
+  - sh: brew install pkg-config icu4c
+  - sh: PATH="/usr/local/opt/icu4c/bin:/usr/local/opt/icu4c/sbin:$PATH" PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/opt/icu4c/lib/pkgconfig" python -m pip install pyicu
+  - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
 
 build: off
 

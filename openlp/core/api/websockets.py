@@ -205,6 +205,8 @@ class WebSocketServer(RegistryBase, RegistryProperties, QtCore.QObject, LogMixin
         """
         Closes the WebSocket server and detach associated signals
         """
+        if Registry().get_flag('no_web_server'):
+            return
         try:
             poller.poller_changed.disconnect(self.handle_poller_signal)
             poller.unhook_signals()

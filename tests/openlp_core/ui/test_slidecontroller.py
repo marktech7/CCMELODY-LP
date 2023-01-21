@@ -26,10 +26,11 @@ import datetime
 from unittest.mock import MagicMock, patch, sentinel
 
 from PyQt5 import QtCore, QtGui
+from openlp.core.lib.serviceitem import ServiceItem
 
 from openlp.core.state import State
 from openlp.core.common.registry import Registry
-from openlp.core.lib import ServiceItemAction
+from openlp.core.lib import ItemCapabilities, ServiceItemAction
 from openlp.core.ui import HideMode
 from openlp.core.ui.slidecontroller import NON_TEXT_MENU, WIDE_MENU, NARROW_MENU, InfoLabel, LiveController, \
     PreviewController, SlideController
@@ -1139,6 +1140,54 @@ def test_process_item_is_reloading_wont_change_display_hide_mode(mocked_execute,
 
     # THEN: set_hide_mode should not be called
     slide_controller.set_hide_mode.assert_not_called()
+
+
+@patch.object(Registry, 'execute')
+def test_process_item_provides_own_theme(mocked_execute, registry, state_media):
+    """
+    Test that media theme is set when media item is flagged with ProvidesOwnTheme
+    """
+    # GIVEN: A mocked presentation service item that provides it's own theme, a mocked Registry.execute
+    #        and a slide controller with many mocks.
+    mocked_pres_item = MagicMock()
+    mocked_pres_item.name = 'mocked_presentation_item'
+    mocked_pres_item.is_command.return_value = True
+    mocked_pres_item.is_media.return_value = False
+    mocked_pres_item.requires_media.return_value = False
+    mocked_pres_item.is_image.return_value = False
+    mocked_pres_item.is_text.return_value = False
+    # Needed to perform the capability checks
+    mocked_pres_item.is_capable = lambda param: ServiceItem.is_capable(mocked_pres_item, param)
+    mocked_pres_item.from_service = False
+    mocked_pres_item.capabilities = [ItemCapabilities.ProvidesOwnTheme]
+    mocked_pres_item.get_frames.return_value = []
+    mocked_settings = MagicMock()
+    mocked_settings.value.return_value = True
+    mocked_main_window = MagicMock()
+    Registry().register('settings', mocked_settings)
+    Registry().register('main_window', mocked_main_window)
+    Registry().register('media_controller', MagicMock())
+    Registry().register('application', MagicMock())
+    slide_controller = SlideController(None)
+    slide_controller.service_item = mocked_pres_item
+    slide_controller.is_live = False
+    slide_controller.preview_widget = MagicMock()
+    slide_controller.preview_display = MagicMock()
+    slide_controller.enable_tool_bar = MagicMock()
+    slide_controller.slide_selected = MagicMock()
+    slide_controller.on_stop_loop = MagicMock()
+    slide_controller.info_label = MagicMock()
+    slide_controller._set_theme = MagicMock()
+    slide_controller.displays = [MagicMock()]
+    slide_controller.split = 0
+    slide_controller.type_prefix = 'test'
+    slide_controller._current_hide_mode = None
+
+    # WHEN: _process_item is called
+    slide_controller._process_item(mocked_pres_item, 0)
+
+    # THEN: _set_theme should be called once
+    slide_controller._set_theme.assert_called_once()
 
 
 def test_live_stolen_focus_shortcuts(settings):

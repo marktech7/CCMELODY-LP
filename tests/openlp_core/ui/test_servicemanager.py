@@ -690,11 +690,8 @@ def test_single_click_timeout_double(mocked_make_live, mocked_make_preview, sett
 
 @patch('openlp.core.ui.servicemanager.zipfile')
 @patch('openlp.core.ui.servicemanager.ServiceManager.save_file_as')
-@patch('openlp.core.ui.servicemanager.os')
 @patch('openlp.core.ui.servicemanager.shutil')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mocked_os, mocked_save_file_as,
-                                           mocked_zipfile, settings):
+def test_save_file_raises_permission_error(mocked_shutil, mocked_save_file_as, mocked_zipfile, settings):
     """
     Test that when a PermissionError is raised when trying to save a file, it is handled correctly
     """
@@ -709,8 +706,7 @@ def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mock
     service_manager.service_manager_list = MagicMock()
     mocked_save_file_as.return_value = False
     mocked_zipfile.ZipFile.return_value = MagicMock()
-    mocked_os.link.side_effect = PermissionError
-    mocked_shutil.copyfile.side_effect = PermissionError
+    mocked_shutil.move.side_effect = PermissionError
 
     # WHEN: The service is saved and a PermissionError is raised
     result = service_manager.save_file()
@@ -725,9 +721,7 @@ def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mock
 @patch('openlp.core.ui.servicemanager.os')
 @patch('openlp.core.ui.servicemanager.shutil')
 @patch('openlp.core.ui.servicemanager.len')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_large_file(mocked_temp_file, mocked_len, mocked_shutil, mocked_os, mocked_save_file_as,
-                              mocked_zipfile, registry):
+def test_save_file_large_file(mocked_len, mocked_shutil, mocked_os, mocked_save_file_as, mocked_zipfile, registry):
     """
     Test that when a file size size larger than a 32bit signed int is attempted to save, the progress bar
     should be provided a value that fits in a 32bit int (because it's passed to C++ as a 32bit unsigned int)
@@ -757,39 +751,6 @@ def test_save_file_large_file(mocked_temp_file, mocked_len, mocked_shutil, mocke
     # THEN: The "save_as" method is called to save the service
     assert result is True
     mocked_save_file_as.assert_not_called()
-
-
-@patch('openlp.core.ui.servicemanager.zipfile')
-@patch('openlp.core.ui.servicemanager.ServiceManager.save_file_as')
-@patch('openlp.core.ui.servicemanager.os')
-@patch('openlp.core.ui.servicemanager.shutil')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_falls_back_to_shutil(mocked_temp_file, mocked_shutil, mocked_os, mocked_save_file_as, mocked_zipfile,
-                                        registry):
-    """
-    Test that when a PermissionError is raised when trying to save a file, it is handled correctly
-    """
-    # GIVEN: A service manager, a service to save
-    mocked_main_window = MagicMock()
-    Registry().register('main_window', mocked_main_window)
-    Registry().register('application', MagicMock())
-    Registry().register('settings', MagicMock())
-    service_manager = ServiceManager(None)
-    service_manager._service_path = MagicMock()
-    service_manager._save_lite = False
-    service_manager.service_items = []
-    service_manager.service_theme = 'Default'
-    service_manager.service_manager_list = MagicMock()
-    mocked_save_file_as.return_value = False
-    mocked_zipfile.ZipFile.return_value = MagicMock()
-    mocked_os.link.side_effect = OSError
-
-    # WHEN: The service is saved and a PermissionError is raised
-    result = service_manager.save_file()
-
-    # THEN: The result is true
-    assert result is True
-    mocked_shutil.copyfile.assert_called_once()
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')

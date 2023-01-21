@@ -52,10 +52,11 @@ if CAN_RUN_TESTS:
         """
         This class logs changes in the title instance variable
         """
-        _title_assignment_list = []
+        _title_assignment_list = None
 
         def __init__(self, manager):
             WorshipCenterProImport.__init__(self, manager, file_paths=[])
+            self._title_assignment_list = []
 
         @property
         def title(self):
@@ -63,7 +64,10 @@ if CAN_RUN_TESTS:
 
         @title.setter
         def title(self, title):
-            self._title_assignment_list.append(title)
+            try:
+                self._title_assignment_list.append(title)
+            except AttributeError:
+                self._title_assignment_list = [title]
 
 
 RECORDSET_TEST_DATA = [DBTestRecord(1, 'TITLE', 'Amazing Grace'),
@@ -71,21 +75,27 @@ RECORDSET_TEST_DATA = [DBTestRecord(1, 'TITLE', 'Amazing Grace'),
                        DBTestRecord(1, 'CCLISONGID', '12345'),
                        DBTestRecord(1, 'COMMENTS', 'The original version'),
                        DBTestRecord(1, 'COPY', 'Public Domain'),
+                       DBTestRecord(1, 'SUBJECT', 'Grace'),
                        DBTestRecord(
                            1, 'LYRICS',
-                           'Amazing grace! How&crlf;sweet the sound&crlf;That saved a wretch like me!&crlf;'
+                           '<INTRO>Amazing grace! How&crlf;sweet the sound&crlf;That saved a wretch like me!&crlf;'
                            'I once was lost,&crlf;but now am found;&crlf;Was blind, but now I see.&crlf;&crlf;'
-                           '\'Twas grace that&crlf;taught my heart to fear,&crlf;And grace my fears relieved;&crlf;'
+                           '<PRECHORUS>\'Twas grace that&crlf;taught my heart to fear,&crlf;'
+                           'And grace my fears relieved;&crlf;'
                            'How precious did&crlf;that grace appear&crlf;The hour I first believed.&crlf;&crlf;'
-                           'Through many dangers,&crlf;toils and snares,&crlf;I have already come;&crlf;'
+                           '<CHORUS>Through many dangers,&crlf;toils and snares,&crlf;I have already come;&crlf;'
                            '\'Tis grace hath brought&crlf;me safe thus far,&crlf;'
-                           'And grace will lead me home.&crlf;&crlf;The Lord has&crlf;promised good to me,&crlf;'
+                           'And grace will lead me home.&crlf;&crlf;'
+                           '<REFRAIN>The Lord has&crlf;promised good to me,&crlf;'
                            'His Word my hope secures;&crlf;He will my Shield&crlf;and Portion be,&crlf;'
-                           'As long as life endures.&crlf;&crlf;Yea, when this flesh&crlf;and heart shall fail,&crlf;'
+                           'As long as life endures.&crlf;&crlf;'
+                           '<BRIDGE>Yea, when this flesh&crlf;and heart shall fail,&crlf;'
                            'And mortal life shall cease,&crlf;I shall possess,&crlf;within the veil,&crlf;'
-                           'A life of joy and peace.&crlf;&crlf;The earth shall soon&crlf;dissolve like snow,&crlf;'
+                           'A life of joy and peace.&crlf;&crlf;'
+                           '<TAG>The earth shall soon&crlf;dissolve like snow,&crlf;'
                            'The sun forbear to shine;&crlf;But God, Who called&crlf;me here below,&crlf;'
-                           'Shall be forever mine.&crlf;&crlf;When we\'ve been there&crlf;ten thousand years,&crlf;'
+                           'Shall be forever mine.&crlf;&crlf;'
+                           '<END>When we\'ve been there&crlf;ten thousand years,&crlf;'
                            'Bright shining as the sun,&crlf;We\'ve no less days to&crlf;sing God\'s praise&crlf;'
                            'Than when we\'d first begun.&crlf;&crlf;'),
                        DBTestRecord(2, 'TITLE', 'Beautiful Garden Of Prayer, The'),
@@ -105,32 +115,32 @@ RECORDSET_TEST_DATA = [DBTestRecord(1, 'TITLE', 'Amazing Grace'),
 SONG_TEST_DATA = [{'title': 'Amazing Grace',
                    'verses': [
                        ('Amazing grace! How\nsweet the sound\nThat saved a wretch like me!\nI once was lost,\n'
-                        'but now am found;\nWas blind, but now I see.'),
+                        'but now am found;\nWas blind, but now I see.', 'i'),
                        ('\'Twas grace that\ntaught my heart to fear,\nAnd grace my fears relieved;\nHow precious did\n'
-                        'that grace appear\nThe hour I first believed.'),
+                        'that grace appear\nThe hour I first believed.', 'p'),
                        ('Through many dangers,\ntoils and snares,\nI have already come;\n\'Tis grace hath brought\n'
-                        'me safe thus far,\nAnd grace will lead me home.'),
+                        'me safe thus far,\nAnd grace will lead me home.', 'c'),
                        ('The Lord has\npromised good to me,\nHis Word my hope secures;\n'
-                        'He will my Shield\nand Portion be,\nAs long as life endures.'),
+                        'He will my Shield\nand Portion be,\nAs long as life endures.', 'c'),
                        ('Yea, when this flesh\nand heart shall fail,\nAnd mortal life shall cease,\nI shall possess,\n'
-                        'within the veil,\nA life of joy and peace.'),
+                        'within the veil,\nA life of joy and peace.', 'b'),
                        ('The earth shall soon\ndissolve like snow,\nThe sun forbear to shine;\nBut God, Who called\n'
-                        'me here below,\nShall be forever mine.'),
+                        'me here below,\nShall be forever mine.', 'o'),
                        ('When we\'ve been there\nten thousand years,\nBright shining as the sun,\n'
-                        'We\'ve no less days to\nsing God\'s praise\nThan when we\'d first begun.')],
+                        'We\'ve no less days to\nsing God\'s praise\nThan when we\'d first begun.', 'e')],
                    'author': 'John Newton',
                    'comments': 'The original version',
                    'copyright': 'Public Domain'},
                   {'title': 'Beautiful Garden Of Prayer, The',
                    'verses': [
                        ('There\'s a garden where\nJesus is waiting,\nThere\'s a place that\nis wondrously fair,\n'
-                        'For it glows with the\nlight of His presence.\n\'Tis the beautiful\ngarden of prayer.'),
+                        'For it glows with the\nlight of His presence.\n\'Tis the beautiful\ngarden of prayer.', 'v'),
                        ('Oh, the beautiful garden,\nthe garden of prayer!\nOh, the beautiful\ngarden of prayer!\n'
-                        'There my Savior awaits,\nand He opens the gates\nTo the beautiful\ngarden of prayer.'),
+                        'There my Savior awaits,\nand He opens the gates\nTo the beautiful\ngarden of prayer.', 'v'),
                        ('There\'s a garden where\nJesus is waiting,\nAnd I go with my\nburden and care,\n'
-                        'Just to learn from His\nlips words of comfort\nIn the beautiful\ngarden of prayer.'),
+                        'Just to learn from His\nlips words of comfort\nIn the beautiful\ngarden of prayer.', 'v'),
                        ('There\'s a garden where\nJesus is waiting,\nAnd He bids you to come,\nmeet Him there;\n'
-                        'Just to bow and\nreceive a new blessing\nIn the beautiful\ngarden of prayer.')]}]
+                        'Just to bow and\nreceive a new blessing\nIn the beautiful\ngarden of prayer.', 'v')]}]
 
 
 @skipUnless(CAN_RUN_TESTS, 'Not Windows, skipping test')
@@ -233,11 +243,44 @@ class TestWorshipCenterProSongImport(TestCase):
                 verse_calls = song_data['verses']
                 add_verse_call_count += len(verse_calls)
                 for call in verse_calls:
-                    mocked_add_verse.assert_any_call(call, 'v')
+                    mocked_add_verse.assert_any_call(*call)
                 if 'author' in song_data:
                     mocked_parse_author.assert_any_call(song_data['author'])
                 if 'comments' in song_data:
                     mocked_add_comment.assert_any_call(song_data['comments'])
                 if 'copyright' in song_data:
                     mocked_add_copyright.assert_any_call(song_data['copyright'])
+                if 'subject' in song_data:
+                    mocked_add_copyright.assert_any_call(song_data['subject'])
             assert mocked_add_verse.call_count == add_verse_call_count, 'Incorrect number of calls made to add_verse'
+
+    def test_song_import_stop(self):
+        """Test that the song importer stops when the flag is set"""
+        with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
+                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc') as mocked_pyodbc, \
+                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
+            mocked_manager = MagicMock()
+            mocked_import_wizard = MagicMock()
+            mocked_add_verse = MagicMock()
+            mocked_parse_author = MagicMock()
+            mocked_add_comment = MagicMock()
+            mocked_add_copyright = MagicMock()
+            mocked_finish = MagicMock()
+            mocked_pyodbc.connect().cursor().fetchall.return_value = RECORDSET_TEST_DATA
+            mocked_translate.return_value = 'Translated Text'
+            importer = WorshipCenterProImportLogger(mocked_manager)
+            importer.import_source = 'import_source'
+            importer.import_wizard = mocked_import_wizard
+            importer.add_verse = mocked_add_verse
+            importer.parse_author = mocked_parse_author
+            importer.add_comment = mocked_add_comment
+            importer.add_copyright = mocked_add_copyright
+            importer.stop_import_flag = True
+            importer.finish = mocked_finish
+
+            # WHEN: Calling the do_import method
+            importer.do_import()
+
+            # THEN: No songs should have been imported
+            assert len(importer._title_assignment_list) == 0
+            mocked_finish.assert_not_called()

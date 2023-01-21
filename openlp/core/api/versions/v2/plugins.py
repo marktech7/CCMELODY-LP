@@ -24,7 +24,7 @@ import logging
 import re
 from flask import abort, request, Blueprint, jsonify
 
-from openlp.core.api.lib import login_required
+from openlp.core.api.lib import login_required, extract_request, old_success_response, old_auth
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib import transpose_lyrics
@@ -33,6 +33,8 @@ log = logging.getLogger(__name__)
 
 
 plugins = Blueprint('v2-plugins', __name__)
+alert_1_views = Blueprint('v1-alert-plugin', __name__)
+alert_2_views = Blueprint('v2-alert-plugin', __name__)
 
 
 def search(plugin_name, text):
@@ -172,3 +174,27 @@ def transpose(transpose_value):
             chord_slides.append({'chords': verse_list[i + 1].strip(), 'verse': verse_list[i]})
         return jsonify(chord_slides), 200
     abort(400)
+
+
+@alert_2_views.route('', methods=['POST'])
+@login_required
+def alert():
+    data = request.json
+    if not data:
+        abort(400)
+    alert = data.get('text', '')
+    if alert:
+        if Registry().get('plugin_manager').get_plugin_by_name('alerts').status == PluginStatus.Active:
+            Registry().get('alerts_manager').alerts_text.emit([alert])
+            return '', 204
+    abort(400)
+
+
+@alert_1_views.route('')
+@old_auth
+def old_alert():
+    alert = extract_request(request.args.get('data', ''), 'text')
+    if alert:
+        if Registry().get('plugin_manager').get_plugin_by_name('alerts').status == PluginStatus.Active:
+            Registry().get('alerts_manager').alerts_text.emit([alert])
+    return old_success_response()
