@@ -1323,7 +1323,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         win_id = QtWidgets.QApplication.desktop().winId()
         screen = QtWidgets.QApplication.primaryScreen()
         rect = ScreenList().current.display_geometry
-        win_image = screen.grabWindow(win_id, rect.x(), rect.y(), rect.width(), rect.height())
+        scaled_x = int(rect.x() / screen.devicePixelRatio())
+        scaled_y = int(rect.y() / screen.devicePixelRatio())
+        scaled_width = int(rect.width() / screen.devicePixelRatio())
+        scaled_height = int(rect.height() / screen.devicePixelRatio())
+        win_image = screen.grabWindow(win_id, scaled_x, scaled_y, scaled_width, scaled_height)
         win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
         return win_image
 
