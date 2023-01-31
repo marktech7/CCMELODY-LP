@@ -410,6 +410,11 @@ def main():
         # support dark mode on windows 10. This makes the titlebar dark, the rest is setup later
         # by calling set_windows_darkmode
         qt_args.extend(['-platform', 'windows:darkmode=1'])
+    no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
+                                     and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
+    if no_custom_factor_rounding:
+        # TODO Won't be needed on PyQt6
+        os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
@@ -419,6 +424,9 @@ def main():
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
+    if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
+        # TODO: Check won't be needed on PyQt6
+        application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     if args.portable:
         application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
