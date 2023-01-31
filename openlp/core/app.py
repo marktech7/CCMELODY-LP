@@ -423,6 +423,11 @@ def main():
                                                     'lib' / 'QtWebEngineCore.framework' / 'Versions' / '5' /
                                                     'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
                                                     'QtWebEngineProcess')
+    no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
+                                     and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
+    if no_custom_factor_rounding:
+        # TODO Won't be needed on PyQt6
+        os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
@@ -433,6 +438,9 @@ def main():
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
+    if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
+        # TODO: Check won't be needed on PyQt6
+        application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
     if args.portable:
         application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
