@@ -21,11 +21,13 @@
 ##########################################################################
 import logging
 
+import json
 import re
-from flask import abort, request, Blueprint, jsonify
+from flask import abort, request, Blueprint, jsonify, Response
 
 from openlp.core.api.lib import login_required, extract_request, old_success_response, old_auth
 from openlp.core.lib.plugin import PluginStatus
+from openlp.core.common.json import OpenLPJSONEncoder
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib import transpose_lyrics
 
@@ -143,6 +145,8 @@ def set_search_option(plugin):
 @plugins.route('/songs/transpose-live-item/<transpose_value>', methods=['GET'])
 def transpose(transpose_value):
     log.debug('songs/transpose-live-item called')
+    response_format = request.args.get('response_format', None, type=str)
+    return_service_item = response_format == 'service_item'
     if transpose_value:
         try:
             transpose_value = int(transpose_value)
@@ -169,9 +173,19 @@ def transpose(transpose_value):
         verse_list = re.split(r'---\[Verse:(.+?)\]---', transposed_lyrics)
         # remove first blank entry
         verse_list = verse_list[1:]
+        j = 0
         for i in range(0, len(verse_list), 2):
-            chord_slides.append({'chords': verse_list[i + 1].strip(), 'verse': verse_list[i]})
-        return jsonify(chord_slides), 200
+            if return_service_item:
+                live_item['slides'][j]['chords'] = verse_list[i + 1].strip()
+                j += 1
+            else:
+                chord_slides.append({'chords': verse_list[i + 1].strip(), 'verse': verse_list[i]})
+        if return_service_item:
+            live_item['chords_transposed'] = True
+            json_live_item = json.dumps(live_item, cls=OpenLPJSONEncoder)
+            return Response(json_live_item, mimetype='application/json')
+        else:
+            return jsonify(chord_slides), 200
     abort(400)
 
 
