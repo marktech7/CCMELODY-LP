@@ -393,8 +393,11 @@ def get_hidpi_mode(args, settings):
     return settings.value('advanced/hidpi mode')
 
 
-def apply_dpi_adjustments_stage_qt(hidpi_mode):
+def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
     if hidpi_mode == HiDPIMode.Off:
+        os.environ['QT_SCALE_FACTOR'] = '1'
+        os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '0'
+        os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '0'
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DisableHighDpiScaling)
     else:
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
@@ -500,7 +503,7 @@ def main():
     settings = Settings()
     # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
     hidpi_mode = get_hidpi_mode(args, settings)
-    apply_dpi_adjustments_stage_qt(hidpi_mode)
+    apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     # Instantiating QCoreApplication
     application = QtWidgets.QApplication(qt_args)
     application.setOrganizationName('OpenLP')
