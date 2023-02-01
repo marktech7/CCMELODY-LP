@@ -403,6 +403,8 @@ def get_hidpi_mode(args, settings):
 def apply_dpi_adjustments_stage_qt(hidpi_mode):
     if hidpi_mode == HiDPIMode.Off:
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DisableHighDpiScaling)
+    else:
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
 
 
 def apply_dpi_adjustments_stage_application(hidpi_mode, application):
@@ -429,6 +431,8 @@ def apply_dpi_adjustments_stage_application(hidpi_mode, application):
             # font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
             font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
             application.setFont(font)
+    if hidpi_mode != HiDPIMode.Off:
+        application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 
 def main():
@@ -536,7 +540,6 @@ def main():
     application = QtWidgets.QApplication(qt_args)
     application.setOrganizationName('OpenLP')
     application.setOrganizationDomain('openlp.org')
-    application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
     # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
     apply_dpi_adjustments_stage_application(hidpi_mode, application)
@@ -568,7 +571,6 @@ def main():
         else:
             set_webview_display_path(args.display_custom_path)
     Registry().set_flag('no_web_server', args.no_web_server)
-    Registry().register('command_line_args', args)
     # Upgrade settings.
     app.settings = settings
     application.setApplicationVersion(get_version()['version'])
