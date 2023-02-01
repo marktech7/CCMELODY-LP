@@ -394,11 +394,16 @@ def get_hidpi_mode(args, settings):
 
 
 def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
-    if hidpi_mode == HiDPIMode.Off:
+    if hidpi_mode == HiDPIMode.Windows_Unaware:
         os.environ['QT_SCALE_FACTOR'] = '1'
         os.environ['QT_AUTO_SCREEN_SCALE_FACTOR'] = '0'
         os.environ['QT_ENABLE_HIGHDPI_SCALING'] = '0'
-        QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DisableHighDpiScaling)
+        if is_win():
+            try:
+                platform_index = qt_args.index('-platform')
+                qt_args[platform_index + 1] += ' windows:dpiawareness=0'
+            except ValueError:
+                qt_args.extend(['-platform', 'windows:dpiawareness=0'])
     else:
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
     if hidpi_mode == HiDPIMode.Default:
@@ -427,10 +432,9 @@ def apply_dpi_adjustments_stage_application(hidpi_mode, application):
             # Increasing font size to match pixel ratio (Windows only)
             # TODO: Review on PyQt6 migration
             font = application.font()
-            # font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
             font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
             application.setFont(font)
-    if hidpi_mode != HiDPIMode.Off:
+    if hidpi_mode != HiDPIMode.Windows_Unaware:
         application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
 

@@ -155,8 +155,8 @@ class AdvancedTab(SettingsTab):
         self.misc_workaround_group_box.setTitle(translate('OpenLP.AdvancedTab', 'Miscellaneous Workarounds'))
         self.hidpi_mode_label.setText(translate('OpenLP.AdvancedTab', 'HiDPI Mode:'))
         self.hidpi_mode_combobox.setItemText(0, translate('OpenLP.AdvancedTab', 'Default'))
-        self.hidpi_mode_combobox.setItemText(1, translate('OpenLP.AdvancedTab', 'Off'))
-        self.hidpi_mode_combobox.setItemText(2, translate('OpenLP.AdvancedTab', 'Legacy'))
+        self.hidpi_mode_combobox.setItemText(1, translate('OpenLP.AdvancedTab', 'Legacy'))
+        self.hidpi_mode_combobox.setItemText(2, translate('OpenLP.AdvancedTab', 'DPI Unaware (Windows only)'))
         self.proxy_widget.retranslate_ui()
 
     def load(self):

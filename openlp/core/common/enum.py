@@ -152,16 +152,16 @@ class SongSearch(IntEnum):
 class HiDPIMode(IntEnum):
     Default = 0,
     # Legacy HiDPI mode is the default Qt behavior, without any OpenLP-specific HiDPI modifications
-    Legacy = 2,
-    # No HiDPI at all (will use raw screen pixels)
-    Off = 1
+    Legacy = 1,
+    # (Windows only) Make the OpenLP run unaware of any screen scaling.
+    Windows_Unaware = 2
 
     @staticmethod
     def parse(value):
         value = value.lower() if isinstance(value, str) else value
         if value in [0, '0', 'default']:
             return HiDPIMode.Default
-        elif value in [1, '1', 'off']:
-            return HiDPIMode.Off
-        elif value in [2, '2', 'legacy']:
+        elif value in [1, '1', 'legacy']:
             return HiDPIMode.Legacy
+        elif value in [2, '2', 'windows_unaware']:
+            return HiDPIMode.Windows_Unaware
