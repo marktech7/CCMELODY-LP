@@ -427,6 +427,12 @@ def main():
     if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
         # TODO: Check won't be needed on PyQt6
         application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+    if is_win() and application.devicePixelRatio() > 1.0:
+        # Increasing font size to match pixel ratio (Windows only)
+        font = application.font()
+        # font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
+        font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
+        application.setFont(font)
     if args.portable:
         application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
