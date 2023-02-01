@@ -101,6 +101,22 @@ class AdvancedTab(SettingsTab):
         self.allow_transparent_display_check_box.setObjectName('allow_transparent_display_check_box')
         self.display_workaround_layout.addWidget(self.allow_transparent_display_check_box)
         self.left_layout.addWidget(self.display_workaround_group_box)
+        # Misc Workarounds
+        self.misc_workaround_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.misc_workaround_group_box.setObjectName('misc_workaround_group_box')
+        self.misc_workaround_layout = QtWidgets.QVBoxLayout(self.misc_workaround_group_box)
+        self.misc_workaround_layout.setObjectName('misc_workaround_layout')
+        self.hidpi_mode_widget = QtWidgets.QWidget(self.misc_workaround_group_box)
+        self.hidpi_mode_layout = QtWidgets.QHBoxLayout(self.hidpi_mode_widget)
+        self.hidpi_mode_layout.setContentsMargins(0, 0, 0, 0)
+        self.hidpi_mode_label = QtWidgets.QLabel(self.hidpi_mode_widget)
+        self.hidpi_mode_combobox = QtWidgets.QComboBox(self.hidpi_mode_widget)
+        self.hidpi_mode_combobox.addItems(['', '', ''])
+        self.hidpi_mode_layout.addWidget(self.hidpi_mode_label)
+        self.hidpi_mode_layout.addWidget(self.hidpi_mode_combobox)
+        self.hidpi_mode_widget.setLayout(self.hidpi_mode_layout)
+        self.misc_workaround_layout.addWidget(self.hidpi_mode_widget)
+        self.left_layout.addWidget(self.misc_workaround_group_box)
         # Proxies
         self.proxy_widget = ProxyWidget(self.right_column)
         self.right_layout.addWidget(self.proxy_widget)
@@ -108,10 +124,11 @@ class AdvancedTab(SettingsTab):
         self.left_layout.addStretch()
         self.right_layout.addStretch()
         # Set up all the connections and things
-        self.alternate_rows_check_box.toggled.connect(self.on_alternate_rows_check_box_toggled)
+        self.alternate_rows_check_box.toggled.connect(self.on_restart_needed)
         self.data_directory_path_edit.pathChanged.connect(self.on_data_directory_path_edit_path_changed)
         self.data_directory_cancel_button.clicked.connect(self.on_data_directory_cancel_button_clicked)
         self.data_directory_copy_check_box.toggled.connect(self.on_data_directory_copy_check_box_toggled)
+        self.hidpi_mode_combobox.currentIndexChanged.connect(self.on_restart_needed)
 
     def retranslate_ui(self):
         """
@@ -135,6 +152,11 @@ class AdvancedTab(SettingsTab):
         self.alternate_rows_check_box.setText(translate('OpenLP.AdvancedTab', 'Use alternating row colours in lists'))
         self.allow_transparent_display_check_box.setText(
             translate('OpenLP.AdvancedTab', 'Disable display transparency'))
+        self.misc_workaround_group_box.setTitle(translate('OpenLP.AdvancedTab', 'Miscellaneous Workarounds'))
+        self.hidpi_mode_label.setText(translate('OpenLP.AdvancedTab', 'HiDPI Mode:'))
+        self.hidpi_mode_combobox.setItemText(0, translate('OpenLP.AdvancedTab', 'Default'))
+        self.hidpi_mode_combobox.setItemText(1, translate('OpenLP.AdvancedTab', 'Off'))
+        self.hidpi_mode_combobox.setItemText(2, translate('OpenLP.AdvancedTab', 'Legacy'))
         self.proxy_widget.retranslate_ui()
 
     def load(self):
@@ -156,6 +178,7 @@ class AdvancedTab(SettingsTab):
         # Don't allow data directory move if running portable.
         if self.settings.value('advanced/is portable'):
             self.data_directory_group_box.hide()
+        self.hidpi_mode_combobox.setCurrentIndex(self.settings.value('advanced/hidpi mode'))
 
     def save(self):
         """
@@ -168,6 +191,7 @@ class AdvancedTab(SettingsTab):
             self.settings.setValue('advanced/x11 bypass wm', self.x11_bypass_check_box.isChecked())
             self.settings_form.register_post_process('config_screen_changed')
         self.settings.setValue('advanced/alternate rows', self.alternate_rows_check_box.isChecked())
+        self.settings.setValue('advanced/hidpi mode', self.hidpi_mode_combobox.currentIndex())
         self.proxy_widget.save()
 
     def cancel(self):
@@ -262,13 +286,14 @@ class AdvancedTab(SettingsTab):
         self.data_directory_cancel_button.hide()
         self.new_data_directory_has_files_label.hide()
 
-    def on_alternate_rows_check_box_toggled(self, checked):
+    def on_restart_needed(self, _):
         """
         Notify user about required restart.
 
         :param checked: The state of the check box (boolean).
         """
-        QtWidgets.QMessageBox.information(self, translate('OpenLP.AdvancedTab', 'Restart Required'),
-                                          translate('OpenLP.AdvancedTab',
-                                                    'This change will only take effect once OpenLP '
-                                                    'has been restarted.'))
+        if (self.isVisible()):
+            QtWidgets.QMessageBox.information(self, translate('OpenLP.AdvancedTab', 'Restart Required'),
+                                              translate('OpenLP.AdvancedTab',
+                                                        'This change will only take effect once OpenLP '
+                                                        'has been restarted.'))

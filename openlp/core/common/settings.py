@@ -32,7 +32,7 @@ from tempfile import gettempdir
 from PyQt5 import QtCore, QtGui
 
 from openlp.core.common import SlideLimits, ThemeLevel
-from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, ImageThemeMode, LayoutStyle, \
+from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, HiDPIMode, ImageThemeMode, LayoutStyle, \
     DisplayStyle, LanguageSelection, SongSearch, PluginStatus
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
@@ -188,6 +188,7 @@ class Settings(QtCore.QSettings):
         'advanced/search as type': True,
         'advanced/ui_theme_name': UiThemes.Automatic,
         'advanced/delete service item confirmation': False,
+        'advanced/hidpi mode': HiDPIMode.Default,
         'alerts/font face': QtGui.QFont().family(),
         'alerts/font size': 40,
         'alerts/db type': 'sqlite',
@@ -511,6 +512,8 @@ class Settings(QtCore.QSettings):
             QtCore.QSettings.__init__(self, Settings.__file_path__, Settings.IniFormat)
         else:
             QtCore.QSettings.__init__(self, *args)
+
+    def init_default_shortcuts(self):
         # Add shortcuts here so QKeySequence has a QApplication instance to use.
         Settings.__default_settings__.update({
             'shortcuts/aboutItem': [QtGui.QKeySequence(QtCore.Qt.CTRL + QtCore.Qt.Key_F1)],

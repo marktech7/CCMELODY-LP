@@ -39,6 +39,7 @@ from PyQt5 import QtCore, QtGui, QtWebEngineWidgets, QtWidgets  # noqa
 
 from openlp.core.api.deploy import check_for_remote_update
 from openlp.core.common.applocation import AppLocation
+from openlp.core.common.enum import HiDPIMode
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.path import create_paths, resolve
@@ -388,6 +389,41 @@ def backup_if_version_changed(settings):
     return True
 
 
+def get_hidpi_mode(args, settings):
+    return settings.value('advanced/hidpi mode')
+
+
+def apply_dpi_adjustments_stage_qt(hidpi_mode):
+    if hidpi_mode == HiDPIMode.Off:
+        QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DisableHighDpiScaling)
+
+
+def apply_dpi_adjustments_stage_application(hidpi_mode, application):
+    """
+    Apply OpenLP DPI adjustments to bypass Windows and QT bugs (unless disabled on settings)
+
+    :param args: OpenLP startup arguments
+    :param settings: The settings object
+    :param stage: The stage of app
+    """
+    if hidpi_mode == HiDPIMode.Default:
+        no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
+                                         and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
+        if no_custom_factor_rounding:
+            # TODO Won't be needed on PyQt6
+            os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
+        if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
+            # TODO: Check won't be needed on PyQt6
+            application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
+        if is_win() and application.devicePixelRatio() > 1.0:
+            # Increasing font size to match pixel ratio (Windows only)
+            # TODO: Review on PyQt6 migration
+            font = application.font()
+            # font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
+            font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
+            application.setFont(font)
+
+
 def main():
     """
     The main function which parses command line options and then runs
@@ -410,31 +446,14 @@ def main():
         # support dark mode on windows 10. This makes the titlebar dark, the rest is setup later
         # by calling set_windows_darkmode
         qt_args.extend(['-platform', 'windows:darkmode=1'])
-    no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
-                                     and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
-    if no_custom_factor_rounding:
-        # TODO Won't be needed on PyQt6
-        os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
-    application = QtWidgets.QApplication(qt_args)
-    application.setOrganizationName('OpenLP')
-    application.setOrganizationDomain('openlp.org')
-    application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
-    application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
-    if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
-        # TODO: Check won't be needed on PyQt6
-        application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-    if is_win() and application.devicePixelRatio() > 1.0:
-        # Increasing font size to match pixel ratio (Windows only)
-        font = application.font()
-        # font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
-        font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
-        application.setFont(font)
+    QtCore.QCoreApplication.setOrganizationName('OpenLP')
+    QtCore.QCoreApplication.setOrganizationDomain('openlp.org')
     if args.portable:
-        application.setApplicationName('OpenLPPortable')
+        QtWidgets.QApplication.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
         # Get location OpenLPPortable.ini
         if args.portablepath:
@@ -447,7 +466,6 @@ def main():
         portable_path = resolve(portable_path)
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
-        set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
@@ -461,9 +479,8 @@ def main():
         portable_settings.setValue('advanced/is portable', True)
         portable_settings.sync()
     else:
-        application.setApplicationName('OpenLP')
+        QtWidgets.QApplication.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
-        set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     # Set the libvlc environment variable if we're frozen
     if getattr(sys, 'frozen', False) and is_win():
         # Path to libvlc and the plugins
@@ -475,6 +492,24 @@ def main():
     # Initialise the Registry
     Registry.create()
     settings = Settings()
+    # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
+    hidpi_mode = get_hidpi_mode(args, settings)
+    apply_dpi_adjustments_stage_qt(hidpi_mode)
+    # Instantiating QCoreApplication
+    application = QtWidgets.QApplication(qt_args)
+    application.setOrganizationName('OpenLP')
+    application.setOrganizationDomain('openlp.org')
+    application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
+    application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
+    # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
+    apply_dpi_adjustments_stage_application(hidpi_mode, application)
+    settings.init_default_shortcuts()
+    if args.portable:
+        application.setApplicationName('OpenLPPortable')
+        set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
+    else:
+        application.setApplicationName('OpenLP')
+        set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     Registry().register('settings', settings)
     log.info(f'Arguments passed {args}')
     # Need settings object for the threads.
@@ -483,6 +518,7 @@ def main():
     Registry().register('application-qt', application)
     Registry().register('application', app)
     Registry().set_flag('no_web_server', args.no_web_server)
+    Registry().register('command_line_args', args)
     # Upgrade settings.
     app.settings = settings
     application.setApplicationVersion(get_version()['version'])
