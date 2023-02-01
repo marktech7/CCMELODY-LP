@@ -398,6 +398,12 @@ def apply_dpi_adjustments_stage_qt(hidpi_mode):
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_DisableHighDpiScaling)
     else:
         QtWidgets.QApplication.setAttribute(QtCore.Qt.ApplicationAttribute.AA_EnableHighDpiScaling)
+    if hidpi_mode == HiDPIMode.Default:
+        no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
+                                         and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
+        if no_custom_factor_rounding:
+            # TODO Won't be needed on PyQt6
+            os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
 
 
 def apply_dpi_adjustments_stage_application(hidpi_mode, application):
@@ -411,9 +417,6 @@ def apply_dpi_adjustments_stage_application(hidpi_mode, application):
     if hidpi_mode == HiDPIMode.Default:
         no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                          and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
-        if no_custom_factor_rounding:
-            # TODO Won't be needed on PyQt6
-            os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
         if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
             # TODO: Check won't be needed on PyQt6
             application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
