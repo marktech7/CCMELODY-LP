@@ -410,7 +410,7 @@ def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
         no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                          and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
         if no_custom_factor_rounding:
-            # TODO Won't be needed on PyQt6
+            # TODO Won't be needed on PyQt6, PassThrough is the default
             os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
 
 
@@ -426,7 +426,7 @@ def apply_dpi_adjustments_stage_application(hidpi_mode, application):
         no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
                                          and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
         if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
-            # TODO: Check won't be needed on PyQt6
+            # TODO Won't be needed on PyQt6, PassThrough is the default
             application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
         if is_win() and application.devicePixelRatio() > 1.0:
             # Increasing font size to match pixel ratio (Windows only)
