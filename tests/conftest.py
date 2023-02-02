@@ -77,6 +77,7 @@ def settings(qapp, registry):
     Settings().setDefaultFormat(QtCore.QSettings.IniFormat)
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
+    sets.init_default_shortcuts()
     sets.setValue('themes/global theme', 'my_theme')
     registry.register('settings', sets)
     registry.register('settings_thread', sets)
