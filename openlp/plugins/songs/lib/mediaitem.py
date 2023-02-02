@@ -145,7 +145,7 @@ class SongMediaItem(MediaManagerItem):
                 translate('SongsPlugin.MediaItem', 'Search Lyrics...')),
             (SongSearch.Authors, UiIcons().user, SongStrings.Authors,
                 translate('SongsPlugin.MediaItem', 'Search Authors...')),
-            (SongSearch.Topics, UiIcons().theme, SongStrings.Topics,
+            (SongSearch.Topics, UiIcons().light_bulb, SongStrings.Topics,
                 translate('SongsPlugin.MediaItem', 'Search Topics...')),
             (SongSearch.Books, UiIcons().address, SongStrings.SongBooks,
                 translate('SongsPlugin.MediaItem', 'Search Songbooks...')),
