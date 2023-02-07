@@ -155,13 +155,3 @@ class HiDPIMode(IntEnum):
     Legacy = 1,
     # (Windows only) Make the OpenLP run unaware of any screen scaling.
     Windows_Unaware = 2
-
-    @staticmethod
-    def parse(value):
-        value = value.lower() if isinstance(value, str) else value
-        if value in [0, '0', 'default']:
-            return HiDPIMode.Default
-        elif value in [1, '1', 'legacy']:
-            return HiDPIMode.Legacy
-        elif value in [2, '2', 'windows_unaware']:
-            return HiDPIMode.Windows_Unaware

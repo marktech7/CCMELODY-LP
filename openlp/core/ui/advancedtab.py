@@ -292,7 +292,7 @@ class AdvancedTab(SettingsTab):
 
         :param checked: The state of the check box (boolean).
         """
-        if (self.isVisible()):
+        if self.isVisible():
             QtWidgets.QMessageBox.information(self, translate('OpenLP.AdvancedTab', 'Restart Required'),
                                               translate('OpenLP.AdvancedTab',
                                                         'This change will only take effect once OpenLP '

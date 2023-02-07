@@ -389,10 +389,6 @@ def backup_if_version_changed(settings):
     return True
 
 
-def get_hidpi_mode(args, settings):
-    return settings.value('advanced/hidpi mode')
-
-
 def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
     if hidpi_mode == HiDPIMode.Windows_Unaware:
         os.environ['QT_SCALE_FACTOR'] = '1'
@@ -506,7 +502,7 @@ def main():
     Registry.create()
     settings = Settings()
     # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
-    hidpi_mode = get_hidpi_mode(args, settings)
+    hidpi_mode = settings.value('advanced/hidpi mode')
     apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     # Instantiating QCoreApplication
     application = QtWidgets.QApplication(qt_args)
