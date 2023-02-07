@@ -396,10 +396,6 @@ def backup_if_version_changed(settings):
     return True
 
 
-def get_hidpi_mode(args, settings):
-    return settings.value('advanced/hidpi mode')
-
-
 def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
     if hidpi_mode == HiDPIMode.Windows_Unaware:
         os.environ['QT_SCALE_FACTOR'] = '1'
@@ -484,6 +480,7 @@ def main():
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
     init_webview_custom_schemes()
     application = QtWidgets.QApplication(qt_args)
+    application.setApplicationName('OpenLP')
     application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_UseHighDpiPixmaps, True)
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
@@ -497,7 +494,7 @@ def main():
         font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
         application.setFont(font)
     if args.portable:
-        QtWidgets.QApplication.setApplicationName('OpenLPPortable')
+        application.setApplicationName('OpenLPPortable')
         Settings.setDefaultFormat(Settings.IniFormat)
         # Get location OpenLPPortable.ini
         if args.portablepath:
@@ -510,6 +507,7 @@ def main():
         portable_path = resolve(portable_path)
         data_path = portable_path / 'Data'
         set_up_logging(portable_path / 'Other')
+        set_up_web_engine_cache(portable_path / 'Other' / 'web_cache')
         log.info('Running portable')
         portable_settings_path = data_path / 'OpenLP.ini'
         # Make this our settings file
@@ -523,8 +521,9 @@ def main():
         portable_settings.setValue('advanced/is portable', True)
         portable_settings.sync()
     else:
-        QtWidgets.QApplication.setApplicationName('OpenLP')
+        application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
+        set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     # Set the libvlc environment variable if we're frozen
     if getattr(sys, 'frozen', False):
         # Path to libvlc and the plugins
@@ -544,7 +543,7 @@ def main():
     Registry.create()
     settings = Settings()
     # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
-    hidpi_mode = get_hidpi_mode(args, settings)
+    hidpi_mode = settings.value('advanced/hidpi mode')
     apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     # Instantiating QCoreApplication
     application = QtWidgets.QApplication(qt_args)
