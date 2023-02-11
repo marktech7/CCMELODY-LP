@@ -25,7 +25,7 @@ import pytest
 from pathlib import Path
 from unittest.mock import call, patch
 
-from openlp.core.common import settings
+from openlp.core.common import settings as modsettings
 from openlp.core.common.settings import Settings, media_players_conv, upgrade_dark_theme_to_ui_theme
 from openlp.core.ui.style import UiThemes
 
@@ -185,7 +185,7 @@ def test_upgrade_single_setting(mocked_remove, mocked_setValue, mocked_value, mo
     local_settings.__setting_upgrade_99__ = [
         ('single/value', 'single/new value', [(str, '')])
     ]
-    settings.__version__ = 99
+    modsettings.__version__ = 99
     mocked_value.side_effect = [98, 10]
     mocked_contains.return_value = True
 
@@ -212,7 +212,7 @@ def test_upgrade_setting_value(mocked_remove, mocked_setValue, mocked_value, moc
     local_settings.__setting_upgrade_99__ = [
         ('values/old value', 'values/new value', [(True, 1)])
     ]
-    settings.__version__ = 99
+    modsettings.__version__ = 99
     mocked_value.side_effect = [98, 1]
     mocked_contains.return_value = True
 
@@ -239,7 +239,7 @@ def test_upgrade_multiple_one_invalid(mocked_remove, mocked_setValue, mocked_val
     local_settings.__setting_upgrade_99__ = [
         (['multiple/value 1', 'multiple/value 2'], 'single/new value', [])
     ]
-    settings.__version__ = 99
+    modsettings.__version__ = 99
     mocked_value.side_effect = [98, 10]
     mocked_contains.side_effect = [True, False]
 
@@ -294,6 +294,16 @@ def test_convert_value_setting_none_list():
 
     # THEN: The result should be an empty list
     assert result == [], 'The result should be an empty list'
+
+
+def test_convert_value_setting_utf8_json():
+    """Test the Settings._convert_value() method when a setting is utf8-encoded JSON"""
+    # GIVEN: A settings object
+    # WHEN: _convert_value() is run
+    result = Settings()._convert_value('{"key": "value"}'.encode('utf8'), None)
+
+    # THEN: The result should be a Path object
+    assert isinstance(result, dict), 'The result should be a dictionary'
 
 
 def test_convert_value_setting_json_Path():

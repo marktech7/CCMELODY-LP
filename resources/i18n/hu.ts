@@ -703,12 +703,12 @@ Folytatható?</translation>
         <translation>vége</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="713"/>
         <source>No Book Found</source>
         <translation>Nincs ilyen könyv</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="713"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
         <translation>A kért könyv nem található ebben a Bibliában. A könyv neve helyesen lett írva?</translation>
     </message>
@@ -1093,38 +1093,38 @@ Nincs lehetőség a könyvnevek módosítására.</translation>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="643"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="647"/>
         <source>Registering Bible and loading books...</source>
         <translation>Biblia regisztrálása és a könyvek betöltése…</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="659"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="663"/>
         <source>Registering Language...</source>
         <translation>Nyelv regisztrálása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="666"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="670"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>{book} importálása… </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="813"/>
         <source>Download Error</source>
         <translation>Letöltési hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="813"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
         <translation>Probléma történt a kijelölt versek letöltésekor. Javasolt az internetkapcsolat ellenőrzése, továbbá, ha a hiba nem oldódik meg, a hiba bejelentése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
         <source>Parse Error</source>
         <translation>Feldolgozási hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
         <translation>Probléma történt a kijelölt versek kibontásakor. Ha a hiba nem oldódik meg, javasolt a hiba bejelentése.</translation>
     </message>
@@ -2427,7 +2427,7 @@ Más képekkel kellene helyettesíteni ezeket?</translation>
 <context>
     <name>MediaPlugin.VlcPlayer</name>
     <message>
-        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="128"/>
+        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="129"/>
         <source>The VLC arguments are invalid.</source>
         <translation>A VLC argumentumok érvénytelenek.</translation>
     </message>
@@ -3973,402 +3973,392 @@ A „&apos;{finish_button}” gombra kattintva megszakad a folyamat, de bármiko
         <translation>magyar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="302"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="303"/>
         <source>General</source>
         <translation>Általános</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="359"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
         <source>&amp;File</source>
         <translation>&amp;Fájl</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
         <source>&amp;Import</source>
         <translation>&amp;Importálás</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
         <source>&amp;Export</source>
         <translation>&amp;Exportálás</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
         <source>&amp;Recent Services</source>
         <translation>&amp;Legutóbbi sorrendek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
         <source>&amp;View</source>
         <translation>&amp;Nézet</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
         <source>&amp;Layout Presets</source>
         <translation>Elrendezések</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="366"/>
         <source>&amp;Tools</source>
         <translation>&amp;Eszközök</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="366"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="367"/>
         <source>&amp;Settings</source>
         <translation>&amp;Beállítások</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
         <source>&amp;Language</source>
         <translation>&amp;Nyelv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="368"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
         <source>&amp;Help</source>
         <translation>&amp;Súgó</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
         <source>Library</source>
         <translation>Könyvtár</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
         <source>Service</source>
         <translation>Sorrend</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
         <source>Themes</source>
         <translation>Témák</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="373"/>
         <source>Projector Controller</source>
         <translation>Projektorkezelő</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="373"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="374"/>
         <source>&amp;New Service</source>
         <translation>Ú&amp;j sorrend</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="376"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="377"/>
         <source>&amp;Open Service</source>
         <translation>Sorrend &amp;megnyitása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="378"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="379"/>
         <source>Open an existing service.</source>
         <translation>Meglévő sorrend megnyitása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="379"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="380"/>
         <source>&amp;Save Service</source>
         <translation>Sorrend menté&amp;se</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="381"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="382"/>
         <source>Save the current service to disk.</source>
         <translation>Aktuális sorrend mentése lemezre.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="382"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="383"/>
         <source>Save Service &amp;As...</source>
         <translation>S&amp;orrend mentése másként</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="383"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="384"/>
         <source>Save Service As</source>
         <translation>Sorrend mentése másként</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="384"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="385"/>
         <source>Save the current service under a new name.</source>
         <translation>Az aktuális sorrend más néven való mentése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
         <source>Print the current service.</source>
         <translation>Az aktuális sorrend nyomtatása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
         <source>E&amp;xit</source>
         <translation>&amp;Kilépés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="390"/>
         <source>Close OpenLP - Shut down the program.</source>
         <translation>OpenLP bezárása ‒ a program kikapcsolása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
         <source>&amp;Theme</source>
         <translation>&amp;Téma</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
         <source>Configure &amp;Shortcuts...</source>
         <translation>&amp;Gyorsbillentyűk beállítása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
         <source>Configure &amp;Formatting Tags...</source>
         <translation>Formázó &amp;címkék beállítása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
         <source>&amp;Configure OpenLP...</source>
         <translation>OpenLP &amp;beállítása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="398"/>
         <source>Export settings to a *.config file.</source>
         <translation>Beállítások mentése egy *.config fájlba.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="403"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
         <source>Settings</source>
         <translation>Beállítások</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="400"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="401"/>
         <source>Import settings from a *.config file previously exported from this or another machine.</source>
         <translation>A beállítások betöltése egy előzőleg ezen vagy egy másik gépen exportált *.config fájlból.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
         <source>&amp;Projector Controller</source>
         <translation>&amp;Projektorkezelő</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
         <source>Hide or show Projectors.</source>
         <translation>Projektorok megjelenítése vagy elrejtése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="407"/>
         <source>Toggle visibility of the Projectors.</source>
         <translation>Projektorok láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="408"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
         <source>L&amp;ibrary</source>
         <translation>&amp;Könyvtár</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
         <source>Hide or show the Library.</source>
         <translation>Könyvtár megjelenítése vagy elrejtése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
         <source>Toggle the visibility of the Library.</source>
         <translation>Könyvtár láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="412"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
         <source>&amp;Themes</source>
         <translation>&amp;Témák</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="414"/>
         <source>Hide or show themes</source>
         <translation>Témák megjelenítése vagy elrejtése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="414"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
         <source>Toggle visibility of the Themes.</source>
         <translation>Témák láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
         <source>&amp;Service</source>
         <translation>&amp;Sorrend</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="418"/>
         <source>Hide or show Service.</source>
         <translation>Sorrend megjelenítése vagy elrejtése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="418"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="419"/>
         <source>Toggle visibility of the Service.</source>
         <translation>Sorrend láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
         <source>&amp;Preview</source>
         <translation>&amp;Előnézet</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
         <source>Hide or show Preview.</source>
         <translation>Előnézet megjelenítése vagy elrejtése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
         <source>Toggle visibility of the Preview.</source>
         <translation>Előnézet láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
         <source>Li&amp;ve</source>
         <translation>Élő adás</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
         <source>Hide or show Live</source>
         <translation>Élő adás megjelenítése vagy elrejtése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
         <source>L&amp;ock visibility of the panels</source>
         <translation>Panelek láthatóságának zárolása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
         <source>Lock visibility of the panels.</source>
         <translation>Panelek láthatóságának &amp;zárolása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
         <source>Toggle visibility of the Live.</source>
         <translation>Élő adás láthatóságának átváltása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="430"/>
         <source>&amp;Manage Plugins</source>
         <translation>&amp;Bővítmények kezelése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="430"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
         <source>You can enable and disable plugins from here.</source>
         <translation>A bővítményeket lehet engedélyezni vagy letiltani itt.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
         <source>&amp;About</source>
         <translation>&amp;Névjegy</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="434"/>
         <source>More information about OpenLP.</source>
         <translation>További információ az OpenLP-ről</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="434"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Felhasználói kézikönyv</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="436"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="437"/>
         <source>Jump to the search box of the current active plugin.</source>
         <translation>Ugrás az aktuális bővítmény keresési mezőjére.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="438"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="439"/>
         <source>&amp;Web Site</source>
         <translation>&amp;Weboldal</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="441"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="442"/>
         <source>Set the interface language to {name}</source>
         <translation>A felhasználói felület nyelvének átváltása erre: {name}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="443"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
         <source>&amp;Autodetect</source>
         <translation>&amp;Automatikus felismerés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
         <source>Use the system language, if available.</source>
         <translation>Rendszernyelv használata, ha elérhető.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="446"/>
         <source>Add &amp;Tool...</source>
         <translation>&amp;Eszköz hozzáadása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="446"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="447"/>
         <source>Add an application to the list of tools.</source>
         <translation>Egy alkalmazás hozzáadása az eszközök listához.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
         <source>Open &amp;Data Folder...</source>
         <translation>&amp;Adatmappa megnyitása…</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="450"/>
         <source>Open the folder where songs, bibles and other data resides.</source>
         <translation>A dalokat, bibliákat és egyéb adatokat tartalmazó mappa megnyitása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
         <source>Re-run First Time Wizard</source>
         <translation>Első indítás tündér</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
         <source>Re-run the First Time Wizard, importing songs, Bibles and themes.</source>
         <translation>Első indítás tündér újbóli futtatása dalok, bibliák, témák importálásához.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
         <source>Update Theme Images</source>
         <translation>Témaképek frissítése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
         <source>Update the preview images for all themes.</source>
         <translation>Összes téma előnézeti képének frissítése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
         <source>&amp;Show all</source>
         <translation>&amp;Minden megjelenítése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
         <source>Reset the interface back to the default layout and show all the panels.</source>
         <translation>A felület alapállapotba állítása és minden panel megjelenítése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="460"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="461"/>
         <source>&amp;Setup</source>
         <translation>&amp;Szerkesztés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="461"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
         <source>Use layout that focuses on setting up the Service.</source>
         <translation>Olyan megjelenés, amely a sorrend összeállítására fókuszál.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="463"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="464"/>
         <source>&amp;Live</source>
         <translation>&amp;Élő adás</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="464"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="465"/>
         <source>Use layout that focuses on Live.</source>
         <translation>Olyan megjelenés, amely az élő adásra fókuszál.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="537"/>
-        <source>Waiting for some things to finish...</source>
-        <translation>Várakozás néhány művelet befejeződésére…</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="539"/>
-        <source>Please Wait</source>
-        <translation>Türelem</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="618"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="630"/>
         <source>Version {new} of OpenLP is now available for download (you are currently running version {current}). 
 
 You can download the latest version from https://openlp.org/.</source>
@@ -4377,29 +4367,29 @@ You can download the latest version from https://openlp.org/.</source>
 A legfrissebb verzió a https://openlp.org/ oldalról szerezhető be.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="621"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="633"/>
         <source>OpenLP Version Updated</source>
         <translation>OpenLP verziófrissítés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="632"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="644"/>
         <source>Version {version} of the web remote is now available for download.
 To download this version, go to the Remote settings and click the Upgrade button.</source>
         <translation>A webes távirányító {version} verziója letölthető.
 A távirányító beállításai között a Frissítés gombbal lehet letölteni az új verziót.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="635"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="647"/>
         <source>New Web Remote Version Available</source>
         <translation>Új verzió érhető el a webes távirányítóból</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="698"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="710"/>
         <source>Re-run First Time Wizard?</source>
         <translation>Újra futtatható az Első indítás tündér?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="698"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="710"/>
         <source>Are you sure you want to re-run the First Time Wizard?
 
 Re-running this wizard may make changes to your current OpenLP configuration and possibly add songs to your existing songs list and change your default theme.</source>
@@ -4408,22 +4398,22 @@ Re-running this wizard may make changes to your current OpenLP configuration and
 A tündér újbóli futtatása során megváltozhatnak az OpenLP aktuális beállításai, az alapértelmezett téma és új dalok adhatók hozzá a jelenlegi dallistákhoz.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="743"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="755"/>
         <source>OpenLP Main Display Blanked</source>
         <translation>Elsötétített OpenLP fő képernyő</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="743"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="755"/>
         <source>The Main Display has been blanked out</source>
         <translation>A fő képernyő el lett sötétítve</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="848"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="860"/>
         <source>Import settings?</source>
         <translation>Beállítások betöltése?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="848"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="860"/>
         <source>Are you sure you want to import settings?
 
  Importing settings will make permanent changes to your current OpenLP configuration.
@@ -4436,24 +4426,24 @@ A beállítások betöltése tartós változásokat okoz a OpenLP jelenlegi beá
 Hibás beállítások betöltése rendellenes működést okozhat, vagy akár az OpenLP abnormális megszakadását is.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="947"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
         <source>Import settings</source>
         <translation>Importálási beállítások</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="971"/>
         <source>OpenLP Settings (*.conf)</source>
         <translation>OpenLP beállítások (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="894"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="906"/>
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
         <translation>Az OpenLP nem tud beállításokat az OpenLP egy újabb verziójából importálni.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="907"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="919"/>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
@@ -4462,73 +4452,83 @@ Processing has terminated and no changes have been made.</source>
 A folyamat megszakad és a változások nem lesznek elmentve.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="947"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
         <source>OpenLP will now close.  Imported settings will be applied the next time you start OpenLP.</source>
         <translation>Az OpenLP most leáll. Az importált beállítások az OpenLP következő indításakor lépnek érvénybe.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="971"/>
         <source>Export Settings File</source>
         <translation>Exportált beállítófájl</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="972"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="984"/>
         <source>Export setting error</source>
         <translation>Exportbeállítási hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="972"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="984"/>
         <source>An error occurred while exporting the settings: {err}</source>
         <translation>Hiba történt a beállítás exportálása közben: {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1028"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1040"/>
         <source>Screen setup has changed</source>
         <translation>A képernyők beállítása módosítva lett</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1028"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1040"/>
         <source>The screen setup has changed. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
         <translation>A képernyők beállítás módosításra került. Az OpenLP megkísérli automatikusan kiválasztani a vetítési képernyőt, de valószínűleg frissíteni kell a beállításokat.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1072"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1084"/>
         <source>Exit OpenLP</source>
         <translation>OpenLP bezárása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1072"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1084"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Valóban bezárható az OpenLP?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1079"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1091"/>
         <source>&amp;Exit OpenLP</source>
         <translation>OpenLP be&amp;zárása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1166"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1100"/>
+        <source>Please Wait</source>
+        <translation>Türelem</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1100"/>
+        <source>Waiting for some things to finish...</source>
+        <translation>Várakozás néhány művelet befejeződésére…</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1180"/>
         <source>Default Theme: {theme}</source>
         <translation>Alapértelmezett téma: {theme}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1352"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1366"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Lista törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1352"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1366"/>
         <source>Clear the list of recent files.</source>
         <translation>Törli a legutóbbi fájlok listáját.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1433"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1447"/>
         <source>Copying OpenLP data to new data directory location - {path} - Please wait for copy to finish</source>
         <translation>Az OpenLP adatok új helyre való másolása folyamatban ‒ {path} ‒ Türelem a folyamat befejeződéséig</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1441"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1455"/>
         <source>OpenLP Data directory copy failed
 
 {err}</source>
@@ -4537,7 +4537,7 @@ A folyamat megszakad és a változások nem lesznek elmentve.</translation>
 {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1443"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1457"/>
         <source>New Data Directory Error</source>
         <translation>Új adatmappahiba</translation>
     </message>
@@ -6018,217 +6018,217 @@ Az utótag nem támogatott</translation>
         <translation>Lejátszási idő:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="148"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="147"/>
         <source>Load an existing service.</source>
         <translation>Egy meglévő szolgálati sorrend betöltése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="152"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="151"/>
         <source>Save this service.</source>
         <translation>Sorrend mentése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="162"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="161"/>
         <source>Select a theme for the service.</source>
         <translation>Ki kell jelölni egy témát a sorrendhez.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="185"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="184"/>
         <source>Move to &amp;top</source>
         <translation>Mozgatás &amp;felülre</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="185"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="184"/>
         <source>Move item to the top of the service.</source>
         <translation>Elem mozgatása a sorrend elejére.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="190"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="189"/>
         <source>Move &amp;up</source>
         <translation>Mozgatás f&amp;eljebb</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="190"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="189"/>
         <source>Move item up one position in the service.</source>
         <translation>Elem mozgatása a sorrendben eggyel feljebb.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="195"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="194"/>
         <source>Move &amp;down</source>
         <translation>Mozgatás &amp;lejjebb</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="195"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="194"/>
         <source>Move item down one position in the service.</source>
         <translation>Elem mozgatása a sorrendben eggyel lejjebb.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="200"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="199"/>
         <source>Move to &amp;bottom</source>
         <translation>Mozgatás &amp;alulra</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="200"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="199"/>
         <source>Move item to the end of the service.</source>
         <translation>Elem mozgatása a sorrend végére.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="206"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="205"/>
         <source>&amp;Delete From Service</source>
         <translation>&amp;Törlés a sorrendből</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="206"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="205"/>
         <source>Delete the selected item from the service.</source>
         <translation>Kijelölt elem törlése a sorrendből.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="212"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="211"/>
         <source>&amp;Expand all</source>
         <translation>Mind &amp;kibontása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="212"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="211"/>
         <source>Expand all the service items.</source>
         <translation>Minden sorrendben lévő elem kibontása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="217"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="216"/>
         <source>&amp;Collapse all</source>
         <translation>Mind össze&amp;csukása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="217"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="216"/>
         <source>Collapse all the service items.</source>
         <translation>Minden sorrendben lévő elem összecsukása.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="223"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="222"/>
         <source>Go Live</source>
         <translation>Élő adásba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="223"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="222"/>
         <source>Send the selected item to Live.</source>
         <translation>A kijelölt elem élő adásba küldése.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="241"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="240"/>
         <source>&amp;Add New Item</source>
         <translation>Új elem &amp;hozzáadása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="243"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="242"/>
         <source>&amp;Add to Selected Item</source>
         <translation>&amp;Hozzáadás a kijelölt elemhez</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="247"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="246"/>
         <source>&amp;Edit Item</source>
         <translation>&amp;Elem szerkesztése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="249"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="248"/>
         <source>&amp;Rename...</source>
         <translation>Át&amp;nevezés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="252"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="251"/>
         <source>&amp;Reorder Item</source>
         <translation>Elem újra&amp;rendezése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="255"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="254"/>
         <source>&amp;Notes</source>
         <translation>&amp;Jegyzetek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="258"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="257"/>
         <source>&amp;Start Time</source>
         <translation>&amp;Kezdő időpont</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="265"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="264"/>
         <source>Create New &amp;Custom Slide</source>
         <translation>Új &amp;speciális dia létrehozása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="272"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="271"/>
         <source>&amp;Auto play slides</source>
         <translation>Automatikus diavetítés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="276"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="275"/>
         <source>Auto play slides &amp;Loop</source>
         <translation>Automatikus &amp;ismétlődő diavetítés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="281"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="280"/>
         <source>Auto play slides &amp;Once</source>
         <translation>Automatikus &amp;egyszeri diavetítés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="933"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="940"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Diák közötti késleltetés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="292"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="291"/>
         <source>Show &amp;Preview</source>
         <translation>&amp;Előnézet megjelenítése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="297"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="296"/>
         <source>&amp;Change Item Theme</source>
         <translation>Elem témájának &amp;módosítása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="364"/>
         <source>Delete item from service</source>
         <translation>Elem törlése a sorrendből</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="364"/>
         <source>Are you sure you want to delete this item from the service?</source>
         <translation>Valóban törölhető ez az elem a sorrendből?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="372"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="371"/>
         <source>&amp;Delete item</source>
         <translation>Elem &amp;törlése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="395"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="394"/>
         <source>Untitled Service</source>
         <translation>Névtelen sorrend</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="499"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="498"/>
         <source>Open File</source>
         <translation>Fájl megnyitása</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="499"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="498"/>
         <source>OpenLP Service Files (*.osz *.oszl)</source>
         <translation>OpenLP sorrendfájlok (*.osz *.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="513"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="512"/>
         <source>Modified Service</source>
         <translation>Módosított sorrend</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="513"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="512"/>
         <source>The current service has been modified. Would you like to save this service?</source>
         <translation>Az aktuális sorrend módosult. Legyen elmentve?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="661"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="660"/>
         <source>Service File(s) Missing</source>
         <translation>Hiányzó sorrendfájl</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="662"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="661"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
@@ -6237,12 +6237,12 @@ These files will be removed if you continue to save.</source>
 Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="712"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="708"/>
         <source>Error Saving File</source>
         <translation>Állománymentési hiba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="712"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="708"/>
         <source>There was an error saving your file.
 
 {error}</source>
@@ -6251,82 +6251,82 @@ Ezen fájlok el lesznek távolítva, ha folytatódik a mentés.</translation>
 {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="749"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="745"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
         <translation>OpenLP sorrendfájlok ‒ egyszerű (*.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="750"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="746"/>
         <source>OpenLP Service Files (*.osz)</source>
         <translation>OpenLP sorrend fájlok (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="847"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="854"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
         <translation>A sorrendfájlt nem lehet betölteni, mivel vagy sérült, vagy elérhetetlen vagy nem érvényes OpenLP2 vagy OpenLP 3 sorrendfájl: {file_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="944"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="951"/>
         <source>&amp;Auto Start - active</source>
         <translation>&amp;Automatikus indítás ‒ aktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="948"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
         <source>&amp;Auto Start - inactive</source>
         <translation>&amp;Automatikus indítás ‒ inaktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1025"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1032"/>
         <source>Input delay</source>
         <translation>Bemeneti késleltetés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1025"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1032"/>
         <source>Delay between slides in seconds.</source>
         <translation>Diák közötti késleltetés másodpercben.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1356"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1363"/>
         <source>Edit</source>
         <translation>Szerkesztés</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1357"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1364"/>
         <source>Service copy only</source>
         <translation>A sorrend csak másolható</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1360"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1367"/>
         <source>Slide theme</source>
         <translation>Dia témája</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1364"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1371"/>
         <source>Notes</source>
         <translation>Jegyzetek</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1615"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1622"/>
         <source>Missing Display Handler</source>
         <translation>Hiányzó képernyőkezelő</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1548"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1555"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
         <translation>Az elemet nem lehet megjeleníteni, mert nincs kezelő, amely megjelenítené</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1615"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1622"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>Az elemet nem lehet megjeleníteni, mert a bővítmény, amely kezelné, hiányzik vagy inaktív</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1640"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1647"/>
         <source>Rename item title</source>
         <translation>Elem címének átnevezése</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1640"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1647"/>
         <source>Title:</source>
         <translation>Cím:</translation>
     </message>
@@ -7659,7 +7659,7 @@ Sérült, elérhetetlen vagy nem érvényes témafájl.</translation>
         <translation>CCLI dal száma:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
         <source>Create a new service.</source>
         <translation>Új szolgálati sorrend létrehozása.</translation>
     </message>
@@ -8209,12 +8209,12 @@ Ez a példány bezáródik.</translation>
         <translation>&amp;Függőleges igazítás:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="463"/>
         <source>Do not show this message again</source>
         <translation>Ne jelenjen meg ismét ez az üzenet</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
         <source>You already have a blank new service.
 Add some items to it then press Save</source>
         <translation>Létrejött egy üres sorrend.
@@ -8896,7 +8896,7 @@ has been successfully created. </source>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songimportform.py" line="351"/>
         <source>Save Error File</source>
-        <translation type="unfinished"/>
+        <translation>Hibafájl mentése</translation>
     </message>
 </context>
 <context>

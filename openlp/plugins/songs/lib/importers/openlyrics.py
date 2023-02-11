@@ -84,11 +84,32 @@ class OpenLyricsImport(SongImport):
         """
         Remove leading and trailing whitespace from the 'text' and 'tail' attributes of an etree._Element object
         """
-        is_chord_after_tail = False
         if next_subelem is not None:
+            # Trimming whitespaces after br tags.
+            # We can't trim the spaces before 'chord' tags
+            is_chord_after_tail = False
             if next_subelem.tag.endswith('chord'):
                 is_chord_after_tail = True
-        if elem.text is not None:
-            elem.text = elem.text.strip()
-        if elem.tail is not None and not is_chord_after_tail:
-            elem.tail = elem.tail.strip()
+            if elem.text is not None:
+                elem.text = elem.text.strip()
+            if elem.tail is not None and not is_chord_after_tail:
+                elem.tail = elem.tail.strip()
+        else:
+            has_children = bool(elem.getchildren())
+            if elem.text is not None:
+                if has_children:
+                    # Can only strip on left as there's children inside
+                    elem.text = elem.text.lstrip()
+                else:
+                    elem.text = elem.text.strip()
+            if elem.tail is not None:
+                if has_children:
+                    # Can only strip on right as there's children inside
+                    elem.tail = elem.tail.rstrip()
+                else:
+                    elem.tail = elem.tail.strip()
+            elif has_children:
+                # Can only strip on right as it's the last tag and there's no tail
+                last_elem = elem.getchildren()[-1]
+                if last_elem.tail is not None:
+                    last_elem.tail = last_elem.tail.rstrip()

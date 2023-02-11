@@ -201,3 +201,25 @@ class TestOpenLyricsImport(TestCase, TestMixin):
         # THEN: The song should preserve spaces before chords
         import_content = importer.open_lyrics.xml_to_song.call_args[0][0]
         assert import_content == expected_content
+
+    def test_lines_spacing_is_correctly_trimmed(self):
+        """
+        Test if lines' leading space are trimmed correctly
+        """
+        # GIVEN: One OpenLyrics XML with the <lines> tag (Amazing_Grace_4_chords.xml)
+        mocked_manager = MagicMock()
+        mocked_import_wizard = MagicMock()
+        importer = OpenLyricsImport(mocked_manager, file_paths=[])
+        importer.import_wizard = mocked_import_wizard
+        expected_content_file = TEST_PATH / 'Amazing_Grace_4_chords_result.xml'
+        expected_content = expected_content_file.read_text()
+
+        # WHEN: Importing the file not having those whitespaces...
+        importer.import_source = [TEST_PATH / 'Amazing_Grace_4_chords.xml']
+        importer.open_lyrics = MagicMock()
+        importer.open_lyrics.xml_to_song = MagicMock()
+        importer.do_import()
+
+        # THEN: The song should be correctly trimmed on start and end
+        import_content = importer.open_lyrics.xml_to_song.call_args[0][0]
+        assert import_content == expected_content

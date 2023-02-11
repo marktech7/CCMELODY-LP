@@ -462,7 +462,7 @@ def test_fix_font_bold_not_windows(mocked_is_win, display_window_env, mock_setti
 
 
 @patch('openlp.core.display.window.is_win')
-def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings, registry):
+def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings):
     """
     Test that a font with a foundry name in it has the foundry removed
     """

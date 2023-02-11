@@ -18,6 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from collections import namedtuple
 from pathlib import Path
 from unittest.mock import MagicMock
 
@@ -102,14 +103,10 @@ def test_plugin_songs_transpose_returns_plugin_exception(flask_client, settings)
     assert res.status_code == 400
 
 
-def test_plugin_songs_transpose_wont_call_renderer(flask_client, settings):
-    """
-    Tests whether the transpose endpoint won't tries to use any Renderer method; the endpoint needs to operate using
-    already-primed caches (as that's what the /live-item endpoint does); also using Renderer from outside the Qt loop
-    causes it to crash.
+TransposeMockReturn = namedtuple('TransposeMockReturn', ['renderer_mock_any_attr'])
 
-    See https://gitlab.com/openlp/openlp/-/merge_requests/516 for some background on this.
-    """
+
+def _init_transpose_mocks():
     # GIVEN: A mocked plugin_manager, live_controller, renderer and a real service item with the internal slide cache
     # filled
     Registry().register('plugin_manager', MagicMock())
@@ -139,8 +136,38 @@ def test_plugin_songs_transpose_wont_call_renderer(flask_client, settings):
     renderer_mock_any_attr.reset_mock()
     renderer_mock.format_slides.reset_mock()
 
+    return TransposeMockReturn(renderer_mock_any_attr=renderer_mock_any_attr)
+
+
+def test_plugin_songs_transpose_wont_call_renderer(flask_client, settings):
+    """
+    Tests whether the transpose endpoint won't tries to use any Renderer method; the endpoint needs to operate using
+    already-primed caches (as that's what the /live-item endpoint does); also using Renderer from outside the Qt loop
+    causes it to crash.
+
+    See https://gitlab.com/openlp/openlp/-/merge_requests/516 for some background on this.
+    """
+    # GIVEN: The default mocks for Transpose API
+    mocks = _init_transpose_mocks()
+
     # WHEN: The endpoint is called
     flask_client.get('/api/v2/plugins/songs/transpose-live-item/-1')
 
     # THEN: The renderer should not be called
-    renderer_mock_any_attr.assert_not_called()
+    mocks.renderer_mock_any_attr.assert_not_called()
+
+
+def test_plugin_songs_transpose_accepts_response_format_service_item(flask_client, settings):
+    """
+    Tests whether the transpose's return_service_item parameter works
+    """
+
+    # GIVEN: The default mocks for Transpose API and the default response
+    _init_transpose_mocks()
+
+    # WHEN: The transpose action returning service_item is called
+    service_item_res = flask_client.get('/api/v2/plugins/songs/transpose-live-item/-1?response_format=service_item')
+
+    # THEN: The service item response shouldn't match normal response and should be a service_item response
+    response = service_item_res.json
+    assert 'capabilities' in response
