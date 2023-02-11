@@ -21,25 +21,86 @@
 """
 Package to test the openlp.core.ui.slidecontroller package.
 """
+import json
+from functools import partial
 from pathlib import Path
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
+from zipfile import BadZipFile
 
 import pytest
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common import ThemeLevel
 from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.core.common.enum import ServiceItemType
+from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.ui.servicemanager import ServiceManager, ServiceManagerList
 from openlp.core.widgets.toolbar import OpenLPToolbar
 
-from tests.helpers.testmixin import TestMixin
+
+def _create_mock_action(svc_manager, name, **kwargs):
+    """
+    Create a fake action with some "real" attributes
+    """
+    action = QtWidgets.QAction(svc_manager.toolbar)
+    action.setObjectName(name)
+    if kwargs.get('triggers'):
+        action.triggered.connect(kwargs.pop('triggers'))
+    svc_manager.toolbar.actions[name] = action
+    return action
 
 
-def test_initial_service_manager(settings):
+def _add_service_item(s_manager):
+    "adds a mocked service item to the passed service manager"
+    mocked_plugin = MagicMock()
+    mocked_plugin.name = 'songs'
+    service_item = ServiceItem(mocked_plugin)
+    service_item.add_icon()
+    slide = "Test slide"
+    service_item.add_from_text(slide)
+    service_item.title = "Test item"
+    s_manager.add_service_item(service_item, rebuild=True, selected=True)
+
+
+@pytest.fixture()
+def service_manager(registry, settings):
+    """Setup a service manager with a service item and a few mocked registry entries"""
+    # Mocked registry entries
+    registry.register('main_window', MagicMock())
+    registry.register('live_controller', MagicMock())
+    registry.register('renderer', MagicMock())
+    registry.register('plugin_manager', MagicMock())
+    settings.setValue('advanced/new service message', False)
+
+    # Service manager
+    svc_manager = ServiceManager()
+    _add_toolbar_action = partial(_create_mock_action, svc_manager)
+    add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
+    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
+    mocked_add_toolbar_action.side_effect = _add_toolbar_action
+    svc_manager.setup_ui(svc_manager)
+
+    yield svc_manager
+    del svc_manager
+
+    add_toolbar_action_patcher.stop()
+
+
+def _setup_service_manager_list(service_manager):
+    service_manager.expanded = MagicMock()
+    service_manager.collapsed = MagicMock()
+    verse_1 = QtWidgets.QTreeWidgetItem(0)
+    verse_2 = QtWidgets.QTreeWidgetItem(0)
+    song_item = QtWidgets.QTreeWidgetItem(0)
+    song_item.addChild(verse_1)
+    song_item.addChild(verse_2)
+    service_manager.setup_ui(service_manager)
+    service_manager.service_manager_list.addTopLevelItem(song_item)
+    return verse_1, verse_2, song_item
+
+
+def test_initial_service_manager(mock_settings):
     """
     Test the initial of service manager.
     """
@@ -690,11 +751,8 @@ def test_single_click_timeout_double(mocked_make_live, mocked_make_preview, sett
 
 @patch('openlp.core.ui.servicemanager.zipfile')
 @patch('openlp.core.ui.servicemanager.ServiceManager.save_file_as')
-@patch('openlp.core.ui.servicemanager.os')
 @patch('openlp.core.ui.servicemanager.shutil')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mocked_os, mocked_save_file_as,
-                                           mocked_zipfile, settings):
+def test_save_file_raises_permission_error(mocked_shutil, mocked_save_file_as, mocked_zipfile, settings):
     """
     Test that when a PermissionError is raised when trying to save a file, it is handled correctly
     """
@@ -709,8 +767,7 @@ def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mock
     service_manager.service_manager_list = MagicMock()
     mocked_save_file_as.return_value = False
     mocked_zipfile.ZipFile.return_value = MagicMock()
-    mocked_os.link.side_effect = PermissionError
-    mocked_shutil.copyfile.side_effect = PermissionError
+    mocked_shutil.move.side_effect = PermissionError
 
     # WHEN: The service is saved and a PermissionError is raised
     result = service_manager.save_file()
@@ -725,9 +782,7 @@ def test_save_file_raises_permission_error(mocked_temp_file, mocked_shutil, mock
 @patch('openlp.core.ui.servicemanager.os')
 @patch('openlp.core.ui.servicemanager.shutil')
 @patch('openlp.core.ui.servicemanager.len')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_large_file(mocked_temp_file, mocked_len, mocked_shutil, mocked_os, mocked_save_file_as,
-                              mocked_zipfile, registry):
+def test_save_file_large_file(mocked_len, mocked_shutil, mocked_os, mocked_save_file_as, mocked_zipfile, registry):
     """
     Test that when a file size size larger than a 32bit signed int is attempted to save, the progress bar
     should be provided a value that fits in a 32bit int (because it's passed to C++ as a 32bit unsigned int)
@@ -757,39 +812,6 @@ def test_save_file_large_file(mocked_temp_file, mocked_len, mocked_shutil, mocke
     # THEN: The "save_as" method is called to save the service
     assert result is True
     mocked_save_file_as.assert_not_called()
-
-
-@patch('openlp.core.ui.servicemanager.zipfile')
-@patch('openlp.core.ui.servicemanager.ServiceManager.save_file_as')
-@patch('openlp.core.ui.servicemanager.os')
-@patch('openlp.core.ui.servicemanager.shutil')
-@patch('openlp.core.ui.servicemanager.NamedTemporaryFile')
-def test_save_file_falls_back_to_shutil(mocked_temp_file, mocked_shutil, mocked_os, mocked_save_file_as, mocked_zipfile,
-                                        registry):
-    """
-    Test that when a PermissionError is raised when trying to save a file, it is handled correctly
-    """
-    # GIVEN: A service manager, a service to save
-    mocked_main_window = MagicMock()
-    Registry().register('main_window', mocked_main_window)
-    Registry().register('application', MagicMock())
-    Registry().register('settings', MagicMock())
-    service_manager = ServiceManager(None)
-    service_manager._service_path = MagicMock()
-    service_manager._save_lite = False
-    service_manager.service_items = []
-    service_manager.service_theme = 'Default'
-    service_manager.service_manager_list = MagicMock()
-    mocked_save_file_as.return_value = False
-    mocked_zipfile.ZipFile.return_value = MagicMock()
-    mocked_os.link.side_effect = OSError
-
-    # WHEN: The service is saved and a PermissionError is raised
-    result = service_manager.save_file()
-
-    # THEN: The result is true
-    assert result is True
-    mocked_shutil.copyfile.assert_called_once()
 
 
 @patch('openlp.core.ui.servicemanager.ServiceManager.regenerate_service_items')
@@ -1096,51 +1118,6 @@ def test_on_new_service_clicked_unmodified_blank_service(MockQMessageBox, regist
     mocked_message_box.exec.assert_called_once_with()
     mocked_settings.setValue.assert_called_once_with('advanced/new service message', False)
     service_manager.new_file.assert_called_once_with()
-
-
-def _create_mock_action(parent, name, **kwargs):
-    """
-    Create a fake action with some "real" attributes
-    """
-    action = QtWidgets.QAction(parent)
-    action.setObjectName(name)
-    if kwargs.get('triggers'):
-        action.triggered.connect(kwargs.pop('triggers'))
-    return action
-
-
-def _add_service_item(s_manager):
-    "adds a mocked service item to the passed service manager"
-    mocked_plugin = MagicMock()
-    mocked_plugin.name = 'songs'
-    service_item = ServiceItem(mocked_plugin)
-    service_item.add_icon()
-    slide = "Test slide"
-    service_item.add_from_text(slide)
-    service_item.title = "Test item"
-    s_manager.add_service_item(service_item, rebuild=True, selected=True)
-
-
-@pytest.fixture()
-def service_manager(registry, settings):
-    """Setup a service manager with a service item and a few mocked registry entries"""
-    # Mocked registry entries
-    Registry().register('main_window', MagicMock())
-    Registry().register('live_controller', MagicMock())
-    Registry().register('renderer', MagicMock())
-
-    # Service manager
-    service_manager = ServiceManager()
-    add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
-    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
-    mocked_add_toolbar_action.side_effect = \
-        lambda name, **kwargs: _create_mock_action(service_manager.toolbar, name, **kwargs)
-    service_manager.setup_ui(service_manager)
-
-    yield service_manager
-    del service_manager
-
-    add_toolbar_action_patcher.stop()
 
 
 def test_on_delete_from_service_confirmation_disabled(settings, service_manager):
@@ -1487,629 +1464,887 @@ def test_load_last_file(registry):
     service_manager.load_file.assert_called_once_with(Path('filename.osz'))
 
 
-class TestServiceManager(TestCase, TestMixin):
+@patch('openlp.core.ui.servicemanager.Path')
+def test_load_file_not_exists(MockPath, registry):
+    """Test the load_file() method when the file does not exist"""
+    # GIVEN: A mocked path object, and a service manager
+    MockPath.return_value.exists.return_value = False
+    service_manager = ServiceManager(None)
+
+    # WHEN: load_file() is called
+    is_loaded = service_manager.load_file('fake/path.osz')
+
+    # THEN: load_file() should exit early and return False
+    assert is_loaded is False, 'is_loaded should have been False'
+    MockPath.assert_called_once_with('fake/path.osz')
+
+
+@patch('openlp.core.ui.servicemanager.Path')
+def test_load_file_os_error(MockPath, registry):
+    """Test the load_file() method when the path object raises an OSError exception"""
+    # GIVEN: A mocked path object, and a service manager
+    MockPath.return_value.exists.side_effect = OSError
+    service_manager = ServiceManager(None)
+
+    # WHEN: load_file() is called
+    is_loaded = service_manager.load_file('fake/path.osz')
+
+    # THEN: load_file() should exit early and return False
+    assert is_loaded is False, 'is_loaded should have been False'
+    MockPath.assert_called_once_with('fake/path.osz')
+
+
+@patch('openlp.core.ui.servicemanager.critical_error_message_box')
+@patch('openlp.core.ui.servicemanager.zipfile.ZipFile')
+@patch('openlp.core.ui.servicemanager.Path')
+@pytest.mark.parametrize('error', [NameError, OSError, ValidationError, BadZipFile])
+def test_load_file_zipfile_exception(MockPath, MockZipFile, mocked_critical_error_message_box, registry,
+                                     service_manager, error):
+    """Test that OpenLP handles various exceptions correctly when trying to load a service file"""
+    # GIVEN: A mocked path object, and a service manager
+    MockZipFile.return_value.__enter__.side_effect = error
+    MockPath.return_value.exists.return_value = True
+    MockPath.return_value.__str__.return_value = 'fake/path.osz'
+
+    # WHEN: load_file() is called
+    service_manager.load_file('fake/path.osz')
+
+    # THEN: load_file() should handle the exception correct and show a message to the user
+    MockPath.assert_called_once_with('fake/path.osz')
+    mocked_critical_error_message_box.assert_called_once_with(message='The service file fake/path.osz could not be '
+                                                              'loaded because it is either corrupt, inaccessible, '
+                                                              'or not a valid OpenLP 2 or OpenLP 3 service file.')
+
+
+@patch('openlp.core.ui.servicemanager.zipfile.ZipFile')
+@patch('openlp.core.ui.servicemanager.Path')
+def test_load_file_extract_and_fix(MockPath, MockZipFile, mock_settings, request):
+    """Test that OpenLP correctly reads the files in a service file, and fixes a corrupted file"""
+    actual_service = [
+        {
+            'openlp_core': {
+                'lite-service': False,
+                'service-theme': None,
+                'openlp-servicefile-version': 3
+            }
+        },
+        {
+            'serviceitem': {
+                'header': {
+                    'name': 'images',
+                    'plugin': 'images',
+                    'theme': -1,
+                    'title': 'First Baptist Church.jpg',
+                    'footer': [],
+                    'type': 2,
+                    'audit': '',
+                    'notes': '',
+                    'from_plugin': False,
+                    'capabilities': [3, 1, 5, 6, 17, 21, 26],
+                    'search': '',
+                    'data': '',
+                    'xml_version': None,
+                    'auto_play_slides_once': False,
+                    'auto_play_slides_loop': False,
+                    'timed_slide_interval': 0,
+                    'start_time': 0,
+                    'end_time': 0,
+                    'media_length': 0,
+                    'background_audio': [],
+                    'theme_overwritten': False,
+                    'will_auto_start': False,
+                    'processor': None,
+                    'metadata': [],
+                    'sha256_file_hash': None,
+                    'stored_filename': None
+                },
+                'data': [
+                    {
+                        'title': 'First Baptist Church.jpg',
+                        'image': {
+                            'parts': [
+                                'images',
+                                'thumbnails',
+                                '7213e6a21ae0a45ceef509a2d107d0bd7d8a4aff2cef9bc94cc3ebd2a40ab352.jpg'
+                            ],
+                            'json_meta': {
+                                'class': 'Path',
+                                'version': 1
+                            }
+                        },
+                        'file_hash': '7213e6a21ae0a45ceef509a2d107d0bd7d8a4aff2cef9bc94cc3ebd2a40ab352'
+                    }
+                ]
+            }
+        },
+        {
+            'serviceitem': {
+                'header': {
+                    'name': 'images',
+                    'plugin': 'images',
+                    'theme': -1,
+                    'title': 'Announcements-12-16-21.jpg',
+                    'footer': [],
+                    'type': 2,
+                    'audit': '',
+                    'notes': '',
+                    'from_plugin': False,
+                    'capabilities': [3, 1, 5, 6, 17, 21, 26],
+                    'search': '',
+                    'data': '',
+                    'xml_version': None,
+                    'auto_play_slides_once': False,
+                    'auto_play_slides_loop': False,
+                    'timed_slide_interval': 0,
+                    'start_time': 0,
+                    'end_time': 0,
+                    'media_length': 0,
+                    'background_audio': [],
+                    'theme_overwritten': False,
+                    'will_auto_start': False,
+                    'processor': None,
+                    'metadata': [],
+                    'sha256_file_hash': None,
+                    'stored_filename': None
+                },
+                'data': [
+                    {
+                        'title': 'Announcements-12-16-21.jpg',
+                        'image': {
+                            'parts': [
+                                'images',
+                                'thumbnails',
+                                'df665978e046ac45e0e638dd85f533d52cce2e6d4de33e6628f9b4c4ee57b09f.jpg'
+                            ],
+                            'json_meta': {
+                                'class': 'Path',
+                                'version': 1
+                            }
+                        },
+                        'file_hash': 'df665978e046ac45e0e638dd85f533d52cce2e6d4de33e6628f9b4c4ee57b09f'
+                    }
+                ]
+            }
+        }
+    ]
+    expected_service = [
+        {
+            'openlp_core': {
+                'lite-service': False,
+                'service-theme': None,
+                'openlp-servicefile-version': 3
+            }
+        },
+        {
+            'serviceitem': {
+                'header': {
+                    'name': 'images',
+                    'plugin': 'images',
+                    'theme': -1,
+                    'title': 'First Baptist Church.jpg',
+                    'footer': [],
+                    'type': 2,
+                    'audit': '',
+                    'notes': '',
+                    'from_plugin': False,
+                    'capabilities': [3, 1, 5, 6, 17, 21, 26],
+                    'search': '',
+                    'data': '',
+                    'xml_version': None,
+                    'auto_play_slides_once': False,
+                    'auto_play_slides_loop': False,
+                    'timed_slide_interval': 0,
+                    'start_time': 0,
+                    'end_time': 0,
+                    'media_length': 0,
+                    'background_audio': [],
+                    'theme_overwritten': False,
+                    'will_auto_start': False,
+                    'processor': None,
+                    'metadata': [],
+                    'sha256_file_hash': None,
+                    'stored_filename': None
+                },
+                'data': [
+                    {
+                        'title': 'First Baptist Church.jpg',
+                        'image': Path(
+                            'images',
+                            'thumbnails',
+                            '7213e6a21ae0a45ceef509a2d107d0bd7d8a4aff2cef9bc94cc3ebd2a40ab352.jpg'
+                        ),
+                        'file_hash': '7213e6a21ae0a45ceef509a2d107d0bd7d8a4aff2cef9bc94cc3ebd2a40ab352'
+                    }
+                ]
+            }
+        },
+        {
+            'serviceitem': {
+                'header': {
+                    'name': 'images',
+                    'plugin': 'images',
+                    'theme': -1,
+                    'title': 'Announcements-12-16-21.jpg',
+                    'footer': [],
+                    'type': 2,
+                    'audit': '',
+                    'notes': '',
+                    'from_plugin': False,
+                    'capabilities': [3, 1, 5, 6, 17, 21, 26],
+                    'search': '',
+                    'data': '',
+                    'xml_version': None,
+                    'auto_play_slides_once': False,
+                    'auto_play_slides_loop': False,
+                    'timed_slide_interval': 0,
+                    'start_time': 0,
+                    'end_time': 0,
+                    'media_length': 0,
+                    'background_audio': [],
+                    'theme_overwritten': False,
+                    'will_auto_start': False,
+                    'processor': None,
+                    'metadata': [],
+                    'sha256_file_hash': None,
+                    'stored_filename': None
+                },
+                'data': [
+                    {
+                        'title': 'Announcements-12-16-21.jpg',
+                        'image': Path(
+                            'images',
+                            'thumbnails',
+                            'df665978e046ac45e0e638dd85f533d52cce2e6d4de33e6628f9b4c4ee57b09f.jpg'
+                        ),
+                        'file_hash': 'df665978e046ac45e0e638dd85f533d52cce2e6d4de33e6628f9b4c4ee57b09f'
+                    }
+                ]
+            }
+        }
+    ]
+    service_json = json.dumps(actual_service)
+    Registry().register('main_window', MagicMock())
+    mocked_zip_file = MagicMock()
+    mocked_zip_file.infolist.return_value = [
+        MagicMock(compress_size=100, filename='service_data.osj'),
+        MagicMock(compress_size=156, filename='7213e6a21ae0a45ceef509a2d107d0bd7d8a4aff2cef9bc94cc3ebd2a40ab352/.jpg'),
+        MagicMock(compress_size=149, filename='df665978e046ac45e0e638dd85f533d52cce2e6d4de33e6628f9b4c4ee57b09f/.jpg'),
+    ]
+    mocked_zip_file.open.return_value.__enter__.return_value.read.return_value = service_json
+    MockZipFile.return_value.__enter__.return_value = mocked_zip_file
+    service_manager = ServiceManager(None)
+
+    _add_toolbar_action = partial(_create_mock_action, service_manager)
+    add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
+    mocked_add_toolbar_action = add_toolbar_action_patcher.start()
+    mocked_add_toolbar_action.side_effect = _add_toolbar_action
+    request.addfinalizer(add_toolbar_action_patcher.stop)
+
+    service_manager.setup_ui(service_manager)
+    service_manager.new_file = MagicMock()
+    service_manager.process_service_items = MagicMock()
+    service_manager.set_file_name = MagicMock()
+    service_manager.set_modified = MagicMock()
+    service_manager.save_file = MagicMock()
+    service_manager.repaint_service_list = MagicMock()
+
+    # WHEN: load_file() is called
+    service_manager.load_file('fake/path.osz')
+
+    # THEN: The files should have been loaded
+    service_manager.new_file.assert_called_once_with()
+    service_manager.process_service_items.assert_called_once_with(expected_service)
+    service_manager.set_file_name.assert_called_once()
+    service_manager.set_modified.assert_called_once_with(False)
+    service_manager.save_file.assert_called_once_with()
+
+
+def test_bootstrap_initialise(service_manager):
     """
-    Test the service manager
+    Test the bootstrap_initialise method
     """
+    # GIVEN: Mocked out stuff
+    service_manager.setup_ui = MagicMock()
+    service_manager.servicemanager_set_item = MagicMock()
+    service_manager.servicemanager_set_item_by_uuid = MagicMock()
+    service_manager.servicemanager_next_item = MagicMock()
+    service_manager.servicemanager_previous_item = MagicMock()
+    service_manager.servicemanager_new_file = MagicMock()
+    service_manager.theme_update_service = MagicMock()
 
-    def _create_mock_action(self, name, **kwargs):
-        """
-        Create a fake action with some "real" attributes
-        """
-        action = QtWidgets.QAction(self.service_manager)
-        action.setObjectName(name)
-        if kwargs.get('triggers'):
-            action.triggered.connect(kwargs.pop('triggers'))
-        self.service_manager.toolbar.actions[name] = action
-        return action
+    # WHEN: bootstrap_initialise is called
+    service_manager.bootstrap_initialise()
 
-    def setUp(self):
-        """
-        Create the UI
-        """
-        Registry.create()
-        self.setup_application()
-        Registry().register('application', MagicMock())
-        Registry().register('main_window', MagicMock())
-        Registry().register('settings', Settings())
-        self.service_manager = ServiceManager()
-        self.add_toolbar_action_patcher = patch('openlp.core.ui.servicemanager.OpenLPToolbar.add_toolbar_action')
-        self.mocked_add_toolbar_action = self.add_toolbar_action_patcher.start()
-        self.mocked_add_toolbar_action.side_effect = self._create_mock_action
+    # THEN: The correct calls should have been made
+    service_manager.setup_ui.assert_called_once_with(service_manager)
+    service_manager.servicemanager_set_item.connect.assert_called_once_with(service_manager.on_set_item)
+    service_manager.servicemanager_set_item_by_uuid.connect.assert_called_once_with(service_manager.set_item_by_uuid)
+    service_manager.servicemanager_next_item.connect.assert_called_once_with(service_manager.next_item)
+    service_manager.servicemanager_previous_item.connect.assert_called_once_with(service_manager.previous_item)
+    service_manager.servicemanager_new_file.connect.assert_called_once_with(service_manager.new_file)
+    service_manager.theme_update_service.connect.assert_called_once_with(service_manager.on_service_theme_change)
 
-    def tearDown(self):
-        """
-        Delete all the C++ objects at the end so that we don't have a segfault
-        """
-        self.add_toolbar_action_patcher.stop()
-        del self.service_manager
 
-    def test_bootstrap_initialise(self):
-        """
-        Test the bootstrap_initialise method
-        """
-        # GIVEN: Mocked out stuff
-        self.service_manager.setup_ui = MagicMock()
-        self.service_manager.servicemanager_set_item = MagicMock()
-        self.service_manager.servicemanager_set_item_by_uuid = MagicMock()
-        self.service_manager.servicemanager_next_item = MagicMock()
-        self.service_manager.servicemanager_previous_item = MagicMock()
-        self.service_manager.servicemanager_new_file = MagicMock()
-        self.service_manager.theme_update_service = MagicMock()
+@patch('openlp.core.ui.servicemanager.ServiceNoteForm')
+@patch('openlp.core.ui.servicemanager.ServiceItemEditForm')
+@patch('openlp.core.ui.servicemanager.StartTimeForm')
+def test_bootstrap_post_set_up(MockStartTimeForm, MockServiceItemEditForm, MockServiceNoteForm, service_manager):
+    """
+    Test the post bootstrap setup
+    """
+    # GIVEN: Mocked forms and a ServiceManager object
+    mocked_service_note_form = MagicMock()
+    MockServiceNoteForm.return_value = mocked_service_note_form
+    mocked_service_item_edit_form = MagicMock()
+    MockServiceItemEditForm.return_value = mocked_service_item_edit_form
+    mocked_start_time_form = MagicMock()
+    MockStartTimeForm.return_value = mocked_start_time_form
 
-        # WHEN: bootstrap_initialise is called
-        self.service_manager.bootstrap_initialise()
+    # WHEN: bootstrap_post_set_up is run
+    service_manager.bootstrap_post_set_up()
 
-        # THEN: The correct calls should have been made
-        self.service_manager.setup_ui.assert_called_once_with(self.service_manager)
-        self.service_manager.servicemanager_set_item.connect.assert_called_once_with(
-            self.service_manager.on_set_item)
-        self.service_manager.servicemanager_set_item_by_uuid.connect.assert_called_once_with(
-            self.service_manager.set_item_by_uuid)
-        self.service_manager.servicemanager_next_item.connect.assert_called_once_with(
-            self.service_manager.next_item)
-        self.service_manager.servicemanager_previous_item.connect.assert_called_once_with(
-            self.service_manager.previous_item)
-        self.service_manager.servicemanager_new_file.connect.assert_called_once_with(
-            self.service_manager.new_file)
-        self.service_manager.theme_update_service.connect.assert_called_once_with(
-            self.service_manager.on_service_theme_change)
+    # THEN: The forms should have been created
+    assert service_manager.service_note_form == mocked_service_note_form
+    assert service_manager.service_item_edit_form == mocked_service_item_edit_form
+    assert service_manager.start_time_form == mocked_start_time_form
 
-    @patch('openlp.core.ui.servicemanager.ServiceNoteForm')
-    @patch('openlp.core.ui.servicemanager.ServiceItemEditForm')
-    @patch('openlp.core.ui.servicemanager.StartTimeForm')
-    def test_bootstrap_post_set_up(self, MockStartTimeForm, MockServiceItemEditForm, MockServiceNoteForm):
-        """
-        Test the post bootstrap setup
-        """
-        # GIVEN: Mocked forms and a ServiceManager object
-        mocked_service_note_form = MagicMock()
-        MockServiceNoteForm.return_value = mocked_service_note_form
-        mocked_service_item_edit_form = MagicMock()
-        MockServiceItemEditForm.return_value = mocked_service_item_edit_form
-        mocked_start_time_form = MagicMock()
-        MockStartTimeForm.return_value = mocked_start_time_form
 
-        # WHEN: bootstrap_post_set_up is run
-        self.service_manager.bootstrap_post_set_up()
+def test_set_file_name_osz(service_manager):
+    """
+    Test setting the file name
+    """
+    # GIVEN: A service manager, some mocks and a file name
+    service_manager.set_modified = MagicMock()
+    service_manager.settings.setValue = MagicMock()
+    file_path = Path('servicefile.osz')
 
-        # THEN: The forms should have been created
-        assert self.service_manager.service_note_form == mocked_service_note_form
-        assert self.service_manager.service_item_edit_form == mocked_service_item_edit_form
-        assert self.service_manager.start_time_form == mocked_start_time_form
+    # WHEN: The filename is set
+    service_manager.set_file_name(file_path)
 
-    def test_set_file_name_osz(self):
-        """
-        Test setting the file name
-        """
-        # GIVEN: A service manager, some mocks and a file name
-        self.service_manager.set_modified = MagicMock()
-        self.service_manager.settings.setValue = MagicMock()
-        file_path = Path('servicefile.osz')
+    # THEN: Various things should have been called and set
+    assert service_manager._service_path == file_path
+    service_manager.set_modified.assert_called_once_with(False)
+    service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
+    assert service_manager._save_lite is False
 
-        # WHEN: The filename is set
-        self.service_manager.set_file_name(file_path)
 
-        # THEN: Various things should have been called and set
-        assert self.service_manager._service_path == file_path
-        self.service_manager.set_modified.assert_called_once_with(False)
-        self.service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
-        assert self.service_manager._save_lite is False
+def test_set_file_name_oszl(service_manager):
+    """
+    Test setting the file name
+    """
+    # GIVEN: A service manager, some mocks and a file name
+    service_manager.set_modified = MagicMock()
+    service_manager.settings.setValue = MagicMock()
+    file_path = Path('servicefile.oszl')
 
-    def test_set_file_name_oszl(self):
-        """
-        Test setting the file name
-        """
-        # GIVEN: A service manager, some mocks and a file name
-        self.service_manager.set_modified = MagicMock()
-        self.service_manager.settings.setValue = MagicMock()
-        file_path = Path('servicefile.oszl')
+    # WHEN: The filename is set
+    service_manager.set_file_name(file_path)
 
-        # WHEN: The filename is set
-        self.service_manager.set_file_name(file_path)
+    # THEN: Various things should have been called and set
+    assert service_manager._service_path == file_path
+    service_manager.set_modified.assert_called_once_with(False)
+    service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
+    assert service_manager._save_lite is True
 
-        # THEN: Various things should have been called and set
-        assert self.service_manager._service_path == file_path
-        self.service_manager.set_modified.assert_called_once_with(False)
-        self.service_manager.settings.setValue.assert_called_once_with('servicemanager/last file', file_path)
-        assert self.service_manager._save_lite is True
 
-    def test_short_file_name(self):
-        """
-        Test the short_file_name method
-        """
-        # GIVEN: A service manager and a file name
-        self.service_manager._service_path = Path('/home/user/service.osz')
+def test_short_file_name(service_manager):
+    """
+    Test the short_file_name method
+    """
+    # GIVEN: A service manager and a file name
+    service_manager._service_path = Path('/home/user/service.osz')
 
-        # WHEN: short_file_name is called
-        result = self.service_manager.short_file_name()
+    # WHEN: short_file_name is called
+    result = service_manager.short_file_name()
 
-        # THEN: The result should be correct
-        assert result == 'service.osz'
+    # THEN: The result should be correct
+    assert result == 'service.osz'
 
-    def test_basic_service_manager(self):
-        """
-        Test the Service Manager UI Functionality
-        """
-        # GIVEN: A New Service Manager instance
-        # WHEN I have set up the display
-        self.service_manager.setup_ui(self.service_manager)
 
-        # THEN the count of items should be zero
-        assert self.service_manager.service_manager_list.topLevelItemCount() == 0, \
-            'The service manager list should be empty '
+def test_basic_service_manager(service_manager):
+    """
+    Test the Service Manager UI Functionality
+    """
+    # GIVEN: A New Service Manager instance
+    # WHEN I have set up the display
+    service_manager.setup_ui(service_manager)
 
-    @patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt')
-    @patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal')
-    @patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec')
-    def test_default_context_menu(self, mocked_exec, mocked_mapToGlobal, mocked_item_at_method):
-        """
-        Test the context_menu() method with a default service item
-        """
-        # GIVEN: A service item added
+    # THEN the count of items should be zero
+    assert service_manager.service_manager_list.topLevelItemCount() == 0, \
+        'The service manager list should be empty '
+
+
+@patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt')
+@patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal')
+@patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec')
+def test_default_context_menu(mocked_exec, mocked_mapToGlobal, mocked_item_at_method, service_manager):
+    """
+    Test the context_menu() method with a default service item
+    """
+    # GIVEN: A service item added
+    mocked_item = MagicMock()
+    mocked_item.parent.return_value = None
+    mocked_item_at_method.return_value = mocked_item
+    mocked_item.data.return_value = 1
+    service_manager.setup_ui(service_manager)
+    # A service item without capabilities.
+    service_item = ServiceItem()
+    service_manager.service_items = [{'service_item': service_item}]
+    q_point = None
+    # Mocked actions.
+    service_manager.edit_action.setVisible = MagicMock()
+    service_manager.create_custom_action.setVisible = MagicMock()
+    service_manager.maintain_action.setVisible = MagicMock()
+    service_manager.notes_action.setVisible = MagicMock()
+    service_manager.time_action.setVisible = MagicMock()
+    service_manager.auto_start_action.setVisible = MagicMock()
+
+    # WHEN: Show the context menu.
+    service_manager.context_menu(q_point)
+
+    # THEN: The following actions should be not visible.
+    service_manager.edit_action.setVisible.assert_called_once_with(False), \
+        'The action should be set invisible.'
+    service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+        'The action should be set invisible.'
+    service_manager.maintain_action.setVisible.assert_called_once_with(False), \
+        'The action should be set invisible.'
+    service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+    service_manager.time_action.setVisible.assert_called_once_with(False), \
+        'The action should be set invisible.'
+    service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
+        'The action should be set invisible.'
+
+
+def test_edit_context_menu(service_manager):
+    """
+    Test the context_menu() method with a edit service item
+    """
+    # GIVEN: A service item added
+    service_manager.setup_ui(service_manager)
+    with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
         mocked_item = MagicMock()
         mocked_item.parent.return_value = None
         mocked_item_at_method.return_value = mocked_item
+        # We want 1 to be returned for the position
         mocked_item.data.return_value = 1
-        self.service_manager.setup_ui(self.service_manager)
         # A service item without capabilities.
         service_item = ServiceItem()
-        self.service_manager.service_items = [{'service_item': service_item}]
+        service_item.add_capability(ItemCapabilities.CanEdit)
+        service_item.edit_id = 1
+        service_manager.service_items = [{'service_item': service_item}]
         q_point = None
         # Mocked actions.
-        self.service_manager.edit_action.setVisible = MagicMock()
-        self.service_manager.create_custom_action.setVisible = MagicMock()
-        self.service_manager.maintain_action.setVisible = MagicMock()
-        self.service_manager.notes_action.setVisible = MagicMock()
-        self.service_manager.time_action.setVisible = MagicMock()
-        self.service_manager.auto_start_action.setVisible = MagicMock()
+        service_manager.edit_action.setVisible = MagicMock()
+        service_manager.create_custom_action.setVisible = MagicMock()
+        service_manager.maintain_action.setVisible = MagicMock()
+        service_manager.notes_action.setVisible = MagicMock()
+        service_manager.time_action.setVisible = MagicMock()
+        service_manager.auto_start_action.setVisible = MagicMock()
 
         # WHEN: Show the context menu.
-        self.service_manager.context_menu(q_point)
+        service_manager.context_menu(q_point)
 
         # THEN: The following actions should be not visible.
-        self.service_manager.edit_action.setVisible.assert_called_once_with(False), \
+        service_manager.edit_action.setVisible.assert_called_with(True), \
+            'The action should be set visible.'
+        service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
             'The action should be set invisible.'
-        self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+        service_manager.maintain_action.setVisible.assert_called_once_with(False), \
             'The action should be set invisible.'
-        self.service_manager.maintain_action.setVisible.assert_called_once_with(False), \
+        service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+        service_manager.time_action.setVisible.assert_called_once_with(False), \
             'The action should be set invisible.'
-        self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-        self.service_manager.time_action.setVisible.assert_called_once_with(False), \
-            'The action should be set invisible.'
-        self.service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
+        service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
             'The action should be set invisible.'
 
-    def test_edit_context_menu(self):
-        """
-        Test the context_menu() method with a edit service item
-        """
-        # GIVEN: A service item added
-        self.service_manager.setup_ui(self.service_manager)
-        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
-            mocked_item = MagicMock()
-            mocked_item.parent.return_value = None
-            mocked_item_at_method.return_value = mocked_item
-            # We want 1 to be returned for the position
-            mocked_item.data.return_value = 1
-            # A service item without capabilities.
-            service_item = ServiceItem()
-            service_item.add_capability(ItemCapabilities.CanEdit)
-            service_item.edit_id = 1
-            self.service_manager.service_items = [{'service_item': service_item}]
-            q_point = None
-            # Mocked actions.
-            self.service_manager.edit_action.setVisible = MagicMock()
-            self.service_manager.create_custom_action.setVisible = MagicMock()
-            self.service_manager.maintain_action.setVisible = MagicMock()
-            self.service_manager.notes_action.setVisible = MagicMock()
-            self.service_manager.time_action.setVisible = MagicMock()
-            self.service_manager.auto_start_action.setVisible = MagicMock()
 
-            # WHEN: Show the context menu.
-            self.service_manager.context_menu(q_point)
+def test_maintain_context_menu(service_manager):
+    """
+    Test the context_menu() method with a maintain
+    """
+    # GIVEN: A service item added
+    service_manager.setup_ui(service_manager)
+    with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
+        mocked_item = MagicMock()
+        mocked_item.parent.return_value = None
+        mocked_item_at_method.return_value = mocked_item
+        # We want 1 to be returned for the position
+        mocked_item.data.return_value = 1
+        # A service item without capabilities.
+        service_item = ServiceItem()
+        service_item.add_capability(ItemCapabilities.CanMaintain)
+        service_manager.service_items = [{'service_item': service_item}]
+        q_point = None
+        # Mocked actions.
+        service_manager.edit_action.setVisible = MagicMock()
+        service_manager.create_custom_action.setVisible = MagicMock()
+        service_manager.maintain_action.setVisible = MagicMock()
+        service_manager.notes_action.setVisible = MagicMock()
+        service_manager.time_action.setVisible = MagicMock()
+        service_manager.auto_start_action.setVisible = MagicMock()
 
-            # THEN: The following actions should be not visible.
-            self.service_manager.edit_action.setVisible.assert_called_with(True), \
-                'The action should be set visible.'
-            self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.maintain_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-            self.service_manager.time_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
+        # WHEN: Show the context menu.
+        service_manager.context_menu(q_point)
 
-    def test_maintain_context_menu(self):
-        """
-        Test the context_menu() method with a maintain
-        """
-        # GIVEN: A service item added
-        self.service_manager.setup_ui(self.service_manager)
-        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
-            mocked_item = MagicMock()
-            mocked_item.parent.return_value = None
-            mocked_item_at_method.return_value = mocked_item
-            # We want 1 to be returned for the position
-            mocked_item.data.return_value = 1
-            # A service item without capabilities.
-            service_item = ServiceItem()
-            service_item.add_capability(ItemCapabilities.CanMaintain)
-            self.service_manager.service_items = [{'service_item': service_item}]
-            q_point = None
-            # Mocked actions.
-            self.service_manager.edit_action.setVisible = MagicMock()
-            self.service_manager.create_custom_action.setVisible = MagicMock()
-            self.service_manager.maintain_action.setVisible = MagicMock()
-            self.service_manager.notes_action.setVisible = MagicMock()
-            self.service_manager.time_action.setVisible = MagicMock()
-            self.service_manager.auto_start_action.setVisible = MagicMock()
+        # THEN: The following actions should be not visible.
+        service_manager.edit_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.maintain_action.setVisible.assert_called_with(True), \
+            'The action should be set visible.'
+        service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+        service_manager.time_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
 
-            # WHEN: Show the context menu.
-            self.service_manager.context_menu(q_point)
 
-            # THEN: The following actions should be not visible.
-            self.service_manager.edit_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.maintain_action.setVisible.assert_called_with(True), \
-                'The action should be set visible.'
-            self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-            self.service_manager.time_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
+def test_loopy_context_menu(service_manager):
+    """
+    Test the context_menu() method with a loop
+    """
+    # GIVEN: A service item added
+    service_manager.setup_ui(service_manager)
+    with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
+        mocked_item = MagicMock()
+        mocked_item.parent.return_value = None
+        mocked_item_at_method.return_value = mocked_item
+        # We want 1 to be returned for the position
+        mocked_item.data.return_value = 1
+        # A service item without capabilities.
+        service_item = ServiceItem()
+        service_item.add_capability(ItemCapabilities.CanLoop)
+        service_item.slides.append("One")
+        service_item.slides.append("Two")
+        service_manager.service_items = [{'service_item': service_item}]
+        q_point = None
+        # Mocked actions.
+        service_manager.edit_action.setVisible = MagicMock()
+        service_manager.create_custom_action.setVisible = MagicMock()
+        service_manager.maintain_action.setVisible = MagicMock()
+        service_manager.notes_action.setVisible = MagicMock()
+        service_manager.time_action.setVisible = MagicMock()
+        service_manager.auto_start_action.setVisible = MagicMock()
 
-    def test_loopy_context_menu(self):
-        """
-        Test the context_menu() method with a loop
-        """
-        # GIVEN: A service item added
-        self.service_manager.setup_ui(self.service_manager)
-        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
-            mocked_item = MagicMock()
-            mocked_item.parent.return_value = None
-            mocked_item_at_method.return_value = mocked_item
-            # We want 1 to be returned for the position
-            mocked_item.data.return_value = 1
-            # A service item without capabilities.
-            service_item = ServiceItem()
-            service_item.add_capability(ItemCapabilities.CanLoop)
-            service_item.slides.append("One")
-            service_item.slides.append("Two")
-            self.service_manager.service_items = [{'service_item': service_item}]
-            q_point = None
-            # Mocked actions.
-            self.service_manager.edit_action.setVisible = MagicMock()
-            self.service_manager.create_custom_action.setVisible = MagicMock()
-            self.service_manager.maintain_action.setVisible = MagicMock()
-            self.service_manager.notes_action.setVisible = MagicMock()
-            self.service_manager.time_action.setVisible = MagicMock()
-            self.service_manager.auto_start_action.setVisible = MagicMock()
+        # WHEN: Show the context menu.
+        service_manager.context_menu(q_point)
 
-            # WHEN: Show the context menu.
-            self.service_manager.context_menu(q_point)
+        # THEN: The following actions should be not visible.
+        service_manager.edit_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.maintain_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+        service_manager.time_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
 
-            # THEN: The following actions should be not visible.
-            self.service_manager.edit_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.maintain_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-            self.service_manager.time_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
 
-    def test_start_time_context_menu(self):
-        """
-        Test the context_menu() method with a start time
-        """
-        # GIVEN: A service item added
-        self.service_manager.setup_ui(self.service_manager)
-        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
-            mocked_item = MagicMock()
-            mocked_item.parent.return_value = None
-            mocked_item_at_method.return_value = mocked_item
-            # We want 1 to be returned for the position
-            mocked_item.data.return_value = 1
-            # A service item without capabilities.
-            service_item = ServiceItem()
-            service_item.add_capability(ItemCapabilities.HasVariableStartTime)
-            self.service_manager.service_items = [{'service_item': service_item}]
-            q_point = None
-            # Mocked actions.
-            self.service_manager.edit_action.setVisible = MagicMock()
-            self.service_manager.create_custom_action.setVisible = MagicMock()
-            self.service_manager.maintain_action.setVisible = MagicMock()
-            self.service_manager.notes_action.setVisible = MagicMock()
-            self.service_manager.time_action.setVisible = MagicMock()
-            self.service_manager.auto_start_action.setVisible = MagicMock()
+def test_start_time_context_menu(service_manager):
+    """
+    Test the context_menu() method with a start time
+    """
+    # GIVEN: A service item added
+    service_manager.setup_ui(service_manager)
+    with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
+        mocked_item = MagicMock()
+        mocked_item.parent.return_value = None
+        mocked_item_at_method.return_value = mocked_item
+        # We want 1 to be returned for the position
+        mocked_item.data.return_value = 1
+        # A service item without capabilities.
+        service_item = ServiceItem()
+        service_item.add_capability(ItemCapabilities.HasVariableStartTime)
+        service_manager.service_items = [{'service_item': service_item}]
+        q_point = None
+        # Mocked actions.
+        service_manager.edit_action.setVisible = MagicMock()
+        service_manager.create_custom_action.setVisible = MagicMock()
+        service_manager.maintain_action.setVisible = MagicMock()
+        service_manager.notes_action.setVisible = MagicMock()
+        service_manager.time_action.setVisible = MagicMock()
+        service_manager.auto_start_action.setVisible = MagicMock()
 
-            # WHEN: Show the context menu.
-            self.service_manager.context_menu(q_point)
+        # WHEN: Show the context menu.
+        service_manager.context_menu(q_point)
 
-            # THEN: The following actions should be not visible.
-            self.service_manager.edit_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.maintain_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-            self.service_manager.time_action.setVisible.assert_called_with(True), \
-                'The action should be set visible.'
-            self.service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
+        # THEN: The following actions should be not visible.
+        service_manager.edit_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.maintain_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+        service_manager.time_action.setVisible.assert_called_with(True), \
+            'The action should be set visible.'
+        service_manager.auto_start_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
 
-    def test_auto_start_context_menu(self):
-        """
-        Test the context_menu() method with can auto start
-        """
-        # GIVEN: A service item added
-        self.service_manager.setup_ui(self.service_manager)
-        with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
-                patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
-            mocked_item = MagicMock()
-            mocked_item.parent.return_value = None
-            mocked_item_at_method.return_value = mocked_item
-            # We want 1 to be returned for the position
-            mocked_item.data.return_value = 1
-            # A service item without capabilities.
-            service_item = ServiceItem()
-            service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
-            self.service_manager.service_items = [{'service_item': service_item}]
-            q_point = None
-            # Mocked actions.
-            self.service_manager.edit_action.setVisible = MagicMock()
-            self.service_manager.create_custom_action.setVisible = MagicMock()
-            self.service_manager.maintain_action.setVisible = MagicMock()
-            self.service_manager.notes_action.setVisible = MagicMock()
-            self.service_manager.time_action.setVisible = MagicMock()
-            self.service_manager.auto_start_action.setVisible = MagicMock()
-            self.service_manager.rename_action.setVisible = MagicMock()
 
-            # WHEN: Show the context menu.
-            self.service_manager.context_menu(q_point)
+def test_auto_start_context_menu(service_manager):
+    """
+    Test the context_menu() method with can auto start
+    """
+    # GIVEN: A service item added
+    service_manager.setup_ui(service_manager)
+    with patch('openlp.core.ui.servicemanager.QtWidgets.QTreeWidget.itemAt') as mocked_item_at_method, \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QWidget.mapToGlobal'), \
+            patch('openlp.core.ui.servicemanager.QtWidgets.QMenu.exec'):
+        mocked_item = MagicMock()
+        mocked_item.parent.return_value = None
+        mocked_item_at_method.return_value = mocked_item
+        # We want 1 to be returned for the position
+        mocked_item.data.return_value = 1
+        # A service item without capabilities.
+        service_item = ServiceItem()
+        service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
+        service_manager.service_items = [{'service_item': service_item}]
+        q_point = None
+        # Mocked actions.
+        service_manager.edit_action.setVisible = MagicMock()
+        service_manager.create_custom_action.setVisible = MagicMock()
+        service_manager.maintain_action.setVisible = MagicMock()
+        service_manager.notes_action.setVisible = MagicMock()
+        service_manager.time_action.setVisible = MagicMock()
+        service_manager.auto_start_action.setVisible = MagicMock()
+        service_manager.rename_action.setVisible = MagicMock()
 
-            # THEN: The following actions should be not visible.
-            self.service_manager.edit_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.maintain_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
-            self.service_manager.time_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
-            self.service_manager.auto_start_action.setVisible.assert_called_with(True), \
-                'The action should be set visible.'
-            self.service_manager.rename_action.setVisible.assert_called_once_with(False), \
-                'The action should be set invisible.'
+        # WHEN: Show the context menu.
+        service_manager.context_menu(q_point)
 
-    def test_click_on_new_service(self):
-        """
-        Test the on_new_service event handler is called by the UI
-        """
-        # GIVEN: An initial form
-        mocked_event = MagicMock()
-        self.service_manager.on_new_service_clicked = mocked_event
-        self.service_manager.setup_ui(self.service_manager)
+        # THEN: The following actions should be not visible.
+        service_manager.edit_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.create_custom_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.maintain_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.notes_action.setVisible.assert_called_with(True), 'The action should be set visible.'
+        service_manager.time_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+        service_manager.auto_start_action.setVisible.assert_called_with(True), \
+            'The action should be set visible.'
+        service_manager.rename_action.setVisible.assert_called_once_with(False), \
+            'The action should be set invisible.'
+
+
+def test_click_on_new_service(service_manager):
+    """
+    Test the on_new_service event handler is called by the UI
+    """
+    # GIVEN: An initial form
+    with patch.object(service_manager, 'new_file') as mocked_new_file:
 
         # WHEN displaying the UI and pressing cancel
-        new_service = self.service_manager.toolbar.actions['newService']
+        new_service = service_manager.toolbar.actions['newService']
         new_service.trigger()
 
-        assert mocked_event.call_count == 1, 'The on_new_service_clicked method should have been called once'
+        assert mocked_new_file.call_count == 1, \
+            'The on_new_service_clicked method should have been called once'
 
-    def test_expand_selection_on_right_arrow(self):
-        """
-        Test that a right arrow key press event calls the on_expand_selection function
-        """
-        # GIVEN a mocked expand function
-        self.service_manager.on_expand_selection = MagicMock()
 
-        # WHEN the right arrow key event is called
-        self.service_manager.setup_ui(self.service_manager)
-        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Right, QtCore.Qt.NoModifier)
-        self.service_manager.service_manager_list.keyPressEvent(event)
+def test_expand_selection_on_right_arrow(service_manager):
+    """
+    Test that a right arrow key press event calls the on_expand_selection function
+    """
+    # GIVEN a mocked expand function
+    service_manager.on_expand_selection = MagicMock()
 
-        # THEN the on_expand_selection function should have been called.
-        self.service_manager.on_expand_selection.assert_called_once_with()
+    # WHEN the right arrow key event is called
+    service_manager.setup_ui(service_manager)
+    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Right, QtCore.Qt.NoModifier)
+    service_manager.service_manager_list.keyPressEvent(event)
 
-    def test_on_expand_selection_item_none(self):
-        """
-        Test that on_expand_selection exits early when there is no item selected.
-        """
-        # GIVEN a mocked expand function
-        self.service_manager.service_manager_list = MagicMock(**{'currentItem.return_value': None})
+    # THEN the on_expand_selection function should have been called.
+    service_manager.on_expand_selection.assert_called_once_with()
 
-        # WHEN on_expand_selection is called
-        self.service_manager.on_expand_selection()
 
-        # THEN on_expand_selection should have exited early
-        self.service_manager.service_manager_list.isExpanded.assert_not_called()
+def test_on_expand_selection_item_none(service_manager):
+    """
+    Test that on_expand_selection exits early when there is no item selected.
+    """
+    # GIVEN a mocked expand function
+    service_manager.service_manager_list = MagicMock(**{'currentItem.return_value': None})
 
-    def test_collapse_selection_on_left_arrow(self):
-        """
-        Test that a left arrow key press event calls the on_collapse_selection function
-        """
-        # GIVEN a mocked collapse function
-        self.service_manager.on_collapse_selection = MagicMock()
+    # WHEN on_expand_selection is called
+    service_manager.on_expand_selection()
 
-        # WHEN the left arrow key event is called
-        self.service_manager.setup_ui(self.service_manager)
-        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Left, QtCore.Qt.NoModifier)
-        self.service_manager.service_manager_list.keyPressEvent(event)
+    # THEN on_expand_selection should have exited early
+    service_manager.service_manager_list.isExpanded.assert_not_called()
 
-        # THEN the on_collapse_selection function should have been called.
-        self.service_manager.on_collapse_selection.assert_called_once_with()
 
-    def test_move_selection_down_on_down_arrow(self):
-        """
-        Test that a down arrow key press event calls the on_move_selection_down function
-        """
-        # GIVEN a mocked move down function
-        self.service_manager.on_move_selection_down = MagicMock()
+def test_collapse_selection_on_left_arrow(service_manager):
+    """
+    Test that a left arrow key press event calls the on_collapse_selection function
+    """
+    # GIVEN a mocked collapse function
+    service_manager.on_collapse_selection = MagicMock()
 
-        # WHEN the down arrow key event is called
-        self.service_manager.setup_ui(self.service_manager)
-        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Down, QtCore.Qt.NoModifier)
-        self.service_manager.service_manager_list.keyPressEvent(event)
+    # WHEN the left arrow key event is called
+    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Left, QtCore.Qt.NoModifier)
+    service_manager.service_manager_list.keyPressEvent(event)
 
-        # THEN the on_move_selection_down function should have been called.
-        self.service_manager.on_move_selection_down.assert_called_once_with()
+    # THEN the on_collapse_selection function should have been called.
+    service_manager.on_collapse_selection.assert_called_once_with()
 
-    def test_move_selection_up_on_up_arrow(self):
-        """
-        Test that an up arrow key press event calls the on_move_selection_up function
-        """
-        # GIVEN a mocked move up function
-        self.service_manager.on_move_selection_up = MagicMock()
 
-        # WHEN the up arrow key event is called
-        self.service_manager.setup_ui(self.service_manager)
-        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Up, QtCore.Qt.NoModifier)
-        self.service_manager.service_manager_list.keyPressEvent(event)
+def test_move_selection_down_on_down_arrow(service_manager):
+    """
+    Test that a down arrow key press event calls the on_move_selection_down function
+    """
+    # GIVEN a mocked move down function
+    service_manager.on_move_selection_down = MagicMock()
 
-        # THEN the on_move_selection_up function should have been called.
-        self.service_manager.on_move_selection_up.assert_called_once_with()
+    # WHEN the down arrow key event is called
+    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Down, QtCore.Qt.NoModifier)
+    service_manager.service_manager_list.keyPressEvent(event)
 
-    def test_delete_selection_on_delete_key(self):
-        """
-        Test that a delete key press event calls the on_delete_from_service function
-        """
-        # GIVEN a mocked on_delete_from_service function
-        self.service_manager.on_delete_from_service = MagicMock()
+    # THEN the on_move_selection_down function should have been called.
+    service_manager.on_move_selection_down.assert_called_once_with()
 
-        # WHEN the delete key event is called
-        self.service_manager.setup_ui(self.service_manager)
-        event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Delete, QtCore.Qt.NoModifier)
-        self.service_manager.service_manager_list.keyPressEvent(event)
 
-        # THEN the on_delete_from_service function should have been called.
-        self.service_manager.on_delete_from_service.assert_called_once_with()
+def test_move_selection_up_on_up_arrow(service_manager):
+    """
+    Test that an up arrow key press event calls the on_move_selection_up function
+    """
+    # GIVEN a mocked move up function
+    service_manager.on_move_selection_up = MagicMock()
 
-    def _setup_service_manager_list(self):
-        self.service_manager.expanded = MagicMock()
-        self.service_manager.collapsed = MagicMock()
-        verse_1 = QtWidgets.QTreeWidgetItem(0)
-        verse_2 = QtWidgets.QTreeWidgetItem(0)
-        song_item = QtWidgets.QTreeWidgetItem(0)
-        song_item.addChild(verse_1)
-        song_item.addChild(verse_2)
-        self.service_manager.setup_ui(self.service_manager)
-        self.service_manager.service_manager_list.addTopLevelItem(song_item)
-        return verse_1, verse_2, song_item
+    # WHEN the up arrow key event is called
+    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Up, QtCore.Qt.NoModifier)
+    service_manager.service_manager_list.keyPressEvent(event)
 
-    def test_on_expand_selection(self):
-        """
-        Test that the on_expand_selection function successfully expands an item and moves to its first child
-        """
-        # GIVEN a mocked servicemanager list
-        verse_1, verse_2, song_item = self._setup_service_manager_list()
-        self.service_manager.service_manager_list.setCurrentItem(song_item)
-        # Reset expanded function in case it has been called and/or changed in initialisation of the service manager.
-        self.service_manager.expanded = MagicMock()
+    # THEN the on_move_selection_up function should have been called.
+    service_manager.on_move_selection_up.assert_called_once_with()
 
-        # WHEN on_expand_selection is called
-        self.service_manager.on_expand_selection()
 
-        # THEN selection should be expanded
-        selected_index = self.service_manager.service_manager_list.currentIndex()
-        above_selected_index = self.service_manager.service_manager_list.indexAbove(selected_index)
-        assert self.service_manager.service_manager_list.isExpanded(above_selected_index) is True, \
-            'Item should have been expanded'
-        self.service_manager.expanded.assert_called_once_with(song_item)
+def test_delete_selection_on_delete_key(service_manager):
+    """
+    Test that a delete key press event calls the on_delete_from_service function
+    """
+    # GIVEN a mocked on_delete_from_service function
+    service_manager.on_delete_from_service = MagicMock()
 
-    def test_on_collapse_selection_with_parent_selected(self):
-        """
-        Test that the on_collapse_selection function successfully collapses an item
-        """
-        # GIVEN a mocked servicemanager list
-        verse_1, verse_2, song_item = self._setup_service_manager_list()
-        self.service_manager.service_manager_list.setCurrentItem(song_item)
-        self.service_manager.service_manager_list.expandItem(song_item)
+    # WHEN the delete key event is called
+    event = QtGui.QKeyEvent(QtCore.QEvent.KeyPress, QtCore.Qt.Key_Delete, QtCore.Qt.NoModifier)
+    service_manager.service_manager_list.keyPressEvent(event)
 
-        # Reset collapsed function in case it has been called and/or changed in initialisation of the service manager.
-        self.service_manager.collapsed = MagicMock()
+    # THEN the on_delete_from_service function should have been called.
+    service_manager.on_delete_from_service.assert_called_once_with()
 
-        # WHEN on_expand_selection is called
-        self.service_manager.on_collapse_selection()
 
-        # THEN selection should be expanded
-        selected_index = self.service_manager.service_manager_list.currentIndex()
-        assert self.service_manager.service_manager_list.isExpanded(selected_index) is False, \
-            'Item should have been collapsed'
-        assert self.service_manager.service_manager_list.currentItem() == song_item, \
-            'Top item should have been selected'
-        self.service_manager.collapsed.assert_called_once_with(song_item)
+def test_on_expand_selection(service_manager):
+    """
+    Test that the on_expand_selection function successfully expands an item and moves to its first child
+    """
+    # GIVEN a mocked servicemanager list
+    verse_1, verse_2, song_item = _setup_service_manager_list(service_manager)
+    service_manager.service_manager_list.setCurrentItem(song_item)
+    # Reset expanded function in case it has been called and/or changed in initialisation of the service manager.
+    service_manager.expanded = MagicMock()
 
-    def test_on_collapse_selection_with_child_selected(self):
-        """
-        Test that the on_collapse_selection function successfully collapses child's parent item
-        and moves selection to its parent.
-        """
-        # GIVEN a mocked servicemanager list
-        verse_1, verse_2, song_item = self._setup_service_manager_list()
-        self.service_manager.service_manager_list.setCurrentItem(verse_2)
-        self.service_manager.service_manager_list.expandItem(song_item)
-        # Reset collapsed function in case it has been called and/or changed in initialisation of the service manager.
-        self.service_manager.collapsed = MagicMock()
+    # WHEN on_expand_selection is called
+    service_manager.on_expand_selection()
 
-        # WHEN on_expand_selection is called
-        self.service_manager.on_collapse_selection()
+    # THEN selection should be expanded
+    selected_index = service_manager.service_manager_list.currentIndex()
+    above_selected_index = service_manager.service_manager_list.indexAbove(selected_index)
+    assert service_manager.service_manager_list.isExpanded(above_selected_index) is True, \
+        'Item should have been expanded'
+    service_manager.expanded.assert_called_once_with(song_item)
 
-        # THEN selection should be expanded
-        selected_index = self.service_manager.service_manager_list.currentIndex()
-        assert self.service_manager.service_manager_list.isExpanded(selected_index) is False, \
-            'Item should have been collapsed'
-        assert self.service_manager.service_manager_list.currentItem() == song_item, \
-            'Top item should have been selected'
-        self.service_manager.collapsed.assert_called_once_with(song_item)
 
-    def test_replace_service_item(self):
-        """
-        Tests that the replace_service_item function replaces items as expected
-        """
-        # GIVEN a service item list and a new item which name and edit_id match a service item
-        self.service_manager.repaint_service_list = MagicMock()
-        Registry().register('live_controller', MagicMock())
-        item1 = MagicMock()
-        item1.edit_id = 'abcd'
-        item1.name = 'itemA'
-        item2 = MagicMock()
-        item2.edit_id = 'abcd'
-        item2.name = 'itemB'
-        item3 = MagicMock()
-        item3.edit_id = 'cfgh'
-        item3.name = 'itemA'
-        self.service_manager.service_items = [
-            {'service_item': item1},
-            {'service_item': item2},
-            {'service_item': item3}
-        ]
-        new_item = MagicMock()
-        new_item.edit_id = 'abcd'
-        new_item.name = 'itemA'
+def test_on_collapse_selection_with_parent_selected(service_manager):
+    """
+    Test that the on_collapse_selection function successfully collapses an item
+    """
+    # GIVEN a mocked servicemanager list
+    verse_1, verse_2, song_item = _setup_service_manager_list(service_manager)
+    service_manager.service_manager_list.setCurrentItem(song_item)
+    service_manager.service_manager_list.expandItem(song_item)
 
-        # WHEN replace_service_item is called
-        self.service_manager.replace_service_item(new_item)
+    # Reset collapsed function in case it has been called and/or changed in initialisation of the service manager.
+    service_manager.collapsed = MagicMock()
 
-        # THEN new_item should replace item1, and only replaces that one item
-        assert self.service_manager.service_items[0]['service_item'] == new_item
-        new_item.merge.assert_called_once_with(item1)
+    # WHEN on_expand_selection is called
+    service_manager.on_collapse_selection()
+
+    # THEN selection should be expanded
+    selected_index = service_manager.service_manager_list.currentIndex()
+    assert service_manager.service_manager_list.isExpanded(selected_index) is False, \
+        'Item should have been collapsed'
+    assert service_manager.service_manager_list.currentItem() == song_item, \
+        'Top item should have been selected'
+    service_manager.collapsed.assert_called_once_with(song_item)
+
+
+def test_on_collapse_selection_with_child_selected(service_manager):
+    """
+    Test that the on_collapse_selection function successfully collapses child's parent item
+    and moves selection to its parent.
+    """
+    # GIVEN a mocked servicemanager list
+    verse_1, verse_2, song_item = _setup_service_manager_list(service_manager)
+    service_manager.service_manager_list.setCurrentItem(verse_2)
+    service_manager.service_manager_list.expandItem(song_item)
+    # Reset collapsed function in case it has been called and/or changed in initialisation of the service manager.
+    service_manager.collapsed = MagicMock()
+
+    # WHEN on_expand_selection is called
+    service_manager.on_collapse_selection()
+
+    # THEN selection should be expanded
+    selected_index = service_manager.service_manager_list.currentIndex()
+    assert service_manager.service_manager_list.isExpanded(selected_index) is False, \
+        'Item should have been collapsed'
+    assert service_manager.service_manager_list.currentItem() == song_item, \
+        'Top item should have been selected'
+    service_manager.collapsed.assert_called_once_with(song_item)
+
+
+def test_replace_service_item(registry, service_manager):
+    """
+    Tests that the replace_service_item function replaces items as expected
+    """
+    # GIVEN a service item list and a new item which name and edit_id match a service item
+    service_manager.repaint_service_list = MagicMock()
+    # registry.remove('live_controller')
+    # Registry().register('live_controller', MagicMock())
+    item1 = MagicMock()
+    item1.edit_id = 'abcd'
+    item1.name = 'itemA'
+    item2 = MagicMock()
+    item2.edit_id = 'abcd'
+    item2.name = 'itemB'
+    item3 = MagicMock()
+    item3.edit_id = 'cfgh'
+    item3.name = 'itemA'
+    service_manager.service_items = [
+        {'service_item': item1},
+        {'service_item': item2},
+        {'service_item': item3}
+    ]
+    new_item = MagicMock()
+    new_item.edit_id = 'abcd'
+    new_item.name = 'itemA'
+
+    # WHEN replace_service_item is called
+    service_manager.replace_service_item(new_item)
+
+    # THEN new_item should replace item1, and only replaces that one item
+    assert service_manager.service_items[0]['service_item'] == new_item
+    new_item.merge.assert_called_once_with(item1)

@@ -22,6 +22,7 @@
 This is the main window, where all the action happens.
 """
 import shutil
+from contextlib import contextmanager
 from datetime import datetime, date
 from pathlib import Path
 from tempfile import gettempdir
@@ -529,20 +530,32 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.ws_server = WebSocketServer()
         self.screen_updating_lock = Lock()
 
+    @contextmanager
+    def _show_wait_dialog(self, title, message):
+        """
+        Show a wait dialog, wait for some tasks to complete, and then close it.
+        """
+        try:
+            # Display a progress dialog with a message
+            wait_dialog = QtWidgets.QProgressDialog(message, '', 0, 0, self)
+            wait_dialog.setWindowTitle(title)
+            for window_flag in [QtCore.Qt.WindowContextHelpButtonHint]:
+                wait_dialog.setWindowFlag(window_flag, False)
+            wait_dialog.setWindowModality(QtCore.Qt.WindowModal)
+            wait_dialog.setAutoClose(False)
+            wait_dialog.setCancelButton(None)
+            wait_dialog.show()
+            QtWidgets.QApplication.processEvents()
+            yield
+        finally:
+            # Finally close the message window
+            wait_dialog.close()
+
     def _wait_for_threads(self):
         """
         Wait for the threads
         """
         # Sometimes the threads haven't finished, let's wait for them
-        wait_dialog = QtWidgets.QProgressDialog(translate('OpenLP.MainWindow', 'Waiting for some things to finish...'),
-                                                '', 0, 0, self)
-        wait_dialog.setWindowTitle(translate('OpenLP.MainWindow', 'Please Wait'))
-        for window_flag in [QtCore.Qt.WindowContextHelpButtonHint]:
-            wait_dialog.setWindowFlag(window_flag, False)
-        wait_dialog.setWindowModality(QtCore.Qt.WindowModal)
-        wait_dialog.setAutoClose(False)
-        wait_dialog.setCancelButton(None)
-        wait_dialog.show()
         thread_names = list(self.application.worker_threads.keys())
         for thread_name in thread_names:
             if thread_name not in self.application.worker_threads.keys():
@@ -569,7 +582,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             except RuntimeError:
                 # Ignore the RuntimeError that is thrown when Qt has already deleted the C++ thread object
                 pass
-        wait_dialog.close()
 
     def bootstrap_post_set_up(self):
         """
@@ -1085,10 +1097,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             else:
                 event.accept()
         if event.isAccepted():
-            # Wait for all the threads to complete
-            self._wait_for_threads()
-            # If we just did a settings import, close without saving changes.
-            self.clean_up(save_settings=not self.settings_imported)
+            with self._show_wait_dialog(translate('OpenLP.MainWindow', 'Please Wait'),
+                                        translate('OpenLP.MainWindow', 'Waiting for some things to finish...')):
+                # Wait for all the threads to complete
+                self._wait_for_threads()
+                # If we just did a settings import, close without saving changes.
+                self.clean_up(save_settings=not self.settings_imported)
 
     def eventFilter(self, obj, event):
         if event.type() == QtCore.QEvent.FileOpen:

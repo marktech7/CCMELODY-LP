@@ -2,34 +2,34 @@
 <context>
     <name>AlertsPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="162"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="160"/>
         <source>&amp;Alert</source>
         <translation>&amp;Avviso</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="162"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="160"/>
         <source>Show an alert message.</source>
-        <translation>Visualizza un messaggio di Avviso</translation>
+        <translation>Visualizza un messaggio di avviso.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="190"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="188"/>
         <source>&lt;strong&gt;Alerts Plugin&lt;/strong&gt;&lt;br /&gt;The alert plugin controls the displaying of alerts on the display screen.</source>
         <translation>&lt;strong&gt;Plugin degli avvisi&lt;/strong&gt;&lt;br /&gt;Il plugin degli avvisi consente di visualizzare degli avvisi sullo schermo durante la proiezione.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="200"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="198"/>
         <source>Alert</source>
         <comment>name singular</comment>
         <translation>Avviso</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="201"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="199"/>
         <source>Alerts</source>
         <comment>name plural</comment>
         <translation>Avvisi</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="205"/>
+        <location filename="../../openlp/plugins/alerts/alertsplugin.py" line="203"/>
         <source>Alerts</source>
         <comment>container title</comment>
         <translation>Avvisi</translation>
@@ -40,12 +40,12 @@
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="93"/>
         <source>Alert Message</source>
-        <translation>Messaggio di Avviso</translation>
+        <translation>Messaggio di avviso</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="94"/>
         <source>Alert &amp;text:</source>
-        <translation>&amp;Testo dell&apos;Avviso:</translation>
+        <translation>&amp;Testo dell&apos;avviso:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="95"/>
@@ -70,12 +70,12 @@
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertdialog.py" line="99"/>
         <source>Display &amp;&amp; Cl&amp;ose</source>
-        <translation>Visualizza &amp;&amp; Chiudi</translation>
+        <translation>Visualizza &amp;e ch&amp;iudi</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="108"/>
         <source>New Alert</source>
-        <translation>Nuovo Avviso</translation>
+        <translation>Nuovo avviso</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="108"/>
@@ -93,20 +93,20 @@ Digita del testo prima di fare clic su Nuovo.</translation>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="179"/>
         <source>You have not entered a parameter to be replaced.
 Do you want to continue anyway?</source>
-        <translation>Non hai inserito alcun parametro da sostituire.
-Vuoi continuare ugualmente?</translation>
+        <translation>Non hai inserito un parametro da sostituire.
+Vuoi continuare comunque?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="190"/>
         <source>No Placeholder Found</source>
-        <translation>Nessun Segnaposto trovato</translation>
+        <translation>Nessun placeholder trovato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/forms/alertform.py" line="190"/>
         <source>The alert text does not contain '&lt;&gt;'.
 Do you want to continue anyway?</source>
-        <translation>Il testo di avviso non contiene  &apos;&lt;&gt;&apos;.
-Vuoi continuare ugualmente?</translation>
+        <translation>Il testo dell&apos;avviso non contiene &apos;&lt;&gt;&apos;.
+Vuoi continuare comunque?</translation>
     </message>
 </context>
 <context>
@@ -114,37 +114,37 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="118"/>
         <source>Font Settings</source>
-        <translation>Impostazione Carattere</translation>
+        <translation>Impostazioni carattere</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="119"/>
         <source>Font name:</source>
-        <translation>Nome Carattere:</translation>
+        <translation>Nome del carattere</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="120"/>
         <source>Font color:</source>
-        <translation>Colore Carattere:</translation>
+        <translation>Colore del carattere:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="122"/>
         <source>Font size:</source>
-        <translation>Dimensione Carattere:</translation>
+        <translation>Dimensione del carattere:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="124"/>
         <source>Background Settings</source>
-        <translation>Impostazioni Sfondo</translation>
+        <translation>Impostazioni dello sfondo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="125"/>
         <source>Other Settings</source>
-        <translation>Altre Impostazioni</translation>
+        <translation>Altre impostazioni</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="126"/>
         <source>Alert timeout:</source>
-        <translation>durata Avviso:</translation>
+        <translation>Timeout dell&apos;avviso:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="128"/>
@@ -154,7 +154,7 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/alerts/lib/alertstab.py" line="129"/>
         <source>Enable Scrolling</source>
-        <translation>Abilita lo scorrimento</translation>
+        <translation>Abilita scorrimento</translation>
     </message>
 </context>
 <context>
@@ -167,7 +167,7 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="110"/>
         <source>&lt;strong&gt;Bible Plugin&lt;/strong&gt;&lt;br /&gt;The Bible plugin provides the ability to display Bible verses from different sources during the service.</source>
-        <translation>&lt;strong&gt;Bibbia Plugin&lt;/strong&gt;&lt;br /&gt; Il componente aggiuntivo Bibbia permette di visualizzare i versetti della Bibbia da fonti diverse durante il servizio.</translation>
+        <translation>&lt;strong&gt;Plugin della Bibbia&lt;/strong&gt;&lt;br /&gt;Il plugin della Bibbia offre la possibilità di visualizzare versi biblici, da diverse fonti, durante il servizio di culto.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="143"/>
@@ -190,12 +190,12 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="153"/>
         <source>Import a Bible.</source>
-        <translation>Importa una Bibbia</translation>
+        <translation>Importa una Bibbia.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="154"/>
         <source>Add a new Bible.</source>
-        <translation>Aggiungi una Bibbia.</translation>
+        <translation>Aggiungi una nuova Bibbia.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="155"/>
@@ -210,17 +210,17 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="157"/>
         <source>Preview the selected Bible.</source>
-        <translation>Anteprima della Bibbia selezionata.</translation>
+        <translation>Visualizza nell&apos;Anteprima la Bibbia selezionata.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="158"/>
         <source>Send the selected Bible live.</source>
-        <translation>Proietta la Bibbia selezionata.</translation>
+        <translation>Invia la Bibbia selezionata nella Diretta.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/bibleplugin.py" line="159"/>
         <source>Add the selected Bible to the service.</source>
-        <translation>Aggiungi la Bibbia selezionata nel service.</translation>
+        <translation>Aggiungi la Bibbia selezionata al Servizio.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="48"/>
@@ -440,7 +440,7 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="91"/>
         <source>Acts</source>
-        <translation>Atti</translation>
+        <translation>Atti degli Apostoli</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="92"/>
@@ -600,12 +600,12 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="123"/>
         <source>Rest of Daniel</source>
-        <translation>Resto di Daniele</translation>
+        <translation>Supplementi a Daniele</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="124"/>
         <source>Rest of Esther</source>
-        <translation>Resto di Ester</translation>
+        <translation>Ester greco</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="125"/>
@@ -615,7 +615,7 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="126"/>
         <source>Letter of Jeremiah</source>
-        <translation>Lettere di Geremia</translation>
+        <translation>Lettera di Geremia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="127"/>
@@ -630,7 +630,7 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="129"/>
         <source>Bel</source>
-        <translation>Bel e il  Dragone</translation>
+        <translation>Bel</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/__init__.py" line="130"/>
@@ -703,19 +703,19 @@ Vuoi continuare ugualmente?</translation>
         <translation>fine</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="713"/>
         <source>No Book Found</source>
-        <translation>Libro non trovato</translation>
+        <translation>Nessun libro trovato</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="709"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="713"/>
         <source>No matching book could be found in this Bible. Check that you have spelled the name of the book correctly.</source>
-        <translation>Nessun libro corrispondente è stato trovato in questa Bibbia. Verificare di aver digitato correttamente il nome del libro.</translation>
+        <translation>Nessuna corrispondenza è stato trovata in questa Bibbia. Verifica di aver digitato il nome del libro correttamente.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="65"/>
         <source>The proxy server {proxy} was found in the bible {name}.&lt;br&gt;Would you like to set it as the proxy for OpenLP?</source>
-        <translation>Il server proxy {proxy} è stato trovato per la bibbia {name}. &lt;br&gt;Vuoi impostarlo come proxy per OpenLP?</translation>
+        <translation>Il server proxy {proxy} è stato trovato nella Bibbia {name}. &lt;br&gt;Vuoi impostarlo come proxy per OpenLP?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/upgrade.py" line="70"/>
@@ -728,27 +728,27 @@ Vuoi continuare ugualmente?</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="162"/>
         <source>You need to specify a version name for your Bible.</source>
-        <translation>È necessario specificare un nome di versione per la vostra Bibbia.</translation>
+        <translation>Devi specificare un nome per la tua Bibbia.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="168"/>
         <source>You need to set a copyright for your Bible. Bibles in the Public Domain need to be marked as such.</source>
-        <translation>È necessario definire il copyright per la Bibbia. Bibbie di pubblico dominio devono essere contrassegnati come tali.</translation>
+        <translation>Devi impostare un copyright per la tua Bibbia. Le Bibbie di pubblico dominio devono essere contrassegnate come tali.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="176"/>
         <source>Bible Exists</source>
-        <translation>Bibbia presente</translation>
+        <translation>Bibbia esistente</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="176"/>
         <source>This Bible already exists. Please import a different Bible or first delete the existing one.</source>
-        <translation>Questa Bibbia esiste già. Si prega di importare una Bibbia diversa o prima eliminare quella esistente.</translation>
+        <translation>Questa Bibbia esiste già. Importa una Bibbia diversa o cancella prima quella esistente.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="190"/>
         <source>You need to specify a book name for &quot;{text}&quot;.</source>
-        <translation>E&apos; necessario specificare il nome di un libro per &quot;{text}&quot;.</translation>
+        <translation>Devi specificare un nome per il libro &quot;{text}&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="197"/>
@@ -756,18 +756,18 @@ Vuoi continuare ugualmente?</translation>
 Numbers can only be used at the beginning and must
 be followed by one or more non-numeric characters.</source>
         <translation>Il nome del libro &quot;{name}&quot; non è corretto.
-I numeri possono essere usati all&apos; inizio e devono
-essere seguiti ad uno o più caratteri alfanumerici.</translation>
+I numeri possono essere utilizzati solo all&apos;inizio e devono
+essere seguiti da uno o più caratteri non numerici.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="210"/>
         <source>Duplicate Book Name</source>
-        <translation>Nome Libro duplicato</translation>
+        <translation>Nome del libro duplicato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="210"/>
         <source>The Book Name &quot;{name}&quot; has been entered more than once.</source>
-        <translation>Il nome del libro &quot;{name}&quot; è stato inserito più di una volta</translation>
+        <translation>Il nome del libro &quot;{name}&quot; è stato inserito più di una volta.</translation>
     </message>
 </context>
 <context>
@@ -775,7 +775,7 @@ essere seguiti ad uno o più caratteri alfanumerici.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="53"/>
         <source>The file &quot;{file}&quot; you supplied is compressed. You must decompress it before import.</source>
-        <translation>Il tuo file &quot;{file}&quot; caricato è compresso. E&apos; necessario decomprimerlo prima di importarlo.</translation>
+        <translation>Il file &quot;{file}&quot; che hai fornito è compresso. Devi decomprimerlo prima dell&apos;importazione.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="224"/>
@@ -789,7 +789,7 @@ essere seguiti ad uno o più caratteri alfanumerici.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/manager.py" line="334"/>
         <source>Web Bible cannot be used in Text Search</source>
-        <translation>Le Bibbie Web non possono essere utilizzate nella ricerca dei testi</translation>
+        <translation>La ricerca per testo non può essere usata in una Bibbia online</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/manager.py" line="334"/>
@@ -797,10 +797,10 @@ essere seguiti ad uno o più caratteri alfanumerici.</translation>
 Please use the Scripture Reference Search instead.
 
 This means that the currently selected Bible is a Web Bible.</source>
-        <translation>La ricerca testo non è disponibile con la Bibbia Web.
-Utilizzare invece la ricerca di riferimento nelle Scritture.
+        <translation>La ricerca per testo non è disponibile con una Bibbia online.
+Puoi eseguire la ricerca tramite il riferimento biblico (es. Giovanni 3:16) 
 
-Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</translation>
+Questo significa che la Bibbia attualmente selezionata è una Bibbia online.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="798"/>
@@ -810,7 +810,7 @@ Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</trans
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="798"/>
         <source>&lt;strong&gt;The reference you typed is invalid!&lt;br&gt;&lt;br&gt;Please make sure that your reference follows one of these patterns:&lt;/strong&gt;&lt;br&gt;&lt;br&gt;%s</source>
-        <translation>&lt;strong&gt;Il riferimento che hai digitato non è valido!&lt;br&gt;&lt;br&gt;Assicurati che il tuo riferimento segua uno di questi schemi:&lt;/strong&gt;&lt;br&gt;&lt;br&gt;%s</translation>
+        <translation>&lt;strong&gt;Il riferimento che hai digitato non è valido!&lt;br&gt;&lt;br&gt;Assicurati che esso segua uno di questi schemi:&lt;/strong&gt;&lt;br&gt;&lt;br&gt;%s</translation>
     </message>
 </context>
 <context>
@@ -833,7 +833,7 @@ Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</trans
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="182"/>
         <source>Bible theme:</source>
-        <translation>Tema della Bibbia:</translation>
+        <translation>Tema usato dalla Bibbia:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="187"/>
@@ -858,12 +858,12 @@ Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</trans
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="195"/>
         <source>Note: Changes do not affect verses in the Service</source>
-        <translation>Nota: Le modifiche non influiscono sui versetti nel Servizio</translation>
+        <translation>Nota: Le modifiche non influiscono sui versi che sono già presenti nel Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="197"/>
         <source>Display second Bible verses</source>
-        <translation>Mostra i versetti della seconda Bibbia</translation>
+        <translation>Mostra i versi della seconda Bibbia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="198"/>
@@ -873,17 +873,17 @@ Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</trans
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="199"/>
         <source>Verse separator:</source>
-        <translation>Separatore dei versetti:</translation>
+        <translation>Separatore dei versi:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="200"/>
         <source>Range separator:</source>
-        <translation>Separatore di intervallo:</translation>
+        <translation>Separatore di intervalli:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="201"/>
         <source>List separator:</source>
-        <translation>Separatore elenco:</translation>
+        <translation>Separatore di elenchi:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="202"/>
@@ -895,9 +895,9 @@ Questo significa che la Bibbia attualmente selezionata è una Bibbia web.</trans
         <source>Multiple alternative verse separators may be defined.
 They have to be separated by a vertical bar &quot;|&quot;.
 Please clear this edit line to use the default value.</source>
-        <translation>È possibile definire più separatori di versetti.
+        <translation>È possibile definire più separatori di versi.
 Devono essere separati da una barra verticale &quot;|&quot;.
-Lascia la riga vuota per usare il valore predefinito.</translation>
+Lascia questa riga vuota per usare il valore predefinito.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="210"/>
@@ -908,8 +908,8 @@ Lascia la riga vuota per usare il valore predefinito.</translation>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="211"/>
         <source>Book name language in search field,
 search results and on display:</source>
-        <translation>Lingua per i nomi dei libri nel campo di ricerca,
-nei risultati e sullo schermo:</translation>
+        <translation>Lingua utilizzata per i nomi dei libri nel campo di ricerca,
+nei risultati e durante la proiezione:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="213"/>
@@ -934,7 +934,7 @@ nei risultati e sullo schermo:</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="220"/>
         <source>Reset search type to &quot;Text or Scripture Reference&quot; on startup</source>
-        <translation>Ripristina il tipo di ricerca in &quot;Testo o Riferimento biblico&quot; all&apos;avvio</translation>
+        <translation>Ripristina il tipo di ricerca in &quot;Testo o Riferimento biblico&quot; all&apos;avvio di OpenLP</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/biblestab.py" line="223"/>
@@ -979,7 +979,7 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="91"/>
         <source>Old Testament</source>
-        <translation>Vecchio Testamento</translation>
+        <translation>Antico Testamento</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="92"/>
@@ -989,7 +989,7 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
     <message>
         <location filename="../../openlp/plugins/bibles/forms/booknamedialog.py" line="93"/>
         <source>Apocrypha</source>
-        <translation>Libri Apocrifi</translation>
+        <translation>Apocrifi</translation>
     </message>
 </context>
 <context>
@@ -1011,7 +1011,7 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
         <location filename="../../openlp/plugins/bibles/lib/importers/csvbible.py" line="169"/>
         <source>Importing verses from {book}...</source>
         <comment>Importing verses from &lt;book name&gt;...</comment>
-        <translation>Importazione dei versetti da {book}...</translation>
+        <translation>Importazione dei versi da {book}...</translation>
     </message>
 </context>
 <context>
@@ -1024,7 +1024,7 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="137"/>
         <source>License Details</source>
-        <translation>Dettagli Licenza</translation>
+        <translation>Dettagli della licenza</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="138"/>
@@ -1049,12 +1049,12 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="142"/>
         <source>Default Bible Language</source>
-        <translation>Lingua predefinita per la Bibbia </translation>
+        <translation>Lingua predefinita per la Bibbia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="143"/>
         <source>Book name language in search field, search results and on display:</source>
-        <translation>Lingua per i nomi dei libri nel campo di ricerca, nei risultati e sullo schermo:</translation>
+        <translation>Lingua utilizzata per i nomi dei libri nel campo di ricerca, nei risultati e durante la proiezione:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibledialog.py" line="146"/>
@@ -1080,52 +1080,52 @@ un minimo di {count} caratteri e uno spazio per motivi prestazionali)</translati
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="93"/>
         <source>This is a Web Download Bible.
 It is not possible to customize the Book Names.</source>
-        <translation>Questa è una Bibbia scaricata da Internet.
+        <translation>Questa è una Bibbia online.
 Non è possibile personalizzare i nomi dei libri.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/editbibleform.py" line="98"/>
         <source>To use the customized book names, &quot;Bible language&quot; must be selected on the Meta Data tab or, if &quot;Global settings&quot; is selected, on the Bible page in Configure OpenLP.</source>
-        <translation>Per utilizzare i nomi dei libri personalizzati, è necessario selezionare &quot;Lingua della Bibbia&quot; nella scheda Metadati o, se si seleziona &quot;Impostazioni generali&quot;, nella pagina Bibbia in Configura OpenLP.</translation>
+        <translation>Per personalizzare i nomi dei libri, è necessario selezionare &quot;Lingua della Bibbia&quot; nella scheda Metadati o, se si seleziona &quot;Impostazioni generali&quot;, nella pagina Bibbia in Configura OpenLP.</translation>
     </message>
 </context>
 <context>
     <name>BiblesPlugin.HTTPBible</name>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="643"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="647"/>
         <source>Registering Bible and loading books...</source>
         <translation>Registrazione della Bibbia e caricamento dei libri...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="659"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="663"/>
         <source>Registering Language...</source>
         <translation>Registrazione della lingua...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="666"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="670"/>
         <source>Importing {book}...</source>
         <comment>Importing &lt;book name&gt;...</comment>
         <translation>Importazione di {book}...</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="813"/>
         <source>Download Error</source>
         <translation>Errore durante il download</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="809"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="813"/>
         <source>There was a problem downloading your verse selection. Please check your Internet connection, and if this error continues to occur, please consider reporting a bug.</source>
-        <translation>Si è verificato un problema durante il download dei versetti. Controlla la tua connessione ad Internet e se l&apos;errore persiste, considera la segnalazione del bug.</translation>
+        <translation>Si è verificato un problema durante il download dei versi. Controlla la tua connessione ad Internet e, se l&apos;errore persiste, considera la segnalazione del bug.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
         <source>Parse Error</source>
         <translation>Errore di analisi</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="815"/>
+        <location filename="../../openlp/plugins/bibles/lib/importers/http.py" line="819"/>
         <source>There was a problem extracting your verse selection. If this error continues to occur please consider reporting a bug.</source>
-        <translation>Si è verificato un problema durante l&apos;estrazione dei versetti selezionati. Se l&apos;errore persiste, considera la segnalazione del bug.</translation>
+        <translation>Si è verificato un problema durante l&apos;estrazione dei versi selezionati. Se l&apos;errore persiste, considera la segnalazione del bug.</translation>
     </message>
 </context>
 <context>
@@ -1143,7 +1143,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="375"/>
         <source>This wizard will help you to import Bibles from a variety of formats. Click the next button below to start the process by selecting a format to import from.</source>
-        <translation>Questa procedura guidata ti aiuterà a importare le Bibbie. Fai clic sul pulsante successivo in basso per avviare il processo selezionando un formato da cui importare.</translation>
+        <translation>Questa procedura guidata ti consentirà di importare la Bibbia. Fai clic sul pulsante &quot;Successivo&quot; in basso per selezionare il formato della Bibbia che vuoi importare.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="387"/>
@@ -1163,7 +1163,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="393"/>
         <source>Verses file:</source>
-        <translation>File dei versetti:</translation>
+        <translation>File dei versi:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="395"/>
@@ -1183,7 +1183,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="400"/>
         <source>Crosswalk</source>
-        <translation>Riferimenti</translation>
+        <translation>Crosswalk</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="402"/>
@@ -1233,7 +1233,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="421"/>
         <source>License Details</source>
-        <translation>Dettagli della Licenza</translation>
+        <translation>Dettagli della licenza</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="423"/>
@@ -1243,7 +1243,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="425"/>
         <source>Version name:</source>
-        <translation>Nome della Versione:</translation>
+        <translation>Nome della versione:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="426"/>
@@ -1263,7 +1263,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="430"/>
         <source>Please wait while your Bible is imported.</source>
-        <translation>Si prega di attendere mentre la Bibbia viene importata.</translation>
+        <translation>Attendi mentre la Bibbia viene importata.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="462"/>
@@ -1273,12 +1273,12 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="469"/>
         <source>You need to specify a file of Bible verses to import.</source>
-        <translation>È necessario specificare un file con i versetti della Bibbia da importare.</translation>
+        <translation>È necessario specificare un file con i versi della Bibbia da importare.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="532"/>
         <source>You need to specify a version name for your Bible.</source>
-        <translation>È necessario specificare un nome per la tua Bibbia.</translation>
+        <translation>Devi specificare un nome per la tua Bibbia.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="538"/>
@@ -1288,7 +1288,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="553"/>
         <source>Bible Exists</source>
-        <translation>Bibbia presente</translation>
+        <translation>Bibbia esistente</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="553"/>
@@ -1313,12 +1313,12 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="761"/>
         <source>Registered Bible. Please note, that verses will be downloaded on demand and thus an internet connection is required.</source>
-        <translation>Bibbia registrata. Si prega di notare che i versi verranno scaricati sul momento e quindi è necessaria una connessione a Internet.</translation>
+        <translation>Bibbia registrata. Nota bene: i versi verranno scaricati sul momento e quindi è necessaria una connessione ad Internet.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="771"/>
         <source>Your Bible import failed.</source>
-        <translation>L&apos;importazione Bibbia non è riuscita.</translation>
+        <translation>L&apos;importazione della Bibbia non è riuscita.</translation>
     </message>
 </context>
 <context>
@@ -1326,12 +1326,12 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="66"/>
         <source>Select Language</source>
-        <translation>Seleziona la Lingua</translation>
+        <translation>Seleziona la lingua</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="68"/>
         <source>OpenLP is unable to determine the language of this translation of the Bible. Please select the language from the list below.</source>
-        <translation>OpenLP non è in grado di determinare la lingua di questa traduzione della Bibbia. Seleziona la lingua dal seguente elenco.</translation>
+        <translation>OpenLP non è in grado di determinare la lingua di questa traduzione della Bibbia. Selezionala dal seguente elenco.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languagedialog.py" line="72"/>
@@ -1344,7 +1344,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/languageform.py" line="62"/>
         <source>You need to choose a language.</source>
-        <translation>E&apos; necessario scegliere una lingua.</translation>
+        <translation>Devi scegliere una lingua.</translation>
     </message>
 </context>
 <context>
@@ -1402,7 +1402,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="264"/>
         <source>Verse:</source>
-        <translation>Versetto:</translation>
+        <translation>Versi:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="269"/>
@@ -1417,17 +1417,17 @@ Non è possibile personalizzare i nomi dei libri.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
         <source>Text or Reference</source>
-        <translation>Testo o Riferimento</translation>
+        <translation>Testo o riferimento</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
         <source>Text or Reference...</source>
-        <translation>Testo o Riferimento...</translation>
+        <translation>Testo o riferimento...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
         <source>Scripture Reference</source>
-        <translation>Riferimento Biblico</translation>
+        <translation>Riferimento biblico</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="313"/>
@@ -1451,7 +1451,7 @@ Non è possibile personalizzare i nomi dei libri.</translation>
 You will need to re-import this Bible to use it again.</source>
         <translation>Sei sicuro di voler eliminare la Bibbia &quot;{bible}&quot; da OpenLP?
 
-Dovrai reimportare questa Bibbia per riutilizzarla.</translation>
+Dovrai reimportare questa Bibbia per utilizzarla di nuovo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="507"/>
@@ -1461,12 +1461,12 @@ Dovrai reimportare questa Bibbia per riutilizzarla.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="510"/>
         <source>Results ({result_count})</source>
-        <translation>Risultati  ({result_count})</translation>
+        <translation>Risultati ({result_count})</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="589"/>
         <source>OpenLP cannot combine single and dual Bible verse search results. Do you want to clear your saved results?</source>
-        <translation>OpenLP non è in grado di combinare i risultati delle ricerche effettuate con una singola Bibbia e con una doppia Bibbia. Vuoi cancellare i risultati salvati?</translation>
+        <translation>OpenLP non è in grado di combinare i risultati delle ricerche effettuate con una singola Bibbia con i risultati delle ricerche effettuate con più Bibbie. Vuoi cancellare i risultati salvati?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="624"/>
@@ -1476,7 +1476,7 @@ Dovrai reimportare questa Bibbia per riutilizzarla.</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="772"/>
         <source>Verses not found</source>
-        <translation>Versetti non trovati</translation>
+        <translation>Versi non trovati</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/mediaitem.py" line="772"/>
@@ -1484,10 +1484,10 @@ Dovrai reimportare questa Bibbia per riutilizzarla.</translation>
 Only verses found in both Bibles will be shown.
 
 {count:d} verses have not been included in the results.</source>
-        <translation>La seconda Bibbia &quot;{second_name}&quot; non contiene tutti i versetti che si trovano nella Bibbia principale &quot;{name}&quot;.
-Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
+        <translation>La seconda Bibbia &quot;{second_name}&quot; non contiene tutti i versi che si trovano nella Bibbia principale &quot;{name}&quot;.
+Verranno mostrati solo i versi trovati in entrambe le Bibbie.
 
-{count:d} versetti non sono stati inclusi nei risultati.</translation>
+ {count:d} versi non sono stati inclusi nei risultati.</translation>
     </message>
 </context>
 <context>
@@ -1495,7 +1495,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="171"/>
         <source>Removing unused tags (this may take a few minutes)...</source>
-        <translation>Rimozione dei tag inutilizzati (questo può richiedere alcuni minuti)...</translation>
+        <translation>Rimozione dei tag inutilizzati (l&apos;operazione potrebbe richiedere alcuni minuti)...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/bibleimport.py" line="200"/>
@@ -1517,7 +1517,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
         <location filename="../../openlp/plugins/bibles/lib/importers/sword.py" line="93"/>
         <source>An unexpected error happened while importing the SWORD bible, please report this to the OpenLP developers.
 {error}</source>
-        <translation>Si è verificato un errore imprevisto durante l&apos;importazione della Bibbia in formato SWORD, si prega di segnalare questo evento agli sviluppatori di OpenLP.
+        <translation>Si è verificato un errore imprevisto durante l&apos;importazione della Bibbia in formato SWORD, per favore segnala questo evento agli sviluppatori di OpenLP.
 {error}</translation>
     </message>
 </context>
@@ -1531,7 +1531,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/wordproject.py" line="75"/>
         <source>Incorrect Bible file type, files are missing.</source>
-        <translation>Il file Bibbia non è corretto, mancano dei file.</translation>
+        <translation>Il file della Bibbia non è corretto, mancano dei file.</translation>
     </message>
 </context>
 <context>
@@ -1539,12 +1539,12 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="59"/>
         <source>Incorrect Bible file type. Expected data is missing.</source>
-        <translation>Il file della Bibbia non è corretto, mancano dei dati previsti.</translation>
+        <translation>Il file della Bibbia non è corretto. Mancano dei dati essenziali.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/bibles/lib/importers/zefania.py" line="95"/>
         <source>Incorrect Bible file type supplied. Zefania Bibles may be compressed. You must decompress them before import.</source>
-        <translation>Il file della Bibbia fornito non è valido. Le Bibbie in formato Zefania possono essere compresse. È necessario decomprimerle prima dell&apos;importazione.</translation>
+        <translation>Il file della Bibbia che hai fornito non è valido. Le Bibbie in formato Zefania potrebbero essere compresse. Devi decomprimerle prima dell&apos;importazione.</translation>
     </message>
 </context>
 <context>
@@ -1560,25 +1560,25 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="62"/>
         <source>&lt;strong&gt;Custom Slide Plugin&lt;/strong&gt;&lt;br /&gt;The custom slide plugin provides the ability to set up custom text slides that can be displayed on the screen the same way songs are. This plugin provides greater freedom over the songs plugin.</source>
-        <translation>&lt;strong&gt;Plugin per le Slides Personalizzate&lt;/strong&gt;&lt;br /&gt;Il plugin per le slides personalizzate fornisce la possibilità di creare delle diapositive di testo personalizzate che possono essere visualizzate sullo schermo allo stesso modo dei brani. Questo plugin offre una maggiore libertà rispetto al plugin dei brani.</translation>
+        <translation>&lt;strong&gt;Plugin per le diapositive personalizzate&lt;/strong&gt;&lt;br /&gt;Il plugin per le diapositive personalizzate fornisce la possibilità di creare delle diapositive di testo che possono essere visualizzate sullo schermo allo stesso modo dei brani. Questo plugin offre una maggiore libertà rispetto al plugin dei brani.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="100"/>
         <source>Custom Slide</source>
         <comment>name singular</comment>
-        <translation>Slide personalizzata</translation>
+        <translation>Diapositiva personalizzata</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="101"/>
         <source>Custom Slides</source>
         <comment>name plural</comment>
-        <translation>Slides personalizzate</translation>
+        <translation>Diapositive personalizzate</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="105"/>
         <source>Custom Slides</source>
         <comment>container title</comment>
-        <translation>Slides personalizzate</translation>
+        <translation>Diapositive personalizzate</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="109"/>
@@ -1603,7 +1603,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="113"/>
         <source>Delete the selected custom slide.</source>
-        <translation>Elimina le diapositive personalizzate che hai selezionato.</translation>
+        <translation>Elimina la diapositiva personalizzata che hai selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="114"/>
@@ -1613,12 +1613,12 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="115"/>
         <source>Send the selected custom slide live.</source>
-        <translation>Invia la diapositiva personalizzata che hai selezionato nella Diretta.</translation>
+        <translation>Invia nella Diretta la diapositiva personalizzata che hai selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/customplugin.py" line="116"/>
         <source>Add the selected custom slide to the service.</source>
-        <translation>Aggiungi le diapositive personalizzate che hai selezionato al Servizio.</translation>
+        <translation>Aggiungi al Servizio la diapositiva personalizzata che hai selezionato.</translation>
     </message>
 </context>
 <context>
@@ -1644,7 +1644,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="104"/>
         <source>Edit Custom Slides</source>
-        <translation>Modifica le diapositive personalizzate</translation>
+        <translation>Modifica della diapositiva personalizzata</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="105"/>
@@ -1674,7 +1674,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="112"/>
         <source>The&amp;me:</source>
-        <translation>Te&amp;mi</translation>
+        <translation>Te&amp;ma:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomdialog.py" line="113"/>
@@ -1707,7 +1707,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/custom/forms/editcustomslidedialog.py" line="47"/>
         <source>Edit Slide</source>
-        <translation>Modifica Diapositiva</translation>
+        <translation>Modifica diapositiva</translation>
     </message>
 </context>
 <context>
@@ -1729,7 +1729,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="53"/>
         <source>&lt;strong&gt;Image Plugin&lt;/strong&gt;&lt;br /&gt;The image plugin provides displaying of images.&lt;br /&gt;One of the distinguishing features of this plugin is the ability to group a number of images together in the service manager, making the displaying of multiple images easier. This plugin can also make use of OpenLP&apos;s &quot;timed looping&quot; feature to create a slide show that runs automatically. In addition to this, images from the plugin can be used to override the current theme&apos;s background, which renders text-based items like songs with the selected image as a background instead of the background provided by the theme.</source>
-        <translation>&lt;strong&gt;Plugin delle immagini&lt;/strong&gt;&lt;br /&gt;Questo plugin offre la possibilità di visualizzare le immagini.&lt;br /&gt;Una delle caratteristiche distintive di questo plugin è la possibilità di raggruppare le immagini nel Servizio, semplificando la visualizzazione di più immagini. Questo plugin può anche utilizzare la funzione &quot;timer&quot; di OpenLP per creare una presentazione che viene eseguita automaticamente. Inoltre, le immagini del plugin possono essere utilizzate per sovrascrivere lo sfondo del tema corrente.</translation>
+        <translation>&lt;strong&gt;Plugin delle immagini&lt;/strong&gt;&lt;br /&gt;Questo plugin offre la possibilità di visualizzare delle immagini.&lt;br /&gt;Una delle caratteristiche che distingue questo plugin è la possibilità di raggruppare le immagini nel Servizio, semplificando la visualizzazione di più immagini. Questo plugin può anche utilizzare la funzione &quot;timer&quot; di OpenLP per creare una presentazione che viene eseguita automaticamente.  Inoltre, le immagini del plugin possono essere utilizzate per sovrascrivere lo sfondo del tema corrente.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="78"/>
@@ -1752,7 +1752,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="85"/>
         <source>Add new image(s).</source>
-        <translation>Aggiungi nuove Immagini.</translation>
+        <translation>Aggiungi nuove immagini.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/imageplugin.py" line="87"/>
@@ -1787,7 +1787,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="192"/>
         <source>Add new image(s)</source>
-        <translation>Aggiungi nuove Immagini.</translation>
+        <translation>Aggiungi nuove immagini</translation>
     </message>
 </context>
 <context>
@@ -1795,7 +1795,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="54"/>
         <source>Add group</source>
-        <translation>Aggiungi Gruppo</translation>
+        <translation>Aggiungi gruppo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="55"/>
@@ -1805,22 +1805,22 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupdialog.py" line="56"/>
         <source>Group name:</source>
-        <translation>Nome del Gruppo:</translation>
+        <translation>Nome del gruppo:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupform.py" line="67"/>
         <source>You need to type in a group name.</source>
-        <translation>È necessario specificare un nome per il gruppo.</translation>
+        <translation>Devi specificare un nome per il gruppo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="663"/>
         <source>Could not add the new group.</source>
-        <translation>Impossibile aggiungere il nuovo gruppo.</translation>
+        <translation>Non è stato possibile aggiungere il nuovo gruppo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="666"/>
         <source>This group already exists.</source>
-        <translation>Questo Gruppo esiste già.</translation>
+        <translation>Questo gruppo esiste già.</translation>
     </message>
 </context>
 <context>
@@ -1838,7 +1838,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="84"/>
         <source>No group</source>
-        <translation>Nessun Gruppo</translation>
+        <translation>Nessun gruppo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="85"/>
@@ -1848,7 +1848,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/forms/choosegroupdialog.py" line="86"/>
         <source>New group</source>
-        <translation>Nuovo Gruppo</translation>
+        <translation>Nuovo gruppo</translation>
     </message>
 </context>
 <context>
@@ -1856,7 +1856,7 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="169"/>
         <source>Select Attachment</source>
-        <translation>Seleziona allegati</translation>
+        <translation>Seleziona allegato</translation>
     </message>
 </context>
 <context>
@@ -1864,12 +1864,12 @@ Verranno mostrati solo i versetti trovati in entrambe le Bibbie.
     <message>
         <location filename="../../openlp/plugins/images/forms/addgroupform.py" line="54"/>
         <source>-- Top-level group --</source>
-        <translation>-- Gruppo Principale --</translation>
+        <translation>-- Gruppo principale --</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="82"/>
         <source>Select Image(s)</source>
-        <translation>Selezione Immagini</translation>
+        <translation>Seleziona immagini</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="244"/>
@@ -1911,7 +1911,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="700"/>
         <source>There was a problem replacing your background, the image file &quot;{name}&quot; no longer exists.</source>
-        <translation>Si è verificato un problema durante la sostituzione dello sfondo, il file di immagine &quot;{nome}&quot; non esiste più.</translation>
+        <translation>Si è verificato un problema durante la sostituzione dello sfondo, il file &quot;{nome}&quot; non esiste più.</translation>
     </message>
 </context>
 <context>
@@ -1919,7 +1919,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="69"/>
         <source>Image Background</source>
-        <translation>Immagine di Sfondo</translation>
+        <translation>Immagine di sfondo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/images/lib/imagetab.py" line="70"/>
@@ -1942,24 +1942,24 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="135"/>
         <source>Add new media</source>
-        <translation>Aggiungi nuovi media</translation>
+        <translation>Aggiungi nuovi contenuti multimediali</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="101"/>
         <source>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt;The media plugin provides playback of audio and video.</source>
-        <translation>&lt;strong&gt;Media Plugin&lt;/strong&gt;&lt;br /&gt; Il plugin multimediale consente la riproduzione di audio e video.</translation>
+        <translation>&lt;strong&gt;Plugin multimediale&lt;/strong&gt;&lt;br /&gt;Il plugin multimediale consente la riproduzione di audio e video.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="111"/>
         <source>Media</source>
         <comment>name singular</comment>
-        <translation>Media</translation>
+        <translation>Contenuto multimediale</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="112"/>
         <source>Media</source>
         <comment>name plural</comment>
-        <translation>Media</translation>
+        <translation>Contenuti multimediali</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="116"/>
@@ -1970,37 +1970,37 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="120"/>
         <source>Load new media.</source>
-        <translation>Carica nuovi media.</translation>
+        <translation>Carica nuovi contenuti multimediali.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="122"/>
         <source>Add new media.</source>
-        <translation>Aggiungi nuovi media.</translation>
+        <translation>Aggiungi nuovi contenuti multimediali.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="123"/>
         <source>Edit the selected media.</source>
-        <translation>Modifica il media selezionato.</translation>
+        <translation>Modifica i contenuti multimediali che hai selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="124"/>
         <source>Delete the selected media.</source>
-        <translation>Elimina il media selezionato.</translation>
+        <translation>Elimina i contenuti multimediali che hai selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="125"/>
         <source>Preview the selected media.</source>
-        <translation>Visualizza nell&apos;Anteprima il media selezionato.</translation>
+        <translation>Visualizza nell&apos;Anteprima i contenuti multimediali che hai selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="126"/>
         <source>Send the selected media live.</source>
-        <translation>Invia i media selezionati nella Diretta.</translation>
+        <translation>Invia i contenuti multimediali che hai selezionato nella Diretta.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/mediaplugin.py" line="127"/>
         <source>Add the selected media to the service.</source>
-        <translation>Aggiungi il media selezionato al Servizio.</translation>
+        <translation>Aggiungi i contenuti multimediali che hai selezionato al Servizio.</translation>
     </message>
 </context>
 <context>
@@ -2028,12 +2028,12 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="189"/>
         <source>Load disc</source>
-        <translation>Carica Disco</translation>
+        <translation>Carica disco</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="190"/>
         <source>Track Details</source>
-        <translation>Dettagli Traccia</translation>
+        <translation>Dettagli traccia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="191"/>
@@ -2043,7 +2043,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="192"/>
         <source>Audio track:</source>
-        <translation>Traccia Audio:</translation>
+        <translation>Traccia audio:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectordialog.py" line="193"/>
@@ -2106,12 +2106,12 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="218"/>
         <source>An error happened during initialization of VLC player</source>
-        <translation>Si è verificato un errore durante l&apos;inizializzazione del Lettore VLC</translation>
+        <translation>Si è verificato un errore durante l&apos;inizializzazione di VLC player</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="239"/>
         <source>VLC player failed playing the media</source>
-        <translation>Il Lettore VLC non è riuscito a riprodurre il media</translation>
+        <translation>VLC player non è riuscito a riprodurre il contenuto multimediale</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="569"/>
@@ -2156,7 +2156,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/mediaclipselectorform.py" line="609"/>
         <source>The name of the mediaclip must not contain the character &quot;:&quot;</source>
-        <translation>Il nome della clip multimediale non deve contenere il carattere &quot;:&quot;</translation>
+        <translation>Il nome della clip multimediale non può contenere il carattere &quot;:&quot;</translation>
     </message>
 </context>
 <context>
@@ -2177,14 +2177,14 @@ Vuoi aggiungere comunque le altre immagini?</translation>
         <translation>Per il supporto agli streaming di rete è richiesto VLC.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="336"/>
+        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="335"/>
         <source>Unsupported File</source>
         <translation>File non supportato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="72"/>
         <source>Select Media</source>
-        <translation>Seleziona media</translation>
+        <translation>Seleziona contenuto multimediale</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/lib/mediaitem.py" line="148"/>
@@ -2232,12 +2232,12 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="83"/>
         <source>Live Media</source>
-        <translation>Media nella Diretta</translation>
+        <translation>Contenuti multimediali nella Diretta</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="84"/>
         <source>VLC (requires restart)</source>
-        <translation> VLC (richiede il riavvio)</translation>
+        <translation>VLC (richiede il riavvio)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="85"/>
@@ -2247,7 +2247,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/core/ui/media/mediatab.py" line="86"/>
         <source>Start Live items automatically</source>
-        <translation>Inizia a riprodurre automaticamente i media nella Diretta</translation>
+        <translation>Inizia a riprodurre automaticamente i contenuti multimediali nella Diretta</translation>
     </message>
 </context>
 <context>
@@ -2255,12 +2255,12 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="81"/>
         <source>A Stream name is needed.</source>
-        <translation>È necessario un nome per lo Stream.</translation>
+        <translation>È necessario un nome per lo stream.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="88"/>
         <source>A MRL is needed.</source>
-        <translation>E&apos; necessario un MRL</translation>
+        <translation>È necessario un MRL.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="163"/>
@@ -2280,7 +2280,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/__init__.py" line="166"/>
         <source>VLC options</source>
-        <translation>opzioni di VLC</translation>
+        <translation>Opzioni di VLC</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/networkstreamselectorform.py" line="77"/>
@@ -2400,7 +2400,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="689"/>
         <source>JACK Audio Connection Kit</source>
-        <translation>Kit di connessione JACK audio </translation>
+        <translation>Kit di connessione JACK Audio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/media/forms/streamselectordialog.py" line="695"/>
@@ -2426,7 +2426,7 @@ Vuoi aggiungere comunque le altre immagini?</translation>
 <context>
     <name>MediaPlugin.VlcPlayer</name>
     <message>
-        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="127"/>
+        <location filename="../../openlp/core/ui/media/vlcplayer.py" line="129"/>
         <source>The VLC arguments are invalid.</source>
         <translation>I parametri di VLC non sono validi.</translation>
     </message>
@@ -2434,12 +2434,12 @@ Vuoi aggiungere comunque le altre immagini?</translation>
 <context>
     <name>OpenLP</name>
     <message>
-        <location filename="../../openlp/core/app.py" line="168"/>
+        <location filename="../../openlp/core/app.py" line="167"/>
         <source>Data Directory Error</source>
         <translation>Errore nella directory dei dati</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="168"/>
+        <location filename="../../openlp/core/app.py" line="167"/>
         <source>OpenLP data folder was not found in:
 
 {path}
@@ -2453,94 +2453,94 @@ Do you want to reset to the default data location? If not, OpenLP will be closed
 
 {path}
 
-La posizione della cartella dei dati era stata precedentemente modificata rispetto alla posizione predefinita di OpenLP. Se i dati sono stati archiviati su un dispositivo rimovibile, tale dispositivo deve essere reso disponibile.
+La posizione della cartella dati era stata precedentemente modificata rispetto alla posizione predefinita di OpenLP.  Se i dati sono stati archiviati su un dispositivo rimovibile, tale dispositivo deve essere disponibile.
 
 Si può reimpostare la posizione dei dati nella posizione predefinita, oppure si può provare a rendere disponibile la posizione corrente.
 
-Si vuole reimpostare la posizione dati predefinita? In caso contrario, OpenLP verrà chiuso in modo da poter provare a risolvere il problema.</translation>
+Vuoi ripristinare la posizione dati predefinita? In caso contrario, OpenLP verrà chiuso così puoi provare a risolvere il problema.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="244"/>
+        <location filename="../../openlp/core/app.py" line="243"/>
         <source>Backup</source>
         <translation>Backup</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="227"/>
+        <location filename="../../openlp/core/app.py" line="226"/>
         <source>OpenLP has been upgraded, do you want to create
 a backup of the old data folder?</source>
         <translation>OpenLP è stato aggiornato, vuoi creare
-un backup della vecchia cartella dei dati?</translation>
+un backup della vecchia cartella dati?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="238"/>
+        <location filename="../../openlp/core/app.py" line="237"/>
         <source>Backup of the data folder failed!</source>
-        <translation>Il backup della cartella dei dati non è riuscito!</translation>
+        <translation>Il backup della cartella dati è fallito!</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="241"/>
+        <location filename="../../openlp/core/app.py" line="240"/>
         <source>A backup of the data folder has been created at:
 
 {text}</source>
-        <translation>Una copia di backup della cartella dei dati è stata creata in:
+        <translation>Una copia di backup della cartella dati è stata creata in:
 
 {text}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="334"/>
+        <location filename="../../openlp/core/app.py" line="345"/>
         <source>Downgrade</source>
         <translation>Downgrade</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="334"/>
+        <location filename="../../openlp/core/app.py" line="345"/>
         <source>OpenLP has found a configuration file created by a newer version of OpenLP. OpenLP will start with a fresh install as downgrading data is not supported. Any existing data will be backed up to:
 
 {data_folder_backup_path}
 
 Do you want to continue?</source>
-        <translation>OpenLP ha trovato un file di configurazione creato da una versione più recente di OpenLP. OpenLP inizierà con una nuova installazione, poiché il downgrade dei dati non è supportato. Il backup dei dati esistenti verrà effettuato in:
+        <translation>OpenLP ha trovato un file di configurazione creato da una versione più recente di OpenLP. Il programma inizierà con una nuova installazione, poiché il downgrade dei dati non è supportato. Il backup dei dati esistenti verrà effettuato in:
 
 {data_folder_backup_path}.
 
-Si desidera continuare?</translation>
+Vuoi continuare?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="359"/>
+        <location filename="../../openlp/core/app.py" line="370"/>
         <source>Settings Backup</source>
-        <translation>Impostazioni di Backup</translation>
+        <translation>Impostazioni del backup</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="351"/>
+        <location filename="../../openlp/core/app.py" line="362"/>
         <source>Your settings are about to be upgraded. A backup will be created at {settings_back_up_path}</source>
         <translation>Le tue impostazioni stanno per essere aggiornate. Verrà creato un backup in {settings_back_up_path}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="359"/>
+        <location filename="../../openlp/core/app.py" line="370"/>
         <source>Settings back up failed.
 
 OpenLP will attempt to continue.</source>
-        <translation>Il backup delle impostazioni non è riuscito.
+        <translation>Il backup delle impostazioni è fallito.
 
 OpenLP tenterà di continuare.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="370"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>OpenLP Backup</source>
         <translation>Backup di OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/app.py" line="370"/>
+        <location filename="../../openlp/core/app.py" line="381"/>
         <source>Backup of the data folder failed during downgrade.</source>
         <translation>Il backup della cartella dati non è riuscito durante il downgrade.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/__init__.py" line="396"/>
+        <location filename="../../openlp/core/common/__init__.py" line="403"/>
         <source>Image Files</source>
-        <translation>File Immagine</translation>
+        <translation>File immagine</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="197"/>
         <source>Video Files</source>
-        <translation>File Video</translation>
+        <translation>File video</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="667"/>
@@ -2558,22 +2558,22 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="396"/>
         <source>Error fetching version</source>
-        <translation>Errore nella ricerca della versione</translation>
+        <translation>Errore durante il recupero della versione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="396"/>
         <source>There was a problem fetching the latest version of the remote</source>
-        <translation>Si è verificato un problema nell&apos;acquisizione dell&apos;ultima versione del controllo remoto.</translation>
+        <translation>Si è verificato un problema durante il recupero dell&apos;ultima versione del controllo remoto.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="406"/>
         <source>New version available!</source>
-        <translation>Disponibile una nuova versione!</translation>
+        <translation>Nuova versione disponibile!</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="406"/>
         <source>There&apos;s a new version of the web remote available.</source>
-        <translation>È disponibile una nuova versione del telecomando web.</translation>
+        <translation>È disponibile una nuova versione del controllo remoto web.</translation>
     </message>
 </context>
 <context>
@@ -2581,7 +2581,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="103"/>
         <source>&lt;p&gt;OpenLP {{version}}{{revision}} - Open Source Lyrics Projection&lt;br&gt;Copyright {crs} 2004-{yr} OpenLP Developers&lt;/p&gt;&lt;p&gt;Find out more about OpenLP: &lt;a href=&quot;https://openlp.org/&quot;&gt;https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.&lt;/p&gt;&lt;p&gt;This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.&lt;/p&gt;&lt;p&gt;You should have received a copy of the GNU General Public License along with this program.  If not, see &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt;https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</source>
-        <translation>&lt;p&gt;OpenLP {{version}}{{revision}} - Open Source Lyrics Projection&lt;br&gt; Copyright {crs} 2004-{yr} Sviluppatori di OpenLP&lt;/p&gt;&lt;p&gt;Scopri di più su OpenLP:&lt;a href=&quot;https://openlp.org/&quot;&gt;https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Questo programma è un software libero: puoi ridistribuirlo e/o modificarlo secondo i termini della GNU General Public License come pubblicato dalla Free Software Foundation, sia la versione 3 della licenza, o (a vostra scelta) qualsiasi versione successiva. &lt;/p&gt;&lt;p&gt;Questo programma è distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; senza nemmeno la garanzia implicita di COMMERCIABILITÀ o IDONEITÀ PER UN PARTICOLARE SCOPO. Vedi la GNU General Public License per maggiori dettagli.&lt;/p&gt;&lt;p&gt;Dovresti aver ricevuto una copia della GNU General Public License insieme a questo programma. In caso contrario, vedi &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt;https://www.gnu.org/licenses/&lt;/a&gt;.&lt;/p&gt;</translation>
+        <translation>&lt;p&gt;OpenLP {{version}}{{revision}} - Open Source Lyrics Projection&lt;br&gt; Copyright {crs} 2004-{yr} Sviluppatori di OpenLP&lt;/p&gt;&lt;p&gt;Scopri di più su OpenLP:&lt;a href=&quot;https://openlp.org/&quot;&gt; https://openlp.org/&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Questo programma è un software libero: puoi ridistribuirlo e/o modificarlo secondo i termini della GNU General Public License come pubblicato dalla Free Software Foundation, sia la versione 3 della licenza, o (a vostra scelta) qualsiasi versione successiva. &lt;/p&gt;&lt;p&gt;Questo programma è distribuito nella speranza che sia utile, ma SENZA ALCUNA GARANZIA; senza nemmeno la garanzia implicita di COMMERCIABILITÀ o IDONEITÀ PER UN PARTICOLARE SCOPO. Vedi la GNU General Public License per maggiori dettagli.&lt;/p&gt;&lt;p&gt; Dovresti aver ricevuto una copia della GNU General Public License insieme a questo programma. In caso contrario, vedi &lt;a href=&quot;https://www.gnu.org/licenses/&quot;&gt; https://www.gnu.org/licenses/&lt;/a&gt; .&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="118"/>
@@ -2596,7 +2596,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="155"/>
         <source>&lt;h3&gt;Final credit:&lt;/h3&gt;&lt;blockquote&gt;&lt;p&gt;For God so loved the world that He gave His one and only Son, so that whoever believes in Him will not perish but inherit eternal life.&lt;/p&gt;&lt;p&gt;John 3:16&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;And last but not least, final credit goes to God our Father, for sending His Son to die on the cross, setting us free from sin. We bring this software to you for free because He has set us free.&lt;/p&gt;</source>
-        <translation>&lt;h3&gt;Credito finale:&lt;/h3&gt;&lt;blockquote&gt;&lt;p&gt; Perché Dio ha tanto amato il mondo, che ha dato il suo unigenito Figlio, affinché chiunque crede in lui non perisca, ma abbia vita eterna.&lt;/p&gt;&lt;p&gt; Giovanni 3:16&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;E per ultimo, ma non per importanza, il merito finale va a Dio nostro Padre, per aver mandato Suo Figlio a morire sulla croce, rendendoci liberi dal peccato. Ti offriamo questo software gratuitamente perché Egli ci ha liberato.&lt;/p&gt;</translation>
+        <translation>&lt;h3&gt;Credito finale:&lt;/h3&gt;&lt;blockquote&gt;&lt;p&gt; Perché Dio ha tanto amato il mondo, che ha dato il suo unigenito Figlio, affinché chiunque crede in lui non perisca, ma abbia vita eterna.&lt;/p&gt;&lt;p&gt; Giovanni 3:16&lt;/p&gt;&lt;/blockquote&gt;&lt;p&gt;E per ultimo, ma non per importanza, il merito finale va a Dio nostro Padre, per aver mandato Suo Figlio a morire sulla croce, rendendoci liberi dal peccato. Ti offriamo questo software gratuitamente perché Egli ci ha liberato gratuitamente.&lt;/p&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/aboutdialog.py" line="164"/>
@@ -2616,7 +2616,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/aboutform.py" line="57"/>
         <source> build {version}</source>
-        <translation> versione {version}</translation>
+        <translation>versione {version}</translation>
     </message>
 </context>
 <context>
@@ -2639,12 +2639,12 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="109"/>
         <source>-- Top-level folder --</source>
-        <translation>-- Cartella primo livello --</translation>
+        <translation>-- Cartella principale --</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="122"/>
         <source>You need to type in a folder name.</source>
-        <translation>È necessario digitare un nome per la cartella.</translation>
+        <translation>Devi digitare un nome per la cartella.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="127"/>
@@ -2677,7 +2677,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="124"/>
         <source>Cancel OpenLP data directory location change.</source>
-        <translation>Annulla le modifiche alla posizione della cartella dei dati di OpenLP.</translation>
+        <translation>Annulla le modifiche alla posizione della cartella dati di OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="126"/>
@@ -2692,7 +2692,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="129"/>
         <source>&lt;strong&gt;WARNING:&lt;/strong&gt; New data directory location contains OpenLP data files.  These files WILL be replaced during a copy.</source>
-        <translation>&lt;strong&gt;ATTENZIONE:&lt;/strong&gt; Il nuovo percorso contiene dei file di OpenLP. Questi file verranno sostituiti durante la copia.</translation>
+        <translation>&lt;strong&gt;ATTENZIONE:&lt;/strong&gt; Il nuovo percorso contiene dei file di OpenLP. Questi file SARANNO SOSTITUITI durante la copia.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="132"/>
@@ -2717,7 +2717,7 @@ OpenLP tenterà di continuare.</translation>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="136"/>
         <source>Disable display transparency</source>
-        <translation>Disattivare la trasparenza dello schermo</translation>
+        <translation>Disattiva la trasparenza dello schermo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="191"/>
@@ -2726,11 +2726,11 @@ OpenLP tenterà di continuare.</translation>
 {path}
 
 Existing files in this directory could be overwritten. The data directory will be changed when OpenLP is closed.</source>
-        <translation>Sei sicuro di voler cambiare la posizione della cartella dei dati di OpenLP in: 
+        <translation>Sei sicuro di voler cambiare la posizione della cartella dati di OpenLP in: 
 
 {path}
 
-Eventuali file presenti in questa cartella saranno sovrascritti. La cartella dei dati verrà modificata alla chiusura di OpenLP.</translation>
+Eventuali file presenti in questa cartella saranno sovrascritti. La cartella dati verrà modificata alla chiusura di OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="197"/>
@@ -2739,21 +2739,21 @@ Eventuali file presenti in questa cartella saranno sovrascritti. La cartella dei
 {path}
 
 The data directory will be changed when OpenLP is closed.</source>
-        <translation>Sei sicuro di voler cambiare la posizione della cartella dei dati di OpenLP in: 
+        <translation>Sei sicuro di voler cambiare la posizione della cartella dati di OpenLP in: 
 
 {path}
 
-La cartella dei dati verrà modificata alla chiusura di OpenLP.</translation>
+La cartella dati verrà modificata alla chiusura di OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="201"/>
         <source>Confirm Data Directory Change</source>
-        <translation>Conferma modifica al percorso dei dati</translation>
+        <translation>Conferma modifica cartella dati</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="231"/>
         <source>Overwrite Existing Data</source>
-        <translation>Sovrascrivi i Dati Esistenti</translation>
+        <translation>Sovrascrivi i dati esistenti</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="231"/>
@@ -2770,12 +2770,12 @@ Il percorso selezionato
 
 {path}
 
-sembra contenere i file di dati OpenLP. Si desidera sostituire questi file con i file di dati corrente?</translation>
+sembra contenere file di OpenLP. Si desidera sostituire questi file con quelli correnti?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="271"/>
         <source>Restart Required</source>
-        <translation>È Richiesto il Riavvio</translation>
+        <translation>È richiesto il riavvio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/advancedtab.py" line="271"/>
@@ -2815,7 +2815,7 @@ sembra contenere i file di dati OpenLP. Si desidera sostituire questi file con i
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="221"/>
         <source>Preview items when clicked in Service</source>
-        <translation>Visualizza nell&apos;Anteprima gli elementi selezionati in Servizio</translation>
+        <translation>Visualizza nell&apos;Anteprima gli elementi selezionati nel Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="223"/>
@@ -2852,67 +2852,67 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="231"/>
         <source>Auto-scroll the previous slide into view</source>
-        <translation>Scorrimento automatico diapositiva precedente in vista</translation>
+        <translation>Scorri automaticamente la diapositiva precedente nella visualizzazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="233"/>
         <source>Auto-scroll the previous slide to top</source>
-        <translation>Scorrimento automatico diapositiva precedente verso l&apos;alto</translation>
+        <translation>Scorri automaticamente la diapositiva precedente verso l&apos;alto</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="235"/>
         <source>Auto-scroll the previous slide to middle</source>
-        <translation>Scorrimento automatico diapositiva precedente in centro</translation>
+        <translation>Scorri automaticamente la diapositiva precedente fino al centro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="237"/>
         <source>Auto-scroll the current slide into view</source>
-        <translation>Scorrimento automatico della diapositiva corrente in visualizzazione</translation>
+        <translation>Scorri automaticamente la diapositiva corrente nella vista</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="239"/>
         <source>Auto-scroll the current slide to top</source>
-        <translation>Scorrimento automatico attuale diapositiva verso l&apos;alto</translation>
+        <translation>Scorri automaticamente la diapositiva corrente verso l&apos;alto</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="241"/>
         <source>Auto-scroll the current slide to middle</source>
-        <translation>Scorrimento automatico attuale diapositiva in centro</translation>
+        <translation>Scorri automaticamente la diapositiva corrente fino al centro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="243"/>
         <source>Auto-scroll the current slide to bottom</source>
-        <translation>Scorrimento automatico attuale diapositiva verso il basso</translation>
+        <translation>Scorri automaticamente la diapositiva corrente fino in fondo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="245"/>
         <source>Auto-scroll the next slide into view</source>
-        <translation>Scorrimento automatico prossima diapositiva in visualizzazione</translation>
+        <translation>Scorri automaticamente la diapositiva successiva nella visualizzazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="247"/>
         <source>Auto-scroll the next slide to top</source>
-        <translation>Scorrimento automatico diapositiva successiva verso l&apos;alto</translation>
+        <translation>Scorri automaticamente la diapositiva successiva verso l&apos;alto</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="249"/>
         <source>Auto-scroll the next slide to middle</source>
-        <translation>Scorrimento automatico diapositiva successiva in centro</translation>
+        <translation>Scorri automaticamente la diapositiva successiva fino al centro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="251"/>
         <source>Auto-scroll the next slide to bottom</source>
-        <translation>Scorrimento automatico diapositiva successiva in basso</translation>
+        <translation>Scorri automaticamente la diapositiva successiva fino in fondo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="253"/>
         <source>Enable application exit confirmation</source>
-        <translation>Abilita la conferma di uscita dell&apos;applicazione</translation>
+        <translation>Abilita la conferma all&apos;uscita dell&apos;applicazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="256"/>
         <source>Alert if New clicked on blank service</source>
-        <translation>Avviso, stai creando un nuovo servizio</translation>
+        <translation>Avvisa se si fa clic su &quot;Nuovo&quot; con un Servizio vuoto</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="259"/>
@@ -2927,17 +2927,17 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="261"/>
         <source>Default Light</source>
-        <translation>Stile di default Chiaro</translation>
+        <translation>Tema chiaro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="262"/>
         <source>Default Dark</source>
-        <translation>Stile di default Scuro</translation>
+        <translation>Tema scuro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="264"/>
         <source>QDarkStyle</source>
-        <translation>Stile Scuro</translation>
+        <translation>QDarkStyle</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="265"/>
@@ -2950,12 +2950,12 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="227"/>
         <source>Select Folder</source>
-        <translation>Seleziona Cartella</translation>
+        <translation>Seleziona cartella</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="228"/>
         <source>Add items to folder:</source>
-        <translation>Aggiungi elementi nella cartella:</translation>
+        <translation>Aggiungi elementi alla cartella:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="229"/>
@@ -2975,7 +2975,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/folders.py" line="256"/>
         <source>You need to type in a folder name.</source>
-        <translation>È necessario digitare un nome per la cartella.</translation>
+        <translation>Devi digitare un nome per la cartella.</translation>
     </message>
 </context>
 <context>
@@ -2983,7 +2983,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/widgets/buttons.py" line="44"/>
         <source>Click to select a color.</source>
-        <translation>Fare clic per selezionare un colore.</translation>
+        <translation>Fai clic per selezionare un colore.</translation>
     </message>
 </context>
 <context>
@@ -3197,7 +3197,7 @@ nel controllo diapositive:</translation>
 <context>
     <name>OpenLP.DisplayWindow</name>
     <message>
-        <location filename="../../openlp/core/display/window.py" line="150"/>
+        <location filename="../../openlp/core/display/window.py" line="155"/>
         <source>Display Window</source>
         <translation>Finestra di visualizzazione</translation>
     </message>
@@ -3212,17 +3212,17 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="96"/>
         <source>&lt;strong&gt;Please describe what you were trying to do.&lt;/strong&gt; &amp;nbsp;If possible, write in English.</source>
-        <translation>&lt;strong&gt;Descrivi cosa stavi cercando di fare. &lt;/strong&gt;&amp;nbsp;Se possibile, scrivi in inglese.</translation>
+        <translation>&lt;strong&gt;Descrivi cosa stavi cercando di fare.&lt;/strong&gt;&amp;nbsp;Se possibile, scrivi in inglese.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="99"/>
         <source>&lt;strong&gt;Oops, OpenLP hit a problem and couldn&apos;t recover!&lt;br&gt;&lt;br&gt;You can help &lt;/strong&gt; the OpenLP developers to &lt;strong&gt;fix this&lt;/strong&gt; by&lt;br&gt; sending them a &lt;strong&gt;bug report to {email}&lt;/strong&gt;{newlines}</source>
-        <translation>&lt;strong&gt;Oops, OpenLP ha avuto un problema e non è stato possibile risolverlo!&lt;br&gt;&lt;br&gt;Puoi aiutare&lt;/strong&gt; gli sviluppatori di OpenLP a &lt;strong&gt;risolverlo&lt;/strong&gt;&lt;br&gt; inviando loro una &lt;strong&gt;segnalazione di bug a {email}&lt;/strong&gt;{newlines}</translation>
+        <translation>&lt;strong&gt;Oops, OpenLP ha avuto un problema e non è riuscito a risolverlo!&lt;br&gt;&lt;br&gt;Puoi aiutare&lt;/strong&gt; gli sviluppatori di OpenLP a&lt;strong&gt; risolverlo&lt;/strong&gt;&lt;br&gt; inviando loro una &lt;strong&gt;segnalazione di bug a {email}&lt;/strong&gt;{newlines}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="105"/>
         <source>{first_part}&lt;strong&gt;No email app? &lt;/strong&gt; You can &lt;strong&gt;save&lt;/strong&gt; this information to a &lt;strong&gt;file&lt;/strong&gt; and&lt;br&gt;send it from your &lt;strong&gt;mail on browser&lt;/strong&gt; via an &lt;strong&gt;attachment.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;&lt;strong&gt;Thank you&lt;/strong&gt; for being part of making OpenLP better!&lt;br&gt;</source>
-        <translation>{first_part}&lt;strong&gt;Nessuna app di posta elettronica?&lt;/strong&gt; Puoi&lt;strong&gt;salvare&lt;/strong&gt; queste informazioni in un &lt;strong&gt;file&lt;/strong&gt; e &lt;br&gt;inviarle tramite&lt;strong&gt;email dal tuo browser&lt;/strong&gt; &lt;strong&gt;allegando il file.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;&lt;strong&gt;Grazie&lt;/strong&gt; per rendere OpenLP un prodotto migliore!&lt;br&gt;</translation>
+        <translation>{first_part}&lt;strong&gt;Nessuna app di posta elettronica? &lt;/strong&gt; Puoi &lt;strong&gt;salvare&lt;/strong&gt; queste informazioni in un &lt;strong&gt;file&lt;/strong&gt; e &lt;br&gt;inviarle tramite &lt;strong&gt;email dal tuo browser&lt;/strong&gt; &lt;strong&gt;allegando il file.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;&lt;strong&gt;Grazie&lt;/strong&gt; per rendere OpenLP un prodotto migliore!&lt;br&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="112"/>
@@ -3232,24 +3232,24 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="113"/>
         <source>Save to File</source>
-        <translation>Salva su File</translation>
+        <translation>Salva su file</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptiondialog.py" line="114"/>
         <source>Attach File</source>
-        <translation>Allega File</translation>
+        <translation>Allega file</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="114"/>
         <source>Failed to Save Report</source>
-        <translation>Impossibile Salvare il Rapporto</translation>
+        <translation>Impossibile salvare il report</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="114"/>
         <source>The following error occurred when saving the report.
 
 {exception}</source>
-        <translation>Si è verificato il seguente errore durante il salvataggio del rapporto.
+        <translation>Si è verificato il seguente errore durante il salvataggio del report.
 
 {exception}</translation>
     </message>
@@ -3261,7 +3261,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="156"/>
         <source>&lt;strong&gt;Tell us what you were doing when this happened.&lt;/strong&gt;</source>
-        <translation>&lt;strong&gt;Dicci cosa stavi facendo quando è successo.&lt;/strong&gt;</translation>
+        <translation>&lt;strong&gt;Raccontaci cosa stavi facendo quando è successo.&lt;/strong&gt;</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="160"/>
@@ -3281,12 +3281,12 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="97"/>
         <source>Save Crash Report</source>
-        <translation>Salva il rapporto del crash</translation>
+        <translation>Salva il report del crash</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/exceptionform.py" line="97"/>
         <source>Text files (*.txt *.log *.text)</source>
-        <translation>File Testo (*.txt *.log *.text)</translation>
+        <translation>File di testo (*.txt *.log *.text)</translation>
     </message>
 </context>
 <context>
@@ -3294,17 +3294,17 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/filerenamedialog.py" line="60"/>
         <source>New File Name:</source>
-        <translation>Nuovo nome del File:</translation>
+        <translation>Nuovo nome del file:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/filerenameform.py" line="55"/>
         <source>File Copy</source>
-        <translation>Copia File</translation>
+        <translation>Copia file</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/filerenameform.py" line="57"/>
         <source>File Rename</source>
-        <translation>Rinomina File</translation>
+        <translation>Rinomina file</translation>
     </message>
 </context>
 <context>
@@ -3312,12 +3312,12 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimelanguagedialog.py" line="68"/>
         <source>Select Translation</source>
-        <translation>Selezione Traduzione</translation>
+        <translation>Seleziona traduzione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimelanguagedialog.py" line="69"/>
         <source>Choose the translation you&apos;d like to use in OpenLP.</source>
-        <translation>Scegli la traduzione che desideri utilizzare in OpenLP.</translation>
+        <translation>Seleziona la traduzione che desideri utilizzare in OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimelanguagedialog.py" line="71"/>
@@ -3330,12 +3330,12 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="553"/>
         <source>Network Error</source>
-        <translation>Errore di Rete</translation>
+        <translation>Errore di rete</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="190"/>
         <source>There was a network error attempting to connect to retrieve initial configuration information</source>
-        <translation>Si è verificato un errore di rete durante il tentativo di connessione per recuperare le informazioni sulla configurazione iniziale</translation>
+        <translation>Si è verificato un errore di rete durante il recupero delle informazioni per la configurazione iniziale</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="197"/>
@@ -3360,7 +3360,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="441"/>
         <source>There was a connection problem during download, so further downloads will be skipped. Try to re-run the First Time Wizard later.</source>
-        <translation>Si è verificato un problema di connessione durante il download, quindi ulteriori download verranno ignorati. Prova a rieseguire la Procedura guidata per il Primo Avvio in un secondo momento.</translation>
+        <translation>Si è verificato un problema di connessione durante il download, quindi gli ulteriori download saranno ignorati. Prova a rieseguire la Procedura guidata per il primo avvio in un secondo momento.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="453"/>
@@ -3400,7 +3400,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="494"/>
         <source>There was a connection problem while downloading, so further downloads will be skipped. Try to re-run the First Time Wizard later.</source>
-        <translation>Si è verificato un problema di connessione durante il download, quindi ulteriori download verranno ignorati. Prova a rieseguire la Procedura guidata per il Primo Avvio in un secondo momento.</translation>
+        <translation>Si è verificato un problema di connessione durante il download, quindi gli ulteriori download saranno ignorati. Prova a rieseguire la Procedura guidata per il primo avvio in un secondo momento.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimeform.py" line="554"/>
@@ -3410,7 +3410,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="74"/>
         <source>OpenLP has a web remote, which enables you to control OpenLP from another computer, phone or tablet on the same network as the OpenLP computer. OpenLP can download this web remote for you now, or you can download it later via the remote settings.</source>
-        <translation>OpenLP ha un controllo remoto tramite web, esso permette di controllare OpenLP da un altro computer, telefono o tablet sulla stessa rete dove è attivo OpenLP. OpenLP può scaricare questo controllo web per voi ora, oppure potete scaricarlo in seguito tramite le impostazioni del telecomando.</translation>
+        <translation>OpenLP ha un controllo remoto web, esso permette di controllare OpenLP da un altro computer, telefono o tablet sulla stessa rete dove è attivo OpenLP. OpenLP può scaricare questo controllo web adesso, oppure puoi scaricarlo in seguito tramite le impostazioni del controllo remoto.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="78"/>
@@ -3425,22 +3425,22 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="80"/>
         <source>Please confirm if you want to download the web remote.</source>
-        <translation>Si prega di confermare se si desidera scaricare il controllo remoto del web.</translation>
+        <translation>Si prega di confermare se si desidera scaricare il controllo remoto web.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="311"/>
         <source>First Time Wizard</source>
-        <translation>Procedura guidata per il Primo Avvio</translation>
+        <translation>Procedura guidata per il primo avvio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="312"/>
         <source>Welcome to the First Time Wizard</source>
-        <translation>Benvenuto nella Procedura guidata per il Primo Avvio</translation>
+        <translation>Benvenuto nella Procedura guidata per il primo avvio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="314"/>
         <source>This wizard will help you to configure OpenLP for initial use. Click the &apos;{next_button}&apos; button below to start.</source>
-        <translation>Questa procedura guidata ti aiuterà a configurare OpenLP per il primo utilizzo. Fai clic sul pulsante &apos;{next_button}&apos; in basso per iniziare.</translation>
+        <translation>Questa procedura guidata ti aiuterà nella prima configurazione di OpenLP. Fai clic sul pulsante &apos;{next_button}&apos; in basso per iniziare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="318"/>
@@ -3455,7 +3455,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="321"/>
         <source>Please wait while the resource index is downloaded.</source>
-        <translation>Attendere il download dell&apos;indice delle risorse.</translation>
+        <translation>Attendi il download dell&apos;indice delle risorse.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="323"/>
@@ -3470,7 +3470,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="326"/>
         <source>You can also change these settings after the Wizard.</source>
-        <translation>Puoi anche modificare queste impostazioni dopo la procedura guidata.</translation>
+        <translation>Puoi modificare queste impostazioni anche dopo la procedura guidata.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="328"/>
@@ -3480,7 +3480,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="329"/>
         <source>Choose the main display screen for OpenLP.</source>
-        <translation>Scegli la schermo principale per OpenLP.</translation>
+        <translation>Scegli lo schermo principale per OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="331"/>
@@ -3490,7 +3490,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="332"/>
         <source>Custom Slides – Easier to manage than songs and they have their own list of slides</source>
-        <translation>Slides Personalizzate – Consente di creare delle presentazioni. Esse hanno il proprio elenco di diapositive e sono più facili da gestire rispetto ai brani.</translation>
+        <translation>Diapositive personalizzate – Esse hanno il proprio elenco di diapositive e sono più facili da gestire rispetto ai brani.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="335"/>
@@ -3500,7 +3500,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="336"/>
         <source>Images – Show images or replace background with them</source>
-        <translation>Immagini – Visualizza le immagini e permette anche di usarle come sfondo</translation>
+        <translation>Immagini – Visualizza le immagini e permette anche di utilizzarle come sfondo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="338"/>
@@ -3510,17 +3510,17 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="340"/>
         <source>Media – Playback of Audio and Video files</source>
-        <translation>Media – Permette di riprodurre file Audio e Video</translation>
+        <translation>Media – Permette di riprodurre file audio e video</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="341"/>
         <source>Song Usage Monitor</source>
-        <translation>Controllo Utilizzo Brano</translation>
+        <translation>Monitoraggio dell&apos;utilizzo dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="342"/>
         <source>Alerts – Display informative messages while showing other slides</source>
-        <translation>Avvisi – Visualizza messaggi informativi mentre si mostrano altre diapositive</translation>
+        <translation>Avvisi – Mostra messaggi informativi durante la visualizzazione di altre diapositive</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="344"/>
@@ -3530,7 +3530,7 @@ nel controllo diapositive:</translation>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="345"/>
         <source>Can OpenLP download some resource data?</source>
-        <translation>OpenLP può scaricare alcuni dati sulle risorse?</translation>
+        <translation>OpenLP può scaricare alcune risorse?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="346"/>
@@ -3544,7 +3544,7 @@ Se desideri scaricare alcune di queste risorse fai clic sul pulsante &quot;{next
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="352"/>
         <source>No Internet Connection</source>
-        <translation>Nessuna connessione a Internet</translation>
+        <translation>Nessuna connessione a internet</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="353"/>
@@ -3566,7 +3566,7 @@ Per favore controlla la tua connessione Internet. Se la tua chiesa utilizza un s
 
 Fai clic sul pulsante &quot;{back_button}&quot; per riprovare..
 
-Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un secondo momento selezionando &quot;Riesegui la Procedura guidata per il Primo Avvio&quot; dal menu &quot;Strumenti&quot; di OpenLP.</translation>
+Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un secondo momento selezionando &quot;Riesegui la Procedura guidata per il primo avvio&quot; dal menu &quot;Strumenti&quot; di OpenLP.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="363"/>
@@ -3616,12 +3616,12 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="373"/>
         <source>Downloading and Configuring</source>
-        <translation>Download e Configurazione</translation>
+        <translation>Download e configurazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/firsttimewizard.py" line="374"/>
         <source>Please wait while resources are downloaded and OpenLP is configured.</source>
-        <translation>Attendere il download delle risorse e la successiva configurazione di OpenLP.</translation>
+        <translation>Attendi il download delle risorse e la successiva configurazione di OpenLP.</translation>
     </message>
 </context>
 <context>
@@ -3634,7 +3634,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/library.py" line="117"/>
         <source>You must select an item or folder to delete.</source>
-        <translation>È necessario selezionare un elemento o cartella da eliminare.</translation>
+        <translation>È necessario selezionare un elemento o una cartella da eliminare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="135"/>
@@ -3649,7 +3649,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/library.py" line="399"/>
         <source>File Exists</source>
-        <translation>Il file esiste</translation>
+        <translation>File esistente</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/library.py" line="399"/>
@@ -3710,7 +3710,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="113"/>
         <source>Configure Formatting Tags</source>
-        <translation>Configura Tag di Formattazione</translation>
+        <translation>Configura Tag di formattazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="116"/>
@@ -3745,7 +3745,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagdialog.py" line="131"/>
         <source>Hide content from Live/Preview</source>
-        <translation>Nascondere il contenuto dal Live/Preview</translation>
+        <translation>Nascondi il contenuto dalla Diretta/Anteprima</translation>
     </message>
 </context>
 <context>
@@ -3758,7 +3758,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagcontroller.py" line="84"/>
         <source>Description {tag} already defined.</source>
-        <translation>La Descrizione del tag {tag} è stata già definita.</translation>
+        <translation>La descrizione del tag {tag} è stata già definita.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/formattingtagcontroller.py" line="152"/>
@@ -3768,7 +3768,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagcontroller.py" line="172"/>
         <source>End tag {end} does not match end tag for start tag {start}</source>
-        <translation>Il tag di chiusura {end} non corrisponde al tag di chiusura per il tag di apertura {start}</translation>
+        <translation>Il tag {end} non corrisponde al tag di chiusura per il tag di apertura {start}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/formattingtagform.py" line="93"/>
@@ -3783,7 +3783,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/formattingtagform.py" line="221"/>
         <source>Validation Error</source>
-        <translation>Errore di convalida</translation>
+        <translation>Errore di validazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/formattingtagform.py" line="201"/>
@@ -3831,7 +3831,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="123"/>
         <source>Orange</source>
-        <translation>Arancio</translation>
+        <translation>Arancione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/formattingtags.py" line="133"/>
@@ -3899,7 +3899,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="196"/>
         <source>Show blank screen warning</source>
-        <translation>Visualizza avviso su schermo vuoto</translation>
+        <translation>Visualizza avviso schermo oscurato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="197"/>
@@ -3919,7 +3919,7 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="202"/>
         <source>Logo file:</source>
-        <translation>File del Logo:</translation>
+        <translation>File del logo:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/generaltab.py" line="203"/>
@@ -3942,23 +3942,23 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>Permission Error</source>
-        <translation>Errore di Permessi</translation>
+        <translation>Errore di permessi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/handlers.py" line="43"/>
         <source>There was a permissions error when trying to access {filename}</source>
-        <translation>Si è verificato un errore di permessi durante il tentativo di accedere a {filename}</translation>
+        <translation>Si è verificato un errore di permessi durante il tentativo di accesso a {filename}</translation>
     </message>
 </context>
 <context>
     <name>OpenLP.LanguageManager</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="300"/>
+        <location filename="../../openlp/core/common/i18n.py" line="302"/>
         <source>Language</source>
         <translation>Lingua</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="300"/>
+        <location filename="../../openlp/core/common/i18n.py" line="302"/>
         <source>Please restart OpenLP to use your new language setting.</source>
         <translation>Riavvia OpenLP per utilizzare le nuove impostazioni della lingua.</translation>
     </message>
@@ -3966,408 +3966,398 @@ Se fai clic sul pulsante &quot;{finish_button}&quot; puoi scaricare i dati in un
 <context>
     <name>OpenLP.MainWindow</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="262"/>
+        <location filename="../../openlp/core/common/i18n.py" line="264"/>
         <source>English</source>
         <comment>Please add the name of your language here</comment>
-        <translation>Italiano (it_IT)</translation>
+        <translation>Italiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="301"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="303"/>
         <source>General</source>
         <translation>Generale</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="358"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
         <source>&amp;File</source>
         <translation>&amp;File</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="359"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
         <source>&amp;Import</source>
         <translation>&amp;Importa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="360"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
         <source>&amp;Export</source>
         <translation>&amp;Esporta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="361"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
         <source>&amp;Recent Services</source>
-        <translation>Servizi Recenti</translation>
+        <translation>Servizi recenti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="362"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
         <source>&amp;View</source>
         <translation>&amp;Visualizza</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="363"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
         <source>&amp;Layout Presets</source>
         <translation>&amp;Layout predefiniti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="364"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="366"/>
         <source>&amp;Tools</source>
         <translation>&amp;Strumenti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="365"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="367"/>
         <source>&amp;Settings</source>
         <translation>&amp;Impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="392"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
         <source>&amp;Language</source>
         <translation>&amp;Lingua</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="367"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
         <source>&amp;Help</source>
         <translation>&amp;Aiuto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="368"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
         <source>Library</source>
         <translation>Libreria</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="369"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
         <source>Service</source>
         <translation>Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="370"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
         <source>Themes</source>
         <translation>Temi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="371"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="373"/>
         <source>Projector Controller</source>
-        <translation>Impostazioni Proiettore</translation>
+        <translation>Impostazioni proiettore</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="372"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="374"/>
         <source>&amp;New Service</source>
         <translation>&amp;Nuovo Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="375"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="377"/>
         <source>&amp;Open Service</source>
         <translation>&amp;Apri Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="377"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="379"/>
         <source>Open an existing service.</source>
         <translation>Apri un servizio esistente.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="378"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="380"/>
         <source>&amp;Save Service</source>
         <translation>&amp;Salva Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="380"/>
-        <source>Save the current service to disk.</source>
-        <translation>Salvare il servizio corrente su disco.</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="381"/>
-        <source>Save Service &amp;As...</source>
-        <translation>Salva Servizio Con &amp;Nome...</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="382"/>
-        <source>Save Service As</source>
-        <translation>Salvare il servizio come</translation>
+        <source>Save the current service to disk.</source>
+        <translation>Salva il servizio corrente su disco.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="383"/>
+        <source>Save Service &amp;As...</source>
+        <translation>Salva Servizio &amp;con nome...</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="384"/>
+        <source>Save Service As</source>
+        <translation>Salva Servizio come</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="385"/>
         <source>Save the current service under a new name.</source>
-        <translation>Salvare il servizio corrente con un nuovo nome.</translation>
+        <translation>Salva il Servizio corrente con un nuovo nome.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="386"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
         <source>Print the current service.</source>
-        <translation>Stampa il servizio corrente.</translation>
+        <translation>Stampa il Servizio corrente.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="387"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="389"/>
         <source>E&amp;xit</source>
         <translation>Esci</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="388"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="390"/>
         <source>Close OpenLP - Shut down the program.</source>
         <translation>Chiudi OpenLP - Chiude il programma.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="391"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
         <source>&amp;Theme</source>
         <translation>&amp;Tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="393"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
         <source>Configure &amp;Shortcuts...</source>
-        <translation>Configura le scorciatoie...</translation>
+        <translation>Configura le &amp;scorciatoie...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="394"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
         <source>Configure &amp;Formatting Tags...</source>
         <translation>Configura i &amp;Tag di formattazione...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="395"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="397"/>
         <source>&amp;Configure OpenLP...</source>
         <translation>&amp;Configura OpenLP...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="396"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="398"/>
         <source>Export settings to a *.config file.</source>
         <translation>Esporta le impostazioni in un file *.config</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="402"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="399"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="401"/>
         <source>Import settings from a *.config file previously exported from this or another machine.</source>
-        <translation>Importare le impostazioni da un file *. config precedentemente esportato da questa o da un&apos;altra macchina.</translation>
+        <translation>Importa le impostazioni da un file *.config che è stato precedentemente esportato da questa o un&apos;altra macchina.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="403"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
         <source>&amp;Projector Controller</source>
-        <translation>&amp;Impostazioni Proiettore</translation>
+        <translation>&amp;Impostazioni proiettore</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="404"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="406"/>
         <source>Hide or show Projectors.</source>
         <translation>Nasconde o mostra i proiettori.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="407"/>
         <source>Toggle visibility of the Projectors.</source>
         <translation>Attiva/disattiva la visibilità di &quot;Impostazioni Proiettore&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="407"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
         <source>L&amp;ibrary</source>
         <translation>L&amp;ibreria</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="408"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="410"/>
         <source>Hide or show the Library.</source>
         <translation>Nascondi o mostra la libreria.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="409"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
         <source>Toggle the visibility of the Library.</source>
         <translation>Attiva/disattiva la visibilità della Libreria.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="411"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
         <source>&amp;Themes</source>
         <translation>&amp;Temi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="412"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="414"/>
         <source>Hide or show themes</source>
         <translation>Nascondi o mostra temi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
         <source>Toggle visibility of the Themes.</source>
         <translation>Attiva/disattiva la visibilità di &quot;Temi&quot;.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="415"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
         <source>&amp;Service</source>
         <translation>&amp;Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="416"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="418"/>
         <source>Hide or show Service.</source>
         <translation>Nascondi o mostra Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="417"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="419"/>
         <source>Toggle visibility of the Service.</source>
         <translation>Attiva/disattiva la visibilità del Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="419"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
         <source>&amp;Preview</source>
         <translation>&amp;Anteprima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="420"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="422"/>
         <source>Hide or show Preview.</source>
         <translation>Nascondi o mostra l&apos;Anteprima.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="421"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
         <source>Toggle visibility of the Preview.</source>
         <translation>Attiva/disattiva la visibilità dell&apos;Anteprima.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="423"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
         <source>Li&amp;ve</source>
         <translation>&amp;Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="424"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
         <source>Hide or show Live</source>
         <translation>Nascondi o mostra la Diretta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="425"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
         <source>L&amp;ock visibility of the panels</source>
         <translation>B&amp;locca la visibilità dei pannelli</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="426"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
         <source>Lock visibility of the panels.</source>
         <translation>Blocca la visibilità dei pannelli.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="427"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
         <source>Toggle visibility of the Live.</source>
         <translation>Attiva/disattiva la visibilità della Diretta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="428"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="430"/>
         <source>&amp;Manage Plugins</source>
         <translation>&amp;Gestione Plugin</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="429"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
         <source>You can enable and disable plugins from here.</source>
         <translation>Puoi abilitare e disabilitare i plugin da qui.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="431"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
         <source>&amp;About</source>
         <translation>&amp;Informazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="432"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="434"/>
         <source>More information about OpenLP.</source>
         <translation>Ulteriori informazioni su OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="433"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
         <source>&amp;User Manual</source>
         <translation>&amp;Manuale d&apos;uso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="435"/>
-        <source>Jump to the search box of the current active plugin.</source>
-        <translation>Passa alla casella di ricerca del plugin corrente.</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="437"/>
-        <source>&amp;Web Site</source>
-        <translation>&amp;Sito Web</translation>
+        <source>Jump to the search box of the current active plugin.</source>
+        <translation>Passa alla casella di ricerca del plugin attualmente attivo.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="440"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="439"/>
+        <source>&amp;Web Site</source>
+        <translation>&amp;Sito web</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="442"/>
         <source>Set the interface language to {name}</source>
         <translation>Imposta la lingua dell&apos;interfaccia su {name}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="442"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
         <source>&amp;Autodetect</source>
         <translation>&amp;Rileva automaticamente</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="443"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
         <source>Use the system language, if available.</source>
         <translation>Usa la lingua di sistema, se disponibile.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="444"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="446"/>
         <source>Add &amp;Tool...</source>
         <translation>Aggiungi &amp;strumento...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="445"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="447"/>
         <source>Add an application to the list of tools.</source>
         <translation>Aggiungi un&apos;applicazione all&apos;elenco degli strumenti.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="447"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="449"/>
         <source>Open &amp;Data Folder...</source>
-        <translation>Apri la &amp;Cartella dei Dati...</translation>
+        <translation>Apri la &amp;Cartella dati...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="448"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="450"/>
         <source>Open the folder where songs, bibles and other data resides.</source>
         <translation>Apri la cartella in cui risiedono i brani, le bibbie e altri dati.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="450"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="452"/>
         <source>Re-run First Time Wizard</source>
-        <translation>Riesegui la Procedura guidata per il Primo Avvio</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="451"/>
-        <source>Re-run the First Time Wizard, importing songs, Bibles and themes.</source>
-        <translation>Riesegui la Procedura guidata per il Primo Avvio, l&apos;importazione dei brani, delle Bibbie e dei temi.</translation>
+        <translation>Riesegui la Procedura guidata per il primo avvio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/mainwindow.py" line="453"/>
-        <source>Update Theme Images</source>
-        <translation>Aggiorna le immagini dei Temi</translation>
+        <source>Re-run the First Time Wizard, importing songs, Bibles and themes.</source>
+        <translation>Riesegui la Procedura guidata per il primo avvio, l&apos;importazione dei brani, delle Bibbie e dei temi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="454"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="455"/>
+        <source>Update Theme Images</source>
+        <translation>Aggiorna le immagini dei temi</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
         <source>Update the preview images for all themes.</source>
         <translation>Aggiorna le immagini di anteprima per tutti i temi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="456"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="458"/>
         <source>&amp;Show all</source>
         <translation>&amp;Mostra tutto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="457"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
         <source>Reset the interface back to the default layout and show all the panels.</source>
         <translation>Ripristina l&apos;interfaccia al layout predefinito e mostra tutti i pannelli.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="459"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="461"/>
         <source>&amp;Setup</source>
         <translation>&amp;Preparazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="460"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
         <source>Use layout that focuses on setting up the Service.</source>
-        <translation>Utilizza un layout incentrato sulla configurazione del servizio di culto.</translation>
+        <translation>Utilizza un layout incentrato sulla preparazione del Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="462"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="464"/>
         <source>&amp;Live</source>
         <translation>&amp;Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="463"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="465"/>
         <source>Use layout that focuses on Live.</source>
         <translation>Utilizza un layout che si concentra sulla Diretta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="535"/>
-        <source>Waiting for some things to finish...</source>
-        <translation>In attesa che alcune cose finiscano...</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="537"/>
-        <source>Please Wait</source>
-        <translation>Attendere Prego</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="616"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="630"/>
         <source>Version {new} of OpenLP is now available for download (you are currently running version {current}). 
 
 You can download the latest version from https://openlp.org/.</source>
@@ -4376,53 +4366,53 @@ You can download the latest version from https://openlp.org/.</source>
 Puoi scaricare l&apos;ultima versione da https://openlp.org/.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="619"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="633"/>
         <source>OpenLP Version Updated</source>
-        <translation>La Versione di OpenLP è stata aggiornata.</translation>
+        <translation>La versione di OpenLP è stata aggiornata.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="630"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="644"/>
         <source>Version {version} of the web remote is now available for download.
 To download this version, go to the Remote settings and click the Upgrade button.</source>
         <translation>La versione {version} del controllo remoto web è ora disponibile per il download.
-Per scaricare questa versione, andare su impostazioni del telecomando e fare clic sul pulsante Aggiorna.</translation>
+Per scaricarla, vai nelle impostazioni del controllo remoto e clicca sul pulsante Aggiorna.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="633"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="647"/>
         <source>New Web Remote Version Available</source>
-        <translation>E&apos; disponibile la nuova versione del controllo remoto Web</translation>
+        <translation>È disponibile una nuova versione del Controllo remoto web</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="692"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="710"/>
         <source>Re-run First Time Wizard?</source>
-        <translation>Rieseguire la Procedura guidata per il Primo Avvio?</translation>
+        <translation>Rieseguire la Procedura guidata per il primo avvio?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="692"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="710"/>
         <source>Are you sure you want to re-run the First Time Wizard?
 
 Re-running this wizard may make changes to your current OpenLP configuration and possibly add songs to your existing songs list and change your default theme.</source>
-        <translation>Sei sicuro di voler eseguire nuovamente la Procedura guidata per il Primo Avvio?
+        <translation>Sei sicuro di voler eseguire nuovamente la Procedura guidata per il primo avvio?
 
 La riesecuzione di questa procedura guidata può apportare modifiche alla configurazione corrente di OpenLP ed eventualmente aggiungere brani all&apos;elenco dei brani esistenti e modificare il tema predefinito.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="737"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="755"/>
         <source>OpenLP Main Display Blanked</source>
-        <translation>Schermo Principale di OpenLP Oscurato</translation>
+        <translation>Schermo principale di OpenLP oscurato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="737"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="755"/>
         <source>The Main Display has been blanked out</source>
-        <translation>Lo Schermo Principale è stato oscurato</translation>
+        <translation>Lo schermo principale è stato oscurato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="842"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="860"/>
         <source>Import settings?</source>
         <translation>Vuoi importare le impostazioni?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="842"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="860"/>
         <source>Are you sure you want to import settings?
 
  Importing settings will make permanent changes to your current OpenLP configuration.
@@ -4430,22 +4420,22 @@ La riesecuzione di questa procedura guidata può apportare modifiche alla config
  Importing incorrect settings may cause erratic behaviour or OpenLP to terminate abnormally.</source>
         <translation>Sei sicuro di voler importare le impostazioni?
 
-L&apos;importazione delle impostazioni comporterà modifiche permanenti alla tua attuale configurazione di OpenLP.
+L&apos;importazione apporterà modifiche permanenti alla configurazione corrente di OpenLP.
 
-L&apos;importazione di impostazioni errate può causare comportamenti irregolari o causare la chiusura anomala di OpenLP.</translation>
+L&apos;importazione di impostazioni errate può causare un comportamento irregolare o l&apos;interruzione anomala di OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
         <source>Import settings</source>
         <translation>Importa impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="953"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="971"/>
         <source>OpenLP Settings (*.conf)</source>
-        <translation>Impostazioni OpenLP (*.conf)</translation>
+        <translation>Impostazioni di OpenLP (*.conf)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="888"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="906"/>
         <source>OpenLP cannot import settings from a newer version of OpenLP.
 
 Processing has terminated and no changes have been made.</source>
@@ -4454,93 +4444,103 @@ Processing has terminated and no changes have been made.</source>
 L&apos;elaborazione è terminata e non sono state apportate modifiche.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="901"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="919"/>
         <source>The file you have selected does not appear to be a valid OpenLP settings file.
 
 Processing has terminated and no changes have been made.</source>
         <translation>Il file che hai selezionato non sembra essere un file valido di impostazioni di OpenLP.
 
-Il processo è terminato e non sono state apportate modifiche.</translation>
+L&apos;elaborazione è terminata e non sono state apportate modifiche.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="941"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="959"/>
         <source>OpenLP will now close.  Imported settings will be applied the next time you start OpenLP.</source>
-        <translation>OpenLP verrà chiuso. Le impostazioni importate saranno applicate al prossimo avvio di OpenLP.</translation>
+        <translation>OpenLP verrà chiuso. Le impostazioni importate verranno applicate al prossimo avvio di OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="953"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="971"/>
         <source>Export Settings File</source>
-        <translation>Esporta File delle Impostazioni</translation>
+        <translation>Esporta file delle impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="966"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="984"/>
         <source>Export setting error</source>
         <translation>Errore durante l&apos;esportazione delle impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="966"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="984"/>
         <source>An error occurred while exporting the settings: {err}</source>
-        <translation>Si è verificato un errore durante l&apos;esportazione delle impostazioni: {err}.</translation>
+        <translation>Si è verificato un errore durante l&apos;esportazione delle impostazioni: {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1027"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1040"/>
         <source>Screen setup has changed</source>
         <translation>La configurazione dello schermo è cambiata</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1027"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1040"/>
         <source>The screen setup has changed. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
-        <translation>L&apos;impostazione dello schermo è cambiata. OpenLP cercherà di selezionare automaticamente uno schermo di visualizzazione, ma dovresti considerare di aggiornare le impostazioni dello schermo.</translation>
+        <translation>La configurazione dello schermo è cambiata. OpenLP proverà a selezionare automaticamente uno schermo, ma è probabile che tu debba apportare delle modifiche.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1056"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1084"/>
         <source>Exit OpenLP</source>
         <translation>Esci da OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1056"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1084"/>
         <source>Are you sure you want to exit OpenLP?</source>
         <translation>Sei sicuro di voler uscire da OpenLP?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1063"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1091"/>
         <source>&amp;Exit OpenLP</source>
         <translation>&amp;Esci da OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1150"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1100"/>
+        <source>Please Wait</source>
+        <translation>Attendere prego</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1100"/>
+        <source>Waiting for some things to finish...</source>
+        <translation>In attesa che alcune cose finiscano...</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1180"/>
         <source>Default Theme: {theme}</source>
         <translation>Tema predefinito: {theme}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1324"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1366"/>
         <source>Clear List</source>
         <comment>Clear List of recent files</comment>
         <translation>Svuota elenco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1324"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1366"/>
         <source>Clear the list of recent files.</source>
         <translation>Svuota l&apos;elenco dei file recenti.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1405"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1447"/>
         <source>Copying OpenLP data to new data directory location - {path} - Please wait for copy to finish</source>
         <translation>Copia dei dati di OpenLP nel nuovo percorso - {path} - Attendi il completamento dell&apos;operazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1413"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1455"/>
         <source>OpenLP Data directory copy failed
 
 {err}</source>
-        <translation>Copia della cartella dei dati di OpenLP fallita
+        <translation>La copia della cartella dati di OpenLP non è riuscita
 
-{err}</translation>
+ {err}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/mainwindow.py" line="1415"/>
+        <location filename="../../openlp/core/ui/mainwindow.py" line="1457"/>
         <source>New Data Directory Error</source>
-        <translation>Errore nella nuova Cartella dei Dati</translation>
+        <translation>Errore nella nuova cartella dati</translation>
     </message>
 </context>
 <context>
@@ -4548,7 +4548,7 @@ Il processo è terminato e non sono state apportate modifiche.</translation>
     <message>
         <location filename="../../openlp/core/lib/db.py" line="451"/>
         <source>Database Error</source>
-        <translation>Errore nel Database</translation>
+        <translation>Errore nel database</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/db.py" line="189"/>
@@ -4564,32 +4564,32 @@ Database: {db}</translation>
         <source>The database being loaded was created in a more recent version of OpenLP. The database is version {db_ver}, while OpenLP expects version {db_up}. The database will not be loaded.
 
 Database: {db_name}</source>
-        <translation>Il database da caricare è stato creato in una versione più recente di OpenLP. La versione del database è {db_ver}, mentre OpenLP si aspetta la versione {db_up}. Il database non verrà importato.
+        <translation>Il database da caricare è stato creato in una versione più recente di OpenLP. La versione del database è {db_ver}, mentre OpenLP si aspetta la versione {db_up}. Il database non verrà caricato.
 
-Database: {db_name}</translation>
+ Database: {db_name}</translation>
     </message>
 </context>
 <context>
     <name>OpenLP.MediaController</name>
     <message>
-        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="113"/>
+        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="115"/>
         <source>OpenLP requires the following libraries in order to show videos and other media, but they are not installed. Please install these libraries to enable media playback in OpenLP.</source>
-        <translation>OpenLP richiede le seguenti librerie per mostrare video e altri media, ma non sono installate. Installa queste librerie per abilitare la riproduzione dei file multimediali in OpenLP.</translation>
+        <translation>OpenLP richiede le seguenti librerie per mostrare video e altri contenuti multimediali, ma non sono installate. Installa queste librerie per abilitare la riproduzione dei contenuti multimediali in OpenLP.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="117"/>
+        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="119"/>
         <source>To install these libraries, you will need to enable the RPMFusion repository: https://rpmfusion.org/</source>
         <translation>Per installare queste librerie, è necessario abilitare il repository RPMFusion: https://rpmfusion.org/</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="121"/>
+        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="123"/>
         <source>macOS is missing VLC. Please download and install from the VLC web site: https://www.videolan.org/vlc/</source>
-        <translation>Su macOS manca VLC. Si prega di scaricarlo e installarlo dal suo sito web: https://www.videolan.org/vlc/</translation>
+        <translation>Su macOS manca VLC. Per favore, scaricalo e installalo dal suo sito web: https://www.videolan.org/vlc/</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="146"/>
+        <location filename="../../openlp/core/ui/media/mediacontroller.py" line="148"/>
         <source>No Displays have been configured, so Live Media has been disabled</source>
-        <translation>Nessun display è stato configurato, quindi Live Media è stato disabilitato.</translation>
+        <translation>Nessuno schermo è stato configurato, quindi la visualizzazione di contenuti multimediali nella Diretta è stata disattivata.</translation>
     </message>
 </context>
 <context>
@@ -4602,7 +4602,7 @@ Database: {db_name}</translation>
     <message>
         <location filename="../../openlp/plugins/images/lib/mediaitem.py" line="162"/>
         <source>&amp;Add to selected Service Item</source>
-        <translation>&amp;Aggiungi Elemento al Servizio selezionato</translation>
+        <translation>&amp;Aggiungi all&apos;elemento del Servizio selezionato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="370"/>
@@ -4624,7 +4624,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="522"/>
         <source>You must select one or more items to preview.</source>
-        <translation>È necessario selezionare uno o più elementi per l&apos;anteprima.</translation>
+        <translation>Devi selezionare uno o più elementi da visualizzare nell&apos;Anteprima.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="540"/>
@@ -4644,7 +4644,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="641"/>
         <source>You must select an existing service item to add to.</source>
-        <translation>È necessario selezionare un elemento del servizio da aggiungere.</translation>
+        <translation>È necessario selezionare un elemento del Servizio a cui aggiungere.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="649"/>
@@ -4654,7 +4654,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/lib/mediamanageritem.py" line="649"/>
         <source>You must select a {title} service item.</source>
-        <translation>È necessario selezionare un elemento del servizio {title}.</translation>
+        <translation>È necessario selezionare un elemento del Servizio {title}.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="105"/>
@@ -4673,12 +4673,12 @@ Estensione del file non supportata</translation>
 <context>
     <name>OpenLP.OpenLyricsImportError</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="722"/>
+        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="725"/>
         <source>&lt;lyrics&gt; tag is missing.</source>
         <translation>&lt;lyrics&gt; tag mancante.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="727"/>
+        <location filename="../../openlp/plugins/songs/lib/openlyricsxml.py" line="730"/>
         <source>&lt;verse&gt; tag is missing.</source>
         <translation>&lt;verse&gt; tag mancante.</translation>
     </message>
@@ -4718,7 +4718,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/pjlink.py" line="734"/>
         <source>Error while sending data to projector</source>
-        <translation>Si è verificato un errore inviando i dati al proiettore</translation>
+        <translation>Si è verificato un errore durante l&apos;invio dei dati al proiettore</translation>
     </message>
 </context>
 <context>
@@ -4726,12 +4726,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="168"/>
         <source>Acknowledge a PJLink SRCH command - returns MAC address.</source>
-        <translation>Riconoscere un comando PJLink SRCH - restituisce l&apos;indirizzo MAC.</translation>
+        <translation>Riconosce un comando PJLink SRCH - restituisce l&apos; indirizzo MAC.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="173"/>
         <source>Blank/unblank video and/or mute audio.</source>
-        <translation>Oscurare/sbloccare il video e/o disattivare l&apos;audio.</translation>
+        <translation>Oscura/sblocca il video e/o disattiva l&apos;audio.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="178"/>
@@ -4741,7 +4741,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="183"/>
         <source>Query error status from projector. Returns fan/lamp/temp/cover/filter/other error status.</source>
-        <translation>Richiesta dello stato di errore del proiettore. Restituisce lo stato di errore del ventilatore/lampada/tempo/copertura/filtro/altro.</translation>
+        <translation>Richiedi lo stato del proiettore. Restituisce lo stato della ventola/lampada/temperatura/coperchio/filtro/altri errori.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="189"/>
@@ -4786,7 +4786,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="229"/>
         <source>Query current input resolution.</source>
-        <translation>Richiedi la risoluzione in input corrente.</translation>
+        <translation>Richiedi la risoluzione dell&apos;input corrente.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="234"/>
@@ -4796,7 +4796,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="239"/>
         <source>UDP Status - Projector is now available on network. Includes MAC address.</source>
-        <translation>Stato UDP - Il proiettore è ora disponibile in rete. Include indirizzo MAC.</translation>
+        <translation>Stato UDP - Il proiettore è ora disponibile sulla rete. Include l&apos;indirizzo MAC.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="244"/>
@@ -4811,7 +4811,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="254"/>
         <source>Initial connection with authentication/no authentication request.</source>
-        <translation>Connessione iniziale con autenticazione/nessuna autenticazione richiesta.</translation>
+        <translation>Connessione iniziale con/nessuna autenticazione richiesta.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="259"/>
@@ -4821,7 +4821,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="264"/>
         <source>Query replacement air filter model number.</source>
-        <translation>Richiedi il modello del filtro dell&apos;aria.</translation>
+        <translation>Richiedi il modello del ricambio del filtro dell&apos;aria.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="269"/>
@@ -4831,7 +4831,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="274"/>
         <source>Query recommended resolution.</source>
-        <translation>Richiedi risoluzione consigliata.</translation>
+        <translation>Richiedi la risoluzione consigliata.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="279"/>
@@ -4859,17 +4859,17 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="301"/>
         <source>Browse for directory.</source>
-        <translation>Cerca la cartella.</translation>
+        <translation>Sfoglia per la cartella.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="302"/>
         <source>Revert to default directory.</source>
-        <translation>Ritorna alla cartella predefinita.</translation>
+        <translation>Ripristina la cartella predefinita.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="304"/>
         <source>Browse for file.</source>
-        <translation>Cerca il file.</translation>
+        <translation>Sfoglia per i file.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="305"/>
@@ -4879,12 +4879,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="319"/>
         <source>Select Directory</source>
-        <translation>Seleziona Cartella</translation>
+        <translation>Seleziona cartella</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/edits.py" line="323"/>
         <source>Select File</source>
-        <translation>Seleziona File</translation>
+        <translation>Seleziona file</translation>
     </message>
 </context>
 <context>
@@ -4892,12 +4892,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/plugindialog.py" line="74"/>
         <source>Manage Plugins</source>
-        <translation>Gestione Plugin</translation>
+        <translation>Gestione plugin</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/plugindialog.py" line="75"/>
         <source>Plugin Details</source>
-        <translation>Dettagli Plugin</translation>
+        <translation>Dettagli plugin</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/plugindialog.py" line="77"/>
@@ -4930,12 +4930,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/lib/pluginmanager.py" line="170"/>
         <source>Unable to initialise the following plugins:</source>
-        <translation>Impossibile inizializzare i seguenti plugin:</translation>
+        <translation>Non è possibile inizializzare i seguenti plugin:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/lib/pluginmanager.py" line="176"/>
         <source>See the log file for more details</source>
-        <translation>Visualizza il file di log per maggiori dettagli</translation>
+        <translation>Visualizza il file di log per maggiori informazioni</translation>
     </message>
 </context>
 <context>
@@ -4976,7 +4976,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="138"/>
         <source>Zoom Original</source>
-        <translation>Dimensione Originale</translation>
+        <translation>Dimensione originale</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="139"/>
@@ -5001,7 +5001,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="143"/>
         <source>Other Options</source>
-        <translation>Altre Opzioni</translation>
+        <translation>Altre opzioni</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="144"/>
@@ -5016,7 +5016,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="146"/>
         <source>Include service item notes</source>
-        <translation>Includi note sugli elementi del Servizio</translation>
+        <translation>Includi note degli elementi del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="147"/>
@@ -5031,7 +5031,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/ui/printservicedialog.py" line="149"/>
         <source>Service Sheet</source>
-        <translation>Documento del Servizio</translation>
+        <translation>Foglio del Servizio</translation>
     </message>
 </context>
 <context>
@@ -5049,7 +5049,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="407"/>
         <source>The connection was refused by the peer (or timed out)</source>
-        <translation>La connessione è stata rifiutata dal peer (o scaduta)</translation>
+        <translation>La connessione è stata rifiutata dal peer (o è scaduta)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="409"/>
@@ -5109,12 +5109,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="422"/>
         <source>PJLink authentication Mismatch Error</source>
-        <translation>Errore, autenticazione PJLink non corretta</translation>
+        <translation>Errore: mancata corrispondenza nell&apos;autenticazione PJLink</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="423"/>
         <source>Projector not connected error</source>
-        <translation>Errore proiettore non collegato</translation>
+        <translation>Errore: proiettore non collegato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="424"/>
@@ -5124,7 +5124,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="425"/>
         <source>PJLink Invalid prefix character</source>
-        <translation>PJLink Prefisso del Carattere non valido</translation>
+        <translation>PJLink Prefisso del carattere non valido</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="426"/>
@@ -5134,7 +5134,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="427"/>
         <source>The socket is using a proxy, and the proxy requires authentication</source>
-        <translation>La connessione utilizza un proxy che richiede l&apos;autenticazione</translation>
+        <translation>Il socket utilizza un proxy che richiede l&apos;autenticazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="430"/>
@@ -5144,7 +5144,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="433"/>
         <source>Could not contact the proxy server because the connection to that server was denied</source>
-        <translation>Impossibile contattare il server proxy perché la connessione è stata negata</translation>
+        <translation>Non è possibile contattare il server proxy perché la connessione è stata negata</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="436"/>
@@ -5159,7 +5159,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="441"/>
         <source>The connection negotiation with the proxy server failed because the response from the proxy server could not be understood</source>
-        <translation>La negoziazione della connessione con il server proxy non è riuscita perché la risposta dal server proxy non può essere interpretata</translation>
+        <translation>La negoziazione della connessione con il server proxy non è riuscita perché non è stato possibile comprendere la risposta dal server proxy</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="444"/>
@@ -5179,17 +5179,17 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="451"/>
         <source>The socket operation failed because the application lacked the required privileges</source>
-        <translation>La connessione è fallita perché all&apos;applicazione mancavano i privilegi richiesti</translation>
+        <translation>L&apos;operazione del socket non è riuscita perché l&apos;applicazione non disponeva dei privilegi richiesti</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="454"/>
         <source>The local system ran out of resources (e.g., too many sockets)</source>
-        <translation>Il sistema locale ha esaurito le risorse (ad es. Troppe connessioni attive)</translation>
+        <translation>Il sistema locale ha esaurito le risorse (ad es. troppi socket)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="456"/>
         <source>The socket operation timed out</source>
-        <translation>La connessione è scaduta</translation>
+        <translation>L&apos;operazione del socket è scaduta</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="458"/>
@@ -5219,12 +5219,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="465"/>
         <source>An unidentified socket error occurred</source>
-        <translation>Si è verificato un errore di connessione non identificato</translation>
+        <translation>Si è verificato un errore del socket non identificato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="466"/>
         <source>The requested socket operation is not supported by the local operating system (e.g., lack of IPv6 support)</source>
-        <translation>L&apos;operazione di connessione richiesta non è supportata dal sistema operativo locale (ad es. Mancanza di supporto IPv6)</translation>
+        <translation>L&apos;operazione del socket richiesta non è supportata dal sistema operativo locale (ad es. mancanza di supporto IPv6)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="469"/>
@@ -5239,7 +5239,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="471"/>
         <source>Socket is bound to an address or port</source>
-        <translation>La connessione è associata a un indirizzo o una porta</translation>
+        <translation>Il socket è associato a un indirizzo o a una porta</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="472"/>
@@ -5249,7 +5249,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="473"/>
         <source>Socket is about to close</source>
-        <translation>La connessione sta per chiudere</translation>
+        <translation>Il socket sta per chiudersi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="474"/>
@@ -5274,12 +5274,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="478"/>
         <source>Performing a host name lookup</source>
-        <translation>Esecuzione di una ricerca per nome dell&apos;host</translation>
+        <translation>Esecuzione di una ricerca del nome host</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="479"/>
         <source>Projector Information available</source>
-        <translation>Informazioni del Proiettore disponibili</translation>
+        <translation>Informazioni del proiettore disponibili</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="480"/>
@@ -5289,7 +5289,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="481"/>
         <source>Socket is listening (internal use only)</source>
-        <translation>La connessione è in ascolto (solo per uso interno)</translation>
+        <translation>Il socket è in ascolto (solo per uso interno)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="482"/>
@@ -5309,7 +5309,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="485"/>
         <source>Not Connected</source>
-        <translation>Non Connesso</translation>
+        <translation>Non connesso</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="486"/>
@@ -5329,12 +5329,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="489"/>
         <source>Power in standby</source>
-        <translation>Alimentazione è in standby</translation>
+        <translation>L&apos;alimentazione è in standby</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="490"/>
         <source>Getting status</source>
-        <translation>Lettura stato</translation>
+        <translation>Ottenimento dello stato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/constants.py" line="491"/>
@@ -5352,7 +5352,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="197"/>
         <source>Edit Projector</source>
-        <translation>Modifica Proiettore</translation>
+        <translation>Modifica proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="199"/>
@@ -5362,7 +5362,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="201"/>
         <source>Port Number</source>
-        <translation>Numero Porta</translation>
+        <translation>Numero porta</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/editform.py" line="203"/>
@@ -5395,12 +5395,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="69"/>
         <source>Add a new projector.</source>
-        <translation> Aggiungi un nuovo proiettore </translation>
+        <translation>Aggiungi un nuovo proiettore.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="75"/>
         <source>Edit Projector</source>
-        <translation>Modifica Proiettore</translation>
+        <translation>Modifica proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="75"/>
@@ -5410,22 +5410,22 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="80"/>
         <source>Delete Projector</source>
-        <translation>Elimina Proiettore</translation>
+        <translation>Elimina proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="80"/>
         <source>Delete selected projector.</source>
-        <translation> Elimina il proiettore selezionato </translation>
+        <translation>Elimina il proiettore selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="86"/>
         <source>Select Input Source</source>
-        <translation>Seleziona una sorgente di Input</translation>
+        <translation>Seleziona una sorgente di input</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="86"/>
         <source>Choose input source on selected projector.</source>
-        <translation>Seleziona una sorgente di Input per il proiettore selezionato.</translation>
+        <translation>Seleziona una sorgente di input per il proiettore selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="92"/>
@@ -5440,37 +5440,37 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="99"/>
         <source>Connect to selected projector.</source>
-        <translation>Connettiti al proiettore selezionato.</translation>
+        <translation>Connetti al proiettore selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="106"/>
         <source>Connect to selected projectors</source>
-        <translation>Connettiti ai proiettori selezionati</translation>
+        <translation>Connetti ai proiettori selezionati</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="106"/>
         <source>Connect to selected projectors.</source>
-        <translation>Connettiti ai proiettori selezionati</translation>
+        <translation>Connetti ai proiettori selezionati.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="113"/>
         <source>Disconnect from selected projectors</source>
-        <translation>Disconnettiti dai proiettori selezionati</translation>
+        <translation>Disconnetti dai proiettori selezionati</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="113"/>
         <source>Disconnect from selected projector.</source>
-        <translation>Disconnettiti dai proiettori selezionati</translation>
+        <translation>Disconnetti dal proiettore selezionato.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="120"/>
         <source>Disconnect from selected projector</source>
-        <translation>Disconnettiti dal proiettore selezionato</translation>
+        <translation>Disconnetti dal proiettore selezionato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="120"/>
         <source>Disconnect from selected projectors.</source>
-        <translation>Disconnettiti dai proiettori selezionati.</translation>
+        <translation>Disconnetti dai proiettori selezionati.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="135"/>
@@ -5510,7 +5510,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="162"/>
         <source>Blank selected projectors screen</source>
-        <translation>Oscura lo schermo del proiettore selezionato</translation>
+        <translation>Oscura lo schermo dei proiettori selezionati</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="162"/>
@@ -5540,7 +5540,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="203"/>
         <source>&amp;Edit Projector</source>
-        <translation>&amp;Modifica Proiettore</translation>
+        <translation>&amp;Modifica proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="208"/>
@@ -5550,47 +5550,47 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="214"/>
         <source>&amp;Connect Projector</source>
-        <translation>&amp;Connetti Proiettore</translation>
+        <translation>&amp;Connetti proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="219"/>
         <source>D&amp;isconnect Projector</source>
-        <translation>D&amp;isconnetti Proiettore</translation>
+        <translation>D&amp;isconnetti proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="225"/>
         <source>Power &amp;On Projector</source>
-        <translation>Accendi Pr&amp;oiettore</translation>
+        <translation>&amp;Accendi proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="230"/>
         <source>Power O&amp;ff Projector</source>
-        <translation>&amp;Spegni Proiettore</translation>
+        <translation>&amp;Spegni proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="236"/>
         <source>Select &amp;Input</source>
-        <translation>Seleziona &amp;Input</translation>
+        <translation>Seleziona &amp;input</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="241"/>
         <source>Edit Input Source</source>
-        <translation>Modifica Sorgente di Input</translation>
+        <translation>Modifica sorgente di input</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="246"/>
         <source>&amp;Blank Projector Screen</source>
-        <translation>&amp;Oscura lo Schermo del Proiettore</translation>
+        <translation>&amp;Oscura lo schermo del proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="256"/>
         <source>&amp;Show Projector Screen</source>
-        <translation>&amp;Visualizza lo Schermo del Proiettore</translation>
+        <translation>&amp;Visualizza lo schermo del proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="262"/>
         <source>&amp;Delete Projector</source>
-        <translation>&amp;Elimina Proiettore</translation>
+        <translation>&amp;Elimina proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="500"/>
@@ -5630,7 +5630,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="640"/>
         <source>Projector Name</source>
-        <translation>Nome Proiettore</translation>
+        <translation>Nome del proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="643"/>
@@ -5650,22 +5650,22 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="650"/>
         <source>Software Version</source>
-        <translation>Versione del Software</translation>
+        <translation>Versione del software</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="653"/>
         <source>Serial Number</source>
-        <translation>Numero di Serie</translation>
+        <translation>Numero di serie</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="656"/>
         <source>Lamp Model Number</source>
-        <translation>Modello della Lampada</translation>
+        <translation>Modello della lampada</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="659"/>
         <source>Filter Model Number</source>
-        <translation>Modello del Filtro</translation>
+        <translation>Modello del filtro</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="662"/>
@@ -5690,7 +5690,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="671"/>
         <source>Current source input is</source>
-        <translation>La sorgente di ingresso attuale è</translation>
+        <translation>La sorgente di input attuale è</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="678"/>
@@ -5735,7 +5735,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="934"/>
         <source>Authentication Error</source>
-        <translation>Errore di Autenticazione</translation>
+        <translation>Errore di autenticazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/manager.py" line="949"/>
@@ -5763,12 +5763,12 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="112"/>
         <source>Connect to projectors on startup</source>
-        <translation>Connetti al proiettore all&apos;avvio</translation>
+        <translation>Connetti ai proiettori all&apos;avvio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="114"/>
         <source>Socket timeout (seconds)</source>
-        <translation>Timeout di connessione (secondi)</translation>
+        <translation>Timeout del socket (secondi)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="116"/>
@@ -5788,7 +5788,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="124"/>
         <source>Connect to projector when LINKUP received (v2 only)</source>
-        <translation>Collegarsi al proiettore quando si riceve LINKUP (solo v2)</translation>
+        <translation>Connetti al proiettore quando viene ricevuto il LINKUP (solo v2)</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="126"/>
@@ -5829,7 +5829,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="123"/>
         <source>e.g. proxy_server_address:port_no</source>
-        <translation>es: indirizzo_del_server_proxy:numero_porta</translation>
+        <translation>per esempio: indirizzo_del_server_proxy:numero_porta</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="124"/>
@@ -5855,9 +5855,9 @@ Estensione del file non supportata</translation>
 <context>
     <name>OpenLP.RemotePlugin</name>
     <message>
-        <location filename="../../openlp/core/widgets/dialogs.py" line="122"/>
+        <location filename="../../openlp/core/widgets/dialogs.py" line="121"/>
         <source>Importing Website</source>
-        <translation>Importare il sito web</translation>
+        <translation>Importazione del sito web</translation>
     </message>
 </context>
 <context>
@@ -5865,7 +5865,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="353"/>
         <source>Restart Required</source>
-        <translation>È Richiesto il Riavvio</translation>
+        <translation>Riavvio richiesto</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="353"/>
@@ -5876,12 +5876,12 @@ Estensione del file non supportata</translation>
 <context>
     <name>OpenLP.Screen</name>
     <message>
-        <location filename="../../openlp/core/display/screens.py" line="271"/>
+        <location filename="../../openlp/core/display/screens.py" line="275"/>
         <source>Screen settings and screen setup is not the same</source>
-        <translation>Le impostazioni dello schermo e la configurazione dello schermo non sono le stesse</translation>
+        <translation>Le impostazioni dello schermo non corrispondono con gli schermi in uso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/display/screens.py" line="271"/>
+        <location filename="../../openlp/core/display/screens.py" line="275"/>
         <source>There is a mismatch between screens and screen settings. OpenLP will try to automatically select a display screen, but you should consider updating the screen settings.</source>
         <translation>Le impostazioni dello schermo rilevate non corrispondono con quanto impostato. OpenLP cercherà di configurare automaticamente uno schermo di visualizzazione, ma dovresti considerare di aggiornare le impostazioni dello schermo.</translation>
     </message>
@@ -5891,18 +5891,18 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="194"/>
         <source>({screen.geometry.width()} x {screen.geometry.height()} pixels)</source>
-        <translation>({screen.geometry.width()} x {screen.geometry.height()} pixels)</translation>
+        <translation>({screen.geometry.width()} x {screen.geometry.height()} pixel)</translation>
     </message>
 </context>
 <context>
     <name>OpenLP.ScreenList</name>
     <message>
-        <location filename="../../openlp/core/display/screens.py" line="297"/>
+        <location filename="../../openlp/core/display/screens.py" line="301"/>
         <source>Screen</source>
         <translation>Schermo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/display/screens.py" line="300"/>
+        <location filename="../../openlp/core/display/screens.py" line="304"/>
         <source>primary</source>
         <translation>primario</translation>
     </message>
@@ -5972,7 +5972,7 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/widgets/widgets.py" line="320"/>
         <source>You need to select at least one screen to be used as a display. Select the screen you wish to use as a display, and check the checkbox for that screen.</source>
-        <translation>Devi selezionare almeno uno schermo da usare per la visualizzazione. Seleziona lo schermo che desideri utilizzare e spunta la casella di controllo corrispondente.</translation>
+        <translation>Devi selezionare almeno uno schermo da usare per la visualizzazione. Seleziona lo schermo che desideri usare e spunta la casella di controllo corrispondente.</translation>
     </message>
 </context>
 <context>
@@ -5980,15 +5980,15 @@ Estensione del file non supportata</translation>
     <message>
         <location filename="../../openlp/core/lib/serviceitem.py" line="337"/>
         <source>[slide {frame:d}]</source>
-        <translation>[slide {frame:d}]</translation>
+        <translation>[diapositiva {frame:d}]</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="780"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="792"/>
         <source>&lt;strong&gt;Start&lt;/strong&gt;: {start}</source>
         <translation>&lt;strong&gt;Inizio&lt;/strong&gt;: {start}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/lib/serviceitem.py" line="784"/>
+        <location filename="../../openlp/core/lib/serviceitem.py" line="796"/>
         <source>&lt;strong&gt;Length&lt;/strong&gt;: {length}</source>
         <translation>&lt;strong&gt;Durata&lt;/strong&gt;: {length}</translation>
     </message>
@@ -6009,241 +6009,241 @@ Estensione del file non supportata</translation>
         <translation>Note del servizio: </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/printserviceform.py" line="242"/>
+        <location filename="../../openlp/core/ui/printserviceform.py" line="243"/>
         <source>Notes: </source>
         <translation>Note:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/printserviceform.py" line="250"/>
+        <location filename="../../openlp/core/ui/printserviceform.py" line="251"/>
         <source>Playing time: </source>
         <translation>Durata riproduzione:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="148"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="147"/>
         <source>Load an existing service.</source>
-        <translation>Carica un servizio esistente.</translation>
+        <translation>Carica un Servizio esistente.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="152"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="151"/>
         <source>Save this service.</source>
-        <translation>Salva questo servizio.</translation>
+        <translation>Salva questo Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="162"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="161"/>
         <source>Select a theme for the service.</source>
-        <translation>Seleziona un tema per il servizio.</translation>
+        <translation>Seleziona un tema per il Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="185"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="184"/>
         <source>Move to &amp;top</source>
-        <translation>Sposta all&apos;inizio</translation>
+        <translation>Sposta all&apos;&amp;inizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="185"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="184"/>
         <source>Move item to the top of the service.</source>
-        <translation>Sposta l&apos;elemento all&apos;inizio del servizio</translation>
+        <translation>Sposta l&apos;elemento all&apos;inizio del Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="190"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="189"/>
         <source>Move &amp;up</source>
         <translation>Sposta verso l&apos;&amp;alto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="190"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="189"/>
         <source>Move item up one position in the service.</source>
-        <translation>Sposta l&apos;elemento in alto di una posizione nel servizio.</translation>
+        <translation>Sposta l&apos;elemento in alto di una posizione nel Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="195"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="194"/>
         <source>Move &amp;down</source>
         <translation>Sposta verso il &amp;basso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="195"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="194"/>
         <source>Move item down one position in the service.</source>
-        <translation>Sposta l&apos;elemento in basso di una posizione nel servizio.</translation>
+        <translation>Sposta l&apos;elemento in basso di una posizione nel Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="200"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="199"/>
         <source>Move to &amp;bottom</source>
         <translation>Sposta alla &amp;fine</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="200"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="199"/>
         <source>Move item to the end of the service.</source>
-        <translation>Sposta l&apos;elemento alla fine del servizio.</translation>
+        <translation>Sposta l&apos;elemento alla fine del Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="206"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="205"/>
         <source>&amp;Delete From Service</source>
         <translation>&amp;Elimina dal Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="206"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="205"/>
         <source>Delete the selected item from the service.</source>
-        <translation>Elimina l&apos;elemento selezionato dal servizio.</translation>
+        <translation>Elimina l&apos;elemento selezionato dal Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="212"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="211"/>
         <source>&amp;Expand all</source>
         <translation>&amp;Espandi tutto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="212"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="211"/>
         <source>Expand all the service items.</source>
-        <translation>Espandi tutti gli elementi del servizio.</translation>
+        <translation>Espandi tutti gli elementi del Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="217"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="216"/>
         <source>&amp;Collapse all</source>
         <translation>&amp;Comprimi tutto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="217"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="216"/>
         <source>Collapse all the service items.</source>
-        <translation>Comprimi tutti gli elementi del servizio.</translation>
+        <translation>Comprimi tutti gli elementi del Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="223"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="222"/>
         <source>Go Live</source>
         <translation>Invia nella Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="223"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="222"/>
         <source>Send the selected item to Live.</source>
         <translation>Invia nella Diretta l&apos;elemento selezionato.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="241"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="240"/>
         <source>&amp;Add New Item</source>
         <translation>&amp;Aggiungi un nuovo elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="243"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="242"/>
         <source>&amp;Add to Selected Item</source>
-        <translation>&amp;Aggiungi all&apos;Elemento Selezionato</translation>
+        <translation>&amp;Aggiungi all&apos;elemento selezionato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="247"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="246"/>
         <source>&amp;Edit Item</source>
-        <translation>&amp;Modifica Elemento</translation>
+        <translation>&amp;Modifica elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="249"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="248"/>
         <source>&amp;Rename...</source>
         <translation>&amp;Rinomina...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="252"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="251"/>
         <source>&amp;Reorder Item</source>
-        <translation>&amp;Riordina Elemento</translation>
+        <translation>&amp;Riordina elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="255"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="254"/>
         <source>&amp;Notes</source>
         <translation>&amp;Note</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="258"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="257"/>
         <source>&amp;Start Time</source>
-        <translation>&amp;Ora d&apos;Inizio</translation>
+        <translation>&amp;Ora d&apos;inizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="265"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="264"/>
         <source>Create New &amp;Custom Slide</source>
-        <translation>Crea una nuova &amp;Diapositiva personalizzata</translation>
+        <translation>Crea una nuova &amp;diapositiva personalizzata</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="272"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="271"/>
         <source>&amp;Auto play slides</source>
         <translation>&amp;Riproduci diapositive automaticamente</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="276"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="275"/>
         <source>Auto play slides &amp;Loop</source>
         <translation>Riproduci diapositive automaticamente in &amp;loop</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="281"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="280"/>
         <source>Auto play slides &amp;Once</source>
         <translation>Riproduci diapositive automaticamente &amp;una sola volta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="930"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="940"/>
         <source>&amp;Delay between slides</source>
         <translation>&amp;Ritardo tra le diapositive</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="292"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="291"/>
         <source>Show &amp;Preview</source>
         <translation>Visualizza nell&apos;&amp;Anteprima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="297"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="296"/>
         <source>&amp;Change Item Theme</source>
         <translation>&amp;Cambia tema dell&apos;elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="364"/>
         <source>Delete item from service</source>
-        <translation>Eliminare l&apos;elemento dal servizio</translation>
+        <translation>Elimina l&apos;elemento dal Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="365"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="364"/>
         <source>Are you sure you want to delete this item from the service?</source>
-        <translation>Sei sicuro di voler eliminare questo elemento dal servizio?</translation>
+        <translation>Sei sicuro di voler eliminare questo elemento dal Servizio?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="372"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="371"/>
         <source>&amp;Delete item</source>
         <translation>&amp;Elimina l&apos;elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="395"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="394"/>
         <source>Untitled Service</source>
-        <translation>Servizio senza Titolo</translation>
+        <translation>Servizio senza titolo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="499"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="498"/>
         <source>Open File</source>
-        <translation>Apri File:</translation>
+        <translation>Apri file</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="499"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="498"/>
         <source>OpenLP Service Files (*.osz *.oszl)</source>
-        <translation>File Servizio OpenLP (*.osz *.oszl)</translation>
+        <translation>File di Servizio OpenLP (*.osz *.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="513"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="512"/>
         <source>Modified Service</source>
-        <translation>Servizio Modificato</translation>
+        <translation>Servizio modificato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="513"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="512"/>
         <source>The current service has been modified. Would you like to save this service?</source>
-        <translation>Il servizio attuale è stato modificato. Vuoi salvare questo servizio?</translation>
+        <translation>Il Servizio attuale è stato modificato. Vuoi salvare questo Servizio?</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="658"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="660"/>
         <source>Service File(s) Missing</source>
-        <translation>File del servizio mancanti</translation>
+        <translation>File del Servizio mancanti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="659"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="661"/>
         <source>The following file(s) in the service are missing: {name}
 
 These files will be removed if you continue to save.</source>
-        <translation>Mancano i seguenti file nel servizio: {name}
+        <translation>Mancano i seguenti file nel Servizio: {name}
 
-Questi file verranno rimossi se si continua a salvataggio.</translation>
+Questi file verranno rimossi se continui a salvare.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="709"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="708"/>
         <source>Error Saving File</source>
         <translation>Errore durante il salvataggio del file</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="709"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="708"/>
         <source>There was an error saving your file.
 
 {error}</source>
@@ -6252,82 +6252,82 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
 {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="746"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="745"/>
         <source>OpenLP Service Files - lite (*.oszl)</source>
-        <translation>File di servizio OpenLP - lite (*.oszl)</translation>
+        <translation>File di Servizio OpenLP - lite (*.oszl)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="747"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="746"/>
         <source>OpenLP Service Files (*.osz)</source>
-        <translation>File di servizio OpenLP (*.osz)</translation>
+        <translation>File di Servizio OpenLP (*.osz)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="844"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="854"/>
         <source>The service file {file_path} could not be loaded because it is either corrupt, inaccessible, or not a valid OpenLP 2 or OpenLP 3 service file.</source>
-        <translation>Impossibile caricare il file del Servizio {file_path} perché è corrotto, inaccessibile o non è un file di Servizio di OpenLP 2 o OpenLP 3.</translation>
+        <translation>Non è possibile caricare il file del Servizio {file_path} perché è danneggiato, inaccessibile o non è un file di Servizio di OpenLP 2 o OpenLP 3.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="941"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="951"/>
         <source>&amp;Auto Start - active</source>
-        <translation>Partenza &amp;Automatica - attivato</translation>
+        <translation>Avvio &amp;automatico - attivo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="945"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="955"/>
         <source>&amp;Auto Start - inactive</source>
-        <translation>Partenza &amp;Automatica - non attivo</translation>
+        <translation>Avvio &amp;automatico - non attivo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1022"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1032"/>
         <source>Input delay</source>
-        <translation>Ritardo Ingresso</translation>
+        <translation>Ritardo input</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1022"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1032"/>
         <source>Delay between slides in seconds.</source>
         <translation>Ritardo tra le diapositive in secondi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1353"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1363"/>
         <source>Edit</source>
         <translation>Modifica</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1354"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1364"/>
         <source>Service copy only</source>
-        <translation>Solo la copia del servizio</translation>
+        <translation>Solo la copia del Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1357"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1367"/>
         <source>Slide theme</source>
         <translation>Tema diapositive</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1361"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1371"/>
         <source>Notes</source>
         <translation>Note</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1612"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1622"/>
         <source>Missing Display Handler</source>
-        <translation>Gestore Schermo Mancante</translation>
+        <translation>Gestore di visualizzazione mancante</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1545"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1555"/>
         <source>Your item cannot be displayed as there is no handler to display it</source>
-        <translation>L&apos;elemento non può essere visualizzato perché non c&apos;è nessun gestore per visualizzarlo.</translation>
+        <translation>L&apos;elemento non può essere visualizzato in quanto non esiste un gestore per visualizzarlo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1612"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1622"/>
         <source>Your item cannot be displayed as the plugin required to display it is missing or inactive</source>
         <translation>L&apos;elemento non può essere visualizzato poiché il plugin richiesto per visualizzarlo è mancante o inattivo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1637"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1647"/>
         <source>Rename item title</source>
         <translation>Rinomina il titolo dell&apos;elemento</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="1637"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="1647"/>
         <source>Title:</source>
         <translation>Titolo:</translation>
     </message>
@@ -6337,7 +6337,7 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicenoteform.py" line="72"/>
         <source>Service Item Notes</source>
-        <translation>Note sull&apos;elemento del Servizio</translation>
+        <translation>Note dell&apos;elemento del Servizio</translation>
     </message>
 </context>
 <context>
@@ -6410,7 +6410,7 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="178"/>
         <source>Time service usually starts.</source>
-        <translation>Orario in cui il servizio inizia di solito.</translation>
+        <translation>L&apos;orario in cui in cui di solito inizia il servizio di culto.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="179"/>
@@ -6420,12 +6420,12 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="180"/>
         <source>Consult the OpenLP manual for usage.</source>
-        <translation>Per l&apos;utilizzo consultare il manuale di OpenLP.</translation>
+        <translation>Consulta il manuale di OpenLP per l&apos;utilizzo.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="181"/>
         <source>Revert to the default service name &quot;{name}&quot;.</source>
-        <translation>Torna al nome predefinito del servizio &quot;{name}&quot;.</translation>
+        <translation>Torna al nome predefinito del Servizio &quot;{name}&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="184"/>
@@ -6435,7 +6435,7 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="186"/>
         <source>Slide Controller</source>
-        <translation>Controller Diapositiva</translation>
+        <translation>Controller diapositiva</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="187"/>
@@ -6460,12 +6460,12 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="194"/>
         <source> sec</source>
-        <translation>secondi</translation>
+        <translation> secondi</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="196"/>
         <source>Service Item Wrapping</source>
-        <translation>Raggruppamento elementi del Servizio</translation>
+        <translation>Raggruppamento degli elementi del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="197"/>
@@ -6475,7 +6475,7 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="198"/>
         <source>&amp;Remain on Slide</source>
-        <translation>&amp;Rimani sulla Diapositiva</translation>
+        <translation>&amp;Rimani sulla diapositiva</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="199"/>
@@ -6485,17 +6485,17 @@ Questi file verranno rimossi se si continua a salvataggio.</translation>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="200"/>
         <source>&amp;Move to next/previous service item</source>
-        <translation>Vai al successivo/precedente elemento del servizio</translation>
+        <translation>Vai al successivo/precedente elemento del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="202"/>
         <source>Service Editing</source>
-        <translation>Edita il servizio</translation>
+        <translation>Modifica del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="203"/>
         <source>Show confirmation box when deleting item from service</source>
-        <translation>Mostra una casella di conferma quando si elimina un elemento dal servizio</translation>
+        <translation>Mostra una casella di conferma quando si elimina un elemento dal Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicetab.py" line="301"/>
@@ -6597,164 +6597,164 @@ usa una scorciatoia diversa.</translation>
 <context>
     <name>OpenLP.SlideController</name>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="277"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="291"/>
         <source>Previous Slide</source>
-        <translation>Diapositiva Precedente</translation>
+        <translation>Diapositiva precedente</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="277"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="291"/>
         <source>Move to previous.</source>
         <translation>Passa alla precedente.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="284"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="298"/>
         <source>Next Slide</source>
-        <translation>Diapositiva Successiva</translation>
+        <translation>Diapositiva successiva</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="284"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="298"/>
         <source>Move to next.</source>
         <translation>Passa alla successiva.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="304"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="318"/>
         <source>Hide</source>
         <translation>Nascondi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="307"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="321"/>
         <source>Show Presentation</source>
         <translation>Mostra presentazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="312"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="326"/>
         <source>Show Theme</source>
-        <translation>Mostra Tema</translation>
+        <translation>Mostra tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="317"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="331"/>
         <source>Show Black</source>
-        <translation>Visualizza Schermo Nero</translation>
+        <translation>Mostra schermo nero</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="322"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="336"/>
         <source>Show Desktop</source>
         <translation>Visualizza Desktop</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="355"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="369"/>
         <source>Play Slides</source>
-        <translation>Riproduci Diapositive</translation>
+        <translation>Riproduci diapositive</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="375"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="389"/>
         <source>Delay between slides in seconds.</source>
         <translation>Ritardo tra le diapositive in secondi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="379"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="393"/>
         <source>Move to live.</source>
         <translation>Invia nella Diretta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="382"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="396"/>
         <source>Add to Service.</source>
-        <translation>Aggiungi al Servizio</translation>
+        <translation>Aggiungi al Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="386"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="400"/>
         <source>Edit and reload song preview.</source>
         <translation>Modifica e ricarica il brano nell&apos;Anteprima.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="390"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="404"/>
         <source>Clear</source>
-        <translation>Chiaro</translation>
+        <translation>Svuota</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="397"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="411"/>
         <source>Start playing media.</source>
         <translation>Inizia la riproduzione.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="401"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="415"/>
         <source>Pause playing media.</source>
         <translation>Metti in pausa la riproduzione.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="405"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="419"/>
         <source>Stop playing media.</source>
         <translation>Ferma la riproduzione.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="409"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="423"/>
         <source>Loop playing media.</source>
-        <translation>Ciclo di riproduzione di contenuti multimediali.</translation>
+        <translation>Riproduci in loop i contenuti multimediali.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="416"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="430"/>
         <source>Video timer.</source>
-        <translation>Timer video.</translation>
+        <translation>Timer del video.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="425"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="439"/>
         <source>Video position.</source>
-        <translation>Posizione video.</translation>
+        <translation>Posizione del video.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="436"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="450"/>
         <source>Audio Volume.</source>
-        <translation>Volume Audio.</translation>
+        <translation>Volume audio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="474"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="488"/>
         <source>Go to &quot;Verse&quot;</source>
         <translation>Vai alla &quot;Strofa&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="475"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="489"/>
         <source>Go to &quot;Chorus&quot;</source>
         <translation>Vai al &quot;Coro&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="476"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="490"/>
         <source>Go to &quot;Bridge&quot;</source>
         <translation>Vai al &quot;Ponte&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="478"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="492"/>
         <source>Go to &quot;Pre-Chorus&quot;</source>
         <translation>Vai al &quot;Pre-Coro&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="479"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="493"/>
         <source>Go to &quot;Intro&quot;</source>
         <translation>Vai all&apos;&quot;Introduzione&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="480"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="494"/>
         <source>Go to &quot;Ending&quot;</source>
         <translation>Vai al &quot;Finale&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="481"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="495"/>
         <source>Go to &quot;Other&quot;</source>
         <translation>Vai a &quot;Altro&quot;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="539"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="553"/>
         <source>Go To</source>
         <translation>Vai a</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="626"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="640"/>
         <source>Previous Service</source>
-        <translation>Servizio Precedente</translation>
+        <translation>Servizio precedente</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/slidecontroller.py" line="631"/>
+        <location filename="../../openlp/core/ui/slidecontroller.py" line="645"/>
         <source>Next Service</source>
-        <translation>Servizio Successivo</translation>
+        <translation>Servizio successivo</translation>
     </message>
 </context>
 <context>
@@ -6782,12 +6782,12 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/projectors/sourceselectform.py" line="397"/>
         <source>Edit Projector Source Text</source>
-        <translation>Modifica Testo Sorgente del Proiettore</translation>
+        <translation>Modifica descrizione della sorgente del proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/sourceselectform.py" line="399"/>
         <source>Select Projector Source</source>
-        <translation>Seleziona la Sorgente del Proiettore</translation>
+        <translation>Seleziona la sorgente del proiettore</translation>
     </message>
     <message>
         <location filename="../../openlp/core/projectors/sourceselectform.py" line="481"/>
@@ -6823,7 +6823,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/themelayoutdialog.py" line="70"/>
         <source>Theme Layout</source>
-        <translation>Formato Tema</translation>
+        <translation>Layout del tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themelayoutdialog.py" line="71"/>
@@ -6841,7 +6841,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/starttimedialog.py" line="116"/>
         <source>Item Start and Finish Time</source>
-        <translation>Elemento di Inizio e Fine Tempo</translation>
+        <translation>Tempo di inizio e fine dell&apos;elemento</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/starttimedialog.py" line="123"/>
@@ -6876,17 +6876,17 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/starttimeform.py" line="77"/>
         <source>Time Validation Error</source>
-        <translation>Errore di convalida Tempo</translation>
+        <translation>Errore di convalida del tempo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/starttimeform.py" line="72"/>
         <source>Finish time is set after the end of the media item</source>
-        <translation>Il tempo di fine è impostato dopo la fine dell&apos;elemento multimediale</translation>
+        <translation>Il tempo di fine indicato è successivo alla fine del contenuto multimediale</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/starttimeform.py" line="77"/>
         <source>Start time is after the finish time of the media item</source>
-        <translation>Il tempo di inizio è successivo al tempo di fine dell&apos;elemento multimediale</translation>
+        <translation>Il tempo di inizio indicato è successivo alla fine del contenuto multimediale</translation>
     </message>
 </context>
 <context>
@@ -6902,12 +6902,12 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="68"/>
         <source>Create a new theme.</source>
-        <translation>Creare un nuovo tema.</translation>
+        <translation>Crea un nuovo tema.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="72"/>
         <source>Edit Theme</source>
-        <translation>Modifica Tema</translation>
+        <translation>Modifica tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="72"/>
@@ -6917,7 +6917,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="77"/>
         <source>Delete Theme</source>
-        <translation>Cancella Tema</translation>
+        <translation>Cancella tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="77"/>
@@ -6927,42 +6927,42 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="85"/>
         <source>Import Theme</source>
-        <translation>Importa Tema</translation>
+        <translation>Importa tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="85"/>
         <source>Import a theme.</source>
-        <translation>Importa un Tema.</translation>
+        <translation>Importa un tema.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="90"/>
         <source>Export Theme</source>
-        <translation>Esporta Tema</translation>
+        <translation>Esporta tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="90"/>
         <source>Export a theme.</source>
-        <translation>Esporta un Tema.</translation>
+        <translation>Esporta un tema.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="108"/>
         <source>&amp;Edit Theme</source>
-        <translation>&amp;Modifica Tema</translation>
+        <translation>&amp;Modifica tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="111"/>
         <source>&amp;Copy Theme</source>
-        <translation>&amp;Copia Tema</translation>
+        <translation>&amp;Copia tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="114"/>
         <source>&amp;Rename Theme</source>
-        <translation>&amp;Rinomina Tema</translation>
+        <translation>&amp;Rinomina tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="117"/>
         <source>&amp;Delete Theme</source>
-        <translation>&amp;Elimina Tema</translation>
+        <translation>&amp;Elimina tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="121"/>
@@ -6972,7 +6972,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="125"/>
         <source>&amp;Export Theme</source>
-        <translation>&amp;Esporta Tema</translation>
+        <translation>&amp;Esporta tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="303"/>
@@ -6982,7 +6982,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="324"/>
         <source>You must select a theme to rename.</source>
-        <translation>È necessario selezionare un Tema da rinominare.</translation>
+        <translation>È necessario selezionare un tema da rinominare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="324"/>
@@ -7003,7 +7003,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="384"/>
         <source>You must select a theme to edit.</source>
-        <translation>È necessario selezionare un Tema da modificare.</translation>
+        <translation>È necessario selezionare un tema da modificare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="401"/>
@@ -7018,7 +7018,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="401"/>
         <source>Delete {theme_name} theme?</source>
-        <translation>Eliminare il tema {theme_name} ?</translation>
+        <translation>Eliminare il tema {theme_name}?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="438"/>
@@ -7043,12 +7043,12 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="452"/>
         <source>Your theme has been successfully exported.</source>
-        <translation>Il tuo tema è stato esportato con successo.</translation>
+        <translation>Il tema è stato esportato con successo.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="475"/>
         <source>Theme Export Failed</source>
-        <translation>Esportazione del tema non riuscita</translation>
+        <translation>L&apos;esportazione del tema non è riuscita</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="475"/>
@@ -7058,7 +7058,7 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="491"/>
         <source>Select Theme Import File</source>
-        <translation>Seleziona il file del Tema da importare</translation>
+        <translation>Seleziona il file del tema da importare</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="547"/>
@@ -7068,12 +7068,12 @@ usa una scorciatoia diversa.</translation>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="599"/>
         <source>Theme Already Exists</source>
-        <translation>Questo Tema è già presente</translation>
+        <translation>Questo tema è già presente</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="599"/>
         <source>Theme {name} already exists. Do you want to replace it?</source>
-        <translation>Il Tema {name} è già presente. Vuoi sostituirlo?</translation>
+        <translation>Il tema {name} è già presente. Vuoi sostituirlo?</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="660"/>
@@ -7087,7 +7087,7 @@ usa una scorciatoia diversa.</translation>
 It is corrupt, inaccessible or not a valid theme.</source>
         <translation>Si è verificato un problema durante l&apos;importazione di {file_name}.
 
-È corrotto, inaccessibile o non è un tema valido.</translation>
+È un tema danneggiato, inaccessibile o non valido.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/thememanager.py" line="688"/>
@@ -7100,26 +7100,26 @@ It is corrupt, inaccessible or not a valid theme.</source>
         <translation>È presente già un tema con questo nome.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/thememanager.py" line="818"/>
+        <location filename="../../openlp/core/ui/thememanager.py" line="817"/>
         <source>You are unable to delete the default theme.</source>
         <translation>Non è possibile eliminare il tema predefinito.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/thememanager.py" line="827"/>
+        <location filename="../../openlp/core/ui/thememanager.py" line="826"/>
         <source>{count} time(s) by {plugin}</source>
         <translation>{count} tempo(i) di {plugin}</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/thememanager.py" line="834"/>
+        <location filename="../../openlp/core/ui/thememanager.py" line="833"/>
         <source>Unable to delete theme</source>
         <translation>Impossibile eliminare il tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/thememanager.py" line="834"/>
+        <location filename="../../openlp/core/ui/thememanager.py" line="833"/>
         <source>Theme is currently used 
 
 {text}</source>
-        <translation>Il Tema è attualmente in uso
+        <translation>Il tema è attualmente in uso
 
  {text}</translation>
     </message>
@@ -7254,7 +7254,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/pages/areaposition.py" line="142"/>
         <source>Width:</source>
-        <translation>Larghezza</translation>
+        <translation>Larghezza:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/areaposition.py" line="144"/>
@@ -7264,7 +7264,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/pages/areaposition.py" line="137"/>
         <source>&amp;Footer Area</source>
-        <translation>&amp;Area delle Note a Piè di Pagina</translation>
+        <translation>&amp;Area delle note a piè di pagina</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/areaposition.py" line="146"/>
@@ -7279,12 +7279,12 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="110"/>
         <source>Select Video</source>
-        <translation>Seleziona un Video</translation>
+        <translation>Seleziona un video</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="164"/>
         <source>Background type:</source>
-        <translation>Tipo di Sfondo:</translation>
+        <translation>Tipo di sfondo:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="165"/>
@@ -7304,7 +7304,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="171"/>
         <source>Live stream</source>
-        <translation>Trasmissione in diretta</translation>
+        <translation>Diretta streaming</translation>
     </message>
     <message>
         <location filename="../../openlp/core/pages/background.py" line="173"/>
@@ -7349,37 +7349,37 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="144"/>
         <source>Background Image Empty</source>
-        <translation>Immagine di sfondo vuota</translation>
+        <translation>Immagine di sfondo mancante</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="144"/>
         <source>You have not selected a background image. Please select one before continuing.</source>
-        <translation>Non hai selezionato un&apos;immagine di sfondo. Selezionane una prima di continuare.</translation>
+        <translation>Non hai selezionato un&apos;immagine per lo sfondo. Selezionane una prima di continuare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="150"/>
         <source>Background Video Empty</source>
-        <translation>Sfondo video vuoto</translation>
+        <translation>Sfondo video mancante</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="150"/>
         <source>You have not selected a background video. Please select one before continuing.</source>
-        <translation>Non hai selezionato un video di sfondo. Per favore, selezionane uno prima di continuare.</translation>
+        <translation>Non hai selezionato un video per lo sfondo. Selezionane uno prima di continuare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="156"/>
         <source>Background Stream Empty</source>
-        <translation>Flusso di sfondo vuoto</translation>
+        <translation>Diretta streaming mancante</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="156"/>
         <source>You have not selected a background stream. Please select one before continuing.</source>
-        <translation>Non è stato selezionato un flusso di sfondo. Si prega di selezionarne uno prima di continuare.</translation>
+        <translation>Non hai selezionato una diretta streaming da usare come sfondo. Selezionane una prima di continuare.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="228"/>
         <source>Edit Theme - {name}</source>
-        <translation>Modifica Tema - {name}</translation>
+        <translation>Modifica tema - {name}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="423"/>
@@ -7389,7 +7389,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="423"/>
         <source>There is no name for this theme. Please enter one.</source>
-        <translation>Non esiste un nome per questo tema. Per favore, inseriscine uno.</translation>
+        <translation>Non esiste un nome per questo tema. Inseriscine uno.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="428"/>
@@ -7399,7 +7399,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themeform.py" line="428"/>
         <source>Invalid theme name. Please enter one.</source>
-        <translation>Nome del tema non valido. Per favore, inseriscine uno.</translation>
+        <translation>Nome del tema non valido. Inseriscine uno.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="112"/>
@@ -7419,7 +7419,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="118"/>
         <source>Set Up Background</source>
-        <translation>Imposta lo Sfondo</translation>
+        <translation>Imposta lo sfondo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="119"/>
@@ -7439,37 +7439,37 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="124"/>
         <source>Footer Area Font Details</source>
-        <translation>Caratteristiche dei caratteri delle Note a Piè di pagina</translation>
+        <translation>Caratteristiche dei caratteri delle note a piè di pagina</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="125"/>
         <source>Define the font and display characteristics for the Footer text</source>
-        <translation>Definisci il carattere e le caratteristiche per il testo nelle Note a piè di pagina</translation>
+        <translation>Definisci il carattere e le caratteristiche per il testo delle note a piè di pagina</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="127"/>
         <source>Text Formatting Details</source>
-        <translation>Dettagli di formattazione del testo</translation>
+        <translation>Dettagli sulla formattazione del testo</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="128"/>
         <source>Allows additional display formatting information to be defined</source>
-        <translation>Consente di definire ulteriori informazioni sulla formattazione</translation>
+        <translation>Consente di definire ulteriori dettagli sulla formattazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="130"/>
         <source>Output Area Locations</source>
-        <translation>Posizioni delle Aree di Output</translation>
+        <translation>Posizioni delle aree di output</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="131"/>
         <source>Allows you to change and move the Main and Footer areas.</source>
-        <translation>Consente di modificare e spostare l&apos;Area Principale e l&apos;Area delle Note a Piè di pagina.</translation>
+        <translation>Consente di modificare e spostare l&apos;Area principale e l&apos;Area delle note a piè di pagina.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="134"/>
         <source>Layout Preview</source>
-        <translation>Anteprima impaginazione</translation>
+        <translation>Anteprima del layout</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="135"/>
@@ -7484,7 +7484,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themewizard.py" line="137"/>
         <source>Theme name:</source>
-        <translation>Nome del Tema:</translation>
+        <translation>Nome del tema:</translation>
     </message>
 </context>
 <context>
@@ -7515,22 +7515,22 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="120"/>
         <source>&amp;Transition between service items</source>
-        <translation>&amp;Transizione tra le voci di servizio</translation>
+        <translation>&amp;Transizione tra gli elementi del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="121"/>
         <source>&amp;Reload live theme when changed</source>
-        <translation>&amp;Ricarica il tema dal vivo quando viene cambiato</translation>
+        <translation>&amp;Ricarica il tema della Diretta quando viene cambiato</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="122"/>
         <source>Theme Level</source>
-        <translation>Livello Tema</translation>
+        <translation>Livello tema</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="123"/>
         <source>S&amp;ong Level</source>
-        <translation>Livello B&amp;rano </translation>
+        <translation>Livello b&amp;rano </translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="124"/>
@@ -7550,7 +7550,7 @@ It is corrupt, inaccessible or not a valid theme.</source>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="133"/>
         <source>&amp;Global Level</source>
-        <translation>&amp;Livello Globale</translation>
+        <translation>&amp;Livello globale</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/themestab.py" line="134"/>
@@ -7561,505 +7561,505 @@ It is corrupt, inaccessible or not a valid theme.</source>
 <context>
     <name>OpenLP.Ui</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="338"/>
+        <location filename="../../openlp/core/common/i18n.py" line="340"/>
         <source>About</source>
         <translation>Informazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="339"/>
+        <location filename="../../openlp/core/common/i18n.py" line="341"/>
         <source>&amp;Add</source>
         <translation>&amp;Aggiungi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="340"/>
+        <location filename="../../openlp/core/common/i18n.py" line="342"/>
         <source>Add folder</source>
         <translation>Aggiungi cartella</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="341"/>
+        <location filename="../../openlp/core/common/i18n.py" line="343"/>
         <source>Add folder.</source>
         <translation>Aggiungi cartella.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="342"/>
+        <location filename="../../openlp/core/common/i18n.py" line="344"/>
         <source>Add group</source>
         <translation>Aggiungi gruppo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="343"/>
+        <location filename="../../openlp/core/common/i18n.py" line="345"/>
         <source>Add group.</source>
-        <translation>Aggiungi gruppo</translation>
+        <translation>Aggiungi gruppo.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="344"/>
+        <location filename="../../openlp/core/common/i18n.py" line="346"/>
         <source>Advanced</source>
         <translation>Avanzate</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="345"/>
+        <location filename="../../openlp/core/common/i18n.py" line="347"/>
         <source>All Files</source>
         <translation>Tutti i file</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="346"/>
+        <location filename="../../openlp/core/common/i18n.py" line="348"/>
         <source>Automatic</source>
         <translation>Automatico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="347"/>
+        <location filename="../../openlp/core/common/i18n.py" line="349"/>
         <source>Background Color</source>
         <translation>Colore di sfondo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="348"/>
+        <location filename="../../openlp/core/common/i18n.py" line="350"/>
         <source>Background color:</source>
         <translation>Colore di sfondo:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="349"/>
+        <location filename="../../openlp/core/common/i18n.py" line="351"/>
         <source>Search is Empty or too Short</source>
         <translation>La ricerca è vuota o troppo breve</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="350"/>
+        <location filename="../../openlp/core/common/i18n.py" line="352"/>
         <source>&lt;strong&gt;The search you have entered is empty or shorter than 3 characters long.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Please try again with a longer search.</source>
         <translation>&lt;strong&gt;La ricerca che hai inserito è vuota o più corta di 3 caratteri.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Riprova con una ricerca più lunga.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="353"/>
+        <location filename="../../openlp/core/common/i18n.py" line="355"/>
         <source>No Bibles Available</source>
         <translation>Nessuna Bibbia disponibile</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="354"/>
+        <location filename="../../openlp/core/common/i18n.py" line="356"/>
         <source>&lt;strong&gt;There are no Bibles currently installed.&lt;/strong&gt;&lt;br&gt;&lt;br&gt;Please use the Import Wizard to install one or more Bibles.</source>
-        <translation>&lt;strong&gt;Non ci sono Bibbie attualmente installate. &lt;/strong&gt;&lt;br&gt;&lt;br&gt;Usa la Procedura Guidata per importare una o più Bibbie.</translation>
+        <translation>&lt;strong&gt;Attualmete non è installata alcuna Bibbia &lt;/strong&gt;&lt;br&gt;&lt;br&gt;Usa la Procedura guidata per importare una o più Bibbie.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="356"/>
+        <location filename="../../openlp/core/common/i18n.py" line="358"/>
         <source>Bottom</source>
         <translation>Fondo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="357"/>
+        <location filename="../../openlp/core/common/i18n.py" line="359"/>
         <source>Browse...</source>
         <translation>Sfoglia...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="358"/>
+        <location filename="../../openlp/core/common/i18n.py" line="360"/>
         <source>Cancel</source>
         <translation>Annulla</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="359"/>
+        <location filename="../../openlp/core/common/i18n.py" line="361"/>
         <source>CCLI number:</source>
         <translation>Numero CCLI:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="360"/>
+        <location filename="../../openlp/core/common/i18n.py" line="362"/>
         <source>CCLI song number:</source>
-        <translation>Numero Brano CCLI:</translation>
+        <translation>Numero brano CCLI:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
         <source>Create a new service.</source>
         <translation>Crea un nuovo Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="362"/>
+        <location filename="../../openlp/core/common/i18n.py" line="364"/>
         <source>Confirm Delete</source>
         <translation>Conferma eliminazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="363"/>
+        <location filename="../../openlp/core/common/i18n.py" line="365"/>
         <source>Continuous</source>
         <translation>Continuo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="364"/>
+        <location filename="../../openlp/core/common/i18n.py" line="366"/>
         <source>Default</source>
         <translation>Predefinito</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="365"/>
+        <location filename="../../openlp/core/common/i18n.py" line="367"/>
         <source>Default Color:</source>
         <translation>Colore predefinito:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="366"/>
+        <location filename="../../openlp/core/common/i18n.py" line="368"/>
         <source>Service %Y-%m-%d %H-%M</source>
         <comment>This may not contain any of the following characters: /\?*|&lt;&gt;[]&quot;:+
 See http://docs.python.org/library/datetime.html#strftime-strptime-behavior for more information.</comment>
-        <translation>Servizio %Y-%m-%d %H-%M</translation>
+        <translation>Servizio %d-%m-%Y %H-%M</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="370"/>
+        <location filename="../../openlp/core/common/i18n.py" line="372"/>
         <source>&amp;Delete</source>
         <translation>&amp;Elimina</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="371"/>
+        <location filename="../../openlp/core/common/i18n.py" line="373"/>
         <source>Display style:</source>
         <translation>Stile di visualizzazione:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="372"/>
+        <location filename="../../openlp/core/common/i18n.py" line="374"/>
         <source>Duplicate Error</source>
         <translation>Errore duplicato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="373"/>
+        <location filename="../../openlp/core/common/i18n.py" line="375"/>
         <source>&amp;Edit</source>
         <translation>&amp;Modifica</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="374"/>
+        <location filename="../../openlp/core/common/i18n.py" line="376"/>
         <source>Empty Field</source>
-        <translation>Campo Vuoto</translation>
+        <translation>Campo vuoto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="375"/>
+        <location filename="../../openlp/core/common/i18n.py" line="377"/>
         <source>Error</source>
         <translation>Errore</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="376"/>
+        <location filename="../../openlp/core/common/i18n.py" line="378"/>
         <source>Export</source>
         <translation>Esporta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="377"/>
+        <location filename="../../openlp/core/common/i18n.py" line="379"/>
         <source>File</source>
         <translation>File</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="378"/>
+        <location filename="../../openlp/core/common/i18n.py" line="380"/>
         <source>File appears to be corrupt.</source>
         <translation>Il file sembra essere danneggiato.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="379"/>
+        <location filename="../../openlp/core/common/i18n.py" line="381"/>
         <source>pt</source>
         <comment>Abbreviated font point size unit</comment>
         <translation>pt</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="380"/>
+        <location filename="../../openlp/core/common/i18n.py" line="382"/>
         <source>Help</source>
         <translation>Aiuto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="381"/>
+        <location filename="../../openlp/core/common/i18n.py" line="383"/>
         <source>h</source>
         <comment>The abbreviated unit for hours</comment>
         <translation>h</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="382"/>
+        <location filename="../../openlp/core/common/i18n.py" line="384"/>
         <source>Invalid Folder Selected</source>
         <comment>Singular</comment>
-        <translation>Cartella selezionata non valida</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="383"/>
-        <source>Invalid File Selected</source>
-        <comment>Singular</comment>
-        <translation>File selezionato non valido</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="384"/>
-        <source>Invalid Files Selected</source>
-        <comment>Plural</comment>
-        <translation>File selezionati non validi</translation>
+        <translation>La cartella selezionata non è valida</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="385"/>
+        <source>Invalid File Selected</source>
+        <comment>Singular</comment>
+        <translation>Il file selezionato non è valido</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="386"/>
+        <source>Invalid Files Selected</source>
+        <comment>Plural</comment>
+        <translation>I file selezionati non sono validi</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="387"/>
         <source>Image</source>
         <translation>Immagine</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="386"/>
+        <location filename="../../openlp/core/common/i18n.py" line="388"/>
         <source>Import</source>
         <translation>Importa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="387"/>
+        <location filename="../../openlp/core/common/i18n.py" line="389"/>
         <source>Layout style:</source>
-        <translation>Stile del layout:</translation>
+        <translation>Stile di visualizzazione:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="388"/>
+        <location filename="../../openlp/core/common/i18n.py" line="390"/>
         <source>Live</source>
         <translation>Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="389"/>
+        <location filename="../../openlp/core/common/i18n.py" line="391"/>
         <source>Live Stream</source>
-        <translation>Streaming dal vivo</translation>
+        <translation>Diretta streaming</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="390"/>
+        <location filename="../../openlp/core/common/i18n.py" line="392"/>
         <source>Live Background Error</source>
         <translation>Errore nello sfondo della Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="391"/>
+        <location filename="../../openlp/core/common/i18n.py" line="393"/>
         <source>Live Toolbar</source>
-        <translation>Barra strumenti Live</translation>
+        <translation>Barra degli strumenti della Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="392"/>
+        <location filename="../../openlp/core/common/i18n.py" line="394"/>
         <source>Load</source>
         <translation>Carica</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="393"/>
+        <location filename="../../openlp/core/common/i18n.py" line="395"/>
         <source>Manufacturer</source>
         <comment>Singular</comment>
         <translation>Produttore</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="394"/>
+        <location filename="../../openlp/core/common/i18n.py" line="396"/>
         <source>Manufacturers</source>
         <comment>Plural</comment>
         <translation>Produttori</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="395"/>
+        <location filename="../../openlp/core/common/i18n.py" line="397"/>
         <source>Model</source>
         <comment>Singular</comment>
         <translation>Modello</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="396"/>
+        <location filename="../../openlp/core/common/i18n.py" line="398"/>
         <source>Models</source>
         <comment>Plural</comment>
         <translation>Modelli</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="397"/>
+        <location filename="../../openlp/core/common/i18n.py" line="399"/>
         <source>m</source>
         <comment>The abbreviated unit for minutes</comment>
         <translation>min</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="398"/>
+        <location filename="../../openlp/core/common/i18n.py" line="400"/>
         <source>Middle</source>
         <translation>Centrale</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="399"/>
+        <location filename="../../openlp/core/common/i18n.py" line="401"/>
         <source>New</source>
         <translation>Nuovo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="400"/>
+        <location filename="../../openlp/core/common/i18n.py" line="402"/>
         <source>New Service</source>
         <translation>Nuovo Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="401"/>
-        <source>New Theme</source>
-        <translation>Nuovo Tema</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="402"/>
-        <source>Next Track</source>
-        <translation>Nuova Traccia</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/common/i18n.py" line="403"/>
+        <source>New Theme</source>
+        <translation>Nuovo tema</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="404"/>
+        <source>Next Track</source>
+        <translation>Nuova traccia</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="405"/>
         <source>No Folder Selected</source>
         <comment>Singular</comment>
         <translation>Nessuna cartella selezionata</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="404"/>
+        <location filename="../../openlp/core/common/i18n.py" line="406"/>
         <source>No File Selected</source>
         <comment>Singular</comment>
         <translation>Nessun file selezionato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="405"/>
+        <location filename="../../openlp/core/common/i18n.py" line="407"/>
         <source>No Files Selected</source>
         <comment>Plural</comment>
         <translation>Nessun file selezionato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="406"/>
+        <location filename="../../openlp/core/common/i18n.py" line="408"/>
         <source>No Item Selected</source>
         <comment>Singular</comment>
         <translation>Nessun elemento selezionato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="407"/>
+        <location filename="../../openlp/core/common/i18n.py" line="409"/>
         <source>No Items Selected</source>
         <comment>Plural</comment>
         <translation>Nessun elemento selezionato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="408"/>
+        <location filename="../../openlp/core/common/i18n.py" line="410"/>
         <source>No Search Results</source>
-        <translation>Nessun Risultato trovato</translation>
+        <translation>Nessun risultato trovato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="409"/>
+        <location filename="../../openlp/core/common/i18n.py" line="411"/>
         <source>OpenLP</source>
         <translation>OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="410"/>
+        <location filename="../../openlp/core/common/i18n.py" line="412"/>
         <source>OpenLP Song Database</source>
-        <translation>Database brani OpenLP</translation>
+        <translation>Database dei brani OpenLP</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="411"/>
+        <location filename="../../openlp/core/common/i18n.py" line="413"/>
         <source>OpenLP is already running on this machine. 
 Closing this instance</source>
         <translation>OpenLP è già in esecuzione su questa macchina. 
-Chiudere questa istanza</translation>
+Chiudi questa istanza</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="412"/>
+        <location filename="../../openlp/core/common/i18n.py" line="414"/>
         <source>Open service.</source>
         <translation>Apri un Servizio.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="413"/>
-        <source>Optional, this will be displayed in footer.</source>
-        <translation>Facoltativo, questo verrà visualizzato a piè di pagina.</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="414"/>
-        <source>Optional, this won&apos;t be displayed in footer.</source>
-        <translation>Facoltativo, questo non verrà visualizzato a piè di pagina.</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/common/i18n.py" line="415"/>
-        <source>Play Slides in Loop</source>
-        <translation>Riproduci le diapositive con un ciclo continuo</translation>
+        <source>Optional, this will be displayed in footer.</source>
+        <translation>Facoltativo, questo verrà visualizzato nel piè di pagina.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/common/i18n.py" line="416"/>
+        <source>Optional, this won&apos;t be displayed in footer.</source>
+        <translation>Facoltativo, questo non verrà visualizzato nel piè di pagina.</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="417"/>
+        <source>Play Slides in Loop</source>
+        <translation>Riproduci le diapositive in loop</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="418"/>
         <source>Play Slides to End</source>
         <translation>Riproduci le diapositive fino all&apos;ultima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="417"/>
+        <location filename="../../openlp/core/common/i18n.py" line="419"/>
         <source>Preview</source>
         <translation>Anteprima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="418"/>
+        <location filename="../../openlp/core/common/i18n.py" line="420"/>
         <source>Preview Toolbar</source>
-        <translation>Anteprima Barra Strumenti</translation>
+        <translation>Barra degli strumenti dell&apos;Anteprima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="419"/>
+        <location filename="../../openlp/core/common/i18n.py" line="421"/>
         <source>Print Service</source>
         <translation>Stampa Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="420"/>
+        <location filename="../../openlp/core/common/i18n.py" line="422"/>
         <source>Projector</source>
         <comment>Singular</comment>
         <translation>Proiettore</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="421"/>
+        <location filename="../../openlp/core/common/i18n.py" line="423"/>
         <source>Projectors</source>
         <comment>Plural</comment>
-        <translation>Proiettore</translation>
+        <translation>Proiettori</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="422"/>
+        <location filename="../../openlp/core/common/i18n.py" line="424"/>
         <source>Replace Background</source>
-        <translation>Sostituisci lo Sfondo</translation>
+        <translation>Sostituisci lo sfondo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="423"/>
+        <location filename="../../openlp/core/common/i18n.py" line="425"/>
         <source>Replace live background.</source>
         <translation>Sostituisci lo sfondo della Diretta</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="424"/>
+        <location filename="../../openlp/core/common/i18n.py" line="426"/>
         <source>Replace live background is not available when the WebKit player is disabled.</source>
-        <translation>Sostituzione sfondo della Diretta non è disponibile quando il lettore WebKit è disattivato.</translation>
+        <translation>La sostituzione dello sfondo della Diretta non è disponibile quando il lettore WebKit è disattivato.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="426"/>
+        <location filename="../../openlp/core/common/i18n.py" line="428"/>
         <source>Reset Background</source>
         <translation>Ripristina sfondo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="427"/>
-        <source>Reset live background.</source>
-        <translation>Ripristina lo sfondo Diretta</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="428"/>
-        <source>Required, this will be displayed in footer.</source>
-        <translation>Richiesto, questo verrà visualizzato a piè di pagina.</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/common/i18n.py" line="429"/>
+        <source>Reset live background.</source>
+        <translation>Ripristina lo sfondo della Diretta.</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="430"/>
+        <source>Required, this will be displayed in footer.</source>
+        <translation>Obbligatorio, verrà visualizzato nel piè di pagina.</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="431"/>
         <source>s</source>
         <comment>The abbreviated unit for seconds</comment>
         <translation>sec</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="431"/>
+        <location filename="../../openlp/core/common/i18n.py" line="433"/>
         <source>Save &amp;&amp; Preview</source>
-        <translation>Salva &amp;&amp; visualizza nell&apos;Anteprima</translation>
+        <translation>Salva &amp;e visualizza nell&apos;Anteprima</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="432"/>
+        <location filename="../../openlp/core/common/i18n.py" line="434"/>
         <source>Search</source>
         <translation>Ricerca</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="433"/>
+        <location filename="../../openlp/core/common/i18n.py" line="435"/>
         <source>Search Themes...</source>
         <comment>Search bar place holder text </comment>
         <translation>Cerca Temi...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="434"/>
+        <location filename="../../openlp/core/common/i18n.py" line="436"/>
         <source>You must select an item to delete.</source>
         <translation>È necessario selezionare un elemento da eliminare.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="435"/>
+        <location filename="../../openlp/core/common/i18n.py" line="437"/>
         <source>You must select an item to edit.</source>
         <translation>È necessario selezionare un elemento da modificare.</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="436"/>
+        <location filename="../../openlp/core/common/i18n.py" line="438"/>
         <source>Settings</source>
         <translation>Impostazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="437"/>
+        <location filename="../../openlp/core/common/i18n.py" line="439"/>
         <source>Save Service</source>
         <translation>Salva Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="438"/>
+        <location filename="../../openlp/core/common/i18n.py" line="440"/>
         <source>Service</source>
         <translation>Servizio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="439"/>
-        <source>Please type more text to use &apos;Search As You Type&apos;</source>
-        <translation>Digita più testo per utilizzare &quot;Cerca durante la digitazione&quot;</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="440"/>
-        <source>Optional &amp;Split</source>
-        <translation>Opzioni &amp;Divisione</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/common/i18n.py" line="441"/>
+        <source>Please type more text to use &apos;Search As You Type&apos;</source>
+        <translation>Digita altro testo per usare &quot;Cerca durante la digitazione&quot;</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="442"/>
+        <source>Optional &amp;Split</source>
+        <translation>&amp;Divisione opzionale</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="443"/>
         <source>Split a slide into two only if it does not fit on the screen as one slide.</source>
         <translation>Dividi una diapositiva in due solo se non si adatta allo schermo in un&apos;unica diapositiva.</translation>
     </message>
@@ -8069,124 +8069,124 @@ Chiudere questa istanza</translation>
         <translation>Avvio dell&apos;importazione ...</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="444"/>
-        <source>Stop Play Slides in Loop</source>
-        <translation>Ferma Riproduzione Diapositive a Ciclo continuo</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/common/i18n.py" line="445"/>
-        <source>Stop Play Slides to End</source>
-        <translation>Arresta Riproduzione Diapositive alla fine</translation>
-    </message>
-    <message>
         <location filename="../../openlp/core/common/i18n.py" line="446"/>
+        <source>Stop Play Slides in Loop</source>
+        <translation>Interrompi la riproduzione delle diapositive in loop</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="447"/>
+        <source>Stop Play Slides to End</source>
+        <translation>Interrompi la riproduzione delle diapositive fino alla fine</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/common/i18n.py" line="448"/>
         <source>Theme</source>
         <comment>Singular</comment>
         <translation>Tema</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="447"/>
+        <location filename="../../openlp/core/common/i18n.py" line="449"/>
         <source>Themes</source>
         <comment>Plural</comment>
         <translation>Temi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="448"/>
+        <location filename="../../openlp/core/common/i18n.py" line="450"/>
         <source>Tools</source>
         <translation>Strumenti</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="449"/>
+        <location filename="../../openlp/core/common/i18n.py" line="451"/>
         <source>Top</source>
         <translation>Alto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="450"/>
+        <location filename="../../openlp/core/common/i18n.py" line="452"/>
         <source>Unsupported File</source>
         <translation>File non supportato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="451"/>
+        <location filename="../../openlp/core/common/i18n.py" line="453"/>
         <source>Verse Per Slide</source>
         <translation>Verso per diapositiva</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="452"/>
+        <location filename="../../openlp/core/common/i18n.py" line="454"/>
         <source>Verse Per Line</source>
         <translation>Verso per riga</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="453"/>
+        <location filename="../../openlp/core/common/i18n.py" line="455"/>
         <source>Version</source>
         <translation>Versione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="454"/>
+        <location filename="../../openlp/core/common/i18n.py" line="456"/>
         <source>View</source>
         <translation>Visualizza</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="455"/>
+        <location filename="../../openlp/core/common/i18n.py" line="457"/>
         <source>View Mode</source>
         <translation>Modalità di visualizzazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="456"/>
+        <location filename="../../openlp/core/common/i18n.py" line="458"/>
         <source>Video</source>
         <translation>Video</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="457"/>
+        <location filename="../../openlp/core/common/i18n.py" line="459"/>
         <source>Web Interface, Download and Install Latest Version</source>
-        <translation>Interfaccia web, scaricare e installare l&apos;ultima versione</translation>
+        <translation>Interfaccia web, scarica e installa l&apos;ultima versione</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="458"/>
+        <location filename="../../openlp/core/common/i18n.py" line="460"/>
         <source>Continuous (whole verses)</source>
         <translation>Continuativo (versi interi)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="459"/>
+        <location filename="../../openlp/core/common/i18n.py" line="461"/>
         <source>There was a problem advertising OpenLP&apos;s remote interface on the network:</source>
-        <translation>C&apos;è stato un problema nel trasmettere l&apos;interfaccia remota di OpenLP sulla rete:</translation>
+        <translation>Si è verificato un problema durante la pubblicazione dell&apos;interfaccia remota di OpenLP sulla rete:</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="461"/>
+        <location filename="../../openlp/core/common/i18n.py" line="463"/>
         <source>An unknown error occurred</source>
         <translation>Si è verificato un errore sconosciuto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="462"/>
+        <location filename="../../openlp/core/common/i18n.py" line="464"/>
         <source>OpenLP already seems to be advertising itself</source>
-        <translation>OpenLP sembra già visualizzare se stesso</translation>
+        <translation>OpenLP sembra aver già pubblicato se stesso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="463"/>
+        <location filename="../../openlp/core/common/i18n.py" line="465"/>
         <source>Book Chapter</source>
         <translation>Capitolo del libro</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="464"/>
+        <location filename="../../openlp/core/common/i18n.py" line="466"/>
         <source>Chapter</source>
         <translation>Capitolo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="465"/>
+        <location filename="../../openlp/core/common/i18n.py" line="467"/>
         <source>Verse</source>
-        <translation>Verso</translation>
+        <translation>Versetto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="467"/>
+        <location filename="../../openlp/core/common/i18n.py" line="469"/>
         <source>Psalm</source>
         <translation>Salmo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="468"/>
+        <location filename="../../openlp/core/common/i18n.py" line="470"/>
         <source>Book names may be shortened from full names, for an example Ps 23 = Psalm 23</source>
-        <translation>I nomi dei libri possono essere abbreviati da nomi completi, ad esempio Sa 23 = Salmo 23</translation>
+        <translation>I nomi dei libri possono essere abbreviati dai nomi completi, ad esempio Sal 23 = Salmo 23</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="701"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="702"/>
         <source>Written by</source>
         <translation>Scritto da</translation>
     </message>
@@ -8208,19 +8208,19 @@ Chiudere questa istanza</translation>
     <message>
         <location filename="../../openlp/core/lib/ui.py" line="320"/>
         <source>&amp;Vertical Align:</source>
-        <translation>&amp;Allineamento Verticale:</translation>
+        <translation>&amp;Allineamento verticale:</translation>
+    </message>
+    <message>
+        <location filename="../../openlp/core/ui/servicemanager.py" line="463"/>
+        <source>Do not show this message again</source>
+        <translation>Non mostrare più questo messaggio</translation>
     </message>
     <message>
         <location filename="../../openlp/core/ui/servicemanager.py" line="464"/>
-        <source>Do not show this message again</source>
-        <translation>Non visualizzare questo messaggio ancora</translation>
-    </message>
-    <message>
-        <location filename="../../openlp/core/ui/servicemanager.py" line="465"/>
         <source>You already have a blank new service.
 Add some items to it then press Save</source>
         <translation>Il Servizio è ancora vuoto.
-Puoi aggiungere nuovi elementi e poi premi Save</translation>
+Aggiungi alcuni elementi ad esso e poi premi Salva</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="53"/>
@@ -8240,12 +8240,12 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="57"/>
         <source>Importing &quot;{source}&quot;...</source>
-        <translation>Importazione &quot;{source}&quot;...</translation>
+        <translation>Importazione di &quot;{source}&quot;...</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="58"/>
         <source>Select Import Source</source>
-        <translation>Selezionare Fonte di importazione</translation>
+        <translation>Seleziona una sorgente per l&apos;importazione</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="59"/>
@@ -8255,7 +8255,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="60"/>
         <source>Open {file_type} File</source>
-        <translation>Apri {file_type} File</translation>
+        <translation>Apri file {file_type}</translation>
     </message>
     <message>
         <location filename="../../openlp/core/widgets/wizard.py" line="61"/>
@@ -8293,12 +8293,12 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/bibles/forms/bibleimportform.py" line="373"/>
         <source>Welcome to the Bible Import Wizard</source>
-        <translation>Benvenuti nella Procedura guidata di importazione della Bibbia</translation>
+        <translation>Benvenuti nella Procedura guidata per l&apos;importazione della Bibbia</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="137"/>
         <source>Welcome to the Duplicate Song Removal Wizard</source>
-        <translation>Benvenuti nella procedura guidata di Rimozione Brani Duplicati</translation>
+        <translation>Benvenuti nella Procedura guidata per la rimozione dei brani duplicati</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="143"/>
@@ -8325,7 +8325,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="38"/>
         <source>Author Unknown</source>
-        <translation>Autore Sconosciuto</translation>
+        <translation>Autore sconosciuto</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="40"/>
@@ -8347,7 +8347,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="43"/>
         <source>Song Maintenance</source>
-        <translation>Manutenzione dei Brani</translation>
+        <translation>Manutenzione dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="44"/>
@@ -8393,7 +8393,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/projectors/tab.py" line="118"/>
         <source>Source select dialog interface</source>
-        <translation>Interfaccia di dialogo per la selezione della fonte</translation>
+        <translation>Interfaccia di dialogo per la selezione della sorgente</translation>
     </message>
 </context>
 <context>
@@ -8401,40 +8401,40 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="91"/>
         <source>PlanningCenter</source>
-        <translation>CentroPianificazione</translation>
+        <translation>PlanningCenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="72"/>
         <source>Planning Center Service</source>
-        <translation>Servizio CentroPianificazione</translation>
+        <translation>Servizio Planning Center</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="72"/>
         <source>Import Planning Center Service Plan from Planning Center Online.</source>
-        <translation>Importare il piano di servizio del Centro Pianificazione dal Centro di Pianificazione Online.</translation>
+        <translation>Importa un piano di Servizio Planning Center da Planning Center Online.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="104"/>
         <source>&lt;strong&gt;PlanningCenter Plugin&lt;/strong&gt;&lt;br /&gt;The planningcenter plugin provides an interface to import service plans from the Planning Center Online v2 API.</source>
-        <translation>&lt;strong&gt;Plugin Centro di Pianificazione&lt;/strong&gt;&lt;br /&gt;Il Plugin Centro di Pianificazione fornisce un&apos;interfaccia per importare i piani di servizio dal Planning Center Online v2 API.</translation>
+        <translation>&lt;strong&gt;Plugin PlanningCenter&lt;/strong&gt;&lt;br /&gt;Il plugin PlanningCenter fornisce un&apos;interfaccia per importare i piani di Servizio da Planning Center Online v2.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="114"/>
         <source>PlanningCenter</source>
         <comment>name singular</comment>
-        <translation>CentroPianificazione</translation>
+        <translation>PlanningCenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="116"/>
         <source>PlanningCenter</source>
         <comment>name plural</comment>
-        <translation>CentroPianificazione</translation>
+        <translation>PlanningCenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="121"/>
         <source>PlanningCenter</source>
         <comment>container title</comment>
-        <translation>CentroPianificazione</translation>
+        <translation>PlanningCenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/planningcenterplugin.py" line="127"/>
@@ -8447,7 +8447,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="94"/>
         <source>Test Credentials</source>
-        <translation>Test delle Credenziali</translation>
+        <translation>Prova le credenziali</translation>
     </message>
 </context>
 <context>
@@ -8455,7 +8455,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="70"/>
         <source>Planning Center Online Service Importer</source>
-        <translation>Importa servizi da Planning Center Online</translation>
+        <translation>Importatore di Servizi da Planning Center Online</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="72"/>
@@ -8465,7 +8465,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="73"/>
         <source>Select Plan</source>
-        <translation>Seleziona Piano</translation>
+        <translation>Seleziona piano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="74"/>
@@ -8475,17 +8475,17 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="75"/>
         <source>Import As New Service</source>
-        <translation>Importa come nuovo servizio</translation>
+        <translation>Importa come nuovo Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="77"/>
         <source>Refresh Service</source>
-        <translation>Ricarica Servizi</translation>
+        <translation>Ricarica Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="78"/>
         <source>Refresh Existing Service from Planning Center. This will update song lyrics or item orders that have changed</source>
-        <translation>Aggiorna il servizio esistente dal Centro di Pianificazione. Ciò aggiornerà i testi dei brani o l&apos;ordine degli elementi che sono stati modificati</translation>
+        <translation>Ricarica il Servizio esistente da Planning Center. Questo aggiornerà i testi dei brani o l&apos;ordine degli elementi che sono stati modificati</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="82"/>
@@ -8495,17 +8495,17 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="83"/>
         <source>Edit the Application ID and Secret Code to login to Planning Center Online</source>
-        <translation>Modifica l&apos;ID applicazione e il codice segreto per accedere a Planning Center Online</translation>
+        <translation>Modifica l&apos;Application ID e il codice segreto per accedere a Planning Center Online</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="85"/>
         <source>Song Theme</source>
-        <translation>Tema del Brano</translation>
+        <translation>Tema del brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/forms/selectplandialog.py" line="86"/>
         <source>Slide Theme</source>
-        <translation>Tema della Diapositiva</translation>
+        <translation>Tema della diapositiva</translation>
     </message>
 </context>
 <context>
@@ -8518,17 +8518,17 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="73"/>
         <source>Application ID:</source>
-        <translation>ID applicazione:</translation>
+        <translation>Application ID:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="74"/>
         <source>Secret:</source>
-        <translation>Segreto:</translation>
+        <translation>Secret:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="76"/>
         <source>&lt;strong&gt;Note:&lt;/strong&gt; An Internet connection and a Planning Center Online Account are required in order to import plans from Planning Center Online.</source>
-        <translation>&lt;strong&gt;Nota:&lt;/strong&gt; Per importare i piani da Planning Center Online sono necessari una connessione Internet e un account online di Planning Center.</translation>
+        <translation>&lt;strong&gt;Nota:&lt;/strong&gt; Per importare i piani da Planning Center Online sono necessari una connessione Internet e un account di Planning Center Online.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/planningcenter/lib/planningcentertab.py" line="81"/>
@@ -8541,64 +8541,64 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
   &lt;li&gt;Enter a description of your use case (eg. &quot;OpenLP Integration&quot;)&lt;/li&gt;
   &lt;li&gt;Copy and paste the provided Application ID and Secret values below.&lt;/li&gt;
 &lt;/ol&gt;</source>
-        <translation>Inserisci i dati del tuo &lt;b&gt;Token di accesso personale&lt;/b&gt; al &lt;i&gt;Planning Center Online&lt;/i&gt; nelle caselle di testo sottostanti. I Token di accesso personali si creano procedendo come segue:
+        <translation>Inserisci i dati del &lt;i&gt;Personal Access Token&lt;/i&gt; di &lt;b&gt;Planning Center Online&lt;/b&gt; nelle caselle di testo sottostanti. I Personal Access Tokens vengono creati effettuando le seguenti operazioni:
 &lt;ol&gt;
-&lt;li&gt;Accedere al proprio account Planning Center Online all&apos;indirizzo&lt;br&gt;
+&lt;li&gt;Accedi al tuo account Planning Center Online all&apos;indirizzo&lt;br&gt;
 &lt;a href=https://api.planningcenteronline.com/oauth/applications&gt; 
- https://api.planningcenteronline.com/oauth/applications&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;Fai clic sul pulsante &quot;Nuovo token di accesso personale&quot; nella parte inferiore dello schermo.&lt;/li&gt;
-&lt;li&gt;Inserisci una descrizione del vostro tipo di uso (ad es. &quot;Integrazione OpenLP&quot;).&lt;/li&gt;
-&lt;li&gt;Copiare e incollare i valori Application ID e Secret forniti di seguito.&lt;/li&gt;
+ https://api.planningcenteronline.com/oauth/applications&lt;/a&gt;&lt;/li&gt;
+&lt;li&gt;Fai clic sul pulsante &quot;New Personal Access Token&quot; nella parte inferiore dello schermo.&lt;/li&gt;
+&lt;li&gt;Inserisci una descrizione del tuo caso d&apos;uso (es. &quot;Integrazione di OpenLP&quot;)&lt;/li&gt;
+&lt;li&gt;Copia e incolla i valori Application ID e Secret forniti di seguito.&lt;/li&gt;
 &lt;/ol&gt;</translation>
     </message>
 </context>
 <context>
     <name>PresentationPlugin</name>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="158"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="160"/>
         <source>&lt;strong&gt;Presentation Plugin&lt;/strong&gt;&lt;br /&gt;The presentation plugin provides the ability to show presentations using a number of different programs. The choice of available presentation programs is available to the user in a drop down box.</source>
-        <translation>&lt;strong&gt;Plugin per le Presentazioni&lt;/strong&gt;&lt;br /&gt;Il Plugin per le Presentazioni offre la possibilità di mostrare presentazioni utilizzando una serie di programmi diversi.</translation>
+        <translation>&lt;strong&gt;Plugin per le presentazioni&lt;/strong&gt;&lt;br /&gt;Il Plugin per le presentazioni offre la possibilità di mostrare presentazioni utilizzando una serie di programmi diversi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="171"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="173"/>
         <source>Presentation</source>
         <comment>name singular</comment>
         <translation>Presentazione</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="172"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="174"/>
         <source>Presentations</source>
         <comment>name plural</comment>
         <translation>Presentazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="176"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="178"/>
         <source>Presentations</source>
         <comment>container title</comment>
         <translation>Presentazioni</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="180"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="182"/>
         <source>Load a new presentation.</source>
         <translation>Carica una nuova presentazione.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="184"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="186"/>
         <source>Delete the selected presentation.</source>
         <translation>Elimina la presentazione selezionata.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="185"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="187"/>
         <source>Preview the selected presentation.</source>
         <translation>Visualizza nell&apos;Anteprima la presentazione selezionata.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="186"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="188"/>
         <source>Send the selected presentation live.</source>
         <translation>Invia la presentazione selezionata nella Diretta.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="187"/>
+        <location filename="../../openlp/plugins/presentations/presentationplugin.py" line="189"/>
         <source>Add the selected presentation to the service.</source>
         <translation>Aggiungi la presentazione selezionata al Servizio.</translation>
     </message>
@@ -8608,7 +8608,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="67"/>
         <source>Select Presentation(s)</source>
-        <translation>Seleziona Presentazione</translation>
+        <translation>Seleziona presentazione</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="68"/>
@@ -8631,19 +8631,19 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
         <translation>Questo tipo di presentazione non è supportato.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="405"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="410"/>
         <source>Missing Presentation</source>
         <translation>Presentazione mancante</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="405"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="410"/>
         <source>The presentation {name} no longer exists.</source>
-        <translation>La presentazione {name} non esiste.</translation>
+        <translation>La presentazione {name} non esiste più.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="396"/>
+        <location filename="../../openlp/plugins/presentations/lib/mediaitem.py" line="401"/>
         <source>The presentation {name} is incomplete, please reload.</source>
-        <translation>La presentazione {name} è incompleta, prego ricaricala.</translation>
+        <translation>La presentazione {name} è incompleta, ricaricala.</translation>
     </message>
 </context>
 <context>
@@ -8680,8 +8680,8 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="109"/>
         <source>Let PowerPoint control the size and monitor of the presentations
 (This may fix PowerPoint scaling issues in Windows 8 and 10)</source>
-        <translation>Consenti a PowerPoint di controllare le dimensioni e il monitoraggio delle presentazioni
-(Ciò può risolvere i problemi di ridimensionamento di PowerPoint in Windows 8 e 10)</translation>
+        <translation>Lascia che PowerPoint controlli le dimensioni e il monitoraggio delle presentazioni
+(Questo può risolvere i problemi di ridimensionamento di PowerPoint in Windows 8 e 10)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="113"/>
@@ -8691,7 +8691,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="114"/>
         <source>Use Impress Slide Show Settings / Presentation Display setting</source>
-        <translation>Utilizzare le impostazioni di Impress Slide Show / Impostazione di visualizzazione della presentazione</translation>
+        <translation>Utilizza le impostazioni di presentazione di Impress</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/presentations/lib/presentationtab.py" line="122"/>
@@ -8717,17 +8717,17 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="203"/>
         <source>Server Settings</source>
-        <translation>Impostazioni del Server</translation>
+        <translation>Impostazioni del server</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="204"/>
         <source>Listen IP address (0.0.0.0 matches all addresses):</source>
-        <translation>Ascolta l&apos;indirizzo IP (0.0.0.0 corrisponde a tutti gli indirizzi):</translation>
+        <translation>Indirizzo IP di ascolto (0.0.0.0 corrisponde a tutti gli indirizzi):</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="207"/>
         <source>Port number:</source>
-        <translation>Numero della porta:</translation>
+        <translation>Numero di porta:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="208"/>
@@ -8737,17 +8737,17 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="209"/>
         <source>Stage view URL:</source>
-        <translation>URL Visualizzazione Scena:</translation>
+        <translation>URL visualizzazione scena:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="210"/>
         <source>Live view URL:</source>
-        <translation>URL Visualizzazione Diretta:</translation>
+        <translation>URL visualizzazione Diretta:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="211"/>
         <source>Chords view URL:</source>
-        <translation>URL Visualizzazione accordi:</translation>
+        <translation>URL visualizzazione accordi:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="212"/>
@@ -8757,7 +8757,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="213"/>
         <source>Show thumbnails of non-text slides in remote and stage view.</source>
-        <translation>Mostra le anteprime delle diapositive non testuali nella vista remota e in scena.</translation>
+        <translation>Mostra le miniature delle diapositive non di testo nella visualizzazione remota e in visualizzazione scena.</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="215"/>
@@ -8772,12 +8772,12 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="218"/>
         <source>User Authentication</source>
-        <translation>Autenticazione Utente</translation>
+        <translation>Autenticazione utente</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="219"/>
         <source>Web Remote</source>
-        <translation>Controllo Web Remoto</translation>
+        <translation>Controllo remoto web</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="220"/>
@@ -8792,7 +8792,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="222"/>
         <source>User id:</source>
-        <translation>ID Utente:</translation>
+        <translation>ID utente:</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="223"/>
@@ -8822,7 +8822,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="228"/>
         <source>Server Status</source>
-        <translation>Stato del Server</translation>
+        <translation>Stato del server</translation>
     </message>
     <message>
         <location filename="../../openlp/core/api/tab.py" line="229"/>
@@ -8858,7 +8858,7 @@ Puoi aggiungere nuovi elementi e poi premi Save</translation>
     <message>
         <location filename="../../openlp/plugins/songs/reporting.py" line="45"/>
         <source>Save File</source>
-        <translation> Salva File </translation>
+        <translation>Salva file</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/reporting.py" line="45"/>
@@ -8892,7 +8892,15 @@ has been successfully created. </source>
     <message>
         <location filename="../../openlp/plugins/songs/reporting.py" line="91"/>
         <source>An error occurred while extracting: {error}</source>
-        <translation>Si è verificato un errore durante l&apos;estrazione: {error}.</translation>
+        <translation>Si è verificato un errore durante l&apos;estrazione: {error}</translation>
+    </message>
+</context>
+<context>
+    <name>SongPlugin.SongImporter</name>
+    <message>
+        <location filename="../../openlp/plugins/songs/forms/songimportform.py" line="351"/>
+        <source>Save Error File</source>
+        <translation>Salva il file di errore</translation>
     </message>
 </context>
 <context>
@@ -8960,25 +8968,25 @@ has been successfully created. </source>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="225"/>
         <source>&lt;strong&gt;SongUsage Plugin&lt;/strong&gt;&lt;br /&gt;This plugin tracks the usage of songs in services.</source>
-        <translation>&lt;strong&gt;Plugin dell&apos;utilizzo dei Brani&lt;/strong&gt;&lt;br /&gt; Questo plugin tiene traccia dell&apos;utilizzo dei brani nei servizi.</translation>
+        <translation>&lt;strong&gt;Plugin dell&apos;utilizzo dei Brani&lt;/strong&gt;&lt;br /&gt; Questo plugin tiene traccia dell&apos;utilizzo dei brani nei servizi di culto.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="236"/>
         <source>SongUsage</source>
         <comment>name singular</comment>
-        <translation>Utilizzo dei Brani</translation>
+        <translation>Utilizzo dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="237"/>
         <source>SongUsage</source>
         <comment>name plural</comment>
-        <translation>Utilizzo dei Brani</translation>
+        <translation>Utilizzo dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songusage/songusageplugin.py" line="241"/>
         <source>SongUsage</source>
         <comment>container title</comment>
-        <translation>Utilizzo dei Brani</translation>
+        <translation>Utilizzo dei brani</translation>
     </message>
 </context>
 <context>
@@ -9162,9 +9170,9 @@ has been successfully created.</source>
         <source>The codepage setting is responsible
 for the correct character representation.
 Usually you are fine with the preselected choice.</source>
-        <translation>L&apos;impostazione codepage è responsabile
-per la rappresentazione corretta dei caratteri.
-Generalmente va bene la scelta preselezionata.</translation>
+        <translation>L&apos;impostazione della tabella dei codici è responsabile
+per la corretta rappresentazione dei caratteri.
+Di solito va bene la scelta preselezionata.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/__init__.py" line="331"/>
@@ -9226,12 +9234,12 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Song List Report</source>
-        <translation>Rapporto elenco dei brani</translation>
+        <translation>Rapporto sull&apos;elenco dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/songsplugin.py" line="214"/>
         <source>Produce a CSV file of all the songs in the database.</source>
-        <translation>Produrre un file CSV di tutti i brani del database.</translation>
+        <translation>Produce un file CSV di tutti i brani nel database.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/songsplugin.py" line="238"/>
@@ -9241,7 +9249,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/songsplugin.py" line="240"/>
         <source>Reindexing songs</source>
-        <translation>Reindicizzazione brani</translation>
+        <translation>Reindicizzazione dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/songsplugin.py" line="283"/>
@@ -9320,7 +9328,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
         <location filename="../../openlp/plugins/songs/lib/db.py" line="71"/>
         <source>Words and Music</source>
         <comment>Author who wrote both lyrics and music of a song</comment>
-        <translation>Testo e Musica</translation>
+        <translation>Testo e musica</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/db.py" line="73"/>
@@ -9334,12 +9342,12 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/authorsdialog.py" line="74"/>
         <source>Author Maintenance</source>
-        <translation>Manutenzione Autore</translation>
+        <translation>Manutenzione autore</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/authorsdialog.py" line="75"/>
         <source>Display name:</source>
-        <translation>Visualizza nome:</translation>
+        <translation>Nome da visualizzare:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/authorsdialog.py" line="76"/>
@@ -9364,7 +9372,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/authorsform.py" line="102"/>
         <source>You have not set a display name for the author, combine the first and last names?</source>
-        <translation>Non hai impostato un soprannome per l&apos;autore, combinare il nome e il cognome?</translation>
+        <translation>Non hai impostato un nome da visualizzare per l&apos;autore, combinare il nome e il cognome?</translation>
     </message>
 </context>
 <context>
@@ -9385,7 +9393,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/dreambeam.py" line="110"/>
         <source>Invalid DreamBeam song file. Missing DreamSong tag.</source>
-        <translation>Il File del brano di DreamBeam non è valido. Mancano i tag DreamSong.</translation>
+        <translation>Il file dei brani di DreamBeam non è valido. Tag DreamSong mancante.</translation>
     </message>
 </context>
 <context>
@@ -9393,7 +9401,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/easyslides.py" line="74"/>
         <source>Invalid EasySlides song file. Missing Item tag.</source>
-        <translation>Il File del brano EasySlides non è valido. Manca il Tag dell&apos;articolo.</translation>
+        <translation>Il file dei brani di EasySlides non è valido. Manca il tag dell&apos;elemento.</translation>
     </message>
 </context>
 <context>
@@ -9458,7 +9466,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
         <source>
 [above are Song Tags with notes imported from EasyWorship]</source>
         <translation>
-[qui sopra sono tag di brani con note importate da EasyWorship].</translation>
+[sopra ci sono i tag dei brani con le note importate da EasyWorship]</translation>
     </message>
 </context>
 <context>
@@ -9477,14 +9485,14 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
 <context>
     <name>SongsPlugin.EditSongForm</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="430"/>
+        <location filename="../../openlp/core/common/i18n.py" line="432"/>
         <source>&amp;Save &amp;&amp; Close</source>
-        <translation>&amp;Salva &amp;e Chiudi</translation>
+        <translation>&amp;Salva &amp;e chiudi</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="301"/>
         <source>Song Editor</source>
-        <translation>Editor dei Brani</translation>
+        <translation>Editor dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="302"/>
@@ -9504,7 +9512,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="305"/>
         <source>&amp;Verse order:</source>
-        <translation>&amp;Ordine dei Versi:</translation>
+        <translation>&amp;Ordine delle strofe:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="308"/>
@@ -9514,17 +9522,17 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="310"/>
         <source>Title &amp;&amp; Lyrics</source>
-        <translation>Titolo &amp;e Testi</translation>
+        <translation>Titolo &amp;e testi</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="313"/>
         <source>&amp;Add to Song</source>
-        <translation>&amp;Aggiungi al Brano</translation>
+        <translation>&amp;Aggiungi al brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="314"/>
         <source>&amp;Edit Author Type</source>
-        <translation>&amp;Modifica tipo di Autore</translation>
+        <translation>&amp;Modifica tipo di autore</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="337"/>
@@ -9534,22 +9542,22 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="316"/>
         <source>&amp;Manage Authors, Topics, Songbooks</source>
-        <translation>&amp;Gestisci autori, argomenti, brani musicali</translation>
+        <translation>&amp;Gestisci autori, argomenti, innari</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="318"/>
         <source>A&amp;dd to Song</source>
-        <translation>&amp;Aggiungi al Brano</translation>
+        <translation>&amp;Aggiungi al brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="319"/>
         <source>R&amp;emove</source>
-        <translation>&amp;Rimuovi</translation>
+        <translation>R&amp;imuovi</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="321"/>
         <source>Add &amp;to Song</source>
-        <translation>Aggiungi &amp;al Brano</translation>
+        <translation>Aggiungi &amp;al brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="322"/>
@@ -9559,12 +9567,12 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="323"/>
         <source>Authors, Topics &amp;&amp; Songbooks</source>
-        <translation>Autori, Argomenti, Brani musicali</translation>
+        <translation>Autori, argomenti &amp;e innari</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="326"/>
         <source>New &amp;Theme</source>
-        <translation>Nuovo &amp;Tema</translation>
+        <translation>Nuovo &amp;tema</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="327"/>
@@ -9579,7 +9587,7 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="331"/>
         <source>Theme, Copyright Info &amp;&amp; Comments</source>
-        <translation>Tema, Informazioni sul copyright &amp;e Commenti</translation>
+        <translation>Tema, informazioni sul copyright &amp;e commenti</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="333"/>
@@ -9589,17 +9597,17 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="335"/>
         <source>Add &amp;File(s)</source>
-        <translation>Aggiungi &amp;File</translation>
+        <translation>Aggiungi &amp;file</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="336"/>
         <source>Add &amp;Media</source>
-        <translation>Aggiungi &amp;Media</translation>
+        <translation>Aggiungi &amp;contenuto multimediale</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="338"/>
         <source>Remove &amp;All</source>
-        <translation>Rimuovi &amp;Tutto</translation>
+        <translation>Rimuovi &amp;tutto</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editsongdialog.py" line="340"/>
@@ -9612,41 +9620,41 @@ La codifica è responsabile della corretta rappresentazione dei caratteri.</tran
         <translation>&lt;strong&gt;Attenzione:&lt;/strong&gt; L&apos;ordine delle strofe non è stato specificato.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="203"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="204"/>
         <source>There are no verses corresponding to &quot;{invalid}&quot;. Valid entries are {valid}.
 Please enter the verses separated by spaces.</source>
-        <translation>Non ci sono strofe corrispondenti a &quot;{invalid}&quot;. Le voci valide sono  {valid}.
+        <translation>Non ci sono strofe corrispondenti a &quot;{invalid}&quot;. Le voci valide sono {valid}.
 Per favore, inserisci le strofe separate da spazi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="208"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="209"/>
         <source>There is no verse corresponding to &quot;{invalid}&quot;. Valid entries are {valid}.
 Please enter the verses separated by spaces.</source>
         <translation>Non c&apos;è una strofa corrispondente a &quot;{invalid}&quot;. Le voci valide sono {valid}.
 Per favore, inserisci le strofe separate da spazi.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="212"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="213"/>
         <source>Invalid Verse Order</source>
         <translation>Ordine delle strofe non valido</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="226"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="227"/>
         <source>You need to type in a song title.</source>
         <translation>È necessario digitare il titolo del brano.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="232"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="233"/>
         <source>You need to type in at least one verse.</source>
         <translation>È necessario digitare almeno una strofa.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="238"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="239"/>
         <source>You need to have an author for this song.</source>
         <translation>È necessario indicare un autore per questo brano.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="264"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="265"/>
         <source>There are misplaced formatting tags in the following verses:
 
 {tag}
@@ -9656,87 +9664,87 @@ Please correct these tags before continuing.</source>
 
 {tag}
 
-Si prega di correggere questi tag prima di continuare.</translation>
+Correggi questi tag prima di continuare.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="273"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="274"/>
         <source>You have {count} verses named {name} {number}. You can have at most 26 verses with the same name</source>
         <translation>Hai {count} strofe chiamate {name} {number}. Si possono avere al massimo 26 strofe con lo stesso nome</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="595"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="596"/>
         <source>Add Author</source>
-        <translation>Aggiungi Autore</translation>
+        <translation>Aggiungi autore</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="595"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="596"/>
         <source>This author does not exist, do you want to add them?</source>
-        <translation>Questo autore non esiste, si desidera aggiungerlo?</translation>
+        <translation>Questo autore non esiste, vuoi aggiungerlo?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="616"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="617"/>
         <source>This author is already in the list.</source>
         <translation>Questo autore è già nell&apos;elenco.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="623"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="624"/>
         <source>You have not selected a valid author. Either select an author from the list, or type in a new author and click the &quot;Add Author to Song&quot; button to add the new author.</source>
         <translation>Non hai selezionato un autore valido. Seleziona un autore dall&apos;elenco o digita un nuovo autore e fai clic sul pulsante &quot;Aggiungi autore al brano&quot; per aggiungere il nuovo autore.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="647"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="648"/>
         <source>Edit Author Type</source>
         <translation>Modifica il tipo di autore</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="647"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="648"/>
         <source>Choose type for this author</source>
         <translation>Scegli il tipo per questo autore</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="674"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="675"/>
         <source>Add Topic</source>
-        <translation>Aggiungi Argomento</translation>
+        <translation>Aggiungi argomento</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="674"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="675"/>
         <source>This topic does not exist, do you want to add it?</source>
         <translation>Questo argomento non esiste, vuoi aggiungerlo?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="692"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="693"/>
         <source>This topic is already in the list.</source>
         <translation>Questo argomento è già nell&apos;elenco.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="701"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="702"/>
         <source>You have not selected a valid topic. Either select a topic from the list, or type in a new topic and click the &quot;Add Topic to Song&quot; button to add the new topic.</source>
-        <translation>Non hai selezionato un argomento valido. Selezionare un argomento nell&apos;elenco o digitare in un nuovo argomento e fare clic sul pulsante &quot;Aggiungi argomento al Brano&quot; per aggiungere il nuovo argomento.</translation>
+        <translation>Non hai selezionato un argomento valido. Seleziona un argomento dall&apos;elenco o digita un nuovo argomento e fai clic sul pulsante &quot;Aggiungi argomento al brano&quot; per aggiungere il nuovo argomento.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="720"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="721"/>
         <source>Add Songbook</source>
-        <translation>Aggiungi Raccolta musicale</translation>
+        <translation>Aggiungi innario</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="720"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="721"/>
         <source>This Songbook does not exist, do you want to add it?</source>
-        <translation>Questa Raccolta Musicale non esiste, si desidera aggiungerla?</translation>
+        <translation>Questo innario non esiste, vuoi aggiungerlo?</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="737"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="738"/>
         <source>This Songbook is already in the list.</source>
-        <translation>Questa Raccolta Musicale è già nell&apos;elenco.</translation>
+        <translation>Questo innario è già nell&apos;elenco.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="745"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="746"/>
         <source>You have not selected a valid Songbook. Either select a Songbook from the list, or type in a new Songbook and click the &quot;Add to Song&quot; button to add the new Songbook.</source>
-        <translation>Non hai selezionato una Raccolta Musicale  valida. Selezionare una raccolta nell&apos;elenco o digitare in una nuova raccolta e fare clic sul pulsante &quot;Aggiungi Raccolta&quot; per aggiungere la nuova raccolta musicale.</translation>
+        <translation>Non hai selezionato un innario valido. Seleziona un innario dall&apos;elenco o digita un nuovo innario e fai clic sul pulsante &quot;Aggiungi al brano&quot; per aggiungere il nuovo innario.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="945"/>
+        <location filename="../../openlp/plugins/songs/forms/editsongform.py" line="946"/>
         <source>Open File(s)</source>
-        <translation>Apri File</translation>
+        <translation>Apri file</translation>
     </message>
 </context>
 <context>
@@ -9749,7 +9757,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="93"/>
         <source>&amp;Verse type:</source>
-        <translation>&amp;Tipo di Strofa:</translation>
+        <translation>&amp;Tipo di strofa:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="103"/>
@@ -9774,7 +9782,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="110"/>
         <source>Transpose:</source>
-        <translation>Trasporre:</translation>
+        <translation>Trasposizione:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editversedialog.py" line="111"/>
@@ -9794,7 +9802,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/editverseform.py" line="254"/>
         <source>Invalid Chord</source>
-        <translation>Accordo Non valido</translation>
+        <translation>Accordo non valido</translation>
     </message>
 </context>
 <context>
@@ -9812,7 +9820,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="145"/>
         <source>This wizard will help to export your songs to the open and free &lt;strong&gt;OpenLyrics &lt;/strong&gt; worship song format.</source>
-        <translation>Questa procedura guidata vi aiuterà a esportare i vostri brani nel formato &lt;strong&gt;OpenLyrics&lt;/strong&gt;.</translation>
+        <translation>Questa procedura guidata vi aiuterà a esportare i vostri brani nel formato gratuito &lt;strong&gt;OpenLyrics&lt;/strong&gt;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="148"/>
@@ -9832,7 +9840,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="153"/>
         <source>Check All</source>
-        <translation>Seleziona Tutto</translation>
+        <translation>Seleziona tutto</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="154"/>
@@ -9857,7 +9865,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="159"/>
         <source>Please wait while your songs are exported.</source>
-        <translation>Si prega di attendere mentre i brani vengono esportati.</translation>
+        <translation>Attendi mentre i brani vengono esportati.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="175"/>
@@ -9885,12 +9893,12 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/foilpresenter.py" line="131"/>
         <source>Invalid Foilpresenter song file. Missing expected tags</source>
-        <translation>Il File del brano di Foilpresenter non è valido. Mancano Tag</translation>
+        <translation>Il file dei brani di Foilpresenter non è valido. Mancano dei tag</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/foilpresenter.py" line="391"/>
         <source>Invalid Foilpresenter song file. No verses found.</source>
-        <translation>Il File del brano di Foilpresenter non è valido. Versetti non trovati.</translation>
+        <translation>Il file dei brani di Foilpresenter non è valido. Nessuna strofa trovata.</translation>
     </message>
 </context>
 <context>
@@ -9951,7 +9959,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="197"/>
         <source>This importer has been disabled.</source>
-        <translation>Questo importatore è stato disattivato.</translation>
+        <translation>Questo strumento di importazione è stato disattivato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="209"/>
@@ -9961,27 +9969,27 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="210"/>
         <source>OpenLyrics or OpenLP 2 Exported Song</source>
-        <translation> Brani esportati OpenLyrics o OpenLP 2</translation>
+        <translation>Brani OpenLyrics o esportati da OpenLP 2</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="217"/>
         <source>OpenLP 2 Databases</source>
-        <translation>Database OpenLP 2 </translation>
+        <translation>Database di OpenLP 2</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="220"/>
         <source>Generic Document/Presentation</source>
-        <translation>Documento/presentazione generici</translation>
+        <translation>Documento/presentazione generico</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="223"/>
         <source>The generic document/presentation importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
-        <translation>L&apos;importatore di documenti/presentazioni generici è stato disabilitato perché OpenLP non può accedere a OpenOffice o LibreOffice.</translation>
+        <translation>Lo strumento di importazione di documenti/presentazioni generici è stato disabilitato perché OpenLP non può accedere a OpenOffice o LibreOffice.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="226"/>
         <source>Select Document/Presentation Files</source>
-        <translation>Seleziona Documenti/File di presentazione</translation>
+        <translation>Seleziona file di documenti/presentazioni</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="232"/>
@@ -9996,17 +10004,17 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="246"/>
         <source>DreamBeam Song Files</source>
-        <translation>File dei brani DreamBeam</translation>
+        <translation>File dei brani di DreamBeam</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="253"/>
         <source>EasySlides XML File</source>
-        <translation>File EasySlides XML </translation>
+        <translation>File XML di EasySlides </translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="260"/>
         <source>EasyWorship Song Database</source>
-        <translation>Database brani EasyWorship</translation>
+        <translation>Database dei brani di EasyWorship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="268"/>
@@ -10016,27 +10024,27 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="276"/>
         <source>EasyWorship Service File</source>
-        <translation>File di servizio EasyWorship</translation>
+        <translation>File di Servizio di EasyWorship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="283"/>
         <source>Foilpresenter Song Files</source>
-        <translation>File dei brani Foilpresenter</translation>
+        <translation>File dei brani di Foilpresenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="291"/>
         <source>LiveWorship Database</source>
-        <translation>Archivio LiveWorship</translation>
+        <translation>Database di LiveWorship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="293"/>
         <source>First convert your LiveWorship database to an XML text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;User Manual&lt;/a&gt;.</source>
-        <translation>Per prima cosa convertite il vostro database LiveWorship in un file di testo XML, come spiegato nel &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;manuale d&apos;uso&lt;/a&gt;.</translation>
+        <translation>Per prima cosa converti il tuo database LiveWorship in un file di testo XML, come spiegato nel &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-liveworship&quot;&gt;Manuale Utente&lt;/a&gt;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="302"/>
         <source>LyriX Files</source>
-        <translation>File LyriX</translation>
+        <translation>File di LyriX</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="303"/>
@@ -10046,27 +10054,27 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="310"/>
         <source>MediaShout Database</source>
-        <translation>Database MediaShout</translation>
+        <translation>Database di MediaShout</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="311"/>
         <source>The MediaShout importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
-        <translation>Lo strumento di importazione di MediaShout è supportato solo su Windows. È stato disabilitato a causa di un modulo Python mancante. Se vuoi usare questa funzione, dovrai installare il modulo &quot;pyodbc&quot;.</translation>
+        <translation>Lo strumento di importazione MediaShout è supportato solo su Windows. È stato disabilitato a causa di un modulo Python mancante. Se vuoi usare questa funzione, installa il modulo &quot;pyodbc&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="327"/>
         <source>OPS Pro database</source>
-        <translation>Database OPS Pro</translation>
+        <translation>Database di OPS Pro</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="328"/>
         <source>The OPS Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
-        <translation>Lo strumento di importazione OPS Pro è supportato solo su Windows. È stato disattivato a causa di un modulo Python mancante. Se si desidera utilizzare questa funzione, sarà necessario installare il modulo &quot;pyodbc&quot;.</translation>
+        <translation>Lo strumento di importazione OPS Pro è supportato solo su Windows. È stato disattivato a causa di un modulo Python mancante. Se vuoi usare questa funzione, devi installare il modulo &quot;pyodbc&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="337"/>
         <source>PowerPraise Song Files</source>
-        <translation>File di brani PowerPraise</translation>
+        <translation>File dei brani di PowerPraise</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="344"/>
@@ -10076,67 +10084,67 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="351"/>
         <source>PresentationManager Song Files</source>
-        <translation>File di brani PresentationManager</translation>
+        <translation>File dei brani di PresentationManager</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="358"/>
         <source>ProPresenter Song Files</source>
-        <translation>File di brani ProPresenter</translation>
+        <translation>File dei brani di ProPresenter</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="365"/>
         <source>Singing The Faith Exported Files</source>
-        <translation>File Canti della Fede esportati</translation>
+        <translation>File esportati da Singing The Faith</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="367"/>
         <source>First use Singing The Faith Electronic edition to export the song(s) in Text format.</source>
-        <translation>Utilizzare per prima cosa Singing The Faith Electronic edition per esportare il brano o i brani in formato testo.</translation>
+        <translation>Per prima cosa usa Singing The Faith Electronic edition per esportare i brani in formato testo.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="375"/>
         <source>SongBeamer Files</source>
-        <translation>File tipo SongBeamer</translation>
+        <translation>File di SongBeamer</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="383"/>
         <source>SongPro Text Files</source>
-        <translation>File testo SongPro</translation>
+        <translation>File di testo SongPro</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="384"/>
         <source>SongPro (Export File)</source>
-        <translation>SongPro (Esporta File)</translation>
+        <translation>SongPro (file esportati)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="385"/>
         <source>In SongPro, export your songs using the File -&gt; Export menu</source>
-        <translation>In SongPro, esporta i tuoi brani utilizzando in File -&gt; menu Esporta</translation>
+        <translation>In SongPro, esporta i tuoi brani utilizzando il menu File -&gt; Esporta</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="392"/>
         <source>SongShow Plus Song Files</source>
-        <translation>File tipo SongShow Plus</translation>
+        <translation>File dei brani di SongShow Plus</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="399"/>
         <source>Songs Of Fellowship Song Files</source>
-        <translation>File brani tipo Songs Of Fellowship</translation>
+        <translation>File dei brani di Songs Of Fellowship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="401"/>
         <source>The Songs of Fellowship importer has been disabled because OpenLP cannot access OpenOffice or LibreOffice.</source>
-        <translation>L&apos;importatore di Songs of Fellowship è stato disattivato perché non è possibile accedere a OpenLP OpenOffice o LibreOffice.</translation>
+        <translation>Lo strumento di importazione di Songs of Fellowship è stato disabilitato perché OpenLP non può accedere a OpenOffice o LibreOffice.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="409"/>
         <source>SundayPlus Song Files</source>
-        <translation>File tipo SundayPlus</translation>
+        <translation>File dei brani di SundayPlus</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="416"/>
         <source>VideoPsalm Files</source>
-        <translation>File VideoPsalm</translation>
+        <translation>File di VideoPsalm</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="417"/>
@@ -10146,17 +10154,17 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="418"/>
         <source>The VideoPsalm songbooks are normally located in {path}</source>
-        <translation>Le raccolte musicali di VideoPsalm si trovano normalmente in {path}</translation>
+        <translation>Gli innari di VideoPsalm si trovano normalmente in {path}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="426"/>
         <source>Words Of Worship Song Files</source>
-        <translation>File Brani tipo Words Of Worship</translation>
+        <translation>File dei brani di Words Of Worship</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="434"/>
         <source>Worship Assistant Files</source>
-        <translation>File Worship Assistant</translation>
+        <translation>File di Worship Assistant</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="436"/>
@@ -10166,17 +10174,17 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="437"/>
         <source>In Worship Assistant, export your Database to a CSV file.</source>
-        <translation>In Worship Assistant, è possibile esportare il Database in un file CSV.</translation>
+        <translation>In Worship Assistant, esporta il tuo database in un file CSV.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="445"/>
         <source>WorshipCenter Pro Song Files</source>
-        <translation>File brani WorshipCenter Pro</translation>
+        <translation>File dei brani di WorshipCenter Pro</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="447"/>
         <source>The WorshipCenter Pro importer is only supported on Windows. It has been disabled due to a missing Python module. If you want to use this importer, you will need to install the &quot;pyodbc&quot; module.</source>
-        <translation>Lo strumento di importazione WorshipCenter Pro è supportato solo su Windows. È stato disattivato a causa di un modulo Python mancante. Se si desidera utilizzare questa funzione, sarà necessario installare il modulo &quot;pyodbc&quot;.</translation>
+        <translation>Lo strumento di importazione WorshipCenter Pro è supportato solo su Windows. È stato disattivato a causa di un modulo Python mancante. Se vuoi utilizzare questa funzione, devi installare il modulo &quot;pyodbc&quot;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="457"/>
@@ -10186,7 +10194,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importer.py" line="458"/>
         <source>First convert your ZionWorx database to a CSV text file, as explained in the &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;User Manual&lt;/a&gt;.</source>
-        <translation>Prima di convertire il database di ZionWorx in un file di testo CSV, consultare il manuale raggiungibile su: &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;User Manual&lt;/a&gt;.</translation>
+        <translation>Per prima cosa converti il tuo database ZionWorx in un file di testo CSV, come spiegato nel &lt;a href=&quot;http://manual.openlp.org/songs.html#importing-from-zionworx&quot;&gt;Manuale Utente&lt;/a&gt;.</translation>
     </message>
 </context>
 <context>
@@ -10215,7 +10223,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/mediafilesdialog.py" line="65"/>
         <source>Select Media File(s)</source>
-        <translation>Seleziona File Multimediale(i)</translation>
+        <translation>Seleziona file multimediali</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/mediafilesdialog.py" line="66"/>
@@ -10226,7 +10234,7 @@ Si prega di correggere questi tag prima di continuare.</translation>
 <context>
     <name>SongsPlugin.MediaItem</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="716"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="717"/>
         <source>CCLI License</source>
         <translation>Licenza CCLI </translation>
     </message>
@@ -10243,17 +10251,17 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="126"/>
         <source>Maintain the lists of authors, topics and books.</source>
-        <translation>Gestire le liste di autori, argomenti e raccolte musicali.</translation>
+        <translation>Gestisci gli elenchi di autori, argomenti e innari.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Entire Song</source>
-        <translation>Intero Brano</translation>
+        <translation>Intero brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Entire Song...</source>
-        <translation>Ricerca Interi brani...</translation>
+        <translation>Ricerca interi brani...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
@@ -10263,22 +10271,22 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Lyrics...</source>
-        <translation>Ricerca Testi...</translation>
+        <translation>Ricerca testi...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Authors...</source>
-        <translation>Ricerca Autori...</translation>
+        <translation>Ricerca autori...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Topics...</source>
-        <translation>Cercare argomenti...</translation>
+        <translation>Ricerca argomenti...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Songbooks...</source>
-        <translation>Ricerca Raccolte Musicali...</translation>
+        <translation>Ricerca innari...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
@@ -10288,12 +10296,12 @@ Si prega di correggere questi tag prima di continuare.</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>Search Copyright...</source>
-        <translation>Cerca Copyright....</translation>
+        <translation>Cerca Copyright...</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
         <source>CCLI number</source>
-        <translation>numero CCLI </translation>
+        <translation>Numero CCLI</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="136"/>
@@ -10312,21 +10320,21 @@ Si prega di correggere questi tag prima di continuare.</translation>
         <translation>copia</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="634"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="635"/>
         <source>Media</source>
         <translation>Media</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="694"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="695"/>
         <source>CCLI License: </source>
-        <translation>Licenza CCLI : </translation>
+        <translation>Licenza CCLI: </translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="724"/>
+        <location filename="../../openlp/plugins/songs/lib/mediaitem.py" line="725"/>
         <source>Failed to render Song footer html.
 See log for details</source>
-        <translation>Fallito il rendering della pagina html riferita alla base del Brano.
-Vedi il log per i dettagli</translation>
+        <translation>Impossibile eseguire il rendering dell&apos;HTML nel piè di pagina del brano.
+Vedi il log per maggiori informazioni</translation>
     </message>
 </context>
 <context>
@@ -10334,7 +10342,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/mediashout.py" line="62"/>
         <source>Unable to open the MediaShout database.</source>
-        <translation>Impossibile aprire l&apos;archivio di MediaShout.</translation>
+        <translation>Impossibile aprire il database di MediaShout.</translation>
     </message>
 </context>
 <context>
@@ -10342,12 +10350,12 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/opspro.py" line="65"/>
         <source>Unable to connect the OPS Pro database.</source>
-        <translation>Impossibile connettersi all&apos;archivio OPS Pro.</translation>
+        <translation>Impossibile connettersi al database di OPS Pro.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/opspro.py" line="87"/>
         <source>&quot;{title}&quot; could not be imported. {error}</source>
-        <translation>&quot;{title}&quot; Non è stato possibile importare. {error}</translation>
+        <translation>&quot;{title}&quot; non può essere importato. {error}</translation>
     </message>
 </context>
 <context>
@@ -10355,7 +10363,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/openlp.py" line="143"/>
         <source>Not a valid OpenLP 2 song database.</source>
-        <translation>Non è un database di brani OpenLP 2 valido.</translation>
+        <translation>Non è un database dei brani di OpenLP 2 valido.</translation>
     </message>
 </context>
 <context>
@@ -10363,7 +10371,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/openlyricsexport.py" line="68"/>
         <source>Exporting &quot;{title}&quot;...</source>
-        <translation>Esportazione &quot;{title}&quot;...</translation>
+        <translation>Esportazione di &quot;{title}&quot;...</translation>
     </message>
 </context>
 <context>
@@ -10371,7 +10379,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/opensong.py" line="137"/>
         <source>Invalid OpenSong song file. Missing song tag.</source>
-        <translation>Il File del brano OpenSong non è valido. Mancano i Tag brano.</translation>
+        <translation>Il file dei brani di OpenSong non è valido. Tag del brano mancante.</translation>
     </message>
 </context>
 <context>
@@ -10379,7 +10387,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powerpraise.py" line="100"/>
         <source>Invalid PowerPraise song file. Missing needed tag.</source>
-        <translation>Il File del brano PowerPraise non è valido. Manca il tag necessario.</translation>
+        <translation>Il file dei brani di PowerPraise non è valido. Tag necessario mancante.</translation>
     </message>
 </context>
 <context>
@@ -10397,7 +10405,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="118"/>
         <source>Invalid {text} file. Unexpected byte value.</source>
-        <translation>File {text} non valido. Valore byte inatteso.</translation>
+        <translation>File {text} non valido. Valore di byte imprevisto.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="136"/>
@@ -10407,12 +10415,12 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="142"/>
         <source>Invalid {text} file. Missing &quot;COPYRIGHTLINE&quot; header.</source>
-        <translation>File {testo} non valido. Intestazione mancante &quot;COPYRIGHTLINE&quot;.</translation>
+        <translation>File {text} non valido. Intestazione &quot;COPYRIGHTLINE&quot; mancante.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/powersong.py" line="148"/>
         <source>Verses not found. Missing &quot;PART&quot; header.</source>
-        <translation>Versi non trovati. Intestazione  &quot;PART&quot; mancante.</translation>
+        <translation>Strofe non trovate. Intestazione &quot;PART&quot; mancante.</translation>
     </message>
 </context>
 <context>
@@ -10420,12 +10428,12 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="88"/>
         <source>File is not in XML-format, which is the only format supported.</source>
-        <translation>Il File non è in formato XML, che è l&apos;unico formato supportato.</translation>
+        <translation>Il file non è in formato XML, che è l&apos;unico formato supportato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/presentationmanager.py" line="103"/>
         <source>File is not a valid PresentationManager XMl file.</source>
-        <translation>Il file non è un file XMl PresentationManager valido.</translation>
+        <translation>Il file non è un XML di PresentationManager valido.</translation>
     </message>
 </context>
 <context>
@@ -10433,7 +10441,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/propresenter.py" line="67"/>
         <source>File is not a valid ProPresenter XMl file.</source>
-        <translation>Il file non è un file XMl ProPresenter valido.</translation>
+        <translation>Il file non è un XML di ProPresenter valido.</translation>
     </message>
 </context>
 <context>
@@ -10459,7 +10467,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songbeamer.py" line="138"/>
         <source>File is not a valid SongBeamer file.</source>
-        <translation>Il file non è un file SongBeamer valido.</translation>
+        <translation>Il file non è un file di SongBeamer valido.</translation>
     </message>
 </context>
 <context>
@@ -10467,7 +10475,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookdialog.py" line="66"/>
         <source>Songbook Maintenance</source>
-        <translation>Manutenzione Raccolta Brani</translation>
+        <translation>Manutenzione innario</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookdialog.py" line="67"/>
@@ -10482,7 +10490,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songbookform.py" line="61"/>
         <source>You need to type in a name for the book.</source>
-        <translation>È necessario digitare un nome per la raccolta.</translation>
+        <translation>Devi digitare un nome per l&apos;innario.</translation>
     </message>
 </context>
 <context>
@@ -10490,7 +10498,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="252"/>
         <source>Finished export. To import these files use the &lt;strong&gt;OpenLyrics&lt;/strong&gt; importer.</source>
-        <translation>Esportazione terminata. Per importare questi file utilizzare l&apos;importatore &lt;strong&gt;OpenLyrics&lt;/strong&gt;.</translation>
+        <translation>Esportazione terminata. Per importare questi file utilizza lo strumento di importazione &lt;strong&gt;OpenLyrics&lt;/strong&gt;.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="256"/>
@@ -10500,7 +10508,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songexportform.py" line="258"/>
         <source>Your song export failed because this error occurred: {error}</source>
-        <translation>L&apos;esportazione del tuo brano è fallita perché si è verificato questo errore: {error}</translation>
+        <translation>L&apos;esportazione del tuo brano non è riuscita perché si è verificato questo errore: {error}</translation>
     </message>
 </context>
 <context>
@@ -10518,7 +10526,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/openoffice.py" line="85"/>
         <source>File not found</source>
-        <translation>File non trovato </translation>
+        <translation>File non trovato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songimport.py" line="105"/>
@@ -10528,7 +10536,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songimport.py" line="119"/>
         <source>The following songs could not be imported:</source>
-        <translation>Non possono essere importati i seguenti brani:</translation>
+        <translation>I seguenti brani non possono essere importati:</translation>
     </message>
 </context>
 <context>
@@ -10541,12 +10549,12 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="251"/>
         <source>This author already exists.</source>
-        <translation>Questo Autore esiste già.</translation>
+        <translation>Questo autore esiste già.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="264"/>
         <source>Could not add your topic.</source>
-        <translation>Impossibile aggiungere il tuo argomento.</translation>
+        <translation>Impossibile aggiungere questo argomento.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="267"/>
@@ -10556,12 +10564,12 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="281"/>
         <source>Could not add your book.</source>
-        <translation>Impossibile aggiungere questa raccolta.</translation>
+        <translation>Impossibile aggiungere questo innario.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="284"/>
         <source>This book already exists.</source>
-        <translation>Questa raccolta esiste già.</translation>
+        <translation>Questo innario esiste già.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="389"/>
@@ -10571,7 +10579,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="316"/>
         <source>The author {original} already exists. Would you like to make songs with author {new} use the existing author {original}?</source>
-        <translation>L&apos;autore {original} esiste già. Vuoi abbinare i brani con l&apos;autore {new} con questo autore già presente {original}?</translation>
+        <translation>L&apos;autore {original} esiste già. Vuoi fare in modo che i brani con l&apos;autore {new} utilizzino l&apos;autore esistente {original}?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="329"/>
@@ -10581,22 +10589,22 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="352"/>
         <source>The topic {original} already exists. Would you like to make songs with topic {new} use the existing topic {original}?</source>
-        <translation>L&apos;argomento {original} esiste già. Vuoi abbinare nel brano l&apos;argomento {new} con l&apos;argomento già esistente {original}?</translation>
+        <translation>L&apos;argomento {original} esiste già. Vuoi fare in modo che i brani con l&apos;argomento {new} utilizzino l&apos;argomento esistente {original}?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="362"/>
         <source>Could not save your modified topic, because it already exists.</source>
-        <translation>Non puoi salvare questo argomento modificato, perché esiste già.</translation>
+        <translation>Impossibile salvare l&apos;argomento modificato perché esiste già.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="391"/>
         <source>The book {original} already exists. Would you like to make songs with book {new} use the existing book {original}?</source>
-        <translation>La raccolta {original} esiste già. Vuoi abbinare i brani con la raccolta {new} con questa raccolta {original} già esistente?</translation>
+        <translation>L&apos;innario {original} esiste già. Vuoi fare in modo che i brani con l&apos;innario {new} utilizzino l&apos;innario esistente {original}?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="517"/>
         <source>Delete Author</source>
-        <translation>Cancella Autore</translation>
+        <translation>Cancella autore</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="517"/>
@@ -10606,7 +10614,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="517"/>
         <source>This author cannot be deleted, they are currently assigned to at least one song.</source>
-        <translation>Questo autore non può essere eliminato, è attualmente assegnato ad almeno un brano.</translation>
+        <translation>Questo autore non può essere eliminato, al momento è assegnato ad almeno un brano.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="529"/>
@@ -10616,27 +10624,27 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="529"/>
         <source>Are you sure you want to delete the selected topic?</source>
-        <translation>Sei sicuro di voler cancellare l&apos;argomento selezionato?</translation>
+        <translation>Sei sicuro di voler eliminare l&apos;argomento selezionato?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="529"/>
         <source>This topic cannot be deleted, it is currently assigned to at least one song.</source>
-        <translation>Questo argomento non può essere eliminato, attualmente è assegnato ad almeno un brano.</translation>
+        <translation>Questo argomento non può essere eliminato, al momento è assegnato ad almeno un brano.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="540"/>
         <source>Delete Book</source>
-        <translation>Cancella Raccolta</translation>
+        <translation>Elimina innario</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="540"/>
         <source>Are you sure you want to delete the selected book?</source>
-        <translation>Sei sicuro di voler eliminare la raccolta selezionata?</translation>
+        <translation>Sei sicuro di voler eliminare l&apos;innario selezionato?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songmaintenanceform.py" line="540"/>
         <source>This book cannot be deleted, it is currently assigned to at least one song.</source>
-        <translation>Questa raccolta non può essere eliminata, attualmente è assegnata ad almeno un brano.</translation>
+        <translation>Questo innario non può essere eliminato, al momento è assegnato ad almeno un brano.</translation>
     </message>
 </context>
 <context>
@@ -10644,7 +10652,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songpro.py" line="93"/>
         <source>File is not a valid SongPro file.</source>
-        <translation>Il file non è un file SongPro valido.</translation>
+        <translation>Il file non è un file di SongPro valido.</translation>
     </message>
 </context>
 <context>
@@ -10652,7 +10660,7 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectdialog.py" line="153"/>
         <source>CCLI SongSelect Importer</source>
-        <translation>importatore CCLI SongSelect </translation>
+        <translation>Strumento di importazione CCLI SongSelect </translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectdialog.py" line="154"/>
@@ -10703,41 +10711,41 @@ Vedi il log per i dettagli</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="107"/>
         <source>This song cannot be read. Perhaps your CCLI account does not give you access to this song.</source>
-        <translation>Questo brano non può essere letto. Forse il tuo account CCLI non ti dà accesso a questo brano.</translation>
+        <translation>Questo brano non può essere letto. Forse il tuo account CCLI non ti consente di accedere a questo brano.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="135"/>
         <source>Incomplete song</source>
-        <translation>Brani incompleti</translation>
+        <translation>Brano incompleto</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="135"/>
         <source>This song is missing some information, like the lyrics, and cannot be imported.</source>
-        <translation>Questo brano è mancante di alcune informazioni, come il testo e non può essere importato.</translation>
+        <translation>A questo brano mancano alcune informazioni, come il testo, e non può essere importato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="196"/>
         <source>Song Duplicate Warning</source>
-        <translation>Avviso di duplicazione brano</translation>
+        <translation>Avviso di brano duplicato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="196"/>
         <source>A song with the same CCLI number is already in your database.
 
 Are you sure you want to import this song?</source>
-        <translation>Una brano con lo stesso numero CCLI è già presente nel tuo database.
+        <translation>Una brano con lo stesso numero CCLI è già nel tuo database.
 
 Sei sicuro di voler importare questo brano?</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="208"/>
         <source>Song Imported</source>
-        <translation>Brani importati</translation>
+        <translation>Brano importato</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/songselectform.py" line="208"/>
         <source>Your song has been imported</source>
-        <translation>La tuo brano è stato importato</translation>
+        <translation>Il brano è stato importato</translation>
     </message>
 </context>
 <context>
@@ -10745,7 +10753,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/songshowplus.py" line="186"/>
         <source>File is not a valid SongShowPlus file.</source>
-        <translation>Il file non è un file SongShowPlus valido.</translation>
+        <translation>Il file non è un file di SongShowPlus valido.</translation>
     </message>
 </context>
 <context>
@@ -10753,37 +10761,37 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="141"/>
         <source>Song related settings</source>
-        <translation>Impostazioni relative al brano</translation>
+        <translation>Impostazioni relative ai brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="142"/>
         <source>Enable &quot;Go to verse&quot; button in Live panel</source>
-        <translation>Attivare il pulsante &quot;Vai al verso&quot; nel pannello Live</translation>
+        <translation>Abilita il pulsante &quot;Vai alla strofa&quot; nel pannello della Diretta</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="144"/>
         <source>Update service from song edit</source>
-        <translation>Aggiornamento Servizio da Modifica Brano</translation>
+        <translation>Aggiorna il Servizio alla modifica di un brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="145"/>
         <source>Import missing songs from Service files</source>
-        <translation>Importa i brani mancanti dal file di Servizio</translation>
+        <translation>Importa i brani mancanti dai file del Servizio</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="147"/>
         <source>Add Songbooks as first slide</source>
-        <translation>Aggiungi la Raccolta Brani come prima diapositiva</translation>
+        <translation>Aggiungi gli innari come prima diapositiva</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="149"/>
         <source>Auto-play background audio</source>
-        <translation>Riproduzione automatica dell&apos;audio di sottofondo</translation>
+        <translation>Riproduci automaticamente l&apos;audio di sottofondo</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="150"/>
         <source>If enabled all text between &quot;[&quot; and &quot;]&quot; will be regarded as chords.</source>
-        <translation>Se abilitato, tutti i testi tra &quot;[&quot; e &quot;]&quot; saranno considerati accordi.</translation>
+        <translation>Se abilitato, tutti i testi tra &quot;[&quot; e &quot;]&quot; saranno considerati come accordi.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="152"/>
@@ -10793,7 +10801,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="153"/>
         <source>Ignore chords when importing songs</source>
-        <translation>Ignora accordi quando si importano brani</translation>
+        <translation>Ignora gli accordi durante l&apos;importazione dei brani</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="155"/>
@@ -10813,7 +10821,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="158"/>
         <source>Chord notation to use:</source>
-        <translation>Notazione dell&apos;accordo da utilizzare:</translation>
+        <translation>Notazione degli accordi da utilizzare:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="159"/>
@@ -10833,17 +10841,17 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="163"/>
         <source>Warn about missing song key</source>
-        <translation>Avviso assenza chiave del brano</translation>
+        <translation>Avvisa alla mancanza della chiave in un brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="164"/>
         <source>Footer</source>
-        <translation>Piè Pagina</translation>
+        <translation>Piè di pagina</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="169"/>
         <source>Song Title</source>
-        <translation>Titolo Brano</translation>
+        <translation>Titolo del brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="170"/>
@@ -10873,7 +10881,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="178"/>
         <source>Authors (Type &quot;Words and Music&quot;)</source>
-        <translation>Autori (Tipo &quot;Parole e Musica&quot;)</translation>
+        <translation>Autori (Tipo &quot;Parole e musica&quot;)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="180"/>
@@ -10883,12 +10891,12 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="181"/>
         <source>Authors (Type &quot;Words&quot; &amp; &quot;Words and Music&quot;)</source>
-        <translation>Autori (Tipo &quot;Parole&quot; e &quot;Parole e Musica&quot;)</translation>
+        <translation>Autori (Tipo &quot;Parole&quot; e &quot;Parole e musica&quot;)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="183"/>
         <source>Authors (Type &quot;Music&quot; &amp; &quot;Words and Music&quot;)</source>
-        <translation>Autori (Tipo &quot;Musica&quot; e &quot;Parole e Musica&quot;)</translation>
+        <translation>Autori (Tipo &quot;Musica&quot; e &quot;Parole e musica&quot;)</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="185"/>
@@ -10898,7 +10906,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="186"/>
         <source>Songbook Entries</source>
-        <translation>Voci nelle Raccolte Musicali</translation>
+        <translation>Voce nell&apos;innario</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="188"/>
@@ -10908,7 +10916,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="189"/>
         <source>Song CCLI Number</source>
-        <translation>Numero CCLI Brano</translation>
+        <translation>Numero CCLI del brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="190"/>
@@ -10938,22 +10946,22 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="205"/>
         <source>How to use Footers:</source>
-        <translation>Come usare i Piè di pagina:</translation>
+        <translation>Come usare i piè di pagina:</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="206"/>
         <source>Footer Template</source>
-        <translation>Modello Piè di pagina</translation>
+        <translation>Modello del piè di pagina</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="206"/>
         <source>Mako Syntax</source>
-        <translation>Sintassi di Mako</translation>
+        <translation>Sintassi Mako</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="209"/>
         <source>Reset Template</source>
-        <translation>Reimposta Modello</translation>
+        <translation>Reimposta modello</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="288"/>
@@ -10963,7 +10971,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/songstab.py" line="288"/>
         <source>WARNING: Saving your SongSelect password is INSECURE, your password is stored in PLAIN TEXT. Click Yes to save your password or No to cancel this.</source>
-        <translation>ATTENZIONE: salvare la tua password di SongSelect è INSICURO, la tua password è memorizzata in CHIARO. Clicca su Si per salvare la tua password o su No per annullarla.</translation>
+        <translation>ATTENZIONE: Salvare la tua password di SongSelect NON È SICURO, la tua password è memorizzata in CHIARO. Clicca su Si per salvare la tua password o No per annullare questa operazione.</translation>
     </message>
 </context>
 <context>
@@ -10971,7 +10979,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/topicsdialog.py" line="60"/>
         <source>Topic Maintenance</source>
-        <translation>Manutenzione Argomento</translation>
+        <translation>Manutenzione argomento</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/topicsdialog.py" line="61"/>
@@ -10981,7 +10989,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/forms/topicsform.py" line="58"/>
         <source>You need to type in a topic name.</source>
-        <translation>È necessario digitare un nome per l&apos;argomento.</translation>
+        <translation>Devi digitare un nome per l&apos;argomento.</translation>
     </message>
 </context>
 <context>
@@ -10989,7 +10997,7 @@ Sei sicuro di voler importare questo brano?</translation>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
         <source>Song key warning</source>
-        <translation>Avviso chiave brano</translation>
+        <translation>Avviso chiave del brano</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/ui.py" line="55"/>
@@ -10997,10 +11005,10 @@ Sei sicuro di voler importare questo brano?</translation>
 For an optimal chord experience, please include a song key at the beginning of the song. For example: [=G]
 
 You can disable this warning message in songs settings.</source>
-        <translation>Per questo brano non è stata rilevata alcuna chiave musicale, che deve essere collocata prima del primo accordo.
-Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale all&apos;inizio del brano. Ad esempio: [=SOL]
+        <translation>Nessuna chiave musicale è stata rilevata per questo brano, dovrebbe essere posizionata prima del primo accordo.
+Per un&apos;esperienza ottimale con gli accordi, includi una chiave musicale all&apos;inizio del brano. Ad esempio: [=SOL]
 
-È possibile disattivare questo messaggio di avviso nelle impostazioni dei brani.</translation>
+Puoi disattivare questo messaggio di avviso nelle impostazioni dei brani.</translation>
     </message>
 </context>
 <context>
@@ -11054,7 +11062,7 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/wordsofworship.py" line="177"/>
         <source>Invalid Words of Worship song file. Missing {text!r} header.</source>
-        <translation>Il File del brano Words of Worship non è valido. Manca l&apos;intestazione {text!r}.</translation>
+        <translation>Il file dei brani di Words of Worship non è valido. Manca l&apos;intestazione {text!r}.</translation>
     </message>
 </context>
 <context>
@@ -11062,7 +11070,7 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipassistant.py" line="90"/>
         <source>Error reading CSV file.</source>
-        <translation>Errore lettura file CSV.</translation>
+        <translation>Errore durante la lettura del file CSV.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipassistant.py" line="90"/>
@@ -11072,17 +11080,17 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipassistant.py" line="126"/>
         <source>Decoding error: {error}</source>
-        <translation>Errore decodifica: {error}</translation>
+        <translation>Errore di decodifica: {error}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipassistant.py" line="191"/>
         <source>Record {count:d}</source>
-        <translation>Registrazione {count:d}</translation>
+        <translation>Record {count:d}</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipassistant.py" line="136"/>
         <source>File not valid WorshipAssistant CSV format.</source>
-        <translation>Il formato del file CSV WorshipAssistant non è valido.</translation>
+        <translation>Il formato del file CSV di WorshipAssistant non è valido.</translation>
     </message>
 </context>
 <context>
@@ -11090,40 +11098,40 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/lib/importers/worshipcenterpro.py" line="59"/>
         <source>Unable to connect the WorshipCenter Pro database.</source>
-        <translation>Impossibile connettersi all&apos;archivio WorshipCenter Pro</translation>
+        <translation>Impossibile connettersi al database di WorshipCenter Pro.</translation>
     </message>
 </context>
 <context>
     <name>SongsPlugin.ZionWorxImport</name>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="125"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="128"/>
         <source>Error reading CSV file.</source>
-        <translation>Errore lettura file CSV.</translation>
+        <translation>Errore durante la lettura del file CSV.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="83"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="86"/>
         <source>Line {number:d}: {error}</source>
         <translation>Linea {number:d}: {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="103"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="106"/>
         <source>Record {index}</source>
-        <translation>Registrazione {index}</translation>
+        <translation>Record {index}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="103"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="106"/>
         <source>Decoding error: {error}</source>
         <translation>Errore di decodifica: {error}</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="108"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="111"/>
         <source>File not valid ZionWorx CSV format.</source>
-        <translation>Il formato del file CSV ZionWorx non è valido.</translation>
+        <translation>Il formato del file CSV di ZionWorx non è valido.</translation>
     </message>
     <message>
-        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="122"/>
+        <location filename="../../openlp/plugins/songs/lib/importers/zionworx.py" line="125"/>
         <source>Record %d</source>
-        <translation>Registrazione %d\</translation>
+        <translation>Record %d</translation>
     </message>
 </context>
 <context>
@@ -11136,7 +11144,7 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="140"/>
         <source>This wizard will help you to remove duplicate songs from the song database. You will have a chance to review every potential duplicate song before it is deleted. So no songs will be deleted without your explicit approval.</source>
-        <translation>Questa procedura guidata vi aiuterà a cercare ed eventualmente rimuovere nell&apos;archivio eventuali brani doppi. Avrete la possibilità di rivedere ogni possibile brano prima che possa essere eliminato. Nessun brano potrà essere così eliminato senza il consenso esplicito.</translation>
+        <translation>Questa procedura guidata ti aiuterà a rimuovere i brani duplicati dal database. Avrai la possibilità di rivedere ogni potenziale brano duplicato prima dell&apos;eliminazione. Quindi nessun brano verrà cancellato senza il tuo consenso esplicito.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="145"/>
@@ -11146,7 +11154,7 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="146"/>
         <source>Please wait while your songs database is analyzed.</source>
-        <translation>Si prega di attendere mentre viene analizzato l&apos;archivio dei brani.</translation>
+        <translation>Attendi mentre il database dei brani viene analizzato.</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="148"/>
@@ -11156,7 +11164,7 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="155"/>
         <source>Review duplicate songs ({current}/{total})</source>
-        <translation>Verifica i brani duplicati  ({current}/{total})</translation>
+        <translation>Verifica dei brani duplicati ({current}/{total})</translation>
     </message>
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="221"/>
@@ -11166,925 +11174,925 @@ Per un&apos;esperienza ottimale con gli accordi, includere una chiave musicale a
     <message>
         <location filename="../../openlp/plugins/songs/forms/duplicatesongremovalform.py" line="221"/>
         <source>No duplicate songs have been found in the database.</source>
-        <translation>Non sono stati trovati brani duplicati nell&apos;archivio.</translation>
+        <translation>Nessun brano duplicato è stato trovato nel database.</translation>
     </message>
 </context>
 <context>
     <name>common.languages</name>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>(Afan) Oromo</source>
         <comment>Language code: om</comment>
         <translation>(Afan) Oromo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Abkhazian</source>
         <comment>Language code: ab</comment>
         <translation>Abcaso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Afar</source>
         <comment>Language code: aa</comment>
         <translation>Afar</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Afrikaans</source>
         <comment>Language code: af</comment>
-        <translation>Sud Africano</translation>
+        <translation>Afrikaans</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Albanian</source>
         <comment>Language code: sq</comment>
         <translation>Albanese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Amharic</source>
         <comment>Language code: am</comment>
         <translation>Amarico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Amuzgo</source>
         <comment>Language code: amu</comment>
         <translation>Amuzgo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Ancient Greek</source>
         <comment>Language code: grc</comment>
         <translation>Greco Antico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Arabic</source>
         <comment>Language code: ar</comment>
         <translation>Arabo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Armenian</source>
         <comment>Language code: hy</comment>
         <translation>Armeno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Assamese</source>
         <comment>Language code: as</comment>
         <translation>Assamese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Aymara</source>
         <comment>Language code: ay</comment>
-        <translation>Aimara</translation>
+        <translation>Aymara</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Azerbaijani</source>
         <comment>Language code: az</comment>
-        <translation>Azerbaigiano</translation>
+        <translation>Azero</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bashkir</source>
         <comment>Language code: ba</comment>
-        <translation>Bashkir - Haitiano</translation>
+        <translation>Bashkir</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Basque</source>
         <comment>Language code: eu</comment>
         <translation>Basco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bengali</source>
         <comment>Language code: bn</comment>
-        <translation>Bengalese</translation>
+        <translation>Bengali</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bhutani</source>
         <comment>Language code: dz</comment>
-        <translation>Bhutanese</translation>
+        <translation>Bhutani</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bihari</source>
         <comment>Language code: bh</comment>
         <translation>Bihari</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bislama</source>
         <comment>Language code: bi</comment>
         <translation>Bislama</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Breton</source>
         <comment>Language code: br</comment>
         <translation>Bretone</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Bulgarian</source>
         <comment>Language code: bg</comment>
         <translation>Bulgaro</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Burmese</source>
         <comment>Language code: my</comment>
-        <translation>Burmese</translation>
+        <translation>Birmano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Byelorussian</source>
         <comment>Language code: be</comment>
         <translation>Bielorusso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Cakchiquel</source>
         <comment>Language code: cak</comment>
         <translation>Cakchiquel</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Cambodian</source>
         <comment>Language code: km</comment>
-        <translation>Cambogiano</translation>
+        <translation>Cambodian</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Catalan</source>
         <comment>Language code: ca</comment>
         <translation>Catalano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Chinese</source>
         <comment>Language code: zh</comment>
         <translation>Cinese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Comaltepec Chinantec</source>
         <comment>Language code: cco</comment>
-        <translation>Comaltepeco Chinanteco </translation>
+        <translation>Comaltepec Chinantec</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Corsican</source>
         <comment>Language code: co</comment>
         <translation>Corso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Croatian</source>
         <comment>Language code: hr</comment>
         <translation>Croato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Czech</source>
         <comment>Language code: cs</comment>
         <translation>Ceco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Danish</source>
         <comment>Language code: da</comment>
         <translation>Danese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Dutch</source>
         <comment>Language code: nl</comment>
         <translation>Olandese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>English</source>
         <comment>Language code: en</comment>
         <translation>Inglese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Esperanto</source>
         <comment>Language code: eo</comment>
         <translation>Esperanto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Estonian</source>
         <comment>Language code: et</comment>
         <translation>Estone</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Faeroese</source>
         <comment>Language code: fo</comment>
-        <translation>Faeroese</translation>
+        <translation>Faroese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Fiji</source>
         <comment>Language code: fj</comment>
-        <translation>Fiji</translation>
+        <translation>Fijiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Finnish</source>
         <comment>Language code: fi</comment>
         <translation>Finlandese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>French</source>
         <comment>Language code: fr</comment>
         <translation>Francese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Frisian</source>
         <comment>Language code: fy</comment>
         <translation>Frisone</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Galician</source>
         <comment>Language code: gl</comment>
         <translation>Galiziano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Georgian</source>
         <comment>Language code: ka</comment>
         <translation>Georgiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>German</source>
         <comment>Language code: de</comment>
         <translation>Tedesco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Greek</source>
         <comment>Language code: el</comment>
         <translation>Greco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Greenlandic</source>
         <comment>Language code: kl</comment>
-        <translation>Groelandese</translation>
+        <translation>Groenlandese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Guarani</source>
         <comment>Language code: gn</comment>
         <translation>Guarani</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Gujarati</source>
         <comment>Language code: gu</comment>
         <translation>Gujarati</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Haitian Creole</source>
         <comment>Language code: ht</comment>
-        <translation>Creolo Haitiano</translation>
+        <translation>Creolo haitiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Hausa</source>
         <comment>Language code: ha</comment>
         <translation>Hausa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Hebrew (former iw)</source>
         <comment>Language code: he</comment>
-        <translation>Ebraico (antico)</translation>
+        <translation>Ebraico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Hiligaynon</source>
         <comment>Language code: hil</comment>
-        <translation>Ilongo</translation>
+        <translation>Hiligaynon</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Hindi</source>
         <comment>Language code: hi</comment>
         <translation>Hindi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Hungarian</source>
         <comment>Language code: hu</comment>
         <translation>Ungherese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Icelandic</source>
         <comment>Language code: is</comment>
         <translation>Islandese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Indonesian (former in)</source>
         <comment>Language code: id</comment>
-        <translation>Indonesiano (primo)</translation>
+        <translation>Indonesiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Interlingua</source>
         <comment>Language code: ia</comment>
         <translation>Interlingua</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Interlingue</source>
         <comment>Language code: ie</comment>
         <translation>Interlingue</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Inuktitut (Eskimo)</source>
         <comment>Language code: iu</comment>
-        <translation>Eschimese ()</translation>
+        <translation>Inuktitut (Eskimo)</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Inupiak</source>
         <comment>Language code: ik</comment>
-        <translation>Inuktitut</translation>
+        <translation>Inupiaq</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Irish</source>
         <comment>Language code: ga</comment>
         <translation>Irlandese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Italian</source>
         <comment>Language code: it</comment>
         <translation>Italiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Jakalteko</source>
         <comment>Language code: jac</comment>
-        <translation>Jacalteco</translation>
+        <translation>Jakalteko</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Japanese</source>
         <comment>Language code: ja</comment>
         <translation>Giapponese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Javanese</source>
         <comment>Language code: jw</comment>
         <translation>Giavanese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>K&apos;iche&apos;</source>
         <comment>Language code: quc</comment>
-        <translation>Quiché</translation>
+        <translation>K&apos;iche&apos;</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kannada</source>
         <comment>Language code: kn</comment>
         <translation>Kannada</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kashmiri</source>
         <comment>Language code: ks</comment>
         <translation>Kashmiri</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kazakh</source>
         <comment>Language code: kk</comment>
-        <translation>Kazaco</translation>
+        <translation>Kazako</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kekchí </source>
         <comment>Language code: kek</comment>
         <translation>Kekchí </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kinyarwanda</source>
         <comment>Language code: rw</comment>
-        <translation>Kinyarwanda - Ruandese </translation>
+        <translation>Kinyarwanda</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kirghiz</source>
         <comment>Language code: ky</comment>
         <translation>Kirghiso</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kirundi</source>
         <comment>Language code: rn</comment>
         <translation>Rundi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Korean</source>
         <comment>Language code: ko</comment>
         <translation>Coreano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Kurdish</source>
         <comment>Language code: ku</comment>
         <translation>Curdo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Laothian</source>
         <comment>Language code: lo</comment>
-        <translation>Laotiano</translation>
+        <translation>Lao</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Latin</source>
         <comment>Language code: la</comment>
         <translation>Latino</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Latvian, Lettish</source>
         <comment>Language code: lv</comment>
         <translation>Lettone</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Lingala</source>
         <comment>Language code: ln</comment>
         <translation>Lingala</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Lithuanian</source>
         <comment>Language code: lt</comment>
         <translation>Lituano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Macedonian</source>
         <comment>Language code: mk</comment>
         <translation>Macedone</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Malagasy</source>
         <comment>Language code: mg</comment>
         <translation>Malgascio</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Malay</source>
         <comment>Language code: ms</comment>
-        <translation>Malese</translation>
+        <translation>Malay</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Malayalam</source>
         <comment>Language code: ml</comment>
         <translation>Malayalam</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Maltese</source>
         <comment>Language code: mt</comment>
         <translation>Maltese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Mam</source>
         <comment>Language code: mam</comment>
         <translation>Mam</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Maori</source>
         <comment>Language code: mi</comment>
-        <translation>Maori</translation>
+        <translation>Māori</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Maori</source>
         <comment>Language code: mri</comment>
-        <translation>Maori</translation>
+        <translation>Māori</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Marathi</source>
         <comment>Language code: mr</comment>
         <translation>Marathi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Moldavian</source>
         <comment>Language code: mo</comment>
         <translation>Moldavo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Mongolian</source>
         <comment>Language code: mn</comment>
         <translation>Mongolo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Nahuatl</source>
         <comment>Language code: nah</comment>
         <translation>Nahuatl</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Nauru</source>
         <comment>Language code: na</comment>
-        <translation>Nauruano</translation>
+        <translation>Nauru</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Nepali</source>
         <comment>Language code: ne</comment>
         <translation>Nepalese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Norwegian</source>
         <comment>Language code: no</comment>
         <translation>Norvegese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Occitan</source>
         <comment>Language code: oc</comment>
         <translation>Occitano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Oriya</source>
         <comment>Language code: or</comment>
         <translation>Oriya</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Pashto, Pushto</source>
         <comment>Language code: ps</comment>
-        <translation>Afgano, Pushtu</translation>
+        <translation>Pashto, Pushto</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Persian</source>
         <comment>Language code: fa</comment>
-        <translation>Farsi</translation>
+        <translation>Persiano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Plautdietsch</source>
         <comment>Language code: pdt</comment>
         <translation>Plautdietsch</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Polish</source>
         <comment>Language code: pl</comment>
         <translation>Polacco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Portuguese</source>
         <comment>Language code: pt</comment>
         <translation>Portoghese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Punjabi</source>
         <comment>Language code: pa</comment>
         <translation>Punjabi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Quechua</source>
         <comment>Language code: qu</comment>
         <translation>Quechua</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Rhaeto-Romance</source>
         <comment>Language code: rm</comment>
-        <translation>Ladino Retoromanze</translation>
+        <translation>Reto-romanzo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Romanian</source>
         <comment>Language code: ro</comment>
-        <translation>Rumeno</translation>
+        <translation>Romeno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Russian</source>
         <comment>Language code: ru</comment>
         <translation>Russo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Samoan</source>
         <comment>Language code: sm</comment>
-        <translation>Samoana</translation>
+        <translation>Samoano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Sangro</source>
         <comment>Language code: sg</comment>
-        <translation>Sangro</translation>
+        <translation>Sango</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Sanskrit</source>
         <comment>Language code: sa</comment>
         <translation>Sanscrito</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Scots Gaelic</source>
         <comment>Language code: gd</comment>
         <translation>Scozzese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Serbian</source>
         <comment>Language code: sr</comment>
         <translation>Serbo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Serbo-Croatian</source>
         <comment>Language code: sh</comment>
         <translation>Serbo-Croato</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Sesotho</source>
         <comment>Language code: st</comment>
-        <translation>Sotho </translation>
+        <translation>Sesotho</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Setswana</source>
         <comment>Language code: tn</comment>
         <translation>Tswana </translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Shona</source>
         <comment>Language code: sn</comment>
         <translation>Shona</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Sindhi</source>
         <comment>Language code: sd</comment>
         <translation>Sindhi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Singhalese</source>
         <comment>Language code: si</comment>
-        <translation>Cingalese</translation>
+        <translation>Singalese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Siswati</source>
         <comment>Language code: ss</comment>
-        <translation>Tswana </translation>
+        <translation>Swati</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Slovak</source>
         <comment>Language code: sk</comment>
         <translation>Slovacco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Slovenian</source>
         <comment>Language code: sl</comment>
         <translation>Sloveno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Somali</source>
         <comment>Language code: so</comment>
         <translation>Somalo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Spanish</source>
         <comment>Language code: es</comment>
         <translation>Spagnolo</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Sudanese</source>
         <comment>Language code: su</comment>
-        <translation>Sudanese</translation>
+        <translation>Sondanese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Swahili</source>
         <comment>Language code: sw</comment>
         <translation>Swahili</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Swedish</source>
         <comment>Language code: sv</comment>
         <translation>Svedese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tagalog</source>
         <comment>Language code: tl</comment>
-        <translation>Filippino</translation>
+        <translation>Tagalog</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tajik</source>
         <comment>Language code: tg</comment>
         <translation>Tagico</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tamil</source>
         <comment>Language code: ta</comment>
         <translation>Tamil</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tatar</source>
         <comment>Language code: tt</comment>
         <translation>Tataro</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tegulu</source>
         <comment>Language code: te</comment>
-        <translation>Tegulu</translation>
+        <translation>Telugu</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Thai</source>
         <comment>Language code: th</comment>
-        <translation>Tailandese</translation>
+        <translation>Thai</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tibetan</source>
         <comment>Language code: bo</comment>
         <translation>Tibetano</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tigrinya</source>
         <comment>Language code: ti</comment>
-        <translation>Tigrinya</translation>
+        <translation>Tigrino</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tonga</source>
         <comment>Language code: to</comment>
         <translation>Tonga</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Tsonga</source>
         <comment>Language code: ts</comment>
         <translation>Tsonga</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Turkish</source>
         <comment>Language code: tr</comment>
         <translation>Turco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Turkmen</source>
         <comment>Language code: tk</comment>
-        <translation>Turkmeno</translation>
+        <translation>Turcmeno</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Twi</source>
         <comment>Language code: tw</comment>
         <translation>Twi</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Uigur</source>
         <comment>Language code: ug</comment>
-        <translation>Uiguri</translation>
+        <translation>Uighuro</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Ukrainian</source>
         <comment>Language code: uk</comment>
         <translation>Ucraino</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Urdu</source>
         <comment>Language code: ur</comment>
         <translation>Urdu</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Uspanteco</source>
         <comment>Language code: usp</comment>
         <translation>Uspanteco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Uzbek</source>
         <comment>Language code: uz</comment>
-        <translation>Uzbeco</translation>
+        <translation>Usbeco</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Vietnamese</source>
         <comment>Language code: vi</comment>
         <translation>Vietnamita</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Volapuk</source>
         <comment>Language code: vo</comment>
         <translation>Volapük</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Welch</source>
         <comment>Language code: cy</comment>
         <translation>Gallese</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Wolof</source>
         <comment>Language code: wo</comment>
         <translation>Wolof</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Xhosa</source>
         <comment>Language code: xh</comment>
-        <translation>Xosa</translation>
+        <translation>Xhosa</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Yiddish (former ji)</source>
         <comment>Language code: yi</comment>
-        <translation>Giudeo (tedesco)</translation>
+        <translation>Yiddish</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Yoruba</source>
         <comment>Language code: yo</comment>
         <translation>Yoruba</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Zhuang</source>
         <comment>Language code: za</comment>
         <translation>Zhuang</translation>
     </message>
     <message>
-        <location filename="../../openlp/core/common/i18n.py" line="55"/>
+        <location filename="../../openlp/core/common/i18n.py" line="57"/>
         <source>Zulu</source>
         <comment>Language code: zu</comment>
         <translation>Zulu</translation>

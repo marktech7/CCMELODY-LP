@@ -32,6 +32,7 @@ from time import sleep
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
+from openlp.core.common.mixins import LogMixin
 from openlp.core.common.platform import is_linux, is_macosx, is_win
 from openlp.core.display.screens import ScreenList
 from openlp.core.lib.ui import critical_error_message_box
@@ -83,7 +84,7 @@ if is_linux() and 'pytest' not in sys.argv[0] and get_vlc():
         log.exception('Failed to run XInitThreads(), VLC might not work properly!')
 
 
-class VlcPlayer(MediaPlayer):
+class VlcPlayer(MediaPlayer, LogMixin):
     """
     A specialised version of the MediaPlayer class, which provides a VLC display.
     """
@@ -133,7 +134,7 @@ class VlcPlayer(MediaPlayer):
             controller.vlc_instance = vlc.Instance(command_line_options)
             if not controller.vlc_instance:
                 return
-        log.debug(f"VLC version: {vlc.libvlc_get_version()}")
+        self.log_debug(f"VLC version: {vlc.libvlc_get_version()}")
         # creating an empty vlc media player
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
         controller.vlc_widget.resize(controller.size())
@@ -172,7 +173,7 @@ class VlcPlayer(MediaPlayer):
         """
         if not controller.vlc_instance:
             return False
-        log.debug('load video in VLC Controller')
+        self.log_debug('load video in VLC Controller')
         path = None
         if file and not controller.media_info.media_type == MediaType.Stream:
             path = os.path.normcase(file)
@@ -201,7 +202,7 @@ class VlcPlayer(MediaPlayer):
                 path = '/' + path
             dvd_location = 'dvd://' + path + '#' + controller.media_info.title_track
             controller.vlc_media = controller.vlc_instance.media_new_location(dvd_location)
-            log.debug(f"vlc dvd load: {dvd_location}")
+            self.log_debug(f"vlc dvd load: {dvd_location}")
             controller.vlc_media.add_option(f"start-time={int(controller.media_info.start_time // 1000)}")
             controller.vlc_media.add_option(f"stop-time={int(controller.media_info.end_time // 1000)}")
             controller.vlc_media_player.set_media(controller.vlc_media)
@@ -210,10 +211,11 @@ class VlcPlayer(MediaPlayer):
             self.media_state_wait(controller, VlCState.Playing)
             if controller.media_info.audio_track > 0:
                 res = controller.vlc_media_player.audio_set_track(controller.media_info.audio_track)
-                log.debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track) + ' ' + str(res))
+                self.log_debug('vlc play, audio_track set: ' + str(controller.media_info.audio_track) + ' ' + str(res))
             if controller.media_info.subtitle_track > 0:
                 res = controller.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
-                log.debug('vlc play, subtitle_track set: ' + str(controller.media_info.subtitle_track) + ' ' + str(res))
+                self.log_debug('vlc play, subtitle_track set: ' +
+                               str(controller.media_info.subtitle_track) + ' ' + str(res))
         elif controller.media_info.media_type == MediaType.Stream:
             controller.vlc_media = controller.vlc_instance.media_new_location(file[0])
             controller.vlc_media.add_options(file[1])
@@ -269,7 +271,7 @@ class VlcPlayer(MediaPlayer):
         :param output_display: The display where the media is
         :return:
         """
-        log.debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
+        self.log_debug('vlc play, mediatype: ' + str(controller.media_info.media_type))
         threading.Thread(target=controller.vlc_media_player.play).start()
         if not self.media_state_wait(controller, VlCState.Playing):
             return False

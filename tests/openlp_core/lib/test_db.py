@@ -104,7 +104,7 @@ def test_get_upgrade_op():
         MockedOperations.assert_called_with(mocked_context)
 
 
-def test_delete_database_without_db_file_name():
+def test_delete_database_without_db_file_name(registry):
     """
     Test that the ``delete_database`` function removes a database file, without the file name parameter
     """

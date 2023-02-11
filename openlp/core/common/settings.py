@@ -787,7 +787,10 @@ class Settings(QtCore.QSettings):
             # An empty dictionary saved to the settings results in a None type being returned.
             elif isinstance(default_value, dict):
                 return {}
-        elif isinstance(setting, str):
+        elif isinstance(setting, (str, bytes)):
+            if isinstance(setting, bytes):
+                # convert to str
+                setting = setting.decode('utf8')
             if 'json_meta' in setting or '__Path__' in setting or setting.startswith('{'):
                 return json.loads(setting, cls=OpenLPJSONDecoder)
         # Convert the setting to the correct type.

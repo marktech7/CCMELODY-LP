@@ -346,7 +346,7 @@ describe("Screen Visibility", function () {
       done();
     }, TRANSITION_TIMEOUT);
   });
-  
+
   it("should trigger dispatchEvent when toBlack(eventName) is called with an event parameter", function (done) {
     var testEventName = 'event_33';
     displayWatcher.dispatchEvent = function(eventName) {
@@ -959,10 +959,33 @@ describe("Display.setImageSlides", function () {
     expect(Display._slides["1"]).toEqual(1);
     expect($(".slides > section > section").length).toEqual(2);
     expect($(".slides > section > section > img").length).toEqual(2);
-    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg")
-    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
-    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg")
-    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;")
+    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg");
+    expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;");
+    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg");
+    expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;");
+    expect(Reveal.sync).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe("Display.setFullscreenImage", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    var slides_container = _createDiv({"class": "slides"});
+    var footer_container = _createDiv({"class": "footer"});
+    Display._slidesContainer = slides_container;
+    Display._footerContainer = footer_container;
+    Display._slides = {};
+  });
+
+  it("should set a fullscreen image", function () {
+    var image = "file:///openlp1.jpg";
+    let bg_color = "#000";
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.setFullscreenImage(bg_color, image);
+
+    expect($(".slides > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg");
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
   });
 });

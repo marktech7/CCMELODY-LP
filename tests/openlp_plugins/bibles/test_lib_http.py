@@ -22,179 +22,194 @@
     Package to test the openlp.plugin.bible.lib.https package.
 """
 import os
-from unittest import TestCase
 from unittest.mock import MagicMock
 
 import pytest
 
-from openlp.core.common.registry import Registry
-from openlp.core.common.settings import Settings
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
-IS_CI = 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ
+
+if 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ:
+    pytest.skip('Skip Bible HTTP tests to prevent GitLab CI from being blacklisted', allow_module_level=True)
 
 
-@pytest.mark.skipif(IS_CI, reason='Skip Bible HTTP tests to prevent GitLab CI from being blacklisted')
-class TestBibleHTTP(TestCase):
+@pytest.fixture
+def bg_extract(settings, registry):
+    """A fixture to return a BibleGateway extractor"""
+    registry.register('service_list', MagicMock())
+    registry.register('main_window', MagicMock())
+    bg = BGExtract()
+    yield bg
 
-    def setUp(self):
-        """
-        Set up the Registry
-        """
-        Registry.create()
-        Registry().register('service_list', MagicMock())
-        Registry().register('application', MagicMock())
-        Registry().register('main_window', MagicMock())
-        Registry().register('settings', Settings())
 
-    def test_bible_gateway_extract_books(self):
-        """
-        Test the Bible Gateway retrieval of book list for NIV bible
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = BGExtract()
+@pytest.fixture
+def cw_extract(settings, registry):
+    """A fixture to return a Crosswalk extractor"""
+    registry.register('service_list', MagicMock())
+    registry.register('main_window', MagicMock())
+    cw = CWExtract()
+    yield cw
 
-        # WHEN: The Books list is called
-        books = handler.get_books_from_http('NIV')
 
-        # THEN: We should get back a valid service item
-        assert len(books) == 66, 'The bible should not have had any books added or removed'
-        assert books[0] == 'Genesis', 'The first bible book should be Genesis'
+@pytest.fixture
+def bs_extract(settings, registry):
+    """A fixture to return a BibleServer extractor"""
+    registry.register('service_list', MagicMock())
+    registry.register('main_window', MagicMock())
+    bs = BSExtract()
+    yield bs
 
-    def test_bible_gateway_extract_books_support_redirect(self):
-        """
-        Test the Bible Gateway retrieval of book list for DN1933 bible with redirect (bug 1251437)
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = BGExtract()
 
-        # WHEN: The Books list is called
-        books = handler.get_books_from_http('DN1933')
+def test_biblegateway_get_bibles(bg_extract):
+    """
+    Test getting list of bibles from BibleGateway.com
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: downloading bible list from Crosswalk
+    bibles = bg_extract.get_bibles_from_http()
 
-        # THEN: We should get back a valid service item
-        assert len(books) == 66, 'This bible should have 66 books'
+    # THEN: The list should not be None, and some known bibles should be there
+    assert bibles is not None
+    assert ('Holman Christian Standard Bible (HCSB)', 'HCSB', 'en') in bibles
 
-    def test_bible_gateway_extract_verse(self):
-        """
-        Test the Bible Gateway retrieval of verse list for NIV bible John 3
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = BGExtract()
 
-        # WHEN: The Books list is called
-        results = handler.get_bible_chapter('NIV', 'John', 3)
+def test_bible_gateway_extract_books(bg_extract):
+    """
+    Test the Bible Gateway retrieval of book list for NIV bible
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    books = bg_extract.get_books_from_http('NIV')
 
-        # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+    # THEN: We should get back a valid service item
+    assert len(books) == 66, 'The bible should not have had any books added or removed'
+    assert books[0] == 'Genesis', 'The first bible book should be Genesis'
 
-    def test_bible_gateway_extract_verse_nkjv(self):
-        """
-        Test the Bible Gateway retrieval of verse list for NKJV bible John 3
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = BGExtract()
 
-        # WHEN: The Books list is called
-        results = handler.get_bible_chapter('NKJV', 'John', 3)
+def test_bible_gateway_extract_books_support_redirect(bg_extract):
+    """
+    Test the Bible Gateway retrieval of book list for DN1933 bible with redirect (bug 1251437)
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    books = bg_extract.get_books_from_http('DN1933')
 
-        # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+    # THEN: We should get back a valid service item
+    assert len(books) == 66, 'This bible should have 66 books'
 
-    def test_crosswalk_extract_books(self):
-        """
-        Test Crosswalk retrieval of book list for NIV bible
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = CWExtract()
 
-        # WHEN: The Books list is called
-        books = handler.get_books_from_http('niv')
+def test_bible_gateway_extract_verse(bg_extract):
+    """
+    Test the Bible Gateway retrieval of verse list for NIV bible John 3
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    results = bg_extract.get_bible_chapter('NIV', 'John', 3)
 
-        # THEN: We should get back a valid service item
-        assert len(books) == 66, 'The bible should not have had any books added or removed'
+    # THEN: We should get back a valid service item
+    assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
 
-    def test_crosswalk_extract_verse(self):
-        """
-        Test Crosswalk retrieval of verse list for NIV bible John 3
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = CWExtract()
 
-        # WHEN: The Books list is called
-        results = handler.get_bible_chapter('niv', 'john', 3)
+def test_bible_gateway_extract_verse_nkjv(bg_extract):
+    """
+    Test the Bible Gateway retrieval of verse list for NKJV bible John 3
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    results = bg_extract.get_bible_chapter('NKJV', 'John', 3)
 
-        # THEN: We should get back a valid service item
-        assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
+    # THEN: We should get back a valid service item
+    assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
 
-    def test_crosswalk_get_bibles(self):
-        """
-        Test getting list of bibles from Crosswalk.com
-        """
-        # GIVEN: A new Crosswalk extraction class
-        handler = CWExtract()
 
-        # WHEN: downloading bible list from Crosswalk
-        bibles = handler.get_bibles_from_http()
+def test_crosswalk_extract_books(cw_extract):
+    """
+    Test Crosswalk retrieval of book list for NIV bible
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    books = cw_extract.get_books_from_http('niv')
 
-        # THEN: The list should not be None, and some known bibles should be there
-        assert bibles is not None
-        assert ('Giovanni Diodati 1649 (Italian)', 'gdb', 'it') in bibles
+    # THEN: We should get back a valid service item
+    assert len(books) == 66, 'The bible should not have had any books added or removed'
 
-    def test_crosswalk_get_verse_text(self):
-        """
-        Test verse text from Crosswalk.com
-        """
-        # GIVEN: A new Crosswalk extraction class
-        handler = CWExtract()
 
-        # WHEN: downloading NIV Genesis from Crosswalk
-        niv_genesis_chapter_one = handler.get_bible_chapter('niv', 'Genesis', 1)
+def test_crosswalk_extract_verse(cw_extract):
+    """
+    Test Crosswalk retrieval of verse list for NIV bible John 3
+    """
+    # GIVEN: A new Bible Gateway extraction class
+    # WHEN: The Books list is called
+    results = cw_extract.get_bible_chapter('niv', 'john', 3)
 
-        # THEN: The verse list should contain the verses
-        assert niv_genesis_chapter_one.has_verse_list() is True
-        assert 'In the beginning God created the heavens and the earth.' == niv_genesis_chapter_one.verse_list[1], \
-            'The first chapter of genesis should have been fetched.'
+    # THEN: We should get back a valid service item
+    assert len(results.verse_list) == 36, 'The book of John should not have had any verses added or removed'
 
-    def test_bibleserver_get_bibles(self):
-        """
-        Test getting list of bibles from BibleServer.com
-        """
-        # GIVEN: A new Bible Server extraction class
-        handler = BSExtract()
 
-        # WHEN: downloading bible list from bibleserver
-        bibles = handler.get_bibles_from_http()
+def test_crosswalk_get_bibles(cw_extract):
+    """
+    Test getting list of bibles from Crosswalk.com
+    """
+    # GIVEN: A new Crosswalk extraction class
+    # WHEN: downloading bible list from Crosswalk
+    bibles = cw_extract.get_bibles_from_http()
 
-        # THEN: The list should not be None, and some known bibles should be there
-        assert bibles is not None
-        assert ('New Int. Readers Version', 'NIRV', 'en') in bibles
-        assert ('Священное Писание, Восточный перевод', 'CARS', 'ru') in bibles
+    # THEN: The list should not be None, and some known bibles should be there
+    assert bibles is not None
+    assert ('Giovanni Diodati 1649 (Italian)', 'gdb', 'it') in bibles
 
-    def test_bibleserver_get_verse_text(self):
-        """
-        Test verse text from bibleserver.com
-        """
-        # GIVEN: A new Crosswalk extraction class
-        handler = BSExtract()
 
-        # WHEN: downloading NIV Genesis from Crosswalk
-        niv_genesis_chapter_one = handler.get_bible_chapter('NIV', 'Genesis', 1)
+def test_crosswalk_get_verse_text(cw_extract):
+    """
+    Test verse text from Crosswalk.com
+    """
+    # GIVEN: A new Crosswalk extraction class
+    # WHEN: downloading NIV Genesis from Crosswalk
+    niv_genesis_chapter_one = cw_extract.get_bible_chapter('niv', 'Genesis', 1)
 
-        # THEN: The verse list should contain the verses
-        assert niv_genesis_chapter_one.has_verse_list() is True
-        assert 'In the beginning God created the heavens and the earth.' == niv_genesis_chapter_one.verse_list[1], \
-            'The first chapter of genesis should have been fetched.'
+    # THEN: The verse list should contain the verses
+    assert niv_genesis_chapter_one.has_verse_list() is True
+    assert 'In the beginning God created the heavens and the earth.' == niv_genesis_chapter_one.verse_list[1], \
+        'The first chapter of genesis should have been fetched.'
 
-    def test_biblegateway_get_bibles(self):
-        """
-        Test getting list of bibles from BibleGateway.com
-        """
-        # GIVEN: A new Bible Gateway extraction class
-        handler = BGExtract()
 
-        # WHEN: downloading bible list from Crosswalk
-        bibles = handler.get_bibles_from_http()
+def test_bibleserver_get_bibles(bs_extract):
+    """
+    Test getting list of bibles from BibleServer.com
+    """
+    # GIVEN: A new Bible Server extraction class
+    # WHEN: downloading bible list from bibleserver
+    bibles = bs_extract.get_bibles_from_http()
 
-        # THEN: The list should not be None, and some known bibles should be there
-        assert bibles is not None
-        assert ('Holman Christian Standard Bible (HCSB)', 'HCSB', 'en') in bibles
+    # THEN: The list should not be None, and some known bibles should be there
+    assert bibles is not None
+    assert ('New Int. Readers Version', 'NIRV', 'en') in bibles
+    assert ('Священное Писание, Восточный перевод', 'CARS', 'ru') in bibles
+
+
+def test_bibleserver_get_verse_text(bs_extract):
+    """
+    Test verse text from bibleserver.com
+    """
+    # GIVEN: A new Crosswalk extraction class
+    # WHEN: downloading NIV Genesis from Crosswalk
+    niv_genesis_chapter_one = bs_extract.get_bible_chapter('NIV', 'Genesis', 1)
+
+    # THEN: The verse list should contain the verses
+    assert niv_genesis_chapter_one.has_verse_list() is True
+    assert 'In the beginning God created the heavens and the earth.' == niv_genesis_chapter_one.verse_list[1], \
+        'The first chapter of genesis should have been fetched.'
+
+
+def test_bibleserver_get_chapter_with_bridged_verses(bs_extract):
+    """
+    Test verse text from bibleserver.com
+    """
+    # GIVEN: A new Crosswalk extraction class
+    # WHEN: downloading PCB Genesis from BibleServer
+    pcb_genesis_chapter_one = bs_extract.get_bible_chapter('PCB', 'Genesis', 1)
+
+    # THEN: The verse list should contain the verses
+    assert pcb_genesis_chapter_one.has_verse_list() is True
+    assert 7 in pcb_genesis_chapter_one.verse_list
+    assert 8 not in pcb_genesis_chapter_one.verse_list

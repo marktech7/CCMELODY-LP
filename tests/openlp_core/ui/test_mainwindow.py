@@ -831,3 +831,119 @@ def test_update_recent_files_menu(mocked_create_action, mocked_add_actions, Mock
 
     # THEN: There should be no errors
     assert mocked_create_action.call_count == 2
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QProgressDialog')
+def test_show_wait_dialog(MockProcessDialog, main_window_reduced):
+    """Test that the show wait dialog context manager works correctly"""
+    # GIVEN: A mocked out QProgressDialog and a minimal main window
+    mocked_wait_dialog = MagicMock()
+    MockProcessDialog.return_value = mocked_wait_dialog
+
+    # WHEN: Calling _show_wait_dialog()
+    with main_window_reduced._show_wait_dialog('Test', 'This is a test'):
+        pass
+
+    # THEN: The correct methods should have been called
+    MockProcessDialog.assert_called_once_with('This is a test', '', 0, 0, main_window_reduced)
+    mocked_wait_dialog.setWindowTitle.assert_called_once_with('Test')
+    mocked_wait_dialog.setWindowFlag.assert_called_once_with(QtCore.Qt.WindowContextHelpButtonHint, False)
+    mocked_wait_dialog.setWindowModality.assert_called_once_with(QtCore.Qt.WindowModal)
+    mocked_wait_dialog.setAutoClose.assert_called_once_with(False)
+    mocked_wait_dialog.setCancelButton.assert_called_once_with(None)
+    mocked_wait_dialog.show.assert_called_once_with()
+    mocked_wait_dialog.close.assert_called_once_with()
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QApplication')
+def test_wait_for_threads(MockApp, main_window_reduced):
+    """Test that the wait_for_threads() method correctly stops the threads"""
+    # GIVEN: A mocked application, and a reduced main window
+    mocked_http_thread = MagicMock()
+    mocked_http_thread.isRunning.side_effect = [True, True, False, False]
+    mocked_http_worker = MagicMock()
+    mocked_http_worker.stop = MagicMock()
+    main_window_reduced.application.worker_threads = {
+        'http': {'thread': mocked_http_thread, 'worker': mocked_http_worker}
+    }
+
+    # WHEN: _wait_for_threads() is called
+    main_window_reduced._wait_for_threads()
+
+    # THEN: The correct methods should have been called
+    assert MockApp.processEvents.call_count == 2, 'processEvents() should have been called twice'
+    mocked_http_worker.stop.assert_called_once()
+    assert mocked_http_thread.isRunning.call_count == 4, 'isRunning() should have been called 4 times'
+    mocked_http_thread.wait.assert_called_once_with(100)
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QApplication')
+def test_wait_for_threads_no_threads(MockApp, main_window_reduced):
+    """Test that the wait_for_threads() method exits early when there are no threads"""
+    # GIVEN: A mocked application, and a reduced main window
+    main_window_reduced.application.worker_threads = {}
+
+    # WHEN: _wait_for_threads() is called
+    main_window_reduced._wait_for_threads()
+
+    # THEN: The correct methods should have been called
+    assert MockApp.processEvents.call_count == 0, 'processEvents() should not have been called'
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QApplication')
+def test_wait_for_threads_disappearing_thread(MockApp, main_window_reduced):
+    """Test that the wait_for_threads() method correctly ignores threads that resolve themselves"""
+    # GIVEN: A mocked application, and a reduced main window
+    main_window_reduced.application.worker_threads = MagicMock(**{'keys.side_effect': [['http'], []]})
+
+    # WHEN: _wait_for_threads() is called
+    main_window_reduced._wait_for_threads()
+
+    # THEN: The correct methods should have been called
+    assert MockApp.processEvents.call_count == 0, 'processEvents() should not have been called'
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QApplication')
+def test_wait_for_threads_stuck_thread(MockApp, main_window_reduced):
+    """Test that the wait_for_threads() method correctly stops the threads"""
+    # GIVEN: A mocked application, and a reduced main window
+    mocked_http_thread = MagicMock()
+    mocked_http_thread.isRunning.return_value = True
+    mocked_http_worker = MagicMock()
+    mocked_http_worker.stop = MagicMock()
+    main_window_reduced.application.worker_threads = {
+        'http': {'thread': mocked_http_thread, 'worker': mocked_http_worker}
+    }
+
+    # WHEN: _wait_for_threads() is called
+    main_window_reduced._wait_for_threads()
+
+    # THEN: The correct methods should have been called
+    assert MockApp.processEvents.call_count == 51, 'processEvents() should have been called 51 times'
+    mocked_http_worker.stop.assert_called_once()
+    assert mocked_http_thread.isRunning.call_count == 53, 'isRunning() should have been called 53 times'
+    mocked_http_thread.wait.assert_called_with(100)
+    mocked_http_thread.terminate.assert_called_once()
+
+
+@patch('openlp.core.ui.mainwindow.QtWidgets.QApplication')
+def test_wait_for_threads_runtime_error(MockApp, main_window_reduced):
+    """Test that the wait_for_threads() method handles a runtime error"""
+    # GIVEN: A mocked application, and a reduced main window
+    mocked_http_thread = MagicMock()
+    mocked_http_thread.isRunning.side_effect = RuntimeError
+    mocked_http_worker = MagicMock()
+    mocked_http_worker.stop = MagicMock()
+    main_window_reduced.application.worker_threads = {
+        'http': {'thread': mocked_http_thread, 'worker': mocked_http_worker}
+    }
+
+    # WHEN: _wait_for_threads() is called
+    main_window_reduced._wait_for_threads()
+
+    # THEN: The correct methods should have been called
+    assert MockApp.processEvents.call_count == 1, 'processEvents() should have been called once'
+    mocked_http_worker.stop.assert_called_once()
+    assert mocked_http_thread.isRunning.call_count == 1, 'isRunning() should have been called once'
+    mocked_http_thread.wait.assert_not_called()
+    mocked_http_thread.terminate.assert_not_called()

@@ -94,20 +94,18 @@ class WorshipCenterProImport(SongImport):
                     marker_end = verse.find('>')
                     marker = verse[marker_start + 1:marker_end]
                     # Identify the marker type
-                    if 'REFRAIN' in marker or 'CHORUS' in marker:
+                    if marker in ['REFRAIN', 'CHORUS']:
                         marker_type = 'c'
-                    elif 'BRIDGE' in marker:
+                    elif marker == 'BRIDGE':
                         marker_type = 'b'
-                    elif 'PRECHORUS' in marker:
+                    elif marker == 'PRECHORUS':
                         marker_type = 'p'
-                    elif 'END' in marker:
+                    elif marker == 'END':
                         marker_type = 'e'
-                    elif 'INTRO' in marker:
+                    elif marker == 'INTRO':
                         marker_type = 'i'
-                    elif 'TAG' in marker:
+                    elif marker == 'TAG':
                         marker_type = 'o'
-                    else:
-                        marker_type = 'v'
                     # Strip tags from text
                     verse = re.sub('<[^<]+?>', '', verse)
                 self.add_verse(verse.strip(), marker_type)

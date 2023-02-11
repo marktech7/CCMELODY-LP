@@ -453,7 +453,11 @@ class BSExtract(RegistryProperties):
         verses = {}
         for verse in content:
             self.application.process_events()
-            versenumber = int(verse.find('span', 'verse-number__group').get_text().strip())
+            versenumber = verse.find('span', 'verse-number__group').get_text().strip()
+            if '-' in versenumber:
+                # Some translations bundle verses together, see https://gitlab.com/openlp/openlp/-/issues/1104
+                versenumber = versenumber.split('-')[0]
+            versenumber = int(versenumber)
             verses[versenumber] = verse.find('span', 'verse-content--hover').get_text().strip()
         return SearchResults(book_name, chapter, verses)
 

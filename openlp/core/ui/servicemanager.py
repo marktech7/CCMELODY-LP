@@ -29,7 +29,6 @@ import zipfile
 from contextlib import suppress
 from datetime import datetime, timedelta
 from pathlib import Path
-from tempfile import NamedTemporaryFile
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
@@ -690,8 +689,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.log_debug('ServiceManager.save_file - ZIP contents size is %i bytes' % total_size)
         self.main_window.display_progress_bar(1000)
         try:
-            with NamedTemporaryFile(dir=str(file_path.parent), prefix='.') as temp_file, \
-                    zipfile.ZipFile(temp_file, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+            tmp_file_path = str(file_path) + ".saving"
+            with zipfile.ZipFile(tmp_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
                 # First we add service contents..
                 zip_file.writestr('service_data.osj', service_content)
                 self.main_window.increment_progress_bar(service_content_size / total_size * 1000)
@@ -701,11 +700,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     self.main_window.increment_progress_bar(local_file_item.stat().st_size / total_size * 1000)
                 with suppress(FileNotFoundError):
                     file_path.unlink()
-                # Try to link rather than copy to prevent writing another file
-                try:
-                    os.link(temp_file.name, file_path)
-                except OSError:
-                    shutil.copyfile(temp_file.name, file_path)
+            # Move rather than copy to prevent writing another file if possible
+            shutil.move(tmp_file_path, file_path)
             self.settings.setValue('servicemanager/last directory', file_path.parent)
         except (PermissionError, OSError) as error:
             self.log_exception('Failed to save service to disk: {name}'.format(name=file_path))
@@ -795,6 +791,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             # if the filename, directory name, or volume label syntax is incorrect it can cause an exception
             return False
         service_data = None
+        is_broken_file = False
         self.application.set_busy_cursor()
         try:
             # TODO: figure out a way to use the presentation thumbnails from the service file
@@ -832,6 +829,13 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                         # into the root of the service folder.
                         if self.servicefile_version and self.servicefile_version < 3:
                             zip_info.filename = os.path.basename(zip_info.filename.replace('/', os.path.sep))
+                        else:
+                            # Fix an issue with service files created in 2.9.x
+                            fname, ext = os.path.splitext(zip_info.filename)
+                            if not ext and os.path.basename(fname).startswith('.'):
+                                zip_info.filename = fname.replace('/', '')
+                                is_broken_file = True
+                                self.log_debug(f'Fixing file {fname} => {zip_info.filename}')
                         zip_file.extract(zip_info, str(self.service_path))
                     self.main_window.increment_progress_bar(zip_info.compress_size)
                 # Handle the content
@@ -840,6 +844,9 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 self.set_file_name(file_path)
                 self.main_window.add_recent_file(file_path)
                 self.set_modified(False)
+                # If this file was broken due to a bug in 2.9.x, save the file to fix it.
+                if is_broken_file:
+                    self.save_file()
                 self.settings.setValue('servicemanager/last file', file_path)
         except (NameError, OSError, ValidationError, zipfile.BadZipFile):
             self.application.set_normal_cursor()
@@ -1197,15 +1204,16 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Collapses cursor selection on the window Called by the left arrow
         """
         item = self.service_manager_list.currentItem()
-        # Since we only have 2 levels we find them by checking for children
-        if item.childCount():
-            if self.service_manager_list.isExpanded(self.service_manager_list.currentIndex()):
-                self.service_manager_list.collapseItem(item)
-                self.service_manager.collapsed(item)
-        else:  # If selection is lower level
-            self.service_manager_list.collapseItem(item.parent())
-            self.service_manager.collapsed(item.parent())
-            self.service_manager_list.setCurrentItem(item.parent())
+        if item is not None:
+            # Since we only have 2 levels we find them by checking for children
+            if item.childCount():
+                if self.service_manager_list.isExpanded(self.service_manager_list.currentIndex()):
+                    self.service_manager_list.collapseItem(item)
+                    self.service_manager.collapsed(item)
+            else:  # If selection is lower level
+                self.service_manager_list.collapseItem(item.parent())
+                self.service_manager.collapsed(item.parent())
+                self.service_manager_list.setCurrentItem(item.parent())
 
     def on_collapse_all(self):
         """

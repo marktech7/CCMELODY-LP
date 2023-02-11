@@ -497,7 +497,7 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
         if controller.media_info.is_playing and controller.media_info.length > 0:
             controller.media_info.timer += TICK_TIME
             if controller.media_info.timer >= controller.media_info.start_time + controller.media_info.length:
-                if is_looping_playback(controller):
+                if is_looping_playback(controller) or self.is_theme_background:
                     start_again = True
                 else:
                     self.media_stop(controller)
@@ -683,6 +683,9 @@ class MediaController(RegistryBase, LogMixin, RegistryProperties):
                 else:
                     self._media_set_visibility(controller, False)
                 del self.current_media_players[controller.controller_type]
+            controller.mediabar.actions['playbackPlay'].setVisible(True)
+            controller.mediabar.actions['playbackStop'].setDisabled(True)
+            controller.mediabar.actions['playbackPause'].setVisible(False)
 
     def media_hide_msg(self, msg):
         """

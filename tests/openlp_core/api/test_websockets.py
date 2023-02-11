@@ -41,42 +41,6 @@ def worker(settings):
     yield worker
 
 
-@patch('openlp.core.api.websockets.WebSocketWorker')
-@patch('openlp.core.api.websockets.run_thread')
-def test_serverstart(mocked_run_thread, MockWebSocketWorker, registry):
-    """
-    Test the starting of the WebSockets Server with the disabled flag set off
-    """
-    # GIVEN: A new WebSocketServer
-    Registry().set_flag('no_web_server', False)
-    server = WebSocketServer()
-
-    # WHEN: I start the server
-    server.start()
-
-    # THEN: the api environment should have been created
-    assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
-    assert MockWebSocketWorker.call_count == 1, 'The http thread should have been called once'
-
-
-@patch('openlp.core.api.websockets.WebSocketWorker')
-@patch('openlp.core.api.websockets.run_thread')
-def test_serverstart_not_required(mocked_run_thread, MockWebSocketWorker, registry):
-    """
-    Test the starting of the WebSockets Server with the disabled flag set on
-    """
-    # GIVEN: A new WebSocketServer and the server is not required
-    Registry().set_flag('no_web_server', True)
-    server = WebSocketServer()
-
-    # WHEN: I start the server
-    server.start()
-
-    # THEN: the api environment should have not been created
-    assert mocked_run_thread.call_count == 0, 'The qthread should not have been called'
-    assert MockWebSocketWorker.call_count == 0, 'The http thread should not have been called'
-
-
 def test_poller_get_state(poller, settings):
     """
     Test the get_state function returns the correct JSON
@@ -105,50 +69,6 @@ def test_poller_get_state(poller, settings):
     assert poll_json['results']['slide'] == 5, 'The slide return value should be 5'
     assert poll_json['results']['service'] == 21, 'The version return value should be 21'
     assert poll_json['results']['item'] == '23-34-45', 'The item return value should match 23-34-45'
-
-
-@patch('openlp.core.api.websockets.serve')
-@patch('openlp.core.api.websockets.asyncio')
-@patch('openlp.core.api.websockets.log')
-def test_worker_start(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
-    """
-    Test the start function of the worker
-    """
-    # GIVEN: A mocked serve function and event loop
-    mocked_serve.return_value = 'server_thing'
-    event_loop = MagicMock()
-    mocked_asyncio.new_event_loop.return_value = event_loop
-    # WHEN: The start function is called
-    worker.start()
-    # THEN: No error occurs
-    mocked_serve.assert_called_once()
-    event_loop.run_until_complete.assert_called_once_with('server_thing')
-    event_loop.run_forever.assert_called_once_with()
-    mocked_log.exception.assert_not_called()
-    # Because run_forever is mocked, it doesn't stall the thread so close will be called immediately
-    event_loop.close.assert_called_once_with()
-
-
-@patch('openlp.core.api.websockets.serve')
-@patch('openlp.core.api.websockets.asyncio')
-@patch('openlp.core.api.websockets.log')
-def test_worker_start_fail(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
-    """
-    Test the start function of the worker handles a error nicely
-    """
-    # GIVEN: A mocked serve function and event loop. run_until_complete returns a error
-    mocked_serve.return_value = 'server_thing'
-    event_loop = MagicMock()
-    mocked_asyncio.new_event_loop.return_value = event_loop
-    event_loop.run_until_complete.side_effect = Exception()
-    # WHEN: The start function is called
-    worker.start()
-    # THEN: An exception is logged but is handled and the event_loop is closed
-    mocked_serve.assert_called_once()
-    event_loop.run_until_complete.assert_called_once_with('server_thing')
-    event_loop.run_forever.assert_not_called()
-    mocked_log.exception.assert_called_once()
-    event_loop.close.assert_called_once_with()
 
 
 def test_poller_event_attach(poller, settings):
@@ -206,6 +126,102 @@ def test_poller_get_state_is_never_none(poller):
     assert state is not None, 'get_state() return should not be None'
 
 
+@patch('openlp.core.api.websockets.serve')
+@patch('openlp.core.api.websockets.asyncio')
+@patch('openlp.core.api.websockets.log')
+def test_websocket_worker_start(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
+    """
+    Test the start function of the worker
+    """
+    # GIVEN: A mocked serve function and event loop
+    mocked_serve.return_value = 'server_thing'
+    event_loop = MagicMock()
+    mocked_asyncio.new_event_loop.return_value = event_loop
+    # WHEN: The start function is called
+    worker.start()
+    # THEN: No error occurs
+    mocked_serve.assert_called_once()
+    event_loop.run_until_complete.assert_called_once_with('server_thing')
+    event_loop.run_forever.assert_called_once_with()
+    mocked_log.exception.assert_not_called()
+    # Because run_forever is mocked, it doesn't stall the thread so close will be called immediately
+    event_loop.close.assert_called_once_with()
+
+
+@patch('openlp.core.api.websockets.serve')
+@patch('openlp.core.api.websockets.asyncio')
+@patch('openlp.core.api.websockets.log')
+def test_websocket_worker_start_fail(mocked_log, mocked_asyncio, mocked_serve, worker, settings):
+    """
+    Test the start function of the worker handles a error nicely
+    """
+    # GIVEN: A mocked serve function and event loop. run_until_complete returns a error
+    mocked_serve.return_value = 'server_thing'
+    event_loop = MagicMock()
+    mocked_asyncio.new_event_loop.return_value = event_loop
+    event_loop.run_until_complete.side_effect = Exception()
+    # WHEN: The start function is called
+    worker.start()
+    # THEN: An exception is logged but is handled and the event_loop is closed
+    mocked_serve.assert_called_once()
+    event_loop.run_until_complete.assert_called_once_with('server_thing')
+    event_loop.run_forever.assert_not_called()
+    mocked_log.exception.assert_called_once()
+    event_loop.close.assert_called_once_with()
+
+
+def test_websocket_server_bootstrap_post_set_up(settings):
+    """
+    Test that the bootstrap_post_set_up() method calls the start method
+    """
+    # GIVEN: A WebSocketServer with the start() method mocked out
+    Registry().set_flag('no_web_server', False)
+    server = WebSocketServer()
+    server.start = MagicMock()
+
+    # WHEN: bootstrap_post_set_up() is called
+    server.bootstrap_post_set_up()
+
+    # THEN: start() should have been called
+    server.start.assert_called_once_with()
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_websocket_server_start(mocked_run_thread, MockWebSocketWorker, registry):
+    """
+    Test the starting of the WebSockets Server with the disabled flag set off
+    """
+    # GIVEN: A new WebSocketServer
+    Registry().set_flag('no_web_server', False)
+    server = WebSocketServer()
+
+    # WHEN: I start the server
+    server.start()
+
+    # THEN: the api environment should have been created
+    assert mocked_run_thread.call_count == 1, 'The qthread should have been called once'
+    assert MockWebSocketWorker.call_count == 1, 'The http thread should have been called once'
+
+
+@patch('openlp.core.api.websockets.WebSocketWorker')
+@patch('openlp.core.api.websockets.run_thread')
+def test_websocket_server_start_not_required(mocked_run_thread, MockWebSocketWorker, registry):
+    """
+    Test the starting of the WebSockets Server with the disabled flag set on
+    """
+    # GIVEN: A new WebSocketServer and the server is not required
+    Registry().set_flag('no_web_server', True)
+    server = WebSocketServer()
+
+    # WHEN: I start the server
+    server.start()
+
+    # THEN: the api environment should have not been created
+    assert mocked_run_thread.call_count == 0, 'The qthread should not have been called'
+    assert MockWebSocketWorker.call_count == 0, 'The http thread should not have been called'
+
+
 @patch('openlp.core.api.websockets.poller')
 @patch('openlp.core.api.websockets.run_thread')
 def test_websocket_server_connects_to_poller(mock_run_thread, mock_poller, settings):
@@ -245,3 +261,65 @@ def test_websocket_worker_register_connections(mock_run_thread, mock_add_state_t
 
     # THEN: WebSocketWorker state notify function should be called
     mock_add_state_to_queues.assert_called_once_with(mock_state)
+
+
+@patch('openlp.core.api.websockets.poller')
+@patch('openlp.core.api.websockets.log')
+def test_websocket_server_try_poller_hook_signals(mocked_log, mock_poller, settings):
+    """
+    Test if the websocket_server invokes poller.hook_signals
+    """
+    # GIVEN: A mocked poller signal and a server
+    mock_poller.hook_signals.side_effect = Exception
+    Registry().set_flag('no_web_server', False)
+    server = WebSocketServer()
+
+    # WHEN: WebSocketServer is started
+    server.try_poller_hook_signals()
+
+    # THEN: poller_changed should be connected with WebSocketServer and correct handler
+    mock_poller.hook_signals.assert_called_once_with()
+    mocked_log.error.assert_called_once_with('Failed to hook poller signals!')
+
+
+@patch('openlp.core.api.websockets.poller')
+def test_websocket_server_close(mock_poller, settings):
+    """
+    Test that the websocket_server close method works correctly
+    """
+    # GIVEN: A mocked poller signal and a server
+    Registry().set_flag('no_web_server', False)
+    mock_poller.poller_changed = MagicMock()
+    mock_poller.poller_changed.connect = MagicMock()
+    server = WebSocketServer()
+    server.handle_poller_signal = MagicMock()
+    mock_worker = MagicMock()
+    server.worker = mock_worker
+
+    # WHEN: WebSocketServer is started
+    server.close()
+
+    # THEN: poller_changed should be connected with WebSocketServer and correct handler
+    mock_poller.poller_changed.disconnect.assert_called_once_with(server.handle_poller_signal)
+    mock_poller.unhook_signals.assert_called_once_with()
+    mock_worker.stop.assert_called_once_with()
+
+
+@patch('openlp.core.api.websockets.poller')
+def test_websocket_server_close_when_disabled(mock_poller, registry, settings):
+    """
+    Test if the websocket_server close method correctly skips teardown when disabled
+    """
+    # GIVEN: A mocked poller signal and a server
+    Registry().set_flag('no_web_server', True)
+    mock_poller.poller_changed = MagicMock()
+    mock_poller.poller_changed.connect = MagicMock()
+    server = WebSocketServer()
+    server.handle_poller_signal = MagicMock()
+
+    # WHEN: WebSocketServer is started
+    server.close()
+
+    # THEN: poller_changed should be connected with WebSocketServer and correct handler
+    assert mock_poller.poller_changed.disconnect.call_count == 0
+    assert mock_poller.unhook_signals.call_count == 0
