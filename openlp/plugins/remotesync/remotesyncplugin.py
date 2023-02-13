@@ -29,6 +29,9 @@ When synchronizing there is 3 things to do:
 """
 import logging
 import uuid
+import getpass
+import socket
+
 from sqlalchemy.sql import and_
 from PyQt5 import QtWidgets, QtCore
 
@@ -66,6 +69,8 @@ class RemoteSyncPlugin(Plugin):
         self.icon = UiIcons().network_stream
         self.icon_path = self.icon
         self.synchronizer = None
+        self.sync_timer = QtCore.QTimer()
+        self.sync_timer_disabled = False
         State().add_service('remote_sync', self.weight, is_plugin=True)
         State().update_pre_conditions('remote_sync', self.check_pre_conditions())
 
@@ -95,7 +100,11 @@ class RemoteSyncPlugin(Plugin):
             self.remote_sync_icon.setObjectName('remote_sync_icon')
             self.main_window.status_bar.insertPermanentWidget(2, self.remote_sync_icon)
             self.settings_tab.remote_sync_icon = self.remote_sync_icon
-        # TODO: Generate a pc id
+        # Generate a pc id if not already done
+        if not Settings().value('remotesync/folder pc id'):
+            username = getpass.getuser()
+            hostname = socket.gethostname()
+            Settings().setValue('remotesync/folder pc id', '{u}-{h}'.format(u=username, h=hostname))
         self.settings_tab.generate_icon()
         sync_type = Settings().value('remotesync/type')
         if sync_type == SyncType.Folder:
@@ -119,10 +128,15 @@ class RemoteSyncPlugin(Plugin):
         Registry().register_function('synchronize_to_remote', self.push_to_remote)
         Registry().register_function('synchronize_from_remote', self.pull_from_remote)
         Registry().register_function('song_deleted', self.queue_song_for_deletion)
+        # prevent sync timer activation during startup check
+        self.sync_timer_disabled = True
         self.startup_check()
+        self.sync_timer_disabled = False
+        self.sync_timer.timeout.connect(self.synchronize)
+        self.sync_timer.setSingleShot(True)
         if self.synchronizer:
-            # Set a timer to start the processing of the queue in 10 seconds
-            QtCore.QTimer.singleShot(10000, self.synchronize)
+            # Set a timer to start the processing of the queue in 2 seconds
+            self.sync_timer.start(2000)
 
     def finalise(self):
         log.debug('finalise')
@@ -177,7 +191,7 @@ class RemoteSyncPlugin(Plugin):
         self.push_to_remote()
         self.synchronizer.disconnect()
         # Set a timer to start the synchronization again in 10 minutes.
-        QtCore.QTimer.singleShot(600000, self.synchronize)
+        self.sync_timer.start(60000)
 
     def push_to_remote(self):
         """
@@ -240,6 +254,12 @@ class RemoteSyncPlugin(Plugin):
                 # TODO: Handle custom slides
                 pass
 
+    def start_short_sync_timer(self):
+        if not self.sync_timer_disabled:
+            if self.sync_timer.isActive():
+                self.sync_timer.stop()
+            self.sync_timer.start(2000)
+
     def queue_song_for_sync(self, song_id):
         """
         Put song in queue to be sync'ed
@@ -254,6 +274,7 @@ class RemoteSyncPlugin(Plugin):
             queue_item.type = SyncItemType.Song
             queue_item.action = SyncItemAction.Update
             self.manager.save_object(queue_item, True)
+            self.start_short_sync_timer()
 
     def queue_custom_for_sync(self, custom_id):
         """
@@ -269,6 +290,7 @@ class RemoteSyncPlugin(Plugin):
             queue_item.type = SyncItemType.Custom
             queue_item.action = SyncItemAction.Update
             self.manager.save_object(queue_item, True)
+            self.start_short_sync_timer()
 
     def queue_song_for_deletion(self, song_id):
         """
@@ -280,6 +302,7 @@ class RemoteSyncPlugin(Plugin):
         queue_item.type = SyncItemType.Song
         queue_item.action = SyncItemAction.Delete
         self.manager.save_object(queue_item, True)
+        self.start_short_sync_timer()
 
     def queue_custom_for_deletion(self, custom_id):
         """
@@ -291,6 +314,7 @@ class RemoteSyncPlugin(Plugin):
         queue_item.type = SyncItemType.Song
         queue_item.action = SyncItemAction.Delete
         self.manager.save_object(queue_item, True)
+        self.start_short_sync_timer()
 
     def pull_from_remote(self):
         updated = self.synchronizer.get_remote_changes()

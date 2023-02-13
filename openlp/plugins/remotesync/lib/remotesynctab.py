@@ -20,15 +20,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-import os.path
-
-from enum import IntEnum
-from PyQt5 import QtCore, QtGui, QtNetwork, QtWidgets
+from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.enum import FtpType, SyncType
-from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
-from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.settingstab import SettingsTab
@@ -88,14 +83,13 @@ class RemoteSyncTab(SettingsTab):
         self.ftp_secure_radio = QtWidgets.QRadioButton('', self)
         self.ftp_type_radio_group.addButton(self.ftp_secure_radio, FtpType.FtpTls)
         self.ftp_settings_layout.setWidget(1, QtWidgets.QFormLayout.SpanningRole, self.ftp_secure_radio)
-        self.left_layout.addWidget(self.sync_type_group_box)
         # FTP server address
         self.ftp_address_label = QtWidgets.QLabel(self.ftp_settings_group_box)
         self.ftp_address_label.setObjectName('address_label')
-        self.ftp_address_edit = QtWidgets.QLineEdit(self.ftp_settings_group_box)
-        self.ftp_address_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
-        self.ftp_address_edit.setObjectName('address_edit')
-        self.ftp_settings_layout.addRow(self.ftp_address_label, self.ftp_address_edit)
+        self.ftp_server_edit = QtWidgets.QLineEdit(self.ftp_settings_group_box)
+        self.ftp_server_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        self.ftp_server_edit.setObjectName('address_edit')
+        self.ftp_settings_layout.addRow(self.ftp_address_label, self.ftp_server_edit)
         # FTP server username
         self.ftp_username_label = QtWidgets.QLabel(self.ftp_settings_group_box)
         self.ftp_username_label.setObjectName('ftp_username_label')
@@ -153,6 +147,8 @@ class RemoteSyncTab(SettingsTab):
         self.left_layout.addStretch()
         self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
         self.right_layout.addStretch()
+        # Set up the connections and things
+        self.sync_type_radio_group.buttonToggled.connect(self.on_sync_type_radio_group_button_toggled)
 
     def retranslate_ui(self):
         self.sync_type_group_box.setTitle(translate('RemotePlugin.RemoteSyncTab', 'Synchronization Type'))
@@ -180,19 +176,47 @@ class RemoteSyncTab(SettingsTab):
         """
         Load the configuration and update the server configuration if necessary
         """
+        checked_radio_sync_type = self.sync_type_radio_group.button(self.settings.value('remotesync/type'))
+        checked_radio_sync_type.setChecked(True)
+        self.folder_path_edit.path = self.settings.value('remotesync/folder path')
+        checked_radio_ftp_type = self.ftp_type_radio_group.button(self.settings.value('remotesync/ftp type'))
+        checked_radio_ftp_type.setChecked(True)
+        self.ftp_server_edit.setText(self.settings.value('remotesync/ftp server'))
+        self.ftp_username_edit.setText(self.settings.value('remotesync/ftp username'))
+        self.ftp_pswd_edit.setText(self.settings.value('remotesync/ftp password'))
+        self.ftp_folder_edit.setText(self.settings.value('remotesync/ftp data folder'))
         #self.port_spin_box.setValue(Settings().value(self.settings_section + '/port'))
         #self.address_edit.setText(Settings().value(self.settings_section + '/ip address'))
         #self.auth_token.setText(Settings().value(self.settings_section + '/auth token'))
-        pass
 
     def save(self):
         """
         Save the configuration and update the server configuration if necessary
         """
+        self.settings.setValue('remotesync/type', self.sync_type_radio_group.checkedId())
+        self.settings.setValue('remotesync/folder path', self.folder_path_edit.path)
+        self.settings.setValue('remotesync/ftp type', self.ftp_type_radio_group.checkedId())
+        self.settings.setValue('remotesync/ftp server', self.ftp_server_edit.text())
+        self.settings.setValue('remotesync/ftp username', self.ftp_username_edit.text())
+        self.settings.setValue('remotesync/ftp password', self.ftp_pswd_edit.text())
         #Settings().setValue(self.settings_section + '/port', self.port_spin_box.value())
         #Settings().setValue(self.settings_section + '/ip address', self.address_edit.text())
         #Settings().setValue(self.settings_section + '/auth token', self.auth_token.text())
         self.generate_icon()
+
+    def on_sync_type_radio_group_button_toggled(self, button, checked):
+        """
+        Handles the toggled signal on the radio buttons. The signal is emitted twice if a radio butting being toggled on
+        causes another radio button in the group to be toggled off.
+
+        En/Disables the Sync type settings groups depending on the currently selected radio button
+
+        :param QtWidgets.QRadioButton button: The button that has toggled
+        :param bool checked: The buttons new state
+        """
+        group_id = self.sync_type_radio_group.id(button)  # The work around (see above comment)
+        self.folder_settings_group_box.setEnabled(group_id == SyncType.Folder)
+        self.ftp_settings_group_box.setEnabled(group_id == SyncType.Ftp)
 
     def on_send_songs_clicked(self):
         Registry().execute('synchronize_to_remote')

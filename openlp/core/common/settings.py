@@ -405,7 +405,7 @@ class Settings(QtCore.QSettings):
         'remotesync/type': SyncType.Disabled,
         'remotesync/folder path': '',
         'remotesync/folder pc id': None,
-        'remotesync/ftp host': '',
+        'remotesync/ftp server': '',
         'remotesync/ftp type': FtpType.Ftp,
         'remotesync/ftp username': '',
         'remotesync/ftp password': '',

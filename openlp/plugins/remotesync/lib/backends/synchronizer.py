@@ -22,7 +22,6 @@
 
 from sqlalchemy.sql import and_
 
-from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.plugins.remotesync.lib.db import RemoteSyncItem, ConflictItem
 from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics

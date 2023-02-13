@@ -20,10 +20,10 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 
-from enum import IntEnum
 import fnmatch
 from ftplib import FTP, FTP_TLS
 from io import TextIOBase
+from pathlib import Path
 
 from openlp.core.common.enum import FtpType
 from openlp.plugins.remotesync.lib.backends.foldersynchronizer import FolderSynchronizer
@@ -46,6 +46,9 @@ class FtpSynchronizer(FolderSynchronizer):
         self.connect()
         base_folder_content = self._get_file_list(self.base_folder_path, '*')
         self.disconnect()
+        if base_folder_content:
+            return True
+        return False
 
     def initialize_remote(self):
         self.connect()
@@ -67,10 +70,12 @@ class FtpSynchronizer(FolderSynchronizer):
     def _get_file_list(self, path, mask):
         file_list = self.ftp.nlst(path)
         filtered_list = fnmatch.filter(file_list, mask)
-        return filtered_list
+        # The returned list must be a list of Path objects
+        path_filtered_list = [Path(f) for f in filtered_list]
+        return path_filtered_list
 
     def _remove_lock_file(self, lock_filename):
-        self.ftp.remove(lock_filename)
+        self.ftp.remove(str(lock_filename))
 
     def _move_file(self, src, dst):
         self.ftp.move(src, dst)
@@ -78,9 +83,9 @@ class FtpSynchronizer(FolderSynchronizer):
     def _create_file(self, filename, file_content):
         text_stream = TextIOBase()
         text_stream.write(file_content)
-        self.ftp.storbinary('STOR ' + filename, text_stream)
+        self.ftp.storbinary('STOR ' + str(filename), text_stream)
 
     def _read_file(self, filename):
         text_stream = TextIOBase()
-        self.ftp.retrbinary('RETR ' + filename, text_stream, 1024)
+        self.ftp.retrbinary('RETR ' + str(filename), text_stream, 1024)
         return text_stream.read()

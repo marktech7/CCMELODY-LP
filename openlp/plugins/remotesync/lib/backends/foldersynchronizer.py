@@ -20,11 +20,9 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import datetime
-import os
-import glob
 import shutil
-
 import logging
+from pathlib import Path
 
 from openlp.plugins.remotesync.lib.backends.synchronizer import Synchronizer, SyncItemType, ConflictException, \
     LockException, ConflictReason
@@ -68,31 +66,31 @@ class FolderSynchronizer(Synchronizer):
         super(FolderSynchronizer, self).__init__(manager)
         self.base_folder_path = base_folder_path
         self.pc_id = pc_id
-        self.song_folder_path = os.path.join(self.base_folder_path, 'songs')
-        self.song_history_folder_path = os.path.join(self.song_folder_path, 'history')
-        self.song_deleted_folder_path = os.path.join(self.song_folder_path, 'deleted')
-        self.custom_folder_path = os.path.join(self.base_folder_path, 'customs')
-        self.custom_history_folder_path = os.path.join(self.custom_folder_path, 'history')
-        self.custom_deleted_folder_path = os.path.join(self.custom_folder_path, 'deleted')
-        self.service_folder_path = os.path.join(self.base_folder_path, 'services')
+        self.song_folder_path = self.base_folder_path / 'songs'
+        self.song_history_folder_path = self.song_folder_path / 'history'
+        self.song_deleted_folder_path = self.song_folder_path / 'deleted'
+        self.custom_folder_path = self.base_folder_path / 'customs'
+        self.custom_history_folder_path = self.custom_folder_path / 'history'
+        self.custom_deleted_folder_path = self.custom_folder_path / 'deleted'
+        self.service_folder_path = self.base_folder_path / 'services'
 
     def check_configuration(self):
         return True
 
     def check_connection(self):
-        return os.path.exists(self.base_folder_path) and os.path.exists(
-            self.song_history_folder_path) and os.path.exists(self.custom_folder_path)
+        return self.base_folder_path.exists() and self.song_history_folder_path.exists() and \
+            self.custom_folder_path.exists()
 
     def initialize_remote(self):
-        os.makedirs(self.song_history_folder_path, exist_ok=True)
-        os.makedirs(self.custom_folder_path, exist_ok=True)
-        os.makedirs(self.service_folder_path, exist_ok=True)
+        self.song_history_folder_path.mkdir(parents=True, exist_ok=True)
+        self.custom_folder_path.mkdir(parents=True, exist_ok=True)
+        self.service_folder_path.mkdir(parents=True, exist_ok=True)
 
     def _get_file_list(self, path, mask):
-        return glob.glob(os.path.join(path, mask))
+        return list(path.glob(mask))
 
     def _remove_lock_file(self, lock_filename):
-        os.remove(lock_filename)
+        Path(lock_filename).unlink()
 
     def _move_file(self, src, dst):
         shutil.move(src, dst)
@@ -123,14 +121,14 @@ class FolderSynchronizer(Synchronizer):
             if song_file in conflicts:
                 continue
             # Check if this song is already sync'ed
-            filename = os.path.basename(song_file)
+            filename = song_file.name
             filename_elements = filename.split('=', 1)
             uuid = filename_elements[0]
             file_version = filename_elements[1].replace('.xml', '')
             # Detect if there are multiple files for the same song, which would mean that we have a conflict
             files = []
             for song_file2 in song_files:
-                if uuid in song_file2:
+                if uuid in str(song_file2):
                     files.append(song_file2)
             # if more than one song file has the same uuid, then we have a conflict
             if len(files) > 1:
@@ -173,7 +171,7 @@ class FolderSynchronizer(Synchronizer):
         existing_lock_file = self._get_file_list(path, uuid + '.lock*')
         if existing_lock_file:
             log.debug('Found a lock file!')
-            current_lock_id = existing_lock_file[0].split('.lock=')[-1]
+            current_lock_id = str(existing_lock_file[0]).split('.lock=')[-1]
             if first_sync_attempt:
                 # Have we seen this lock before?
                 if current_lock_id == prev_lock_id:
@@ -220,7 +218,7 @@ class FolderSynchronizer(Synchronizer):
             # Handle case with multiple files returned, which indicates a conflict!
             if len(existing_song_files) > 1:
                 raise ConflictException(SyncItemType.Song, song_uuid, ConflictReason.MultipleRemoteEntries)
-            existing_file = os.path.basename(existing_song_files[0])
+            existing_file = existing_song_files[0].name
             filename_elements = existing_file.split('=')
             counter = int(filename_elements[1])
             if last_known_version:
@@ -230,14 +228,14 @@ class FolderSynchronizer(Synchronizer):
                     raise ConflictException(SyncItemType.Song, song_uuid, ConflictReason.VersionMismatch)
             counter += 1
             # Create lock file
-            lock_filename = '{path}.lock={pcid}={counter}'.format(path=os.path.join(self.song_folder_path, song_uuid),
+            lock_filename = '{path}.lock={pcid}={counter}'.format(path=str(self.song_folder_path / song_uuid),
                                                                   pcid=self.pc_id, counter=counter)
             self._create_file(lock_filename, '')
             # Move old file to history folder
-            self._move_file(os.path.join(self.song_folder_path, existing_file), self.song_history_folder_path)
+            self._move_file(self.song_folder_path / existing_file, self.song_history_folder_path)
         else:
             # TODO: Check for missing (deleted) file
-            lock_filename = '{path}.lock={pcid}={counter}'.format(path=os.path.join(self.song_folder_path, song_uuid),
+            lock_filename = '{path}.lock={pcid}={counter}'.format(path=str(self.song_folder_path / song_uuid),
                                                                   pcid=self.pc_id, counter=counter)
             counter += 1
             # Create lock file
@@ -245,8 +243,10 @@ class FolderSynchronizer(Synchronizer):
         # Put xml in file
         version = '{counter}={computer_id}'.format(counter=counter, computer_id=self.pc_id)
         xml = self.open_lyrics.song_to_xml(song, version)
-        new_filename = os.path.join(self.song_folder_path, song_uuid + "=" + version + '.xml')
-        new_tmp_filename = new_filename + '-tmp'
+        basename = song_uuid + "=" + version + '.xml'
+        basename_tmp = basename + '-tmp'
+        new_filename = self.song_folder_path / basename
+        new_tmp_filename = self.song_folder_path / basename_tmp
         self._create_file(new_tmp_filename, xml)
         self._move_file(new_tmp_filename, new_filename)
         # Delete lock file
@@ -268,7 +268,7 @@ class FolderSynchronizer(Synchronizer):
             # Handle case with multiple files returned, which indicates a conflict!
             if len(existing_song_files) > 1:
                 raise ConflictException(SyncItemType.Song, song_uuid, ConflictReason.MultipleRemoteEntries)
-            existing_file = os.path.basename(existing_song_files[0])
+            existing_file = existing_song_files[0].name
             filename_elements = existing_file.split('=', 1)
             song_uuid = filename_elements[0]
             version = filename_elements[1]
@@ -308,11 +308,11 @@ class FolderSynchronizer(Synchronizer):
             # Handle case with multiple files returned, which indicates a conflict!
             if len(existing_song_files) > 1:
                 raise ConflictException(SyncItemType.Song, song_uuid, ConflictReason.MultipleRemoteEntries)
-            existing_file = os.path.basename(existing_song_files[0])
+            existing_file = existing_song_files[0].name
             # Move old file to deleted folder
-            self._move_file(os.path.join(self.song_folder_path, existing_file), self.song_history_folder_path)
+            self._move_file(self.song_folder_path / existing_file, self.song_history_folder_path)
         # Create a file in the deleted-folder
-        delete_filename = os.path.join(self.song_deleted_folder_path, song_uuid)
+        delete_filename = self.song_deleted_folder_path / song_uuid
         self._create_file(delete_filename, '')
 
     def send_custom(self, custom):
