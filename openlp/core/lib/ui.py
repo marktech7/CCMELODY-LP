@@ -306,6 +306,7 @@ def create_case_insensitive_completer(cache):
     """
     completer = QtWidgets.QCompleter(cache)
     completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+    return completer
 
 
 def set_case_insensitive_completer(cache, widget):
@@ -359,12 +360,12 @@ def set_case_insensitive_ignore_diacritics_completer(cache, widget):
     model.setStringList(cache)
     completer = IgnoreDiacriticsCompleter()
     completer.setModel(model)
-    completer.setCompletionRole(ORIGINAL_ITEM_ROLE)
+    completer.setCompletionRole(NORMALIZED_ITEM_ROLE)
     completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
     widget.setCompleter(completer)
 
 
-ORIGINAL_ITEM_ROLE = QtCore.Qt.ItemDataRole.UserRole + 5
+NORMALIZED_ITEM_ROLE = QtCore.Qt.ItemDataRole.UserRole + 5
 
 
 class IgnoreDiacriticsCompleter(QtWidgets.QCompleter):
@@ -382,7 +383,7 @@ class IgnoreDiacriticsStringListModel(QtCore.QStringListModel):
         super().__init__(*args, **kwargs)
 
     def data(self, index: QtCore.QModelIndex, role: int):
-        if role == ORIGINAL_ITEM_ROLE:
+        if role == NORMALIZED_ITEM_ROLE:
             value = super().data(index, QtCore.Qt.ItemDataRole.DisplayRole)
             return normalize_diacritics(value) if can_ignore_diacritics() else value
         else:

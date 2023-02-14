@@ -55,8 +55,8 @@ def test_validate_nonmatching_tags(edit_song_form):
     assert valid is True, "The tags list should be valid"
 
 
-@patch('openlp.plugins.songs.forms.editsongform.set_case_insensitive_completer')
-def test_load_objects(mocked_set_case_insensitive_completer, edit_song_form, settings):
+@patch('openlp.plugins.songs.forms.editsongform.set_case_insensitive_ignore_diacritics_completer')
+def test_load_objects(mocked_set_case_insensitive_ignore_diacritics_completer, edit_song_form, settings):
     """
     Test the _load_objects() method
     """
@@ -83,6 +83,6 @@ def test_load_objects(mocked_set_case_insensitive_completer, edit_song_form, set
     mocked_combo.addItem.assert_called_once_with('Charles')
     mocked_cache.append.assert_called_once_with('Charles')
     mocked_combo.setItemData.assert_called_once_with(0, 1)
-    mocked_set_case_insensitive_completer.assert_called_once_with(mocked_cache, mocked_combo)
+    mocked_set_case_insensitive_ignore_diacritics_completer.assert_called_once_with(mocked_cache, mocked_combo)
     mocked_combo.setCurrentIndex.assert_called_once_with(-1)
     mocked_combo.setCurrentText.assert_called_once_with('')

@@ -552,11 +552,13 @@ def test_build_remote_search(media_item):
 @patch('openlp.plugins.songs.lib.mediaitem.SongBookEntry')
 @patch('openlp.plugins.songs.lib.mediaitem.Song')
 @patch('openlp.plugins.songs.lib.mediaitem.or_')
-def test_entire_song_search(mocked_or, MockedSong, MockedSongBookEntry, MockedBook, media_item):
+def test_entire_song_search(mocked_or, MockedSong, MockedSongBookEntry, MockedBook, media_item, settings):
     """
     Test that searching the entire song does the right queries
     """
     # GIVEN: A song media item, a keyword and some mocks
+    settings.setValue('custom/db type', 'sqlite')
+    settings.setValue('core/disable ignore diacritics', True)
     keyword = 'Jesus'
     mocked_or.side_effect = lambda a, b, c, d, e: ' '.join([a, b, c, d, e])
     MockedSong.search_title.like.side_effect = lambda a: a
@@ -575,6 +577,46 @@ def test_entire_song_search(mocked_or, MockedSong, MockedSongBookEntry, MockedBo
     MockedSongBookEntry.entry.like.assert_called_once_with('%jesus%')
     MockedBook.name.like.assert_called_once_with('%jesus%')
     mocked_or.assert_called_once_with('%jesus%', '%jesus%', '%jesus%', '%jesus%', '%jesus%')
+    media_item.plugin.manager.session.query.assert_called_once_with(MockedSong)
+
+    assert media_item.plugin.manager.session.query.mock_calls[4][0] == '().join().join().filter().all'
+
+
+@patch('openlp.plugins.songs.lib.mediaitem.Book')
+@patch('openlp.plugins.songs.lib.mediaitem.SongBookEntry')
+@patch('openlp.plugins.songs.lib.mediaitem.Song')
+@patch('openlp.plugins.songs.lib.mediaitem.or_')
+@patch('openlp.plugins.songs.lib.mediaitem.func.normalize')
+def test_entire_song_search_ignore_diacritics(mocked_normalize, mocked_or, MockedSong, MockedSongBookEntry, MockedBook,
+                                              media_item, settings):
+    """
+    Test that searching the entire song does the right queries
+    """
+    # GIVEN: A song media item, a keyword and some mocks
+    settings.setValue('custom/db type', 'sqlite')
+    settings.setValue('core/disable ignore diacritics', False)
+    keyword = 'Jesus'
+    mocked_or.side_effect = lambda a, b, c, d, e: ' '.join([a, b, c, d, e])
+    MockedSong.search_title.like.side_effect = lambda a: a
+    MockedSong.search_lyrics.like.side_effect = lambda a: a
+    MockedSong.comments.like.side_effect = lambda a: a
+    MockedSongBookEntry.entry.like.side_effect = lambda a: a
+    MockedBook.name.like.side_effect = lambda a: a
+
+    def normalize(input):
+        if isinstance(input, MagicMock):
+            input.side_effect = lambda a: 'normalize:' + a
+            return input
+        else:
+            return 'normalize:' + input
+    mocked_normalize.side_effect = normalize
+
+    # WHEN: search_entire_song() is called with the keyword
+    media_item.search_entire(keyword)
+
+    # THEN: The correct calls were made
+    mocked_or.assert_called_once_with('normalize:%jesus%', 'normalize:%jesus%', 'normalize:%jesus%',
+                                      'normalize:%jesus%', 'normalize:%jesus%')
     media_item.plugin.manager.session.query.assert_called_once_with(MockedSong)
 
     assert media_item.plugin.manager.session.query.mock_calls[4][0] == '().join().join().filter().all'
