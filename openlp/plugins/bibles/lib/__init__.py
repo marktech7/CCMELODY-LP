@@ -214,7 +214,7 @@ def get_reference_match(match_type):
     return REFERENCE_MATCHES[match_type]
 
 
-def parse_reference(reference, bible, language_selection, book_ref_id=False):
+def parse_reference(reference, bible, language_selection, book_ref_id=False, ignore_diacritics=False):
     r"""
     This is the next generation über-awesome function that takes a person's typed in string and converts it to a list
     of references to be queried from the Bible database files.
@@ -223,6 +223,7 @@ def parse_reference(reference, bible, language_selection, book_ref_id=False):
     :param bible:  A object. The Bible database object.
     :param language_selection:  An int. The language selection the user has chosen in settings section.
     :param book_ref_id: A string. The book reference id.
+    :param : A string. The book reference id.
 
     The reference list is a list of tuples, with each tuple structured like this::
 
@@ -296,7 +297,7 @@ def parse_reference(reference, bible, language_selection, book_ref_id=False):
         log.debug('Matched reference {text}'.format(text=reference))
         book = match.group('book')
         if not book_ref_id:
-            book_ref_ids = bible.get_book_ref_id_by_localised_name(book, language_selection)
+            book_ref_ids = bible.get_book_ref_id_by_localised_name(book, language_selection, ignore_diacritics)
         elif not bible.get_book_by_book_ref_id(book_ref_id):
             return []
         else:

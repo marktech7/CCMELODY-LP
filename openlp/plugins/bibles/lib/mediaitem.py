@@ -739,7 +739,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         self.search_results = []
-        verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text)
+        verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text, ignore_diacritics=True)
         self.search_results = self.plugin.manager.get_verses(self.bible.name, verse_refs, True)
         if self.second_bible and self.search_results:
             self.second_search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
@@ -749,6 +749,8 @@ class BibleMediaItem(MediaManagerItem):
         """
         We are doing a 'Text Search'.
         This search is called on def text_search by 'Search' Text and Combined Searches.
+
+        We're not enabling Ignore Diacritics search mode here due to performance concerns.
         """
         self.search_results = self.plugin.manager.verse_search(self.bible.name, text)
         if self.search_results is None:
