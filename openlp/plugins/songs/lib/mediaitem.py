@@ -30,7 +30,7 @@ from sqlalchemy.sql import and_, or_
 from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.enum import SongSearch
-from openlp.core.common.i18n import UiStrings, get_natural_key, can_ignore_diacritics, translate
+from openlp.core.common.i18n import UiStrings, get_natural_key, can_ignore_diacritics, normalize_diacritics, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.lib import ServiceItemContext, check_item_selected, create_separated_list
@@ -172,7 +172,7 @@ class SongMediaItem(MediaManagerItem):
             log.debug('Titles Search')
             search_string = '%{text}%'.format(text=clean_string(search_keywords))
             if can_ignore_diacritics():
-                filter = func.normalize(Song.search_title).like(func.normalize(search_string))
+                filter = func.normalize(Song.search_title).like(normalize_diacritics(search_string))
             else:
                 filter = Song.search_title.like(search_string)
             search_results = self.plugin.manager.get_all_objects(Song, filter)
@@ -181,7 +181,7 @@ class SongMediaItem(MediaManagerItem):
             log.debug('Lyrics Search')
             search_string = '%{text}%'.format(text=clean_string(search_keywords))
             if can_ignore_diacritics():
-                filter = func.normalize(Song.search_lyrics).like(func.normalize(search_string))
+                filter = func.normalize(Song.search_lyrics).like(normalize_diacritics(search_string))
             else:
                 filter = Song.search_lyrics.like(search_string)
             search_results = self.plugin.manager.get_all_objects(Song, filter)
@@ -190,7 +190,7 @@ class SongMediaItem(MediaManagerItem):
             log.debug('Authors Search')
             search_string = '%{text}%'.format(text=search_keywords)
             if can_ignore_diacritics():
-                filter = func.normalize(Author.display_name).like(search_string)
+                filter = func.normalize(Author.display_name).like(normalize_diacritics(search_string))
             else:
                 filter = Author.display_name.like(search_string)
             search_results = self.plugin.manager.get_all_objects(Author, filter)
@@ -199,7 +199,7 @@ class SongMediaItem(MediaManagerItem):
             log.debug('Topics Search')
             search_string = '%{text}%'.format(text=search_keywords)
             if can_ignore_diacritics():
-                filter = func.normalize(Topic.name).like(func.normalize(search_string))
+                filter = func.normalize(Topic.name).like(normalize_diacritics(search_string))
             else:
                 filter = Topic.name.like(search_string)
             search_results = self.plugin.manager.get_all_objects(Topic, filter)
@@ -210,22 +210,22 @@ class SongMediaItem(MediaManagerItem):
             search_book = '{text}%'.format(text=search_keywords[0])
             search_entry = '{text}%'.format(text=search_keywords[2])
             if can_ignore_diacritics():
-                filter = or_(func.normalize(Book.name).like(func.normalize(search_book)),
-                             SongBookEntry.entry.like(search_entry),
-                             Song.temporary.is_(False))
+                filter = [func.normalize(Book.name).like(normalize_diacritics(search_book)),
+                          SongBookEntry.entry.like(search_entry),
+                          Song.temporary.is_(False)]
             else:
-                filter = or_(Book.name.like(search_book), SongBookEntry.entry.like(search_entry),
-                             Song.temporary.is_(False))
+                filter = [Book.name.like(search_book), SongBookEntry.entry.like(search_entry),
+                          Song.temporary.is_(False)]
             search_results = (self.plugin.manager.session.query(SongBookEntry.entry, Book.name, Song.title, Song.id)
                               .join(Song)
                               .join(Book)
-                              .filter(filter).all())
+                              .filter(*filter).all())
             self.display_results_book(search_results)
         elif search_type == SongSearch.Themes:
             log.debug('Theme Search')
             search_string = '%{text}%'.format(text=search_keywords)
             if can_ignore_diacritics():
-                filters = func.normalize(Song.theme_name).like(func.normalize(search_string))
+                filters = func.normalize(Song.theme_name).like(normalize_diacritics(search_string))
             else:
                 filters = Song.theme_name.like(search_string)
             search_results = self.plugin.manager.get_all_objects(Song, filters)
@@ -234,7 +234,8 @@ class SongMediaItem(MediaManagerItem):
             log.debug('Copyright Search')
             search_string = '%{text}%'.format(text=search_keywords)
             if can_ignore_diacritics():
-                filters = and_(func.normalize(Song.copyright).like(func.normalize(search_string)), Song.copyright != '')
+                filters = and_(func.normalize(Song.copyright).like(normalize_diacritics(search_string)),
+                               Song.copyright != '')
             else:
                 filters = and_(Song.copyright.like(search_string), Song.copyright != '')
             search_results = self.plugin.manager.get_all_objects(
@@ -250,12 +251,13 @@ class SongMediaItem(MediaManagerItem):
     def search_entire(self, search_keywords):
         search_string = '%{text}%'.format(text=clean_string(search_keywords))
         if can_ignore_diacritics():
-            filter = or_(func.normalize(Book.name).like(func.normalize(search_string)),
-                         func.normalize(SongBookEntry.entry).like(func.normalize(search_string)),
+            normalized_search_string = normalize_diacritics(search_string)
+            filter = or_(func.normalize(Book.name).like(normalized_search_string),
+                         func.normalize(SongBookEntry.entry).like(normalized_search_string),
                          # hint: search_title contains alternate title
-                         func.normalize(Song.search_title).like(func.normalize(search_string)),
-                         func.normalize(Song.search_lyrics).like(func.normalize(search_string)),
-                         func.normalize(Song.comments).like(func.normalize(search_string)))
+                         func.normalize(Song.search_title).like(normalized_search_string),
+                         func.normalize(Song.search_lyrics).like(normalized_search_string),
+                         func.normalize(Song.comments).like(normalized_search_string))
         else:
             filter = or_(Book.name.like(search_string), SongBookEntry.entry.like(search_string),
                          # hint: search_title contains alternate title

@@ -288,7 +288,7 @@ class BibleDB(Manager):
         """
         log.debug('BibleDB.get_books("{book}")'.format(book=book))
         if ignore_diacritics and can_ignore_diacritics():
-            filter = func.normalize(Book.name).like(func.normalize(book + '%')) if book else None
+            filter = func.normalize(Book.name).like(normalize_diacritics(book + '%')) if book else None
         else:
             filter = Book.name.like(book + '%') if book else None
         return self.get_all_objects(Book, filter_clause=filter, order_by_ref=Book.id)

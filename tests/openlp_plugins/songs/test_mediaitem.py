@@ -595,7 +595,7 @@ def test_entire_song_search_ignore_diacritics(mocked_normalize, mocked_or, Mocke
     # GIVEN: A song media item, a keyword and some mocks
     settings.setValue('custom/db type', 'sqlite')
     settings.setValue('core/enable ignore diacritics', True)
-    keyword = 'Jesus'
+    keyword = 'Jesús'
     mocked_or.side_effect = lambda a, b, c, d, e: ' '.join([a, b, c, d, e])
     MockedSong.search_title.like.side_effect = lambda a: a
     MockedSong.search_lyrics.like.side_effect = lambda a: a
@@ -615,10 +615,9 @@ def test_entire_song_search_ignore_diacritics(mocked_normalize, mocked_or, Mocke
     media_item.search_entire(keyword)
 
     # THEN: The correct calls were made
-    mocked_or.assert_called_once_with('normalize:%jesus%', 'normalize:%jesus%', 'normalize:%jesus%',
-                                      'normalize:%jesus%', 'normalize:%jesus%')
+    mocked_or.assert_called_once_with('%jesus%', '%jesus%', '%jesus%', '%jesus%', '%jesus%')
     media_item.plugin.manager.session.query.assert_called_once_with(MockedSong)
-
+    assert mocked_normalize.call_count == 5  # Called DB normalize function 5 times
     assert media_item.plugin.manager.session.query.mock_calls[4][0] == '().join().join().filter().all'
 
 
