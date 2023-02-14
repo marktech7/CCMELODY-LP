@@ -25,7 +25,7 @@ from PyQt5 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, func, or_
 
 from openlp.core.common.enum import CustomSearch
-from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.i18n import UiStrings, can_ignore_diacritics, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import check_item_selected
 from openlp.core.lib.mediamanageritem import MediaManagerItem
@@ -269,14 +269,20 @@ class CustomMediaItem(MediaManagerItem):
         search_keywords = '%{search}%'.format(search=self.whitespace.sub(' ', self.search_text_edit.displayText()))
         if search_type == CustomSearch.Titles:
             log.debug('Titles Search')
-            search_results = self.plugin.db_manager.get_all_objects(CustomSlide,
-                                                                    CustomSlide.title.like(search_keywords),
+            if can_ignore_diacritics():
+                filter = func.normalize(CustomSlide.title).like(func.normalize(search_keywords))
+            else:
+                filter = CustomSlide.title.like(search_keywords)
+            search_results = self.plugin.db_manager.get_all_objects(CustomSlide, filter,
                                                                     order_by_ref=CustomSlide.title)
             self.load_list(search_results)
         elif search_type == CustomSearch.Themes:
             log.debug('Theme Search')
-            search_results = self.plugin.db_manager.get_all_objects(CustomSlide,
-                                                                    CustomSlide.theme_name.like(search_keywords),
+            if can_ignore_diacritics():
+                filter = func.normalize(CustomSlide.theme_name).like(func.normalize(search_keywords))
+            else:
+                filter = CustomSlide.theme_name.like(search_keywords)
+            search_results = self.plugin.db_manager.get_all_objects(CustomSlide, filter,
                                                                     order_by_ref=CustomSlide.title)
             self.load_list(search_results)
 

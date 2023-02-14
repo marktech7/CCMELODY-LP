@@ -32,7 +32,7 @@ from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, critical_error_message_box, \
-    find_and_set_in_combo_box, set_case_insensitive_completer
+    find_and_set_in_combo_box, set_case_insensitive_ignore_diacritics_completer
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.edits import SearchEdit
 from openlp.plugins.bibles.forms.bibleimportform import BibleImportForm
@@ -423,7 +423,7 @@ class BibleMediaItem(MediaManagerItem):
                 # when auto complete is used and user does not need to add the space manually.
                 books = [book.get_name(language_selection) + ' ' for book in book_data]
                 books.sort(key=get_locale_key)
-        set_case_insensitive_completer(books, self.search_edit)
+        set_case_insensitive_ignore_diacritics_completer(books, self.search_edit)
 
     def on_import_click(self):
         """

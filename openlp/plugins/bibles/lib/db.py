@@ -35,7 +35,7 @@ from sqlalchemy.orm.exc import UnmappedClassError
 from openlp.core.common import clean_filename
 from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.i18n import can_ignore_diacritics, translate
+from openlp.core.common.i18n import can_ignore_diacritics, normalize_diacritics, translate
 from openlp.core.lib.db import BaseModel, Manager, init_db
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib import BibleStrings, upgrade
@@ -321,6 +321,8 @@ class BibleDB(Manager):
             return [db_book.book_reference_id for db_book in db_books]
         else:
             for character in RESERVED_CHARACTERS:
+                if ignore_diacritics and can_ignore_diacritics():
+                    book = normalize_diacritics(book)
                 book_escaped = book.replace(character, '\\' + character)
             regex_book = re.compile('\\s*{book}\\s*'.format(book='\\s*'.join(book_escaped.split())), re.IGNORECASE)
             book_list = []
