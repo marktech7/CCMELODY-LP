@@ -1083,7 +1083,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         if self.bible is None:
             return []
-        reference = self.plugin.manager.parse_ref(self.bible.name, string)
+        reference = self.plugin.manager.parse_ref(self.bible.name, string, ignore_diacritics=True)
         search_results = self.plugin.manager.get_verses(self.bible.name, reference, show_error)
         if search_results:
             verse_text = ' '.join([verse.text for verse in search_results])
@@ -1096,7 +1096,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         if self.bible is None:
             return []
-        reference = self.plugin.manager.parse_ref(self.bible.name, item_id)
+        reference = self.plugin.manager.parse_ref(self.bible.name, item_id, ignore_diacritics=True)
         search_results = self.plugin.manager.get_verses(self.bible.name, reference, False)
         items = self.build_display_results(self.bible, None, search_results)
         return self.build_list_widget_items(items)
