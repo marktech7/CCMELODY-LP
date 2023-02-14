@@ -558,7 +558,7 @@ def test_entire_song_search(mocked_or, MockedSong, MockedSongBookEntry, MockedBo
     """
     # GIVEN: A song media item, a keyword and some mocks
     settings.setValue('custom/db type', 'sqlite')
-    settings.setValue('core/disable ignore diacritics', True)
+    settings.setValue('core/enable ignore diacritics', False)
     keyword = 'Jesus'
     mocked_or.side_effect = lambda a, b, c, d, e: ' '.join([a, b, c, d, e])
     MockedSong.search_title.like.side_effect = lambda a: a
@@ -594,7 +594,7 @@ def test_entire_song_search_ignore_diacritics(mocked_normalize, mocked_or, Mocke
     """
     # GIVEN: A song media item, a keyword and some mocks
     settings.setValue('custom/db type', 'sqlite')
-    settings.setValue('core/disable ignore diacritics', False)
+    settings.setValue('core/enable ignore diacritics', True)
     keyword = 'Jesus'
     mocked_or.side_effect = lambda a, b, c, d, e: ' '.join([a, b, c, d, e])
     MockedSong.search_title.like.side_effect = lambda a: a

@@ -111,6 +111,18 @@ class GeneralTab(SettingsTab):
         self.number_edit.setObjectName('number_edit')
         self.ccli_layout.addRow(self.number_label, self.number_edit)
         self.left_layout.addWidget(self.ccli_group_box)
+        # Search Behavior
+        self.search_behavior_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.search_behavior_group_box.setObjectName('search_behavior_group_box')
+        self.search_behavior_layout = QtWidgets.QFormLayout(self.search_behavior_group_box)
+        self.search_behavior_layout.setObjectName('search_behavior_layout')
+        self.search_as_type_check_box = QtWidgets.QCheckBox(self.search_behavior_group_box)
+        self.search_as_type_check_box.setObjectName('SearchAsType_check_box')
+        self.search_behavior_layout.addRow(self.search_as_type_check_box)
+        self.enable_ignore_accents_check_box = QtWidgets.QCheckBox(self.search_behavior_group_box)
+        self.enable_ignore_accents_check_box.setObjectName('disable_ignore_accents_check_box')
+        self.search_behavior_layout.addRow(self.enable_ignore_accents_check_box)
+        self.left_layout.addWidget(self.search_behavior_group_box)
         # Ui Settings
         self.ui_group_box = QtWidgets.QGroupBox(self.right_column)
         self.ui_group_box.setObjectName('ui_group_box')
@@ -160,9 +172,6 @@ class GeneralTab(SettingsTab):
         self.slide_no_in_footer_checkbox = QtWidgets.QCheckBox(self.ui_group_box)
         self.slide_no_in_footer_checkbox.setObjectName('SlideNumbersInFooter_check_box')
         self.ui_layout.addRow(self.slide_no_in_footer_checkbox)
-        self.search_as_type_check_box = QtWidgets.QCheckBox(self.ui_group_box)
-        self.search_as_type_check_box.setObjectName('SearchAsType_check_box')
-        self.ui_layout.addRow(self.search_as_type_check_box)
         self.enable_auto_close_check_box = QtWidgets.QCheckBox(self.ui_group_box)
         self.enable_auto_close_check_box.setObjectName('enable_auto_close_check_box')
         self.ui_layout.addRow(self.enable_auto_close_check_box)
@@ -185,6 +194,7 @@ class GeneralTab(SettingsTab):
         self.right_layout.addStretch()
         # Connect a few things
         self.search_as_type_check_box.stateChanged.connect(self.on_search_as_type_check_box_changed)
+        self.enable_ignore_accents_check_box.stateChanged.connect(self.on_enable_ignore_accents_check_box_changed)
 
     def retranslate_ui(self):
         """
@@ -255,7 +265,10 @@ class GeneralTab(SettingsTab):
         self.slide_no_in_footer_checkbox.setText(translate('SongsPlugin.GeneralTab', 'Include slide number in footer'))
         self.new_service_message_check_box.setText(translate('OpenLP.AdvancedTab',
                                                              'Alert if New clicked on blank service'))
+        self.search_behavior_group_box.setTitle(translate('OpenLP.GeneralTab', 'Search Settings'))
         self.search_as_type_check_box.setText(translate('SongsPlugin.GeneralTab', 'Enable search as you type'))
+        self.enable_ignore_accents_check_box.setText(translate('SongsPlugin.GeneralTab', 'Ignore accents/diacritics '
+                                                               'while searching'))
         self.ui_theme_style_label.setText(translate('OpenLP.AdvancedTab', 'Interface Theme (needs restart):'))
         self.ui_theme_style_combo_box.setItemText(0, translate('OpenLP.AdvancedTab', 'Use system theme'))
         self.ui_theme_style_combo_box.setItemText(1, translate('OpenLP.AdvancedTab', 'Default Light'))
@@ -305,6 +318,11 @@ class GeneralTab(SettingsTab):
         self.hide_mouse_check_box.setChecked(self.settings.value('advanced/hide mouse'))
         self.is_search_as_you_type_enabled = self.settings.value('advanced/search as type')
         self.search_as_type_check_box.setChecked(self.is_search_as_you_type_enabled)
+        is_sqlite = self.settings.value('custom/db type') == 'sqlite'
+        self.enable_ignore_accents_check_box.setDisabled(not is_sqlite)
+        self.enable_ignore_diacritics = self.settings.value('core/enable ignore diacritics')
+        if is_sqlite:
+            self.enable_ignore_accents_check_box.setChecked(self.enable_ignore_diacritics)
 
     @staticmethod
     def get_ui_theme_index(ui_theme):
@@ -376,6 +394,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('advanced/new service message', self.new_service_message_check_box.isChecked())
         self.settings.setValue('advanced/hide mouse', self.hide_mouse_check_box.isChecked())
         self.settings.setValue('advanced/search as type', self.is_search_as_you_type_enabled)
+        self.settings.setValue('core/enable ignore diacritics', self.enable_ignore_diacritics)
         theme_name = GeneralTab.get_ui_theme_name(self.ui_theme_style_combo_box.currentIndex())
         self.settings.setValue('advanced/ui_theme_name', theme_name)
         self.post_set_up()
@@ -396,3 +415,6 @@ class GeneralTab(SettingsTab):
         self.is_search_as_you_type_enabled = (check_state == QtCore.Qt.Checked)
         self.settings_form.register_post_process('songs_config_updated')
         self.settings_form.register_post_process('custom_config_updated')
+
+    def on_enable_ignore_accents_check_box_changed(self, check_state):
+        self.enable_ignore_diacritics = (check_state == QtCore.Qt.Checked)

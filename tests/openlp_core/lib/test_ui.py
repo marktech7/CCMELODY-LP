@@ -350,7 +350,7 @@ def test_set_case_insensitive_no_diacritics_completer(settings):
     """
     # GIVEN: A QComboBox and a list of Portuguese-accented suggestions
     settings.setValue('custom/db type', 'sqlite')
-    settings.setValue('core/disable ignore diacritics', False)
+    settings.setValue('core/enable ignore diacritics', True)
     line_edit = QtWidgets.QLineEdit()
     suggestions = ['Oito', 'dÉcimos', 'FragrâNCIa', 'uNÇãO']
 

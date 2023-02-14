@@ -597,8 +597,8 @@ def can_ignore_diacritics():
     """
     try:
         settings = Registry().get('settings')
-        is_sqlite = settings.value('custom/db type')
-        is_diacritics_aware = settings.value('core/disable ignore diacritics')
-        return is_sqlite and not is_diacritics_aware
+        is_sqlite = settings.value('custom/db type') == 'sqlite'
+        ignore_diacritics = settings.value('core/enable ignore diacritics')
+        return is_sqlite and ignore_diacritics
     except BaseException:
         return False
