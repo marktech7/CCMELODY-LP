@@ -78,6 +78,9 @@ class GeneralTab(SettingsTab):
         self.check_for_updates_check_box = QtWidgets.QCheckBox(self.startup_group_box)
         self.check_for_updates_check_box.setObjectName('check_for_updates_check_box')
         self.startup_layout.addWidget(self.check_for_updates_check_box)
+        self.check_for_remote_updates_check_box = QtWidgets.QCheckBox(self.startup_group_box)
+        self.check_for_remote_updates_check_box.setObjectName('check_for_remote_updates_check_box')
+        self.startup_layout.addWidget(self.check_for_remote_updates_check_box)
         self.left_layout.addWidget(self.startup_group_box)
         # Logo
         self.logo_group_box = QtWidgets.QGroupBox(self.left_column)
@@ -202,6 +205,8 @@ class GeneralTab(SettingsTab):
         self.logo_file_label.setText(translate('OpenLP.GeneralTab', 'Logo file:'))
         self.logo_hide_on_startup_check_box.setText(translate('OpenLP.GeneralTab', 'Don\'t show logo on startup'))
         self.check_for_updates_check_box.setText(translate('OpenLP.GeneralTab', 'Check for updates to OpenLP'))
+        self.check_for_remote_updates_check_box.setText(translate('OpenLP.GeneralTab',
+                                                                  'Check for updates to OpenLP Remote UI'))
         # CCLI Details
         self.ccli_group_box.setTitle(translate('OpenLP.GeneralTab', 'CCLI Details'))
         self.number_label.setText(UiStrings().CCLINumberLabel)
@@ -277,6 +282,7 @@ class GeneralTab(SettingsTab):
         self.logo_hide_on_startup_check_box.setChecked(self.settings.value('core/logo hide on startup'))
         self.logo_color_button.color = self.logo_background_color
         self.check_for_updates_check_box.setChecked(self.settings.value('core/update check'))
+        self.check_for_remote_updates_check_box.setChecked(self.settings.value('api/update check'))
         # UI Settings
         # The max recent files value does not have an interface and so never
         # gets actually stored in the settings therefore the default value of
@@ -358,6 +364,7 @@ class GeneralTab(SettingsTab):
         self.settings.setValue('core/logo file', self.logo_file_path_edit.path)
         self.settings.setValue('core/logo hide on startup', self.logo_hide_on_startup_check_box.isChecked())
         self.settings.setValue('core/update check', self.check_for_updates_check_box.isChecked())
+        self.settings.setValue('api/update check', self.check_for_remote_updates_check_box.isChecked())
         self.settings.setValue('core/ccli number', self.number_edit.displayText())
         # UI Settings
         self.settings.setValue('advanced/recent file count', self.recent_spin_box.value())

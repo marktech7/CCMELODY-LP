@@ -36,6 +36,7 @@ class SongsTab(SettingsTab):
         """
         self.setObjectName('SongsTab')
         super(SongsTab, self).setup_ui()
+        # Song settings group box
         self.mode_group_box = QtWidgets.QGroupBox(self.left_column)
         self.mode_group_box.setObjectName('mode_group_box')
         self.mode_layout = QtWidgets.QVBoxLayout(self.mode_group_box)
@@ -56,6 +57,7 @@ class SongsTab(SettingsTab):
         self.auto_play_check_box.setObjectName('auto_play_check_box')
         self.mode_layout.addWidget(self.auto_play_check_box)
         self.left_layout.addWidget(self.mode_group_box)
+
         # Chords group box
         self.chords_group_box = QtWidgets.QGroupBox(self.left_column)
         self.chords_group_box.setObjectName('chords_group_box')
@@ -87,6 +89,32 @@ class SongsTab(SettingsTab):
         self.chords_layout.addWidget(self.neolatin_notation_radio_button)
         self.left_layout.addWidget(self.chords_group_box)
 
+        # Footer group box
+        self.footer_group_box = QtWidgets.QGroupBox(self.left_column)
+        self.footer_group_box.setObjectName('footer_group_box')
+        self.footer_layout = QtWidgets.QVBoxLayout(self.footer_group_box)
+        self.footer_layout.setObjectName('footer_layout')
+        self.footer_tabs = QtWidgets.QTabWidget(self.footer_group_box)
+        self.footer_template_page = QtWidgets.QWidget()
+        self.footer_template_layout = QtWidgets.QVBoxLayout(self.footer_template_page)
+        self.footer_edit_box = QtWidgets.QTextEdit(self.footer_template_page)
+        self.footer_template_layout.addWidget(self.footer_edit_box)
+        self.footer_aux_layout = QtWidgets.QHBoxLayout()
+        self.footer_help_label = QtWidgets.QLabel(self.footer_template_page)
+        self.footer_aux_layout.addWidget(self.footer_help_label)
+        self.footer_aux_layout.addStretch()
+        self.footer_reset_button = QtWidgets.QPushButton(self.footer_template_page)
+        self.footer_aux_layout.addWidget(self.footer_reset_button)
+        self.footer_template_layout.addLayout(self.footer_aux_layout)
+        self.footer_tabs.addTab(self.footer_template_page, '')
+        self.footer_legend_page = QtWidgets.QWidget()
+        self.footer_legend_layout = QtWidgets.QVBoxLayout(self.footer_legend_page)
+        self.footer_placeholder_info = QtWidgets.QTextEdit(self.footer_legend_page)
+        self.footer_legend_layout.addWidget(self.footer_placeholder_info)
+        self.footer_tabs.addTab(self.footer_legend_page, '')
+        self.footer_layout.addWidget(self.footer_tabs)
+        self.right_layout.addWidget(self.footer_group_box)
+
         # CCLI SongSelect login group box
         self.ccli_login_group_box = QtWidgets.QGroupBox(self.left_column)
         self.ccli_login_group_box.setObjectName('ccli_login_group_box')
@@ -103,28 +131,13 @@ class SongsTab(SettingsTab):
         self.ccli_password.setEchoMode(QtWidgets.QLineEdit.Password)
         self.ccli_password.setObjectName('ccli_password')
         self.ccli_login_layout.addRow(self.ccli_password_label, self.ccli_password)
-        self.left_layout.addWidget(self.ccli_login_group_box)
+        self.right_layout.addWidget(self.ccli_login_group_box)
 
-        # Footer group box
-        self.footer_group_box = QtWidgets.QGroupBox(self.left_column)
-        self.footer_group_box.setObjectName('footer_group_box')
-        self.footer_layout = QtWidgets.QVBoxLayout(self.footer_group_box)
-        self.footer_layout.setObjectName('footer_layout')
-        self.footer_info_label = QtWidgets.QLabel(self.footer_group_box)
-        self.footer_layout.addWidget(self.footer_info_label)
-        self.footer_placeholder_info = QtWidgets.QTextEdit(self.footer_group_box)
-        self.footer_layout.addWidget(self.footer_placeholder_info)
-        self.footer_desc_label = QtWidgets.QLabel(self.footer_group_box)
-        self.footer_layout.addWidget(self.footer_desc_label)
-        self.footer_edit_box = QtWidgets.QTextEdit(self.footer_group_box)
-        self.footer_layout.addWidget(self.footer_edit_box)
-        self.footer_reset_button = QtWidgets.QPushButton(self.footer_group_box)
-        self.footer_layout.addWidget(self.footer_reset_button, alignment=QtCore.Qt.AlignRight)
-        self.right_layout.addWidget(self.footer_group_box)
-
+        # Make sure everything is top-aligned
         self.left_layout.addStretch()
         self.right_layout.addStretch()
 
+        # Connect all the signals!
         self.tool_bar_active_check_box.stateChanged.connect(self.on_tool_bar_active_check_box_changed)
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
@@ -202,10 +215,10 @@ class SongsTab(SettingsTab):
         self.footer_placeholder_info.setHtml(placeholder_info)
         self.footer_placeholder_info.setReadOnly(True)
 
-        self.footer_info_label.setText(translate('SongsPlugin.SongsTab', 'How to use Footers:'))
-        self.footer_desc_label.setText('{} (<a href="http://docs.makotemplates.org">{}</a>):'
-                                       .format(translate('SongsPlugin.SongsTab', 'Footer Template'),
-                                               translate('SongsPlugin.SongsTab', 'Mako Syntax')))
+        self.footer_tabs.setTabText(1, translate('SongsPlugin.SongsTab', 'How to Use'))
+        self.footer_tabs.setTabText(0, translate('SongsPlugin.SongsTab', 'Template'))
+        self.footer_help_label.setText('<a href="http://docs.makotemplates.org">{}</a>'
+                                       .format(translate('SongsPlugin.SongsTab', 'Mako Syntax')))
         self.footer_reset_button.setText(translate('SongsPlugin.SongsTab', 'Reset Template'))
 
     def on_search_as_type_check_box_changed(self, check_state):
@@ -245,6 +258,9 @@ class SongsTab(SettingsTab):
         self.footer_edit_box.setPlainText(self.settings.get_default_value('songs/footer template'))
 
     def load(self):
+        """
+        Load the songs settings
+        """
         self.tool_bar = self.settings.value('songs/display songbar')
         self.update_edit = self.settings.value('songs/update service on edit')
         self.update_load = self.settings.value('songs/add song from service')
@@ -272,6 +288,9 @@ class SongsTab(SettingsTab):
         self.footer_edit_box.setPlainText(self.settings.value('songs/footer template'))
 
     def save(self):
+        """
+        Save the song settings
+        """
         self.settings.setValue('songs/display songbar', self.tool_bar)
         self.settings.setValue('songs/update service on edit', self.update_edit)
         self.settings.setValue('songs/add song from service', self.update_load)

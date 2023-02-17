@@ -34,7 +34,7 @@ install:
   # Update pip
   - python -m pip install --upgrade pip
   # Install generic dependencies from pypi. sqlalchemy most be 1.4 for now
-  - python -m pip install "sqlalchemy<1.5" alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six webob requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword qrcode pillow
+  - python -m pip install "sqlalchemy<1.5" alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc zeroconf flask-cors pytest-qt pyenchant pysword qrcode pillow
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   - cmd: choco install vlc %CHOCO_VLC_ARG% --no-progress --limit-output

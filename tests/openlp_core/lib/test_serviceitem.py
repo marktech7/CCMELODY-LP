@@ -35,6 +35,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.lib.theme import TransitionSpeed
+from openlp.core.ui.icons import UiIcons
 from tests.utils import convert_file_service_item
 from tests.utils.constants import RESOURCE_PATH
 
@@ -965,3 +966,19 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
         'data': {}
     }
     assert result == expected_dict
+
+
+@pytest.mark.parametrize('plugin_name,icon', [('songs', 'music'), ('bibles', 'bible'),
+                                              ('presentations', 'presentation'), ('images', 'picture'),
+                                              ('media', 'video')])
+def test_add_icon(registry, plugin_name, icon):
+    """Test that adding an icon works according to the plugin name"""
+    # GIVEN: A service item
+    service_item = ServiceItem()
+    service_item.name = plugin_name
+
+    # WHEN: add_icon() is called
+    service_item.add_icon()
+
+    # THEN: The icon should be correct
+    assert service_item.icon.name() == getattr(UiIcons(), icon).name()

@@ -18,11 +18,10 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-
 import base64
 from functools import wraps
 
-from webob import Response
+from flask import Response
 
 from openlp.core.common.registry import Registry
 
@@ -36,10 +35,7 @@ def check_auth(auth):
     """
     auth_code = "{user}:{password}".format(user=Registry().get('settings_thread').value('api/user id'),
                                            password=Registry().get('settings_thread').value('api/password'))
-    try:
-        auth_base = base64.b64encode(auth_code)
-    except TypeError:
-        auth_base = base64.b64encode(auth_code.encode()).decode()
+    auth_base = base64.b64encode(auth_code.encode()).decode()
     if auth[1] == auth_base:
         return True
     else:
@@ -51,7 +47,7 @@ def authenticate():
     Sends a 401 response that enables basic auth to be triggered
     """
     resp = Response(status=401)
-    resp.www_authenticate = 'Basic realm="OpenLP Login Required"'
+    resp.www_authenticate.set_basic('OpenLP Login Required')
     return resp
 
 

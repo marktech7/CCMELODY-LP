@@ -60,7 +60,7 @@ def system_information():
     data['websocket_port'] = Registry().get('settings_thread').value('api/websocket port')
     data['login_required'] = Registry().get('settings_thread').value('api/authentication enabled')
     data['api_version'] = 2
-    data['api_revision'] = 2
+    data['api_revision'] = 3
     return jsonify(data)
 
 

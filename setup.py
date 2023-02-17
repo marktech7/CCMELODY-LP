@@ -120,7 +120,6 @@ using a computer and a display/projector.""",
         'requests',
         'SQLAlchemy < 1.5',
         'waitress',
-        'WebOb',
         'websockets',
         'zeroconf'
     ],

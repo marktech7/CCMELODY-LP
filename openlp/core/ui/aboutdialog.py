@@ -144,7 +144,6 @@ class UiAboutDialog(object):
                       '<li><a href="https://wiki.videolan.org/PythonBinding">Python bindings for VLC</a> (LGPL)</li>'
                       '<li><a href="https://github.com/Pylons/waitress">Waitress</a> (ZPL)</li>'
                       '<li><a href="https://github.com/aaugustin/websockets">websockets</a> (BSD)</li>'
-                      '<li><a href="https://webob.org/">WebOb</a> (MIT)</li>'
                       '<li><a href="https://mkleehammer.github.io/pyodbc/">pyodbc</a> (MIT)</li>'
                       '<li><a href="http://initd.org/psycopg/">psycopg2</a> (LGPL3+)</li>'
                       '</ul>')

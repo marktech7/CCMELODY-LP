@@ -182,6 +182,7 @@ def transpose(transpose_value):
                 chord_slides.append({'chords': verse_list[i + 1].strip(), 'verse': verse_list[i]})
         if return_service_item:
             live_item['chords_transposed'] = True
+            live_item['slides'][live_controller.selected_row]['selected'] = True
             json_live_item = json.dumps(live_item, cls=OpenLPJSONEncoder)
             return Response(json_live_item, mimetype='application/json')
         else:
