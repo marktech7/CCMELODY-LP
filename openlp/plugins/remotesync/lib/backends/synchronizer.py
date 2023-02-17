@@ -130,7 +130,7 @@ class Synchronizer(object):
         """
         pass
 
-    def get_remote_changes(self):
+    def get_remote_song_changes(self):
         """
         Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
         fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
@@ -171,6 +171,15 @@ class Synchronizer(object):
         :type DateTime:
         :param prev_lock_id:
         :type str:
+        """
+        pass
+
+    def get_remote_custom_changes(self):
+        """
+        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
+        fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
+        remotely, they are also deleted locally.
+        :return: True if one or more songs was updated, otherwise False
         """
         pass
 

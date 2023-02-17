@@ -199,60 +199,69 @@ class RemoteSyncPlugin(Plugin):
         """
         queue_items = self.manager.get_all_objects(SyncQueueItem)
         song_manager = Registry().get('songs_manager')
+        custom_manager = Registry().get('custom_manager')
         for queue_item in queue_items:
-            if queue_item.type == SyncItemType.Song:
-                if queue_item.action == SyncItemAction.Update:
-                    song = song_manager.get_object(Song, queue_item.item_id)
-                    # If song has not been sync'ed before we generate a uuid
-                    sync_item = self.manager.get_object_filtered(RemoteSyncItem,
-                                                                 and_(RemoteSyncItem.type == SyncItemType.Song,
-                                                                      RemoteSyncItem.item_id == song.id))
-                    if not sync_item:
-                        sync_item = RemoteSyncItem()
-                        sync_item.type = SyncItemType.Song
-                        sync_item.item_id = song.id
-                        sync_item.uuid = str(uuid.uuid4())
-                    # Synchronize the song
-                    try:
-                        version = self.synchronizer.send_song(song, sync_item.uuid, sync_item.version,
-                                                              queue_item.first_attempt, queue_item.lock_id)
-                    except ConflictException:
-                        log.debug('Conflict detected for song %d / %s' % (sync_item.item_id, sync_item.uuid))
-                        # TODO: Store the conflict in the DB and turn on the conflict icon
-                        continue
-                    except LockException as le:
-                        # Store the lock time in the DB and keep it in the queue
-                        log.debug('Lock detected for song %d / %s' % (sync_item.item_id, sync_item.uuid))
-                        queue_item.first_attempt = le.first_attempt
-                        queue_item.lock_id = le.lock_id
-                        self.manager.save_object(queue_item)
-                        continue
-                    sync_item.version = version
-                    # Save the RemoteSyncItem so we know which version we have locally
-                    self.manager.save_object(sync_item, True)
-                elif queue_item.action == SyncItemAction.Delete:
-                    # Delete the song
-                    try:
+            if queue_item.action == SyncItemAction.Update:
+                if queue_item.type == SyncItemType.Song:
+                    item = song_manager.get_object(Song, queue_item.item_id)
+                    item_type = SyncItemType.Song
+                else:
+                    item = custom_manager.get_object(Custom, queue_item.item_id)
+                    item_type = SyncItemType.Custom
+                # If item has not been sync'ed before we generate a uuid
+                sync_item = self.manager.get_object_filtered(RemoteSyncItem,
+                                                                and_(RemoteSyncItem.type == item_type,
+                                                                    RemoteSyncItem.item_id == item.id))
+                if not sync_item:
+                    sync_item = RemoteSyncItem()
+                    sync_item.type = item_type
+                    sync_item.item_id = item.id
+                    sync_item.uuid = str(uuid.uuid4())
+                # Synchronize the item
+                try:
+                    if queue_item.type == SyncItemType.Song:
+                        version = self.synchronizer.send_song(item, sync_item.uuid, sync_item.version,
+                                                                queue_item.first_attempt, queue_item.lock_id)
+                    else:
+                        version = self.synchronizer.send_custom(item, sync_item.uuid, sync_item.version,
+                                                                queue_item.first_attempt, queue_item.lock_id)
+                except ConflictException:
+                    log.debug('Conflict detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    # TODO: Store the conflict in the DB and turn on the conflict icon
+                    continue
+                except LockException as le:
+                    # Store the lock time in the DB and keep it in the queue
+                    log.debug('Lock detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    queue_item.first_attempt = le.first_attempt
+                    queue_item.lock_id = le.lock_id
+                    self.manager.save_object(queue_item)
+                    continue
+                sync_item.version = version
+                # Save the RemoteSyncItem so we know which version we have locally
+                self.manager.save_object(sync_item, True)
+            elif queue_item.action == SyncItemAction.Delete:
+                # Delete the item
+                try:
+                    if queue_item.type == SyncItemType.Song:
                         version = self.synchronizer.delete_song(sync_item.uuid, sync_item.version,
                                                                 queue_item.first_attempt, queue_item.lock_id)
-                    except ConflictException:
-                        log.debug('Conflict detected for song %d / %s' % (sync_item.item_id, sync_item.uuid))
-                        # TODO: Store the conflict in the DB and turn on the conflict icon
-                        continue
-                    except LockException as le:
-                        # Store the lock time in the DB and keep it in the queue
-                        log.debug('Lock detected for song %d / %s' % (sync_item.item_id, sync_item.uuid))
-                        queue_item.first_attempt = le.first_attempt
-                        queue_item.lock_id = le.lock_id
-                        self.manager.save_object(queue_item)
-                        continue
-                # Delete the SyncQueueItem from the queue since the synchronization is now complete
-                self.manager.delete_all_objects(SyncQueueItem, and_(SyncQueueItem.item_id == queue_item.item_id,
-                                                                    SyncQueueItem.type == SyncItemType.Song))
-
-            elif queue_item.type == SyncItemType.Custom:
-                # TODO: Handle custom slides
-                pass
+                    else:
+                        version = self.synchronizer.delete_custom(sync_item.uuid, sync_item.version,
+                                                                  queue_item.first_attempt, queue_item.lock_id)
+                except ConflictException:
+                    log.debug('Conflict detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    # TODO: Store the conflict in the DB and turn on the conflict icon
+                    continue
+                except LockException as le:
+                    # Store the lock time in the DB and keep it in the queue
+                    log.debug('Lock detected for item %d / %s' % (sync_item.item_id, sync_item.uuid))
+                    queue_item.first_attempt = le.first_attempt
+                    queue_item.lock_id = le.lock_id
+                    self.manager.save_object(queue_item)
+                    continue
+            # Delete the SyncQueueItem from the queue since the synchronization is now complete
+            self.manager.delete_all_objects(SyncQueueItem, and_(SyncQueueItem.item_id == queue_item.item_id,
+                                                                SyncQueueItem.type == queue_item.type))
 
     def start_short_sync_timer(self):
         if not self.sync_timer_disabled:
@@ -317,9 +326,12 @@ class RemoteSyncPlugin(Plugin):
         self.start_short_sync_timer()
 
     def pull_from_remote(self):
-        updated = self.synchronizer.get_remote_changes()
-        if updated:
+        songs_updated = self.synchronizer.get_remote_song_changes()
+        if songs_updated:
             Registry().execute('songs_load_list')
+        customs_updated = self.synchronizer.get_remote_custom_changes()
+        if customs_updated:
+            Registry().execute('custom_load_list')
 
     def save_service(self, service_item):
         pass

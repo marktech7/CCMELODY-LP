@@ -106,16 +106,6 @@ class FolderSynchronizer(Synchronizer):
         in_file.close()
         return content
 
-    def get_remote_song_changes(self):
-        """
-        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
-        fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
-        remotely, they are also deleted locally.
-        :return: True if one or more songs was updated, otherwise False
-        """
-        updated = self._get_remote_changes(SyncItemType.Song)
-        return updated
-
     def _check_for_lock_file(self, type, path, uuid, first_sync_attempt, prev_lock_id):
         """
         Check for lock file. Raises exception if a valid lock file is found. If an expired lock file is found
@@ -152,6 +142,16 @@ class FolderSynchronizer(Synchronizer):
             else:
                 # New lock encountered, now we have to wait for it
                 raise LockException(type, uuid, current_lock_id, datetime.datetime.now())
+
+    def get_remote_song_changes(self):
+        """
+        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
+        fetch_song method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
+        remotely, they are also deleted locally.
+        :return: True if one or more songs was updated, otherwise False
+        """
+        updated = self._get_remote_changes(SyncItemType.Song)
+        return updated
 
     def send_song(self, song, song_uuid, last_known_version, first_sync_attempt, prev_lock_id):
         """
@@ -211,6 +211,16 @@ class FolderSynchronizer(Synchronizer):
         :type str:
         """
         self._delete_item(SyncItemType.Song, song_uuid, first_del_attempt, prev_lock_id)
+
+    def get_remote_custom_changes(self):
+        """
+        Check for changes in the remote/shared folder. If a changed/new item is found it is fetched using the
+        fetch_custom method, and if a conflict is detected the mark_item_for_conflict is used. If items has been deleted
+        remotely, they are also deleted locally.
+        :return: True if one or more songs was updated, otherwise False
+        """
+        updated = self._get_remote_changes(SyncItemType.Custom)
+        return updated
 
     def send_custom(self, custom):
         pass
