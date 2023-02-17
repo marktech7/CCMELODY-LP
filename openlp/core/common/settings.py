@@ -275,6 +275,7 @@ class Settings(QtCore.QSettings):
         'core/override position': False,
         'core/monitor': {},
         'core/application version': '0.0',
+        'core/enable ignore diacritics': True,
         'images/background mode': ImageThemeMode.Black,
         'images/theme': None,
         'images/db type': 'sqlite',

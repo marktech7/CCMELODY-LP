@@ -26,9 +26,10 @@ from unittest.mock import MagicMock, call, patch
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.ui import add_welcome_page, create_action, create_button, create_button_box, \
-    create_horizontal_adjusting_combo_box, create_valign_selection_widgets, create_widget_action, \
-    critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer
+from openlp.core.lib.ui import NORMALIZED_ITEM_ROLE, IgnoreDiacriticsCompleter, add_welcome_page, create_action, \
+    create_button, create_button_box, create_horizontal_adjusting_combo_box, create_valign_selection_widgets, \
+    create_widget_action, critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer, \
+    set_case_insensitive_ignore_diacritics_completer
 
 
 def test_add_welcome_page():
@@ -341,3 +342,25 @@ def test_set_case_insensitive_completer():
     completer = line_edit.completer()
     assert isinstance(completer, QtWidgets.QCompleter)
     assert completer.caseSensitivity() == QtCore.Qt.CaseInsensitive
+
+
+def test_set_case_insensitive_no_diacritics_completer(settings):
+    """
+    Test setting a case insensitive completer on a widget that ignores diacritics
+    """
+    # GIVEN: A QComboBox and a list of Portuguese-accented suggestions
+    settings.setValue('custom/db type', 'sqlite')
+    settings.setValue('core/enable ignore diacritics', True)
+    line_edit = QtWidgets.QLineEdit()
+    suggestions = ['Oito', 'dÉcimos', 'FragrâNCIa', 'uNÇãO']
+
+    # WHEN: We call the function
+    set_case_insensitive_ignore_diacritics_completer(suggestions, line_edit)
+
+    # THEN: The Combobox should have a completer which is case insensitive
+    completer = line_edit.completer()
+    assert isinstance(completer, IgnoreDiacriticsCompleter)
+    assert completer.splitPath('uNÇãO') == ['uNCaO']
+    assert completer.completionRole() == NORMALIZED_ITEM_ROLE
+    assert completer.model().data(completer.model().index(3, 0), QtCore.Qt.ItemDataRole.DisplayRole) == 'uNÇãO'
+    assert completer.model().data(completer.model().index(3, 0), NORMALIZED_ITEM_ROLE) == 'uNCaO'

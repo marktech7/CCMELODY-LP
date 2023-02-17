@@ -21,11 +21,13 @@
 """
 The :mod:`languages` module provides a list of language names with utility functions.
 """
+from functools import lru_cache
 import itertools
 import locale
 import logging
 import re
 from collections import namedtuple
+import unicodedata
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -53,6 +55,7 @@ def translate(context, text, comment=None, qt_translate=QtCore.QCoreApplication.
 
 Language = namedtuple('Language', ['id', 'name', 'code'])
 ICU_COLLATOR = None
+ICU_DIACRITICS_TRANSLITERATOR = None
 DIGITS_OR_NONDIGITS = re.compile(r'\d+|\D+')
 LANGUAGES = sorted([
     Language(1, translate('common.languages', '(Afan) Oromo', 'Language code: om'), 'om'),
@@ -556,3 +559,46 @@ def get_language(name):
             if language.name == name_title or language.code == name_lower:
                 return language
     return None
+
+
+def __get_diacritics_transliterator():
+    global ICU_DIACRITICS_TRANSLITERATOR
+    if ICU_DIACRITICS_TRANSLITERATOR is None:
+        import icu
+        ICU_DIACRITICS_TRANSLITERATOR = icu.Transliterator.createInstance('NFD; [:Nonspacing Mark:] Remove; NFC')
+    return ICU_DIACRITICS_TRANSLITERATOR
+
+
+# Small cache to speed up commonly repeated strings
+@lru_cache(50)
+def normalize_diacritics(input):
+    if input is None:
+        return None
+    # ICU is the prefered way to handle transliteration, we fallback to unicodedata which will work in most cases.
+    # ICU is much faster here.
+    try:
+        transliterator = __get_diacritics_transliterator()
+        normalized = transliterator.transliterate(input)
+    except Exception:
+        normalized = unicodedata.normalize('NFKD', input)
+        normalized = u"".join([c for c in normalized if not unicodedata.combining(c)])
+    return normalized
+
+
+def can_ignore_diacritics():
+    """
+    Returns whether this instance of OpenLP is able to handle SQLite's DB `LIKE` queries to ignore diacritics/accents.
+
+    SQLite is unable to use 'COLLATE' rules on LIKE queries, so a custom function is needed to help.
+
+    This is usually done by 'normalize' function (provided by us) in SQLite databases. You should check if this
+    function is true and then wrap the 'like' predicates (column and value) using SQLAlchemy's `func.normalize()`
+    helper.
+    """
+    try:
+        settings = Registry().get('settings')
+        is_sqlite = settings.value('custom/db type') == 'sqlite'
+        ignore_diacritics = settings.value('core/enable ignore diacritics')
+        return is_sqlite and ignore_diacritics
+    except BaseException:
+        return False

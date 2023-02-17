@@ -35,7 +35,7 @@ from sqlalchemy.orm.exc import UnmappedClassError
 from openlp.core.common import clean_filename
 from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.i18n import translate
+from openlp.core.common.i18n import can_ignore_diacritics, normalize_diacritics, translate
 from openlp.core.lib.db import BaseModel, Manager, init_db
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib import BibleStrings, upgrade
@@ -281,13 +281,16 @@ class BibleDB(Manager):
         log.debug('BibleDB.get_book("{book}")'.format(book=book))
         return self.get_object_filtered(Book, Book.name.like(book + '%'))
 
-    def get_books(self, book=None):
+    def get_books(self, book=None, ignore_diacritics=False):
         """
         A wrapper so both local and web bibles have a get_books() method that
         manager can call. Used in the media manager advanced search tab.
         """
         log.debug('BibleDB.get_books("{book}")'.format(book=book))
-        filter = Book.name.like(book + '%') if book else None
+        if ignore_diacritics and can_ignore_diacritics():
+            filter = func.normalize(Book.name).like(normalize_diacritics(book + '%')) if book else None
+        else:
+            filter = Book.name.like(book + '%') if book else None
         return self.get_all_objects(Book, filter_clause=filter, order_by_ref=Book.id)
 
     def get_book_by_book_ref_id(self, ref_id):
@@ -299,12 +302,13 @@ class BibleDB(Manager):
         log.debug('BibleDB.get_book_by_book_ref_id("{ref}")'.format(ref=ref_id))
         return self.get_object_filtered(Book, Book.book_reference_id.like(ref_id))
 
-    def get_book_ref_id_by_localised_name(self, book, language_selection):
+    def get_book_ref_id_by_localised_name(self, book, language_selection, ignore_diacritics=False):
         """
         Return the ids of a matching named book.
 
         :param book: The name of the book, according to the selected language.
         :param language_selection:  The language selection the user has chosen in the settings section of the Bible.
+        :param ignore_diacritics: Ignore diacritics/accents if available on this OpenLP instance.
         :rtype: list[int]
         """
         log.debug('get_book_ref_id_by_localised_name("{book}", "{lang}")'.format(book=book, lang=language_selection))
@@ -312,13 +316,15 @@ class BibleDB(Manager):
         from openlp.plugins.bibles.lib import BibleStrings
         book_names = BibleStrings().BookNames
         # escape reserved characters
-        for character in RESERVED_CHARACTERS:
-            book_escaped = book.replace(character, '\\' + character)
-        regex_book = re.compile('\\s*{book}\\s*'.format(book='\\s*'.join(book_escaped.split())), re.IGNORECASE)
         if language_selection == LanguageSelection.Bible:
-            db_books = self.get_books(book)
+            db_books = self.get_books(book, ignore_diacritics)
             return [db_book.book_reference_id for db_book in db_books]
         else:
+            for character in RESERVED_CHARACTERS:
+                if ignore_diacritics and can_ignore_diacritics():
+                    book = normalize_diacritics(book)
+                book_escaped = book.replace(character, '\\' + character)
+            regex_book = re.compile('\\s*{book}\\s*'.format(book='\\s*'.join(book_escaped.split())), re.IGNORECASE)
             book_list = []
             if language_selection == LanguageSelection.Application:
                 books = [key for key in list(book_names.keys()) if regex_book.match(book_names[key])]

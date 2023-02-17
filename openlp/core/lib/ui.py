@@ -26,7 +26,7 @@ import logging
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.actions import ActionList
-from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.common.i18n import UiStrings, can_ignore_diacritics, normalize_diacritics, translate
 from openlp.core.common.platform import is_macosx
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
@@ -298,6 +298,17 @@ def create_widget_action(parent, name='', **kwargs):
     return action
 
 
+def create_case_insensitive_completer(cache):
+    """
+    Sets a case insensitive text completer.
+
+    :param cache: The list of items to use as suggestions.
+    """
+    completer = QtWidgets.QCompleter(cache)
+    completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+    return completer
+
+
 def set_case_insensitive_completer(cache, widget):
     """
     Sets a case insensitive text completer for a widget.
@@ -305,8 +316,7 @@ def set_case_insensitive_completer(cache, widget):
     :param cache: The list of items to use as suggestions.
     :param widget: A widget to set the completer (QComboBox or QLineEdit instance)
     """
-    completer = QtWidgets.QCompleter(cache)
-    completer.setCaseSensitivity(QtCore.Qt.CaseInsensitive)
+    completer = create_case_insensitive_completer(cache)
     widget.setCompleter(completer)
 
 
@@ -337,3 +347,44 @@ def find_and_set_in_combo_box(combo_box, value_to_find, set_missing=True):
         # Not Found.
         index = 0 if set_missing else combo_box.currentIndex()
     combo_box.setCurrentIndex(index)
+
+
+def set_case_insensitive_ignore_diacritics_completer(cache, widget):
+    """
+    Sets a case insensitive text completer for a widget, and ignore diacritics if possible.
+
+    :param cache: The list of items to use as suggestions.
+    :param widget: A widget to set the completer (QComboBox or QLineEdit instance)
+    """
+    model = IgnoreDiacriticsStringListModel()
+    model.setStringList(cache)
+    completer = IgnoreDiacriticsCompleter()
+    completer.setModel(model)
+    completer.setCompletionRole(NORMALIZED_ITEM_ROLE)
+    completer.setCaseSensitivity(QtCore.Qt.CaseSensitivity.CaseInsensitive)
+    widget.setCompleter(completer)
+
+
+NORMALIZED_ITEM_ROLE = QtCore.Qt.ItemDataRole.UserRole + 5
+
+
+class IgnoreDiacriticsCompleter(QtWidgets.QCompleter):
+
+    def splitPath(self, path: str):
+        path = [normalize_diacritics(path) if can_ignore_diacritics() else path]
+        return path
+
+    def pathFromIndex(self, index: QtCore.QModelIndex) -> str:
+        return str(index.data())
+
+
+class IgnoreDiacriticsStringListModel(QtCore.QStringListModel):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+    def data(self, index: QtCore.QModelIndex, role: int):
+        if role == NORMALIZED_ITEM_ROLE:
+            value = super().data(index, QtCore.Qt.ItemDataRole.DisplayRole)
+            return normalize_diacritics(value) if can_ignore_diacritics() else value
+        else:
+            return super().data(index, role)

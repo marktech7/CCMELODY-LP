@@ -468,16 +468,16 @@ def test_update_auto_completer_search_no_bible(media_item):
     media_item.search_edit = mocked_search_edit
     media_item.bible = None
     with patch.object(media_item, 'get_common_books') as mocked_get_common_books, \
-            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_completer') \
-            as mocked_set_case_insensitive_completer:
+            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_ignore_diacritics_completer') \
+            as mocked_set_case_insensitive_ignore_diacritics_completer:
 
         # WHEN: Calling update_auto_completer
         media_item.update_auto_completer()
 
-        # THEN: get_common_books should not have been called. set_case_insensitive_completer should have been called
-        #       with an empty list
+        # THEN: get_common_books should not have been called. set_case_insensitive_ignore_diacritics_completer should
+        # have been called with an empty list
         mocked_get_common_books.assert_not_called()
-        mocked_set_case_insensitive_completer.assert_called_once_with([], mocked_search_edit)
+        mocked_set_case_insensitive_ignore_diacritics_completer.assert_called_once_with([], mocked_search_edit)
 
 
 def test_update_auto_completer_search_reference_type(media_item):
@@ -490,14 +490,15 @@ def test_update_auto_completer_search_reference_type(media_item):
     media_item.bible = MagicMock()
     with patch.object(media_item, 'get_common_books', return_value=book_list_1), \
             patch('openlp.plugins.bibles.lib.mediaitem.get_locale_key', side_effect=lambda x: x), \
-            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_completer') \
-            as mocked_set_case_insensitive_completer:
+            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_ignore_diacritics_completer') \
+            as mocked_set_case_insensitive_ignore_diacritics_completer:
 
         # WHEN: Calling update_auto_completer
         media_item.update_auto_completer()
 
-        # THEN: set_case_insensitive_completer should have been called with the names of the books + space in order
-        mocked_set_case_insensitive_completer.assert_called_once_with(
+        # THEN: set_case_insensitive_ignore_diacritics_completer should have been called with the names of the
+        # books + space in order
+        mocked_set_case_insensitive_ignore_diacritics_completer.assert_called_once_with(
             ['Book 1 ', 'Book 2 ', 'Book 3 '], mocked_search_edit)
 
 
@@ -511,14 +512,15 @@ def test_update_auto_completer_search_combined_type(media_item):
     media_item.bible = MagicMock()
     with patch.object(media_item, 'get_common_books', return_value=book_list_1), \
             patch('openlp.plugins.bibles.lib.mediaitem.get_locale_key', side_effect=lambda x: x), \
-            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_completer') \
-            as mocked_set_case_insensitive_completer:
+            patch('openlp.plugins.bibles.lib.mediaitem.set_case_insensitive_ignore_diacritics_completer') \
+            as mocked_set_case_insensitive_ignore_diacritics_completer:
 
         # WHEN: Calling update_auto_completer
         media_item.update_auto_completer()
 
-        # THEN: set_case_insensitive_completer should have been called with the names of the books + space in order
-        mocked_set_case_insensitive_completer.assert_called_once_with(
+        # THEN: set_case_insensitive_ignore_diacritics_completer should have been called with the names of the
+        # books + space in order
+        mocked_set_case_insensitive_ignore_diacritics_completer.assert_called_once_with(
             ['Book 1 ', 'Book 2 ', 'Book 3 '], mocked_search_edit)
 
 

@@ -26,20 +26,22 @@ import json
 import logging
 import os
 from copy import copy
+from typing import cast
 from urllib.parse import quote_plus as urlquote
 
 from alembic.migration import MigrationContext
 from alembic.operations import Operations
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, Table, Unicode, UnicodeText, create_engine, types
+from sqlalchemy import Column, ForeignKey, Integer, MetaData, Table, Unicode, UnicodeText, create_engine, types, event
+from sqlalchemy.engine import Engine
 from sqlalchemy.engine.url import URL, make_url
 from sqlalchemy.exc import DBAPIError, InvalidRequestError, OperationalError, ProgrammingError, SQLAlchemyError
 from sqlalchemy.ext.declarative import declared_attr
-from sqlalchemy.orm import backref, mapper, relationship, scoped_session, sessionmaker
+from sqlalchemy.orm import Session, backref, mapper, relationship, scoped_session, sessionmaker
 from sqlalchemy.pool import NullPool
 
 from openlp.core.common import delete_file
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.i18n import translate
+from openlp.core.common.i18n import normalize_diacritics, translate
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder
 from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box
@@ -155,6 +157,8 @@ def init_db(url, auto_flush=True, auto_commit=False, base=None):
         base.metadata.bind = engine
         metadata = base.metadata
     session = scoped_session(sessionmaker(autoflush=auto_flush, autocommit=auto_commit, bind=engine))
+    if engine.driver == 'pysqlite':
+        diacritics_unaware_like_event(engine, session)
     return session, metadata
 
 
@@ -222,6 +226,24 @@ def get_upgrade_op(session):
     """
     context = MigrationContext.configure(session.bind.connect())
     return Operations(context)
+
+
+def diacritics_unaware_like_event(engine: Engine, session: Session):
+    event.listen(engine, 'connect', _create_diacritics_unaware_like)
+
+
+def _normalize_diacritics(input):
+    if input is None:
+        return None
+    if input == '%' or input == '%%':
+        return input
+    return normalize_diacritics(input)
+
+
+def _create_diacritics_unaware_like(engine, connection_record):
+    import sqlite3
+    raw_connection = cast(sqlite3.Connection, engine)
+    raw_connection.create_function('normalize', 1, _normalize_diacritics)
 
 
 class CommonMixin(object):

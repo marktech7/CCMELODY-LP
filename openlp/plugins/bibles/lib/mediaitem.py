@@ -32,7 +32,7 @@ from openlp.core.lib import ServiceItemContext
 from openlp.core.lib.mediamanageritem import MediaManagerItem
 from openlp.core.lib.serviceitem import ItemCapabilities
 from openlp.core.lib.ui import create_horizontal_adjusting_combo_box, critical_error_message_box, \
-    find_and_set_in_combo_box, set_case_insensitive_completer
+    find_and_set_in_combo_box, set_case_insensitive_ignore_diacritics_completer
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.edits import SearchEdit
 from openlp.plugins.bibles.forms.bibleimportform import BibleImportForm
@@ -423,7 +423,7 @@ class BibleMediaItem(MediaManagerItem):
                 # when auto complete is used and user does not need to add the space manually.
                 books = [book.get_name(language_selection) + ' ' for book in book_data]
                 books.sort(key=get_locale_key)
-        set_case_insensitive_completer(books, self.search_edit)
+        set_case_insensitive_ignore_diacritics_completer(books, self.search_edit)
 
     def on_import_click(self):
         """
@@ -739,7 +739,7 @@ class BibleMediaItem(MediaManagerItem):
         :return: None
         """
         self.search_results = []
-        verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text)
+        verse_refs = self.plugin.manager.parse_ref(self.bible.name, search_text, ignore_diacritics=True)
         self.search_results = self.plugin.manager.get_verses(self.bible.name, verse_refs, True)
         if self.second_bible and self.search_results:
             self.second_search_results = self.plugin.manager.get_verses(self.second_bible.name, verse_refs, True)
@@ -749,6 +749,8 @@ class BibleMediaItem(MediaManagerItem):
         """
         We are doing a 'Text Search'.
         This search is called on def text_search by 'Search' Text and Combined Searches.
+
+        We're not enabling Ignore Diacritics search mode here due to performance concerns.
         """
         self.search_results = self.plugin.manager.verse_search(self.bible.name, text)
         if self.search_results is None:
@@ -1081,7 +1083,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         if self.bible is None:
             return []
-        reference = self.plugin.manager.parse_ref(self.bible.name, string)
+        reference = self.plugin.manager.parse_ref(self.bible.name, string, ignore_diacritics=True)
         search_results = self.plugin.manager.get_verses(self.bible.name, reference, show_error)
         if search_results:
             verse_text = ' '.join([verse.text for verse in search_results])
@@ -1094,7 +1096,7 @@ class BibleMediaItem(MediaManagerItem):
         """
         if self.bible is None:
             return []
-        reference = self.plugin.manager.parse_ref(self.bible.name, item_id)
+        reference = self.plugin.manager.parse_ref(self.bible.name, item_id, ignore_diacritics=True)
         search_results = self.plugin.manager.get_verses(self.bible.name, reference, False)
         items = self.build_display_results(self.bible, None, search_results)
         return self.build_list_widget_items(items)

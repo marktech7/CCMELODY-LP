@@ -258,11 +258,11 @@ class BibleManager(LogMixin, RegistryProperties):
                   '"{book}", "{chapter}")'.format(bible=bible, book=book_ref_id, chapter=chapter))
         return self.db_cache[bible].get_verse_count(book_ref_id, chapter)
 
-    def parse_ref(self, bible, reference_text, book_ref_id=False):
+    def parse_ref(self, bible, reference_text, book_ref_id=False, ignore_diacritics=False):
         if not bible:
             return
         language_selection = self.get_language_selection(bible)
-        return parse_reference(reference_text, self.db_cache[bible], language_selection, book_ref_id)
+        return parse_reference(reference_text, self.db_cache[bible], language_selection, book_ref_id, ignore_diacritics)
 
     def get_verses(self, bible, ref_list, show_error=True):
         """

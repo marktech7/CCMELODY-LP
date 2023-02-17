@@ -37,7 +37,8 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib import MediaType, create_separated_list
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.plugin import PluginStatus
-from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer
+from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box, \
+    set_case_insensitive_ignore_diacritics_completer
 from openlp.core.state import State
 from openlp.core.widgets.dialogs import FileDialog
 from openlp.plugins.songs.forms.editsongdialog import Ui_EditSongDialog
@@ -130,7 +131,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             combo.addItem(obj.name)
             cache.append(obj.name)
             combo.setItemData(row, obj.id)
-        set_case_insensitive_completer(cache, combo)
+        set_case_insensitive_ignore_diacritics_completer(cache, combo)
         combo.setCurrentIndex(-1)
         combo.setCurrentText('')
 
@@ -384,7 +385,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
             self.authors_combo_box.addItem(author.display_name)
             self.authors_combo_box.setItemData(row, author.id)
             self.authors.append(author.display_name)
-        set_case_insensitive_completer(self.authors, self.authors_combo_box)
+        set_case_insensitive_ignore_diacritics_completer(self.authors, self.authors_combo_box)
         self.authors_combo_box.setCurrentIndex(-1)
         self.authors_combo_box.setCurrentText('')
 
@@ -421,7 +422,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         self.themes = theme_list
         self.themes.sort(key=get_theme_key)
         self.theme_combo_box.addItems(theme_list)
-        set_case_insensitive_completer(self.themes, self.theme_combo_box)
+        set_case_insensitive_ignore_diacritics_completer(self.themes, self.theme_combo_box)
         self.theme_combo_box.setCurrentIndex(-1)
         self.theme_combo_box.setCurrentText('')
 
