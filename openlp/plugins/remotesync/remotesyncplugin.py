@@ -46,6 +46,7 @@ from openlp.core.common.enum import SyncType
 from openlp.plugins.remotesync.lib.backends.synchronizer import SyncItemType, SyncItemAction, ConflictException, \
     LockException
 from openlp.core.state import State
+from openlp.plugins.custom.lib.db import CustomSlide
 from openlp.plugins.songs.lib.db import Song
 
 from openlp.plugins.remotesync.lib import RemoteSyncTab
@@ -123,11 +124,12 @@ class RemoteSyncPlugin(Plugin):
             self.synchronizer.initialize_remote()
         # TODO: register delete functions
         Registry().register_function('song_changed', self.queue_song_for_sync)
-        Registry().register_function('custom_changed', self.queue_custom_for_sync)
+        Registry().register_function('custom_changed', self.queue_custom_for_sync)  # TODO: implement executing
         Registry().register_function('service_changed', self.save_service)
         Registry().register_function('synchronize_to_remote', self.push_to_remote)
         Registry().register_function('synchronize_from_remote', self.pull_from_remote)
         Registry().register_function('song_deleted', self.queue_song_for_deletion)
+        Registry().register_function('custom_deleted', self.queue_custom_for_deletion)  # TODO: implement executing
         # prevent sync timer activation during startup check
         self.sync_timer_disabled = True
         self.startup_check()
@@ -206,7 +208,7 @@ class RemoteSyncPlugin(Plugin):
                     item = song_manager.get_object(Song, queue_item.item_id)
                     item_type = SyncItemType.Song
                 else:
-                    item = custom_manager.get_object(Custom, queue_item.item_id)
+                    item = custom_manager.get_object(CustomSlide, queue_item.item_id)
                     item_type = SyncItemType.Custom
                 # If item has not been sync'ed before we generate a uuid
                 sync_item = self.manager.get_object_filtered(RemoteSyncItem,

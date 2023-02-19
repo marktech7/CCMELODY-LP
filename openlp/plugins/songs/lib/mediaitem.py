@@ -507,7 +507,6 @@ class SongMediaItem(MediaManagerItem):
                 item_id = item.data(QtCore.Qt.UserRole)
                 delete_song(item_id, self.plugin)
                 self.main_window.increment_progress_bar()
-                Registry().execute('song_deleted', self.song.id)
             self.main_window.finished_progress_bar()
             self.application.set_normal_cursor()
             self.on_search_text_button_clicked()

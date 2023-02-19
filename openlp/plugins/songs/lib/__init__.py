@@ -545,6 +545,7 @@ def delete_song(song_id, song_plugin):
     except OSError:
         log.exception('Could not remove directory: {path}'.format(path=save_path))
     song_plugin.manager.delete_object(Song, song_id)
+    Registry().execute('song_deleted', song_id)
 
 
 def transpose_lyrics(lyrics, transpose_value):
