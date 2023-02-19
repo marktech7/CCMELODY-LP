@@ -377,6 +377,7 @@ class Settings(QtCore.QSettings):
         'user interface/main window state': QtCore.QByteArray(),
         'user interface/preview panel': True,
         'user interface/preview splitter geometry': QtCore.QByteArray(),
+        'user interface/theme manager view mode': 0,
         'user interface/show library': True,
         'user interface/show projectors': True,
         'user interface/show service': True,

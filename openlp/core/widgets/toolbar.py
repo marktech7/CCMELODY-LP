@@ -95,6 +95,25 @@ class OpenLPToolbar(QtWidgets.QToolBar):
             else:
                 log.warning('No handle "%s" in actions list.', str(handle))
 
+    def set_widget_checked(self, widgets, checked=True):
+        """
+        Set the checked state for a widget or a list of widgets.
+
+        :param widgets: A list of string with widget object names.
+        :param enabled: The new state as bool.
+        """
+        if isinstance(widgets, list):
+            for handle in widgets:
+                if handle in self.actions:
+                    self.actions[handle].setChecked(checked)
+                else:
+                    log.warning('No handle "%s" in actions list.', str(handle))
+        else:
+            if widgets in self.actions:
+                self.actions[widgets].setChecked(checked)
+            else:
+                log.warning('No handle "%s" in actions list.', str(widgets))
+
     def remove_widget(self, name):
         """
         Find and remove an action from the toolbar

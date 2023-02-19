@@ -1340,6 +1340,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.setValue('user interface/live splitter geometry', self.live_controller.splitter.saveState())
         self.settings.setValue('user interface/preview splitter geometry', self.preview_controller.splitter.saveState())
         self.settings.setValue('user interface/main window splitter geometry', self.control_splitter.saveState())
+        self.theme_manager.save_settings()
 
     def update_recent_files_menu(self):
         """

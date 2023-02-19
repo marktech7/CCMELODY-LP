@@ -40,7 +40,8 @@ from openlp.core.common.utils import wait_for
 from openlp.core.lib import build_icon, check_item_selected, create_thumb, get_text_file_string, validate_thumb
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.theme import Theme
-from openlp.core.lib.ui import create_widget_action, critical_error_message_box
+from openlp.core.lib.ui import MultipleViewModeList, add_list_view_mode_items_to_toolbar, create_widget_action, \
+    critical_error_message_box, set_list_view_mode_toolbar_state
 from openlp.core.ui.filerenameform import FileRenameForm
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.themeform import ThemeForm
@@ -92,13 +93,18 @@ class Ui_ThemeManager(object):
                                         icon=UiIcons().upload,
                                         tooltip=translate('OpenLP.ThemeManager', 'Export a theme.'),
                                         triggers=self.on_export_theme)
+        self.toolbar.addSeparator()
+        add_list_view_mode_items_to_toolbar(self.toolbar, self)
         self.layout.addWidget(self.toolbar)
         self.theme_widget = QtWidgets.QWidgetAction(self.toolbar)
         self.theme_widget.setObjectName('theme_widget')
         # create theme manager list
-        self.theme_list_widget = QtWidgets.QListWidget(widget)
+        self.theme_list_widget = MultipleViewModeList(widget)
         self.theme_list_widget.setAlternatingRowColors(True)
         self.theme_list_widget.setIconSize(QtCore.QSize(88, 50))
+        self.theme_list_widget.set_icon_size_by_view_mode(QtWidgets.QListView.ViewMode.ListMode, QtCore.QSize(88, 50))
+        self.theme_list_widget.set_icon_size_by_view_mode(QtWidgets.QListView.ViewMode.IconMode,
+                                                          QtCore.QSize(176, 100))
         self.theme_list_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.theme_list_widget.setObjectName('theme_list_widget')
         self.layout.addWidget(self.theme_list_widget)
@@ -180,12 +186,27 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
         """
         process the bootstrap post setup request
         """
+        self.load_settings()
         self.progress_form = ThemeProgressForm(self)
         self.theme_form = ThemeForm(self)
         self.theme_form.path = self.theme_path
         self.file_rename_form = FileRenameForm()
         self.upgrade_themes()  # TODO: Can be removed when upgrade path from OpenLP 2.4 no longer needed
         self.load_themes()
+
+    def load_settings(self):
+        view_mode_value = None
+        try:
+            view_mode_value = self.settings.value('user interface/theme manager view mode')
+            self.theme_list_widget.setViewMode(view_mode_value)
+        except Exception:
+            view_mode_value = QtWidgets.QListWidget.ViewMode.ListMode
+            self.settings.setValue('user interface/theme manager view mode', view_mode_value)
+        set_list_view_mode_toolbar_state(self.toolbar, view_mode_value)
+
+    def save_settings(self):
+        if self.theme_list_widget:
+            self.settings.setValue('user interface/theme manager view mode', self.theme_list_widget.viewMode())
 
     def screen_changed(self):
         """
@@ -277,6 +298,16 @@ class ThemeManager(QtWidgets.QWidget, RegistryBase, Ui_ThemeManager, LogMixin, R
                 self.theme_list_widget.item(count).setText(name)
                 self.delete_toolbar_action.setVisible(item not in self.theme_list_widget.selectedItems())
         Registry().execute('theme_change_global')
+
+    def on_set_view_mode_list(self):
+        mode = QtWidgets.QListView.ViewMode.ListMode
+        self.theme_list_widget.setViewMode(mode)
+        set_list_view_mode_toolbar_state(self.toolbar, mode)
+
+    def on_set_view_mode_grid(self):
+        mode = QtWidgets.QListView.ViewMode.IconMode
+        self.theme_list_widget.setViewMode(mode)
+        set_list_view_mode_toolbar_state(self.toolbar, mode)
 
     def on_theme_level_updated(self):
         """

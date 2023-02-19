@@ -170,6 +170,8 @@ class UiIcons(metaclass=Singleton):
             'usermo': {'icon': 'op.users'},
             'users': {'icon': 'fa.users'},
             'video': {'icon': 'fa.file-video-o'},
+            'view_list': {'icon': 'fa.th-list'},
+            'view_grid': {'icon': 'fa.th-large'},
             'volunteer': {'icon': 'fa.group'}
         }
         self.load_icons(icon_list)

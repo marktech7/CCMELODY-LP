@@ -492,6 +492,7 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     Test the functions of bootstrap_post_setup are called.
     """
     # GIVEN:
+    theme_manager.toolbar = MagicMock()
     theme_manager.theme_path = MagicMock()
     theme_manager.load_themes = MagicMock()
     theme_manager.upgrade_themes = MagicMock()

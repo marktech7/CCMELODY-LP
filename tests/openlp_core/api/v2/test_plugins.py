@@ -103,7 +103,7 @@ def test_plugin_songs_transpose_returns_plugin_exception(flask_client, settings)
     assert res.status_code == 400
 
 
-TransposeMockReturn = namedtuple('TransposeMockReturn', ['renderer_mock_any_attr'])
+TransposeMockReturn = namedtuple('TransposeMockReturn', ['renderer_mock_any_attr', 'live_controller_mock'])
 
 
 def _init_transpose_mocks():
@@ -136,7 +136,8 @@ def _init_transpose_mocks():
     renderer_mock_any_attr.reset_mock()
     renderer_mock.format_slides.reset_mock()
 
-    return TransposeMockReturn(renderer_mock_any_attr=renderer_mock_any_attr)
+    return TransposeMockReturn(renderer_mock_any_attr=renderer_mock_any_attr,
+                               live_controller_mock=live_controller_mock)
 
 
 def test_plugin_songs_transpose_wont_call_renderer(flask_client, settings):
@@ -171,3 +172,20 @@ def test_plugin_songs_transpose_accepts_response_format_service_item(flask_clien
     # THEN: The service item response shouldn't match normal response and should be a service_item response
     response = service_item_res.json
     assert 'capabilities' in response
+
+
+def test_plugin_songs_transpose_marks_selected_slide(flask_client, settings):
+    """
+    Tests whether the transpose's endpoint marks the active slide
+    """
+
+    # GIVEN: The default mocks for Transpose API and the default response
+    mocks = _init_transpose_mocks()
+    mocks.live_controller_mock.selected_row = 1
+
+    # WHEN: The transpose action returning service_item is called
+    service_item_res = flask_client.get('/api/v2/plugins/songs/transpose-live-item/-1?response_format=service_item')
+
+    # THEN: The service item response shouldn't match normal response and should be a service_item response
+    response = service_item_res.json
+    assert response['slides'][1]['selected'] is True

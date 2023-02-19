@@ -90,7 +90,6 @@ MODULES = [
     'mako',
     'websockets',
     'waitress',
-    'webob',
     'requests',
     'qtawesome',
     'pymediainfo',
