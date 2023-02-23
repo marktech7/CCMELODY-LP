@@ -44,30 +44,60 @@ from lxml import etree, objectify
 log = logging.getLogger(__name__)
 
 
-# TODO: These classes need to be refactored into a single class.
-class CustomXMLBuilder(object):
+class CustomXML(object):
     """
-    This class builds the XML used to describe songs.
+    This class builds and parses the XML used to describe custom slides.
     """
-    log.info('CustomXMLBuilder Loaded')
+    log.info('CustomXML Loaded')
 
-    def __init__(self):
+    def __init__(self, xml=None):
         """
         Set up the custom builder.
         """
-        # Create the minidom document
-        self.custom_xml = Document()
-        self.new_document()
-        self.add_lyrics_to_song()
+        if xml:
+            self.parse_str(xml)
+        else:
+            # Create the minidom document if no input given
+            self.custom_xml = Document()
+            self.new_document()
+            self.add_lyrics_to_song()
+
+    def parse_str(self, xml):
+        self.custom_xml = None
+        if xml[:5] == '<?xml':
+            xml = xml[38:]
+        try:
+            self.custom_xml = objectify.fromstring(xml)
+            song_tags = self.custom_xml.getElementsByTagName('song')
+            if song_tags:
+                self.song = song_tags[0]
+            else:
+                self.new_document()
+                log.error('Invalid xml {xml}, missing song tag'.format(xml=xml))
+                return False
+            lyrics_tags = self.custom_xml.getElementsByTagName('lyrics')
+            if lyrics_tags:
+                self.lyrics = lyrics_tags[0]
+            else:
+                log.error('Invalid xml {xml}, missing lyrics tag'.format(xml=xml))
+                self.add_lyrics_to_song()
+                return False
+        except etree.XMLSyntaxError:
+            log.exception('Invalid xml {xml}'.format(xml=xml))
+            self.new_document()
+            return False
+        return True
 
     def new_document(self):
         """
         Create a new custom XML document.
         """
         # Create the <song> base element
+        self.custom_xml = Document()
         self.song = self.custom_xml.createElement('song')
         self.custom_xml.appendChild(self.song)
         self.song.setAttribute('version', '1.0')
+        self.add_lyrics_to_song()
 
     def add_lyrics_to_song(self):
         """
@@ -97,39 +127,6 @@ class CustomXMLBuilder(object):
         cds = self.custom_xml.createCDATASection(content)
         verse.appendChild(cds)
 
-    def _dump_xml(self):
-        """
-        Debugging aid to dump XML so that we can see what we have.
-        """
-        return self.custom_xml.toprettyxml(indent='  ')
-
-    def extract_xml(self):
-        """
-        Extract our newly created XML custom.
-        """
-        return self.custom_xml.toxml('utf-8')
-
-
-class CustomXMLParser(object):
-    """
-    A class to read in and parse a custom's XML.
-    """
-    log.info('CustomXMLParser Loaded')
-
-    def __init__(self, xml):
-        """
-        Set up our custom XML parser.
-
-        :param xml: The XML of the custom to be parsed.
-        """
-        self.custom_xml = None
-        if xml[:5] == '<?xml':
-            xml = xml[38:]
-        try:
-            self.custom_xml = objectify.fromstring(xml)
-        except etree.XMLSyntaxError:
-            log.exception('Invalid xml {xml}'.format(xml=xml))
-
     def get_verses(self):
         """
         Iterates through the verses in the XML and returns a list of verses and their attributes.
@@ -147,4 +144,25 @@ class CustomXMLParser(object):
         """
         Debugging aid to dump XML so that we can see what we have.
         """
-        return dump(self.custom_xml)
+        return self.custom_xml.toprettyxml(indent='  ')
+
+    def extract_xml(self):
+        """
+        Extract our newly created XML custom.
+        """
+        return self.custom_xml.toxml('utf-8')
+
+    def add_title_and_credit(self, title, credit):
+        """
+        """
+        pass
+
+    def get_title(self):
+        """
+        """
+        return ''
+
+    def get_credit(self):
+        """
+        """
+        return ''
