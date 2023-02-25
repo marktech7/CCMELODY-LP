@@ -34,10 +34,9 @@ The basic XML is of the format::
     </song>
 """
 
+import copy
 import logging
-from xml.dom.minidom import Document
 from xml.etree.ElementTree import dump
-
 from lxml import etree, objectify
 
 
@@ -55,49 +54,13 @@ class CustomXML(object):
         Set up the custom builder.
         """
         if xml:
-            self.parse_str(xml)
+            if xml.startswith('<?xml'):
+                xml = xml[38:]
+            self.custom_xml = objectify.fromstring(xml)
         else:
             # Create the minidom document if no input given
-            self.custom_xml = Document()
-            self.new_document()
+            self.custom_xml = objectify.fromstring('<song version="1.0" />')
             self.add_lyrics_to_song()
-
-    def parse_str(self, xml):
-        self.custom_xml = None
-        if xml[:5] == '<?xml':
-            xml = xml[38:]
-        try:
-            self.custom_xml = objectify.fromstring(xml)
-            song_tags = self.custom_xml.getElementsByTagName('song')
-            if song_tags:
-                self.song = song_tags[0]
-            else:
-                self.new_document()
-                log.error('Invalid xml {xml}, missing song tag'.format(xml=xml))
-                return False
-            lyrics_tags = self.custom_xml.getElementsByTagName('lyrics')
-            if lyrics_tags:
-                self.lyrics = lyrics_tags[0]
-            else:
-                log.error('Invalid xml {xml}, missing lyrics tag'.format(xml=xml))
-                self.add_lyrics_to_song()
-                return False
-        except etree.XMLSyntaxError:
-            log.exception('Invalid xml {xml}'.format(xml=xml))
-            self.new_document()
-            return False
-        return True
-
-    def new_document(self):
-        """
-        Create a new custom XML document.
-        """
-        # Create the <song> base element
-        self.custom_xml = Document()
-        self.song = self.custom_xml.createElement('song')
-        self.custom_xml.appendChild(self.song)
-        self.song.setAttribute('version', '1.0')
-        self.add_lyrics_to_song()
 
     def add_lyrics_to_song(self):
         """
@@ -105,9 +68,8 @@ class CustomXML(object):
         custom item.
         """
         # Create the main <lyrics> element
-        self.lyrics = self.custom_xml.createElement('lyrics')
-        self.lyrics.setAttribute('language', 'en')
-        self.song.appendChild(self.lyrics)
+        self.lyrics = etree.SubElement(self.custom_xml, 'lyrics')
+        self.lyrics.set('language', 'en')
 
     def add_verse_to_lyrics(self, verse_type, number, content):
         """
@@ -119,13 +81,9 @@ class CustomXML(object):
         :param content: The actual text of the verse to be stored.
 
         """
-        verse = self.custom_xml.createElement('verse')
-        verse.setAttribute('type', verse_type)
-        verse.setAttribute('label', number)
-        self.lyrics.appendChild(verse)
-        # add data as a CDATA section to protect the XML from special chars
-        cds = self.custom_xml.createCDATASection(content)
-        verse.appendChild(cds)
+        verse = etree.Element('verse', type=str(verse_type), label=str(number))
+        verse.text = etree.CDATA(content)
+        self.lyrics.append(verse)
 
     def get_verses(self):
         """
@@ -140,29 +98,66 @@ class CustomXML(object):
                 verse_list.append([element.attrib, str(element.text)])
         return verse_list
 
-    def _dump_xml(self):
-        """
-        Debugging aid to dump XML so that we can see what we have.
-        """
-        return self.custom_xml.toprettyxml(indent='  ')
-
-    def extract_xml(self):
-        """
-        Extract our newly created XML custom.
-        """
-        return self.custom_xml.toxml('utf-8')
-
     def add_title_and_credit(self, title, credit):
         """
         """
-        pass
+        # set title
+        title_element = self.custom_xml.find('title')
+        if not title_element:
+            title_element = etree.Element('title')
+            self.custom_xml.append(title_element)
+        title_element.text = title
+        # set credit
+        credit_element = self.custom_xml.find('credit')
+        if not credit_element:
+            credit_element = etree.Element('credit')
+            self.custom_xml.append(credit_element)
+        credit_element.text = credit
 
     def get_title(self):
         """
         """
-        return ''
+        title_element = self.custom_xml.find('title')
+        if not title_element:
+            return ''
+        return title_element.text
 
     def get_credit(self):
         """
         """
-        return ''
+        credit_element = self.custom_xml.find('credit')
+        if not credit_element:
+            return ''
+        return credit_element.text
+
+    def _dump_xml(self, keep_title_and_credit=False):
+        """
+        Debugging aid to dump XML so that we can see what we have.
+        """
+        if keep_title_and_credit:
+            return etree.tostring(self.custom_xml, encoding='utf-8', xml_declaration=True, pretty_print=True)
+        else:
+            tmp_xml = copy.copy(self.custom_xml)
+            title_element = tmp_xml.find('title')
+            if title_element:
+                tmp_xml.remove(title_element)
+            credit_element = tmp_xml.find('credit')
+            if credit_element:
+                tmp_xml.remove(credit_element)
+            return etree.tostring(tmp_xml, encoding='utf-8', xml_declaration=True, pretty_print=True)
+
+    def extract_xml(self, keep_title_and_credit=False):
+        """
+        Extract our newly created XML custom.
+        """
+        if keep_title_and_credit:
+            return etree.tostring(self.custom_xml, encoding='utf-8', xml_declaration=True)
+        else:
+            tmp_xml = copy.copy(self.custom_xml)
+            title_element = tmp_xml.find('title')
+            if title_element:
+                tmp_xml.remove(title_element)
+            credit_element = tmp_xml.find('credit')
+            if credit_element:
+                tmp_xml.remove(credit_element)
+            return etree.tostring(tmp_xml, encoding='utf-8', xml_declaration=True)
