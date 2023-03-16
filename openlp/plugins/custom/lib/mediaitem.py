@@ -250,13 +250,12 @@ class CustomMediaItem(MediaManagerItem):
         item = self.list_view.currentItem()
         item_id = item.data(QtCore.Qt.UserRole)
         old_custom_slide = self.plugin.db_manager.get_object(CustomSlide, item_id)
-        new_custom_slide = CustomSlide()
-        new_custom_slide.title = '{title} <{text}>'.format(title=old_custom_slide.title,
-                                                           text=translate('CustomPlugin.MediaItem',
-                                                                          'copy', 'For item cloning'))
-        new_custom_slide.text = old_custom_slide.text
-        new_custom_slide.credits = old_custom_slide.credits
-        new_custom_slide.theme_name = old_custom_slide.theme_name
+        new_custom_slide = CustomSlide(title='{title} <{text}>'.format(title=old_custom_slide.title,
+                                                                       text=translate('CustomPlugin.MediaItem',
+                                                                                      'copy', 'For item cloning')),
+                                       text=old_custom_slide.text,
+                                       credits=old_custom_slide.credits,
+                                       theme_name=old_custom_slide.theme_name)
         self.plugin.db_manager.save_object(new_custom_slide)
         self.on_search_text_button_clicked()
 
@@ -325,24 +324,20 @@ class CustomMediaItem(MediaManagerItem):
 
         :param item:  the service item to be converted to a Custom item
         """
-        custom = CustomSlide()
-        custom.title = item.title
-        if item.theme:
-            custom.theme_name = item.theme
-        else:
-            custom.theme_name = ''
-        footer = ' '.join(item.raw_footer)
-        if footer:
-            if footer.startswith(item.title):
-                custom.credits = footer[len(item.title) + 1:]
-            else:
-                custom.credits = footer
-        else:
-            custom.credits = ''
+        # Create the text
         custom_xml = CustomXML()
         for (idx, slide) in enumerate(item.slides):
             custom_xml.add_verse_to_lyrics('custom', str(idx + 1), slide['text'])
-        custom.text = str(custom_xml.extract_xml(), 'utf-8')
+        # Create the credits from the footer
+        credits = ''
+        footer = ' '.join(item.raw_footer)
+        if footer:
+            if footer.startswith(item.title):
+                credits = footer[len(item.title) + 1:]
+            else:
+                credits = footer
+        custom = CustomSlide(title=item.title, text=str(custom_xml.extract_xml(), 'utf-8'),
+                             theme_name=item.theme if item.theme else '', credits=credits)
         self.plugin.db_manager.save_object(custom)
         self.on_search_text_button_clicked()
 

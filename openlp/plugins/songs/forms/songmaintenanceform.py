@@ -30,7 +30,7 @@ from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.songs.forms.authorsform import AuthorsForm
 from openlp.plugins.songs.forms.songbookform import SongBookForm
 from openlp.plugins.songs.forms.topicsform import TopicsForm
-from openlp.plugins.songs.lib.db import Author, Book, Song, Topic, SongBookEntry
+from openlp.plugins.songs.lib.db import Author, SongBook, Song, Topic, SongBookEntry
 
 from .songmaintenancedialog import Ui_SongMaintenanceDialog
 
@@ -163,7 +163,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
             return get_natural_key(book.name)
 
         self.song_books_list_widget.clear()
-        books = self.manager.get_all_objects(Book)
+        books = self.manager.get_all_objects(SongBook)
         books.sort(key=get_book_key)
         for book in books:
             book_name = QtWidgets.QListWidgetItem('{name} ({publisher})'.format(name=book.name,
@@ -206,7 +206,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         :param edit: Are we editing the song?
         """
         books = self.manager.get_all_objects(
-            Book, and_(Book.name == new_book.name, Book.publisher == new_book.publisher))
+            SongBook, and_(SongBook.name == new_book.name, SongBook.publisher == new_book.publisher))
         return self._check_object_exists(books, new_book, edit)
 
     def _check_object_exists(self, existing_objects, new_object, edit):
@@ -236,7 +236,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         """
         self.author_form.auto_display_name = True
         if self.author_form.exec():
-            author = Author.populate(
+            author = Author(
                 first_name=self.author_form.first_name,
                 last_name=self.author_form.last_name,
                 display_name=self.author_form.display_name
@@ -256,7 +256,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         Add a topic to the list.
         """
         if self.topic_form.exec():
-            topic = Topic.populate(name=self.topic_form.name)
+            topic = Topic(name=self.topic_form.name)
             if self.check_topic_exists(topic):
                 if self.manager.save_object(topic):
                     self.reset_topics()
@@ -272,8 +272,8 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         Add a book to the list.
         """
         if self.song_book_form.exec():
-            book = Book.populate(name=self.song_book_form.name_edit.text(),
-                                 publisher=self.song_book_form.publisher_edit.text())
+            book = SongBook(name=self.song_book_form.name_edit.text(),
+                            publisher=self.song_book_form.publisher_edit.text())
             if self.check_song_book_exists(book):
                 if self.manager.save_object(book):
                     self.reset_song_books()
@@ -370,7 +370,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         book_id = self._get_current_item_id(self.song_books_list_widget)
         if book_id == -1:
             return
-        book = self.manager.get_object(Book, book_id)
+        book = self.manager.get_object(SongBook, book_id)
         if book.publisher is None:
             book.publisher = ''
         self.song_book_form.name_edit.setText(book.name)
@@ -466,11 +466,11 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         """
         # Find the duplicate.
         existing_book = self.manager.get_object_filtered(
-            Book,
+            SongBook,
             and_(
-                Book.name == old_song_book.name,
-                Book.publisher == old_song_book.publisher,
-                Book.id != old_song_book.id
+                SongBook.name == old_song_book.name,
+                SongBook.publisher == old_song_book.publisher,
+                SongBook.id != old_song_book.id
             )
         )
         if existing_book is None:
@@ -508,7 +508,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
             self.manager.save_object(song)
             self.manager.delete_object(SongBookEntry, (old_song_book.id, song_id, old_book_song_number))
 
-        self.manager.delete_object(Book, old_song_book.id)
+        self.manager.delete_object(SongBook, old_song_book.id)
 
     def on_delete_author_button_clicked(self):
         """
@@ -537,7 +537,7 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         """
         Delete the Book if the Book is not attached to any songs.
         """
-        self._delete_item(Book, self.song_books_list_widget, self.reset_song_books,
+        self._delete_item(SongBook, self.song_books_list_widget, self.reset_song_books,
                           translate('SongsPlugin.SongMaintenanceForm', 'Delete Book'),
                           translate('SongsPlugin.SongMaintenanceForm',
                                     'Are you sure you want to delete the selected book?'),

@@ -21,16 +21,17 @@
 
 import logging
 
-from openlp.core.state import State
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.db import Manager
 from openlp.core.lib.plugin import Plugin, StringContent
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
+
 from openlp.plugins.images.lib import upgrade
-from openlp.plugins.images.lib.mediaitem import ImageMediaItem
-from openlp.plugins.images.lib.imagetab import ImageTab
 from openlp.plugins.images.lib.db import init_schema
+from openlp.plugins.images.lib.imagetab import ImageTab
+from openlp.plugins.images.lib.mediaitem import ImageMediaItem
 
 
 log = logging.getLogger(__name__)

@@ -435,7 +435,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 2 == mocked_db_manager.save_object.call_count, \
             'The save_object() method should have been called twice'
         mocked_db_manager.get_object_filtered.assert_called_with(MockedAuthor, False)
-        MockedAuthor.populate.assert_called_with(first_name='Public', last_name='Domain', display_name='Public Domain')
+        MockedAuthor.assert_called_with(first_name='Public', last_name='Domain', display_name='Public Domain')
         assert 1 == len(result.authors_songs), 'There should only be one author'
 
     @patch('openlp.plugins.songs.lib.songselect.clean_song')
@@ -470,7 +470,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 2 == mocked_db_manager.save_object.call_count, \
             'The save_object() method should have been called twice'
         mocked_db_manager.get_object_filtered.assert_called_with(MockedAuthor, False)
-        assert 0 == MockedAuthor.populate.call_count, 'A new author should not have been instantiated'
+        assert 0 == MockedAuthor.call_count, 'A new author should not have been instantiated'
         assert 1 == len(result.authors_songs), 'There should only be one author'
 
     @patch('openlp.plugins.songs.lib.songselect.clean_song')
@@ -505,7 +505,7 @@ class TestSongSelectImport(TestCase, TestMixin):
         assert 2 == mocked_db_manager.save_object.call_count, \
             'The save_object() method should have been called twice'
         mocked_db_manager.get_object_filtered.assert_called_with(MockedAuthor, False)
-        MockedAuthor.populate.assert_called_with(first_name='Unknown', last_name='', display_name='Unknown')
+        MockedAuthor.assert_called_with(first_name='Unknown', last_name='', display_name='Unknown')
         assert 1 == len(result.authors_songs), 'There should only be one author'
 
     @patch('openlp.plugins.songs.lib.songselect.clean_song')
@@ -545,8 +545,8 @@ class TestSongSelectImport(TestCase, TestMixin):
         # THEN: The return value should be a Song class and the topics should have been added
         assert isinstance(result, Song), 'The returned value should be a Song object'
         mocked_clean_song.assert_called_with(mocked_db_manager, result)
-        assert MockedTopic.populate.call_count == 2, 'Should have created 2 new topics'
-        MockedTopic.populate.assert_called_with(name='Flood')
+        assert MockedTopic.call_count == 2, 'Should have created 2 new topics'
+        MockedTopic.assert_called_with(name='Flood')
         assert 1 == len(result.authors_songs), 'There should only be one author'
 
 

@@ -44,7 +44,7 @@ from openlp.plugins.songs.forms.songexportform import SongExportForm
 from openlp.plugins.songs.forms.songimportform import SongImportForm
 from openlp.plugins.songs.forms.songmaintenanceform import SongMaintenanceForm
 from openlp.plugins.songs.lib import VerseType, clean_string, delete_song
-from openlp.plugins.songs.lib.db import Author, AuthorType, Book, MediaFile, Song, SongBookEntry, Topic
+from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, MediaFile, Song, SongBookEntry, Topic
 from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics, SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
 
@@ -84,7 +84,7 @@ class SongMediaItem(MediaManagerItem):
                 AppLocation.get_section_data_path(self.plugin.name) / 'audio' / str(song.id) / os.path.split(bga[0])[1]
             create_paths(dest_path.parent)
             copyfile(AppLocation.get_section_data_path('servicemanager') / bga[0], dest_path)
-            song.media_files.append(MediaFile.populate(weight=i, file_path=dest_path, file_hash=bga[1]))
+            song.media_files.append(MediaFile(weight=i, file_path=dest_path, file_hash=bga[1]))
         self.plugin.manager.save_object(song, True)
 
     def add_middle_header_bar(self):
@@ -194,10 +194,10 @@ class SongMediaItem(MediaManagerItem):
             search_keywords = search_keywords.rpartition(' ')
             search_book = '{text}%'.format(text=search_keywords[0])
             search_entry = '{text}%'.format(text=search_keywords[2])
-            search_results = (self.plugin.manager.session.query(SongBookEntry.entry, Book.name, Song.title, Song.id)
+            search_results = (self.plugin.manager.session.query(SongBookEntry.entry, SongBook.name, Song.title, Song.id)
                               .join(Song)
-                              .join(Book)
-                              .filter(Book.name.like(search_book), SongBookEntry.entry.like(search_entry),
+                              .join(SongBook)
+                              .filter(SongBook.name.like(search_book), SongBookEntry.entry.like(search_entry),
                                       Song.temporary.is_(False)).all())
             self.display_results_book(search_results)
         elif search_type == SongSearch.Themes:
@@ -223,8 +223,8 @@ class SongMediaItem(MediaManagerItem):
         search_string = '%{text}%'.format(text=clean_string(search_keywords))
         return self.plugin.manager.session.query(Song) \
             .join(SongBookEntry, isouter=True) \
-            .join(Book, isouter=True) \
-            .filter(or_(Book.name.like(search_string), SongBookEntry.entry.like(search_string),
+            .join(SongBook, isouter=True) \
+            .filter(or_(SongBook.name.like(search_string), SongBookEntry.entry.like(search_string),
                         # hint: search_title contains alternate title
                         Song.search_title.like(search_string), Song.search_lyrics.like(search_string),
                         Song.comments.like(search_string))) \

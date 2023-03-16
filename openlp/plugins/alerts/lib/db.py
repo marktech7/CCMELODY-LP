@@ -22,33 +22,38 @@
 The :mod:`db` module provides the database and schema that is the backend for the Alerts plugin.
 """
 
-from sqlalchemy import Column, Table, types
-from sqlalchemy.orm import mapper
+from sqlalchemy import Column, MetaData
+from sqlalchemy.orm import Session
+from sqlalchemy.types import Integer, UnicodeText
 
-from openlp.core.lib.db import BaseModel, init_db
+# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
+try:
+    from sqlalchemy.orm import declarative_base
+except ImportError:
+    from sqlalchemy.ext.declarative import declarative_base
+
+from openlp.core.lib.db import init_db
 
 
-class AlertItem(BaseModel):
+Base = declarative_base(MetaData())
+
+
+class AlertItem(Base):
     """
     AlertItem model
     """
-    pass
+    __tablename__ = 'alerts'
+    id = Column(Integer, primary_key=True)
+    text = Column(UnicodeText, nullable=False)
 
 
-def init_schema(url):
+def init_schema(url: str) -> Session:
     """
     Setup the alerts database connection and initialise the database schema
 
     :param url:
         The database to setup
     """
-    session, metadata = init_db(url)
-
-    alerts_table = Table('alerts', metadata,
-                         Column('id', types.Integer(), primary_key=True),
-                         Column('text', types.UnicodeText, nullable=False))
-
-    mapper(AlertItem, alerts_table)
-
+    session, metadata = init_db(url, base=Base)
     metadata.create_all(checkfirst=True)
     return session

@@ -65,7 +65,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.version import get_version
 from openlp.plugins.songs.lib import VerseType, clean_song
-from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song, Topic
+from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, Song, Topic
 
 
 log = logging.getLogger(__name__)
@@ -542,9 +542,9 @@ class OpenLyrics(object):
             author = self.manager.get_object_filtered(Author, Author.display_name == display_name)
             if author is None:
                 # We need to create a new author, as the author does not exist.
-                author = Author.populate(display_name=display_name,
-                                         last_name=display_name.split(' ')[-1],
-                                         first_name=' '.join(display_name.split(' ')[:-1]))
+                author = Author(display_name=display_name,
+                                last_name=display_name.split(' ')[-1],
+                                first_name=' '.join(display_name.split(' ')[:-1]))
             song.add_author(author, author_type)
 
     def _process_cclinumber(self, properties, song):
@@ -790,10 +790,10 @@ class OpenLyrics(object):
             for songbook in properties.songbooks.songbook:
                 book_name = songbook.get('name', '')
                 if book_name:
-                    book = self.manager.get_object_filtered(Book, Book.name == book_name)
+                    book = self.manager.get_object_filtered(SongBook, SongBook.name == book_name)
                     if book is None:
                         # We need to create a book, because it does not exist.
-                        book = Book.populate(name=book_name, publisher='')
+                        book = SongBook(name=book_name, publisher='')
                         self.manager.save_object(book)
                     song.add_songbook_entry(book, songbook.get('entry', ''))
 
@@ -825,7 +825,7 @@ class OpenLyrics(object):
                     topic = self.manager.get_object_filtered(Topic, Topic.name == topic_text)
                     if topic is None:
                         # We need to create a topic, because it does not exist.
-                        topic = Topic.populate(name=topic_text)
+                        topic = Topic(name=topic_text)
                         self.manager.save_object(topic)
                     song.topics.append(topic)
 

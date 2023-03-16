@@ -24,21 +24,37 @@ song databases into the current installation database.
 """
 import logging
 from pathlib import Path
+from sqlite3 import Row, connect as sqlite3_connect
 
-from sqlalchemy import MetaData, Table, create_engine
-from sqlalchemy.orm import class_mapper, mapper, relation, scoped_session, sessionmaker
-from sqlalchemy.orm.exc import UnmappedClassError
-
+from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import translate
-from openlp.core.lib.db import BaseModel
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib import clean_song
-from openlp.plugins.songs.lib.db import Author, Book, MediaFile, Song, Topic
+from openlp.plugins.songs.lib.db import Author, SongBook, MediaFile, Song, Topic
 
 from .songimport import SongImport
 
-
 log = logging.getLogger(__name__)
+
+
+SONG_AUTHORS = 'SELECT * FROM authors AS a JOIN authors_songs AS s ON a.id = s.author_id WHERE s.song_id = ?'
+SONG_TOPICS = 'SELECT t.name AS name FROM topics AS t JOIN songs_topics AS st ON t.id = st.topic_id ' \
+              'WHERE st.song_id = ?'
+SONG_BOOKS = 'SELECT b.name, b.publisher, e.entry FROM song_books AS b ' \
+             'JOIN songs_songbooks AS e ON b.id = e.songbook_id WHERE e.song_id = ?'
+SONG_MEDIA = 'SELECT * FROM media_files WHERE song_id = ?'
+
+
+def does_table_exist(conn, table_name: str) -> bool:
+    """Check if a table exists in the database"""
+    res = conn.execute('SELECT name FROM sqlite_master WHERE type = "table" AND name = ?', (table_name,))
+    return res.fetchone() is not None
+
+
+def does_column_exist(conn, table_name: str, column_name: str) -> bool:
+    """Check if a table exists in the database"""
+    res = conn.execute(f'SELECT * FROM {table_name} LIMIT 1')
+    return column_name in res.fetchone().keys()
 
 
 class OpenLPSongImport(SongImport):
@@ -62,228 +78,109 @@ class OpenLPSongImport(SongImport):
 
         :param progress_dialog: The QProgressDialog used when importing songs from the FRW.
         """
-
-        class OldAuthorSong(BaseModel):
-            """
-            Maps to the authors_songs table
-            """
-            pass
-
-        class OldAuthor(BaseModel):
-            """
-            Maps to the authors table
-            """
-            pass
-
-        class OldBook(BaseModel):
-            """
-            Maps to the songbooks table
-            """
-            pass
-
-        class OldMediaFile(BaseModel):
-            """
-            Maps to the media_files table
-            """
-            pass
-
-        class OldSong(BaseModel):
-            """
-            Maps to the songs table
-            """
-            pass
-
-        class OldTopic(BaseModel):
-            """
-            Maps to the topics table
-            """
-            pass
-
-        class OldSongBookEntry(BaseModel):
-            """
-            Maps to the songs_songbooks table
-            """
-            pass
-
         # Check the file type
         if self.import_source.suffix != '.sqlite':
             self.log_error(self.import_source, translate('SongsPlugin.OpenLPSongImport',
                                                          'Not a valid OpenLP 2 song database.'))
             return
-        self.import_source = 'sqlite:///{url}'.format(url=self.import_source)
-        # Load the db file and reflect it
-        engine = create_engine(self.import_source)
-        source_meta = MetaData()
-        source_meta.reflect(engine)
-        self.source_session = scoped_session(sessionmaker(bind=engine))
-        # Run some checks to see which version of the database we have
-        table_list = list(source_meta.tables.keys())
-        if 'media_files' in table_list:
-            has_media_files = True
-        else:
-            has_media_files = False
-        if 'songs_songbooks' in table_list:
-            has_songs_books = True
-        else:
-            has_songs_books = False
-        if 'authors_songs' in table_list:
-            has_authors_songs = True
-        else:
-            has_authors_songs = False
-        # Load up the tabls and map them out
-        try:
-            source_authors_table = source_meta.tables['authors']
-            source_song_books_table = source_meta.tables['song_books']
-            source_songs_table = source_meta.tables['songs']
-            source_topics_table = source_meta.tables['topics']
-            source_authors_songs_table = source_meta.tables['authors_songs']
-            source_songs_topics_table = source_meta.tables['songs_topics']
-            source_media_files_songs_table = None
-        except KeyError:
+        # Connect to the database
+        conn = sqlite3_connect(self.import_source)
+        conn.row_factory = Row
+        # Check that we have some of the mandatory tables
+        if not any([does_table_exist(conn, 'songs'), does_table_exist(conn, 'authors'),
+                    does_table_exist(conn, 'topics'), does_table_exist(conn, 'song_books')]):
             self.log_error(self.import_source, translate('SongsPlugin.OpenLPSongImport',
                                                          'Not a valid OpenLP 2 song database.'))
             return
-        # Set up media_files relations
-        if has_media_files:
-            source_media_files_table = source_meta.tables['media_files']
-            source_media_files_songs_table = source_meta.tables.get('media_files_songs')
-            try:
-                class_mapper(OldMediaFile)
-            except UnmappedClassError:
-                mapper(OldMediaFile, source_media_files_table)
-        if has_songs_books:
-            source_songs_songbooks_table = source_meta.tables['songs_songbooks']
-            try:
-                class_mapper(OldSongBookEntry)
-            except UnmappedClassError:
-                mapper(OldSongBookEntry, source_songs_songbooks_table, properties={'songbook': relation(OldBook)})
-        if has_authors_songs:
-            try:
-                class_mapper(OldAuthorSong)
-            except UnmappedClassError:
-                mapper(OldAuthorSong, source_authors_songs_table)
-        if has_authors_songs and 'author_type' in source_authors_songs_table.c.keys():
-            has_author_type = True
-        else:
-            has_author_type = False
-        # Set up the songs relationships
-        song_props = {
-            'authors': relation(OldAuthor, backref='songs', secondary=source_authors_songs_table),
-            'topics': relation(OldTopic, backref='songs', secondary=source_songs_topics_table)
-        }
-        if has_media_files:
-            if isinstance(source_media_files_songs_table, Table):
-                song_props['media_files'] = relation(OldMediaFile, backref='songs',
-                                                     secondary=source_media_files_songs_table)
-            else:
-                song_props['media_files'] = \
-                    relation(OldMediaFile, backref='songs',
-                             foreign_keys=[source_media_files_table.c.song_id],
-                             primaryjoin=source_songs_table.c.id == source_media_files_table.c.song_id)
-        if has_songs_books:
-            song_props['songbook_entries'] = relation(OldSongBookEntry, backref='song', cascade='all, delete-orphan')
-        else:
-            song_props['book'] = relation(OldBook, backref='songs')
-        if has_authors_songs:
-            song_props['authors_songs'] = relation(OldAuthorSong)
-        # Map the rest of the tables
-        try:
-            class_mapper(OldAuthor)
-        except UnmappedClassError:
-            mapper(OldAuthor, source_authors_table)
-        try:
-            class_mapper(OldBook)
-        except UnmappedClassError:
-            mapper(OldBook, source_song_books_table)
-        try:
-            class_mapper(OldSong)
-        except UnmappedClassError:
-            mapper(OldSong, source_songs_table, properties=song_props)
-        try:
-            class_mapper(OldTopic)
-        except UnmappedClassError:
-            mapper(OldTopic, source_topics_table)
-
-        source_songs = self.source_session.query(OldSong).all()
+        # Determine the database structure
+        has_media_files = does_table_exist(conn, 'media_files')
+        has_songs_books = does_table_exist(conn, 'songs_songbooks')
+        # has_authors_songs = does_table_exist(conn, 'authors_songs')
+        # has_author_type = has_authors_songs and does_column_exist(conn, 'authors_songs', 'author_type')
+        # Set up wizard
         if self.import_wizard:
-            self.import_wizard.progress_bar.setMaximum(len(source_songs))
-        for song in source_songs:
+            song_count = conn.execute('SELECT COUNT(id) AS song_count FROM songs').fetchone()
+            self.import_wizard.progress_bar.setMaximum(song_count['song_count'])
+        for song in conn.execute('SELECT * FROM songs'):
             new_song = Song()
-            new_song.title = song.title
-            if has_media_files and hasattr(song, 'alternate_title'):
-                new_song.alternate_title = song.alternate_title
+            new_song.title = song['title']
+            if 'alternate_title' in song.keys():
+                new_song.alternate_title = song['alternate_title']
             else:
-                old_titles = song.search_title.split('@')
+                old_titles = song['search_title'].split('@')
                 if len(old_titles) > 1:
                     new_song.alternate_title = old_titles[1]
             # Transfer the values to the new song object
             new_song.search_title = ''
             new_song.search_lyrics = ''
-            new_song.lyrics = song.lyrics
-            new_song.verse_order = song.verse_order
-            new_song.copyright = song.copyright
-            new_song.comments = song.comments
-            new_song.theme_name = song.theme_name
-            new_song.ccli_number = song.ccli_number
-            if hasattr(song, 'song_number') and song.song_number:
-                new_song.song_number = song.song_number
+            new_song.lyrics = song['lyrics']
+            new_song.verse_order = song['verse_order']
+            new_song.copyright = song['copyright']
+            new_song.comments = song['comments']
+            new_song.theme_name = song['theme_name']
+            new_song.ccli_number = song['ccli_number']
+            if 'song_number' in song.keys():
+                new_song.song_number = song['song_number']
             # Find or create all the authors and add them to the new song object
-            for author in song.authors:
-                existing_author = self.manager.get_object_filtered(Author, Author.display_name == author.display_name)
+            song_authors = conn.execute(SONG_AUTHORS, (song['id'],))
+            for author in song_authors:
+                existing_author = self.manager.get_object_filtered(Author,
+                                                                   Author.display_name == author['display_name'])
                 if not existing_author:
-                    existing_author = Author.populate(
-                        first_name=author.first_name,
-                        last_name=author.last_name,
-                        display_name=author.display_name
+                    existing_author = Author(
+                        first_name=author['first_name'],
+                        last_name=author['last_name'],
+                        display_name=author['display_name']
                     )
                 # If this is a new database, we need to import the author_type too
-                author_type = None
-                if has_author_type:
-                    for author_song in song.authors_songs:
-                        if author_song.author_id == author.id:
-                            author_type = author_song.author_type
-                            break
+                try:
+                    author_type = author['author_type']
+                except IndexError:
+                    author_type = ''
                 new_song.add_author(existing_author, author_type)
             # Find or create all the topics and add them to the new song object
-            if song.topics:
-                for topic in song.topics:
-                    existing_topic = self.manager.get_object_filtered(Topic, Topic.name == topic.name)
-                    if not existing_topic:
-                        existing_topic = Topic.populate(name=topic.name)
-                    new_song.topics.append(existing_topic)
+            for topic in conn.execute(SONG_TOPICS, (song['id'],)):
+                existing_topic = self.manager.get_object_filtered(Topic, Topic.name == topic['name'])
+                if not existing_topic:
+                    existing_topic = Topic(name=topic['name'])
+                new_song.topics.append(existing_topic)
             # Find or create all the songbooks and add them to the new song object
-            if has_songs_books and song.songbook_entries:
-                for entry in song.songbook_entries:
-                    existing_book = self.manager.get_object_filtered(Book, Book.name == entry.songbook.name)
+            if has_songs_books:
+                for entry in conn.execute(SONG_BOOKS, (song['id'],)):
+                    existing_book = self.manager.get_object_filtered(SongBook, SongBook.name == entry['name'])
                     if not existing_book:
-                        existing_book = Book.populate(name=entry.songbook.name, publisher=entry.songbook.publisher)
-                    new_song.add_songbook_entry(existing_book, entry.entry)
-            elif hasattr(song, 'book') and song.book:
-                existing_book = self.manager.get_object_filtered(Book, Book.name == song.book.name)
+                        existing_book = SongBook(name=entry['name'], publisher=entry['publisher'])
+                    new_song.add_songbook_entry(existing_book, entry['entry'])
+            elif does_column_exist(conn, 'songs', 'book_id'):
+                book = conn.execute('SELECT name, publisher FROM song_books WHERE id = ?', (song['book_id'],))
+                existing_book = self.manager.get_object_filtered(SongBook, SongBook.name == book['name'])
                 if not existing_book:
-                    existing_book = Book.populate(name=song.book.name, publisher=song.book.publisher)
+                    existing_book = SongBook(name=book['name'], publisher=book['publisher'])
                 # Get the song_number from "songs" table "song_number" field. (This is db structure from 2.2.1)
                 # If there's a number, add it to the song, otherwise it will be "".
-                existing_number = song.song_number if hasattr(song, 'song_number') else ''
-                if existing_number:
-                    new_song.add_songbook_entry(existing_book, existing_number)
+                if 'song_number' in song.keys():
+                    new_song.add_songbook_entry(existing_book, song['song_number'])
                 else:
                     new_song.add_songbook_entry(existing_book, '')
             # Find or create all the media files and add them to the new song object
-            if has_media_files and song.media_files:
-                for media_file in song.media_files:
+            if has_media_files:
+                for media_file in conn.execute(SONG_MEDIA, (song['id'],)):
                     # Database now uses paths rather than strings for media files, and the key name has
                     # changed appropriately. This catches any databases using the old key name.
                     try:
-                        media_path = media_file.file_path
-                    except Exception:
-                        media_path = Path(media_file.file_name)
-                    existing_media_file = self.manager.get_object_filtered(
-                        MediaFile, MediaFile.file_path == media_path)
+                        media_path = media_file['file_path']
+                    except (IndexError, KeyError):
+                        media_path = Path(media_file['file_name'])
+                    existing_media_file = self.manager.get_object_filtered(MediaFile,
+                                                                           MediaFile.file_path == media_path)
                     if existing_media_file:
                         new_song.media_files.append(existing_media_file)
                     else:
-                        new_song.media_files.append(MediaFile.populate(file_path=media_path))
+                        if 'file_hash' in media_file.keys():
+                            file_hash = media_file['file_hash']
+                        else:
+                            file_hash = sha256_file_hash(media_path)
+                        new_song.media_files.append(MediaFile(file_path=media_path, file_hash=file_hash))
             clean_song(self.manager, new_song)
             self.manager.save_object(new_song)
             if progress_dialog:
@@ -293,5 +190,4 @@ class OpenLPSongImport(SongImport):
                 self.import_wizard.increment_progress_bar(WizardStrings.ImportingType.format(source=new_song.title))
             if self.stop_import_flag:
                 break
-        self.source_session.close()
-        engine.dispose()
+        conn.close()

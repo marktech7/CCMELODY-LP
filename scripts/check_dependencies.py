@@ -94,7 +94,6 @@ MODULES = [
     'qtawesome',
     'pymediainfo',
     'vlc',
-    'zeroconf',
     'qrcode',
     'PIL.ImageQt'
 ]

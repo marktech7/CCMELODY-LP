@@ -22,17 +22,34 @@
 The :mod:`db` module provides the database and schema that is the backend for
 the Custom plugin
 """
-from sqlalchemy import Column, Table, types
-from sqlalchemy.orm import mapper
+from sqlalchemy import Column, MetaData
+from sqlalchemy.types import Integer, Unicode, UnicodeText
+
+# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
+try:
+    from sqlalchemy.orm import declarative_base
+except ImportError:
+    from sqlalchemy.ext.declarative import declarative_base
 
 from openlp.core.common.i18n import get_natural_key
-from openlp.core.lib.db import BaseModel, init_db
+from openlp.core.lib.db import init_db
 
 
-class CustomSlide(BaseModel):
+Base = declarative_base(MetaData())
+
+
+class CustomSlide(Base):
     """
     CustomSlide model
     """
+    __tablename__ = 'custom_slide'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(Unicode(255), nullable=False)
+    text = Column(UnicodeText, nullable=False)
+    credits = Column(UnicodeText)
+    theme_name = Column(Unicode(128))
+
     # By default sort the customs by its title considering language specific characters.
     def __lt__(self, other):
         return get_natural_key(self.title) < get_natural_key(other.title)
@@ -53,17 +70,6 @@ def init_schema(url):
 
     :param url:  The database to setup
     """
-    session, metadata = init_db(url)
-
-    custom_slide_table = Table('custom_slide', metadata,
-                               Column('id', types.Integer(), primary_key=True),
-                               Column('title', types.Unicode(255), nullable=False),
-                               Column('text', types.UnicodeText, nullable=False),
-                               Column('credits', types.UnicodeText),
-                               Column('theme_name', types.Unicode(128))
-                               )
-
-    mapper(CustomSlide, custom_slide_table)
-
+    session, metadata = init_db(url, base=Base)
     metadata.create_all(checkfirst=True)
     return session

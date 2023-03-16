@@ -23,40 +23,45 @@ The :mod:`db` module provides the database and schema that is the backend for
 the SongUsage plugin
 """
 
-from sqlalchemy import Column, Table, types
-from sqlalchemy.orm import mapper
+from sqlalchemy import Column, MetaData
+from sqlalchemy.orm import Session
+from sqlalchemy.types import Integer, Date, Time, Unicode
 
-from openlp.core.lib.db import BaseModel, init_db
+# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
+try:
+    from sqlalchemy.orm import declarative_base
+except ImportError:
+    from sqlalchemy.ext.declarative import declarative_base
+
+from openlp.core.lib.db import init_db
 
 
-class SongUsageItem(BaseModel):
+Base = declarative_base(MetaData())
+
+
+class SongUsageItem(Base):
     """
     SongUsageItem model
     """
-    pass
+    __tablename__ = 'songusage_data'
+
+    id = Column(Integer, primary_key=True)
+    usagedate = Column(Date, index=True, nullable=False)
+    usagetime = Column(Time, index=True, nullable=False)
+    title = Column(Unicode(255), nullable=False)
+    authors = Column(Unicode(255), nullable=False)
+    copyright = Column(Unicode(255))
+    ccl_number = Column(Unicode(65))
+    plugin_name = Column(Unicode(20))
+    source = Column(Unicode(10))
 
 
-def init_schema(url):
+def init_schema(url: str) -> Session:
     """
     Setup the songusage database connection and initialise the database schema
 
     :param url: The database to setup
     """
-    session, metadata = init_db(url)
-
-    songusage_table = Table('songusage_data', metadata,
-                            Column('id', types.Integer(), primary_key=True),
-                            Column('usagedate', types.Date, index=True, nullable=False),
-                            Column('usagetime', types.Time, index=True, nullable=False),
-                            Column('title', types.Unicode(255), nullable=False),
-                            Column('authors', types.Unicode(255), nullable=False),
-                            Column('copyright', types.Unicode(255)),
-                            Column('ccl_number', types.Unicode(65)),
-                            Column('plugin_name', types.Unicode(20)),
-                            Column('source', types.Unicode(10))
-                            )
-
-    mapper(SongUsageItem, songusage_table)
-
+    session, metadata = init_db(url, base=Base)
     metadata.create_all(checkfirst=True)
     return session

@@ -40,7 +40,6 @@ if is_win():
     import win32con
     import win32gui
     import win32ui
-    import winreg
     import pywintypes
 
 log = logging.getLogger(__name__)
@@ -60,7 +59,10 @@ class PowerpointController(PresentationController):
         log.debug('Initialising')
         super(PowerpointController, self).__init__(plugin, 'Powerpoint', PowerpointDocument)
         self.supports = ['ppt', 'pps', 'pptx', 'ppsx', 'pptm']
+        # MS Office has since version 12 (2007) or above supported odp
+        self.also_supports = ['odp']
         self.process = None
+        self.com_obj_name = None
 
     def check_available(self):
         """
@@ -68,21 +70,15 @@ class PowerpointController(PresentationController):
         """
         log.debug('check_available')
         if is_win():
-            try:
-                winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, 'PowerPoint.Application').Close()
+            # Entry postfixes are for versions 16=2016-2021, 15=2013, 14=2010, 12=2007, 17=future?
+            for entry in ['', '.16', '.17', '.15', '.14', '.12']:
                 try:
-                    # Try to detect if the version is 12 (2007) or above, and if so add 'odp' as a support filetype
-                    version_key = winreg.OpenKey(winreg.HKEY_CLASSES_ROOT, 'PowerPoint.Application\\CurVer')
-                    tmp1, app_version_string, tmp2 = winreg.EnumValue(version_key, 0)
-                    version_key.Close()
-                    app_version = int(app_version_string[-2:])
-                    if app_version >= 12:
-                        self.also_supports = ['odp']
-                except (OSError, ValueError):
-                    log.exception('Detection of powerpoint version using registry failed.')
-                return True
-            except OSError:
-                pass
+                    process = Dispatch('PowerPoint.Application' + entry)
+                    self.com_obj_name = 'PowerPoint.Application' + entry
+                    process.Quit()
+                    return True
+                except (AttributeError, pywintypes.com_error):
+                    pass
         return False
 
     if is_win():
@@ -91,8 +87,8 @@ class PowerpointController(PresentationController):
             Loads PowerPoint process.
             """
             log.debug('start_process')
-            if not self.process:
-                self.process = Dispatch('PowerPoint.Application')
+            if not self.process and self.com_obj_name:
+                self.process = Dispatch(self.com_obj_name)
 
         def kill(self):
             """

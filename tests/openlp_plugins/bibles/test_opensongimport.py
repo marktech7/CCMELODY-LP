@@ -412,6 +412,8 @@ def test_file_import(manager, mock_settings):
         importer.session = MagicMock()
         importer.get_language = MagicMock()
         importer.get_language.return_value = 'Danish'
+        importer.get_language_id = MagicMock()
+        importer.get_language_id.return_value = 'dk'
 
         # WHEN: Importing bible file
         importer.file_path = TEST_PATH / bible_file

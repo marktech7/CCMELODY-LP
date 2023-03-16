@@ -254,27 +254,27 @@ class SongFormat(object):
         },
         EasyWorshipDB: {
             'class': EasyWorshipSongImport,
-            'name': 'EasyWorship Song Database',
+            'name': 'EasyWorship 2007/2009 Song Database',
             'prefix': 'ew',
             'selectMode': SongFormatSelect.SingleFile,
             'filter': '{text} (*.DB)'.format(text=translate('SongsPlugin.ImportWizardForm',
-                                                            'EasyWorship Song Database'))
+                                                            'EasyWorship 2007/2009 Song Database'))
         },
         EasyWorshipSqliteDB: {
             'class': EasyWorshipSongImport,
-            'name': 'EasyWorship 6 Song Database',
+            'name': 'EasyWorship 6/7 Song Database',
             'prefix': 'ew',
             'selectMode': SongFormatSelect.SingleFolder,
             'filter': '{text} (*.db)'.format(text=translate('SongsPlugin.ImportWizardForm',
-                                                            'EasyWorship 6 Song Data Directory'))
+                                                            'EasyWorship 6/7 Song Data Directory'))
         },
         EasyWorshipService: {
             'class': EasyWorshipSongImport,
-            'name': 'EasyWorship Service',
+            'name': 'EasyWorship 2007/2009 Service File',
             'prefix': 'ew',
             'selectMode': SongFormatSelect.SingleFile,
             'filter': '{text} (*.ews)'.format(text=translate('SongsPlugin.ImportWizardForm',
-                                                             'EasyWorship Service File'))
+                                                             'EasyWorship 2007/2009 Service File'))
         },
         FoilPresenter: {
             'class': FoilPresenterImport,

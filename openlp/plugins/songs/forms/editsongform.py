@@ -44,7 +44,7 @@ from openlp.plugins.songs.forms.editsongdialog import Ui_EditSongDialog
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
 from openlp.plugins.songs.forms.mediafilesform import MediaFilesForm
 from openlp.plugins.songs.lib import VerseType, clean_song
-from openlp.plugins.songs.lib.db import Author, AuthorType, Book, MediaFile, Song, SongBookEntry, Topic
+from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, MediaFile, Song, SongBookEntry, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 from openlp.plugins.songs.lib.ui import SongStrings, show_key_warning
 
@@ -406,7 +406,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         Load the Songbooks into the combobox
         """
         self.songbooks = []
-        self._load_objects(Book, self.songbooks_combo_box, self.songbooks)
+        self._load_objects(SongBook, self.songbooks_combo_box, self.songbooks)
 
     def load_themes(self, theme_list: list):
         """
@@ -599,10 +599,10 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
                     translate('SongsPlugin.EditSongForm', 'This author does not exist, do you want to add them?'),
                     defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.Yes:
                 if text.find(' ') == -1:
-                    author = Author.populate(first_name='', last_name='', display_name=text)
+                    author = Author(first_name='', last_name='', display_name=text)
                 else:
-                    author = Author.populate(first_name=text.rsplit(' ', 1)[0], last_name=text.rsplit(' ', 1)[1],
-                                             display_name=text)
+                    author = Author(first_name=text.rsplit(' ', 1)[0], last_name=text.rsplit(' ', 1)[1],
+                                    display_name=text)
                 self.manager.save_object(author)
                 self._add_author_to_list(author, author_type)
                 self.load_authors()
@@ -676,7 +676,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
                     self, translate('SongsPlugin.EditSongForm', 'Add Topic'),
                     translate('SongsPlugin.EditSongForm', 'This topic does not exist, do you want to add it?'),
                     defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.Yes:
-                topic = Topic.populate(name=text)
+                topic = Topic(name=text)
                 self.manager.save_object(topic)
                 topic_item = QtWidgets.QListWidgetItem(str(topic.name))
                 topic_item.setData(QtCore.Qt.UserRole, topic.id)
@@ -722,7 +722,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
                     self, translate('SongsPlugin.EditSongForm', 'Add Songbook'),
                     translate('SongsPlugin.EditSongForm', 'This Songbook does not exist, do you want to add it?'),
                     defaultButton=QtWidgets.QMessageBox.Yes) == QtWidgets.QMessageBox.Yes:
-                songbook = Book.populate(name=text)
+                songbook = SongBook(name=text)
                 self.manager.save_object(songbook)
                 self.add_songbook_entry_to_list(songbook.id, songbook.name, self.songbook_entry_edit.text())
                 self.load_songbooks()
@@ -733,7 +733,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
                 return
         elif item >= 0:
             item_id = (self.songbooks_combo_box.itemData(item))
-            songbook = self.manager.get_object(Book, item_id)
+            songbook = self.manager.get_object(SongBook, item_id)
             if self.songbooks_list_view.findItems(str(songbook.name), QtCore.Qt.MatchExactly):
                 critical_error_message_box(
                     message=translate('SongsPlugin.EditSongForm', 'This Songbook is already in the list.'))
@@ -1029,7 +1029,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
     def save_song(self, preview=False):
         """
         Get all the data from the widgets on the form, and then save it to the database. The form has been validated
-        and all reference items (Authors, Books and Topics) have been saved before this function is called.
+        and all reference items (Authors, SongBooks and Topics) have been saved before this function is called.
 
         :param preview: Should be ``True`` if the song is also previewed (boolean).
         """
@@ -1075,7 +1075,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         for row in range(self.songbooks_list_view.count()):
             item = self.songbooks_list_view.item(row)
             songbook_id = item.data(QtCore.Qt.UserRole)[0]
-            songbook = self.manager.get_object(Book, songbook_id)
+            songbook = self.manager.get_object(SongBook, songbook_id)
             entry = item.data(QtCore.Qt.UserRole)[1]
             self.song.add_songbook_entry(songbook, entry)
         # Save the song here because we need a valid id for the audio files.
