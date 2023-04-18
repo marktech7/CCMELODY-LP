@@ -723,7 +723,26 @@ describe("Display.alertAnimationEndEvent", function () {
   });
 });
 
-describe("Display.setTextSlide", function () {
+describe("Display.doLinesFit", function () {
+  beforeEach(function() {
+    document.body.innerHTML = "";
+    var slides_container = _createDiv({"class": "slides"});
+    var footer_container = _createDiv({"class": "footer"});
+    Display._slidesContainer = slides_container;
+    Display._footerContainer = footer_container;
+    Display._slides = {};
+  });
+
+  it("should return true for a line that fits", function () {
+    spyOn(window, "$").and.returnValue([{clientWidth: 2, scrollWidth: 2}, {clientWidth: 1, scrollWidth: 2}])
+
+    var return_value = Display.doLinesFit()
+
+    expect(return_value).toEqual([true, false])
+  })
+});
+
+describe("Display.setTextSlidesNoTransition", function () {
   beforeEach(function() {
     document.body.innerHTML = "";
     var slides_container = _createDiv({"class": "slides"});
@@ -734,36 +753,37 @@ describe("Display.setTextSlide", function () {
   });
 
   it("should add a new slide", function () {
-    var text = "Amazing grace,\nhow sweet the sound";
+    var slides = ["Amazing grace,\nhow sweet the sound"];
     spyOn(Display, "reinit");
 
-    Display.setTextSlide(text);
+    Display.setTextSlidesNoTransition(slides);
 
-    expect(Display._slides["test-slide"]).toEqual(0);
+    expect(Display._slides[0]).toEqual(0);
     expect($(".slides > section > section").length).toEqual(1);
-    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(slides[0]));
     expect(Display.reinit).toHaveBeenCalled();
   });
 
-  it("should update an existing slide", function () {
-    var text = "That saved a wretch\nlike me";
+  it("should add multiple new slides", function () {
+    var slides = ["Amazing grace,\nhow sweet the sound", "That saved a wretch like me"];
     spyOn(Display, "reinit");
-    Display.setTextSlide("Amazing grace,\nhow sweet the sound");
 
-    Display.setTextSlide(text);
+    Display.setTextSlidesNoTransition(slides);
 
-    expect(Display._slides["test-slide"]).toEqual(0);
-    expect($(".slides > section > section").length).toEqual(1);
-    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(text));
-    expect(Display.reinit).toHaveBeenCalledTimes(1); // only called once for the first setTextSlide
+    expect(Display._slides[0]).toEqual(0);
+    expect(Display._slides[1]).toEqual(1);
+    expect($(".slides > section > section").length).toEqual(2);
+    expect($(".slides > section > section")[0].innerHTML).toEqual(_prepareText(slides[0]));
+    expect($(".slides > section > section")[1].innerHTML).toEqual(_prepareText(slides[1]));
+    expect(Display.reinit).toHaveBeenCalled();
   });
 
   it("should give the new slide the future class", function () {
     var text = "That saved a wretch\nlike me";
     spyOn(Display, "reinit");
-    Display.setTextSlide("Amazing grace,\nhow sweet the sound");
+    Display.setTextSlidesNoTransition(["Amazing grace,\nhow sweet the sound"]);
 
-    Display.setTextSlide(text);
+    Display.setTextSlidesNoTransition([text]);
 
     expect($(".slides > section > section")[0].classList.contains("future")).toEqual(true);
   });

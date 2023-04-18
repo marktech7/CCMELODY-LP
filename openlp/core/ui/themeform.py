@@ -326,6 +326,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         """
         self.alignment_page.horizontal_align = self.theme.display_horizontal_align
         self.alignment_page.vertical_align = self.theme.display_vertical_align
+        self.alignment_page.wrap_style = self.theme.display_wrap_style
         self.alignment_page.is_transition_enabled = self.theme.display_slide_transition
         self.alignment_page.transition_type = self.theme.display_slide_transition_type
         self.alignment_page.transition_speed = self.theme.display_slide_transition_speed
@@ -407,6 +408,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         # alignment page
         self.theme.display_horizontal_align = self.alignment_page.horizontal_align
         self.theme.display_vertical_align = self.alignment_page.vertical_align
+        self.theme.display_wrap_style = self.alignment_page.wrap_style
         self.theme.display_slide_transition = self.alignment_page.is_transition_enabled
         self.theme.display_slide_transition_type = self.alignment_page.transition_type
         self.theme.display_slide_transition_speed = self.alignment_page.transition_speed

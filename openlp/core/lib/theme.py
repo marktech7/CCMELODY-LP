@@ -283,6 +283,30 @@ class VerticalType(object):
         return VerticalType.Names.index(align)
 
 
+class WrapStyle(object):
+    """
+    Type enumeration for wrap style.
+    """
+    Even = 0
+    Greedy = 1
+
+    Names = ['even', 'greedy']
+
+    @staticmethod
+    def to_string(wrap):
+        """
+        Return a string representation of the wrap style
+        """
+        return WrapStyle.Names[wrap]
+
+    @staticmethod
+    def from_string(wrap):
+        """
+        Return an wrap style for a given string
+        """
+        return WrapStyle.Names.index(wrap)
+
+
 BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition', 'slide_transition_reverse']
 
 INTEGER_LIST = ['size', 'line_adjustment', 'x', 'height', 'y', 'width', 'shadow_size', 'outline_size',

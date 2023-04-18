@@ -27,6 +27,7 @@ import mako
 import math
 import os
 import re
+import json
 
 from PyQt5 import QtWidgets, QtGui
 
@@ -39,6 +40,7 @@ from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
 from openlp.core.display.window import DisplayWindow
 from openlp.core.lib import ItemCapabilities
+from openlp.core.lib.theme import WrapStyle
 from openlp.core.lib.formattingtags import FormattingTags
 
 
@@ -583,7 +585,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         self.force_page = force_page
         if not self.force_page:
             self.set_theme(theme_data, is_sync=True, service_item_type=ServiceItemType.Text)
-            slides = self.format_slide(VERSE, None)
+            slides = self.format_slide(VERSE, None, theme_data)
             verses = dict()
             verses['title'] = TITLE
             verses['text'] = render_tags(slides[0])
@@ -591,30 +593,46 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             verses['footer'] = self.generate_footer()
             self.load_verses([verses], is_sync=True)
             # Wait for a second
-            wait_for(lambda: False, timeout=1)
+            wait_for(lambda: False, 'Waited for theme preview', timeout=1)
             self.force_page = False
             if generate_screenshot:
                 return self.grab()
         self.force_page = False
         return None
 
-    def format_slide(self, text, item):
+    def format_slide(self, text, item, theme=None):
         """
         Calculate how much text can fit on a slide.
 
         :param text:  The words to go on the slides.
         :param item: The :class:`~openlp.core.lib.serviceitem.ServiceItem` item object.
+        :param theme: Theme data, only used if no item is present.
 
         """
-        wait_for(lambda: self._is_initialised)
+        wait_for(lambda: self._is_initialised, 'Waiting in format slide for initialisation')
         self.log_debug('format slide')
         if item:
+            theme = item.get_theme_data(self.theme_level)
             # Set theme for preview
-            self.set_theme(item.get_theme_data(self.theme_level))
+            self.set_theme(theme)
         # Add line endings after each line of text used for bibles.
         line_end = '<br>'
         if item and item.is_capable(ItemCapabilities.NoLineBreaks):
             line_end = ' '
+        # Split lines that are too long
+        strategy = None
+        if theme is not None:
+            strategy = theme.display_wrap_style
+        new_lines = []
+        lines = text.split('\n')
+        lines_fit = self._lines_fit_on_slide(lines)
+        for index, fits in enumerate(lines_fit):
+            if fits:
+                new_lines.append(lines[index].replace('[ ]', ' '))
+            else:
+                split_lines = self._break_line(lines[index], strategy)
+                new_lines += split_lines
+        text = '\n'.join(new_lines)
         # Bibles
         if item and item.name == 'bibles':
             if item.is_capable(ItemCapabilities.CanWordSplit):
@@ -625,70 +643,8 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                 else:
                     pages = self._paginate_slide(text.split('\n'), line_end)
         # Songs and Custom
-        elif item is None or (item and item.is_capable(ItemCapabilities.CanSoftBreak)):
-            pages = []
-            if '[---]' in text:
-                # Remove Overflow split if at start of the text
-                if text.startswith('[---]'):
-                    text = text[5:]
-                # Remove two or more option slide breaks next to each other (causing infinite loop).
-                while '\n[---]\n[---]\n' in text:
-                    text = text.replace('\n[---]\n[---]\n', '\n[---]\n')
-                while ' [---]' in text:
-                    text = text.replace(' [---]', '[---]')
-                while '[---] ' in text:
-                    text = text.replace('[---] ', '[---]')
-                # Grab the number of lines in the text to use as a max number of loops
-                count = text.count('\n') + 1
-                for _ in range(count):
-                    slides = text.split('\n[---]\n', 2)
-                    # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
-                    # for now).
-                    if len(slides) == 3:
-                        html_text = render_tags('\n'.join(slides[:2]))
-                    # We check both slides to determine if the optional split is needed (there is only one optional
-                    # split).
-                    else:
-                        html_text = render_tags('\n'.join(slides))
-                    html_text = html_text.replace('\n', '<br>')
-                    if self._text_fits_on_slide(html_text):
-                        # The first two optional slides fit (as a whole) on one slide. Replace the first occurrence
-                        # of [---].
-                        text = text.replace('\n[---]', '', 1)
-                    else:
-                        # The first optional slide fits, which means we have to render the first optional slide.
-                        text_contains_split = '[---]' in text
-                        if text_contains_split:
-                            try:
-                                text_to_render, text = text.split('\n[---]\n', 1)
-                            except ValueError:
-                                text_to_render = text.split('\n[---]\n')[0]
-                                text = ''
-                            text_to_render, raw_tags, html_tags = get_start_tags(text_to_render)
-                            if text:
-                                text = raw_tags + text
-                        else:
-                            text_to_render = text
-                            text = ''
-                        lines = text_to_render.strip('\n').split('\n')
-                        slides = self._paginate_slide(lines, line_end)
-                        if len(slides) > 1 and text:
-                            # Add all slides apart from the last one the list.
-                            pages.extend(slides[:-1])
-                            if text_contains_split:
-                                text = slides[-1] + '\n[---]\n' + text
-                            else:
-                                text = slides[-1] + '\n' + text
-                            text = text.replace('<br>', '\n')
-                        else:
-                            pages.extend(slides)
-                    if '[---]' not in text:
-                        lines = text.strip('\n').split('\n')
-                        pages.extend(self._paginate_slide(lines, line_end))
-                        break
-            else:
-                # Clean up line endings.
-                pages = self._paginate_slide(text.split('\n'), line_end)
+        elif (item is None or (item and item.is_capable(ItemCapabilities.CanSoftBreak))) and '[---]' in text:
+            pages = self._calculate_optional_splits(text, line_end)
         else:
             pages = self._paginate_slide(text.split('\n'), line_end)
         new_pages = []
@@ -697,6 +653,180 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
                 page = page[:-4]
             new_pages.append(page)
         return new_pages
+
+    def _break_line(self, line, strategy):
+        """
+        Splits a line using the specified strategy
+
+        :param line: The line to split.
+        :param strategy: The WrapStyle to use.
+        """
+        # Splitters in order of priority
+        # First of a pair is the symbol and second value is the
+        # text inserted if no line break is used.
+        splitters = [["[ ]", " "], [", ", ", "], [" ", " "]]
+        cleaned_text = line
+        for (sp, sub) in splitters:
+            cleaned_text = cleaned_text.replace(sp, sub)
+        full_length = len(cleaned_text)
+        best_fit = [cleaned_text]
+        for (splitter, substitute) in splitters:
+            cleaned_text = line
+            for (sp, sub) in splitters:
+                if splitter == sp:
+                    continue
+                cleaned_text = cleaned_text.replace(sp, sub)
+            line_segments = cleaned_text.split(splitter)
+            if (strategy == WrapStyle.Even):
+                [success, new_best_fit] = self._split_evenly(line_segments, substitute, full_length)
+            else:
+                [success, new_best_fit] = self._split_greedy(line_segments, substitute)
+            if new_best_fit is not None:
+                best_fit = new_best_fit
+            if (success is True):
+                break
+        # Full line fits, or failed to split; returns best attempt on failure
+        return best_fit
+
+    def _split_greedy(self, segments, join_str):
+        # Skip if none of this splitter are in the string
+        result_segments = []
+        result_fits = True
+        max_segments = len(segments)
+        if (max_segments == 1):
+            return [False, None]
+        while True:
+            lines_fit = self._lines_fit_on_slide(
+                [join_str.join(segments[:i + 1]) for i in range(0, max_segments)]
+            )
+            if (lines_fit[0] is False):
+                result_fits = False
+            lines_fit[0] = True
+            for fits in range(max_segments, 0, -1):
+                if (lines_fit[fits - 1] is True):
+                    result_segments.append(join_str.join(segments[:fits]))
+                    if (fits >= max_segments):
+                        return [result_fits, result_segments]
+                    else:
+                        segments = segments[fits:]
+                        max_segments = len(segments)
+                        break
+
+    def _split_evenly(self, segments, join_str, full_length):
+        # Skip if none of this splitter are in the string
+        max_segments = len(segments)
+        if (max_segments == 1):
+            return [False, None]
+        # Keep track of best attempt
+        smallest_attempt = []
+        smallest_attempt_largest_segment_size = 10000000
+        # Cache the length of the string after each possible split
+        split_spots = []
+        current_length = 0
+        substitute_length = len(join_str)
+        for segment in segments:
+            current_length += len(segment) + substitute_length
+            split_spots.append(current_length)
+        # Attempt to split line into increasingly more lines until it fits
+        for num_of_segments in range(2, max_segments + 1):
+            target_segment_size = full_length / num_of_segments
+            end_of_previous_segment = 0
+            new_segments = []
+            # For each split we are attempting to make
+            for split_num in range(1, num_of_segments):
+                target_split_spot = target_segment_size * split_num
+                closest_split = end_of_previous_segment
+                last_split_offset = 10000000
+                # Find best split place to split between segments
+                for index in range(end_of_previous_segment, max_segments):
+                    split_offset = int(abs(target_split_spot - split_spots[index]))
+                    if (split_offset > last_split_offset):
+                        closest_split = index
+                        break
+                    last_split_offset = split_offset
+                # No splits were left to use; end loop and add remaining text
+                if (closest_split == end_of_previous_segment):
+                    break
+                new_segment_pieces = segments[end_of_previous_segment:closest_split]
+                new_segments.append(join_str.join(new_segment_pieces))
+                end_of_previous_segment = closest_split
+            # Add the remaining part of the string
+            new_segment_pieces = segments[end_of_previous_segment:]
+            new_segments.append(join_str.join(new_segment_pieces))
+            # If lines already fit, no need to split them more
+            if all(self._lines_fit_on_slide(new_segments)):
+                return [True, new_segments]
+            else:
+                # Save this attempt if it has the smallest segment size yet
+                # (rough estimate as letters are different sizes)
+                # Without this, a large word that can't be split, could cause each word to be split individually.
+                largest_segment = max(map(lambda s: len(s), new_segments))
+                if largest_segment < smallest_attempt_largest_segment_size:
+                    smallest_attempt = new_segments
+        # couldn't fit at all, return the best attempt
+        return [False, smallest_attempt]
+
+    def _calculate_optional_splits(self, text, line_end):
+        pages = []
+        # Remove Overflow split if at start of the text
+        if text.startswith('[---]'):
+            text = text[5:]
+        # Remove two or more option slide breaks next to each other (causing infinite loop).
+        while '\n[---]\n[---]\n' in text:
+            text = text.replace('\n[---]\n[---]\n', '\n[---]\n')
+        while ' [---]' in text:
+            text = text.replace(' [---]', '[---]')
+        while '[---] ' in text:
+            text = text.replace('[---] ', '[---]')
+        # Grab the number of lines in the text to use as a max number of loops
+        count = text.count('\n') + 1
+        for _ in range(count):
+            slides = text.split('\n[---]\n', 2)
+            # If there are (at least) two occurrences of [---] we use the first two slides (and neglect the last
+            # for now).
+            if len(slides) == 3:
+                html_text = render_tags('\n'.join(slides[:2]))
+            # We check both slides to determine if the optional split is needed (there is only one optional
+            # split).
+            else:
+                html_text = render_tags('\n'.join(slides))
+            html_text = html_text.replace('\n', '<br>')
+            if self._text_fits_on_slide(html_text):
+                # The first two optional slides fit (as a whole) on one slide. Replace the first occurrence
+                # of [---].
+                text = text.replace('\n[---]', '', 1)
+            else:
+                # The first optional slide fits, which means we have to render the first optional slide.
+                text_contains_split = '[---]' in text
+                if text_contains_split:
+                    try:
+                        text_to_render, text = text.split('\n[---]\n', 1)
+                    except ValueError:
+                        text_to_render = text.split('\n[---]\n')[0]
+                        text = ''
+                    text_to_render, raw_tags, html_tags = get_start_tags(text_to_render)
+                    if text:
+                        text = raw_tags + text
+                else:
+                    text_to_render = text
+                    text = ''
+                lines = text_to_render.strip('\n').split('\n')
+                slides = self._paginate_slide(lines, line_end)
+                if len(slides) > 1 and text:
+                    # Add all slides apart from the last one the list.
+                    pages.extend(slides[:-1])
+                    if text_contains_split:
+                        text = slides[-1] + '\n[---]\n' + text
+                    else:
+                        text = slides[-1] + '\n' + text
+                    text = text.replace('<br>', '\n')
+                else:
+                    pages.extend(slides)
+            if '[---]' not in text:
+                lines = text.strip('\n').split('\n')
+                pages.extend(self._paginate_slide(lines, line_end))
+                break
+        return pages
 
     def _paginate_slide(self, lines, line_end):
         """
@@ -841,10 +971,26 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             return True
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
-        self.run_javascript('Display.setTextSlide("{text}");'
+        self.run_javascript('Display.setTextSlidesNoTransition(["{text}"]);'
                             .format(text=text.replace('"', '\\"')), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
         does_text_fit = self.run_javascript('Display.doesContentFit();', is_sync=True)
+        return does_text_fit
+
+    def _lines_fit_on_slide(self, lines):
+        """
+        Checks if the given ``text`` fits on a slide. If it does ``True`` is returned, otherwise ``False``.
+        Text should always "fit" for empty strings
+
+        :param text:  The text to check. It may contain HTML tags.
+        """
+        if lines == []:
+            return []
+        self.clear_slides()
+        self.log_debug('_lines_fit_on_slide: \n{lines}'.format(lines=lines))
+        self.run_javascript('Display.setTextSlidesNoTransition({lines});'
+                            .format(lines=json.dumps(lines)), is_sync=True)
+        does_text_fit = self.run_javascript('Display.doLinesFit();', is_sync=True)
         return does_text_fit
 
     def save_screenshot(self, fname=None):

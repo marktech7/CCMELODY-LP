@@ -599,7 +599,9 @@ def transpose_verse(verse_text, transpose_value, notation, key):
             elif word == '/':
                 is_bass = True
                 transposed_lyrics += word
-            elif word == '--}{--':
+            elif word == '--}{--':  # Forced verse split
+                transposed_lyrics += word
+            elif word == ' ':  # Optional line splits
                 transposed_lyrics += word
             else:
                 # This MUST be a chord
