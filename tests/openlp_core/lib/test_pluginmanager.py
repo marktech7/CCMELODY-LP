@@ -53,11 +53,13 @@ def plugin_manager_env(registry, state):
     Registry().register('settings', MagicMock())
 
 
-def test_bootstrap_initialise(settings, state):
+@patch('openlp.core.lib.pluginmanager.Plugin.__subclasses__')
+def test_bootstrap_initialise(mocked_subclasses, settings, state):
     """
     Test the PluginManager.bootstrap_initialise() method
     """
     # GIVEN: A plugin manager with some mocked out methods
+    mocked_subclasses.return_value = [MagicMock()]
     State().add_service('mediacontroller', 0)
     State().update_pre_conditions('mediacontroller', True)
     manager = PluginManager()

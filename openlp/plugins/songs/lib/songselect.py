@@ -233,7 +233,7 @@ class SongSelectImport(object):
         :param song: Dictionary of the song to save
         :return:
         """
-        db_song = Song.populate(title=song['title'], copyright=song['copyright'], ccli_number=song['ccli_number'])
+        db_song = Song(title=song['title'], copyright=song['copyright'], ccli_number=song['ccli_number'])
         song_xml = SongXML()
         verse_order = []
         for verse in song['verses']:
@@ -265,12 +265,12 @@ class SongSelectImport(object):
                     last_name = ''
                 else:
                     last_name = name_parts[1]
-                author = Author.populate(first_name=first_name, last_name=last_name, display_name=author_name)
+                author = Author(first_name=first_name, last_name=last_name, display_name=author_name)
             db_song.add_author(author)
         for topic_name in song.get('topics', []):
             topic = self.db_manager.get_object_filtered(Topic, Topic.name == topic_name)
             if not topic:
-                topic = Topic.populate(name=topic_name)
+                topic = Topic(name=topic_name)
             db_song.topics.append(topic)
         self.db_manager.save_object(db_song)
         return db_song

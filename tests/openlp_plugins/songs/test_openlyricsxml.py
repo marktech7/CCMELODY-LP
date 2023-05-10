@@ -166,7 +166,7 @@ def test_process_songbooks(registry, settings):
     Test that _process_songbooks works
     """
     # GIVEN: A OpenLyric XML with songbooks and a mocked out manager
-    with patch('openlp.plugins.songs.lib.openlyricsxml.Book'):
+    with patch('openlp.plugins.songs.lib.openlyricsxml.SongBook'):
         mocked_manager = MagicMock()
         mocked_manager.get_object_filtered.return_value = None
         ol = OpenLyrics(mocked_manager)

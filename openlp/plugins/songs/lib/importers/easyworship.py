@@ -392,8 +392,10 @@ class EasyWorshipSongImport(SongImport):
             self.author = song[2]
             self.copyright = song[3]
             self.ccli_number = song[4]
-            words = words_db.execute('SELECT words FROM word WHERE song_id = ?;', (song_id,))
-            self.set_song_import_object(self.author, words.fetchone()[0].encode())
+            song_words_result = words_db.execute('SELECT words FROM word WHERE song_id = ?;', (song_id,))
+            words = song_words_result.fetchone()
+            if words:
+                self.set_song_import_object(self.author, words[0].encode())
             if not self.finish():
                 self.log_error(self.import_source,
                                translate('SongsPlugin.EasyWorshipSongImport',

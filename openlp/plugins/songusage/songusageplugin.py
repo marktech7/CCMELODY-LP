@@ -190,15 +190,16 @@ class SongUsagePlugin(Plugin):
     def _add_song_usage(self, source, item):
         audit = item[0].audit
         if self.song_usage_active and audit:
-            song_usage_item = SongUsageItem()
-            song_usage_item.usagedate = datetime.today()
-            song_usage_item.usagetime = datetime.now().time()
-            song_usage_item.title = audit[0]
-            song_usage_item.copyright = audit[2]
-            song_usage_item.ccl_number = audit[3]
-            song_usage_item.authors = ' '.join(audit[1])
-            song_usage_item.plugin_name = item[0].name
-            song_usage_item.source = source
+            song_usage_item = SongUsageItem(
+                usagedate=datetime.today(),
+                usagetime=datetime.now().time(),
+                title=audit[0],
+                copyright=audit[2],
+                ccl_number=audit[3],
+                authors=' '.join(audit[1]),
+                plugin_name=item[0].name,
+                source=source
+            )
             self.manager.save_object(song_usage_item)
 
     def on_song_usage_delete(self):

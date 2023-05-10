@@ -196,7 +196,7 @@ class ServiceItem(RegistryProperties):
         elif self.name == 'media':
             self.icon = UiIcons().video
         else:
-            self.icon = UiIcons().clone
+            self.icon = UiIcons().custom
 
     def _create_slides(self):
         """
@@ -221,12 +221,18 @@ class ServiceItem(RegistryProperties):
                 pages = self.renderer.format_slide(raw_slide['text'], self)
                 previous_pages[verse_tag] = (raw_slide, pages)
             for page in pages:
+                footer_html = None
+                has_footer_html = 'footer_html' in raw_slide
+                if has_footer_html:
+                    footer_html = raw_slide['footer_html']
+                else:
+                    footer_html = self.footer_html
                 rendered_slide = {
                     'title': raw_slide['title'],
                     'text': render_tags(page),
                     'chords': remove_tags(page),
                     'verse': index,
-                    'footer': self.footer_html
+                    'footer': footer_html
                 }
                 self._rendered_slides.append(rendered_slide)
                 display_slide = {
@@ -303,12 +309,13 @@ class ServiceItem(RegistryProperties):
         self.slides.append(slide)
         self._new_item()
 
-    def add_from_text(self, text, verse_tag=None):
+    def add_from_text(self, text, verse_tag=None, footer_html=None):
         """
         Add a text slide to the service item.
 
         :param text: The raw text of the slide.
         :param verse_tag:
+        :param footer_html: Custom HTML footer for current slide
         """
         if verse_tag:
             verse_tag = verse_tag.upper()
@@ -317,7 +324,10 @@ class ServiceItem(RegistryProperties):
             verse_tag = str(len(self.slides) + 1)
         self.service_item_type = ServiceItemType.Text
         title = text[:30].split('\n')[0]
-        self.slides.append({'title': title, 'text': text, 'verse': verse_tag})
+        slide = {'title': title, 'text': text, 'verse': verse_tag}
+        if footer_html is not None:
+            slide['footer_html'] = footer_html
+        self.slides.append(slide)
         self._new_item()
 
     def add_from_command(self, path, file_name, image, display_title=None, notes=None, file_hash=None):
@@ -506,7 +516,8 @@ class ServiceItem(RegistryProperties):
         self.theme_overwritten = header.get('theme_overwritten', False)
         if self.service_item_type == ServiceItemType.Text:
             for slide in service_item['serviceitem']['data']:
-                self.add_from_text(slide['raw_slide'], slide['verseTag'])
+                footer_html = slide['footer_html'] if 'footer_html' in slide else None
+                self.add_from_text(slide['raw_slide'], slide['verseTag'], footer_html)
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
             if path:

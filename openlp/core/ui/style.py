@@ -227,6 +227,10 @@ def set_default_darkmode(app):
     app.setPalette(dark_palette)
 
 
+def get_alternate_rows_repair_stylesheet(base_color_name):
+    return 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: ' + base_color_name + ';}\n'
+
+
 def get_application_stylesheet():
     """
     Return the correct application stylesheet based on the current style and operating system
@@ -239,11 +243,14 @@ def get_application_stylesheet():
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
             base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.Active, QtGui.QPalette.Base)
-            alternate_rows_repair_stylesheet = \
-                'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: ' + base_color.name() + ';}\n'
+            alternate_rows_repair_stylesheet = get_alternate_rows_repair_stylesheet(base_color.name())
             stylesheet += alternate_rows_repair_stylesheet
         if is_win():
             stylesheet += WIN_REPAIR_STYLESHEET
+    stylesheet += 'QWidget#slide_controller_toolbar QToolButton::checked {' \
+        '  background-color: palette(highlight);' \
+        '  color: palette(highlighted-text);' \
+        '}'
     return stylesheet
 
 

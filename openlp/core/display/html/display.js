@@ -290,8 +290,11 @@ function _fixFontName(fontName) {
  * The Display object is what we use from OpenLP
  */
 var Display = {
+  /** @type {HTMLElement} */
   _slidesContainer: null,
+  /** @type {HTMLElement} */
   _footerContainer: null,
+  /** @type {HTMLElement} */
   _backgroundsContainer: null,
   _alerts: [],
   _slides: {},
@@ -352,6 +355,7 @@ var Display = {
     Display._backgroundsContainer = $(".backgrounds")[0];
     Display._doTransitions = isDisplay;
     Reveal.initialize(Display._revealConfig);
+    Reveal.addEventListener('slidechanged', Display._onSlideChanged);
     Display.setItemTransition(doItemTransitions && isDisplay);
     displayWatcher.setInitialised(true);
   },
@@ -649,6 +653,18 @@ var Display = {
     slide.innerHTML = html;
     return slide;
   },
+
+  _onSlideChanged: function(event) {
+    Display._footerContainer.querySelectorAll('.footer-item')
+      .forEach(footerItem => footerItem.classList.remove('active'));
+    var currentSlideNth = parseInt(event.currentSlide.getAttribute('data-slide'));
+    var newActiveFooter = Display._footerContainer.querySelector('.footer-item[data-slide="' + currentSlideNth + '"]');
+
+    if (newActiveFooter) {
+      newActiveFooter.classList.add('active');
+    }
+  },
+
   /**
    * Set text slides.
    * @param {Object[]} slides - A list of slides to add as JS objects: {"verse": "v1", "text": "line 1\nline2"}
@@ -658,12 +674,20 @@ var Display = {
     var slide_html;
     var parentSection = document.createElement("section");
     parentSection.classList = "text-slides";
-    slides.forEach(function (slide) {
+    slides.forEach(function (slide, index) {
       slide_html = Display._createTextSlide(slide.verse, slide.text);
+      slide_html.setAttribute('data-slide', index);
       parentSection.appendChild(slide_html);
       Display._slides[slide.verse] = parentSection.children.length - 1;
       if (slide.footer) {
-        Display._footerContainer.innerHTML = slide.footer;
+        var footerSlide = document.createElement('div');
+        footerSlide.classList.add('footer-item');
+        footerSlide.setAttribute('data-slide', index);
+        if (index == 0) {
+          footerSlide.classList.add('active');
+        }
+        footerSlide.innerHTML = slide.footer;
+        Display._footerContainer.append(footerSlide);
       }
     });
     Display.replaceSlides(parentSection, true);
@@ -689,6 +713,7 @@ var Display = {
       var parentSection = document.createElement("section");
       parentSection.classList = "text-slides";
       slide_html = Display._createTextSlide("test-slide", text);
+      slide_html.setAttribute('data-slide', 0);
       parentSection.appendChild(slide_html);
       Display._slides["test-slide"] = 0;
       Display.applyTheme(parentSection);
@@ -711,6 +736,7 @@ var Display = {
       var img = document.createElement('img');
       img.src = slide.path;
       img.setAttribute("style", "width: 100%; height: 100%; margin: 0; object-fit: contain;");
+      img.setAttribute('data-slide', index);
       section.appendChild(img);
       parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
@@ -730,6 +756,7 @@ var Display = {
     videoElement.preload = "auto";
     videoElement.setAttribute("id", "video");
     videoElement.setAttribute("style", "height: 100%; width: 100%;");
+    videoElement.setAttribute('data-slide', 0);
     videoElement.autoplay = false;
     // All the update methods below are Python functions, hence not camelCase
     videoElement.addEventListener("durationchange", function (event) {

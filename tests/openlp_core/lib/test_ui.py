@@ -26,9 +26,11 @@ from unittest.mock import MagicMock, call, patch
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.ui import add_welcome_page, create_action, create_button, create_button_box, \
-    create_horizontal_adjusting_combo_box, create_valign_selection_widgets, create_widget_action, \
-    critical_error_message_box, find_and_set_in_combo_box, set_case_insensitive_completer
+from openlp.core.lib.ui import MultipleViewModeList, add_list_view_mode_items_to_toolbar, add_welcome_page, \
+    create_action, create_button, create_button_box, create_horizontal_adjusting_combo_box, \
+    create_valign_selection_widgets, create_widget_action, critical_error_message_box, find_and_set_in_combo_box, \
+    set_case_insensitive_completer, set_list_view_mode_toolbar_state
+from openlp.core.widgets.toolbar import OpenLPToolbar
 
 
 def test_add_welcome_page():
@@ -341,3 +343,148 @@ def test_set_case_insensitive_completer():
     completer = line_edit.completer()
     assert isinstance(completer, QtWidgets.QCompleter)
     assert completer.caseSensitivity() == QtCore.Qt.CaseInsensitive
+
+
+def test_multiple_view_mode_list(settings):
+    """
+    Tests if MultipleViewModeList works and have the default ViewMode
+    """
+    # GIVEN: MultipleViewModeList
+
+    # WHEN: It's built
+    list = MultipleViewModeList(None)
+
+    # THEN: It's should be build sucessfully, with default ListMode
+    list.viewMode() == QtWidgets.QListWidget.ViewMode.ListMode
+
+
+def test_multiple_view_mode_list_set_icon_size_by_view_mode_icon_mode(settings):
+    """
+    Tests if MultipleViewModeList's set_icon_size_by_view_mode works with a IconMode default value
+    """
+    # GIVEN: a MultipleViewModeList instance and a custom icon size
+    list = MultipleViewModeList(None)
+    icon_size = QtCore.QSize(93, 37)
+
+    # WHEN: set_icon_size_by_view_mode is called with IconMode and mode is changed
+    list.set_icon_size_by_view_mode(QtWidgets.QListWidget.ViewMode.IconMode, icon_size)
+    list.setViewMode(QtWidgets.QListWidget.ViewMode.IconMode)
+
+    # THEN: New icon size should be set successfully
+    assert list.iconSize() == icon_size
+
+
+def test_multiple_view_mode_list_set_icon_size_by_view_mode_list_mode(settings):
+    """
+    Tests if MultipleViewModeList's set_icon_size_by_view_mode works with a ListMode default value
+    """
+    # GIVEN: a MultipleViewModeList instance and a custom icon size
+    list = MultipleViewModeList(None, QtWidgets.QListWidget.ViewMode.IconMode)
+    icon_size = QtCore.QSize(93, 37)
+
+    # WHEN: set_icon_size_by_view_mode is called with ListMode and mode is changed
+    list.set_icon_size_by_view_mode(QtWidgets.QListWidget.ViewMode.ListMode, icon_size)
+    list.setViewMode(QtWidgets.QListWidget.ViewMode.ListMode)
+
+    # THEN: New icon size should be set successfully
+    assert list.iconSize() == icon_size
+
+
+def test_multiple_view_mode_list_set_icon_size_by_view_mode_changes_current_size(settings):
+    """
+    Tests if MultipleViewModeList's set_icon_size_by_view_mode changes the current value if provided mode is the same
+    as current List's ViewMode.
+    """
+    # GIVEN: a MultipleViewModeList instance and a custom icon size
+    list = MultipleViewModeList(None, QtWidgets.QListWidget.ViewMode.IconMode)
+    icon_size = QtCore.QSize(93, 37)
+
+    # WHEN: set_icon_size_by_view_mode is called with IconMode and mode is changed
+    list.set_icon_size_by_view_mode(QtWidgets.QListWidget.ViewMode.IconMode, icon_size)
+
+    # THEN: New icon size should be set successfully
+    assert list.iconSize() == icon_size
+
+
+def test_multiple_view_mode_list_set_view_mode_preserves_last_icon_size(settings):
+    """
+    Tests if MultipleViewModeList's preserves the last iconSize when no equivalent
+    default icon size is present
+    """
+    # GIVEN: a MultipleViewModeList instance and a custom icon size
+    list = MultipleViewModeList(None, QtWidgets.QListWidget.ViewMode.IconMode)
+    icon_size = QtCore.QSize(93, 37)
+    last_icon_size = list.iconSize()
+    list.set_icon_size_by_view_mode(QtWidgets.QListWidget.ViewMode.ListMode, icon_size)
+
+    # WHEN: viewMode() is changed and reverted
+    list.setViewMode(QtWidgets.QListWidget.ViewMode.ListMode)
+    list.setViewMode(QtWidgets.QListWidget.ViewMode.IconMode)
+
+    # THEN: Old icon size should be restored
+    assert list.iconSize() == last_icon_size
+
+
+def test_add_list_view_mode_items_to_toolbar_creates_items(settings):
+    """
+    Tests if add_list_view_mode_items_to_toolbar creates the list view items.
+    """
+    # GIVEN: an OpenLPToolbar
+    toolbar = OpenLPToolbar(None)
+
+    # WHEN: add_list_view_mode_items_to_toolbar is called
+    add_list_view_mode_items_to_toolbar(toolbar, MagicMock())
+
+    # THEN: Assert correct icons are created
+    assert isinstance(toolbar.actions['listView'], QtWidgets.QAction) is True
+    assert isinstance(toolbar.actions['gridView'], QtWidgets.QAction) is True
+
+
+def test_add_list_view_mode_items_to_toolbar_click_calls_handlers(settings):
+    """
+    Tests if add_list_view_mode_items_to_toolbar created items calls the handlers
+    """
+    # GIVEN: an OpenLPToolbar with ListView items
+    toolbar = OpenLPToolbar(None)
+    handler = MagicMock()
+    add_list_view_mode_items_to_toolbar(toolbar, handler)
+
+    # WHEN: handler items is called
+    toolbar.actions['listView'].trigger()
+    toolbar.actions['gridView'].trigger()
+
+    # THEN: Assert correct handlers were called
+    handler.on_set_view_mode_list.assert_called_once()
+    handler.on_set_view_mode_grid.assert_called_once()
+
+
+def test_set_list_view_mode_toolbar_state_view_mode_list_mode(settings):
+    """
+    Tests if set_list_view_mode_toolbar_state changes the toolbar items state to List Mode correctly
+    """
+    # GIVEN: an OpenLPToolbar with checkable List View items
+    toolbar = OpenLPToolbar(None)
+    add_list_view_mode_items_to_toolbar(toolbar, MagicMock())
+
+    # WHEN: set_list_view_mode_toolbar_state is called with ListMode
+    set_list_view_mode_toolbar_state(toolbar, QtWidgets.QListWidget.ViewMode.ListMode)
+
+    # THEN: Assert correct icons are checked or not
+    assert toolbar.actions['listView'].isChecked() is True
+    assert toolbar.actions['gridView'].isChecked() is False
+
+
+def test_set_list_view_mode_toolbar_state_view_mode_icon_mode(settings):
+    """
+    Tests if set_list_view_mode_toolbar_state changes the toolbar items state to Grid Mode correctly
+    """
+    # GIVEN: an OpenLPToolbar with checkable List View items
+    toolbar = OpenLPToolbar(None)
+    add_list_view_mode_items_to_toolbar(toolbar, MagicMock())
+
+    # WHEN: set_list_view_mode_toolbar_state is called with ListMode
+    set_list_view_mode_toolbar_state(toolbar, QtWidgets.QListWidget.ViewMode.IconMode)
+
+    # THEN: Assert correct icons are checked or not
+    assert toolbar.actions['listView'].isChecked() is False
+    assert toolbar.actions['gridView'].isChecked() is True

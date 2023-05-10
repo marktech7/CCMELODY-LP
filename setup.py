@@ -120,8 +120,7 @@ using a computer and a display/projector.""",
         'requests',
         'SQLAlchemy < 1.5',
         'waitress',
-        'websockets',
-        'zeroconf'
+        'websockets'
     ],
     extras_require={
         'agpl-pdf': ['PyMuPDF'],

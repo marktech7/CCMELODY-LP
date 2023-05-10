@@ -730,7 +730,7 @@ def test_replace_service_item(preview_widget, state_media):
     # GIVEN: A ServiceItem with two frames.
     service_item = ServiceItem(None)
     service = read_service_from_file('serviceitem_image_3.osj')
-    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash'):
+    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash', new=lambda x: "MockedHash"):
         service_item.set_from_service(service[0])
     # WHEN: Added to the preview widget.
     preview_widget.replace_service_item(service_item, 1, 1)
@@ -746,7 +746,7 @@ def test_change_slide(preview_widget, state_media):
     # GIVEN: A ServiceItem with two frames content.
     service_item = ServiceItem(None)
     service = read_service_from_file('serviceitem_image_3.osj')
-    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash'):
+    with patch('os.path.exists') and patch('openlp.core.lib.serviceitem.sha256_file_hash', new=lambda x: "MockedHash"):
         service_item.set_from_service(service[0])
     # WHEN: Added to the preview widget and switched to the second frame.
     preview_widget.replace_service_item(service_item, 1, 0)

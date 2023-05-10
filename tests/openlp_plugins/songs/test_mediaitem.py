@@ -548,7 +548,7 @@ def test_build_remote_search(media_item):
     assert search_results == [[123, 'My Song', 'My alternative']]
 
 
-@patch('openlp.plugins.songs.lib.mediaitem.Book')
+@patch('openlp.plugins.songs.lib.mediaitem.SongBook')
 @patch('openlp.plugins.songs.lib.mediaitem.SongBookEntry')
 @patch('openlp.plugins.songs.lib.mediaitem.Song')
 @patch('openlp.plugins.songs.lib.mediaitem.or_')

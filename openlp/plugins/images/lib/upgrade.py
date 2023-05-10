@@ -26,7 +26,9 @@ import logging
 import shutil
 from pathlib import Path
 
-from sqlalchemy import Column, Table, types
+from sqlalchemy import Column, ForeignKey, MetaData, Table, inspect
+from sqlalchemy.orm import Session
+from sqlalchemy.types import Integer, Unicode
 
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
@@ -36,17 +38,17 @@ from openlp.core.lib.db import PathType, get_upgrade_op
 
 
 log = logging.getLogger(__name__)
-__version__ = 3
+__version__ = 4
 
 
-def upgrade_1(session, metadata):
+def upgrade_1(session: Session, metadata: MetaData):
     """
     Version 1 upgrade - old db might/might not be versioned.
     """
     log.debug('Skipping upgrade_1 of files DB - not used')
 
 
-def upgrade_2(session, metadata):
+def upgrade_2(session: Session, metadata: MetaData):
     """
     Version 2 upgrade - Move file path from old db to JSON encoded path to new db. Added during 2.5 dev
     """
@@ -70,7 +72,7 @@ def upgrade_2(session, metadata):
             op.drop_column('image_filenames', 'filenames')
 
 
-def upgrade_3(session, metadata):
+def upgrade_3(session: Session, metadata: MetaData):
     """
     Version 3 upgrade - add sha256 hash
     """
@@ -78,7 +80,7 @@ def upgrade_3(session, metadata):
     old_table = Table('image_filenames', metadata, autoload=True)
     if 'file_hash' not in [col.name for col in old_table.c.values()]:
         op = get_upgrade_op(session)
-        op.add_column('image_filenames', Column('file_hash', types.Unicode(128)))
+        op.add_column('image_filenames', Column('file_hash', Unicode(128)))
         conn = op.get_bind()
         results = conn.execute('SELECT * FROM image_filenames')
         thumb_path = AppLocation.get_data_path() / 'images' / 'thumbnails'
@@ -101,3 +103,58 @@ def upgrade_3(session, metadata):
             except OSError:
                 log.exception('Failed in renaming image thumb from {oldt} to {newt}'.format(oldt=old_thumb,
                                                                                             newt=new_thumb))
+
+
+def upgrade_4(session: Session, metadata: MetaData):
+    """
+    Version 4 upgrade - convert to the common folders/items model
+    """
+    log.debug('Starting upgrade_4 for converting to common folders/items model')
+    op = get_upgrade_op(session)
+    conn = op.get_bind()
+    # Check if the folder table exists
+    table_names = inspect(conn).get_table_names()
+    if 'image_groups' not in table_names:
+        # Bypass this upgrade, it has already been performed
+        return
+    # Get references to the old tables
+    old_folder_table = Table('image_groups', metadata, autoload=True)
+    old_item_table = Table('image_filenames', metadata, autoload=True)
+    # Create the new tables
+    if 'folder' not in table_names:
+        new_folder_table = op.create_table(
+            'folder',
+            Column('id', Integer, primary_key=True),
+            Column('name', Unicode(255), nullable=False, index=True),
+            Column('parent_id', Integer, ForeignKey('folder.id'))
+        )
+    else:
+        new_folder_table = Table('folder', metadata, autoload=True)
+    if 'item' not in table_names:
+        new_item_table = op.create_table(
+            'item',
+            Column('id', Integer, primary_key=True),
+            Column('name', Unicode(255), nullable=False, index=True),
+            Column('file_path', Unicode(255)),
+            Column('file_hash', Unicode(255)),
+            Column('folder_id', Integer)
+        )
+    else:
+        new_item_table = Table('item', metadata, autoload=True)
+    # Bulk insert all the data from the old tables to the new tables
+    folders = []
+    for old_folder in conn.execute(old_folder_table.select()).fetchall():
+        folders.append({'id': old_folder.id, 'name': old_folder.group_name,
+                        'parent_id': old_folder.parent_id if old_folder.parent_id != 0 else None})
+    op.bulk_insert(new_folder_table, folders)
+    items = []
+    for old_item in conn.execute(old_item_table.select()).fetchall():
+        file_path = json.loads(old_item.file_path, cls=OpenLPJSONDecoder)
+        items.append({'id': old_item.id, 'name': file_path.name, 'file_path': str(file_path),
+                      'file_hash': old_item.file_hash, 'folder_id': old_item.group_id})
+    op.bulk_insert(new_item_table, items)
+    # Remove the old tables
+    del old_item_table
+    del old_folder_table
+    op.drop_table('image_filenames')
+    op.drop_table('image_groups')

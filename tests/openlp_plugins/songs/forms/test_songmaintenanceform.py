@@ -31,7 +31,7 @@ from PyQt5 import QtCore, QtWidgets
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
 from openlp.core.lib.db import Manager
-from openlp.plugins.songs.lib.db import init_schema, Book, Song, SongBookEntry
+from openlp.plugins.songs.lib.db import init_schema, SongBook, Song, SongBookEntry
 from openlp.plugins.songs.forms.songmaintenanceform import SongMaintenanceForm
 
 from sqlalchemy.sql import and_
@@ -220,7 +220,7 @@ def test_delete_book_assigned(mocked_critical_error_message_box, form_env):
     # GIVEN: Some mocked items
     form = form_env[0]
     mocked_manager = form_env[1]
-    mocked_item = create_autospec(Book, spec_set=True)
+    mocked_item = create_autospec(SongBook, spec_set=True)
     mocked_item.id = 1
     mocked_manager.get_object.return_value = mocked_item
     mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.Yes
@@ -315,7 +315,7 @@ def test_reset_topics(MockedTopic, MockedQListWidgetItem, form_env):
 
 
 @patch('openlp.plugins.songs.forms.songmaintenanceform.QtWidgets.QListWidgetItem')
-@patch('openlp.plugins.songs.forms.songmaintenanceform.Book')
+@patch('openlp.plugins.songs.forms.songmaintenanceform.SongBook')
 def test_reset_song_books(MockedBook, MockedQListWidgetItem, form_env):
     """
     Test the reset_song_books() method
@@ -402,7 +402,7 @@ def test_check_topic_exists(MockedTopic, form_env):
 
 
 @patch('openlp.plugins.songs.forms.songmaintenanceform.and_')
-@patch('openlp.plugins.songs.forms.songmaintenanceform.Book')
+@patch('openlp.plugins.songs.forms.songmaintenanceform.SongBook')
 def test_check_song_book_exists(MockedBook, mocked_and, form_env):
     """
     Test the check_song_book_exists() method
@@ -498,11 +498,11 @@ def test_merge_song_books(registry, settings, temp_folder):
     manager = Manager('songs', init_schema, db_file_path=db_tmp_path)
 
     # create 2 song books, both with the same name
-    book1 = Book()
+    book1 = SongBook()
     book1.name = 'test book1'
     book1.publisher = ''
     manager.save_object(book1)
-    book2 = Book()
+    book2 = SongBook()
     book2.name = 'test book1'
     book2.publisher = ''
     manager.save_object(book2)
@@ -550,7 +550,7 @@ def test_merge_song_books(registry, settings, temp_folder):
                                                                     SongBookEntry.song_id == song2.id))
     song3_book2_entry = manager.get_all_objects(SongBookEntry, and_(SongBookEntry.songbook_id == book2.id,
                                                                     SongBookEntry.song_id == song3.id))
-    books = manager.get_all_objects(Book, Book.name == 'test book1')
+    books = manager.get_all_objects(SongBook, SongBook.name == 'test book1')
 
     # song records should not be deleted
     assert len(songs) == 3

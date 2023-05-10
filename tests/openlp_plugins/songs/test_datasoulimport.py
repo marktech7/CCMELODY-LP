@@ -19,49 +19,19 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`db` module provides the database and schema that is the backend for
-the SongUsage plugin
+This module contains tests for the Datasoul song importer.
 """
-
-from sqlalchemy import Column, MetaData
-from sqlalchemy.orm import Session
-from sqlalchemy.types import Integer, Date, Time, Unicode
-
-# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
-try:
-    from sqlalchemy.orm import declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative import declarative_base
-
-from openlp.core.lib.db import init_db
+from tests.helpers.songfileimport import SongImportTestHelper
+from tests.utils.constants import RESOURCE_PATH
 
 
-Base = declarative_base(MetaData())
+TEST_PATH = RESOURCE_PATH / 'songs' / 'datasoul'
 
 
-class SongUsageItem(Base):
-    """
-    SongUsageItem model
-    """
-    __tablename__ = 'songusage_data'
+def test_datasoul(mock_settings):
 
-    id = Column(Integer, primary_key=True)
-    usagedate = Column(Date, index=True, nullable=False)
-    usagetime = Column(Time, index=True, nullable=False)
-    title = Column(Unicode(255), nullable=False)
-    authors = Column(Unicode(255), nullable=False)
-    copyright = Column(Unicode(255))
-    ccl_number = Column(Unicode(65))
-    plugin_name = Column(Unicode(20))
-    source = Column(Unicode(10))
-
-
-def init_schema(url: str) -> Session:
-    """
-    Setup the songusage database connection and initialise the database schema
-
-    :param url: The database to setup
-    """
-    session, metadata = init_db(url, base=Base)
-    metadata.create_all(checkfirst=True)
-    return session
+    test_file_import = SongImportTestHelper('DatasoulImport', 'datasoul')
+    test_file_import.setUp()
+    expected = test_file_import.load_external_result_data(TEST_PATH / 'Amazing Grace.json')
+    test_file_import.file_import([TEST_PATH / 'Amazing Grace.song'], expected)
+    test_file_import.tearDown()

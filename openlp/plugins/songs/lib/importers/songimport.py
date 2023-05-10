@@ -32,7 +32,7 @@ from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib import VerseType, clean_song
-from openlp.plugins.songs.lib.db import Author, Book, MediaFile, Song, Topic
+from openlp.plugins.songs.lib.db import Author, SongBook, MediaFile, Song, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
 
@@ -366,21 +366,21 @@ class SongImport(QtCore.QObject):
         for author_text, author_type in self.authors:
             author = self.manager.get_object_filtered(Author, Author.display_name == author_text)
             if not author:
-                author = Author.populate(display_name=author_text,
-                                         last_name=author_text.split(' ')[-1],
-                                         first_name=' '.join(author_text.split(' ')[:-1]))
+                author = Author(display_name=author_text,
+                                last_name=author_text.split(' ')[-1],
+                                first_name=' '.join(author_text.split(' ')[:-1]))
             song.add_author(author, author_type)
         if self.song_book_name:
-            song_book = self.manager.get_object_filtered(Book, Book.name == self.song_book_name)
+            song_book = self.manager.get_object_filtered(SongBook, SongBook.name == self.song_book_name)
             if song_book is None:
-                song_book = Book.populate(name=self.song_book_name, publisher=self.song_book_pub)
+                song_book = SongBook(name=self.song_book_name, publisher=self.song_book_pub)
             song.add_songbook_entry(song_book, song.song_number)
         for topic_text in self.topics:
             if not topic_text:
                 continue
             topic = self.manager.get_object_filtered(Topic, Topic.name == topic_text)
             if topic is None:
-                topic = Topic.populate(name=topic_text)
+                topic = Topic(name=topic_text)
             song.topics.append(topic)
         song.temporary = temporary_flag
         # We need to save the song now, before adding the media files, so that
@@ -394,7 +394,7 @@ class SongImport(QtCore.QObject):
             if not media_file:
                 if file_path.parent:
                     file_path = self.copy_media_file(song.id, file_path)
-                song.media_files.append(MediaFile.populate(file_path=file_path, weight=weight))
+                song.media_files.append(MediaFile(file_path=file_path, weight=weight))
         self.manager.save_object(song)
         self.set_defaults()
         return song.id

@@ -85,6 +85,20 @@ def add_records(projector_db, test):
     return added
 
 
+@pytest.fixture()
+def projector(temp_folder, settings):
+    """
+    Set up anything necessary for all tests
+    """
+    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
+    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
+        mocked_init_url.return_value = tmpdb_url
+        proj = ProjectorDB()
+    yield proj
+    proj.session.close()
+    del proj
+
+
 def test_upgrade_old_projector_db(temp_folder):
     """
     Test that we can upgrade a version 1 db to the current schema
@@ -100,20 +114,6 @@ def test_upgrade_old_projector_db(temp_folder):
 
     # THEN: the song db should have been upgraded to the latest version
     assert updated_to_version == latest_version, 'The projector DB should have been upgrade to the latest version'
-
-
-@pytest.fixture()
-def projector(temp_folder, settings):
-    """
-    Set up anything necessary for all tests
-    """
-    tmpdb_url = 'sqlite:///{db}'.format(db=os.path.join(temp_folder, TEST_DB))
-    with patch('openlp.core.projectors.db.init_url') as mocked_init_url:
-        mocked_init_url.return_value = tmpdb_url
-        proj = ProjectorDB()
-    yield proj
-    proj.session.close()
-    del proj
 
 
 def test_find_record_by_ip(projector):

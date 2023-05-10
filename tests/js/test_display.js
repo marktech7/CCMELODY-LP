@@ -170,6 +170,7 @@ describe("The Display object", function () {
 
   it("should initialise Reveal when init is called", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     Display.init();
     expect(Reveal.initialize).toHaveBeenCalled();
@@ -177,6 +178,7 @@ describe("The Display object", function () {
 
   it("should have checkerboard class when init is called when not display", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     document.body.classList = "";
     Display.init({isDisplay: false});
@@ -185,6 +187,7 @@ describe("The Display object", function () {
 
   it("should not have checkerboard class when init is called when is a display", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     document.body.classList = "";
     Display.init({isDisplay: true});
@@ -205,6 +208,14 @@ describe("The Display object", function () {
 
   it("should have a setItemTransition() method", function () {
     expect(Display.setItemTransition).toBeDefined();
+  });
+
+  it("should register _onSlideChanged event for slide change", function () {
+    spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
+    document.body.innerHTML = "";
+    Display.init();
+    expect(Reveal.addEventListener).toHaveBeenCalledWith('slidechanged', Display._onSlideChanged);
   });
 
   it("should have a correctly functioning clearSlides() method", function () {
@@ -936,6 +947,33 @@ describe("Display.setTextSlides", function () {
     expect(slidesDiv.style['width']).toEqual('1230px');
     expect(slidesDiv.style['height']).toEqual('4560px');
   })
+
+  it("should work correctly with different footer contents per slide", function () {
+    var slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      },
+      {
+        "verse": "v2",
+        "text": "'twas Grace that taught, my heart to fear\nAnd grace, my fears relieved.\n" +
+                "How precious did that grace appear,\nthe hour I first believed.",
+        "footer": "Public Domain, Second Test"
+      }
+    ];
+    spyOn(Display, "clearSlides");
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.setTextSlides(slides);
+
+    expect(Display.clearSlides).toHaveBeenCalledTimes(0);
+    expect($(".footer > .footer-item").length).toEqual(2);
+    expect(document.querySelectorAll(".footer > .footer-item")[0].innerHTML).toEqual(slides[0].footer);
+    expect(document.querySelectorAll(".footer > .footer-item")[1].innerHTML).toEqual(slides[1].footer);
+  });
 });
 
 describe("Display.setImageSlides", function () {
@@ -1184,5 +1222,47 @@ describe("Display.setTextAreaLayoutBorders", function () {
     document.body.classList = "";
     Display.setTextAreaLayoutBorders(false)
     expect(document.body.classList.contains('layout-area-aid')).toEqual(false);
+  });
+});
+
+describe("Reveal slidechanged event", function () {
+  it("should swap footer content", function (done) {
+    var slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      },
+      {
+        "verse": "v2",
+        "text": "'twas Grace that taught, my heart to fear\nAnd grace, my fears relieved.\n" +
+                "How precious did that grace appear,\nthe hour I first believed.",
+        "footer": "Public Domain, Second Test"
+      }
+    ];
+
+    var slidesDiv = _createDiv({"class": "slides"});
+    slidesDiv.innerHTML = "<section><p></p></section>";
+    Display._slidesContainer = slidesDiv;
+    var footerDiv = _createDiv({"class": "footer"});
+    Display._footerContainer = footerDiv;
+    var revealDiv = _createDiv({"class": "reveal"});
+    revealDiv.append(slidesDiv);
+    revealDiv.append(footerDiv);
+    document.body.appendChild(revealDiv);
+
+    Display.init({isDisplay: false, doItemTransitions: false});
+    var oldDisplaySlideChanged = Display._onSlideChanged; 
+    Display._onSlideChanged = function(event) {
+      oldDisplaySlideChanged(event);
+      expect(document.querySelector(".footer > .footer-item.active").getAttribute('data-slide')).toEqual('1');
+      done();
+    }
+    Display.setTextSlides(slides);
+
+    var currentSlide = Display._slidesContainer.querySelector('*:nth-child(2)');
+    currentSlide.id = '1';
+    Display._onSlideChanged({currentSlide: currentSlide});
   });
 });

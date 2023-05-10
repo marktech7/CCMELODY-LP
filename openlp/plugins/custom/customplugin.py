@@ -52,7 +52,7 @@ class CustomPlugin(Plugin):
         super(CustomPlugin, self).__init__('custom', CustomMediaItem, CustomTab)
         self.weight = -5
         self.db_manager = Manager('custom', init_schema)
-        self.icon_path = UiIcons().clone
+        self.icon_path = UiIcons().custom
         self.icon = build_icon(self.icon_path)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())

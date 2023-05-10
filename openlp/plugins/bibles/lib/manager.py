@@ -29,7 +29,7 @@ from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.plugins.bibles.lib import parse_reference
-from openlp.plugins.bibles.lib.db import BibleDB, BibleMeta
+from openlp.plugins.bibles.lib.db import BibleDB
 
 from .importers.csvbible import CSVBible
 from .importers.http import HTTPBible
@@ -151,8 +151,8 @@ class BibleManager(LogMixin, RegistryProperties):
             self.db_cache[name] = bible
             # Look to see if lazy load bible exists and get create getter.
             if self.db_cache[name].is_web_bible:
-                source = self.db_cache[name].get_object(BibleMeta, 'download_source')
-                download_name = self.db_cache[name].get_object(BibleMeta, 'download_name').value
+                source = self.db_cache[name].get_object(bible.BibleMeta, 'download_source')
+                download_name = self.db_cache[name].get_object(bible.BibleMeta, 'download_name').value
                 web_bible = HTTPBible(self.parent, path=self.path, file=file_path, download_source=source.value,
                                       download_name=download_name)
                 self.db_cache[name] = web_bible
@@ -376,7 +376,8 @@ class BibleManager(LogMixin, RegistryProperties):
         Returns the meta data for a given key.
         """
         log.debug('get_meta {bible},{key}'.format(bible=bible, key=key))
-        return self.db_cache[bible].get_object(BibleMeta, key)
+        bible_db = self.db_cache[bible]
+        return bible_db.get_object(bible_db.BibleMeta, key)
 
     def update_book(self, bible, book):
         """

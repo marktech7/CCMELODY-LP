@@ -387,7 +387,7 @@ def clean_song(manager, song):
         name = SongStrings.AuthorUnknown
         author = manager.get_object_filtered(Author, Author.display_name == name)
         if author is None:
-            author = Author.populate(display_name=name, last_name='', first_name='')
+            author = Author(display_name=name, last_name='', first_name='')
         song.add_author(author)
     if song.copyright:
         song.copyright = CONTROL_CHARS.sub('', song.copyright).strip()

@@ -283,6 +283,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.controller_layout.addWidget(self.preview_widget)
         # Build the full toolbar
         self.toolbar = OpenLPToolbar(self)
+        self.toolbar.setObjectName('slide_controller_toolbar')
         size_toolbar_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         size_toolbar_policy.setHorizontalStretch(0)
         size_toolbar_policy.setVerticalStretch(0)
@@ -320,22 +321,22 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             # The order of the blank to modes in Shortcuts list comes from here.
             self.show_screen = create_action(self, 'showScreen',
                                              text=translate('OpenLP.SlideController', 'Show Presentation'),
-                                             icon=UiIcons().live_presentation,
+                                             icon=UiIcons().get_icon_variant_selected('live_presentation'),
                                              checked=False, can_shortcuts=True, category=self.category,
                                              triggers=self.on_show_display)
             self.theme_screen = create_action(self, 'themeScreen',
                                               text=translate('OpenLP.SlideController', 'Show Theme'),
-                                              icon=UiIcons().live_theme,
+                                              icon=UiIcons().get_icon_variant_selected('live_theme'),
                                               checked=False, can_shortcuts=True, category=self.category,
                                               triggers=self.on_toggle_theme)
             self.blank_screen = create_action(self, 'blankScreen',
                                               text=translate('OpenLP.SlideController', 'Show Black'),
-                                              icon=UiIcons().live_black,
+                                              icon=UiIcons().get_icon_variant_selected('live_black'),
                                               checked=False, can_shortcuts=True, category=self.category,
                                               triggers=self.on_toggle_blank)
             self.desktop_screen = create_action(self, 'desktopScreen',
                                                 text=translate('OpenLP.SlideController', 'Show Desktop'),
-                                                icon=UiIcons().live_desktop,
+                                                icon=UiIcons().get_icon_variant_selected('live_desktop'),
                                                 checked=False, can_shortcuts=True, category=self.category,
                                                 triggers=self.on_toggle_desktop)
             self.hide_menu.setDefaultAction(self.show_screen)
@@ -370,11 +371,13 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                                           self.toolbar))
             self.toolbar.add_toolbar_widget(self.play_slides_menu)
             self.play_slides_loop = create_action(self, 'playSlidesLoop', text=UiStrings().PlaySlidesInLoop,
-                                                  icon=UiIcons().loop, checked=False, can_shortcuts=True,
-                                                  category=self.category, triggers=self.on_play_slides_loop)
+                                                  icon=UiIcons().get_icon_variant_selected('loop'), checked=False,
+                                                  can_shortcuts=True, category=self.category,
+                                                  triggers=self.on_play_slides_loop)
             self.play_slides_once = create_action(self, 'playSlidesOnce', text=UiStrings().PlaySlidesToEnd,
-                                                  icon=UiIcons().play_slides, checked=False, can_shortcuts=True,
-                                                  category=self.category, triggers=self.on_play_slides_once)
+                                                  icon=UiIcons().get_icon_variant_selected('play_slides'),
+                                                  checked=False, can_shortcuts=True, category=self.category,
+                                                  triggers=self.on_play_slides_once)
             if self.settings.value('advanced/slide limits') == SlideLimits.Wrap:
                 self.play_slides_menu.setDefaultAction(self.play_slides_loop)
             else:
@@ -408,6 +411,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.controller_layout.addWidget(self.toolbar)
         # Build a Media ToolBar
         self.mediabar = OpenLPToolbar(self)
+        self.mediabar.setObjectName('slide_controller_toolbar')
         self.mediabar.add_toolbar_action('playbackPlay', text='media_playback_play',
                                          icon=UiIcons().play,
                                          tooltip=translate('OpenLP.SlideController', 'Start playing media.'),
@@ -421,7 +425,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                          tooltip=translate('OpenLP.SlideController', 'Stop playing media.'),
                                          triggers=self.send_to_plugins)
         self.mediabar.add_toolbar_action('playbackLoop', text='media_playback_loop',
-                                         icon=UiIcons().repeat, checked=False,
+                                         icon=UiIcons().get_icon_variant_selected('repeat'), checked=False,
                                          tooltip=translate('OpenLP.SlideController', 'Loop playing media.'),
                                          triggers=self.send_to_plugins)
         self.position_label = QtWidgets.QLabel()

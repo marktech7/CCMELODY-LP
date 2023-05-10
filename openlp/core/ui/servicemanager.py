@@ -264,7 +264,7 @@ class Ui_ServiceManager(object):
         self.create_custom_action = create_widget_action(self.menu,
                                                          text=translate('OpenLP.ServiceManager', 'Create New &Custom '
                                                                                                  'Slide'),
-                                                         icon=UiIcons().clone,
+                                                         icon=UiIcons().custom,
                                                          triggers=self.create_custom)
         self.menu.addSeparator()
         # Add AutoPlay menu actions

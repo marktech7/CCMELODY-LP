@@ -968,6 +968,58 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
     assert result == expected_dict
 
 
+def test_add_from_text_adds_per_slide_footer_html():
+    """
+    Test the Service Item - adding text slides with per slide footer_html
+    """
+    # GIVEN: A service item and two slides
+    service_item = ServiceItem(None)
+    slide1 = "This is the first slide"
+    slide1FooterHtml = '<small>First Footer</small>'
+    slide2 = "This is the second slide"
+    slide2FooterHtml = '<small>Second Footer</small>'
+
+    # WHEN: adding text slides to service_item
+    service_item.add_from_text(slide1, footer_html=slide1FooterHtml)
+    service_item.add_from_text(slide2, footer_html=slide2FooterHtml)
+
+    # THEN: Slides should be added with correctly numbered verse tags (Should start at 1)
+    assert service_item.slides == [
+        {'text': 'This is the first slide', 'title': 'This is the first slide', 'verse': '1',
+         'footer_html': slide1FooterHtml},
+        {'text': 'This is the second slide', 'title': 'This is the second slide', 'verse': '2',
+         'footer_html': slide2FooterHtml}
+    ]
+
+
+@patch('openlp.core.lib.serviceitem.UiIcons')
+def test_add_from_text_per_slide_footer_html_is_honoured(mock_uiicons, settings, registry):
+    """
+    Test the Service Item - adding text slides with per slide footer_html is honoured
+    """
+    # GIVEN: A service item, mocked live_controller and renderer, and two slides
+    renderer_mock = MagicMock()
+    Registry().register('live_controller', MagicMock())
+    Registry().register('renderer', renderer_mock)
+    Registry().register('service_list', MagicMock())
+    renderer_mock.format_slide.side_effect = lambda text, item: [text]
+    service_item = ServiceItem(None)
+    slide1 = "This is the first slide"
+    slide1FooterHtml = '<small>First Footer</small>'
+    slide2 = "This is the second slide"
+    slide2FooterHtml = '<small>Second Footer</small>'
+
+    # WHEN: adding text slides to service_item
+    service_item.add_from_text(slide1, footer_html=slide1FooterHtml)
+    service_item.add_from_text(slide2, footer_html=slide2FooterHtml)
+
+    service_item._create_slides()
+
+    # THEN: Slides should be added with correctly numbered verse tags (Should start at 1)
+    assert service_item._rendered_slides[0]['footer'] == slide1FooterHtml
+    assert service_item._rendered_slides[1]['footer'] == slide2FooterHtml
+
+
 @pytest.mark.parametrize('plugin_name,icon', [('songs', 'music'), ('bibles', 'bible'),
                                               ('presentations', 'presentation'), ('images', 'picture'),
                                               ('media', 'video')])

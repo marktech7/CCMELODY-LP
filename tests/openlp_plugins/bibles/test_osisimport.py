@@ -432,6 +432,8 @@ class TestOsisImportFileImports(TestCase):
             importer.session = MagicMock()
             importer.get_language = MagicMock()
             importer.get_language.return_value = 'Danish'
+            importer.get_language_id = MagicMock()
+            importer.get_language_id.return_value = 'dk'
 
             # WHEN: Importing bible file
             importer.file_path = TEST_PATH / bible_file
@@ -461,6 +463,8 @@ class TestOsisImportFileImports(TestCase):
             importer.session = MagicMock()
             importer.get_language = MagicMock()
             importer.get_language.return_value = 'English'
+            importer.get_language_id = MagicMock()
+            importer.get_language_id.return_value = 'en'
 
             # WHEN: Importing bible file
             importer.file_path = TEST_PATH / bible_file
@@ -490,6 +494,8 @@ class TestOsisImportFileImports(TestCase):
             importer.session = MagicMock()
             importer.get_language = MagicMock()
             importer.get_language.return_value = 'English'
+            importer.get_language_id = MagicMock()
+            importer.get_language_id.return_value = 'en'
 
             # WHEN: Importing bible file
             importer.file_path = TEST_PATH / bible_file
@@ -519,6 +525,8 @@ class TestOsisImportFileImports(TestCase):
             importer.session = MagicMock()
             importer.get_language = MagicMock()
             importer.get_language.return_value = 'Danish'
+            importer.get_language_id = MagicMock()
+            importer.get_language_id.return_value = 'dk'
 
             # WHEN: Importing bible file
             importer.file_path = TEST_PATH / bible_file

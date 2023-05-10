@@ -28,7 +28,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.ui import critical_error_message_box, find_and_set_in_combo_box
 from openlp.plugins.custom.forms.editcustomdialog import Ui_CustomEditDialog
 from openlp.plugins.custom.forms.editcustomslideform import EditCustomSlideForm
-from openlp.plugins.custom.lib.customxmlhandler import CustomXMLBuilder, CustomXMLParser
+from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 from openlp.plugins.custom.lib.db import CustomSlide
 
 log = logging.getLogger(__name__)
@@ -87,7 +87,7 @@ class EditCustomForm(QtWidgets.QDialog, Ui_CustomEditDialog):
             self.custom_slide = self.manager.get_object(CustomSlide, id)
             self.title_edit.setText(self.custom_slide.title)
             self.credit_edit.setText(self.custom_slide.credits)
-            custom_xml = CustomXMLParser(self.custom_slide.text)
+            custom_xml = CustomXML(self.custom_slide.text)
             slide_list = custom_xml.get_verses()
             self.slide_list_view.addItems([slide[1] for slide in slide_list])
             theme = self.custom_slide.theme_name
@@ -110,7 +110,7 @@ class EditCustomForm(QtWidgets.QDialog, Ui_CustomEditDialog):
         """
         if not self._validate():
             return False
-        sxml = CustomXMLBuilder()
+        sxml = CustomXML()
         for count in range(self.slide_list_view.count()):
             sxml.add_verse_to_lyrics('custom', str(count + 1), self.slide_list_view.item(count).text())
         self.custom_slide.title = self.title_edit.text()

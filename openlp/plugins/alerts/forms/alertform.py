@@ -111,8 +111,7 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
                                                         'You haven\'t specified any text for your alert. \n'
                                                         'Please type in some text before clicking New.'))
         else:
-            alert = AlertItem()
-            alert.text = self.alert_text_edit.text()
+            alert = AlertItem(text=self.alert_text_edit.text())
             self.manager.save_object(alert)
         self.load_list()
 

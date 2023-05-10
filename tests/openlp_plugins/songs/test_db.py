@@ -26,7 +26,7 @@ import shutil
 
 from openlp.core.lib.db import upgrade_db
 from openlp.plugins.songs.lib import upgrade
-from openlp.plugins.songs.lib.db import Author, AuthorType, Book, Song
+from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, Song
 from tests.utils.constants import TEST_RESOURCES_PATH
 
 
@@ -174,7 +174,7 @@ def test_add_songbooks():
     # GIVEN: A mocked song and songbook
     song = Song()
     song.songbook_entries = []
-    songbook = Book()
+    songbook = SongBook()
     songbook.name = "Thy Word"
 
     # WHEN: We add two songbooks to a Song

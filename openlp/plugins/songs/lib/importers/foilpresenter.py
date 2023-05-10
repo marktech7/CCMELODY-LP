@@ -89,7 +89,7 @@ from lxml import etree, objectify
 from openlp.core.common.i18n import translate
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib import VerseType, clean_song
-from openlp.plugins.songs.lib.db import Author, Book, Song, Topic
+from openlp.plugins.songs.lib.db import Author, SongBook, Song, Topic
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
@@ -325,8 +325,8 @@ class FoilPresenter(object):
             author = self.manager.get_object_filtered(Author, Author.display_name == display_name)
             if author is None:
                 # We need to create a new author, as the author does not exist.
-                author = Author.populate(display_name=display_name, last_name=display_name.split(' ')[-1],
-                                         first_name=' '.join(display_name.split(' ')[:-1]))
+                author = Author(display_name=display_name, last_name=display_name.split(' ')[-1],
+                                first_name=' '.join(display_name.split(' ')[:-1]))
                 self.manager.save_object(author)
             song.add_author(author)
 
@@ -478,10 +478,10 @@ class FoilPresenter(object):
             for bucheintrag in foilpresenterfolie.buch.bucheintrag:
                 book_name = to_str(bucheintrag.name)
                 if book_name:
-                    book = self.manager.get_object_filtered(Book, Book.name == book_name)
+                    book = self.manager.get_object_filtered(SongBook, SongBook.name == book_name)
                     if book is None:
                         # We need to create a book, because it does not exist.
-                        book = Book.populate(name=book_name, publisher='')
+                        book = SongBook(name=book_name, publisher='')
                         self.manager.save_object(book)
                     song.song_book_id = book.id
                     try:
@@ -527,7 +527,7 @@ class FoilPresenter(object):
                     topic = self.manager.get_object_filtered(Topic, Topic.name == topic_text)
                     if topic is None:
                         # We need to create a topic, because it does not exist.
-                        topic = Topic.populate(name=topic_text)
+                        topic = Topic(name=topic_text)
                         self.manager.save_object(topic)
                     song.topics.append(topic)
         except AttributeError:

@@ -18,7 +18,8 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-from unittest.mock import MagicMock
+from pathlib import Path
+from unittest.mock import MagicMock, patch
 
 import pytest
 from PyQt5 import QtCore, QtWidgets
@@ -28,18 +29,20 @@ from openlp.core.ui.library import FolderLibraryItem
 
 class MockItem(MagicMock):
     file_path = 'path/to/video.mp4'
+    folder_id = None
 
 
 class MockFolder(MagicMock):
-    pass
+    parent_id = None
 
 
 @pytest.fixture
 def folder_library_item(registry, settings):
-    mocked_item = MagicMock()
+    registry.register('main_window', MagicMock())
     mocked_manager = MagicMock()
-    mocked_manager.get_object_filtered.return_value = mocked_item
-    library_item = FolderLibraryItem(None, MagicMock(manager=mocked_manager), MockFolder, MockItem)
+    with patch('openlp.core.lib.mediamanageritem.MediaManagerItem._setup'), \
+            patch('openlp.core.lib.mediamanageritem.MediaManagerItem.setup_item'):
+        library_item = FolderLibraryItem(None, MagicMock(manager=mocked_manager), MockFolder, MockItem)
     return library_item
 
 
@@ -56,32 +59,28 @@ def test_folderlibrary_retranslate_ui(folder_library_item):
     folder_library_item.add_folder_action.setToolTip.assert_called_once_with('Add folder.')
 
 
-def test_folderlibrary_create_item_from_id_path(registry, settings):
+def test_folderlibrary_create_item_from_id_path(folder_library_item):
     """Test the create_item_from_id method"""
     # GIVEN: An instance of the FolderLibraryItem
-    mocked_item = MagicMock()
-    mocked_manager = MagicMock()
-    mocked_manager.get_object_filtered.return_value = mocked_item
-    library_item = FolderLibraryItem(None, MagicMock(manager=mocked_manager), MockFolder, MockItem)
+    mocked_item = MockItem()
+    folder_library_item.manager.get_object_filtered.return_value = mocked_item
 
     # WHEN: create_item_from_id is called
-    result = library_item.create_item_from_id('path/to/video.mp4')
+    result = folder_library_item.create_item_from_id('path/to/video.mp4')
 
     # THEN: The result should be a QTreeWidgetItem with a mocked object as data
     assert isinstance(result, QtWidgets.QTreeWidgetItem)
     assert result.data(0, QtCore.Qt.UserRole) is mocked_item
 
 
-def test_folderlibrary_create_item_from_id_object(registry, settings):
+def test_folderlibrary_create_item_from_id_object(folder_library_item):
     """Test the create_item_from_id method"""
     # GIVEN: An instance of the FolderLibraryItem
-    mocked_item = MagicMock()
-    mocked_manager = MagicMock()
-    mocked_manager.get_object_filtered.return_value = mocked_item
-    library_item = FolderLibraryItem(None, MagicMock(manager=mocked_manager), MockFolder, MockItem)
+    mocked_item = MockItem()
+    folder_library_item.manager.get_object_filtered.return_value = mocked_item
 
     # WHEN: create_item_from_id is called
-    result = library_item.create_item_from_id(mocked_item)
+    result = folder_library_item.create_item_from_id(mocked_item)
 
     # THEN: The result should be a QTreeWidgetItem with a mocked object as data
     assert isinstance(result, QtWidgets.QTreeWidgetItem)
@@ -103,3 +102,83 @@ def test_folderlibrary_current_folder(folder_library_item):
 
     # THEN: The current folder should be the mocked folder
     assert folder is mocked_folder
+
+
+def test_validate_and_load(folder_library_item):
+    """
+    Test that the validate_and_load() method when called with a folder
+    """
+    # GIVEN: A list of files, and a mocked out load_list
+    file_list = ['path1/image1.jpg', 'path2/image2.jpg']
+    expected_list = [MagicMock(file_path=fp) for fp in file_list]
+    folder_library_item.manager.get_all_objects.return_value = expected_list
+    folder_library_item.load_list = MagicMock()
+    folder_library_item.list_view = MagicMock(**{'selectedItems.return_value': None})
+    folder_library_item.settings_section = 'tests'
+    folder_library_item.choose_folder_form = MagicMock(**{'exec.return_value': QtWidgets.QDialog.Accepted,
+                                                          'folder': None})
+
+    # WHEN: Calling validate_and_load with the list of files and a group
+    folder_library_item.validate_and_load(file_list)
+
+    # THEN: load_list should have been called with the file list and the group name,
+    #       the directory should have been saved to the settings
+    folder_library_item.load_list.assert_called_once_with(expected_list, target_folder=None)
+
+
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_recursively_delete_folder(mocked_sha256_file_hash, folder_library_item):
+    """
+    Test that recursively_delete_folder() works
+    """
+    # GIVEN: A Folder object and mocked functions
+    folder_library_item.manager.get_all_objects.side_effect = [
+        [MockItem(), MockItem(), MockItem()],
+        [MockFolder()],
+        [MockItem(), MockItem()],
+        []
+    ]
+    folder_library_item.service_path = Path()
+    folder_library_item.manager.delete_object = MagicMock()
+    folder_library_item.delete_item = MagicMock()
+    mocked_folder = MockFolder()
+    mocked_folder.id = 1
+    mocked_folder.parent_id = None
+    mocked_sha256_file_hash.return_value = 'abcd'
+
+    # WHEN: recursively_delete_group() is called
+    folder_library_item.recursively_delete_folder(mocked_folder)
+
+    # THEN: delete_file() should have been called 12 times and manager.delete_object() 7 times.
+    assert folder_library_item.manager.delete_object.call_count == 6, \
+        'delete_object() should be called 6 times, called {} times'.format(
+            folder_library_item.manager.delete_object.call_count)
+    assert folder_library_item.delete_item.call_count == 5, 'delete_item() should have been called 5 times'
+
+
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_on_delete_click(mocked_sha256_file_hash, folder_library_item):
+    """
+    Test that on_delete_click() works
+    """
+    # GIVEN: An ImageGroups object and mocked functions
+    folder_library_item.check_item_selected = MagicMock(return_value=True)
+    folder_library_item.delete_item = MagicMock()
+    mocked_item = MockItem()
+    mocked_item.id = 1
+    mocked_item.group_id = 1
+    mocked_item.file_path = 'imagefile.png'
+    mocked_item.file_hash = 'abcd'
+    folder_library_item.service_path = Path()
+    folder_library_item.list_view = MagicMock()
+    mocked_row_item = MagicMock()
+    mocked_row_item.data.return_value = mocked_item
+    mocked_row_item.text.return_value = ''
+    folder_library_item.list_view.selectedItems.return_value = [mocked_row_item]
+    mocked_sha256_file_hash.return_value = 'abcd'
+
+    # WHEN: Calling on_delete_click
+    folder_library_item.on_delete_click()
+
+    # THEN: delete_file should have been called twice
+    assert folder_library_item.delete_item.call_count == 1, 'delete_item() should have been called once'

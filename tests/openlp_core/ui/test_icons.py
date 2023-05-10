@@ -31,7 +31,7 @@ def test_simple_icon(settings):
     with patch('openlp.core.ui.icons.UiIcons.__init__', return_value=None):
         icons = UiIcons()
         icon_list = {
-            'active': {'icon': 'fa.child'}
+            'active': {'icon': 'mdi.human-handsup'}
         }
 
         icons.load_icons(icon_list)

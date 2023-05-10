@@ -29,7 +29,7 @@ import re
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
-from openlp.plugins.custom.lib.customxmlhandler import CustomXMLBuilder
+from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 from openlp.plugins.custom.lib.db import CustomSlide
 
 
@@ -42,9 +42,7 @@ class PlanningCenterCustomImport(object):
     :param theme_name:  The theme_name to use for the slide.
     """
     def add_slide(self, item_title, html_details, theme_name):
-        custom_slide = CustomSlide()
-        custom_slide.title = item_title
-        sxml = CustomXMLBuilder()
+        sxml = CustomXML()
         slide_content = ''
         if html_details is None:
             slide_content = item_title
@@ -52,9 +50,8 @@ class PlanningCenterCustomImport(object):
             # we need non-html here, but the input is html
             slide_content = self._process_details(html_details)
         sxml.add_verse_to_lyrics('custom', str(1), slide_content)
-        custom_slide.text = str(sxml.extract_xml(), 'utf-8')
-        custom_slide.credits = 'pco'
-        custom_slide.theme_name = theme_name
+        custom_slide = CustomSlide(title=item_title, text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
+                                   theme_name=theme_name)
         custom = Registry().get('custom')
         custom_db_manager = custom.plugin.db_manager
         custom_db_manager.save_object(custom_slide)
