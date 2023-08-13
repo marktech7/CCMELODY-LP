@@ -178,7 +178,7 @@ class PresentationDocument(object):
                 folder = self._sha256_file_hash
             else:
                 self._sha256_file_hash = sha256_file_hash(self.file_path)
-                folder = self._sha256_file_hash
+                folder = self.file_path.name if self._sha256_file_hash is None else self._sha256_file_hash
         else:
             folder = self.file_path.name
         return Path(self.controller.temp_folder, folder)
