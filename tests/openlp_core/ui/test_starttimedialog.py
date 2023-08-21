@@ -26,16 +26,18 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtTest
 
+from openlp.core.common.registry import Registry
 from openlp.core.ui.starttimeform import StartTimeForm
 
 
 @pytest.fixture()
-def form(mock_settings):
+def form(registry: Registry, mock_settings: MagicMock):
+    registry.register('main_window', None)
     frm = StartTimeForm()
     return frm
 
 
-def test_ui_defaults(form):
+def test_ui_defaults(form: StartTimeForm):
     """
     Test StartTimeDialog are defaults correct
     """
@@ -59,7 +61,7 @@ def test_ui_defaults(form):
         'The maximum finish second should stay the same as the dialog'
 
 
-def test_time_display(form):
+def test_time_display(form: StartTimeForm):
     """
     Test StartTimeDialog display functionality
     """

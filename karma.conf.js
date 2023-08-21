@@ -12,6 +12,7 @@ module.exports = function(config) {
       "tests/js/polyfill.js",
       "tests/js/fake_webchannel.js",
       "openlp/core/display/html/reveal.js",
+      "openlp/core/display/html/display-init.js",
       "openlp/core/display/html/display.js",
       "tests/js/test_*.js"
     ],

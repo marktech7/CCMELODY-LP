@@ -21,14 +21,15 @@
 """
 Functional tests to test the PowerPointController class and related methods.
 """
-import pytest
+from pathlib import Path
 from unittest.mock import MagicMock, patch
+import pytest
 
 from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.plugins.presentations.lib.powerpointcontroller import PowerpointController, PowerpointDocument, \
     _get_text_from_shapes
-
+from tests.utils.constants import RESOURCE_PATH
 
 if is_win():
     import pywintypes
@@ -226,3 +227,28 @@ def test_unblank_screen(get_thumbnail_folder):
             'View.GotoSlide should have been called because of the PowerPoint version'
         assert doc.presentation.SlideShowWindow.View.GotoClick.called is True, \
             'View.GotoClick should have been called because of the PowerPoint version'
+
+
+@pytest.mark.parametrize('file_path, expected_is_in_cloud, expected_same_file_name', [
+    (RESOURCE_PATH / 'presentations' / 'test.pptx', False, True),
+    (Path('test.pptx'), True, False)
+])
+def test_presentation_is_in_cloud(file_path, expected_is_in_cloud, expected_same_file_name,
+                                  registry, settings):
+    """
+    Test that a presentation from a cloud drive is being detected.
+    """
+    # GIVEN: A Document with mocked controller and presentation.
+    mocked_plugin = MagicMock()
+    mocked_plugin.settings_section = 'presentations'
+    ppc = PowerpointController(mocked_plugin)
+    doc = PowerpointDocument(ppc, file_path)
+    doc.presentation = MagicMock(FullName=file_path)
+    if expected_is_in_cloud:
+        doc.presentation = MagicMock(FullName='https://' + str(file_path))
+    else:
+        doc.presentation = MagicMock(FullName=str(file_path))
+    assert doc.is_in_cloud == expected_is_in_cloud, \
+        'is_in_cloud should be false because this file is locally stored'
+    assert (doc.presentation_file == doc.presentation_controller_file) == expected_same_file_name, \
+        'presentation_file should have the same value as presentation_controller_file'

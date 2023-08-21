@@ -172,7 +172,7 @@ class MediaMediaItem(FolderLibraryItem):
             self.load_menu.addAction(self.open_network_stream)
             self.toolbar.actions['mediaLoadAction'].setMenu(self.load_menu)
             button = self.toolbar.widgetForAction(self.toolbar.actions['mediaLoadAction'])
-            button.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+            button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
 
     def generate_slide_data(self, service_item, *, item=None, remote=False, context=ServiceItemContext.Service,
                             **kwargs):
@@ -238,8 +238,6 @@ class MediaMediaItem(FolderLibraryItem):
         service_item.add_capability(ItemCapabilities.CanAutoStartForLive)
         service_item.add_capability(ItemCapabilities.CanEditTitle)
         service_item.add_capability(ItemCapabilities.RequiresMedia)
-        if self.settings.value('media/media auto start') == QtCore.Qt.Checked:
-            service_item.will_auto_start = True
         # force a non-existent theme
         service_item.theme = -1
         # validate the item after all capabilities has been added

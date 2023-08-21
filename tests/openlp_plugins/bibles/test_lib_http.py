@@ -29,7 +29,7 @@ import pytest
 from openlp.plugins.bibles.lib.importers.http import BGExtract, BSExtract, CWExtract
 
 
-if 'GITLAB_CI' in os.environ or 'APPVEYOR' in os.environ:
+if not os.environ.get('OPENLP_RUN_HTTP_BIBLE_TESTS'):
     pytest.skip('Skip Bible HTTP tests to prevent GitLab CI from being blacklisted', allow_module_level=True)
 
 

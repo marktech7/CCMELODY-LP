@@ -23,6 +23,7 @@ Provides additional classes for working in the library
 """
 import os
 from pathlib import Path
+from typing import Any, List, Optional, Union
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -73,7 +74,7 @@ class FolderLibraryItem(MediaManagerItem):
         self.add_folder_action.setText(UiStrings().AddFolder)
         self.add_folder_action.setToolTip(UiStrings().AddFolderDot)
 
-    def create_item_from_id(self, item_id):
+    def create_item_from_id(self, item_id: Any):
         """
         Create a media item from an item id.
 
@@ -126,7 +127,7 @@ class FolderLibraryItem(MediaManagerItem):
                 item = tree_item.data(0, QtCore.Qt.UserRole)
                 if isinstance(item, Item):
                     self.delete_item(item)
-                    if not item.folder_id:
+                    if not item.folder_id or not tree_item.parent():
                         self.list_view.takeTopLevelItem(self.list_view.indexOfTopLevelItem(tree_item))
                     else:
                         tree_item.parent().removeChild(tree_item)
@@ -225,7 +226,7 @@ class FolderLibraryItem(MediaManagerItem):
         self.add_folder_action = self.toolbar.add_toolbar_action(
             'add_folder_action', icon=UiIcons().folder, triggers=self.on_add_folder_click)
 
-    def add_sub_folders(self, folder_list, parent_id=None):
+    def add_sub_folders(self, folder_list: List[QtWidgets.QTreeWidgetItem], parent_id: Optional[int] = None):
         """
         Recursively add subfolders to the given parent folder in a QTreeWidget.
 
@@ -250,7 +251,7 @@ class FolderLibraryItem(MediaManagerItem):
             folder_list[folder.id] = folder_item
             self.add_sub_folders(folder_list, folder.id)
 
-    def expand_folder(self, folder_id, root_item=None):
+    def expand_folder(self, folder_id: int, root_item: Optional[QtWidgets.QTreeWidgetItem] = None):
         """
         Expand folders in the widget recursively.
 
@@ -288,7 +289,7 @@ class FolderLibraryItem(MediaManagerItem):
             self.recursively_delete_folder(child)
             self.manager.delete_object(Folder, child.id)
 
-    def file_to_item(self, filename):
+    def file_to_item(self, filename: Union[Path, str]):
         """
         This method allows the media item to convert a string filename into an item class
 
@@ -362,7 +363,8 @@ class FolderLibraryItem(MediaManagerItem):
         """
         return [item.file_path, item.file_path]
 
-    def search(self, string, show_error):
+    @QtCore.pyqtSlot(str, bool, result=list)
+    def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Performs a search for items containing ``string``
 
@@ -374,13 +376,13 @@ class FolderLibraryItem(MediaManagerItem):
         items = self.manager.get_all_objects(self.item_class, self.item_class.file_path.ilike('%' + string + '%'))
         return [self.format_search_result(item) for item in items]
 
-    def validate_and_load(self, file_paths, target_folder=None):
+    def validate_and_load(self, file_paths: List[Path], target_folder: Optional[QtWidgets.QTreeWidgetItem] = None):
         """
         Process a list for files either from the File Dialog or from Drag and Drop.
         This method is overloaded from MediaManagerItem.
 
         :param list[Path] file_paths: A List of paths  to be loaded
-        :param target_group: The QTreeWidgetItem of the group that will be the parent of the added files
+        :param target_folder: The QTreeWidgetItem of the folder that will be the parent of the added files
         """
         self.application.set_normal_cursor()
         if target_folder:

@@ -45,7 +45,7 @@ def test_add_welcome_page():
 
     # THEN: The wizard should have one page with a pixmap.
     assert 1 == len(wizard.pageIds()), 'The wizard should have one page.'
-    assert isinstance(wizard.page(0).pixmap(QtWidgets.QWizard.WatermarkPixmap), QtGui.QPixmap)
+    assert isinstance(wizard.page(0).pixmap(QtWidgets.QWizard.WizardPixmap.WatermarkPixmap), QtGui.QPixmap)
 
 
 def test_create_button_box():
@@ -70,11 +70,11 @@ def test_create_button_box():
 
     # WHEN: We create the button box with a custom button and a custom role
     btnbox = create_button_box(dialog, 'my_btns', None,
-                               [(QtWidgets.QPushButton('Help'), QtWidgets.QDialogButtonBox.HelpRole)])
+                               [(QtWidgets.QPushButton('Help'), QtWidgets.QDialogButtonBox.ButtonRole.HelpRole)])
     # THEN: We should get a QDialogButtonBox with one button with a certain role
     assert isinstance(btnbox, QtWidgets.QDialogButtonBox)
     assert 1 == len(btnbox.buttons())
-    assert QtWidgets.QDialogButtonBox.HelpRole, btnbox.buttonRole(btnbox.buttons()[0])
+    assert QtWidgets.QDialogButtonBox.ButtonRole.HelpRole, btnbox.buttonRole(btnbox.buttons()[0])
 
 
 @patch('openlp.core.lib.ui.Registry')
@@ -136,7 +136,7 @@ def test_create_horizontal_adjusting_combo_box():
     # THEN: We should get a ComboBox
     assert isinstance(combo, QtWidgets.QComboBox)
     assert combo.objectName() == 'combo1'
-    assert QtWidgets.QComboBox.AdjustToMinimumContentsLength == combo.sizeAdjustPolicy()
+    assert QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength == combo.sizeAdjustPolicy()
 
 
 @patch('openlp.core.lib.ui.log')

@@ -23,10 +23,7 @@ The :mod:`~openlp.plugins.songs.lib.songselect` module contains the SongSelect i
 """
 import logging
 import re
-from html import unescape
-from urllib.request import URLError
 from PyQt5 import QtCore
-from bs4 import BeautifulSoup, NavigableString
 
 from openlp.plugins.songs.lib import VerseType, clean_song
 from openlp.plugins.songs.lib.db import Song, Author, Topic
@@ -78,14 +75,14 @@ class SongSelectImport(object):
         """
         current_url_host = self.webview.page().url().host()
         current_url_path = self.webview.page().url().path()
-        if (current_url_host == QtCore.QUrl(LOGIN_URL).host() and current_url_path == QtCore.QUrl(LOGIN_PAGE).path()):
+        if current_url_host == QtCore.QUrl(LOGIN_URL).host() and current_url_path == QtCore.QUrl(LOGIN_PAGE).path():
             return Pages.Login
-        elif (current_url_host == QtCore.QUrl(BASE_URL).host()):
-            if (current_url_path == '/' or current_url_path == ''):
+        elif current_url_host == QtCore.QUrl(BASE_URL).host():
+            if current_url_path == '/' or current_url_path == '':
                 return Pages.Home
-            elif (current_url_path == QtCore.QUrl(SEARCH_URL).path()):
+            elif current_url_path == QtCore.QUrl(SEARCH_URL).path():
                 return Pages.Search
-            elif (self.get_song_number_from_url(current_url_path) is not None):
+            elif self.get_song_number_from_url(current_url_path) is not None:
                 return Pages.Song
         return Pages.Other
 
@@ -161,70 +158,6 @@ class SongSelectImport(object):
         if regex_matches:
             return regex_matches.group(1)
         return None
-
-    def get_song(self, callback=None):
-        """
-        Get the full song from SongSelect
-
-        :param song: The song page url
-        :param callback: A callback which can be used to indicate progress
-        :return: Dictionary containing the song info
-        """
-        song = {}
-        # Get current song
-        current_url = self.webview.url().path()
-        ccli_number = self.get_song_number_from_url(current_url)
-
-        if callback:
-            callback()
-        try:
-            song_page = BeautifulSoup(self.get_page(SONG_PAGE + ccli_number), 'lxml')
-        except (TypeError, URLError) as error:
-            log.exception('Could not get song from SongSelect, {error}'.format(error=error))
-            return None
-        try:
-            lyrics_link = song_page.find('section', 'page-section').find('a')['href']
-        except KeyError:
-            # can't find a link to the song - most likely the user account has no access to it
-            return None
-        if callback:
-            callback()
-        try:
-            lyrics_page = BeautifulSoup(self.get_page(BASE_URL + lyrics_link), 'lxml')
-        except (TypeError, URLError):
-            log.exception('Could not get lyrics from SongSelect')
-            return None
-        if callback:
-            callback()
-        theme_elements = []
-        # Themes regex only works if the ccli site is in english.
-        themes_regex = re.compile(r'\bThemes\b')
-        for ul in song_page.find_all('ul', 'song-meta-list'):
-            if ul.find('li', string=themes_regex):
-                theme_elements.extend(ul.find_all('li')[1:])
-        copyright_elements = lyrics_page.find('ul', 'copyright').find_all('li')
-        author_elements = song_page.find('div', 'content-title').find('ul', 'authors').find_all('li')
-        song['title'] = unescape(song_page.find('div', 'content-title').find('h1').string.strip())
-        song['authors'] = [unescape(li.find('a').string).strip() for li in author_elements]
-        song['copyright'] = '/'.join([unescape(li.string).strip() for li in copyright_elements])
-        song['topics'] = [unescape(li.string).strip() for li in theme_elements]
-        song['ccli_number'] = song_page.find('div', 'song-content-data').find('ul').find('li')\
-            .find('strong').string.strip()
-        song['verses'] = []
-        verses = lyrics_page.find('div', 'song-viewer lyrics').find_all('p')
-        verse_labels = lyrics_page.find('div', 'song-viewer lyrics').find_all('h3')
-        for verse, label in zip(verses, verse_labels):
-            song_verse = {'label': unescape(label.string).strip(), 'lyrics': ''}
-            for v in verse.contents:
-                if isinstance(v, NavigableString):
-                    song_verse['lyrics'] += unescape(v.string).strip()
-                else:
-                    song_verse['lyrics'] += '\n'
-            song_verse['lyrics'] = song_verse['lyrics'].strip(' \n\r\t')
-            song['verses'].append(song_verse)
-        for counter, author in enumerate(song['authors']):
-            song['authors'][counter] = unescape(author)
-        return song
 
     def save_song(self, song):
         """

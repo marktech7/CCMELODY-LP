@@ -306,7 +306,7 @@ def test_set_verse_single(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_called_once_with(False)
         mocked_verse_text_edit.setPlainText.assert_called_once_with('Amazing grace, how sweet the sound')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
 def test_set_verse_multiple(settings, edit_verse_form):
@@ -331,7 +331,7 @@ def test_set_verse_multiple(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_called_once_with(True)
         mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
 def test_set_verse_multiple_chords_disabled(settings, edit_verse_form):
@@ -356,7 +356,7 @@ def test_set_verse_multiple_chords_disabled(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_not_called()
         mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
 def test_add_splitter_to_text(edit_verse_form):

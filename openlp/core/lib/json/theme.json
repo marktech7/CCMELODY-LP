@@ -10,12 +10,14 @@
     },
     "display" :{
         "horizontal_align": 0,
+        "horizontal_align_footer": 0,
         "slide_transition": false,
         "slide_transition_type": 0,
         "slide_transition_speed": 0,
         "slide_transition_direction": 0,
         "slide_transition_reverse": false,
-        "vertical_align": 0
+        "vertical_align": 0,
+        "vertical_align_footer": 0
     },
     "font": {
         "footer": {
@@ -24,6 +26,7 @@
             "height": 78,
             "italics": false,
             "line_adjustment": 0,
+            "letter_adjustment": 0,
             "location": "",
             "name": "Arial",
             "outline": false,
@@ -44,6 +47,7 @@
             "height": 690,
             "italics": false,
             "line_adjustment": 0,
+            "letter_adjustment": 0,
             "location": "",
             "name": "Arial",
             "outline": false,

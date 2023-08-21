@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-This module runs a Pyro4 server using LibreOffice's version of Python
+This module runs a Pyro5 server using LibreOffice's version of Python
 
 Please Note: This intentionally uses os.path over pathlib because we don't know which version of Python is shipped with
 the version of LibreOffice on the user's computer.
@@ -40,11 +40,11 @@ if sys.platform.startswith('darwin') and 'pytest' not in sys.argv[0]:
 
 # Add the current directory to sys.path so that we can load the serializers
 sys.path.append(os.path.join(os.path.dirname(__file__)))
-# Add the vendor directory to sys.path so that we can load Pyro4
+# Add the vendor directory to sys.path so that we can load Pyro5
 sys.path.append(os.path.join(os.path.dirname(__file__), 'vendor'))
 
 from serializers import register_classes
-from Pyro4 import Daemon, expose
+from Pyro5.api import Daemon, expose
 
 try:
     # Wrap these imports in a try so that we can run the tests on macOS
@@ -81,7 +81,7 @@ class LibreOfficeException(Exception):
 @expose
 class LibreOfficeServer(object):
     """
-    A Pyro4 server which controls LibreOffice
+    A Pyro5 server which controls LibreOffice
     """
     def __init__(self):
         """

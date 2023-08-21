@@ -102,15 +102,15 @@ class ThemeListWidget(QtWidgets.QListWidget):
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setVerticalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOn)
-        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollPerPixel)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.MultiSelection)
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
+        self.setVerticalScrollMode(QtWidgets.QAbstractItemView.ScrollMode.ScrollPerPixel)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.MultiSelection)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
         self.setIconSize(QtCore.QSize(133, 100))
-        self.setMovement(QtWidgets.QListView.Static)
-        self.setFlow(QtWidgets.QListView.LeftToRight)
+        self.setMovement(QtWidgets.QListView.Movement.Static)
+        self.setFlow(QtWidgets.QListView.Flow.LeftToRight)
         self.setProperty("isWrapping", True)
-        self.setResizeMode(QtWidgets.QListView.Adjust)
-        self.setViewMode(QtWidgets.QListView.IconMode)
+        self.setResizeMode(QtWidgets.QListView.ResizeMode.Adjust)
+        self.setViewMode(QtWidgets.QListView.ViewMode.IconMode)
         self.setUniformItemSizes(True)
 
     def resizeEvent(self, event):
@@ -141,14 +141,16 @@ class UiFirstTimeWizard(object):
         first_time_wizard.setWindowIcon(UiIcons().main_icon)
         first_time_wizard.resize(640, 400)
         first_time_wizard.setModal(True)
-        first_time_wizard.setOptions(QtWidgets.QWizard.IndependentPages | QtWidgets.QWizard.NoBackButtonOnStartPage |
-                                     QtWidgets.QWizard.NoBackButtonOnLastPage | QtWidgets.QWizard.HaveCustomButton1)
+        first_time_wizard.setOptions(QtWidgets.QWizard.WizardOption.IndependentPages |
+                                     QtWidgets.QWizard.WizardOption.NoBackButtonOnStartPage |
+                                     QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage |
+                                     QtWidgets.QWizard.WizardOption.HaveCustomButton1)
         if is_macosx():                                                                             # pragma: nocover
-            first_time_wizard.setPixmap(QtWidgets.QWizard.BackgroundPixmap,
+            first_time_wizard.setPixmap(QtWidgets.QWizard.WizardPixmap.BackgroundPixmap,
                                         QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
             first_time_wizard.resize(634, 386)
         else:
-            first_time_wizard.setWizardStyle(QtWidgets.QWizard.ModernStyle)
+            first_time_wizard.setWizardStyle(QtWidgets.QWizard.WizardStyle.ModernStyle)
         add_welcome_page(first_time_wizard, ':/wizards/wizard_firsttime.bmp')
         # The screen config page
         self.screen_page = QtWidgets.QWizardPage()
@@ -304,9 +306,9 @@ class UiFirstTimeWizard(object):
 
         :param first_time_wizard: The wizard form
         """
-        self.finish_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.FinishButton))
-        back_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.BackButton))
-        next_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.NextButton))
+        self.finish_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.WizardButton.FinishButton))
+        back_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.WizardButton.BackButton))
+        next_button_text = clean_button_text(self.buttonText(QtWidgets.QWizard.WizardButton.NextButton))
 
         self.setWindowTitle(translate('OpenLP.FirstTimeWizard', 'First Time Wizard'))
         text = translate('OpenLP.FirstTimeWizard', 'Welcome to the First Time Wizard')
@@ -316,7 +318,7 @@ class UiFirstTimeWizard(object):
                                                 'Click the \'{next_button}\' button below to start.'
                       ).format(next_button=next_button_text))
         self.setButtonText(
-            QtWidgets.QWizard.CustomButton1, translate('OpenLP.FirstTimeWizard', 'Internet Settings'))
+            QtWidgets.QWizard.WizardButton.CustomButton1, translate('OpenLP.FirstTimeWizard', 'Internet Settings'))
         self.download_page.setTitle(translate('OpenLP.FirstTimeWizard', 'Downloading Resource Index'))
         self.download_page.setSubTitle(translate('OpenLP.FirstTimeWizard',
                                                  'Please wait while the resource index is downloaded.'))

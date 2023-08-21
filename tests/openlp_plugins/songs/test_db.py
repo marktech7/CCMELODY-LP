@@ -24,7 +24,7 @@ This module contains tests for the db submodule of the Songs plugin.
 import os
 import shutil
 
-from openlp.core.lib.db import upgrade_db
+from openlp.core.db.upgrades import upgrade_db
 from openlp.plugins.songs.lib import upgrade
 from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, Song
 from tests.utils.constants import TEST_RESOURCES_PATH

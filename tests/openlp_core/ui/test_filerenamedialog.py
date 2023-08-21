@@ -26,16 +26,19 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtTest
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.filerenameform import FileRenameForm
 
 
 @pytest.fixture()
-def form(settings):
+def form(registry: Registry, settings: Settings):
+    Registry().register('main_window', None)
     frm = FileRenameForm()
     return frm
 
 
-def test_window_title(form):
+def test_window_title(form: FileRenameForm):
     """
     Test the windowTitle of the FileRenameDialog
     """
@@ -61,7 +64,7 @@ def test_window_title(form):
         assert form.windowTitle() == 'File Copy', 'The window title should be "File Copy"'
 
 
-def test_line_edit_focus(form):
+def test_line_edit_focus(form: FileRenameForm):
     """
     Regression test for bug1067251
     Test that the file_name_edit setFocus has called with True when executed
@@ -78,7 +81,7 @@ def test_line_edit_focus(form):
         mocked_set_focus.assert_called_with()
 
 
-def test_file_name_validation(form):
+def test_file_name_validation(form: FileRenameForm):
     """
     Test the file_name_edit validation
     """

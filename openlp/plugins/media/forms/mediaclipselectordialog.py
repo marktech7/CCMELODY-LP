@@ -30,10 +30,11 @@ class Ui_MediaClipSelector(object):
     def setup_ui(self, media_clip_selector):
         media_clip_selector.setObjectName('media_clip_selector')
         media_clip_selector.resize(554, 654)
-        self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                                          QtWidgets.QSizePolicy.Fixed)
+        self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                                          QtWidgets.QSizePolicy.Policy.Fixed)
         media_clip_selector.setSizePolicy(
-            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding))
+            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                  QtWidgets.QSizePolicy.Policy.MinimumExpanding))
         self.main_layout = QtWidgets.QVBoxLayout(media_clip_selector)
         self.main_layout.setContentsMargins(8, 8, 8, 8)
         self.main_layout.setObjectName('main_layout')
@@ -95,8 +96,8 @@ class Ui_MediaClipSelector(object):
         # Preview frame
         self.preview_frame = QtWidgets.QFrame(media_clip_selector)
         self.preview_frame.setMinimumSize(QtCore.QSize(320, 240))
-        self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                                               QtWidgets.QSizePolicy.MinimumExpanding))
+        self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                                               QtWidgets.QSizePolicy.Policy.MinimumExpanding))
         self.preview_frame.setStyleSheet('background-color:black;')
         self.preview_frame.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.preview_frame.setObjectName('preview_frame')
@@ -154,10 +155,10 @@ class Ui_MediaClipSelector(object):
         self.main_layout.addWidget(self.range_groupbox)
         # Save and close buttons
         self.button_box = QtWidgets.QDialogButtonBox(media_clip_selector)
-        self.button_box.addButton(QtWidgets.QDialogButtonBox.Save)
-        self.button_box.addButton(QtWidgets.QDialogButtonBox.Close)
-        self.close_button = self.button_box.button(QtWidgets.QDialogButtonBox.Close)
-        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.StandardButton.Save)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        self.close_button = self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Save)
         self.main_layout.addWidget(self.button_box)
 
         self.retranslate_ui(media_clip_selector)

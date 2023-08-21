@@ -98,7 +98,7 @@ class EditSongForm(QtWidgets.QDialog, Ui_EditSongDialog, RegistryProperties):
         self.preview_button = QtWidgets.QPushButton()
         self.preview_button.setObjectName('preview_button')
         self.preview_button.setText(UiStrings().SaveAndPreview)
-        self.button_box.addButton(self.preview_button, QtWidgets.QDialogButtonBox.ActionRole)
+        self.button_box.addButton(self.preview_button, QtWidgets.QDialogButtonBox.ButtonRole.ActionRole)
         self.button_box.clicked.connect(self.on_preview)
         # Create other objects and forms
         self.manager = manager

@@ -466,7 +466,7 @@ class SongFormat(object):
             'class': DatasoulImport,
             'name': 'Datasoul',
             'prefix': 'datasoul',
-            'filter': '{text} (*.song)'.format(text=translate('SongsPlugin.ImportWizardForm', 'Dataoul Song Files'))
+            'filter': '{text} (*.song)'.format(text=translate('SongsPlugin.ImportWizardForm', 'Datasoul Song Files'))
         }
     }
 

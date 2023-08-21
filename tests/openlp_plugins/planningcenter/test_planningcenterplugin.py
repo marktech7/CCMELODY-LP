@@ -26,26 +26,25 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtWidgets
 
+from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
-from openlp.core.ui.settingsform import SettingsForm
 from openlp.plugins.planningcenter.planningcenterplugin import PlanningCenterPlugin
 
 
 @pytest.fixture
-def plugin_env(qapp, settings, state):
+def plugin(qapp, settings: Settings, state: State, registry: Registry):
     """An instance of the PlanningcenterPlugin"""
+    registry.register('main_window', None)
     plugin = PlanningCenterPlugin()
-    settings_form = SettingsForm()
-    return plugin, settings_form
+    return plugin
 
 
-def test_class_init_defaults(plugin_env):
+def test_class_init_defaults(plugin: PlanningCenterPlugin):
     """
     Test that the plugin class is instantiated with the correct defaults
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningcenterPlugin Class
     # WHEN:  the class has been through __init__
     # THEN:
@@ -59,12 +58,11 @@ def test_class_init_defaults(plugin_env):
     assert State().is_module_active('planning_center') is True, "Init State() is active"
 
 
-def test_initialise(plugin_env):
+def test_initialise(plugin: PlanningCenterPlugin):
     """
     Test that the initialise function can be called and it passes a call along
     to its parent class
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningcenterPlugin Class
     # WHEN:  initialise has been called on the class
     with patch('openlp.plugins.planningcenter.planningcenterplugin.PlanningCenterPlugin.import_planning_center',
@@ -76,11 +74,10 @@ def test_initialise(plugin_env):
     assert return_value is None, "Initialise was called on the class and it didn't crash"
 
 
-def test_import_menu_item_added(plugin_env):
+def test_import_menu_item_added(plugin: PlanningCenterPlugin):
     """
     Test that the add_import_menu_item function adds the menu item
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningcenterPlugin Class
     # WHEN:  add_import_menu_item is called
     import_menu = QtWidgets.QMenu()
@@ -91,56 +88,56 @@ def test_import_menu_item_added(plugin_env):
     assert import_menu.isEmpty() is False, "Menu Item is populated"
 
 
-@patch('openlp.plugins.planningcenter.forms.selectplanform.SelectPlanForm.exec')
-@patch('openlp.core.ui.settingsform.SettingsForm.exec')
-def test_on_import_planning_center_triggered_with_auth_settings(mock_editauth_exec, mock_selectplan_exec, plugin_env):
+@patch('openlp.plugins.planningcenter.planningcenterplugin.SelectPlanForm.exec')
+def test_on_import_planning_center_triggered_with_auth_settings(mocked_selectplan_exec: MagicMock,
+                                                                plugin: PlanningCenterPlugin,
+                                                                registry: Registry, settings: Settings):
     """
     Test that the on_import_planning_center_triggered function correctly returns
     the correct form to display.
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningCenterPlugin Class with mocked exec calls on both
     # PlanningCenter forms and settings set
-    application_id = 'abc'
-    secret = '123'
-    Settings().setValue('planningcenter/application_id', application_id)
-    Settings().setValue('planningcenter/secret', secret)
+    mocked_settings_form = MagicMock()
+    registry.register('settings_form', mocked_settings_form)
+    settings.setValue('planningcenter/application_id', 'test-application-id')
+    settings.setValue('planningcenter/secret', 'test-secret')
     # init the planning center plugin so we have default values defined for Settings()
     # WHEN:  on_import_planning_center_triggered is called
     plugin.on_import_planning_center_triggered()
     # THEN:
-    assert mock_selectplan_exec.call_count == 1, "Select Plan Form was shown"
-    assert mock_editauth_exec.call_count == 0, "Edit Auth Form was not shown"
+    assert mocked_selectplan_exec.call_count == 1, 'Select Plan Form was shown'
+    assert mocked_settings_form.exec.call_count == 0, 'Settings Form was not shown'
 
 
 @patch('openlp.plugins.planningcenter.forms.selectplanform.SelectPlanForm.exec')
-@patch('openlp.core.ui.settingsform.SettingsForm.exec')
-def test_on_import_planning_center_triggered_without_auth_settings(mock_editauth_exec,
-                                                                   mock_selectplan_exec, plugin_env):
+def test_on_import_planning_center_triggered_without_auth_settings(mocked_selectplan_exec: MagicMock,
+                                                                   plugin: PlanningCenterPlugin,
+                                                                   registry: Registry, settings: Settings):
     """
     Test that the on_import_planning_center_triggered function correctly returns
     the correct form to display.
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningCenterPlugin Class with mocked exec calls on both
+    mocked_settings_form = MagicMock()
+    registry.register('settings_form', mocked_settings_form)
     # PlanningCenter forms and settings set
-    application_id = ''
-    secret = ''
-    Settings().setValue('planningcenter/application_id', application_id)
-    Settings().setValue('planningcenter/secret', secret)
+    # application_id = ''
+    # secret = ''
+    # settings.setValue('planningcenter/application_id', application_id)
+    # settings.setValue('planningcenter/secret', secret)
     # init the planning center plugin so we have default values defined for Settings()
     # WHEN:  on_import_planning_center_triggered is called
     plugin.on_import_planning_center_triggered()
     # THEN:
-    assert mock_selectplan_exec.call_count == 0, "Select Plan Form was not shown"
-    assert mock_editauth_exec.call_count == 1, "Edit Auth Form was shown"
+    assert mocked_selectplan_exec.call_count == 0, "Select Plan Form was not shown"
+    assert mocked_settings_form.exec.call_count == 1, "Edit Auth Form was shown"
 
 
-def test_finalise(plugin_env):
+def test_finalise(plugin: PlanningCenterPlugin):
     """
     Test that the finalise function cleans up after the plugin
     """
-    plugin = plugin_env[0]
     # GIVEN: A PlanningcenterPlugin Class with a bunch of mocks
     plugin.import_planning_center = MagicMock()
 
@@ -151,8 +148,7 @@ def test_finalise(plugin_env):
     plugin.import_planning_center.setVisible.assert_called_once_with(False)
 
 
-def test_about(plugin_env):
-    plugin = plugin_env[0]
+def test_about(plugin: PlanningCenterPlugin):
     result = plugin.about()
 
     assert result == (

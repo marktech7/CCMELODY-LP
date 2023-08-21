@@ -594,7 +594,7 @@ class MediaClipSelectorForm(QtWidgets.QDialog, Ui_MediaClipSelector, RegistryPro
                                                                                   'Set name of mediaclip'),
                                                                   translate('MediaPlugin.MediaClipSelectorForm',
                                                                             'Name of mediaclip:'),
-                                                                  QtWidgets.QLineEdit.Normal)
+                                                                  QtWidgets.QLineEdit.EchoMode.Normal)
             # User pressed cancel, don't save the clip
             if not ok:
                 return

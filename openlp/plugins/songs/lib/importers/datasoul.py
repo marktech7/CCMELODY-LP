@@ -63,7 +63,7 @@ class DatasoulImport(SongImport):
                     self.log_error(
                         file_path,
                         translate('SongsPlugin.DatasoulImport',
-                                  'Invalid Dataoul song file. Missing Song tag.'))
+                                  'Invalid Datasoul song file. Missing Song tag.'))
                     continue
                 if hasattr(song_xml, 'Title') and song_xml.Title.text:
                     self.title = str(song_xml.Title.text)

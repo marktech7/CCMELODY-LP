@@ -258,11 +258,11 @@ def build_icon(icon):
     elif isinstance(icon, QtGui.QImage):            # pragma: no cover
         pix_map = QtGui.QPixmap.fromImage(icon)
     if pix_map:
-        button_icon.addPixmap(pix_map, QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        button_icon.addPixmap(pix_map, QtGui.QIcon.Mode.Normal, QtGui.QIcon.State.Off)
     return button_icon
 
 
-def image_to_byte(image, base_64=True):
+def image_to_byte(image: QtGui.QPixmap, base_64: bool = True) -> QtCore.QByteArray | str:
     """
     Resize an image to fit on the current screen for the web and returns it as a byte stream.
 
@@ -391,7 +391,7 @@ def resize_image(image_path, width, height, background='#000000', ignore_aspect_
     real_width = preview.width()
     real_height = preview.height()
     # and move it to the centre of the preview space
-    new_image = QtGui.QImage(width, height, QtGui.QImage.Format_ARGB32_Premultiplied)
+    new_image = QtGui.QImage(width, height, QtGui.QImage.Format.Format_ARGB32_Premultiplied)
     painter = QtGui.QPainter(new_image)
     painter.fillRect(new_image.rect(), QtGui.QColor(background))
     painter.drawImage((width - real_width) // 2, (height - real_height) // 2, preview)

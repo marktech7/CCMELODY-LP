@@ -4,22 +4,22 @@ cache:
   - '%LOCALAPPDATA%\pip\Cache'
   -  /Users/appveyor/Libraries/Caches/pip
 
-stack: python 3.8
+stack: python 3.11
 
 environment:
   matrix:
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      PY_DIR: C:\\Python38-x64
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      PY_DIR: C:\\Python311-x64
       CHOCO_VLC_ARG:
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
-      PYICU_PACK: PyICU-2.9-cp38-cp38-win_amd64.whl
-    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2019
-      PY_DIR: C:\\Python38
+      PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win_amd64.whl
+    - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
+      PY_DIR: C:\\Python311
       CHOCO_VLC_ARG: --forcex86
       FORCE_PACKAGING: 0
       FORCE_PACKAGING_MANUAL: 0
-      PYICU_PACK: PyICU-2.9-cp38-cp38-win32.whl
+      PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win32.whl
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
@@ -33,18 +33,18 @@ init:
 install:
   # Update pip
   - python -m pip install --upgrade pip
-  # Install generic dependencies from pypi. sqlalchemy most be 1.4 for now
-  - python -m pip install "sqlalchemy<1.5" alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc flask-cors pytest-qt pyenchant pysword qrcode pillow
+  # Install generic dependencies from pypi.
+  - python -m pip install sqlalchemy alembic appdirs chardet beautifulsoup4 lxml Mako mysql-connector-python pytest mock psycopg2-binary websockets waitress six requests QtAwesome PyQt5 PyQtWebEngine pymediainfo PyMuPDF QDarkStyle python-vlc flask-cors pytest-qt pyenchant pysword qrcode flask
   # Install Windows only dependencies
   - cmd: python -m pip install pyodbc pypiwin32
   - cmd: choco install vlc %CHOCO_VLC_ARG% --no-progress --limit-output
-  # Download and install pyicu for windows (originally from http://www.lfd.uci.edu/~gohlke/pythonlibs/)
-  - cmd: python -m pip install https://get.openlp.org/win-sdk/%PYICU_PACK%
+  # Download and install pyicu for windows from https://github.com/cgohlke/pyicu-build
+  - cmd: python -m pip install %PYICU_PACK%
   # Mac only dependencies
   - sh: brew install --cask vlc
   - sh: brew install pkg-config icu4c
   - sh: PATH="/usr/local/opt/icu4c/bin:/usr/local/opt/icu4c/sbin:$PATH" PKG_CONFIG_PATH="$PKG_CONFIG_PATH:/usr/local/opt/icu4c/lib/pkgconfig" python -m pip install pyicu
-  - sh: python -m pip install Pyro4 'pyobjc-core<8.2' 'pyobjc-framework-Cocoa<8.2' py-applescript
+  - sh: python -m pip install Pyro4 pyobjc-core pyobjc-framework-Cocoa py-applescript
 
 build: off
 
@@ -66,7 +66,7 @@ after_test:
           $ErrorActionPreference = "Continue"
           # This is where we create a package using PyInstaller
           # Install PyInstaller
-          python -m pip install --no-warn-script-location pyinstaller==4.9
+          python -m pip install --no-warn-script-location pyinstaller
           # Some windows only stuff...
           If ($isWindows) {
             # Disabled portable installers - can't figure out how to make them silent

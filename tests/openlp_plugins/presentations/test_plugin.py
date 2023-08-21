@@ -55,7 +55,7 @@ def test_creaste_settings_tab(qapp, state, registry, settings):
     assert isinstance(presentations_plugin.settings_tab, PresentationTab)
 
 
-@patch('openlp.plugins.presentations.presentationplugin.Manager')
+@patch('openlp.plugins.presentations.presentationplugin.DBManager')
 def test_initialise(MockedManager, state, registry, mock_settings):
     """Test that initialising the plugin works correctly"""
     # GIVEN: Some initial values needed for intialisation and a presentations plugin

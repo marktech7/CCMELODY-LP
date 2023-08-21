@@ -27,10 +27,10 @@ from pathlib import Path
 from tempfile import mkdtemp
 from unittest.mock import patch
 
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, select, table, column
 
 from openlp.core.common.applocation import AppLocation
-from openlp.core.lib.db import upgrade_db
+from openlp.core.db.upgrades import upgrade_db
 from openlp.plugins.images.lib import upgrade
 from tests.utils.constants import RESOURCE_PATH
 
@@ -66,4 +66,5 @@ def test_image_filenames_table(db_url, settings):
 
         engine = create_engine(db_url)
         conn = engine.connect()
-        assert conn.execute('SELECT * FROM metadata WHERE key = "version"').first().value == '3'
+        md = table('metadata', column('key'), column('value'))
+        assert conn.execute(select(md.c.value).where(md.c.key == 'version')).scalar() == '2'

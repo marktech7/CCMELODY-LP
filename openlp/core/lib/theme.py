@@ -285,9 +285,9 @@ class VerticalType(object):
 
 BOOLEAN_LIST = ['bold', 'italics', 'override', 'outline', 'shadow', 'slide_transition', 'slide_transition_reverse']
 
-INTEGER_LIST = ['size', 'line_adjustment', 'x', 'height', 'y', 'width', 'shadow_size', 'outline_size',
-                'horizontal_align', 'vertical_align', 'wrap_style', 'slide_transition_type', 'slide_transition_speed',
-                'slide_transition_direction']
+INTEGER_LIST = ['size', 'line_adjustment', 'letter_adjustment', 'x', 'height', 'y', 'width', 'shadow_size',
+                'outline_size', 'horizontal_align', 'vertical_align', 'wrap_style', 'slide_transition_type',
+                'slide_transition_speed', 'slide_transition_direction']
 
 
 class Theme(object):

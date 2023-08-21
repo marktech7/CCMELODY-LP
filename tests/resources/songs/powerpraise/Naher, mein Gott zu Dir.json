@@ -1,6 +1,9 @@
 {
     "title": "Näher, mein Gott, zu Dir",
     "verse_order_list": ["v1", "v2", "v3"],
+    "authors": [
+        ["Text und Musik: Lowell Mason, 1792-1872"]
+    ],
     "verses": [
         [
             "Näher, mein Gott, zu Dir,\nsei meine Bitt'!\nNäher, o Herr, zu Dir\nmit jedem Schritt.\nNur an dem Herzen Dein\nkann ich geborgen sein;\ndeshalb die Bitte mein:\nNäher zu Dir!",

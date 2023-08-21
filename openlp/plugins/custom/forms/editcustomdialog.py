@@ -82,7 +82,7 @@ class Ui_CustomEditDialog(object):
         self.theme_label = QtWidgets.QLabel(custom_edit_dialog)
         self.theme_label.setObjectName('theme_label')
         self.theme_combo_box = QtWidgets.QComboBox(custom_edit_dialog)
-        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.theme_combo_box.setObjectName('theme_combo_box')
         self.theme_label.setBuddy(self.theme_combo_box)
         self.bottom_form_layout.addRow(self.theme_label, self.theme_combo_box)
@@ -96,7 +96,7 @@ class Ui_CustomEditDialog(object):
         self.preview_button = QtWidgets.QPushButton()
         self.button_box = create_button_box(custom_edit_dialog, 'button_box', ['cancel', 'save', 'help'],
                                             [self.preview_button])
-        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
+        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Save)
         self.dialog_layout.addWidget(self.button_box)
         self.retranslate_ui(custom_edit_dialog)
 

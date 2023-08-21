@@ -21,17 +21,16 @@
 """
 Package to test the openlp.core.ui.exeptionform package.
 """
-import os
-import tempfile
 from collections import OrderedDict
 from pathlib import Path
-from unittest import TestCase
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
+
+import pytest
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.settings import Settings
 from openlp.core.common.registry import Registry
 from openlp.core.ui import exceptionform
-from tests.helpers.testmixin import TestMixin
 
 
 exceptionform.MIGRATE_VERSION = 'Migrate Test'
@@ -64,55 +63,81 @@ LIBRARY_VERSIONS = OrderedDict([
 ])
 
 
+@pytest.fixture
+def qtapp(registry: Registry, settings: Settings):
+    app = QtCore.QCoreApplication.instance()
+    if app is None:
+        app = QtWidgets.QApplication([])
+    app.setApplicationVersion('0.0')
+    app.set_normal_cursor = lambda: None
+    app.process_events = lambda: None
+    if registry.has('application'):
+        registry.remove('application')
+    registry.register('application', app)
+    return app
+
+
 @patch('openlp.core.ui.exceptionform.QtGui.QDesktopServices.openUrl')
 @patch('openlp.core.ui.exceptionform.get_version')
 @patch('openlp.core.ui.exceptionform.get_library_versions')
 @patch('openlp.core.ui.exceptionform.is_linux')
 @patch('openlp.core.ui.exceptionform.platform.platform')
-class TestExceptionForm(TestMixin, TestCase):
+@patch("openlp.core.ui.exceptionform.Ui_ExceptionDialog")
+@patch("openlp.core.ui.exceptionform.FileDialog")
+@patch("openlp.core.ui.exceptionform.QtCore.QUrl")
+@patch("openlp.core.ui.exceptionform.QtCore.QUrlQuery.addQueryItem")
+def test_on_send_report_button_clicked(mocked_addQueryItem: MagicMock, MockQUrl: MagicMock,
+                                       MockFileDialog: MagicMock, MockUiExceptionDialog: MagicMock,
+                                       mocked_platform: MagicMock, mocked_is_linux: MagicMock,
+                                       mocked_get_library_versions: MagicMock, mocked_get_version: MagicMock,
+                                       mocked_openUrl: MagicMock, qtapp: QtCore.QCoreApplication):
     """
-    Test functionality of exception form functions
+    Test send report  creates the proper system information text
     """
-    def __method_template_for_class_patches(self, __PLACEHOLDER_FOR_LOCAL_METHOD_PATCH_DECORATORS_GO_HERE__,
-                                            mocked_platform, mocked_is_linux, mocked_get_library_versions,
-                                            mocked_get_version, mocked_openurl):
-        """
-        Template so you don't have to remember the layout of class mock options for methods
-        """
-        mocked_is_linux.return_value = False
-        mocked_get_version.return_value = 'Trunk Test'
-        mocked_get_library_versions.return_value = LIBRARY_VERSIONS
 
-    def setUp(self):
-        self.setup_application()
-        self.app.setApplicationVersion('0.0')
-        # Set up a fake "set_normal_cursor" method since we're not dealing with an actual OpenLP application object
-        self.app.set_normal_cursor = lambda: None
-        self.app.process_events = lambda: None
-        Registry.create()
-        Registry().register('application', self.app)
-        Registry().register('settings', Settings())
-        self.tempfile = os.path.join(tempfile.gettempdir(), 'testfile')
+    # GIVEN: Test environment
+    mocked_platform.return_value = 'Nose Test'
+    mocked_is_linux.return_value = False
+    mocked_get_version.return_value = 'Trunk Test'
+    mocked_get_library_versions.return_value = LIBRARY_VERSIONS
+    test_form = exceptionform.ExceptionForm()
+    test_form.file_attachment = None
 
-    def tearDown(self):
-        if os.path.isfile(self.tempfile):
-            os.remove(self.tempfile)
+    with patch.object(test_form, '_get_pyuno_version') as mock_pyuno, \
+            patch.object(test_form.exception_text_edit, 'toPlainText') as mock_traceback, \
+            patch.object(test_form.description_text_edit, 'toPlainText') as mock_description:
+        mock_pyuno.return_value = 'UNO Bridge Test'
+        mock_traceback.return_value = 'openlp: Traceback Test'
+        mock_description.return_value = 'Description Test'
 
-    @patch("openlp.core.ui.exceptionform.Ui_ExceptionDialog")
-    @patch("openlp.core.ui.exceptionform.FileDialog")
-    @patch("openlp.core.ui.exceptionform.QtCore.QUrl")
-    @patch("openlp.core.ui.exceptionform.QtCore.QUrlQuery.addQueryItem")
-    def test_on_send_report_button_clicked(self, mocked_add_query_item, mocked_qurl, mocked_file_dialog,
-                                           mocked_ui_exception_dialog, mocked_platform, mocked_is_linux,
-                                           mocked_get_library_versions, mocked_get_version, mocked_openurl):
-        """
-        Test send report  creates the proper system information text
-        """
-        # GIVEN: Test environment
-        mocked_platform.return_value = 'Nose Test'
-        mocked_is_linux.return_value = False
-        mocked_get_version.return_value = 'Trunk Test'
-        mocked_get_library_versions.return_value = LIBRARY_VERSIONS
+        # WHEN: on_send_report_button_clicked called
+        test_form.on_send_report_button_clicked()
+
+    # THEN: Verify strings were formatted properly
+    mocked_addQueryItem.assert_called_with('body', MAIL_ITEM_TEXT)
+
+
+@patch('openlp.core.ui.exceptionform.QtGui.QDesktopServices.openUrl')
+@patch('openlp.core.ui.exceptionform.get_version')
+@patch('openlp.core.ui.exceptionform.get_library_versions')
+@patch('openlp.core.ui.exceptionform.is_linux')
+@patch('openlp.core.ui.exceptionform.platform.platform')
+@patch("openlp.core.ui.exceptionform.FileDialog.getSaveFileName")
+def test_on_save_report_button_clicked(mocked_getSaveFilename: MagicMock, mocked_platform: MagicMock,
+                                       mocked_is_linux: MagicMock, mocked_get_library_versions: MagicMock,
+                                       mocked_get_version: MagicMock, mocked_openUrl: MagicMock,
+                                       qtapp: QtCore.QCoreApplication):
+    """
+    Test save report saves the correct information to a file
+    """
+    mocked_platform.return_value = 'Nose Test'
+    mocked_is_linux.return_value = False
+    mocked_get_version.return_value = 'Trunk Test'
+    mocked_get_library_versions.return_value = LIBRARY_VERSIONS
+    with patch.object(Path, 'open') as mocked_path_open:
+        test_path = Path('testfile.txt')
+        mocked_getSaveFilename.return_value = test_path, 'ext'
+
         test_form = exceptionform.ExceptionForm()
         test_form.file_attachment = None
 
@@ -123,39 +148,8 @@ class TestExceptionForm(TestMixin, TestCase):
             mock_traceback.return_value = 'openlp: Traceback Test'
             mock_description.return_value = 'Description Test'
 
-            # WHEN: on_send_report_button_clicked called
-            test_form.on_send_report_button_clicked()
+            # WHEN: on_save_report_button_clicked called
+            test_form.on_save_report_button_clicked()
 
-        # THEN: Verify strings were formatted properly
-        mocked_add_query_item.assert_called_with('body', MAIL_ITEM_TEXT)
-
-    @patch("openlp.core.ui.exceptionform.FileDialog.getSaveFileName")
-    def test_on_save_report_button_clicked(self, mocked_save_filename, mocked_platform, mocked_is_linux,
-                                           mocked_get_library_versions, mocked_get_version, mocked_openurl):
-        """
-        Test save report saves the correct information to a file
-        """
-        mocked_platform.return_value = 'Nose Test'
-        mocked_is_linux.return_value = False
-        mocked_get_version.return_value = 'Trunk Test'
-        mocked_get_library_versions.return_value = LIBRARY_VERSIONS
-        with patch.object(Path, 'open') as mocked_path_open:
-            test_path = Path('testfile.txt')
-            mocked_save_filename.return_value = test_path, 'ext'
-
-            test_form = exceptionform.ExceptionForm()
-            test_form.file_attachment = None
-
-            with patch.object(test_form, '_get_pyuno_version') as mock_pyuno, \
-                    patch.object(test_form.exception_text_edit, 'toPlainText') as mock_traceback, \
-                    patch.object(test_form.description_text_edit, 'toPlainText') as mock_description:
-                mock_pyuno.return_value = 'UNO Bridge Test'
-                mock_traceback.return_value = 'openlp: Traceback Test'
-                mock_description.return_value = 'Description Test'
-
-                # WHEN: on_save_report_button_clicked called
-                test_form.on_save_report_button_clicked()
-
-        # THEN: Verify proper calls to save file
-        # self.maxDiff = None
-        mocked_path_open.assert_has_calls([call().__enter__().write(MAIL_ITEM_TEXT)])
+    # THEN: Verify proper calls to save file
+    mocked_path_open.assert_has_calls([call().__enter__().write(MAIL_ITEM_TEXT)])

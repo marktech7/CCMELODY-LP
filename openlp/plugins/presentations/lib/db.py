@@ -21,12 +21,12 @@
 """
 The :mod:`~openlp.plugins.presentations.lib.db` module contains the database layer for the presentations plugin
 """
-from sqlalchemy import MetaData
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import declarative_base
 
-from openlp.core.lib.db import FolderMixin, ItemMixin, init_db, init_url
+from openlp.core.db.helpers import init_db, init_url
+from openlp.core.db.mixins import FolderMixin, ItemMixin
 
-Base = declarative_base(MetaData())
+Base = declarative_base()
 
 
 class Folder(Base, FolderMixin):
@@ -42,5 +42,5 @@ def init_schema(*args, **kwargs):
     Set up the media database and initialise the schema
     """
     session, metadata = init_db(init_url('presentations'), base=Base)
-    metadata.create_all(checkfirst=True)
+    metadata.create_all(bind=metadata.bind, checkfirst=True)
     return session

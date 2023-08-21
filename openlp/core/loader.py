@@ -39,7 +39,7 @@ def loader():
     MediaController()
     PluginManager()
     # Set up the path with plugins
-    Renderer()
+    Renderer(window_title='Renderer')
     # Create slide controllers
     PreviewController()
     LiveController()

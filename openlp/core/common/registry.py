@@ -46,7 +46,6 @@ class Registry(metaclass=Singleton):
         registry.service_list = {}
         registry.functions_list = {}
         registry.working_flags = {}
-        registry.initialising = True
         return registry
 
     def get(self, key):
@@ -58,10 +57,9 @@ class Registry(metaclass=Singleton):
         if key in self.service_list:
             return self.service_list[key]
         else:
-            if not self.initialising:
-                trace_error_handler(log)
-                log.error('Service {key} not found in list'.format(key=key))
-                raise KeyError('Service {key} not found in list'.format(key=key))
+            trace_error_handler(log)
+            log.error('Service {key} not found in list'.format(key=key))
+            raise KeyError('Service {key} not found in list'.format(key=key))
 
     def register(self, key, reference):
         """
@@ -112,6 +110,22 @@ class Registry(metaclass=Singleton):
         if event in self.functions_list and function in self.functions_list[event]:
             self.functions_list[event].remove(function)
 
+    def has_function(self, event):
+        """
+        Returns whether there's any handler associated with the event.
+
+        :param event: The function to be checked
+        """
+        return event in self.functions_list
+
+    def has(self, service_name: str) -> bool:
+        """
+        Returns whether there's any service registered with provided name
+
+        :param service_name: The service name to be checked
+        """
+        return service_name in self.service_list
+
     def execute(self, event, *args, **kwargs):
         """
         Execute all the handlers associated with the event and return an array of results.
@@ -122,7 +136,7 @@ class Registry(metaclass=Singleton):
         """
         log.debug(f'Running function {event}')
         results = []
-        if event in self.functions_list:
+        if self.has_function(event):
             for function in self.functions_list[event]:
                 try:
                     result = function(*args, **kwargs)

@@ -21,11 +21,14 @@
 """
 Provide common toolbar handling for OpenLP
 """
+import datetime
 import logging
 
 from PyQt5 import QtCore, QtWidgets
+from openlp.core.common.i18n import translate
 
 from openlp.core.lib.ui import create_widget_action
+from openlp.core.ui.icons import UiIcons
 
 
 log = logging.getLogger(__name__)
@@ -127,8 +130,124 @@ class OpenLPToolbar(QtWidgets.QToolBar):
             log.warning(f'No handle {name} in actions list.')
 
     def add_spacer(self):
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                            QtWidgets.QSizePolicy.Policy.Preferred)
         separator = QtWidgets.QWidget()
         separator.setSizePolicy(size_policy)
         self.addWidget(separator)
         pass
+
+
+class MediaSlider(QtWidgets.QSlider):
+    """
+    Allows the mouse events of a slider to be overridden and extra functionality added
+    """
+    def __init__(self, direction, manager, controller):
+        """
+        Constructor
+        """
+        super(MediaSlider, self).__init__(direction)
+        self.manager = manager
+        self.controller = controller
+
+    def mouseMoveEvent(self, event):
+        """
+        Override event to allow hover time to be displayed.
+
+        :param event: The triggering event
+        """
+        time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width())
+        self.setToolTip('%s' % datetime.timedelta(seconds=int(time_value / 1000)))
+        QtWidgets.QSlider.mouseMoveEvent(self, event)
+
+    def mousePressEvent(self, event):
+        """
+        Mouse Press event no new functionality
+        :param event: The triggering event
+        """
+        QtWidgets.QSlider.mousePressEvent(self, event)
+
+    def mouseReleaseEvent(self, event):
+        """
+        Set the slider position when the mouse is clicked and released on the slider.
+
+        :param event: The triggering event
+        """
+        self.setValue(QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width()))
+        QtWidgets.QSlider.mouseReleaseEvent(self, event)
+
+
+class MediaToolbar(OpenLPToolbar):
+    def __init__(self, parent, hide_components=[], action_prefixes=''):
+        super().__init__(parent)
+        self.on_action = lambda *args: None
+        self.hide_components = hide_components
+        self.action_prefixes = action_prefixes
+        self.setup_ui()
+
+    def setup_ui(self):
+        # Build a Media ToolBar
+        self.setObjectName('slide_controller_toolbar')
+        self.identification_label = QtWidgets.QLabel()
+        self.identification_label.setContentsMargins(0, 0, 8, 0)
+        self.set_label(None)  # Hiding it by default
+        self.add_toolbar_widget(self.identification_label)
+        self.add_toolbar_action(self.action_prefixes + 'playbackPlay', text='media_playback_play',
+                                icon=UiIcons().play,
+                                tooltip=translate('OpenLP.SlideController', 'Start playing media.'),
+                                triggers=self._on_action)
+        self.add_toolbar_action(self.action_prefixes + 'playbackPause', text='media_playback_pause',
+                                icon=UiIcons().pause,
+                                tooltip=translate('OpenLP.SlideController', 'Pause playing media.'),
+                                triggers=self._on_action)
+        self.add_toolbar_action(self.action_prefixes + 'playbackStop', text='media_playback_stop',
+                                icon=UiIcons().stop,
+                                tooltip=translate('OpenLP.SlideController', 'Stop playing media.'),
+                                triggers=self._on_action)
+        if 'loop' not in self.hide_components:
+            self.add_toolbar_action(self.action_prefixes + 'playbackLoop', text='media_playback_loop',
+                                    icon=UiIcons().get_icon_variant_selected('repeat'), checked=False,
+                                    tooltip=translate('OpenLP.SlideController', 'Loop playing media.'),
+                                    triggers=self._on_action)
+        self.position_label = QtWidgets.QLabel()
+        self.position_label.setText(' 00:00 / 00:00')
+        self.position_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.position_label.setToolTip(translate('OpenLP.SlideController', 'Video timer.'))
+        self.position_label.setMinimumSize(90, 0)
+        self.position_label.setObjectName(self.action_prefixes + 'position_label')
+        self.add_toolbar_widget(self.position_label)
+        if 'seek' not in self.hide_components:
+            # Build the media seek_slider.
+            self.seek_slider = MediaSlider(QtCore.Qt.Horizontal, self, self)
+            self.seek_slider.setMaximum(1000)
+            self.seek_slider.setTracking(True)
+            self.seek_slider.setMouseTracking(True)
+            self.seek_slider.setToolTip(translate('OpenLP.SlideController', 'Video position.'))
+            self.seek_slider.setGeometry(QtCore.QRect(90, 260, 221, 24))
+            self.seek_slider.setObjectName(self.action_prefixes + 'seek_slider')
+            self.add_toolbar_widget(self.seek_slider)
+            self.seek_slider.valueChanged.connect(self._on_action)
+        if 'volume' not in self.hide_components:
+            # Build the volume_slider.
+            self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+            self.volume_slider.setTickInterval(10)
+            self.volume_slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksAbove)
+            self.volume_slider.setMinimum(0)
+            self.volume_slider.setMaximum(100)
+            self.volume_slider.setTracking(True)
+            self.volume_slider.setToolTip(translate('OpenLP.SlideController', 'Audio Volume.'))
+            self.volume_slider.setGeometry(QtCore.QRect(90, 160, 221, 24))
+            self.volume_slider.setObjectName(self.action_prefixes + 'volume_slider')
+            self.add_toolbar_widget(self.volume_slider)
+            self.volume_slider.valueChanged.connect(self._on_action)
+
+    def set_label(self, label):
+        if label:
+            self.identification_label.setText(label)
+            self.identification_label.setVisible(True)
+        else:
+            self.identification_label.setText('')
+            self.identification_label.setVisible(False)
+
+    def _on_action(self, *args):
+        self.on_action(*args)

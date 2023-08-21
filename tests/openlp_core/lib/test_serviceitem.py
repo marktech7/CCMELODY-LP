@@ -24,6 +24,7 @@ Package to test the openlp.core.lib package.
 import json
 import os
 import pytest
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
@@ -413,6 +414,68 @@ def test_service_item_load_optical_media_from_service(state_media):
     assert service_item.start_time == 654.375, 'Start time should be 654.375'
     assert service_item.end_time == 672.069, 'End time should be 672.069'
     assert service_item.media_length == 17.694, 'Media length should be 17.694'
+
+
+def test_service_item_load_duplicate_presentation_from_24x_service(state_media, settings):
+    """
+    Test the Service Item - simulate loading the same presentation file from a 2.4.x service file twice
+    """
+    presentation_service_time_246 = \
+        {'serviceitem':
+            {'data': [{'display_title': 'test1 ',
+                       'image': 'C:\\OpenLPPortable-246\\Data\\presentations\\thumbnails\\prøve.odp\\slide1.png',
+                       'notes': '\n',
+                       'path': 'C:/Documents',
+                       'title': 'prøve.odp'},
+                      {'display_title': 'Thats all ',
+                       'image': 'C:\\OpenLPPortable-246\\Data\\presentations\\thumbnails\\prøve.odp\\slide2.png',
+                       'notes': '\n',
+                       'path': 'C:/Documents',
+                       'title': 'prøve.odp'}],
+             'header': {'audit': '',
+                        'auto_play_slides_loop': False,
+                        'auto_play_slides_once': False,
+                        'background_audio': [],
+                        'capabilities': [17, 10, 19, 20, 21],
+                        'data': '',
+                        'end_time': 0,
+                        'footer': [],
+                        'from_plugin': False,
+                        'icon': ':/plugins/plugin_presentations.png',
+                        'media_length': 0,
+                        'name': 'presentations',
+                        'notes': '',
+                        'plugin': 'presentations',
+                        'processor': 'Impress',
+                        'search': '',
+                        'start_time': 0,
+                        'theme': None,
+                        'theme_overwritten': False,
+                        'timed_slide_interval': 0,
+                        'title': 'prøve.odp',
+                        'type': 3,
+                        'will_auto_start': False,
+                        'xml_version': None}}}
+
+    # GIVEN: 2 new service items and a mocked add icon and add_from_command function
+    service_item1 = ServiceItem(None)
+    service_item1.add_icon = MagicMock()
+    service_item2 = ServiceItem(None)
+    service_item2.add_icon = MagicMock()
+
+    # create a temp folder with a dummy presentation file
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_folder:
+        open(tmp_folder + '/prøve.odp', 'a').close()
+
+        # WHEN: We add a custom from a saved service, twice
+        service_item1.set_from_service(presentation_service_time_246, Path(tmp_folder))
+        service_item2.set_from_service(presentation_service_time_246, Path(tmp_folder))
+
+    # THEN: Loading should have succeeded and service items should be valid
+    assert service_item1.is_valid is True, 'The new service item should be valid'
+    assert service_item2.is_valid is True, 'The new service item should be valid'
+    assert len(service_item1.slides) == 2, 'The service item should have 2 slides'
+    assert len(service_item2.slides) == 2, 'The service item should have 2 slides'
 
 
 @patch('openlp.core.lib.serviceitem.sha256_file_hash')
@@ -985,10 +1048,8 @@ def test_add_from_text_adds_per_slide_footer_html():
 
     # THEN: Slides should be added with correctly numbered verse tags (Should start at 1)
     assert service_item.slides == [
-        {'text': 'This is the first slide', 'title': 'This is the first slide', 'verse': '1',
-         'footer_html': slide1FooterHtml},
-        {'text': 'This is the second slide', 'title': 'This is the second slide', 'verse': '2',
-         'footer_html': slide2FooterHtml}
+        {'text': slide1, 'title': slide1, 'verse': '1', 'footer_html': slide1FooterHtml},
+        {'text': slide2, 'title': slide2, 'verse': '2', 'footer_html': slide2FooterHtml}
     ]
 
 

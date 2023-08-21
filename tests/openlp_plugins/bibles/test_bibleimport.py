@@ -472,7 +472,8 @@ def test_parse_xml_file_file_not_found_exception(mocked_log_exception, mocked_op
     exception.filename = 'file.tst'
     exception.strerror = 'No such file or directory'
     mocked_open.side_effect = exception
-    importer = BibleImport(MagicMock(), path='.', name='.', file_path=None)
+    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'):
+        importer = BibleImport(MagicMock(), path='.', name='.', file_path=None)
 
     # WHEN: Calling parse_xml
     result = importer.parse_xml(Path('file.tst'))
@@ -495,7 +496,8 @@ def test_parse_xml_file_permission_error_exception(mocked_log_exception, mocked_
     exception.filename = 'file.tst'
     exception.strerror = 'Permission denied'
     mocked_open.side_effect = exception
-    importer = BibleImport(MagicMock(), path='.', name='.', file_path=None)
+    with patch('openlp.plugins.bibles.lib.bibleimport.BibleDB._setup'):
+        importer = BibleImport(MagicMock(), path='.', name='.', file_path=None)
 
     # WHEN: Calling parse_xml
     result = importer.parse_xml(Path('file.tst'))

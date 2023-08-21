@@ -131,14 +131,6 @@ class Ui_SongSelectDialog(object):
         self.message_area.setWordWrap(True)
         self.message_area.setObjectName('message_area')
         self.bottom_button_layout.addWidget(self.message_area, 0, 1, 1, 7)
-        self.view_button = QtWidgets.QPushButton(songselect_dialog)
-        self.view_button.setIcon(UiIcons().search)
-        self.view_button.setObjectName('view_button')
-        self.bottom_button_layout.addWidget(self.view_button, 0, 8, 1, 1)
-        self.import_button = QtWidgets.QPushButton(songselect_dialog)
-        self.import_button.setIcon(UiIcons().download)
-        self.import_button.setObjectName('import_button')
-        self.bottom_button_layout.addWidget(self.import_button, 0, 9, 1, 1)
         # Add everything to the interface layout
         self.songselect_layout.addLayout(self.top_button_layout)
         self.songselect_layout.addWidget(self.stacked_widget)
@@ -151,7 +143,6 @@ class Ui_SongSelectDialog(object):
         Translate the GUI.
         """
         songselect_dialog.setWindowTitle(translate('SongsPlugin.SongSelectForm', 'CCLI SongSelect Importer'))
-        self.view_button.setText(translate('SongsPlugin.SongSelectForm', 'Preview'))
         self.title_label.setText(translate('SongsPlugin.SongSelectForm', 'Title:'))
         self.authors_label.setText(translate('SongsPlugin.SongSelectForm', 'Author(s):'))
         self.copyright_label.setText(translate('SongsPlugin.SongSelectForm', 'Copyright:'))
@@ -159,5 +150,4 @@ class Ui_SongSelectDialog(object):
         self.lyrics_label.setText(translate('SongsPlugin.SongSelectForm', 'Lyrics:'))
         self.back_button.setText(translate('SongsPlugin.SongSelectForm', 'Back',
                                            'When pressed takes user to the CCLI home page'))
-        self.import_button.setText(translate('SongsPlugin.SongSelectForm', 'Import'))
         self.close_button.setText(translate('SongsPlugin.SongSelectForm', 'Close'))

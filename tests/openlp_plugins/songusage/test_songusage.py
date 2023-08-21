@@ -41,7 +41,7 @@ def test_about_text(state, mock_settings):
     assert len(SongUsagePlugin.about()) != 0
 
 
-@patch('openlp.plugins.songusage.songusageplugin.Manager')
+@patch('openlp.plugins.songusage.songusageplugin.DBManager')
 def test_song_usage_init(MockedManager, settings, state):
     """
     Test the initialisation of the SongUsagePlugin class
@@ -59,7 +59,7 @@ def test_song_usage_init(MockedManager, settings, state):
     assert song_usage.song_usage_active is False
 
 
-@patch('openlp.plugins.songusage.songusageplugin.Manager')
+@patch('openlp.plugins.songusage.songusageplugin.DBManager')
 def test_check_pre_conditions(MockedManager, settings, state):
     """
     Test that check_pre_condition returns true for valid manager session
@@ -77,7 +77,7 @@ def test_check_pre_conditions(MockedManager, settings, state):
     assert ret is True
 
 
-@patch('openlp.plugins.songusage.songusageplugin.Manager')
+@patch('openlp.plugins.songusage.songusageplugin.DBManager')
 def test_toggle_song_usage_state(MockedManager, settings, state):
     """
     Test that toggle_song_usage_state does toggle song_usage_state

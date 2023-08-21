@@ -49,8 +49,8 @@ class UiIcons(metaclass=Singleton):
         qta.load_font('op', font_path, charmap_path)
         palette = QtWidgets.QApplication.palette()
         self._default_icon_colors = {
-            "color": palette.color(QtGui.QPalette.Active, QtGui.QPalette.WindowText),
-            "color_disabled": palette.color(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText)
+            "color": palette.color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.WindowText),
+            "color_disabled": palette.color(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.WindowText)
         }
         qta.set_defaults(**self._default_icon_colors)
         self._icon_list = {
@@ -65,7 +65,7 @@ class UiIcons(metaclass=Singleton):
             'audio': {'icon': 'mdi.file-music-outline'},
             'authentication': {'icon': 'mdi.alert', 'attr': 'red'},
             'address': {'icon': 'mdi.book-open-variant'},
-            'back': {'icon': 'fmdi-skip-previous'},
+            'back': {'icon': 'mdi.skip-previous'},
             'backspace': {'icon': 'mdi.close'},
             # 'backspace': {'icon': 'mdi.chevron-left-box-outline'},
             'bible': {'icon': 'mdi.book-open-variant'},

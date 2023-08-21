@@ -33,7 +33,7 @@ from PyQt5 import QtCore, QtGui
 
 from openlp.core.common import SlideLimits, ThemeLevel
 from openlp.core.common.enum import AlertLocation, BibleSearch, CustomSearch, ImageThemeMode, LayoutStyle, \
-    DisplayStyle, LanguageSelection, SongSearch, PluginStatus
+    DisplayStyle, LanguageSelection, SongFirstSlideMode, SongSearch, PluginStatus
 from openlp.core.common.json import OpenLPJSONDecoder, OpenLPJSONEncoder, is_serializable
 from openlp.core.common.path import files_to_paths, str_to_path
 from openlp.core.common.platform import is_linux, is_win
@@ -42,7 +42,7 @@ from openlp.core.ui.style import UiThemes
 
 log = logging.getLogger(__name__)
 
-__version__ = 2
+__version__ = 3
 
 
 class ProxyMode(IntEnum):
@@ -116,6 +116,16 @@ def upgrade_dark_theme_to_ui_theme(value):
     return UiThemes.QDarkStyle if value else UiThemes.Automatic
 
 
+def upgrade_add_first_songbook_slide_config(value):
+    """
+    Upgrade the "songs/add songbook slide" property to "songs/add first slide".
+
+    :param bool value: the old "add_songbook_slide" value
+    :returns SongFirstSlideMode: new SongFirstSlideMode value
+    """
+    return SongFirstSlideMode.Songbook if value is True else SongFirstSlideMode.Default
+
+
 class Settings(QtCore.QSettings):
     """
     Class to wrap QSettings.
@@ -172,6 +182,7 @@ class Settings(QtCore.QSettings):
         'advanced/print file meta data': False,
         'advanced/print notes': False,
         'advanced/print slide text': False,
+        'advanced/protect data directory': False,
         'advanced/proxy mode': ProxyMode.SYSTEM_PROXY,
         'advanced/proxy http': '',
         'advanced/proxy https': '',
@@ -185,6 +196,7 @@ class Settings(QtCore.QSettings):
         'advanced/single click preview': False,
         'advanced/single click service preview': False,
         'advanced/x11 bypass wm': X11_BYPASS_DEFAULT,
+        'advanced/prefer windowed screen capture': False,
         'advanced/search as type': True,
         'advanced/ui_theme_name': UiThemes.Automatic,
         'advanced/delete service item confirmation': False,
@@ -338,7 +350,7 @@ class Settings(QtCore.QSettings):
         'songs/last import type': 0,
         'songs/update service on edit': False,
         'songs/add song from service': True,
-        'songs/add songbook slide': False,
+        'songs/first slide mode': SongFirstSlideMode.Default,
         'songs/display songbar': True,
         'songs/last directory import': None,
         'songs/last directory export': None,
@@ -472,6 +484,10 @@ class Settings(QtCore.QSettings):
         ('themes/last directory', 'themes/last directory', [(str_to_path, None)]),
         ('themes/wrap footer', '', []),
     ]
+    # Settings upgrades for 3.1
+    __setting_upgrade_3__ = [
+        ('songs/add songbook slide', 'songs/first slide mode', [(upgrade_add_first_songbook_slide_config, False)])
+    ]
 
     @staticmethod
     def extend_default_settings(default_values):
@@ -521,56 +537,56 @@ class Settings(QtCore.QSettings):
             'shortcuts/blankScreen': [QtGui.QKeySequence(QtCore.Qt.Key_Period)],
             'shortcuts/collapse': [QtGui.QKeySequence(QtCore.Qt.Key_Minus)],
             'shortcuts/desktopScreen': [QtGui.QKeySequence(QtCore.Qt.Key_D), QtGui.QKeySequence(QtCore.Qt.Key_Escape)],
-            'shortcuts/delete': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/delete': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/down': [QtGui.QKeySequence(QtCore.Qt.Key_Down)],
             'shortcuts/editSong': [],
             'shortcuts/expand': [QtGui.QKeySequence(QtCore.Qt.Key_Plus)],
             'shortcuts/exportThemeItem': [],
-            'shortcuts/fileNewItem': [QtGui.QKeySequence(QtGui.QKeySequence.New)],
-            'shortcuts/fileSaveAsItem': [QtGui.QKeySequence(QtGui.QKeySequence.SaveAs)],
-            'shortcuts/fileExitItem': [QtGui.QKeySequence(QtGui.QKeySequence.Quit)],
-            'shortcuts/fileSaveItem': [QtGui.QKeySequence(QtGui.QKeySequence.Save)],
-            'shortcuts/fileOpenItem': [QtGui.QKeySequence(QtGui.QKeySequence.Open)],
+            'shortcuts/fileNewItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.New)],
+            'shortcuts/fileSaveAsItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.SaveAs)],
+            'shortcuts/fileExitItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Quit)],
+            'shortcuts/fileSaveItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Save)],
+            'shortcuts/fileOpenItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Open)],
             'shortcuts/goLive': [],
-            'shortcuts/userManualItem': [QtGui.QKeySequence(QtGui.QKeySequence.HelpContents)],
+            'shortcuts/userManualItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.HelpContents)],
             'shortcuts/importThemeItem': [],
             'shortcuts/importBibleItem': [],
-            'shortcuts/listViewBiblesDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewBiblesDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewBiblesPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewBiblesLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
                                                  QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Enter)],
             'shortcuts/listViewBiblesServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
-            'shortcuts/listViewCustomDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewCustomDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewCustomPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewCustomLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
                                                  QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Enter)],
             'shortcuts/listViewCustomServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
-            'shortcuts/listViewImagesDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewImagesDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewImagesPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewImagesLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
                                                  QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Enter)],
             'shortcuts/listViewImagesServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
                                                     QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
-            'shortcuts/listViewMediaDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewMediaDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewMediaPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                    QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewMediaLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
                                                 QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Enter)],
             'shortcuts/listViewMediaServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
                                                    QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
-            'shortcuts/listViewPresentationsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewPresentationsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewPresentationsPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                            QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewPresentationsLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
                                                         QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Enter)],
             'shortcuts/listViewPresentationsServiceItem': [QtGui.QKeySequence(QtCore.Qt.Key_Plus),
                                                            QtGui.QKeySequence(QtCore.Qt.Key_Equal)],
-            'shortcuts/listViewSongsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.Delete)],
+            'shortcuts/listViewSongsDeleteItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Delete)],
             'shortcuts/listViewSongsPreviewItem': [QtGui.QKeySequence(QtCore.Qt.Key_Return),
                                                    QtGui.QKeySequence(QtCore.Qt.Key_Enter)],
             'shortcuts/listViewSongsLiveItem': [QtGui.QKeySequence(QtCore.Qt.SHIFT + QtCore.Qt.Key_Return),
@@ -605,15 +621,15 @@ class Settings(QtCore.QSettings):
             'shortcuts/previousService': [QtGui.QKeySequence(QtCore.Qt.Key_Left)],
             'shortcuts/previousItem_preview': [QtGui.QKeySequence(QtCore.Qt.Key_Up),
                                                QtGui.QKeySequence(QtCore.Qt.Key_PageUp)],
-            'shortcuts/printServiceItem': [QtGui.QKeySequence(QtGui.QKeySequence.Print)],
+            'shortcuts/printServiceItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Print)],
             'shortcuts/songExportItem': [],
             'shortcuts/songUsageStatus': [QtGui.QKeySequence(QtCore.Qt.Key_F4)],
-            'shortcuts/searchShortcut': [QtGui.QKeySequence(QtGui.QKeySequence.Find)],
+            'shortcuts/searchShortcut': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Find)],
             'shortcuts/settingsShortcutsItem': [],
             'shortcuts/settingsImportItem': [],
             'shortcuts/settingsPluginListItem': [QtGui.QKeySequence(QtCore.Qt.ALT + QtCore.Qt.Key_F7)],
             'shortcuts/songUsageDelete': [],
-            'shortcuts/settingsConfigureItem': [QtGui.QKeySequence(QtGui.QKeySequence.Preferences)],
+            'shortcuts/settingsConfigureItem': [QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Preferences)],
             'shortcuts/shortcutAction_B': [QtGui.QKeySequence(QtCore.Qt.Key_B)],
             'shortcuts/shortcutAction_C': [QtGui.QKeySequence(QtCore.Qt.Key_C)],
             'shortcuts/shortcutAction_E': [QtGui.QKeySequence(QtCore.Qt.Key_E)],
@@ -809,7 +825,7 @@ class Settings(QtCore.QSettings):
         self.remove('SettingsImport')
         # Get the settings.
         keys = self.allKeys()
-        export_settings = QtCore.QSettings(str(temp_path), QtCore.QSettings.IniFormat)
+        export_settings = QtCore.QSettings(str(temp_path), QtCore.QSettings.Format.IniFormat)
         # Add a header section.
         # This is to insure it's our conf file for import.
         now = datetime.datetime.now()

@@ -28,7 +28,7 @@ from openlp.core.state import State
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
@@ -51,7 +51,7 @@ class SongUsagePlugin(Plugin):
 
     def __init__(self):
         super(SongUsagePlugin, self).__init__('songusage')
-        self.manager = Manager('songusage', init_schema, upgrade_mod=upgrade)
+        self.manager = DBManager('songusage', init_schema, upgrade_mod=upgrade)
         self.weight = -4
         self.icon = UiIcons().song_usage
         self.song_usage_active = False

@@ -278,7 +278,7 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         """
         Restores all default shortcuts.
         """
-        if self.button_box.buttonRole(button) != QtWidgets.QDialogButtonBox.ResetRole:
+        if self.button_box.buttonRole(button) != QtWidgets.QDialogButtonBox.ButtonRole.ResetRole:
             return
         if QtWidgets.QMessageBox.question(self, translate('OpenLP.ShortcutListDialog', 'Restore Default Shortcuts'),
                                           translate('OpenLP.ShortcutListDialog', 'Do you want to restore all '
@@ -475,9 +475,9 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
     def get_shortcut_string(shortcut, for_display=False):
         if for_display:
             if any(modifier in shortcut.toString() for modifier in ['Ctrl', 'Alt', 'Meta', 'Shift']):
-                sequence_format = QtGui.QKeySequence.NativeText
+                sequence_format = QtGui.QKeySequence.SequenceFormat.NativeText
             else:
-                sequence_format = QtGui.QKeySequence.PortableText
+                sequence_format = QtGui.QKeySequence.SequenceFormat.PortableText
         else:
-            sequence_format = QtGui.QKeySequence.PortableText
+            sequence_format = QtGui.QKeySequence.SequenceFormat.PortableText
         return shortcut.toString(sequence_format)

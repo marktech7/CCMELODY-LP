@@ -22,15 +22,20 @@
 The :mod:`~openlp.plugins.songs.forms.songselectform` module contains the GUI for the SongSelect importer
 """
 import logging
+import re
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets, QtWebEngineWidgets
 from sqlalchemy.sql import and_
+from tempfile import TemporaryDirectory
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.plugins.songs.forms.songselectdialog import Ui_SongSelectDialog
 from openlp.plugins.songs.lib.db import Song
 from openlp.plugins.songs.lib.songselect import SongSelectImport, Pages
+from openlp.plugins.songs.lib.importers.chordpro import ChordProImport
+from openlp.plugins.songs.lib.importers.cclifile import CCLIFileImport
+
 
 log = logging.getLogger(__name__)
 
@@ -46,6 +51,8 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.plugin = plugin
         self.db_manager = db_manager
         self.setup_ui(self)
+        self.current_download_item = None
+        self.tmp_folder = TemporaryDirectory(prefix='openlp_songselect_', ignore_cleanup_errors=True)
 
     def initialise(self):
         """
@@ -54,12 +61,68 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         self.song = None
         self.song_select_importer = SongSelectImport(self.db_manager, self.webview)
         self.url_bar.returnPressed.connect(self.on_url_bar_return_pressed)
-        self.view_button.clicked.connect(self.on_view_button_clicked)
         self.back_button.clicked.connect(self.on_back_button_clicked)
         self.close_button.clicked.connect(self.done)
-        self.import_button.clicked.connect(self.on_import_button_clicked)
         self.webview.page().loadStarted.connect(self.page_load_started)
         self.webview.page().loadFinished.connect(self.page_loaded)
+        self.webview.page().profile().downloadRequested.connect(self.on_download_requested)
+        self.webview.urlChanged.connect(self.update_url)
+
+    def update_url(self, new_url):
+        self.url_bar.setText(new_url.toString())
+
+    def download_finished(self):
+        """
+        Callback for when download has finished
+        """
+        if self.current_download_item:
+            if self.current_download_item.state() == QtWebEngineWidgets.QWebEngineDownloadItem.DownloadCompleted:
+                self.song_progress_bar.setValue(2)
+                song_filename = self.current_download_item.downloadDirectory() + '/' \
+                    + self.current_download_item.downloadFileName()
+                song_file = open(song_filename, 'rt')
+                song_content = song_file.read()
+                song_file.seek(0)
+                if self.check_for_duplicate(song_content):
+                    # if a chordpro title tag is in the file, assume it is chordpro format
+                    if '{title:' in song_content:
+                        # assume it is a ChordPro file
+                        chordpro_importer = ChordProImport(self.plugin.manager, file_path=song_filename)
+                        chordpro_importer.do_import_file(song_file)
+                    else:
+                        # assume it is a simple lyrics
+                        cccli_lyrics_importer = CCLIFileImport(self.plugin.manager, file_path=song_filename)
+                        lines = song_file.readlines()
+                        cccli_lyrics_importer.do_import_txt_file(lines)
+                    self.song_progress_bar.setValue(3)
+                    QtWidgets.QMessageBox.information(self, translate('SongsPlugin.SongSelectForm', 'Song Imported'),
+                                                      translate('SongsPlugin.SongSelectForm',
+                                                                'Your song has been imported'))
+                song_file.close()
+                self.song_progress_bar.setVisible(False)
+            self.url_bar.setVisible(True)
+            self.webview.setEnabled(True)
+
+    @QtCore.pyqtSlot(QtWebEngineWidgets.QWebEngineDownloadItem)
+    def on_download_requested(self, download_item):
+        """
+        Called when download is started
+        """
+        # only import from txt is supported
+        if download_item.suggestedFileName().endswith('.txt'):
+            self.song_progress_bar.setMaximum(3)
+            self.song_progress_bar.setValue(1)
+            self.song_progress_bar.setVisible(True)
+            self.webview.setEnabled(False)
+            download_item.setDownloadDirectory(self.tmp_folder.name)
+            download_item.accept()
+            self.current_download_item = download_item
+            self.current_download_item.finished.connect(self.download_finished)
+        else:
+            download_item.cancel()
+            QtWidgets.QMessageBox.information(self, translate('SongsPlugin.SongSelectForm', 'Unsupported format'),
+                                              translate('SongsPlugin.SongSelectForm',
+                                                        'OpenLP can only import simple lyrics or ChordPro'))
 
     def exec(self):
         """
@@ -67,9 +130,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         values.
         """
         self.song_select_importer.reset_webview()
-        self.view_button.setEnabled(False)
         self.back_button.setEnabled(False)
-        self.import_button.setEnabled(False)
         self.stacked_widget.setCurrentIndex(0)
         return QtWidgets.QDialog.exec(self)
 
@@ -82,50 +143,25 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         return QtWidgets.QDialog.done(self, result_code)
 
     def page_load_started(self):
-        self.song_progress_bar.setMaximum(0)
-        self.song_progress_bar.setValue(0)
-        self.song_progress_bar.setVisible(True)
-        self.url_bar.setVisible(False)
-        self.import_button.setEnabled(False)
-        self.view_button.setEnabled(False)
         self.back_button.setEnabled(False)
-        self.message_area.setText('')
+        self.url_bar.setCursorPosition(0)
+        self.url_bar.setVisible(True)
+        self.message_area.setText(translate('SongsPlugin.SongSelectForm',
+                                            'Import songs by clicking the "Download" in the Lyrics tab '
+                                            'or "Download ChordPro" in the Chords tabs.'))
 
     def page_loaded(self, successful):
         self.song = None
         page_type = self.song_select_importer.get_page_type()
         if page_type == Pages.Login:
             self.signin_page_loaded()
-        elif page_type == Pages.Song:
-            self.song_progress_bar.setMaximum(3)
-            self.song_progress_bar.setValue(0)
-            self.song = self.song_select_importer.get_song(self._update_song_progress)
-            if self.song:
-                self.import_button.setEnabled(True)
-                self.view_button.setEnabled(True)
-            else:
-                message = translate('SongsPlugin.SongSelectForm', 'This song cannot be read. Perhaps your CCLI account '
-                                                                  'does not give you access to this song.')
-                self.message_area.setText(message)
+        else:
             self.back_button.setEnabled(True)
-        if page_type == Pages.Other:
-            self.back_button.setEnabled(True)
-        self.song_progress_bar.setVisible(False)
-        self.url_bar.setText(self.webview.url().toString())
-        self.url_bar.setCursorPosition(0)
-        self.url_bar.setVisible(True)
 
     def signin_page_loaded(self):
         username = self.settings.value('songs/songselect username')
         password = self.settings.value('songs/songselect password')
         self.song_select_importer.set_login_fields(username, password)
-
-    def _update_song_progress(self):
-        """
-        Update the progress bar.
-        """
-        self.song_progress_bar.setValue(self.song_progress_bar.value() + 1)
-        self.application.process_events()
 
     def _view_song(self):
         """
@@ -166,14 +202,6 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         url = self.url_bar.text()
         self.song_select_importer.set_page(url)
 
-    def on_view_button_clicked(self):
-        """
-        Import a song from SongSelect.
-        """
-        self.view_button.setEnabled(False)
-        self.url_bar.setEnabled(False)
-        self._view_song()
-
     def on_back_button_clicked(self, force_return_to_home=False):
         """
         Go back to the search page or just to the webview if on the preview screen
@@ -181,17 +209,21 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
         if (self.stacked_widget.currentIndex() == 0 or force_return_to_home):
             self.song_select_importer.set_home_page()
         else:
-            self.view_button.setEnabled(True)
             self.url_bar.setEnabled(True)
         self.stacked_widget.setCurrentIndex(0)
 
-    def on_import_button_clicked(self):
+    def check_for_duplicate(self, song_content):
         """
-        Import a song from SongSelect.
+        Warn user if a song exists in the database with the same ccli_number
         """
-        # Warn user if a song exists in the database with the same ccli_number
+        # First extract the CCLI number of the song
+        match = re.search(r'\nCCLI.+?#\s*(\d+)', song_content)
+        if match:
+            self.ccli_number = match.group(1)
+        else:
+            return True
         songs_with_same_ccli_number = self.plugin.manager.get_all_objects(
-            Song, and_(Song.ccli_number.like(self.song['ccli_number']), Song.ccli_number != ''))
+            Song, and_(Song.ccli_number.like(self.ccli_number), Song.ccli_number != ''))
         if len(songs_with_same_ccli_number) > 0:
             continue_import = QtWidgets.QMessageBox.question(self,
                                                              translate('SongsPlugin.SongSelectForm',
@@ -202,10 +234,5 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                                                                        'Are you sure you want to import this song?'),
                                                              defaultButton=QtWidgets.QMessageBox.No)
             if continue_import == QtWidgets.QMessageBox.No:
-                return
-        self.song_select_importer.save_song(self.song)
-        self.song = None
-        QtWidgets.QMessageBox.information(self, translate('SongsPlugin.SongSelectForm', 'Song Imported'),
-                                          translate('SongsPlugin.SongSelectForm',
-                                                    'Your song has been imported'))
-        self.on_back_button_clicked(True)
+                return False
+        return True

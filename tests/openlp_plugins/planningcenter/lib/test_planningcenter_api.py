@@ -22,105 +22,100 @@
 Package to test the openlp.plugins.planningcenter.lib.planningcenter_api package.
 """
 import os
-import urllib.error
-from unittest import TestCase
-from unittest.mock import patch
+from urllib.error import HTTPError
+from unittest.mock import MagicMock, patch
+
+import pytest
 
 from openlp.plugins.planningcenter.lib.planningcenter_api import PlanningCenterAPI
-from tests.helpers.testmixin import TestMixin
 
 TEST_PATH = os.path.abspath(
     os.path.join(os.path.dirname(__file__), '..', '..', '..', '..', 'resources', 'planningcenter'))
 
 
-class TestPlanningCenterAPI(TestCase, TestMixin):
+@pytest.fixture
+def api() -> PlanningCenterAPI:
+    yield PlanningCenterAPI('application_id', 'secret')
+
+
+def test_init():
     """
-    Test the PlanningCenterAPI class
+    Test that the api class can be instantiated with an application_id and secret
     """
-    def test_init(self):
-        """
-        Test that the api class can be instantiated with an application_id and secret
-        """
-        # GIVEN: A PlanningCenterAPI Class
-        # WHEN:  __init__ is called with an application id and secret
-        api = PlanningCenterAPI('application_id', 'secret')
-        # THEN:
-        # airplane mode should be false
-        self.assertFalse(api.airplane_mode, 'Class init without airplane mode')
+    # GIVEN: A PlanningCenterAPI Class
+    # WHEN:  __init__ is called with an application id and secret
+    api = PlanningCenterAPI('application_id', 'secret')
+    # THEN: airplane mode should be false
+    assert api.airplane_mode is False, 'Class init without airplane mode'
 
-    def test_init_with_airplane_mode(self):
-        """
-        Test that the api class can be instantiated with an application_id and secret
-        """
-        # GIVEN: A PlanningCenterAPI Class
-        # WHEN:  __init__ is called with an application id and secret and airplane_dir mocked
-        with patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir') as airplane_isdir:
-            airplane_isdir.return_value = True
-            api = PlanningCenterAPI('application_id', 'secret')
-        # THEN:
-        # airplane mode should be true
-        self.assertTrue(api.airplane_mode, 'Class init with airplane mode')
 
-    def test_get_from_services_api(self):
-        """
-        Test that the get_from_services_api can be called in airplane mode
-        """
-        # GIVEN: A PlanningCenterAPI Class
-        # WHEN:  get_from_services_api is called with empty string as input ('') and airplane mode enabled
-        with patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir') as airplane_isdir, \
-                patch('openlp.plugins.planningcenter.lib.planningcenter_api.urllib.request.build_opener') \
-                as mock_opener, \
-                patch('openlp.plugins.planningcenter.lib.planningcenter_api.open'):
-            airplane_isdir.return_value = True
-            api = PlanningCenterAPI('application_id', 'secret')
-            mock_opener().open().read.return_value = "{\"foo\" : \"bar\"}".encode(encoding='UTF-8')
-            return_value = api.get_from_services_api('test')
-        # THEN:
-        # we should get back the return value we mocked
-        self.assertEqual(return_value['foo'], 'bar', "get_from_services_api returns correct value")
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir')
+def test_init_with_airplane_mode(mocked_isdir: MagicMock):
+    """
+    Test that the api class can be instantiated with an application_id and secret
+    """
+    # GIVEN: A PlanningCenterAPI Class
+    mocked_isdir.return_value = True
+    # WHEN:  __init__ is called with an application id and secret and airplane_dir mocked
+    api = PlanningCenterAPI('application_id', 'secret')
+    # THEN: airplane mode should be true
+    assert api.airplane_mode is True, 'Class init with airplane mode'
 
-    def test_check_credentials_returns_empty_string_for_bad_credentials(self):
-        """
-        Test that check_credentials returns an empty string if authentication fails
-        """
-        # GIVEN: A PlanningCenterAPI Class with mocked out get_from_services_api that returns a 401 (http auth) error
-        api = PlanningCenterAPI('application_id', 'secret')
-        with patch.object(api, 'get_from_services_api') as mock_get_services:
-            mock_get_services.side_effect = urllib.error.HTTPError(None, 401, None, None, None)
+
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir')
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.urllib.request.build_opener')
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.open')
+def test_get_from_services_api(mocked_open: MagicMock, mocked_opener: MagicMock, mocked_isdir: MagicMock,
+                               api: PlanningCenterAPI):
+    """
+    Test that the get_from_services_api can be called in airplane mode
+    """
+    # GIVEN: A PlanningCenterAPI Class
+    mocked_isdir.return_value = True
+    mocked_opener.return_value.open.return_value.read.return_value = '{"foo" : "bar"}'.encode(encoding='utf8')
+    # WHEN:  get_from_services_api is called with empty string as input ('') and airplane mode enabled
+    result = api.get_from_services_api('test')
+    # THEN: we should get back the return value we mocked
+    assert result['foo'] == 'bar', 'get_from_services_api returns correct value'
+
+
+def test_check_credentials_returns_empty_string_for_bad_credentials(api: PlanningCenterAPI):
+    """
+    Test that check_credentials returns an empty string if authentication fails
+    """
+    # GIVEN: A PlanningCenterAPI Class with mocked out get_from_services_api that returns a 401 (http auth) error
+    with patch.object(api, 'get_from_services_api') as mocked_get_services:
+        mocked_get_services.side_effect = HTTPError(None, 401, None, None, None)
         # WHEN: check_credentials is called
-            return_value = api.check_credentials()
-        # THEN: we have an empty string returns
-        assert return_value == '', "return string is empty for bad authentication"
+        result = api.check_credentials()
+    # THEN: we have an empty string returns
+    assert result == '', 'return string is empty for bad authentication'
 
-    def test_check_credentials_raises_other_exceptions(self):
-        # GIVEN: A PlanningCenterAPI Class with mocked out get_from_services_api that returns a 400 error
-        api = PlanningCenterAPI('application_id', 'secret')
-        with patch.object(api, 'get_from_services_api') as mock_get_services:
-            mock_get_services.side_effect = urllib.error.HTTPError(None, 300, None, None, None)
-            # WHEN: check_credentials is called in a try block
-            error_code = 0
-            try:
-                api.check_credentials()
-            except urllib.error.HTTPError as error:
-                error_code = error.code
-        # THEN: we received an exception with code of 300
-        assert error_code == 300, "correct exception is raised from check_credentials"
 
-    def test_check_credentials_pass(self):
-        """
-        Test that check_credentials can be called in airplane mode
-        """
-        # GIVEN: A PlanningCenterAPI Class
-        # WHEN:  get_from_services_api is called with empty string as input ('') and airplane mode enabled
-        with patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir') as airplane_isdir, \
-                patch('openlp.plugins.planningcenter.lib.planningcenter_api.urllib.request.build_opener') \
-                as mock_opener, \
-                patch('openlp.plugins.planningcenter.lib.planningcenter_api.open'):
-            airplane_isdir.return_value = True
-            api = PlanningCenterAPI('application_id', 'secret')
-            mock_opener().open().read.return_value = "{\"data\": {\"attributes\": {\"name\": \"jpk\"}}}".\
-                encode(encoding='UTF-8')
-            return_value = api.check_credentials()
-        # THEN:
-        # Check credentials returns our mocked value
-        self.assertEqual(return_value, 'jpk', "check_credentials returns correct value for pass")
+def test_check_credentials_raises_other_exceptions(api: PlanningCenterAPI):
+    # GIVEN: A PlanningCenterAPI Class with mocked out get_from_services_api that returns a 400 error
+    with patch.object(api, 'get_from_services_api') as mocked_get_services:
+        mocked_get_services.side_effect = HTTPError(None, 300, None, None, None)
+        # WHEN: check_credentials is called in a try block
+        with pytest.raises(HTTPError) as exc:
+            api.check_credentials()
+    # THEN: we received an exception with code of 300
+    assert exc.value.code == 300, 'correct exception is raised from check_credentials'
+
+
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.os.path.isdir')
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.urllib.request.build_opener')
+@patch('openlp.plugins.planningcenter.lib.planningcenter_api.open')
+def test_check_credentials_pass(mocked_open: MagicMock, mocked_opener: MagicMock, mocked_isdir: MagicMock,
+                                api: PlanningCenterAPI):
+    """
+    Test that check_credentials can be called in airplane mode
+    """
+    # GIVEN: A PlanningCenterAPI Class
+    mocked_isdir.return_value = True
+    mocked_opener.return_value.open.return_value.read.return_value = \
+        '{"data": {"attributes": {"name": "jpk"}}}'.encode(encoding='utf8')
+    # WHEN:  get_from_services_api is called with empty string as input ('') and airplane mode enabled
+    result = api.check_credentials()
+    # THEN: Check credentials returns our mocked value
+    assert result == 'jpk', 'check_credentials returns correct value for pass'

@@ -47,13 +47,13 @@ class SongUsageDeleteForm(QtWidgets.QDialog, Ui_SongUsageDeleteDialog, RegistryP
 
         :param button: The button pressed
         """
-        if self.button_box.standardButton(button) == QtWidgets.QDialogButtonBox.Ok:
+        if self.button_box.standardButton(button) == QtWidgets.QDialogButtonBox.StandardButton.Ok:
             ret = QtWidgets.QMessageBox.question(self,
                                                  translate('SongUsagePlugin.SongUsageDeleteForm',
                                                            'Delete Selected Song Usage Events?'),
                                                  translate('SongUsagePlugin.SongUsageDeleteForm',
                                                            'Are you sure you want to delete selected Song Usage data?'),
-                                                 defaultButton=QtWidgets.QMessageBox.No)
+                                                 defaultButton=QtWidgets.QMessageBox.StandardButton.No)
             if ret == QtWidgets.QMessageBox.Yes:
                 delete_date = self.delete_calendar.selectedDate().toPyDate()
                 self.manager.delete_all_objects(SongUsageItem, SongUsageItem.usagedate <= delete_date)

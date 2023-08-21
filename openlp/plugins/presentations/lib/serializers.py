@@ -19,16 +19,16 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-This module contains some helpers for serializing Path objects in Pyro4
+This module contains some helpers for serializing Path objects in Pyro5
 """
 from pathlib import Path
 
-from Pyro4.util import SerializerBase
+from Pyro5.api import SerializerBase
 
 
 def path_class_to_dict(obj):
     """
-    Serialize a Path object for Pyro4
+    Serialize a Path object for Pyro5
     """
     return {
         '__class__': 'Path',

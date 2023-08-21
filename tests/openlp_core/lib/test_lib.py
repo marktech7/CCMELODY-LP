@@ -206,8 +206,10 @@ def test_build_icon_with_resource():
             patch('openlp.core.lib.QtGui.QPixmap') as MockedQPixmap:
         # GIVEN: A mocked QIcon and a mocked QPixmap
         MockedQtGui.QIcon = MagicMock
-        MockedQtGui.QIcon.Normal = 1
-        MockedQtGui.QIcon.Off = 2
+        MockedQtGui.QIcon.Mode = MagicMock
+        MockedQtGui.QIcon.State = MagicMock
+        MockedQtGui.QIcon.Mode.Normal = 1
+        MockedQtGui.QIcon.State.Off = 2
         MockedQPixmap.return_value = 'mocked_pixmap'
         resource_uri = ':/resource/uri'
 

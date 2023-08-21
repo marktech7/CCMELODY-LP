@@ -25,6 +25,8 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.songimport import SongImport
 from openlp.plugins.songs.lib.importers.zionworx import ZionWorxImport
 from tests.helpers.songfileimport import SongImportTestHelper
@@ -34,19 +36,17 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'zionworx'
 
 
-def test_create_importer(registry):
+@patch('openlp.plugins.songs.lib.importers.zionworx.SongImport')
+def test_create_importer(MockSongImport: MagicMock, registry: Registry, settings: Settings):
     """
     Test creating an instance of the ZionWorx file importer
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.zionworx.SongImport'):
-        mocked_manager = MagicMock()
+    # WHEN: An importer object is created
+    importer = ZionWorxImport(MagicMock(), file_paths=[])
 
-        # WHEN: An importer object is created
-        importer = ZionWorxImport(mocked_manager, file_paths=[])
-
-        # THEN: The importer should be an instance of SongImport
-        assert isinstance(importer, SongImport)
+    # THEN: The importer should be an instance of SongImport
+    assert isinstance(importer, SongImport)
 
 
 @pytest.mark.parametrize('filebase', ['zionworx', 'amazing-grace-arabic'])

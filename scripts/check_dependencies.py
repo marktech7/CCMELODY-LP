@@ -63,7 +63,7 @@ LINUX_MODULES = [
 
 MACOSX_MODULES = [
     'objc',
-    'Pyro4',
+    'Pyro5',
     'AppKit'
 ]
 
@@ -95,7 +95,6 @@ MODULES = [
     'pymediainfo',
     'vlc',
     'qrcode',
-    'PIL.ImageQt'
 ]
 
 

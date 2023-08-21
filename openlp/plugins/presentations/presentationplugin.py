@@ -29,7 +29,7 @@ from pathlib import Path
 from openlp.core.common import extension_loader, sha256_file_hash
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
@@ -55,7 +55,7 @@ class PresentationPlugin(Plugin):
         PluginPresentation constructor.
         """
         super().__init__('presentations', PresentationMediaItem)
-        self.manager = Manager(plugin_name='media', init_schema=init_schema)
+        self.manager = DBManager(plugin_name='media', init_schema=init_schema)
         self.weight = -8
         self.icon_path = UiIcons().presentation
         self.icon = build_icon(self.icon_path)

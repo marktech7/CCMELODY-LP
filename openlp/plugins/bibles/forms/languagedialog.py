@@ -49,7 +49,8 @@ class Ui_LanguageDialog(object):
         self.language_label.setObjectName('language_label')
         self.language_h_box_layout.addWidget(self.language_label)
         self.language_combo_box = QtWidgets.QComboBox(language_dialog)
-        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                            QtWidgets.QSizePolicy.Policy.Fixed)
         size_policy.setHorizontalStretch(0)
         size_policy.setVerticalStretch(0)
         size_policy.setHeightForWidth(self.language_combo_box.sizePolicy().hasHeightForWidth())

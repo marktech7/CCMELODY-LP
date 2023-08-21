@@ -87,7 +87,7 @@ class PresentationTab(SettingsTab):
         self.left_layout.addWidget(self.impress_group_box)
         # setup layout
         self.left_layout.addStretch()
-        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.right_layout.addStretch()
 
     def retranslate_ui(self):

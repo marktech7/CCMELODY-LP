@@ -40,6 +40,10 @@ from openlp.core.ui.mainwindow import MainWindow
 from tests.utils.constants import TEST_RESOURCES_PATH, RESOURCE_PATH
 
 
+JSON_RECENT_FILES = ('[{"parts": ["/", "path", "to", "service-1.osz"], "json_meta": {"class": "Path", "version": 1}},'
+                     '{"parts": ["/", "path", "to", "service-2.osz"], "json_meta": {"class": "Path", "version": 1}}]')
+
+
 def _create_mock_action(parent, name, **kwargs):
     """
     Create a fake action with some "real" attributes
@@ -823,7 +827,45 @@ def test_update_recent_files_menu(mocked_create_action, mocked_add_actions, Mock
     # GIVEN: A mocked settings object, and some other fixtures
     MockPath.return_value.is_file.side_effect = [False, True]
     settings.setValue('advanced/recent file count', 5)
-    main_window_reduced.recent_files = [None, '/fake/path', '/path/to/real/file']
+    main_window_reduced.recent_files = [None, '/fake/path', Path('/path/to/real/file')]
+    main_window_reduced.recent_files_menu = MagicMock()
+
+    # WHEN: update_recent_files_menu() is called
+    main_window_reduced.update_recent_files_menu()
+
+    # THEN: There should be no errors
+    assert mocked_create_action.call_count == 2
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+@patch('openlp.core.ui.mainwindow.add_actions')
+@patch('openlp.core.ui.mainwindow.create_action')
+def test_update_recent_files_menu_as_string(mocked_create_action, mocked_add_actions, MockPath, settings, registry,
+                                            main_window_reduced):
+    """Test that the update_recent_files_menu() method works correctly when the entry is a string instead of a list"""
+    # GIVEN: A mocked settings object, and some other fixtures
+    MockPath.return_value.is_file.side_effect = [False, True]
+    settings.setValue('advanced/recent file count', 5)
+    main_window_reduced.recent_files = JSON_RECENT_FILES
+    main_window_reduced.recent_files_menu = MagicMock()
+
+    # WHEN: update_recent_files_menu() is called
+    main_window_reduced.update_recent_files_menu()
+
+    # THEN: There should be no errors
+    assert mocked_create_action.call_count == 2
+
+
+@patch('openlp.core.ui.mainwindow.Path')
+@patch('openlp.core.ui.mainwindow.add_actions')
+@patch('openlp.core.ui.mainwindow.create_action')
+def test_update_recent_files_menu_as_list_with_string(mocked_create_action, mocked_add_actions, MockPath, settings,
+                                                      registry, main_window_reduced):
+    """Test that the update_recent_files_menu() method works correctly when the entry is a string instead of a list"""
+    # GIVEN: A mocked settings object, and some other fixtures
+    MockPath.return_value.is_file.side_effect = [False, True]
+    settings.setValue('advanced/recent file count', 5)
+    main_window_reduced.recent_files = [JSON_RECENT_FILES]
     main_window_reduced.recent_files_menu = MagicMock()
 
     # WHEN: update_recent_files_menu() is called

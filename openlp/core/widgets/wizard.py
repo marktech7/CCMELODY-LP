@@ -105,8 +105,8 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         self.setObjectName(name)
         self.open_icon = UiIcons().open
         self.delete_icon = UiIcons().delete
-        self.finish_button = self.button(QtWidgets.QWizard.FinishButton)
-        self.cancel_button = self.button(QtWidgets.QWizard.CancelButton)
+        self.finish_button = self.button(QtWidgets.QWizard.WizardButton.FinishButton)
+        self.cancel_button = self.button(QtWidgets.QWizard.WizardButton.CancelButton)
         self.setup_ui(image)
         self.register_fields()
         self.custom_init()
@@ -123,16 +123,18 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         """
         self.setWindowIcon(UiIcons().main_icon)
         self.setModal(True)
-        self.setOptions(QtWidgets.QWizard.IndependentPages |
-                        QtWidgets.QWizard.NoBackButtonOnStartPage | QtWidgets.QWizard.NoBackButtonOnLastPage)
+        self.setOptions(QtWidgets.QWizard.WizardOption.IndependentPages |
+                        QtWidgets.QWizard.WizardOption.NoBackButtonOnStartPage |
+                        QtWidgets.QWizard.WizardOption.NoBackButtonOnLastPage)
         # Set up a help button if the class of this instance has overridden the provide_help method
         if (self.provide_help.__module__ != __name__):
-            self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+            self.setOption(QtWidgets.QWizard.WizardOption.HaveHelpButton, True)
             self.helpRequested.connect(self.provide_help)
         if is_macosx():
-            self.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
+            self.setPixmap(QtWidgets.QWizard.WizardPixmap.BackgroundPixmap,
+                           QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
         else:
-            self.setWizardStyle(QtWidgets.QWizard.ModernStyle)
+            self.setWizardStyle(QtWidgets.QWizard.WizardStyle.ModernStyle)
         add_welcome_page(self, image)
         self.add_custom_pages()
         if self.with_progress_page:
@@ -189,7 +191,8 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         self.progress_layout.addWidget(self.error_report_text_edit)
         self.error_button_layout = QtWidgets.QHBoxLayout()
         self.error_button_layout.setObjectName('error_button_layout')
-        spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacer = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                       QtWidgets.QSizePolicy.Policy.Minimum)
         self.error_button_layout.addItem(spacer)
         self.error_copy_to_button = QtWidgets.QPushButton(self.progress_page)
         self.error_copy_to_button.setObjectName('error_copy_to_button')

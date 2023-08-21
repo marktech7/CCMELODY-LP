@@ -23,7 +23,7 @@ import logging
 
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
@@ -42,7 +42,7 @@ class ImagePlugin(Plugin):
 
     def __init__(self):
         super(ImagePlugin, self).__init__('images', ImageMediaItem, ImageTab)
-        self.manager = Manager('images', init_schema, upgrade_mod=upgrade)
+        self.manager = DBManager('images', init_schema, upgrade_mod=upgrade)
         self.weight = -7
         self.icon_path = UiIcons().picture
         self.icon = build_icon(self.icon_path)

@@ -56,14 +56,14 @@ def test_registry_service(registry):
 
     # WHEN I try to get back a non existent component
     # THEN I will get an exception
-    temp = Registry().get('test2')
-    assert temp is None, 'None should have been returned for missing service'
+    with pytest.raises(KeyError):
+        Registry().get('test2')
 
     # WHEN I try to replace a component I should be allowed
     Registry().remove('test1')
     # THEN I will get an exception
-    temp = Registry().get('test1')
-    assert temp is None, 'None should have been returned for deleted service'
+    with pytest.raises(KeyError):
+        Registry().get('test1')
 
 
 def test_registry_function(registry):

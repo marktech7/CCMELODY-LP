@@ -18,17 +18,19 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from collections import namedtuple
 import logging
 import mako
 import os
 from shutil import copyfile
+from typing import Any
 
 from PyQt5 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, or_
 
 from openlp.core.state import State
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.enum import SongSearch
+from openlp.core.common.enum import SongFirstSlideMode, SongSearch
 from openlp.core.common.i18n import UiStrings, get_natural_key, translate
 from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
@@ -265,7 +267,10 @@ class SongMediaItem(MediaManagerItem):
                 continue
             author_list = [author.display_name for author in song.authors]
             text = create_separated_list(author_list) if author_list else song.title
-            song_detail = '{title} ({author})'.format(title=song.title, author=text)
+            if len(song.media_files) > 0:
+                song_detail = f'{song.title} (A) ({text})'
+            else:
+                song_detail = '{title} ({author})'.format(title=song.title, author=text)
             song_name = QtWidgets.QListWidgetItem(song_detail)
             song_name.setData(QtCore.Qt.UserRole, song.id)
             self.list_view.addItem(song_name)
@@ -293,8 +298,9 @@ class SongMediaItem(MediaManagerItem):
         self.list_view.clear()
         search_results.sort(key=get_author_key)
         for author in search_results:
-            author.songs.sort(key=get_song_key)
-            for song in author.songs:
+            songs = [author_song.song for author_song in author.authors_songs]
+            songs.sort(key=get_song_key)
+            for song in songs:
                 # Do not display temporary songs
                 if song.temporary:
                     continue
@@ -565,19 +571,11 @@ class SongMediaItem(MediaManagerItem):
         service_item.theme = song.theme_name
         service_item.edit_id = item_id
         verse_list = SongXML().get_verses(song.lyrics)
-        if self.settings.value('songs/add songbook slide') and song.songbook_entries:
-            first_slide = '\n'
-            for songbook_entry in song.songbook_entries:
-                if songbook_entry.entry:
-                    first_slide += '{book} #{num}'.format(book=songbook_entry.songbook.name,
-                                                          num=songbook_entry.entry)
-                else:
-                    first_slide += songbook_entry.songbook.name
-                if songbook_entry.songbook.publisher:
-                    first_slide += ' ({pub})'.format(pub=songbook_entry.songbook.publisher)
-                first_slide += '\n\n'
-
-            service_item.add_from_text(first_slide, 'O1')
+        authors = self._get_music_authors(song)
+        songbooks_str = [str(songbook_entry) for songbook_entry in song.songbook_entries]
+        mako_vars = self._get_mako_vars(song, authors, songbooks_str)
+        service_item.title = song.title
+        author_list = self.generate_first_slide_and_footer(service_item, song, authors, songbooks_str, mako_vars)
         # no verse list or only 1 space (in error)
         verse_tags_translated = False
         if VerseType.from_translated_string(str(verse_list[0][0]['type'])) is not None:
@@ -616,8 +614,6 @@ class SongMediaItem(MediaManagerItem):
                         force_verse = verse[1].split('[--}{--]\n')
                         for split_verse in force_verse:
                             service_item.add_from_text(split_verse, verse_def)
-        service_item.title = song.title
-        author_list = self.generate_footer(service_item, song)
         service_item.data_string = {
             'title': song.search_title,
             'alternate_title': song.alternate_title,
@@ -643,14 +639,48 @@ class SongMediaItem(MediaManagerItem):
                 service_item.will_auto_start = bool(self.settings.value('songs/auto play audio'))
         return True
 
-    def generate_footer(self, item, song):
+    def generate_footer(self, item, song, authors, songbooks, mako_vars):
         """
         Generates the song footer based on a song and adds details to a service item.
 
         :param item: The service item to be amended
         :param song: The song to be used to generate the footer
+        :param authors: The authors of the song
         :return: List of all authors (only required for initial song generation)
         """
+        item.audit = [
+            song.title, authors.all, song.copyright, str(song.ccli_number)
+        ]
+        item.raw_footer = []
+        item.raw_footer.append(song.title)
+        if authors.none:
+            item.raw_footer.append("{text}: {authors}".format(text=translate('OpenLP.Ui', 'Written by'),
+                                                              authors=create_separated_list(authors.none)))
+        if authors.words_music:
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.WordsAndMusic],
+                                                              authors=create_separated_list(authors.words_music)))
+        if authors.words:
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Words],
+                                                              authors=create_separated_list(authors.words)))
+        if authors.music:
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Music],
+                                                              authors=create_separated_list(authors.music)))
+        if authors.translation:
+            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Translation],
+                                                              authors=create_separated_list(authors.translation)))
+        if song.copyright:
+            item.raw_footer.append("{symbol} {song}".format(symbol=SongStrings.CopyrightSymbol,
+                                                            song=song.copyright))
+        if song.songbook_entries:
+            item.raw_footer.append(", ".join(songbooks))
+        if self.settings.value('core/ccli number'):
+            item.raw_footer.append(translate('SongsPlugin.MediaItem', 'CCLI License: ') +
+                                   self.settings.value('core/ccli number'))
+        item.footer_html = self._generate_mako_footer(mako_vars)
+        return authors.all
+
+    def _get_music_authors(self, song):
+        authors_tuple = namedtuple('AuthorsTuple', ['words', 'music', 'words_music', 'translation', 'none', 'all'])
         authors_words = []
         authors_music = []
         authors_words_music = []
@@ -668,66 +698,45 @@ class SongMediaItem(MediaManagerItem):
             else:
                 authors_none.append(author_song.author.display_name)
         authors_all = authors_words_music + authors_words + authors_music + authors_translation + authors_none
-        item.audit = [
-            song.title, authors_all, song.copyright, str(song.ccli_number)
-        ]
-        item.raw_footer = []
-        item.raw_footer.append(song.title)
-        if authors_none:
-            item.raw_footer.append("{text}: {authors}".format(text=translate('OpenLP.Ui', 'Written by'),
-                                                              authors=create_separated_list(authors_none)))
-        if authors_words_music:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.WordsAndMusic],
-                                                              authors=create_separated_list(authors_words_music)))
-        if authors_words:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Words],
-                                                              authors=create_separated_list(authors_words)))
-        if authors_music:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Music],
-                                                              authors=create_separated_list(authors_music)))
-        if authors_translation:
-            item.raw_footer.append("{text}: {authors}".format(text=AuthorType.Types[AuthorType.Translation],
-                                                              authors=create_separated_list(authors_translation)))
-        if song.copyright:
-            item.raw_footer.append("{symbol} {song}".format(symbol=SongStrings.CopyrightSymbol,
-                                                            song=song.copyright))
-        songbooks = [str(songbook_entry) for songbook_entry in song.songbook_entries]
-        if song.songbook_entries:
-            item.raw_footer.append(", ".join(songbooks))
-        if self.settings.value('core/ccli number'):
-            item.raw_footer.append(translate('SongsPlugin.MediaItem', 'CCLI License: ') +
-                                   self.settings.value('core/ccli number'))
-        footer_template = self.settings.value('songs/footer template')
+        return authors_tuple(authors_words, authors_music, authors_words_music, authors_translation, authors_none,
+                             authors_all)
+
+    def _get_mako_vars(self, song, authors, songbooks):
         # Keep this in sync with the list in songstab.py
-        vars = {
+        return {
             'title': song.title,
             'alternate_title': song.alternate_title,
             'authors_none_label': translate('OpenLP.Ui', 'Written by'),
-            'authors_none': authors_none,
+            'authors_none': authors.none,
             'authors_words_label': AuthorType.Types[AuthorType.Words],
-            'authors_words': authors_words,
+            'authors_words': authors.words,
             'authors_music_label': AuthorType.Types[AuthorType.Music],
-            'authors_music': authors_music,
+            'authors_music': authors.music,
             'authors_words_music_label': AuthorType.Types[AuthorType.WordsAndMusic],
-            'authors_words_music': authors_words_music,
+            'authors_words_music': authors.words_music,
             'authors_translation_label': AuthorType.Types[AuthorType.Translation],
-            'authors_translation': authors_translation,
-            'authors_words_all': authors_words + authors_words_music,
-            'authors_music_all': authors_music + authors_words_music,
+            'authors_translation': authors.translation,
+            'authors_words_all': authors.words + authors.words_music,
+            'authors_music_all': authors.music + authors.words_music,
             'copyright': song.copyright,
             'songbook_entries': songbooks,
             'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': song.ccli_number,
-            'topics': [topic.name for topic in song.topics]
+            'topics': [topic.name for topic in song.topics],
+            'first_slide': False
         }
+
+    def _generate_mako_footer(self, vars, show_error=True):
+        footer_template = self.settings.value('songs/footer template')
         try:
-            item.footer_html = mako.template.Template(footer_template).render_unicode(**vars).replace('\n', '')
+            return mako.template.Template(footer_template).render_unicode(**vars).replace('\n', '')
         except mako.exceptions.SyntaxException:
             log.error('Failed to render Song footer html:\n' + mako.exceptions.text_error_template().render())
-            critical_error_message_box(message=translate('SongsPlugin.MediaItem',
-                                                         'Failed to render Song footer html.\nSee log for details'))
-        return authors_all
+            if show_error:
+                critical_error_message_box(message=translate('SongsPlugin.MediaItem',
+                                                             'Failed to render Song footer html.\nSee log for details'))
+        return None
 
     def service_load(self, item):
         """
@@ -765,9 +774,55 @@ class SongMediaItem(MediaManagerItem):
                 self._update_background_audio(song, item)
             edit_id = song.id
         # Update service with correct song id and return it to caller.
+        authors = self._get_music_authors(song)
+        songbooks_str = [str(songbook_entry) for songbook_entry in song.songbook_entries]
+        mako_vars = self._get_mako_vars(song, authors, songbooks_str)
+        self.generate_footer(item, song, authors, songbooks_str, mako_vars)
+        if len(item.slides):
+            first_slide = item.slides[0]
+            if 'metadata' in first_slide and 'songs_first_slide_type' in first_slide['metadata']:
+                try:
+                    slide_mode = SongFirstSlideMode(first_slide['metadata']['songs_first_slide_type'])
+                    if slide_mode == SongFirstSlideMode.Footer:
+                        # For now only the footer needs to be regenerated on import, as it's dependent on what
+                        # user defined on each OpenLP instance settings.
+                        self.generate_first_slide_and_footer(item, song, authors, songbooks_str, mako_vars, True)
+                except ValueError:
+                    # Maybe it's a new slide mode generated in a greater OpenLP version, better leave it as-is.
+                    pass
         item.edit_id = edit_id
-        self.generate_footer(item, song)
         return item
+
+    def generate_first_slide_and_footer(self, service_item, song, authors, songbooks_str, mako_vars, replace=False):
+        song_first_slide = self.settings.value('songs/first slide mode')
+        service_item.title = song.title
+        author_list = self.generate_footer(service_item, song, authors, songbooks_str, mako_vars)
+        slide_metadata = {'songs_first_slide_type': song_first_slide}
+        if song_first_slide == SongFirstSlideMode.Songbook and song.songbook_entries:
+            first_slide = '\n'
+            for songbook_entry in song.songbook_entries:
+                if songbook_entry.entry:
+                    first_slide += '{book} #{num}'.format(book=songbook_entry.songbook.name,
+                                                          num=songbook_entry.entry)
+                else:
+                    first_slide += songbook_entry.songbook.name
+                if songbook_entry.songbook.publisher:
+                    first_slide += ' ({pub})'.format(pub=songbook_entry.songbook.publisher)
+                first_slide += '\n\n'
+            if replace:
+                service_item.replace_slide_from_text(0, first_slide, 'O1', metadata=slide_metadata)
+            else:
+                service_item.add_from_text(first_slide, 'O1', metadata=slide_metadata)
+        elif song_first_slide == SongFirstSlideMode.Footer:
+            mako_vars['first_slide'] = True
+            first_slide = self._generate_mako_footer(mako_vars, False)  # Avoiding show message error box twice
+            first_slide = first_slide if first_slide is not None else '\n'.join(service_item.raw_footer)
+            if replace:
+                service_item.replace_slide_from_text(0, first_slide, 'O2', footer_html='', metadata=slide_metadata)
+            else:
+                service_item.add_from_text(first_slide, 'O2', footer_html='', metadata=slide_metadata)
+            mako_vars['first_slide'] = False
+        return author_list
 
     @staticmethod
     def _authors_match(song, authors):
@@ -787,7 +842,8 @@ class SongMediaItem(MediaManagerItem):
         # List must be empty at the end
         return not author_list
 
-    def search(self, string, show_error=True):
+    @QtCore.pyqtSlot(str, bool, result=list)
+    def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Search for some songs
         :param string: The string to show

@@ -38,14 +38,15 @@ from tests.utils.constants import RESOURCE_PATH
 
 
 @pytest.fixture()
-def theme_manager(settings):
+def theme_manager(registry: Registry, settings: Settings) -> ThemeManager:
+    registry.register('main_window', None)
     thm = ThemeManager()
     return thm
 
 
 @patch('openlp.core.ui.thememanager.zipfile.ZipFile.__init__')
 @patch('openlp.core.ui.thememanager.zipfile.ZipFile.write')
-def test_export_theme(mocked_zipfile_write, mocked_zipfile_init, registry):
+def test_export_theme(mocked_zipfile_write: MagicMock, mocked_zipfile_init: MagicMock, registry: Registry):
     """
     Test exporting a theme .
     """
@@ -63,7 +64,7 @@ def test_export_theme(mocked_zipfile_write, mocked_zipfile_init, registry):
                                             Path('Default', 'Default.xml'))
 
 
-def test_initial_theme_manager(registry):
+def test_initial_theme_manager(registry: Registry):
     """
     Test the instantiation of theme manager.
     """
@@ -76,7 +77,7 @@ def test_initial_theme_manager(registry):
 
 
 @patch('openlp.core.ui.thememanager.Theme')
-def test_get_global_theme(mocked_theme, registry):
+def test_get_global_theme(mocked_theme: MagicMock, registry: Registry):
     """
     Test the global theme method returns the theme data for the global theme
     """

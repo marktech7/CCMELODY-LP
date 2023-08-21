@@ -35,7 +35,7 @@ from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
@@ -120,7 +120,7 @@ class SongsPlugin(Plugin):
         Create and set up the Songs plugin.
         """
         super(SongsPlugin, self).__init__('songs', SongMediaItem, SongsTab)
-        self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
+        self.manager = DBManager('songs', init_schema, upgrade_mod=upgrade)
         self.weight = -10
         self.icon_path = UiIcons().music
         self.icon = build_icon(self.icon_path)

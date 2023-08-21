@@ -21,21 +21,24 @@
 """
 This module contains tests for the WorshipCenter Pro song importer.
 """
-from unittest import TestCase, skipUnless
 from unittest.mock import MagicMock, patch
+
+import pytest
+
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 
 from tests.utils import load_external_result_data
 from tests.utils.constants import RESOURCE_PATH
 
-
 try:
-    from openlp.core.common.registry import Registry
     from openlp.plugins.songs.lib.importers.opspro import OPSProImport
     CAN_RUN_TESTS = True
 except ImportError:
     CAN_RUN_TESTS = False
 
 
+pytestmark = pytest.mark.skipif(not CAN_RUN_TESTS, reason='Not Windows, skipping test')
 TEST_PATH = RESOURCE_PATH / 'songs' / 'opspro'
 
 
@@ -67,103 +70,96 @@ def _build_data(test_file, dual_language):
     return song, lyrics
 
 
-@skipUnless(CAN_RUN_TESTS, 'Not Windows, skipping test')
-class TestOpsProSongImport(TestCase):
+@patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
+def test_create_importer(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
     """
-    Test the functions in the :mod:`opsproimport` module.
+    Test creating an instance of the OPS Pro file importer
     """
-    def setUp(self):
-        """
-        Create the registry
-        """
-        Registry.create()
+    # GIVEN: A mocked out SongImport class, and a mocked out "manager"
+    mocked_manager = MagicMock()
 
-    @patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
-    def test_create_importer(self, mocked_songimport):
-        """
-        Test creating an instance of the OPS Pro file importer
-        """
-        # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-        mocked_manager = MagicMock()
+    # WHEN: An importer object is created
+    importer = OPSProImport(mocked_manager, file_paths=[])
 
-        # WHEN: An importer object is created
-        importer = OPSProImport(mocked_manager, file_paths=[])
+    # THEN: The importer object should not be None
+    assert importer is not None, 'Import should not be none'
 
-        # THEN: The importer object should not be None
-        assert importer is not None, 'Import should not be none'
 
-    @patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
-    def test_detect_chorus(self, mocked_songimport):
-        """
-        Test importing lyrics with a chorus in OPS Pro
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
-        mocked_manager = MagicMock()
-        importer = OPSProImport(mocked_manager, file_paths=[])
-        importer.finish = MagicMock()
-        song, lyrics = _build_data('you are so faithfull.txt', False)
+@patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
+def test_detect_chorus(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test importing lyrics with a chorus in OPS Pro
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
+    mocked_manager = MagicMock()
+    importer = OPSProImport(mocked_manager, file_paths=[])
+    importer.finish = MagicMock()
+    song, lyrics = _build_data('you are so faithfull.txt', False)
 
-        # WHEN: An importer object is created
-        importer.process_song(song, lyrics, [])
+    # WHEN: An importer object is created
+    importer.process_song(song, lyrics, [])
 
-        # THEN: The imported data should look like expected
-        result_data = load_external_result_data(TEST_PATH / 'You are so faithful.json')
-        assert importer.verses == _get_item(result_data, 'verses')
-        assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
+    # THEN: The imported data should look like expected
+    result_data = load_external_result_data(TEST_PATH / 'You are so faithful.json')
+    assert importer.verses == _get_item(result_data, 'verses')
+    assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
 
-    @patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
-    def test_join_and_split(self, mocked_songimport):
-        """
-        Test importing lyrics with a split and join tags works in OPS Pro
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
-        mocked_manager = MagicMock()
-        importer = OPSProImport(mocked_manager, file_paths=[])
-        importer.finish = MagicMock()
-        song, lyrics = _build_data('amazing grace.txt', False)
 
-        # WHEN: An importer object is created
-        importer.process_song(song, lyrics, [])
+@patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
+def test_join_and_split(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test importing lyrics with a split and join tags works in OPS Pro
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
+    mocked_manager = MagicMock()
+    importer = OPSProImport(mocked_manager, file_paths=[])
+    importer.finish = MagicMock()
+    song, lyrics = _build_data('amazing grace.txt', False)
 
-        # THEN: The imported data should look like expected
-        result_data = load_external_result_data(TEST_PATH / 'Amazing Grace.json')
-        assert importer.verses == _get_item(result_data, 'verses')
-        assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
+    # WHEN: An importer object is created
+    importer.process_song(song, lyrics, [])
 
-    @patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
-    def test_trans_off_tag(self, mocked_songimport):
-        """
-        Test importing lyrics with a split and join and translations tags works in OPS Pro
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
-        mocked_manager = MagicMock()
-        importer = OPSProImport(mocked_manager, file_paths=[])
-        importer.finish = MagicMock()
-        song, lyrics = _build_data('amazing grace2.txt', True)
+    # THEN: The imported data should look like expected
+    result_data = load_external_result_data(TEST_PATH / 'Amazing Grace.json')
+    assert importer.verses == _get_item(result_data, 'verses')
+    assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
 
-        # WHEN: An importer object is created
-        importer.process_song(song, lyrics, [])
 
-        # THEN: The imported data should look like expected
-        result_data = load_external_result_data(TEST_PATH / 'Amazing Grace.json')
-        assert importer.verses == _get_item(result_data, 'verses')
-        assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
+@patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
+def test_trans_off_tag(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test importing lyrics with a split and join and translations tags works in OPS Pro
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
+    mocked_manager = MagicMock()
+    importer = OPSProImport(mocked_manager, file_paths=[])
+    importer.finish = MagicMock()
+    song, lyrics = _build_data('amazing grace2.txt', True)
 
-    @patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
-    def test_trans_tag(self, mocked_songimport):
-        """
-        Test importing lyrics with various translations tags works in OPS Pro
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
-        mocked_manager = MagicMock()
-        importer = OPSProImport(mocked_manager, file_paths=[])
-        importer.finish = MagicMock()
-        song, lyrics = _build_data('amazing grace3.txt', True)
+    # WHEN: An importer object is created
+    importer.process_song(song, lyrics, [])
 
-        # WHEN: An importer object is created
-        importer.process_song(song, lyrics, [])
+    # THEN: The imported data should look like expected
+    result_data = load_external_result_data(TEST_PATH / 'Amazing Grace.json')
+    assert importer.verses == _get_item(result_data, 'verses')
+    assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
 
-        # THEN: The imported data should look like expected
-        result_data = load_external_result_data(TEST_PATH / 'Amazing Grace3.json')
-        assert importer.verses == _get_item(result_data, 'verses')
-        assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')
+
+@patch('openlp.plugins.songs.lib.importers.opspro.SongImport')
+def test_trans_tag(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test importing lyrics with various translations tags works in OPS Pro
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out "manager" and a mocked song and lyrics entry
+    mocked_manager = MagicMock()
+    importer = OPSProImport(mocked_manager, file_paths=[])
+    importer.finish = MagicMock()
+    song, lyrics = _build_data('amazing grace3.txt', True)
+
+    # WHEN: An importer object is created
+    importer.process_song(song, lyrics, [])
+
+    # THEN: The imported data should look like expected
+    result_data = load_external_result_data(TEST_PATH / 'Amazing Grace3.json')
+    assert importer.verses == _get_item(result_data, 'verses')
+    assert importer.verse_order_list_generated == _get_item(result_data, 'verse_order_list')

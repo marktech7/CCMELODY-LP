@@ -29,7 +29,7 @@ import os
 import shutil
 from unittest.mock import MagicMock, patch
 
-from openlp.core.lib.db import upgrade_db
+from openlp.core.db.upgrades import upgrade_db
 from openlp.core.projectors import upgrade
 from openlp.core.projectors.constants import PJLINK_PORT
 from openlp.core.projectors.db import Manufacturer, Model, Projector, ProjectorDB, ProjectorSource, Source

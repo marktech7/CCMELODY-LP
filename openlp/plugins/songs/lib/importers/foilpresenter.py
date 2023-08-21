@@ -211,8 +211,7 @@ class FoilPresenter(object):
         # No xml get out of here.
         if not xml:
             return
-        if xml[:5] == '<?xml':
-            xml = xml[38:]
+        xml = self._remove_declaration(xml)
         song = Song()
         # Values will be set when cleaning the song.
         song.search_lyrics = ''
@@ -235,6 +234,12 @@ class FoilPresenter(object):
         if self.save_song:
             clean_song(self.manager, song)
             self.manager.save_object(song)
+
+    def _remove_declaration(self, xml: str):
+        """Remove the XML declaration"""
+        if xml[:5] == '<?xml':
+            return xml[38:]
+        return xml
 
     def _process_authors(self, foilpresenterfolie, song):
         """

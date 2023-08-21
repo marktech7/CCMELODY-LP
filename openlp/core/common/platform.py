@@ -75,10 +75,50 @@ def is_64bit_instance():
     return (sys.maxsize > 2**32)
 
 
-def is_xorg_server():
+__IS_WAYLAND_COMPOSITOR = None
+
+
+def is_wayland_compositor():
     """
-    Returns true if the Qt is running on X.org/XWayland display server (Linux/*nix)
+    Returns true if the OpenLP/Qt instance is running in a Wayland compositor.
+    NOTE: This checks is only about compositor. Returns True if the application is running in a Wayland compositor.
+    Will also return True if application is running on X11/X.org mode in a Wayland compositor/desktop environment
+
+    :return: True if the OpenLP/Qt instance is running in a Wayland compositor, otherwise False
+    """
+    global __IS_WAYLAND_COMPOSITOR
+    if __IS_WAYLAND_COMPOSITOR is None:
+        __IS_WAYLAND_COMPOSITOR = bool(os.getenv('WAYLAND_DISPLAY', False))
+    return __IS_WAYLAND_COMPOSITOR
+
+
+def is_xwayland_server():
+    """
+    Returns true if the OpenLP/Qt instance is running in a XWayland X11 server.
+    NOTE: This will be True only if OpenLP is running on X11 mode on a XWayland server
+
+    :return: True if the OpenLP/Qt instance is running in a XWayland X11 server, otherwise False
+    """
+    return is_wayland_compositor() and is_xorg_platform()
+
+
+def is_xorg_platform():
+    """
+    Returns True if the Qt is running on X.org/XWayland platform (Linux/*nix).
+    NOTE: This will return True if user is running the OpenLP as X.org application, but on a Wayland/XWayland
+    environment.
+
     :return: True if the Qt is running on X.org/XWayland display server (Linux/*nix), otherwise False.
     """
     from PyQt5 import QtGui
     return QtGui.QGuiApplication.platformName() == 'xcb'
+
+
+def is_wayland_platform():
+    """
+    Returns true if the OpenLP/Qt instance is running using Qt's Wayland platform and running in a Wayland compositor
+
+    :return: True if the OpenLP/Qt instance is running in a Wayland compositor, otherwise False
+    """
+    from PyQt5 import QtGui
+    return QtGui.QGuiApplication.platformName() == 'wayland'

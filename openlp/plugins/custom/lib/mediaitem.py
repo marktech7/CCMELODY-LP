@@ -18,8 +18,8 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-
 import logging
+from typing import Any
 
 from PyQt5 import QtCore, QtWidgets
 from sqlalchemy.sql import and_, func, or_
@@ -348,7 +348,8 @@ class CustomMediaItem(MediaManagerItem):
         self.search_text_edit.clear()
         self.on_search_text_button_clicked()
 
-    def search(self, string, show_error):
+    @QtCore.pyqtSlot(str, bool, result=list)
+    def search(self, string: str, show_error: bool = True) -> list[list[Any]]:
         """
         Search the database for a given item.
 

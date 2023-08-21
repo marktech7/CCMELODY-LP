@@ -33,6 +33,7 @@ from openlp.core.common import SlideLimits
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.mixins import LogMixin, RegistryProperties
+from openlp.core.common.platform import is_wayland_compositor
 from openlp.core.common.registry import Registry, RegistryBase
 from openlp.core.common.utils import wait_for
 from openlp.core.display.screens import ScreenList
@@ -46,7 +47,7 @@ from openlp.core.ui import DisplayControllerType, HideMode
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import media_empty_song
 from openlp.core.widgets.layouts import AspectRatioLayout
-from openlp.core.widgets.toolbar import OpenLPToolbar
+from openlp.core.widgets.toolbar import MediaToolbar, OpenLPToolbar
 from openlp.core.widgets.views import ListPreviewWidget
 
 # Threshold which has to be trespassed to toggle.
@@ -74,45 +75,6 @@ NON_TEXT_MENU = [
 ]
 
 
-class MediaSlider(QtWidgets.QSlider):
-    """
-    Allows the mouse events of a slider to be overridden and extra functionality added
-    """
-    def __init__(self, direction, manager, controller):
-        """
-        Constructor
-        """
-        super(MediaSlider, self).__init__(direction)
-        self.manager = manager
-        self.controller = controller
-
-    def mouseMoveEvent(self, event):
-        """
-        Override event to allow hover time to be displayed.
-
-        :param event: The triggering event
-        """
-        time_value = QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width())
-        self.setToolTip('%s' % datetime.timedelta(seconds=int(time_value / 1000)))
-        QtWidgets.QSlider.mouseMoveEvent(self, event)
-
-    def mousePressEvent(self, event):
-        """
-        Mouse Press event no new functionality
-        :param event: The triggering event
-        """
-        QtWidgets.QSlider.mousePressEvent(self, event)
-
-    def mouseReleaseEvent(self, event):
-        """
-        Set the slider position when the mouse is clicked and released on the slider.
-
-        :param event: The triggering event
-        """
-        self.setValue(QtWidgets.QStyle.sliderValueFromPosition(self.minimum(), self.maximum(), event.x(), self.width()))
-        QtWidgets.QSlider.mouseReleaseEvent(self, event)
-
-
 class InfoLabel(QtWidgets.QLabel):
     """
     InfoLabel is a subclassed QLabel. Created to provide the ability to add a ellipsis if the text is cut off. Original
@@ -126,7 +88,7 @@ class InfoLabel(QtWidgets.QLabel):
         painter = QtGui.QPainter(self)
         metrics = QtGui.QFontMetrics(self.font())
         elided = metrics.elidedText(self.text(), QtCore.Qt.ElideRight, self.width())
-        painter.drawText(self.rect(), QtCore.Qt.AlignLeft, elided)
+        painter.drawText(self.rect(), QtCore.Qt.AlignLeft | QtCore.Qt.AlignVCenter, elided)
 
     def setText(self, text):
         """
@@ -153,6 +115,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.controller_type = None
         self.displays = []
         self.screens = ScreenList()
+        self.vlc_instance = None
+        self.media_info = None
         Registry().set_flag('has doubleclick added item to service', True)
         Registry().set_flag('replace service manager item', False)
 
@@ -183,7 +147,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             if screen.is_display:
                 will_start_hidden = self._current_hide_mode == HideMode.Screen
                 display = DisplayWindow(self, screen, start_hidden=will_start_hidden,
-                                        after_loaded_callback=self._display_after_loaded_callback)
+                                        after_loaded_callback=self._display_after_loaded_callback,
+                                        window_title='Live Screen' if self.is_live else 'Preview Screen')
                 self.displays.append(display)
                 self._reset_blank(False)
         if self.display:
@@ -243,29 +208,28 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Type label at the top of the slide controller with icon
         self.top_label_horizontal = QtWidgets.QHBoxLayout()
         self.panel_layout.addLayout(self.top_label_horizontal)
-        self.top_label_vertical = QtWidgets.QVBoxLayout()
         if self.is_live:
             icon = UiIcons().live
         else:
             icon = UiIcons().preview
-        pixmap = icon.pixmap(QtCore.QSize(34, 34))
+        pixmap = icon.pixmap(QtCore.QSize(28, 28))
         self.top_icon = QtWidgets.QLabel()
         self.top_icon.setPixmap(pixmap)
-        self.top_icon.setStyleSheet("padding: 0 10 0 25px;")
-        self.top_icon.setAlignment(QtCore.Qt.AlignRight)
-        self.top_label_horizontal.addWidget(self.top_icon, 1)
-        self.top_label_horizontal.addLayout(self.top_label_vertical, 100)
+        self.top_icon.setStyleSheet("padding: 0px 0px 0px 25px;")
+        self.top_icon.setAlignment(QtCore.Qt.AlignCenter)
         self.type_label = QtWidgets.QLabel(self.panel)
-        self.type_label.setStyleSheet('font-weight: bold; font-size: 12pt;')
+        self.type_label.setStyleSheet('padding: 0px 2px 0px 2px; font-weight: bold;')
         if self.is_live:
             self.type_label.setText(UiStrings().Live)
         else:
             self.type_label.setText(UiStrings().Preview)
         # Info label for the title of the current item, at the top of the slide controller
         self.info_label = InfoLabel(self.panel)
-        self.info_label.setSizePolicy(QtWidgets.QSizePolicy.Ignored, QtWidgets.QSizePolicy.Preferred)
-        self.top_label_vertical.addWidget(self.type_label)
-        self.top_label_vertical.addWidget(self.info_label)
+        self.info_label.setStyleSheet('font-style: italic;')
+        self.info_label.setSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.top_label_horizontal.addWidget(self.top_icon)
+        self.top_label_horizontal.addWidget(self.type_label)
+        self.top_label_horizontal.addWidget(self.info_label, stretch=1)
         # Splitter
         self.splitter = QtWidgets.QSplitter(self.panel)
         self.splitter.setOrientation(QtCore.Qt.Vertical)
@@ -273,8 +237,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Actual controller section
         self.controller = QtWidgets.QWidget(self.splitter)
         self.controller.setGeometry(QtCore.QRect(0, 0, 100, 536))
-        self.controller.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred,
-                                                            QtWidgets.QSizePolicy.Maximum))
+        self.controller.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
+                                                            QtWidgets.QSizePolicy.Policy.Maximum))
         self.controller_layout = QtWidgets.QVBoxLayout(self.controller)
         self.controller_layout.setSpacing(0)
         self.controller_layout.setContentsMargins(0, 0, 0, 0)
@@ -284,7 +248,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         # Build the full toolbar
         self.toolbar = OpenLPToolbar(self)
         self.toolbar.setObjectName('slide_controller_toolbar')
-        size_toolbar_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        size_toolbar_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed,
+                                                    QtWidgets.QSizePolicy.Policy.Fixed)
         size_toolbar_policy.setHorizontalStretch(0)
         size_toolbar_policy.setVerticalStretch(0)
         size_toolbar_policy.setHeightForWidth(self.toolbar.sizePolicy().hasHeightForWidth())
@@ -315,7 +280,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.hide_menu = QtWidgets.QToolButton(self.toolbar)
             self.hide_menu.setObjectName('hide_menu')
             self.hide_menu.setText(translate('OpenLP.SlideController', 'Hide'))
-            self.hide_menu.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+            self.hide_menu.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
             self.hide_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Hide'), self.toolbar))
             self.toolbar.add_toolbar_widget(self.hide_menu)
             # The order of the blank to modes in Shortcuts list comes from here.
@@ -366,7 +331,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             self.play_slides_menu = QtWidgets.QToolButton(self.toolbar)
             self.play_slides_menu.setObjectName('play_slides_menu')
             self.play_slides_menu.setText(translate('OpenLP.SlideController', 'Play Slides'))
-            self.play_slides_menu.setPopupMode(QtWidgets.QToolButton.MenuButtonPopup)
+            self.play_slides_menu.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.MenuButtonPopup)
             self.play_slides_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Play Slides'),
                                                           self.toolbar))
             self.toolbar.add_toolbar_widget(self.play_slides_menu)
@@ -410,56 +375,11 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                             triggers=self.on_clear)
         self.controller_layout.addWidget(self.toolbar)
         # Build a Media ToolBar
-        self.mediabar = OpenLPToolbar(self)
-        self.mediabar.setObjectName('slide_controller_toolbar')
-        self.mediabar.add_toolbar_action('playbackPlay', text='media_playback_play',
-                                         icon=UiIcons().play,
-                                         tooltip=translate('OpenLP.SlideController', 'Start playing media.'),
-                                         triggers=self.send_to_plugins)
-        self.mediabar.add_toolbar_action('playbackPause', text='media_playback_pause',
-                                         icon=UiIcons().pause,
-                                         tooltip=translate('OpenLP.SlideController', 'Pause playing media.'),
-                                         triggers=self.send_to_plugins)
-        self.mediabar.add_toolbar_action('playbackStop', text='media_playback_stop',
-                                         icon=UiIcons().stop,
-                                         tooltip=translate('OpenLP.SlideController', 'Stop playing media.'),
-                                         triggers=self.send_to_plugins)
-        self.mediabar.add_toolbar_action('playbackLoop', text='media_playback_loop',
-                                         icon=UiIcons().get_icon_variant_selected('repeat'), checked=False,
-                                         tooltip=translate('OpenLP.SlideController', 'Loop playing media.'),
-                                         triggers=self.send_to_plugins)
-        self.position_label = QtWidgets.QLabel()
-        self.position_label.setText(' 00:00 / 00:00')
-        self.position_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
-        self.position_label.setToolTip(translate('OpenLP.SlideController', 'Video timer.'))
-        self.position_label.setMinimumSize(90, 0)
-        self.position_label.setObjectName('position_label')
-        self.mediabar.add_toolbar_widget(self.position_label)
-        # Build the media seek_slider.
-        self.seek_slider = MediaSlider(QtCore.Qt.Horizontal, self, self)
-        self.seek_slider.setMaximum(1000)
-        self.seek_slider.setTracking(True)
-        self.seek_slider.setMouseTracking(True)
-        self.seek_slider.setToolTip(translate('OpenLP.SlideController', 'Video position.'))
-        self.seek_slider.setGeometry(QtCore.QRect(90, 260, 221, 24))
-        self.seek_slider.setObjectName('seek_slider')
-        self.mediabar.add_toolbar_widget(self.seek_slider)
-        # Build the volume_slider.
-        self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
-        self.volume_slider.setTickInterval(10)
-        self.volume_slider.setTickPosition(QtWidgets.QSlider.TicksAbove)
-        self.volume_slider.setMinimum(0)
-        self.volume_slider.setMaximum(100)
-        self.volume_slider.setTracking(True)
-        self.volume_slider.setToolTip(translate('OpenLP.SlideController', 'Audio Volume.'))
-        self.volume_slider.setGeometry(QtCore.QRect(90, 160, 221, 24))
-        self.volume_slider.setObjectName('volume_slider')
-        self.mediabar.add_toolbar_widget(self.volume_slider)
+        self.mediabar = MediaToolbar(self)
+        self.mediabar.identification_label.setText(translate('OpenLP.SlideController', 'Media'))
+        self.mediabar.on_action = lambda *args: self.send_to_plugins(*args)
         self.controller_layout.addWidget(self.mediabar)
         self.mediabar.setVisible(False)
-        # Signals
-        self.seek_slider.valueChanged.connect(self.send_to_plugins)
-        self.volume_slider.valueChanged.connect(self.send_to_plugins)
         if self.is_live:
             self.new_song_menu()
             self.toolbar.add_toolbar_widget(self.song_menu)
@@ -468,9 +388,9 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.preview_frame = QtWidgets.QFrame(self.splitter)
         self.preview_frame.setGeometry(QtCore.QRect(0, 0, 300, int(300 * self.ratio)))
         self.preview_frame.setMinimumHeight(100)
-        self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Ignored,
-                                                               QtWidgets.QSizePolicy.Ignored,
-                                                               QtWidgets.QSizePolicy.Label))
+        self.preview_frame.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Ignored,
+                                                               QtWidgets.QSizePolicy.Policy.Ignored,
+                                                               QtWidgets.QSizePolicy.ControlType.Label))
         self.preview_frame.setFrameShape(QtWidgets.QFrame.StyledPanel)
         self.preview_frame.setFrameShadow(QtWidgets.QFrame.Sunken)
         self.preview_frame.setObjectName('preview_frame')
@@ -479,7 +399,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.slide_layout.setSpacing(0)
         self.slide_layout.setObjectName('SlideLayout')
         # Set up the preview display
-        self.preview_display = DisplayWindow(self)
+        self.preview_display = DisplayWindow(self, window_title='Live' if self.is_live else 'Preview')
         self.slide_layout.addWidget(self.preview_display)
         self.slide_layout.resize.connect(self.on_preview_resize)
         # Actual preview screen
@@ -553,7 +473,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.song_menu = QtWidgets.QToolButton(self.toolbar)
         self.song_menu.setObjectName('song_menu')
         self.song_menu.setText(translate('OpenLP.SlideController', 'Go To'))
-        self.song_menu.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+        self.song_menu.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
         self.song_menu.setMenu(QtWidgets.QMenu(translate('OpenLP.SlideController', 'Go To'), self.toolbar))
 
     def _raise_displays(self):
@@ -979,7 +899,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                 self._set_theme(self.service_item)
         else:
             self._set_theme(self.service_item)
-        self.info_label.setText(self.service_item.title)
+        self.info_label.setText("–  " + self.service_item.title)
         self.slide_list = {}
         # if the old item was text or images (ie doesn't provide its own display) and the new item provides its own
         # display then clear out the old item so that it doesn't flash momentarily when next showing text/image
@@ -1315,6 +1235,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Gets an image of the display screen and updates the preview frame.
         """
         display_image = self._capture_maindisplay()
+        # display_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
         base64_image = image_to_byte(display_image)
         self.screen_capture = base64_image
         self.preview_display.set_single_image_data('#000', base64_image)
@@ -1324,11 +1245,76 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         Creates an image of the current screen.
         """
         self.log_debug('_capture_maindisplay {text}'.format(text=self.screens.current))
-        win_id = QtWidgets.QApplication.desktop().winId()
-        screen = QtWidgets.QApplication.primaryScreen()
-        rect = ScreenList().current.display_geometry
-        win_image = screen.grabWindow(win_id, rect.x(), rect.y(), rect.width(), rect.height())
-        win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
+        # Wayland needs screenshot fallback even when OpenLP is running on X11/xcb mode.
+        fallback_to_windowed = is_wayland_compositor() or \
+            self.settings.value('advanced/prefer windowed screen capture')
+        if not fallback_to_windowed:
+            # Check if display screen is outside real screen bounds
+            # OpenLP can't take reliable screenshots when any of these conditions happens
+            # See last warning in grabWindow at https://doc.qt.io/qt-6/qscreen.html#grabWindow
+            display_rect = ScreenList().current.display_geometry
+            screen_rect = ScreenList().current.geometry
+            display_above_horizontal = display_rect.left() < screen_rect.left()
+            display_above_vertical = display_rect.top() < screen_rect.top()
+            display_beyond_horizontal = (display_rect.left() + display_rect.width() >
+                                         screen_rect.left() + screen_rect.width())
+            display_beyond_vertical = (display_rect.top() + display_rect.height() >
+                                       screen_rect.top() + screen_rect.height())
+            fallback_to_windowed = display_above_horizontal or display_above_vertical \
+                or display_beyond_horizontal or display_beyond_vertical
+        if fallback_to_windowed:
+            if self.service_item.is_capable(ItemCapabilities.ProvidesOwnDisplay) or self.service_item.is_media() or \
+               self.service_item.is_command():
+                if self.service_item.is_command():
+                    # Attempting to get screenshot from command handler
+                    service_item_name = self.service_item.name.lower()
+                    event_name = '{text}_attempt_screenshot'.format(text=service_item_name)
+                    if Registry().has_function(event_name):
+                        results = Registry().execute(event_name, [self.service_item, self.selected_row])
+                        if len(results):
+                            succedded, binary_data = results[0]
+                            if succedded and binary_data:
+                                self.log_debug('_capture_maindisplay using window capture from {name}'
+                                               .format(name=service_item_name))
+                                return binary_data
+                # Falling back to desktop capture, maybe it works
+                self.log_debug('_capture_maindisplay cannot do window capture, trying to get screenshot from screen'
+                               ' anyway')
+                return self._capture_maindisplay_desktop()
+            else:
+                self.log_debug('_capture_maindisplay falling back to window capture')
+                return self._capture_maindisplay_window()
+        else:
+            return self._capture_maindisplay_desktop()
+
+    def _capture_maindisplay_desktop(self):
+        current_screen = ScreenList().current
+        display_rect = current_screen.display_geometry
+        screen_rect = current_screen.geometry
+        # As we capture using current screen object, we need relative coordinates.
+        # (OpenLP is storing screen positions like a big one-screen, and we can't change this without
+        # disrupting existing users)
+        relative_x = display_rect.x() - screen_rect.x()
+        relative_y = display_rect.y() - screen_rect.y()
+        width = display_rect.width()
+        height = display_rect.height()
+        win_image = current_screen.try_grab_screen_part(relative_x, relative_y, width, height)
+        return win_image
+
+    def _capture_maindisplay_window(self):
+        win_image = None
+        for display in self.displays:
+            if display.is_display:
+                if display.hide_mode == HideMode.Screen or display.hide_mode == HideMode.Blank:
+                    # Sending a black image to avoid artifacts
+                    size = display.size()
+                    win_image = QtGui.QPixmap(size)
+                    win_image.fill(QtGui.QColorConstants.Black)
+                else:
+                    win_image = display.grab_screenshot_safe()
+                    if win_image:
+                        win_image.setDevicePixelRatio(self.preview_display.devicePixelRatio())
+                break
         return win_image
 
     def is_slide_loaded(self):
@@ -1342,7 +1328,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         slide_ready_time = self.slide_changed_time + datetime.timedelta(seconds=slide_delay_time)
         return datetime.datetime.now() > slide_ready_time
 
-    def grab_maindisplay(self):
+    @QtCore.pyqtSlot(result=str)
+    def grab_maindisplay(self) -> str:
         """
         Gets the last taken screenshot
         """
@@ -1595,8 +1582,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
             elif self.is_live:
                 if self._current_hide_mode == HideMode.Theme:
                     self.set_hide_mode(HideMode.Blank)
-                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode,
-                                                 is_theme_background)
+                self.media_controller.load_video(self.controller_type, item, self._current_hide_mode, False)
             elif item.is_media():
                 # avoid loading the video if this is preview and the media is background
                 self.media_controller.load_video(self.controller_type, item, is_theme_background=is_theme_background)

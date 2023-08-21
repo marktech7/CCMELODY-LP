@@ -146,16 +146,16 @@ def set_button_tooltip(button_bar):
     :param button_bar: QDialogButtonBar instance to update
     """
     for button in button_bar.buttons():
-        if button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.Cancel:
+        if button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.StandardButton.Cancel:
             button.setToolTip(translate('OpenLP.SourceSelectForm',
                                         'Ignoring current changes and return to OpenLP'))
-        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.Reset:
+        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.StandardButton.Reset:
             button.setToolTip(translate('OpenLP.SourceSelectForm',
                                         'Delete all user-defined text and revert to PJLink default text'))
-        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.Discard:
+        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.StandardButton.Discard:
             button.setToolTip(translate('OpenLP.SourceSelectForm',
                                         'Discard changes and reset to previous user-defined text'))
-        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.Ok:
+        elif button_bar.standardButton(button) == QtWidgets.QDialogButtonBox.StandardButton.Ok:
             button.setToolTip(translate('OpenLP.SourceSelectForm',
                                         'Save changes and return to OpenLP'))
         else:
@@ -256,9 +256,9 @@ class SourceSelectTabs(QtWidgets.QDialog):
         self.tabwidget.setObjectName('source_select_tabs_tabwidget')
         self.tabwidget.setUsesScrollButtons(False)
         if is_macosx():
-            self.tabwidget.setTabPosition(QtWidgets.QTabWidget.North)
+            self.tabwidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.North)
         else:
-            self.tabwidget.setTabPosition(QtWidgets.QTabWidget.West)
+            self.tabwidget.setTabPosition(QtWidgets.QTabWidget.TabPosition.West)
         self.layout.addWidget(self.tabwidget)
         self.setLayout(self.layout)
 
@@ -285,10 +285,10 @@ class SourceSelectTabs(QtWidgets.QDialog):
                 thistab = self.tabwidget.addTab(tab, PJLINK_DEFAULT_SOURCES[key])
                 if buttonchecked:
                     self.tabwidget.setCurrentIndex(thistab)
-            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Reset |
-                                                         QtWidgets.QDialogButtonBox.Discard |
-                                                         QtWidgets.QDialogButtonBox.Ok |
-                                                         QtWidgets.QDialogButtonBox.Cancel)
+            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Reset |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Discard |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Ok |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         else:
             for key in keys:
                 (tab, button_count, buttonchecked) = build_tab(group=self.button_group,
@@ -300,8 +300,8 @@ class SourceSelectTabs(QtWidgets.QDialog):
                 thistab = self.tabwidget.addTab(tab, PJLINK_DEFAULT_SOURCES[key])
                 if buttonchecked:
                     self.tabwidget.setCurrentIndex(thistab)
-            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok |
-                                                         QtWidgets.QDialogButtonBox.Cancel)
+            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.button_box.clicked.connect(self.button_clicked)
         self.layout.addWidget(self.button_box)
         set_button_tooltip(self.button_box)
@@ -432,10 +432,10 @@ class SourceSelectSingle(QtWidgets.QDialog):
                     item.setText(source_item.text)
                 self.layout.addRow(PJLINK_DEFAULT_CODES[key], item)
                 self.button_group.append(item)
-            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Reset |
-                                                         QtWidgets.QDialogButtonBox.Discard |
-                                                         QtWidgets.QDialogButtonBox.Ok |
-                                                         QtWidgets.QDialogButtonBox.Cancel)
+            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Reset |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Discard |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Ok |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         else:
             for key in keys:
                 source_text = self.projectordb.get_source_by_code(code=key, projector_id=self.projector.db_item.id)
@@ -445,8 +445,8 @@ class SourceSelectSingle(QtWidgets.QDialog):
                 self.layout.addWidget(button)
                 self.button_group.addButton(button, int(key))
                 button_list.append(key)
-            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok |
-                                                         QtWidgets.QDialogButtonBox.Cancel)
+            self.button_box = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok |
+                                                         QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.button_box.clicked.connect(self.button_clicked)
         self.layout.addWidget(self.button_box)
         self.setMinimumHeight(key_count * 25)

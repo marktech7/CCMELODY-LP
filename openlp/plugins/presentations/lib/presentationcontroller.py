@@ -86,6 +86,10 @@ class PresentationDocument(object):
     ``get_thumbnail_path(slide_no, check_exists)``
         Returns a path to an image containing a preview for the requested slide
 
+    ``attempt_screenshot()``
+        Attemps to take a screenshot from the presentation window. Returns a tuple with whether it succedded and
+        the result image.
+
     """
     def __init__(self, controller, document_path):
         """
@@ -108,6 +112,7 @@ class PresentationDocument(object):
         :rtype: None
         """
         self.slide_number = 0
+        self.ui_slidenumber = 0
         self.file_path = document_path
         create_paths(self.get_thumbnail_folder())
 
@@ -152,7 +157,7 @@ class PresentationDocument(object):
             else:
                 self._sha256_file_hash = sha256_file_hash(self.file_path)
                 # If the sha256_file_hash() function encounters an error, it will return None, so use the
-                # filename as the thumbnail folder if the result is None (or falsey)
+                # filename as the thumbnail folder if the result is None (or falsey).
                 folder = self._sha256_file_hash or self.file_path.name
         else:
             folder = self.file_path.name
@@ -174,7 +179,9 @@ class PresentationDocument(object):
                 folder = self._sha256_file_hash
             else:
                 self._sha256_file_hash = sha256_file_hash(self.file_path)
-                folder = self._sha256_file_hash
+                # If the sha256_file_hash() function encounters an error, it will return None, so use the
+                # filename as the temp folder if the result is None (or falsey).
+                folder = self._sha256_file_hash or self.file_path.name
         else:
             folder = self.file_path.name
         return Path(self.controller.temp_folder, folder)
@@ -313,8 +320,16 @@ class PresentationDocument(object):
         if not hide_mode:
             current = self.get_slide_number()
             if current == self.slide_number:
+                # if the latest reported slide number is the same as the current, return here and skip sending an update
                 return
             self.slide_number = current
+        else:
+            # when in blank mode the slide selected in the live slidecontroller overrules the slide
+            # currently selected in the blanked presentation.
+            if self.slide_number == self.ui_slidenumber:
+                # if the latest reported slide number is the same as the current, return here and skip sending an update
+                return
+            self.slide_number = self.ui_slidenumber
         if is_live:
             prefix = 'live'
         else:
@@ -385,6 +400,9 @@ class PresentationDocument(object):
         if not self._sha256_file_hash:
             self._sha256_file_hash = sha256_file_hash(self.file_path)
         return self._sha256_file_hash
+
+    def attempt_screenshot(self, index):
+        return (False, None)
 
 
 class PresentationList(metaclass=Singleton):

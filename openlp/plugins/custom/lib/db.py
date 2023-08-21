@@ -22,20 +22,15 @@
 The :mod:`db` module provides the database and schema that is the backend for
 the Custom plugin
 """
-from sqlalchemy import Column, MetaData
+from sqlalchemy import Column
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.types import Integer, Unicode, UnicodeText
 
-# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
-try:
-    from sqlalchemy.orm import declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative import declarative_base
-
 from openlp.core.common.i18n import get_natural_key
-from openlp.core.lib.db import init_db
+from openlp.core.db.helpers import init_db
 
 
-Base = declarative_base(MetaData())
+Base = declarative_base()
 
 
 class CustomSlide(Base):
@@ -71,5 +66,5 @@ def init_schema(url):
     :param url:  The database to setup
     """
     session, metadata = init_db(url, base=Base)
-    metadata.create_all(checkfirst=True)
+    metadata.create_all(bind=metadata.bind, checkfirst=True)
     return session

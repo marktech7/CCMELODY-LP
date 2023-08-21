@@ -22,9 +22,8 @@
 The :mod:`~openlp.core.api.tab` module contains the settings tab for the API
 """
 
-import PIL.ImageQt
-import PIL.Image
 import qrcode
+from qrcode.image.svg import SvgPathFillImage
 
 from time import sleep
 
@@ -65,7 +64,7 @@ class ApiTab(SettingsTab):
         self.address_label.setObjectName('address_label')
         self.server_settings_layout.addRow(self.address_label)
         self.address_edit = QtWidgets.QLineEdit(self.server_settings_group_box)
-        self.address_edit.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
+        self.address_edit.setSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred, QtWidgets.QSizePolicy.Policy.Fixed)
         self.address_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp(r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}'),
                                        self))
         self.address_edit.setObjectName('address_edit')
@@ -287,10 +286,12 @@ class ApiTab(SettingsTab):
         self.stage_url.setText(f'<a href="{http_url}stage">{http_url}stage</a>')
         self.chords_url.setText(f'<a href="{http_url}chords">{http_url}chords</a>')
         self.live_url.setText(f'<a href="{http_url}main">{http_url}main</a>')
-        img = qrcode.make(http_url)
-        img = PIL.ImageQt.ImageQt(img)
-        image = QtGui.QPixmap.fromImage(img)
-        self.app_qr_code_label.setPixmap(image)
+        # create a QR code SVG, size will be about 300x300
+        qr = qrcode.QRCode(box_size=24)
+        qr.add_data(http_url)
+        img = qr.make_image(image_factory=SvgPathFillImage)
+        qimg = QtGui.QImage.fromData(img.to_string())
+        self.app_qr_code_label.setPixmap(QtGui.QPixmap.fromImage(qimg))
 
     def set_server_states(self):
         """

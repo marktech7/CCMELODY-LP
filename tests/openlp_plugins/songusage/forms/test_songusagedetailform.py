@@ -38,7 +38,8 @@ def test_help(mocked_help, settings):
     detail_form = SongUsageDetailForm(MagicMock(), main_window)
 
     # WHEN: The Help button is clicked
-    QtTest.QTest.mouseClick(detail_form.button_box.button(QtWidgets.QDialogButtonBox.Help), QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(detail_form.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Help),
+                            QtCore.Qt.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()

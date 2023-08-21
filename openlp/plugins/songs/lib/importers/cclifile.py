@@ -21,6 +21,7 @@
 import chardet
 import codecs
 import logging
+import re
 
 from openlp.core.common.i18n import translate
 from openlp.plugins.songs.lib import VerseType
@@ -241,13 +242,25 @@ class CCLIFileImport(SongImport):
             <Empty line>
             <Empty line>
             Song CCLI number
-                # e.g. CCLI Number (e.g.CCLI-Liednummer: 2672885)
+                # e.g. CCLI Number (e.g.CCLI-Liednummer: 2672885).
             Song copyright (if it begins ©, otherwise after authors)
                 # e.g. © 1999 Integrity's Hosanna! Music | LenSongs Publishing
             Song authors                # e.g. Lenny LeBlanc | Paul Baloche
             Licencing info
                 # e.g. For use solely with the SongSelect Terms of Use.
             All rights Reserved.  www.ccli.com
+            CCLI Licence number of user
+                # e.g. CCLI-Liedlizenznummer: 14 / CCLI License No. 14
+
+
+            In the 2023 format the footer is as below:
+            Song authors                # e.g. Lenny LeBlanc | Paul Baloche
+            Song CCLI number
+                # e.g. CCLI Number (e.g.CCLI-Liednummer: 2672885).
+            Song copyright (if it begins ©, otherwise after authors)
+                # e.g. © 1999 Integrity's Hosanna! Music | LenSongs Publishing
+            Licencing info
+                # e.g. For use solely with the SongSelect Terms of Use.
             CCLI Licence number of user
                 # e.g. CCLI-Liedlizenznummer: 14 / CCLI License No. 14
 
@@ -259,8 +272,15 @@ class CCLIFileImport(SongImport):
         verse_type = VerseType.tags[VerseType.Verse]
         song_author = ''
         verse_start = False
-        for line in text_list:
+        for idx in range(len(text_list)):
+            line = text_list[idx]
             clean_line = line.strip()
+            if idx + 1 < len(text_list):
+                next_line = text_list[idx + 1]
+                next_clean_line = next_line.strip()
+            else:
+                next_line = None
+                next_clean_line = None
             if not clean_line:
                 if line_number == 0:
                     continue
@@ -280,18 +300,26 @@ class CCLIFileImport(SongImport):
                     # line_number=1, ccli number, first line after verses
                     if clean_line.startswith('CCLI'):
                         line_number += 1
-                        ccli_parts = clean_line.split(' ')
-                        self.ccli_number = ccli_parts[len(ccli_parts) - 1]
+                        ccli_parts = re.findall(r'\d+', clean_line)
+                        if ccli_parts:
+                            self.ccli_number = ccli_parts[0]
+                    # if CCLI is on the next line, this is 2023 format and the current line is authors
+                    elif next_clean_line and next_clean_line.startswith('CCLI'):
+                        line_number += 1
+                        song_author = clean_line
                     elif not verse_start:
                         # We have the verse descriptor
                         verse_desc_parts = clean_line.split(' ')
                         if len(verse_desc_parts):
-                            if verse_desc_parts[0].startswith('Ver'):
+                            first_verse_desc = verse_desc_parts[0].upper()
+                            if first_verse_desc.startswith(('VER', VerseType.translated_tags[VerseType.Verse])):
                                 verse_type = VerseType.tags[VerseType.Verse]
-                            elif verse_desc_parts[0].startswith('Ch'):
+                            elif first_verse_desc.startswith(('CH', VerseType.translated_tags[VerseType.Chorus])):
                                 verse_type = VerseType.tags[VerseType.Chorus]
-                            elif verse_desc_parts[0].startswith('Br'):
+                            elif first_verse_desc.startswith(('BR', VerseType.translated_tags[VerseType.Bridge])):
                                 verse_type = VerseType.tags[VerseType.Bridge]
+                            elif first_verse_desc.startswith(('END', VerseType.translated_tags[VerseType.Ending])):
+                                verse_type = VerseType.tags[VerseType.Ending]
                             else:
                                 # we need to analyse the next line for
                                 # verse type, so set flag
@@ -318,14 +346,18 @@ class CCLIFileImport(SongImport):
                             # last part. Add l so as to keep the CRLF
                             verse_text = verse_text + line
                 else:
-                    # line_number=2, copyright
+                    # line_number=2, copyright or CCLIE
                     if line_number == 2:
                         line_number += 1
                         if clean_line.startswith('©'):
                             self.add_copyright(clean_line)
+                        elif clean_line.startswith('CCLI'):
+                            ccli_parts = re.findall(r'\d+', clean_line)
+                            if ccli_parts:
+                                self.ccli_number = ccli_parts[0]
                         else:
                             song_author = clean_line
-                    # n=3, authors
+                    # n=3, authors or copyright
                     elif line_number == 3:
                         line_number += 1
                         if song_author:
@@ -335,11 +367,6 @@ class CCLIFileImport(SongImport):
                     # line_number=4, comments lines before last line
                     elif line_number == 4 and not clean_line.startswith('CCL'):
                         self.comments += clean_line
-        # split on known separators
-        author_list = song_author.split('/')
-        if len(author_list) < 2:
-            author_list = song_author.split('|')
-        # Clean spaces before and after author names.
-        for author_name in author_list:
-            self.add_author(author_name.strip())
+        # add author(s)
+        self.parse_author(song_author)
         return self.finish()

@@ -20,6 +20,7 @@
 ##########################################################################
 """
 Package to test the openlp.core.ui.media.vlcplayer package.
+This class is for DVD and Streaming using a Player.
 """
 import os
 import sys
@@ -62,8 +63,8 @@ def test_init(mock_settings):
     assert vlc_player.can_folder is True
 
 
-@patch('openlp.core.ui.media.vlcplayer.is_win')
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.mediaplayer.is_win')
+@patch('openlp.core.ui.media.mediaplayer.is_macosx')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
 def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win, mock_settings):
@@ -109,8 +110,8 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win,
     assert vlc_player.has_own_widget is True
 
 
-@patch('openlp.core.ui.media.vlcplayer.is_win')
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.mediaplayer.is_win')
+@patch('openlp.core.ui.media.mediaplayer.is_macosx')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
 def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win, mock_settings):
@@ -144,8 +145,8 @@ def test_setup_has_audio(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mock
     mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
 
 
-@patch('openlp.core.ui.media.vlcplayer.is_win')
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.mediaplayer.is_win')
+@patch('openlp.core.ui.media.mediaplayer.is_macosx')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
 def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win, mock_settings):
@@ -179,8 +180,8 @@ def test_setup_visible_mouse(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, 
     mocked_vlc.Instance.assert_called_with('--no-video-title-show --input-repeat=99999999 ')
 
 
-@patch('openlp.core.ui.media.vlcplayer.is_win')
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.mediaplayer.is_win')
+@patch('openlp.core.ui.media.mediaplayer.is_macosx')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
 def test_setup_windows(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win, mock_settings):
@@ -214,8 +215,8 @@ def test_setup_windows(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked
     mocked_media_player_new.set_hwnd.assert_called_with(2)
 
 
-@patch('openlp.core.ui.media.vlcplayer.is_win')
-@patch('openlp.core.ui.media.vlcplayer.is_macosx')
+@patch('openlp.core.ui.media.mediaplayer.is_win')
+@patch('openlp.core.ui.media.mediaplayer.is_macosx')
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.QtWidgets')
 def test_setup_osx(MockedQtWidgets, mocked_get_vlc, mocked_is_macosx, mocked_is_win, mock_settings):
@@ -283,7 +284,7 @@ def test_check_not_available(mocked_get_vlc):
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
 @patch('openlp.core.ui.media.vlcplayer.os.path.normcase')
-def test_load(mocked_normcase, mocked_get_vlc, settings):
+def test_load_stream(mocked_normcase, mocked_get_vlc, settings):
     """
     Test loading a video into VLC
     """
@@ -294,24 +295,19 @@ def test_load(mocked_normcase, mocked_get_vlc, settings):
     mocked_get_vlc.return_value = mocked_vlc
     mocked_display = MagicMock()
     mocked_controller = MagicMock()
-    mocked_controller.media_info.media_type = MediaType.Video
+    mocked_controller.media_info.media_type = MediaType.Stream
     mocked_controller.media_info.file_info.absoluteFilePath.return_value = media_path
-    mocked_vlc_media = MagicMock()
+    mocked_controller.vlc_media = MagicMock()
     mocked_media = MagicMock()
     mocked_media.get_duration.return_value = 10000
-    mocked_controller.vlc_instance.media_new_path.return_value = mocked_vlc_media
     mocked_controller.vlc_media_player.get_media.return_value = mocked_media
     vlc_player = VlcPlayer(None)
-
     # WHEN: A video is loaded into VLC
     result = vlc_player.load(mocked_controller, mocked_display, media_path)
-
     # THEN: The video should be loaded
-    mocked_normcase.assert_called_with(media_path)
-    mocked_controller.vlc_instance.media_new_path.assert_called_with(media_path)
-    assert mocked_vlc_media == mocked_controller.vlc_media
-    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
-    mocked_vlc_media.parse.assert_called_with()
+    mocked_controller.vlc_instance.media_new_path.assert_not_called()
+    mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_controller.vlc_media)
+    mocked_controller.vlc_media.parse.assert_called_with()
     assert result is True
 
 
@@ -357,8 +353,8 @@ def test_load_audio_cd(mocked_normcase, mocked_get_vlc, mocked_is_win, settings)
     mocked_controller.vlc_media_player.set_media.assert_called_with(mocked_vlc_media)
     mocked_vlc_media.parse.assert_called_with()
     mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
-    mocked_controller.seek_slider.setMinimum.assert_called_with(20000)
-    mocked_controller.seek_slider.setMaximum.assert_called_with(30000)
+    mocked_controller.mediabar.seek_slider.setMinimum.assert_called_with(20000)
+    mocked_controller.mediabar.seek_slider.setMaximum.assert_called_with(30000)
     assert result is True
 
 
@@ -494,8 +490,8 @@ def test_load_dvd(mocked_normcase, mocked_get_vlc, mocked_is_win, settings):
     mocked_controller.vlc_media_player.video_set_spu.assert_called_with(4)
     mocked_vlc_media.parse.assert_called_with()
     mocked_media_state_wait.assert_called_with(mocked_controller, ANY)
-    mocked_controller.seek_slider.setMinimum.assert_called_with(20000)
-    mocked_controller.seek_slider.setMaximum.assert_called_with(30000)
+    mocked_controller.mediabar.seek_slider.setMinimum.assert_called_with(20000)
+    mocked_controller.mediabar.seek_slider.setMaximum.assert_called_with(30000)
     assert result is True
 
 
@@ -858,7 +854,7 @@ def test_update_ui(mocked_get_vlc):
     mocked_get_vlc.return_value = mocked_vlc
     mocked_controller = MagicMock()
     mocked_controller.media_info.end_time = 300
-    mocked_controller.seek_slider.isSliderDown.return_value = False
+    mocked_controller.mediabar.seek_slider.isSliderDown.return_value = False
     mocked_display = MagicMock()
     mocked_controller.vlc_media.get_state.return_value = 1
     mocked_controller.vlc_media_player.get_time.return_value = 400000
@@ -869,9 +865,9 @@ def test_update_ui(mocked_get_vlc):
 
     # THEN: Certain methods should be called
     mocked_controller.vlc_media_player.get_time.assert_called_with()
-    mocked_controller.seek_slider.setSliderPosition.assert_called_with(400000)
+    mocked_controller.mediabar.seek_slider.setSliderPosition.assert_called_with(400000)
     expected_calls = [call(True), call(False)]
-    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
+    assert expected_calls == mocked_controller.mediabar.seek_slider.blockSignals.call_args_list
 
 
 @patch('openlp.core.ui.media.vlcplayer.get_vlc')
@@ -887,7 +883,7 @@ def test_update_ui_dvd(mocked_get_vlc):
     mocked_controller.media_info = ItemMediaInfo()
     mocked_controller.media_info.start_time = 100
     mocked_controller.media_info.end_time = 300
-    mocked_controller.seek_slider.isSliderDown.return_value = False
+    mocked_controller.mediabar.seek_slider.isSliderDown.return_value = False
     mocked_display = MagicMock()
     mocked_controller.vlc_media.get_state.return_value = 1
     mocked_controller.vlc_media_player.get_time.return_value = 200
@@ -899,6 +895,6 @@ def test_update_ui_dvd(mocked_get_vlc):
 
     # THEN: Certain methods should be called
     mocked_controller.vlc_media_player.get_time.assert_called_with()
-    mocked_controller.seek_slider.setSliderPosition.assert_called_with(200)
+    mocked_controller.mediabar.seek_slider.setSliderPosition.assert_called_with(200)
     expected_calls = [call(True), call(False)]
-    assert expected_calls == mocked_controller.seek_slider.blockSignals.call_args_list
+    assert expected_calls == mocked_controller.mediabar.seek_slider.blockSignals.call_args_list

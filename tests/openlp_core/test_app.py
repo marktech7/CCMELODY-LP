@@ -48,7 +48,8 @@ def app_main_env():
             patch('openlp.core.app.QtWidgets.QMessageBox.information'), \
             patch('openlp.core.app.OpenLP') as mock_openlp, \
             patch('openlp.core.app.Server') as mock_server, \
-            patch('openlp.core.app.sys'):
+            patch('openlp.core.app.sys'), \
+            patch('openlp.core.app.FileLock'):
         mock_registry.return_value = MagicMock()
         mock_settings.return_value = MagicMock()
         openlp_server = MagicMock()

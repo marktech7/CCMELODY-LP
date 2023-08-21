@@ -21,7 +21,12 @@
 """
 Package to test the openlp.core.ui package.
 """
-from openlp.core.ui.media import parse_optical_path
+import pytest
+
+from unittest.mock import MagicMock, ANY
+
+from openlp.core.ui.media import parse_optical_path, get_volume, save_volume, toggle_looping_playback, \
+    is_looping_playback
 from openlp.core.ui.media import format_milliseconds
 
 
@@ -94,3 +99,36 @@ def test_format_milliseconds():
 
     # THEN: The formatted time string should be 55 hours, 33 minutes, 20 seconds, and 000 milliseconds
     assert num_soldiers_on_horses_as_formatted_time_string == "55:33:20,000"
+
+
+@pytest.mark.parametrize("live, result", [(False, 'media/preview volume'), (True, 'media/live volume')])
+def test_get_volume(mock_settings, live, result):
+    controller = MagicMock()
+    controller.is_live = live
+    get_volume(controller)
+    mock_settings.value.assert_called_with(result)
+
+
+@pytest.mark.parametrize("live, result", [(False, 'media/preview volume'), (True, 'media/live volume')])
+def test_save_volume(mock_settings, live, result):
+    controller = MagicMock()
+    controller.is_live = live
+    save_volume(controller, 5)
+    mock_settings.setValue.assert_called_with(result, ANY)
+
+
+@pytest.mark.parametrize("live, result", [(False, 'media/preview loop'), (True, 'media/live loop')])
+def test_toggle_looping_playback(mock_settings, live, result):
+    controller = MagicMock()
+    controller.is_live = live
+    toggle_looping_playback(controller)
+    mock_settings.value.assert_called_with(result)
+    mock_settings.setValue.assert_called_with(result, ANY)
+
+
+@pytest.mark.parametrize("live, result", [(False, 'media/preview loop'), (True, 'media/live loop')])
+def test_is_looping_playback(mock_settings, live, result):
+    controller = MagicMock()
+    controller.is_live = live
+    is_looping_playback(controller)
+    mock_settings.value.assert_called_with(result)

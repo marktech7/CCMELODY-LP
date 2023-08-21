@@ -2,23 +2,26 @@ stages:
   - test
   - deploy
 
+variables:
+  IMAGE_BASE: $CI_REGISTRY/openlp/runners
+
 lint-python:
   stage: test
-  image: openlp/debian
+  image: $IMAGE_BASE/debian
   script:
     - sh scripts/generate_resources.sh
     - flake8
 
 lint-javascript:
   stage: test
-  image: openlp/angular
+  image: $IMAGE_BASE/angular
   script:
     - yarn install
     - yarn lint
 
 test-debian:
   stage: test
-  image: openlp/debian
+  image: $IMAGE_BASE/debian
   script:
     - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings --cov openlp --cov-report term
@@ -29,29 +32,29 @@ test-debian:
 
 test-ubuntu:
   stage: test
-  image: openlp/ubuntu
+  image: $IMAGE_BASE/ubuntu
   script:
     - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-fedora:
   stage: test
-  image: openlp/fedora
+  image: $IMAGE_BASE/fedora
   script:
     - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest-3 --color=no --disable-warnings
 
 test-arch:
   stage: test
-  image: openlp/arch
+  image: $IMAGE_BASE/arch
   script:
     - sh scripts/generate_resources.sh
     - xvfb-run -s '-screen 0 1024x768x24' pytest --color=no --disable-warnings
 
-test-macos:
+test-macos-intel:
   stage: test
   tags:
-    - macos
+    - apple-amd64
   script:
     - export PATH=/opt/local/bin:$PATH
     - sh scripts/generate_resources.sh
@@ -63,16 +66,27 @@ test-macos:
   only:
     - master@openlp/openlp
 
+test-macos-arm:
+  stage: test
+  tags:
+    - apple-arm
+  script:
+    - export PATH=/opt/local/bin:$PATH
+    - sh scripts/generate_resources.sh
+    - python3 -m pytest --color=no --disable-warnings
+  only:
+    - master@openlp/openlp
+
 test-display:
   stage: test
-  image: openlp/angular
+  image: $IMAGE_BASE/angular
   script:
     - yarn install
     - yarn test --browsers ChromiumHeadlessCI
 
 upload-pypi:
   stage: deploy
-  image: openlp/debian
+  image: $IMAGE_BASE/debian
   script:
     - python3 setup.py sdist bdist_wheel
     - twine upload dist/*
@@ -81,7 +95,7 @@ upload-pypi:
 
 pages:
   stage: deploy
-  image: openlp/debian
+  image: $IMAGE_BASE/debian
   script:
     - fixpaths linux.coverage
     - fixpaths macos.coverage
@@ -95,6 +109,6 @@ pages:
     expire_in: 30 days
   dependencies:
     - test-debian
-    - test-macos
+    - test-macos-intel
   only:
     - master@openlp/openlp

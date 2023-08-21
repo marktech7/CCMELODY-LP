@@ -26,14 +26,17 @@ import json
 import logging
 from pathlib import Path
 
-from sqlalchemy import Column, ForeignKey, Table, types
-from sqlalchemy.sql.expression import false, func, null, text
+from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy.schema import MetaData
+from sqlalchemy.orm import Session
+from sqlalchemy.types import Boolean, DateTime, Integer, Unicode
+from sqlalchemy.sql.expression import false, func, null, text, select, update
 
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.applocation import AppLocation
-from openlp.core.common.db import drop_columns
 from openlp.core.common.json import OpenLPJSONEncoder, OpenLPJSONDecoder
-from openlp.core.lib.db import PathType, get_upgrade_op
+from openlp.core.db.types import PathType
+from openlp.core.db.upgrades import get_upgrade_op
 
 
 log = logging.getLogger(__name__)
@@ -41,7 +44,7 @@ __version__ = 8
 
 
 # TODO: When removing an upgrade path the ftw-data needs updating to the minimum supported version
-def upgrade_1(session, metadata):
+def upgrade_1(session: Session, metadata: MetaData):
     """
     Version 1 upgrade.
 
@@ -57,51 +60,50 @@ def upgrade_1(session, metadata):
     :param metadata:
     """
     op = get_upgrade_op(session)
-    metadata.reflect()
+    metadata.reflect(bind=metadata.bind)
     if 'media_files_songs' in [t.name for t in metadata.tables.values()]:
         op.drop_table('media_files_songs')
-        op.add_column('media_files', Column('song_id', types.Integer(), server_default=null()))
-        op.add_column('media_files', Column('weight', types.Integer(), server_default=text('0')))
-        if metadata.bind.url.get_dialect().name != 'sqlite':
-            # SQLite doesn't support ALTER TABLE ADD CONSTRAINT
-            op.create_foreign_key('fk_media_files_song_id', 'media_files', 'songs', ['song_id', 'id'])
+        with op.batch_alter_table('media_files') as batch_op:
+            batch_op.add_column('media_files', Column('song_id', Integer, server_default=null()))
+            batch_op.add_column('media_files', Column('weight', Integer, server_default=text('0')))
+            batch_op.create_foreign_key('fk_media_files_song_id', 'media_files', 'songs', ['song_id', 'id'])
     else:
         log.warning('Skipping upgrade_1 step of upgrading the song db')
 
 
-def upgrade_2(session, metadata):
+def upgrade_2(session: Session, metadata: MetaData):
     """
     Version 2 upgrade.
 
     This upgrade adds a create_date and last_modified date to the songs table
     """
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata, autoload=True)
+    songs_table = Table('songs', metadata, autoload_with=metadata.bind)
     if 'create_date' not in [col.name for col in songs_table.c.values()]:
-        op.add_column('songs', Column('create_date', types.DateTime(), default=func.now()))
-        op.add_column('songs', Column('last_modified', types.DateTime(), default=func.now()))
+        op.add_column('songs', Column('create_date', DateTime, default=func.now()))
+        op.add_column('songs', Column('last_modified', DateTime, default=func.now()))
     else:
         log.warning('Skipping upgrade_2 step of upgrading the song db')
 
 
-def upgrade_3(session, metadata):
+def upgrade_3(session: Session, metadata: MetaData):
     """
     Version 3 upgrade.
 
     This upgrade adds a temporary song flag to the songs table
     """
     op = get_upgrade_op(session)
-    songs_table = Table('songs', metadata, autoload=True)
+    songs_table = Table('songs', metadata, autoload_with=metadata.bind)
     if 'temporary' not in [col.name for col in songs_table.c.values()]:
         if metadata.bind.url.get_dialect().name == 'sqlite':
-            op.add_column('songs', Column('temporary', types.Boolean(create_constraint=False), server_default=false()))
+            op.add_column('songs', Column('temporary', Boolean(create_constraint=False), server_default=false()))
         else:
-            op.add_column('songs', Column('temporary', types.Boolean(), server_default=false()))
+            op.add_column('songs', Column('temporary', Boolean, server_default=false()))
     else:
         log.warning('Skipping upgrade_3 step of upgrading the song db')
 
 
-def upgrade_4(session, metadata):
+def upgrade_4(session: Session, metadata: MetaData):
     """
     Version 4 upgrade.
 
@@ -111,7 +113,7 @@ def upgrade_4(session, metadata):
     pass
 
 
-def upgrade_5(session, metadata):
+def upgrade_5(session: Session, metadata: MetaData):
     """
     Version 5 upgrade.
 
@@ -128,18 +130,17 @@ def upgrade_6(session, metadata):
     This version corrects the errors in upgrades 4 and 5
     """
     op = get_upgrade_op(session)
-    metadata.reflect()
+    metadata.reflect(bind=metadata.bind)
     # Move upgrade 4 to here and correct it (authors_songs table, not songs table)
-    authors_songs = Table('authors_songs', metadata, autoload=True)
+    authors_songs = Table('authors_songs', metadata, autoload_with=metadata.bind)
     if 'author_type' not in [col.name for col in authors_songs.c.values()]:
         # Since SQLite doesn't support changing the primary key of a table, we need to recreate the table
         # and copy the old values
         op.create_table(
             'authors_songs_tmp',
-            Column('author_id', types.Integer(), ForeignKey('authors.id'), primary_key=True),
-            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-            Column('author_type', types.Unicode(255), primary_key=True,
-                   nullable=False, server_default=text('""'))
+            Column('author_id', Integer, ForeignKey('authors.id'), primary_key=True),
+            Column('song_id', Integer, ForeignKey('songs.id'), primary_key=True),
+            Column('author_type', Unicode(255), primary_key=True, nullable=False, server_default=text('""'))
         )
         op.execute('INSERT INTO authors_songs_tmp SELECT author_id, song_id, "" FROM authors_songs')
         op.drop_table('authors_songs')
@@ -149,9 +150,9 @@ def upgrade_6(session, metadata):
         # Create the mapping table (songs <-> songbooks)
         op.create_table(
             'songs_songbooks',
-            Column('songbook_id', types.Integer(), ForeignKey('song_books.id'), primary_key=True),
-            Column('song_id', types.Integer(), ForeignKey('songs.id'), primary_key=True),
-            Column('entry', types.Unicode(255), primary_key=True, nullable=False)
+            Column('songbook_id', Integer, ForeignKey('song_books.id'), primary_key=True),
+            Column('song_id', Integer, ForeignKey('songs.id'), primary_key=True),
+            Column('entry', Unicode(255), primary_key=True, nullable=False)
         )
 
         # Migrate old data
@@ -159,12 +160,10 @@ def upgrade_6(session, metadata):
                     WHERE song_book_id IS NOT NULL AND song_number IS NOT NULL AND song_book_id <> 0')
 
         # Drop old columns
-        if metadata.bind.url.get_dialect().name == 'sqlite':
-            drop_columns(op, 'songs', ['song_book_id', 'song_number'])
-        else:
-            op.drop_constraint('songs_ibfk_1', 'songs', 'foreignkey')
-            op.drop_column('songs', 'song_book_id')
-            op.drop_column('songs', 'song_number')
+        with op.batch_alter_table('songs') as batch_op:
+            # batch_op.drop_constraint('song_book_id', 'foreignkey')
+            batch_op.drop_column('song_book_id')
+            batch_op.drop_column('song_number')
     # Finally, clean up our mess in people's databases
     op.execute('DELETE FROM songs_songbooks WHERE songbook_id = 0')
 
@@ -174,23 +173,23 @@ def upgrade_7(session, metadata):
     Version 7 upgrade - Move file path from old db to JSON encoded path to new db. Upgrade added in 2.5 dev
     """
     log.debug('Starting upgrade_7 for file_path to JSON')
-    old_table = Table('media_files', metadata, autoload=True)
-    if 'file_path' not in [col.name for col in old_table.c.values()]:
+    media_files = Table('media_files', metadata, autoload_with=metadata.bind)
+    if 'file_path' not in [col.name for col in media_files.c.values()]:
         op = get_upgrade_op(session)
         op.add_column('media_files', Column('file_path', PathType()))
+        media_files.append_column(Column('file_path', PathType()))
         conn = op.get_bind()
-        results = conn.execute('SELECT * FROM media_files')
+        results = conn.scalars(select(media_files))
         data_path = AppLocation.get_data_path()
-        for row in results.fetchall():
+        for row in results.all():
             file_path_json = json.dumps(Path(row.file_name), cls=OpenLPJSONEncoder, base_path=data_path)
-            sql = 'UPDATE media_files SET file_path = :file_path WHERE id = :id'
-            conn.execute(sql, {'file_path': file_path_json, 'id': row.id})
+            conn.execute(update(media_files).where(media_files.c.id == row.id).values(file_path=file_path_json))
         # Drop old columns
-        if metadata.bind.url.get_dialect().name == 'sqlite':
-            drop_columns(op, 'media_files', ['file_name', ])
-        else:
-            op.drop_constraint('media_files', 'foreignkey')
-            op.drop_column('media_files', 'filenames')
+        # with op.batch_alter_table('media_files') as batch_op:
+            # if metadata.bind.url.get_dialect().name != 'sqlite':
+            #     for fk in media_files.foreign_keys:
+            #         batch_op.drop_constraint(fk.name, 'foreignkey')
+            # batch_op.drop_column('filename')
 
 
 def upgrade_8(session, metadata):
@@ -198,14 +197,15 @@ def upgrade_8(session, metadata):
     Version 8 upgrade - add sha256 hash to media
     """
     log.debug('Starting upgrade_8 for adding sha256 hashes')
-    old_table = Table('media_files', metadata, autoload=True)
-    if 'file_hash' not in [col.name for col in old_table.c.values()]:
+    media_files = Table('media_files', metadata, autoload_with=metadata.bind)
+    if 'file_hash' not in [col.name for col in media_files.c.values()]:
         op = get_upgrade_op(session)
-        op.add_column('media_files', Column('file_hash', types.Unicode(128)))
+        op.add_column('media_files', Column('file_hash', Unicode(128)))
+        media_files.append_column(Column('file_hash', Unicode(128)))
         conn = op.get_bind()
-        results = conn.execute('SELECT * FROM media_files')
+        results = conn.scalars(select(media_files))
         data_path = AppLocation.get_data_path()
-        for row in results.fetchall():
+        for row in results.all():
             file_path = json.loads(row.file_path, cls=OpenLPJSONDecoder)
             full_file_path = data_path / file_path
             if full_file_path.exists():
@@ -214,5 +214,4 @@ def upgrade_8(session, metadata):
                 log.warning('{audio} does not exists, so no sha256 hash added.'.format(audio=str(file_path)))
                 # set a fake "hash" to allow for the upgrade to go through. The image will be marked as invalid
                 hash = 'NONE'
-            sql = 'UPDATE media_files SET file_hash = :hash WHERE id = :id'
-            conn.execute(sql, {'hash': hash, 'id': row.id})
+            conn.execute(update(media_files).where(media_files.c.id == row.id).values(file_hash=hash))

@@ -34,6 +34,7 @@ class FontSelectFeatures():
     Outline = 'outline'
     Shadow = 'shadow'
     LineSpacing = 'line_spacing'
+    LetterSpacing = 'letter_spacing'
 
 
 DEBOUNCE_TIME = 200
@@ -49,6 +50,7 @@ class FontSelectWidget(ThemeEditorWidget):
     is_bold_changed = QtCore.pyqtSignal(bool)
     is_italic_changed = QtCore.pyqtSignal(bool)
     line_spacing_changed = QtCore.pyqtSignal(int)
+    letter_spacing_changed = QtCore.pyqtSignal(int)
     is_outline_enabled_changed = QtCore.pyqtSignal(bool)
     outline_color_changed = QtCore.pyqtSignal(str)
     outline_size_changed = QtCore.pyqtSignal(int)
@@ -84,13 +86,13 @@ class FontSelectWidget(ThemeEditorWidget):
         self.style_bold_button = QtWidgets.QToolButton(self)
         self.style_bold_button.setCheckable(True)
         self.style_bold_button.setIcon(UiIcons().bold)
-        self.style_bold_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.Bold))
+        self.style_bold_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Bold))
         self.style_bold_button.setObjectName('style_bold_button')
         self.style_layout.addWidget(self.style_bold_button)
         self.style_italic_button = QtWidgets.QToolButton(self)
         self.style_italic_button.setCheckable(True)
         self.style_italic_button.setIcon(UiIcons().italic)
-        self.style_italic_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.Italic))
+        self.style_italic_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Italic))
         self.style_italic_button.setObjectName('style_italic_button')
         self.style_layout.addWidget(self.style_italic_button)
         self.style_layout.addStretch(1)
@@ -203,15 +205,16 @@ class FontSelectWidget(ThemeEditorWidget):
         self.font_style_label.setText(translate('OpenLP.FontSelectWidget', 'Style:'))
         self.style_bold_button.setToolTip('{name} ({shortcut})'.format(
             name=translate('OpenLP.FontSelectWidget', 'Bold'),
-            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.Bold).toString()
+            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Bold).toString()
         ))
         self.style_italic_button.setToolTip('{name} ({shortcut})'.format(
             name=translate('OpenLP.FontSelectWidget', 'Italic'),
-            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.Italic).toString()
+            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Italic).toString()
         ))
         self.font_size_label.setText(translate('OpenLP.FontSelectWidget', 'Size:'))
         self.font_size_spinbox.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
         self.line_spacing_label.setText(translate('OpenLP.FontSelectWidget', 'Line Spacing:'))
+        self.letter_spacing_label.setText(translate('OpenLP.FontSelectWidget', 'Letter Spacing:'))
         self.outline_groupbox.setTitle(translate('OpenLP.FontSelectWidget', 'Outline'))
         self.outline_color_label.setText(translate('OpenLP.FontSelectWidget', 'Color:'))
         self.outline_size_label.setText(translate('OpenLP.FontSelectWidget', 'Size:'))
@@ -243,6 +246,9 @@ class FontSelectWidget(ThemeEditorWidget):
     def _on_line_spacing_changed(self, spacing):
         self.line_spacing_changed.emit(spacing)
         self._on_value_changed_emit()
+
+    def _on_letter_spacing_changed(self, spacing):
+        self.letter_spacing_changed.emit(spacing)
 
     def _on_outline_toggled(self, is_enabled):
         self.is_outline_enabled_changed.emit(is_enabled)
@@ -335,6 +341,14 @@ class FontSelectWidget(ThemeEditorWidget):
     @line_spacing.setter
     def line_spacing(self, line_spacing):
         self.line_spacing_spinbox.setValue(line_spacing)
+
+    @property
+    def letter_spacing(self):
+        return self.letter_spacing_spinbox.value()
+
+    @letter_spacing.setter
+    def letter_spacing(self, letter_spacing):
+        self.letter_spacing_spinbox.setValue(letter_spacing)
 
     @property
     def is_outline_enabled(self):

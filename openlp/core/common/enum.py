@@ -146,3 +146,13 @@ class SongSearch(IntEnum):
     Themes = 7
     Copyright = 8
     CCLInumber = 9
+
+
+@unique
+class SongFirstSlideMode(IntEnum):
+    """
+    An enumeration for song first slide types.
+    """
+    Default = 0  # No cover
+    Songbook = 1
+    Footer = 2

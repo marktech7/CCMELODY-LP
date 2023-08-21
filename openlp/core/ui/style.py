@@ -145,7 +145,7 @@ def is_windows_darkmode():
     """
     theme_settings = QtCore.QSettings('HKEY_CURRENT_USER\\Software\\Microsoft\\Windows\\CurrentVersion\\Themes'
                                       '\\Personalize',
-                                      QtCore.QSettings.NativeFormat)
+                                      QtCore.QSettings.Format.NativeFormat)
     return theme_settings.value('AppsUseLightTheme') == 0
 
 
@@ -202,28 +202,28 @@ def set_default_darkmode(app):
     dark_palette = QtGui.QPalette()
     dark_color = QtGui.QColor(45, 45, 45)
     disabled_color = QtGui.QColor(127, 127, 127)
-    dark_palette.setColor(QtGui.QPalette.Window, dark_color)
-    dark_palette.setColor(QtGui.QPalette.WindowText, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.WindowText, disabled_color)
-    dark_palette.setColor(QtGui.QPalette.Base, QtGui.QColor(18, 18, 18))
-    dark_palette.setColor(QtGui.QPalette.AlternateBase, dark_color)
-    dark_palette.setColor(QtGui.QPalette.ToolTipBase, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.ToolTipText, QtCore.Qt.black)
-    dark_palette.setColor(QtGui.QPalette.Text, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Text, disabled_color)
-    dark_palette.setColor(QtGui.QPalette.Button, dark_color)
-    dark_palette.setColor(QtGui.QPalette.ButtonText, QtCore.Qt.white)
-    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.ButtonText, disabled_color)
-    dark_palette.setColor(QtGui.QPalette.BrightText, QtCore.Qt.red)
-    dark_palette.setColor(QtGui.QPalette.Link, QtGui.QColor(42, 130, 218))
-    dark_palette.setColor(QtGui.QPalette.Highlight, QtGui.QColor(42, 130, 218))
-    dark_palette.setColor(QtGui.QPalette.HighlightedText, QtCore.Qt.black)
-    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.HighlightedText, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Window, dark_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.WindowText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.WindowText, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Base, QtGui.QColor(18, 18, 18))
+    dark_palette.setColor(QtGui.QPalette.ColorRole.AlternateBase, dark_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.ToolTipBase, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.ToolTipText, QtCore.Qt.black)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Text, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.Text, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Button, dark_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.ButtonText, QtCore.Qt.white)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.ButtonText, disabled_color)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.BrightText, QtCore.Qt.red)
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Link, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Highlight, QtGui.QColor(42, 130, 218))
+    dark_palette.setColor(QtGui.QPalette.ColorRole.HighlightedText, QtCore.Qt.black)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.HighlightedText, disabled_color)
     # Fixes ugly (not to mention hard to read) disabled menu items.
     # Source: https://bugreports.qt.io/browse/QTBUG-10322?focusedCommentId=371060#comment-371060
-    dark_palette.setColor(QtGui.QPalette.Disabled, QtGui.QPalette.Light, QtCore.Qt.transparent)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.Light, QtCore.Qt.transparent)
     # Fixes ugly media manager headers.
-    dark_palette.setColor(QtGui.QPalette.Mid, QtGui.QColor(64, 64, 64))
+    dark_palette.setColor(QtGui.QPalette.ColorRole.Mid, QtGui.QColor(64, 64, 64))
     app.setPalette(dark_palette)
 
 
@@ -242,7 +242,8 @@ def get_application_stylesheet():
         stylesheet = qdarkstyle.load_stylesheet_pyqt5()
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
-            base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.Active, QtGui.QPalette.Base)
+            base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.ColorGroup.Active,
+                                                                QtGui.QPalette.ColorRole.Base)
             alternate_rows_repair_stylesheet = get_alternate_rows_repair_stylesheet(base_color.name())
             stylesheet += alternate_rows_repair_stylesheet
         if is_win():

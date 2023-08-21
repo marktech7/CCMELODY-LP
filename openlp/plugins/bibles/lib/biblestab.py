@@ -77,8 +77,10 @@ class BiblesTab(SettingsTab):
         self.bible_theme_label = QtWidgets.QLabel(self.verse_display_group_box)
         self.bible_theme_label.setObjectName('BibleTheme_label')
         self.bible_theme_combo_box = QtWidgets.QComboBox(self.verse_display_group_box)
-        self.bible_theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-        self.bible_theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.bible_theme_combo_box.setSizeAdjustPolicy(
+            QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.bible_theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding,
+                                                 QtWidgets.QSizePolicy.Policy.Fixed)
         self.bible_theme_combo_box.addItem('')
         self.bible_theme_combo_box.setObjectName('BibleThemecombo_box')
         self.verse_display_layout.addRow(self.bible_theme_label, self.bible_theme_combo_box)
@@ -117,7 +119,7 @@ class BiblesTab(SettingsTab):
                                                   self.end_separator_line_edit))
         self.scripture_reference_layout.addWidget(self.end_separator_line_edit, 3, 1)
         self.left_layout.addWidget(self.scripture_reference_group_box)
-        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.language_selection_group_box = QtWidgets.QGroupBox(self.right_column)
         self.language_selection_group_box.setObjectName('language_selection_group_box')
         self.language_selection_layout = QtWidgets.QVBoxLayout(self.language_selection_group_box)
@@ -468,10 +470,10 @@ class BiblesTab(SettingsTab):
         Returns a QPalette with greyed out text as used for placeholderText.
         """
         palette = QtGui.QPalette()
-        color = self.palette().color(QtGui.QPalette.Active, QtGui.QPalette.Text)
+        color = self.palette().color(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.Text)
         if greyed:
             color.setAlpha(128)
-        palette.setColor(QtGui.QPalette.Active, QtGui.QPalette.Text, color)
+        palette.setColor(QtGui.QPalette.ColorGroup.Active, QtGui.QPalette.ColorRole.Text, color)
         return palette
 
     def check_is_verse_number_visible(self):

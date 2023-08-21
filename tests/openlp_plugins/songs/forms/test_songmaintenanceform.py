@@ -30,7 +30,7 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import UiStrings
 from openlp.core.common.registry import Registry
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.plugins.songs.lib.db import init_schema, SongBook, Song, SongBookEntry
 from openlp.plugins.songs.forms.songmaintenanceform import SongMaintenanceForm
 
@@ -131,8 +131,8 @@ def test_delete_item_no_item_id(mocked_critical_error_message_box, form_env):
     Test the _delete_item() method when there is no item selected
     """
     # GIVEN: Some mocked items
-    form = form_env[0]
-    mocked_item_class = MagicMock()
+    form, manager = form_env
+    manager.get_object.return_value = None
     mocked_list_widget = MagicMock()
     mocked_reset_func = MagicMock()
     dialog_title = 'Delete Item'
@@ -142,7 +142,7 @@ def test_delete_item_no_item_id(mocked_critical_error_message_box, form_env):
     # WHEN: _delete_item() is called
     with patch.object(form, '_get_current_item_id') as mocked_get_current_item_id:
         mocked_get_current_item_id.return_value = -1
-        form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
+        form._delete_item(SongBook, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                           error_text)
 
     # THEN: The right things should have been called
@@ -156,10 +156,8 @@ def test_delete_item_invalid_item(mocked_critical_error_message_box, form_env):
     Test the _delete_item() method when the item doesn't exist in the database
     """
     # GIVEN: Some mocked items
-    form = form_env[0]
-    mocked_manager = form_env[1]
-    mocked_manager.get_object.return_value = None
-    mocked_item_class = MagicMock()
+    form, manager = form_env
+    manager.get_object.return_value = None
     mocked_list_widget = MagicMock()
     mocked_reset_func = MagicMock()
     dialog_title = 'Delete Item'
@@ -169,12 +167,12 @@ def test_delete_item_invalid_item(mocked_critical_error_message_box, form_env):
     # WHEN: _delete_item() is called
     with patch.object(form, '_get_current_item_id') as mocked_get_current_item_id:
         mocked_get_current_item_id.return_value = 1
-        form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
+        form._delete_item(SongBook, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                           error_text)
 
     # THEN: The right things should have been called
     mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
-    mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
+    manager.get_object.assert_called_once_with(SongBook, 1)
     mocked_critical_error_message_box.assert_called_once_with(dialog_title, error_text)
 
 
@@ -184,14 +182,12 @@ def test_delete_item(mocked_critical_error_message_box, form_env):
     Test the _delete_item() method
     """
     # GIVEN: Some mocked items
-    form = form_env[0]
-    mocked_manager = form_env[1]
+    form, mocked_manager = form_env
     mocked_item = MagicMock()
     mocked_item.songs = []
     mocked_item.id = 1
     mocked_manager.get_object.return_value = mocked_item
     mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.Yes
-    mocked_item_class = MagicMock()
     mocked_list_widget = MagicMock()
     mocked_reset_func = MagicMock()
     dialog_title = 'Delete Item'
@@ -201,14 +197,14 @@ def test_delete_item(mocked_critical_error_message_box, form_env):
     # WHEN: _delete_item() is called
     with patch.object(form, '_get_current_item_id') as mocked_get_current_item_id:
         mocked_get_current_item_id.return_value = 1
-        form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
+        form._delete_item(SongBook, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                           error_text)
 
     # THEN: The right things should have been called
     mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
-    mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
+    mocked_manager.get_object.assert_called_once_with(SongBook, 1)
     mocked_critical_error_message_box.assert_called_once_with(dialog_title, delete_text, form, True)
-    mocked_manager.delete_object.assert_called_once_with(mocked_item_class, 1)
+    mocked_manager.delete_object.assert_called_once_with(SongBook, 1)
     mocked_reset_func.assert_called_once_with()
 
 
@@ -218,13 +214,12 @@ def test_delete_book_assigned(mocked_critical_error_message_box, form_env):
     Test the _delete_item() method
     """
     # GIVEN: Some mocked items
-    form = form_env[0]
-    mocked_manager = form_env[1]
+    form, mocked_manager = form_env
     mocked_item = create_autospec(SongBook, spec_set=True)
     mocked_item.id = 1
+    mocked_item.songs = [MagicMock(title='Amazing Grace')]
     mocked_manager.get_object.return_value = mocked_item
     mocked_critical_error_message_box.return_value = QtWidgets.QMessageBox.Yes
-    mocked_item_class = MagicMock()
     mocked_list_widget = MagicMock()
     mocked_reset_func = MagicMock()
     dialog_title = 'Delete Book'
@@ -234,13 +229,13 @@ def test_delete_book_assigned(mocked_critical_error_message_box, form_env):
     # WHEN: _delete_item() is called
     with patch.object(form, '_get_current_item_id') as mocked_get_current_item_id:
         mocked_get_current_item_id.return_value = 1
-        form._delete_item(mocked_item_class, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
+        form._delete_item(SongBook, mocked_list_widget, mocked_reset_func, dialog_title, delete_text,
                           error_text)
 
     # THEN: The right things should have been called
     mocked_get_current_item_id.assert_called_once_with(mocked_list_widget)
-    mocked_manager.get_object.assert_called_once_with(mocked_item_class, 1)
-    mocked_critical_error_message_box.assert_called_once_with(dialog_title, error_text)
+    mocked_manager.get_object.assert_called_once_with(SongBook, 1)
+    mocked_critical_error_message_box.assert_called_once_with(dialog_title, error_text + '\n\nAmazing Grace')
     mocked_manager.delete_object.assert_not_called()
     mocked_reset_func.assert_not_called()
 
@@ -495,7 +490,7 @@ def test_merge_song_books(registry, settings, temp_folder):
     """
     # GIVEN a test database populated with test data, and a song maintenance form
     db_tmp_path = os.path.join(temp_folder, 'test-songs-2.9.2.sqlite')
-    manager = Manager('songs', init_schema, db_file_path=db_tmp_path)
+    manager = DBManager('songs', init_schema, db_file_path=db_tmp_path)
 
     # create 2 song books, both with the same name
     book1 = SongBook()

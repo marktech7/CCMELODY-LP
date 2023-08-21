@@ -19,46 +19,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Mixin class with helpers
+The :mod:`~openlp.core.db` module provides the core database functionality for OpenLP
 """
-import os
-from tempfile import mkstemp
-
-from PyQt5 import QtCore, QtWidgets
-
-from openlp.core.common.settings import Settings
-
-
-class TestMixin(object):
-    """
-    The :class:`TestMixin` class provides test with extra functionality
-    """
-
-    def setup_application(self):
-        """
-        Build or reuse the Application object
-        """
-        old_app_instance = QtCore.QCoreApplication.instance()
-        if old_app_instance is None:
-            self.app = QtWidgets.QApplication([])
-        else:
-            self.app = old_app_instance
-
-    def build_settings(self):
-        """
-        Build the settings Object and initialise it
-        """
-        self.fd, self.ini_file = mkstemp('.ini')
-        Settings.set_filename(self.ini_file)
-        Settings().setDefaultFormat(Settings.IniFormat)
-        # Needed on windows to make sure a Settings object is available during the tests
-        self.setting = Settings()
-        Settings().setValue('themes/global theme', 'my_theme')
-
-    def destroy_settings(self):
-        """
-        Destroy the Settings Object
-        """
-        del self.setting
-        os.close(self.fd)
-        os.unlink(Settings().fileName())
