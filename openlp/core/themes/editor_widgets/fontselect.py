@@ -115,6 +115,15 @@ class FontSelectWidget(ThemeEditorWidget):
         self.line_spacing_spinbox.setMaximum(250)
         self.line_spacing_spinbox.setObjectName('line_spacing_spinbox')
         self.main_layout.addWidget(self.line_spacing_spinbox)
+        # Letter spacing
+        self.letter_spacing_label = create_label(self)
+        self.letter_spacing_label.setObjectName('letter_spacing_label')
+        self.main_layout.addWidget(self.letter_spacing_label)
+        self.letter_spacing_spinbox = QtWidgets.QSpinBox(self)
+        self.letter_spacing_spinbox.setMinimum(-250)
+        self.letter_spacing_spinbox.setMaximum(250)
+        self.letter_spacing_spinbox.setObjectName('letter_spacing_spinbox')
+        self.main_layout.addWidget(self.letter_spacing_spinbox)
         # Outline
         self.outline_groupbox = QtWidgets.QGroupBox(self)
         self.outline_groupbox.setCheckable(True)
