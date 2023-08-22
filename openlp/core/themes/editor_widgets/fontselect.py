@@ -25,6 +25,7 @@ theme editor
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
+from openlp.core.lib.ui import AutoSizeableQFontComboBox
 from openlp.core.ui.icons import UiIcons
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.themes.editor_widgets import ThemeEditorWidget, create_label
@@ -68,7 +69,7 @@ class FontSelectWidget(ThemeEditorWidget):
         self.font_name_label = create_label(self)
         self.font_name_label.setObjectName('font_name_label')
         self.main_layout.addWidget(self.font_name_label)
-        self.font_name_combobox = QtWidgets.QFontComboBox(self)
+        self.font_name_combobox = AutoSizeableQFontComboBox(self)
         self.font_name_combobox.setObjectName('font_name_combobox')
         self.main_layout.addWidget(self.font_name_combobox)
         # Font color
@@ -119,7 +120,7 @@ class FontSelectWidget(ThemeEditorWidget):
         self.letter_spacing_label = create_label(self)
         self.letter_spacing_label.setObjectName('letter_spacing_label')
         self.main_layout.addWidget(self.letter_spacing_label)
-        self.letter_spacing_spinbox = QtWidgets.QSpinBox(self)
+        self.letter_spacing_spinbox = QtWidgets.QDoubleSpinBox(self)
         self.letter_spacing_spinbox.setMinimum(-250)
         self.letter_spacing_spinbox.setMaximum(250)
         self.letter_spacing_spinbox.setObjectName('letter_spacing_spinbox')
@@ -171,7 +172,8 @@ class FontSelectWidget(ThemeEditorWidget):
         self.feature_widgets = {
             FontSelectFeatures.Outline: [self.outline_groupbox],
             FontSelectFeatures.Shadow: [self.shadow_groupbox],
-            FontSelectFeatures.LineSpacing: [self.line_spacing_label, self.line_spacing_spinbox]
+            FontSelectFeatures.LineSpacing: [self.line_spacing_label, self.line_spacing_spinbox],
+            FontSelectFeatures.LetterSpacing: [self.letter_spacing_label, self.letter_spacing_spinbox]
         }
 
     def connect_signals(self):
@@ -185,6 +187,7 @@ class FontSelectWidget(ThemeEditorWidget):
             self.style_italic_button.toggled.connect(self._on_style_italic_toggled)
             self.font_size_spinbox.valueChanged.connect(self._on_value_changed_emit_debounce)
             self.line_spacing_spinbox.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.letter_spacing_spinbox.valueChanged.connect(self._on_value_changed_emit_debounce)
             self.outline_groupbox.toggled.connect(self._on_outline_toggled)
             self.outline_color_button.colorChanged.connect(self._on_outline_color_changed)
             self.outline_size_spinbox.valueChanged.connect(self._on_value_changed_emit_debounce)
@@ -258,6 +261,7 @@ class FontSelectWidget(ThemeEditorWidget):
 
     def _on_letter_spacing_changed(self, spacing):
         self.letter_spacing_changed.emit(spacing)
+        self._on_value_changed_emit()
 
     def _on_outline_toggled(self, is_enabled):
         self.is_outline_enabled_changed.emit(is_enabled)

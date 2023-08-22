@@ -457,3 +457,15 @@ def add_list_view_mode_items_to_toolbar(toolbar, trigger_handler):
                                checked=False,
                                tooltip=translate('OpenLP.Ui', 'Shows the list in a grid view.'),
                                triggers=trigger_handler.on_set_view_mode_grid)
+
+
+class AutoSizeableQFontComboBox(QtWidgets.QFontComboBox):
+    """
+    Default QFontComboBox can have a big mininum size hint due to calculating it based on
+    largest font name. This fixes it.
+    """
+
+    def minimumSizeHint(self) -> QtCore.QSize:
+        minimumHint = super().minimumSizeHint()
+        minimumHint.setWidth(100)
+        return minimumHint

@@ -1422,6 +1422,16 @@ var Display = {
     Display.resetTheme();
   },
   /**
+   * Runs a example transition. Used by theme editor.
+   */
+  playExampleTransition: function() {
+    Display.goToSlide(1);
+    clearTimeout(Display._preview_transition_handle);
+    Display._preview_transition_handle = setTimeout(function() {
+        Display.goToSlide(0);
+    }, 2000);
+  },
+  /**
    * Translates file:// protocol URLs to openlp-library://local-file/ scheme
    */
   _getFileUrl: function(url) {

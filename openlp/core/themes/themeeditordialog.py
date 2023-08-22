@@ -123,8 +123,7 @@ class Ui_ThemeEditorDialog(object):
         self.footer_area_section_label.setWordWrap(True)
         self.footer_area_widget = FontSelectWidget(theme_editor)
         self.footer_area_widget.setObjectName('footer_area_widget')
-        self.footer_area_widget.disable_features(FontSelectFeatures.Outline, FontSelectFeatures.Shadow,
-                                                 FontSelectFeatures.LineSpacing)
+        self.footer_area_widget.disable_features(FontSelectFeatures.Outline, FontSelectFeatures.Shadow)
         self.footer_area_section_layout.addWidget(self.footer_area_section_label)
         self.footer_area_section_layout.addWidget(create_separator(self))
         self.footer_area_section_layout.addWidget(self.footer_area_widget)

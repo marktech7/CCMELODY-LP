@@ -193,6 +193,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.main_area_widget.font_color = self.theme.font_main_color
         self.main_area_widget.font_size = self.theme.font_main_size
         self.main_area_widget.line_spacing = self.theme.font_main_line_adjustment
+        self.main_area_widget.letter_spacing = self.theme.font_main_letter_adjustment
         self.main_area_widget.is_outline_enabled = self.theme.font_main_outline
         self.main_area_widget.outline_color = self.theme.font_main_outline_color
         self.main_area_widget.outline_size = self.theme.font_main_outline_size
@@ -211,6 +212,8 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.footer_area_widget.is_bold = self.theme.font_footer_bold
         self.footer_area_widget.is_italic = self.theme.font_footer_italics
         self.footer_area_widget.font_size = self.theme.font_footer_size
+        self.footer_area_widget.line_spacing = self.theme.font_footer_line_adjustment
+        self.footer_area_widget.letter_spacing = self.theme.font_footer_letter_adjustment
 
     def set_position_widget_values(self):
         """
@@ -295,6 +298,7 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme.font_main_color = self.main_area_widget.font_color
         self.theme.font_main_size = self.main_area_widget.font_size
         self.theme.font_main_line_adjustment = self.main_area_widget.line_spacing
+        self.theme.font_main_letter_adjustment = self.main_area_widget.letter_spacing
         self.theme.font_main_outline = self.main_area_widget.is_outline_enabled
         self.theme.font_main_outline_color = self.main_area_widget.outline_color
         self.theme.font_main_outline_size = self.main_area_widget.outline_size
@@ -309,6 +313,8 @@ class ThemeEditorForm(QtWidgets.QDialog, Ui_ThemeEditorDialog, RegistryPropertie
         self.theme.font_footer_size = self.footer_area_widget.font_size
         self.theme.font_footer_bold = self.footer_area_widget.is_bold
         self.theme.font_footer_italics = self.footer_area_widget.is_italic
+        self.theme.font_footer_line_adjustment = self.footer_area_widget.line_spacing
+        self.theme.font_footer_letter_adjustment = self.footer_area_widget.letter_spacing
         # position widget (main)
         self.theme.font_main_override = not self.area_position_widget.use_main_default_location
         if self.theme.font_main_override:

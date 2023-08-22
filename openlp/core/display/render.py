@@ -572,12 +572,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         """
         return self.run_in_display('clearSlides')
 
-    def generate_footer(self):
+    def generate_footer(self, is_first_slide=True):
         """
         """
         footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
+            'first_slide': False,
             'title': TITLE,
             'authors_none_label': translate('OpenLP.Ui', 'Written by'),
             'authors_words_label': translate('SongsPlugin.AuthorType', 'Words',
@@ -587,6 +588,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': CCLI_NO,
+            'songbook_entries': [],
         }
         try:
             footer_html = mako.template.Template(footer_template).render_unicode(**vars).replace('\n', '')
@@ -633,7 +635,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         verse['title'] = TITLE
         verse['text'] = render_tags(slides[0])
         verse['verse'] = 'V1'
-        verse['footer'] = self.generate_footer()
+        verse['footer'] = self.generate_footer(number == 0)
         return verse
 
     def format_slide(self, text, item):
@@ -907,7 +909,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
 
         :param enabled: True to enable borders, False to disable them
         """
-        self.run_javascript('Display.setTextAreaLayoutBorders(%s)' % ('true' if enabled else 'false'))
+        self.run_in_display('setTextAreaLayoutBorders', enabled)
 
     def set_transitions_enabled(self, enabled=True):
         """
@@ -915,19 +917,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
 
         :param enabled: True to enable slide transitions, false to disable them
         """
-        self.run_javascript('Display.setTransitionsEnabled(%s)' % ('true' if enabled else 'false'))
+        self.run_in_display('setTransitionsEnabled', enabled)
 
     def play_transition(self):
         """
         Plays a sample transition.
         """
-        self.run_javascript("""
-            Display.goToSlide(1);
-            clearTimeout(Display._preview_transition_handle);
-            Display._preview_transition_handle = setTimeout(function() {
-                Display.goToSlide(0);
-            }, 2000);
-        """)
+        self.run_in_display('playExampleTransition')
 
 
 class Renderer(RegistryBase, ThemePreviewRenderer):
