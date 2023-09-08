@@ -20,6 +20,8 @@ environment:
       FORCE_PACKAGING: 1
       FORCE_PACKAGING_MANUAL: 1
       PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win32.whl
+      APPVEYOR_REPO_TAG: 3.0.9
+      APPVEYOR_REPO_TAG_NAME: "3.0.9"
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
@@ -83,7 +85,9 @@ after_test:
             # Install VLC - Windows only
             choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
             # Install HTML Help Workshop - Windows only
-            choco install html-help-workshop --no-progress --limit-output
+            #choco install html-help-workshop --no-progress --limit-output
+            appveyor DownloadFile https://github.com/EWSoftware/SHFB/raw/master/ThirdPartyTools/htmlhelp.exe
+            htmlhelp.exe /Q
           }
           else
           {
