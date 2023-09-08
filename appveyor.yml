@@ -17,8 +17,8 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
       PY_DIR: C:\\Python311
       CHOCO_VLC_ARG: --forcex86
-      FORCE_PACKAGING: 0
-      FORCE_PACKAGING_MANUAL: 0
+      FORCE_PACKAGING: 1
+      FORCE_PACKAGING_MANUAL: 1
       PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win32.whl
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
@@ -29,6 +29,7 @@ environment:
 
 init:
 - cmd: set PATH=%PY_DIR%;%PY_DIR%\Scripts;%PATH%
+- ps: iex ((new-object net.webclient).DownloadString('https://raw.githubusercontent.com/appveyor/ci/master/scripts/enable-rdp.ps1'))
 
 install:
   # Update pip
