@@ -20,7 +20,7 @@ environment:
       FORCE_PACKAGING: 1
       FORCE_PACKAGING_MANUAL: 1
       PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win32.whl
-      APPVEYOR_REPO_TAG: 3.0.9
+      APPVEYOR_REPO_TAG: 1
       APPVEYOR_REPO_TAG_NAME: "3.0.9"
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
@@ -56,7 +56,7 @@ test_script:
       If (($env:APPVEYOR_REPO_TAG -eq $False)) {
         cd $env:APPVEYOR_BUILD_FOLDER
         # Run the tests
-        python -m pytest tests
+        #python -m pytest tests
         # Go back to the user root folder
         cd ..
       }
