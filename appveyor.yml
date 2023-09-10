@@ -81,7 +81,7 @@ after_test:
             appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
             7z x portable-setup.7z
             # Install VLC - Windows only
-            choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
+            # choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
           }
           Else {
             # Install Mac only stuff
