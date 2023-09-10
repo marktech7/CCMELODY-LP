@@ -108,7 +108,7 @@ after_test:
           }
           Else {
             If ($isWindows) {
-                python builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+                python builders/windows-builder.py --release 3.1.0rc1 --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
             }
             Else {
                 python builders/macosx-builder.py --skip-update --skip-translations -c osx/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER"
