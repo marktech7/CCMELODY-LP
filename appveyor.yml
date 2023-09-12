@@ -11,13 +11,17 @@ environment:
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
       PY_DIR: C:\\Python311-x64
       CHOCO_VLC_ARG:
-      FORCE_PACKAGING: 0
+      FORCE_PACKAGING: 1
       PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win_amd64.whl
+      PACKAGING_URL: https://gitlab.com/superfly/packaging/-/archive/fix-appveyor-more/packaging-fix-appveyor-more.zip
+      PACKAGING_DIR: packaging-fix-appveyor-more
     - APPVEYOR_BUILD_WORKER_IMAGE: Visual Studio 2022
       PY_DIR: C:\\Python311
       CHOCO_VLC_ARG: --forcex86
-      FORCE_PACKAGING: 0
+      FORCE_PACKAGING: 1
       PYICU_PACK: https://github.com/cgohlke/pyicu-build/releases/download/v2.11/PyICU-2.11-cp311-cp311-win32.whl
+      PACKAGING_URL: https://gitlab.com/superfly/packaging/-/archive/fix-appveyor-more/packaging-fix-appveyor-more.zip
+      PACKAGING_DIR: packaging-fix-appveyor-more
     - APPVEYOR_BUILD_WORKER_IMAGE: macos-catalina
       QT_QPA_PLATFORM: offscreen
       FORCE_PACKAGING: 0
@@ -77,7 +81,7 @@ after_test:
             appveyor DownloadFile https://get.openlp.org/win-sdk/portable-setup.7z
             7z x portable-setup.7z
             # Install VLC - Windows only
-            choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
+            # choco install vlc $env:CHOCO_VLC_ARG --no-progress --limit-output
           }
           Else {
             # Install Mac only stuff
@@ -87,9 +91,10 @@ after_test:
             brew install enchant
           }
           # Get the packaging code
-          Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
-          Expand-Archive -Path packaging-master.zip -DestinationPath .
-          cd packaging-master
+          # Invoke-WebRequest -Uri "https://gitlab.com/openlp/packaging/-/archive/master/packaging-master.zip" -OutFile packaging-master.zip
+          Invoke-WebRequest -Uri "$env:PACKAGING_URL" -OutFile packaging.zip
+          Expand-Archive -Path packaging.zip -DestinationPath .
+          cd $env:PACKAGING_DIR
           If ($env:APPVEYOR_REPO_TAG -eq $True) {
             # If this is a release build, set release argument
             $releaseArg = "--release ""$env:APPVEYOR_REPO_TAG_NAME"""
@@ -103,7 +108,7 @@ after_test:
           }
           Else {
             If ($isWindows) {
-                python builders/windows-builder.py --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
+                python builders/windows-builder.py --release 3.1.0rc1 --skip-update --skip-translations -c windows/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER" --portable
             }
             Else {
                 python builders/macosx-builder.py --skip-update --skip-translations -c osx/config-appveyor.ini -b "$env:APPVEYOR_BUILD_FOLDER"
