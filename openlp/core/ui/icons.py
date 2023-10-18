@@ -74,6 +74,7 @@ class UiIcons(metaclass=Singleton):
             'book': {'icon': 'mdi.book-open-variant'},
             'bottom': {'icon': 'mdi.chevron-double-down'},
             'box': {'icon': 'mdi.briefcase'},
+            'breeze': {'icon': 'mdi.cloud-download'},
             'clapperboard': {'icon': 'mdi.filmstrip'},
             'clock': {'icon': 'mdi.clock-outline'},
             'clone': {'icon': 'mdi.content-duplicate'},

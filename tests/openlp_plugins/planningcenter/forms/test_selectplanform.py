@@ -58,8 +58,8 @@ def plugin(registry: Registry, settings: Settings, state: State) -> PlanningCent
 @pytest.fixture
 def form(plugin: PlanningCenterPlugin) -> SelectPlanForm:
     form_ = SelectPlanForm()
-    form_.planning_center_api.airplane_mode = True
-    form_.planning_center_api.airplane_mode_directory = TEST_PATH
+    form_.planning_center_api.cacheEnabled = True
+    form_.planning_center_api.cache_directory = TEST_PATH
     yield form_
 
 
