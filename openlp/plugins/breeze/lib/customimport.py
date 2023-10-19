@@ -26,9 +26,7 @@ that was used to import songs from Planning Center.
 """
 import re
 
-from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
-from openlp.core.lib.formattingtags import FormattingTags
 from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 from openlp.plugins.custom.lib.db import CustomSlide
 
@@ -41,81 +39,12 @@ class BreezeCustomImport(object):
     :param html_details: The "details" element from PCO, with html formatting
     :param theme_name:  The theme_name to use for the slide.
     """
-    def add_slide(self, item_title, html_details, theme_name):
+    def add_slide(self, segment, theme_name):
         sxml = CustomXML()
-        slide_content = ''
-        if html_details is None:
-            slide_content = item_title
-        else:
-            # we need non-html here, but the input is html
-            slide_content = self._process_details(html_details)
-        sxml.add_verse_to_lyrics('custom', str(1), slide_content)
-        custom_slide = CustomSlide(title=item_title, text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
+        sxml.add_verse_to_lyrics('custom', str(1), segment["content"])
+        custom_slide = CustomSlide(title="General", text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
                                    theme_name=theme_name)
         custom = Registry().get('custom')
         custom_db_manager = custom.plugin.db_manager
         custom_db_manager.save_object(custom_slide)
         return custom_slide.id
-    """
-    Converts the "details" section of a PCO slide into text suitable for
-    slides in OLP
-
-    :param html_details: The html_details string from the PCO API
-    """
-    def _process_details(self, html_details):
-        # convert <br> into new lines
-        html_details = re.sub(r'<br>', '\n', html_details)
-        # covert formatting tags from list to dict to I can do arbitrary lookups
-        FormattingTags.load_tags()
-        openlp_formatting_tags = {}
-        for formatting_tag in FormattingTags.get_html_tags():
-            openlp_formatting_tags[formatting_tag['desc']] = {}
-            openlp_formatting_tags[formatting_tag['desc']]['start tag'] = formatting_tag['start tag']
-            openlp_formatting_tags[formatting_tag['desc']]['end tag'] = formatting_tag['end tag']
-        # convert bold
-        html_details = re.sub(r'<strong>(.*?)</strong>',
-                              r"{start}\1{end}".format(
-                                  start=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Bold')]['start tag'],
-                                  end=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Bold')]['end tag']),
-                              html_details)
-        # convert underline
-        html_details = re.sub(r'<span style="text-decoration: underline;">(.*?)</span>',
-                              r"{start}\1{end}".format(
-                                  start=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Underline')]['start tag'],
-                                  end=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Underline')]['end tag']),
-                              html_details)
-        # convert italics
-        html_details = re.sub(r'<em>(.*?)</em>',
-                              r"{start}\1{end}".format(
-                                  start=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Italics')]['start tag'],
-                                  end=openlp_formatting_tags[
-                                      translate('OpenLP.FormattingTags', 'Italics')]['end tag']),
-                              html_details)
-        # convert Breeze colors to OpenLP base tags
-        color_lookup = {
-            'Red': 'ff0000',
-            'Black': '000000',
-            'Blue': '0000ff',
-            'Yellow': 'ffff00',
-            'Green': '008000',
-            'Pink': 'ff99cc',
-            'Orange': 'ff6600',
-            'Purple': '800080',
-            'White': 'ffffff',
-        }
-        for color in color_lookup.keys():
-            html_details = re.sub(r'<span style="color: #{number};">(.*?)</span>'.format(number=color_lookup[color]),
-                                  r"{start}\1{end}".format(
-                                      start=openlp_formatting_tags[
-                                          translate('OpenLP.FormattingTags', color)]['start tag'],
-                                      end=openlp_formatting_tags[
-                                          translate('OpenLP.FormattingTags', color)]['end tag']),
-                                  html_details)
-        # throw away the rest of the html
-        html_details = re.sub(r'(<!--.*?-->|<[^>]*>)', '', html_details)
-        return html_details

@@ -22,10 +22,12 @@
 The :mod:`~openlp.plugins.breeze.forms.selectplanform` module contains
 the GUI for the Breeze Service Plan importer
 """
+from sqlalchemy.sql import or_
 import logging
 import re
 import time
 from datetime import date, datetime, timedelta
+from typing import Any
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -35,7 +37,10 @@ from openlp.plugins.bibles.lib import parse_reference
 from openlp.plugins.breeze.forms.selectserviceplandialog import Ui_SelectPlanDialog
 from openlp.plugins.breeze.lib.customimport import BreezeCustomImport
 from openlp.plugins.breeze.lib.breeze_api import BreezeAPI
-from openlp.plugins.breeze.lib.songimport import BreezeSongImport
+from openlp.plugins.songs.lib import Song, clean_string
+from openlp.plugins.songs.lib.db import SongBookEntry, SongBook
+from openlp.plugins.songs.lib.importers.songimport import SongImport
+from openlp.plugins.songs.songsplugin import SongsPlugin
 
 log = logging.getLogger(__name__)
 
@@ -167,59 +172,68 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
             service_manager.application.set_busy_cursor()
             # get the plan ID for the current plan selection
             service_plan_id = self.plan_selection_combo_box.itemData(self.plan_selection_combo_box.currentIndex())
-            # get the items array from Planning Center
+            # get the items array from Breeze
+            # TODO: Fetching service plans loader box
             service_plan_items_dict = self.api.get_service_plan(service_plan_id)
             segments = service_plan_items_dict["segments"]
             service_manager.main_window.display_progress_bar(len(segments))
             # convert the planning center dict to Songs and Add them to the ServiceManager
-            service_plan_id_to_openlp_id = {}
+            segment_id_to_openlp_id = {}
             for segment in segments:
-                item_title = segment['attributes']['title']
+                print("Importing segment %s", segment)
+                item_title = segment['title']
                 media_type = ''
+                media_type_suffix = ''
                 openlp_id = -1
+
                 if segment['type'] == 'song':
-                    arrangement_id = segment['relationships']['arrangement']['data']['id']
-                    song_id = segment['relationships']['song']['data']['id']
-                    if song_id not in service_plan_id_to_openlp_id:
+                    song_id = segment['id'] # TODO: Replace with actual song ID when we get songs
+                    if song_id not in segment_id_to_openlp_id:
                         # TODO: Waiting for Breeze Service Plan Songs
-                        # get arrangement from "included" resources
-                        arrangement_data = {}
-                        song_data = {}
-                        for included_item in service_plan_items_dict['included']:
-                            if included_item['type'] == 'Song' and included_item['id'] == song_id:
-                                song_data = included_item
-                            elif included_item['type'] == 'Arrangement' and included_item['id'] == arrangement_id:
-                                arrangement_data = included_item
-                            # if we have both song and arrangement set, stop iterating
-                            if len(song_data) and len(arrangement_data):
-                                break
-                        author = song_data['attributes']['author']
-                        lyrics = arrangement_data['attributes']['lyrics']
-                        arrangement_updated_at = datetime.strptime(arrangement_data['attributes']['updated_at'].
-                                                                   rstrip("Z"), '%Y-%m-%dT%H:%M:%S')
-                        # start importing the song
-                        breeze_import = BreezeSongImport()
-                        theme_name = self.song_theme_selection_combo_box.currentText()
-                        openlp_id = breeze_import.add_song(item_title, author, lyrics,
-                                                                    theme_name, arrangement_updated_at)
-                        service_plan_id_to_openlp_id[song_id] = openlp_id
-                    openlp_id = service_plan_id_to_openlp_id[song_id]
-                    media_type = 'songs'
-                    # TODO: Handle the other types (Scripture, note, general)
-                # add the media to the service
-                media_type_plugin = Registry().get(media_type)
-                # the variable suffix names below for "songs" is "song", so change media_type to song
-                media_type_suffix = media_type
-                if media_type == 'songs':
-                    media_type_suffix = 'song'
-                # turn on remote song feature to add to service
-                media_type_plugin.remote_triggered = True
-                setattr(media_type_plugin, "remote_{0}".format(media_type_suffix), openlp_id)
-                media_type_plugin.add_to_service(remote=openlp_id)
-                # also add verse references if they are there
-                if media_type == 'custom' and not html_details:
-                    # check if the slide title is also a verse reference
-                    # get a reference to the bible manager
+                        # Interface with Song Plugin to find song in local library or CCLI
+                        # Add slide from there! We are not importing lyrics at all.
+                        song_db: SongsPlugin = Registry().get("songs_plugin")
+                        # Could get the songs (a SongMediaItem) and use search(string), which does an everything search.
+                        # Check DB first if song exists so we don't overwrite anything
+                        # If title starts with a number and a space, look in default songbook for the number.
+                        # Search by title, search_title, and ccli_number
+                        search_string = '%{text}%'.format(text=clean_string(segment['title']))
+                        search = song_db.manager.session.query(Song) \
+                            .join(SongBookEntry, isouter=True) \
+                            .join(SongBook, isouter=True) \
+                            .filter(or_(SongBook.name.like(search_string),
+                                        SongBookEntry.entry.like(search_string),
+                                        Song.search_title.like(search_string)
+                                        )).all()
+
+                        if search:
+                            # Let's add the first one for now
+                            openlp_id = search[0].id
+                            # TODO: If not there and we have a CCLI ID and the songselect is enabled, then init import
+                        else:
+                            # Else, create a song slide with just the title
+                            song_import = SongImport(song_db, file_path=None)
+                            song_import.set_defaults()
+                            song_import.title = segment['title']
+                            song_import.add_verse('')
+                            openlp_id = song_import.finish(temporary_flag=True)
+                            if segment['updated_at']:
+                                song = song_db.manager.get_object(Song, openlp_id)
+                                song.last_modified = datetime.strptime(segment['updated_at']
+                                                                       .rstrip("Z"), '%Y-%m-%dT%H:%M:%S')
+                                song_db.manager.save_object(song)
+                    if openlp_id >= 0:
+                        segment_id_to_openlp_id[song_id] = openlp_id
+                        media_type = 'songs'
+                        media_type_suffix = 'song'
+                        media_type_plugin = Registry().get(media_type)
+
+                        # turn on remote song feature to add to service
+                        media_type_plugin.remote_triggered = True
+                        setattr(media_type_plugin, "remote_{0}".format(media_type_suffix), openlp_id)
+                        media_type_plugin.add_to_service(remote=openlp_id)
+                elif segment['type'] is 'scripture':
+                    # get the bible manager
                     bible_media = Registry().get('bibles')
                     bibles = bible_media.plugin.manager.get_bibles()
                     # get the current bible selected from the bibles plugin screen
@@ -237,6 +251,12 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         bible_media.list_view.clear()
                         bible_media.display_results()
                         bible_media.add_to_service()
+                elif segment['type'] is 'general':
+                    theme_name = self.slide_theme_selection_combo_box.currentText()
+                    BreezeCustomImport().add_slide(segment, theme_name)
+                # Don't care about sections, notes or any new types.
+
+                # End of importing plan segment
                 service_manager.main_window.increment_progress_bar()
             if update:
                 for old_service_item in old_service_items:
