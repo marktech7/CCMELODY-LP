@@ -87,7 +87,8 @@ class BreezePlugin(Plugin):
         """
         # Determine which dialog to show based on whether the auth values are set yet
         self.username = self.settings.value("breeze/username")
-        self.secret = self.settings.value("breeze/secret") # TODO: Don't save secret on shared computer
+        # TODO: Don't save secret on shared computer
+        self.secret = self.settings.value("breeze/secret")
         self.subdomain = self.settings.value("breeze/subdomain")
         if not self.username or not self.secret or not self.subdomain:
             self.breeze_form = Registry().get('settings_form')

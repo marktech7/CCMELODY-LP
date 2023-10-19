@@ -25,9 +25,7 @@ the GUI for the Breeze Service Plan importer
 from sqlalchemy.sql import or_
 import logging
 import re
-import time
 from datetime import date, datetime, timedelta
-from typing import Any
 
 from PyQt5 import QtCore, QtWidgets
 
@@ -160,12 +158,7 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         Utility function to perform the import or update as requested
         """
         service_manager = Registry().get('service_manager')
-        old_service_items = []
-        if update:
-            old_service_items = service_manager.service_items.copy()
-            service_manager.new_file()
-        else:
-            service_manager.on_new_service_clicked()
+        service_manager.on_new_service_clicked()
         # we only continue here if the service_manager is now empty
         if len(service_manager.service_items) == 0:
             service_manager.application.set_busy_cursor()
@@ -186,7 +179,8 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                 openlp_id = -1
 
                 if segment['type'] == 'song':
-                    song_id = segment['id'] # TODO: Replace with actual song ID when we get songs
+                    # TODO: Replace with actual song ID when Breeze implements songs
+                    song_id = segment['id']
                     if song_id not in segment_id_to_openlp_id:
                         # TODO: Waiting for Breeze Service Plan Songs
                         # Interface with Song Plugin to find song in local library or CCLI

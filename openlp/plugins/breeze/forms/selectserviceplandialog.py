@@ -30,6 +30,7 @@ class Ui_SelectPlanDialog(object):
     """
     The actual Qt components that make up the dialog.
     """
+
     def setup_ui(self, breeze_dialog):
         breeze_dialog.setObjectName('breeze_dialog')
         breeze_dialog.resize(400, 280)
@@ -64,7 +65,7 @@ class Ui_SelectPlanDialog(object):
         Translate the GUI.
         """
         breeze_dialog.setWindowTitle(translate('BreezePlugin.BreezeForm',
-                                                       'Breeze Service Plan Importer'))
+                                               'Breeze Service Plan Importer'))
         self.plan_selection_label.setText(translate('BreezePlugin.BreezeForm', 'Select Service Plan'))
         self.import_as_new_button.setText(translate('BreezePlugin.BreezeForm', 'Import New'))
         self.import_as_new_button.setToolTip(translate('BreezePlugin.BreezeForm',
@@ -76,6 +77,6 @@ class Ui_SelectPlanDialog(object):
                                                          'have changed'))
         self.edit_auth_button.setText(translate('BreezePlugin.BreezeForm', 'Edit Authentication'))
         self.edit_auth_button.setToolTip(translate('BreezePlugin.BreezeForm', 'Edit the username '
-                                                   'and Password to login to Breeze'))
+                                                                              'and Password to login to Breeze'))
         self.song_theme_selection_label.setText(translate('BreezePlugin.BreezeForm', 'Song Theme'))
         self.slide_theme_selection_label.setText(translate('BreezePlugin.BreezeForm', 'Slide Theme'))

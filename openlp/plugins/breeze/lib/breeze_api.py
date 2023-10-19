@@ -25,10 +25,10 @@ an API interface for Breeze
 import logging
 import os
 import ssl
-from datetime import date
 import requests
 
 log = logging.getLogger(__name__)
+
 
 class BreezeAPI:
     """
@@ -105,15 +105,15 @@ class BreezeAPI:
         }
         response = requests.get(endpoint, headers=headers)
 
-        if response.status_code is 200:
+        if 200 <= response.status_code < 300:
             return response.json()['data']
-        elif response.status_code is 401:
+        elif response.status_code == 401:
             self.__refresh()
             headers = {
                 "Authorization": "Bearer " + self.token
             }
             response = requests.get(endpoint, headers=headers)
-            if response.status_code is 200:
+            if 200 <= response.status_code < 300:
                 return response.json()['data']
 
         # TODO: Throw error if not 200

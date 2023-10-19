@@ -24,7 +24,6 @@ a function that imports a single custom slide into the database and returns
 the database ID of the slide.  This mimics the implementation for SongPlugin
 that was used to import songs from Planning Center.
 """
-import re
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.custom.lib.customxmlhandler import CustomXML
