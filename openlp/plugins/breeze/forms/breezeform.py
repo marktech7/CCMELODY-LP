@@ -184,13 +184,13 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         # TODO: Waiting for Breeze Service Plan Songs
                         # Interface with Song Plugin to find song in local library or CCLI
                         # Add slide from there! We are not importing lyrics at all.
-                        songPlugin: SongsPlugin = Registry().get('songs').plugin
+                        songs_plugin: SongsPlugin = Registry().get('songs').plugin
                         # Could get the songs (a SongMediaItem) and use search(string), which does an everything search.
                         # Check DB first if song exists so we don't overwrite anything
                         # If title starts with a number and a space, look in default songbook for the number.
                         # Search by title, search_title, and ccli_number
                         search_string = '%{text}%'.format(text=clean_string(segment['title']))
-                        search = songPlugin.manager.session.query(Song) \
+                        search = songs_plugin.manager.session.query(Song) \
                             .join(SongBookEntry, isouter=True) \
                             .join(SongBook, isouter=True) \
                             .filter(or_(SongBook.name.like(search_string),
@@ -204,16 +204,16 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                             # TODO: If not there and we have a CCLI ID and the songselect is enabled, then init import
                         else:
                             # Else, create a song slide with just the title
-                            song_import = SongImport(songPlugin, file_path=None)
+                            song_import = SongImport(songs_plugin, file_path=None)
                             song_import.set_defaults()
                             song_import.title = segment['title']
                             song_import.add_verse('')
                             openlp_id = song_import.finish(temporary_flag=True)
                             if segment['updated_at']:
-                                song = songPlugin.manager.get_object(Song, openlp_id)
+                                song = songs_plugin.manager.get_object(Song, openlp_id)
                                 song.last_modified = datetime.strptime(segment['updated_at']
                                                                        .rstrip('Z'), '%Y-%m-%dT%H:%M:%S')
-                                songPlugin.manager.save_object(song)
+                                songs_plugin.manager.save_object(song)
                         media_type = 'songs'
                         media_type_suffix = 'song'
                 elif segment['type'] == 'scripture':
