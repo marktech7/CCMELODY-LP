@@ -125,18 +125,18 @@ class BreezeTab(SettingsTab):
         secret = self.secret_line_edit.text()
         subdomain = self.subdomain_line_edit.text()
         if len(username) == 0 or len(secret) == 0 or len(subdomain) == 0:
-            QtWidgets.QMessageBox.warning(self, "Authentication Failed",
-                                          "Please enter values for both Username, Secret, and Subdomain",
+            QtWidgets.QMessageBox.warning(self, 'Authentication Failed',
+                                          'Please enter values for both Username, Secret, and Subdomain',
                                           QtWidgets.QMessageBox.Ok)
             return
         test_auth = BreezeAPI(username, secret, subdomain)
         organization = test_auth.test()
         if len(organization):
             QtWidgets.QMessageBox.information(self, 'Breeze Authentication Test',
-                                              "Authentication successful for organization: {0}".format(organization),
+                                              'Authentication successful for organization: {0}'.format(organization),
                                               QtWidgets.QMessageBox.Ok)
             self.settings.setValue('breeze/token', test_auth.token())
         else:
-            QtWidgets.QMessageBox.warning(self, "Authentication Failed",
-                                          "Authentiation Failed",
+            QtWidgets.QMessageBox.warning(self, 'Authentication Failed',
+                                          'Authentiation Failed',
                                           QtWidgets.QMessageBox.Ok)

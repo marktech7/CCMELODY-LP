@@ -53,10 +53,10 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
         QtWidgets.QDialog.__init__(self, parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint)
         self.plugin = plugin
         # create Breeze API Object
-        username = Registry().get('settings').value("breeze/username")
-        secret = Registry().get('settings').value("breeze/secret")
-        subdomain = Registry().get('settings').value("breeze/subdomain")
-        token = Registry().get('settings').value("breeze/token")
+        username = Registry().get('settings').value('breeze/username')
+        secret = Registry().get('settings').value('breeze/secret')
+        subdomain = Registry().get('settings').value('breeze/subdomain')
+        token = Registry().get('settings').value('breeze/token')
         self.api = BreezeAPI(username, secret, subdomain, token)
         self.setup_ui(self)
         self.plan_selection_combo_box.currentIndexChanged.connect(self.on_plan_selection_combobox_changed)
@@ -92,9 +92,9 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
             # start_datetime=str: 2023-09-26 00:00:00
             plan_datetime = datetime.strptime(event['start'], '%Y-%m-%d %H:%M:%S')
             plan_date = date(plan_datetime.year, plan_datetime.month, plan_datetime.day)
-            self.plan_selection_combo_box.addItem("{0} ({1})".format(
+            self.plan_selection_combo_box.addItem('{0} ({1})'.format(
                 event['name'],
-                plan_date.strftime("%Y-%m-%d")
+                plan_date.strftime('%Y-%m-%d')
             ), event['service_plan_id'])
             # if we have any date that matches today or in the future, select it
             if plan_date >= today:
@@ -167,12 +167,11 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
             # get the items array from Breeze
             # TODO: Fetching service plans loader box
             service_plan_items_dict = self.api.get_service_plan(service_plan_id)
-            segments = service_plan_items_dict["segments"]
+            segments = service_plan_items_dict['segments']
             service_manager.main_window.display_progress_bar(len(segments))
             # convert the planning center dict to Songs and Add them to the ServiceManager
             segment_id_to_openlp_id = {}
             for segment in segments:
-                print("Importing segment %s", segment)
                 item_title = segment['title']
                 media_type = ''
                 media_type_suffix = ''
@@ -185,13 +184,13 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         # TODO: Waiting for Breeze Service Plan Songs
                         # Interface with Song Plugin to find song in local library or CCLI
                         # Add slide from there! We are not importing lyrics at all.
-                        song_db: SongsPlugin = Registry().get("songs").plugin
+                        songPlugin: SongsPlugin = Registry().get('songs').plugin
                         # Could get the songs (a SongMediaItem) and use search(string), which does an everything search.
                         # Check DB first if song exists so we don't overwrite anything
                         # If title starts with a number and a space, look in default songbook for the number.
                         # Search by title, search_title, and ccli_number
                         search_string = '%{text}%'.format(text=clean_string(segment['title']))
-                        search = song_db.manager.session.query(Song) \
+                        search = songPlugin.manager.session.query(Song) \
                             .join(SongBookEntry, isouter=True) \
                             .join(SongBook, isouter=True) \
                             .filter(or_(SongBook.name.like(search_string),
@@ -202,21 +201,19 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         if search:
                             # Let's add the first one for now
                             openlp_id = search[0].id
-                            print("Found song id %d", openlp_id)
                             # TODO: If not there and we have a CCLI ID and the songselect is enabled, then init import
                         else:
                             # Else, create a song slide with just the title
-                            song_import = SongImport(song_db, file_path=None)
+                            song_import = SongImport(songPlugin, file_path=None)
                             song_import.set_defaults()
                             song_import.title = segment['title']
                             song_import.add_verse('')
                             openlp_id = song_import.finish(temporary_flag=True)
-                            print("Created temp song, id %d", openlp_id)
                             if segment['updated_at']:
-                                song = song_db.manager.get_object(Song, openlp_id)
+                                song = songPlugin.manager.get_object(Song, openlp_id)
                                 song.last_modified = datetime.strptime(segment['updated_at']
-                                                                       .rstrip("Z"), '%Y-%m-%dT%H:%M:%S')
-                                song_db.manager.save_object(song)
+                                                                       .rstrip('Z'), '%Y-%m-%dT%H:%M:%S')
+                                songPlugin.manager.save_object(song)
                         media_type = 'songs'
                         media_type_suffix = 'song'
                 elif segment['type'] == 'scripture':
@@ -238,7 +235,7 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                         bible_media.display_results()
                         bible_media.add_to_service()
                     else:
-                        print("Could not resolve scripture for %s", item_title)
+                        log.warning('Could not resolve scripture for %s', item_title)
                 elif segment['type'] == 'general':
                     theme_name = self.slide_theme_selection_combo_box.currentText()
                     openlp_id = BreezeCustomImport().add_slide(segment, theme_name)
@@ -254,7 +251,7 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
                     media_type_plugin = Registry().get(media_type)
                     # turn on remote song feature to add to service
                     media_type_plugin.remote_triggered = True
-                    setattr(media_type_plugin, "remote_{0}".format(media_type_suffix), openlp_id)
+                    setattr(media_type_plugin, 'remote_{0}'.format(media_type_suffix), openlp_id)
                     media_type_plugin.add_to_service(remote=openlp_id)
 
                 # End of importing plan segment
@@ -267,7 +264,7 @@ class BreezeForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
             service_manager.application.set_normal_cursor()
 
     def _fetch_events(self):
-        log.debug("Fetching Breeze Events")
+        log.debug('Fetching Breeze Events')
 
         today = date.today()
         week_ago = today - timedelta(days=7)

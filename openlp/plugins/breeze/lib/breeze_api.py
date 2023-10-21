@@ -44,7 +44,7 @@ class BreezeAPI:
         :param subdomain: User's Breeze subdomain
         :param token: The cached Breeze token
         """
-        self.api_url = "https://api.breezechms.com/api/v2/"
+        self.api_url = 'https://api.breezechms.com/api/v2/'
         self.username = username
         self.secret = secret
         self.subdomain = subdomain
@@ -71,9 +71,9 @@ class BreezeAPI:
         :type end: date
         """
         events = self.__get('event-instances?filter[start_datetime:gt:date]={0}&filter[start_datetime:lt:date]={1}'
-                            .format(start.strftime("%Y-%m-%d"), end.strftime("%Y-%m-%d"))
+                            .format(start.strftime('%Y-%m-%d'), end.strftime('%Y-%m-%d'))
                             )
-        return filter(lambda event: "service_plan_id" in event and event["service_plan_id"] is not None, events)
+        return filter(lambda event: 'service_plan_id' in event and event['service_plan_id'] is not None, events)
 
     def get_service_plan(self, service_plan_id):
         """
@@ -81,7 +81,7 @@ class BreezeAPI:
 
         :param service_plan_id: ID of the service plan.
         """
-        return self.__get('service-plans/{0}'.format(service_plan_id))
+        return self.__get(f'service-plans/{service_plan_id}')
 
     def __get(self, url):
         """
@@ -101,7 +101,7 @@ class BreezeAPI:
         # Fetch
         endpoint = self.api_url + url
         headers = {
-            "Authorization": "Bearer " + self.token
+            'Authorization': f'Bearer {self.token}'
         }
         response = requests.get(endpoint, headers=headers)
 
@@ -110,7 +110,7 @@ class BreezeAPI:
         elif response.status_code == 401:
             self.__refresh()
             headers = {
-                "Authorization": "Bearer " + self.token
+                'Authorization': f'Bearer {self.token}'
             }
             response = requests.get(endpoint, headers=headers)
             if 200 <= response.status_code < 300:
@@ -135,7 +135,7 @@ class BreezeAPI:
 
     def __refresh(self):
         response = requests.post(self.api_url + 'auth/refresh', headers={
-            "Authorization": "Bearer " + self.token
+            'Authorization': f'Bearer {self.token}'
         })
 
         if response.status_code == 200:

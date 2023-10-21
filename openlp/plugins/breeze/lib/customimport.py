@@ -40,8 +40,8 @@ class BreezeCustomImport(object):
     """
     def add_slide(self, segment, theme_name):
         sxml = CustomXML()
-        sxml.add_verse_to_lyrics('custom', str(1), segment["content"])
-        custom_slide = CustomSlide(title="General", text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
+        sxml.add_verse_to_lyrics('custom', str(1), segment['content'])
+        custom_slide = CustomSlide(title='General', text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
                                    theme_name=theme_name)
         custom = Registry().get('custom')
         custom_db_manager = custom.plugin.db_manager
