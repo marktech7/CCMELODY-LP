@@ -96,8 +96,11 @@ def is_thread_finished(thread_name):
     :param str thread_name: The name of the thread
     :returns: True if the thread is finished, False if it is still running
     """
-    app = Registry().get('application')
-    return thread_name not in app.worker_threads or app.worker_threads[thread_name]['thread'].isFinished()
+    try:
+        app = Registry().get('application')
+        return thread_name not in app.worker_threads or app.worker_threads[thread_name]['thread'].isFinished()
+    except KeyError:
+        return True
 
 
 def make_remove_thread(thread_name):

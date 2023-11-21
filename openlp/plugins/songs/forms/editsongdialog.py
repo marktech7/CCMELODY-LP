@@ -69,8 +69,8 @@ class Ui_EditSongDialog(object):
         self.lyrics_tab_layout.addWidget(self.lyrics_label, 2, 0, QtCore.Qt.AlignTop)
         self.verse_list_widget = SingleColumnTableWidget(self.lyrics_tab)
         self.verse_list_widget.setAlternatingRowColors(True)
-        self.verse_list_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.verse_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.verse_list_widget.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.verse_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.verse_list_widget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.verse_list_widget.setObjectName('verse_list_widget')
         self.lyrics_label.setBuddy(self.verse_list_widget)
@@ -350,9 +350,9 @@ def create_combo_box(parent, name, editable=True):
     :param name: The object name
     """
     combo_box = QtWidgets.QComboBox(parent)
-    combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-    combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+    combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+    combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
     combo_box.setEditable(editable)
-    combo_box.setInsertPolicy(QtWidgets.QComboBox.NoInsert)
+    combo_box.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.NoInsert)
     combo_box.setObjectName(name)
     return combo_box

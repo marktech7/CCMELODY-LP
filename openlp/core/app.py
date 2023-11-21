@@ -46,6 +46,8 @@ from openlp.core.common.platform import is_macosx, is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.display.screens import ScreenList
+from openlp.core.display.webengine import init_webview_custom_schemes, set_webview_display_path
+from openlp.core.lib.filelock import FileLock
 from openlp.core.loader import loader
 from openlp.core.resources import qInitResources
 from openlp.core.server import Server
@@ -78,6 +80,8 @@ class OpenLP(QtCore.QObject, LogMixin):
         """
         self.is_event_loop_active = True
         result = QtWidgets.QApplication.exec()
+        if self.data_dir_lock:
+            self.data_dir_lock.release()
         if hasattr(self, 'server'):
             self.server.close_server()
         return result
@@ -128,7 +132,6 @@ class OpenLP(QtCore.QObject, LogMixin):
         Registry().execute('bootstrap_initialise')
         State().flush_preconditions()
         Registry().execute('bootstrap_post_set_up')
-        Registry().initialise = False
         self.main_window.show()
         if can_show_splash:
             # now kill the splashscreen
@@ -291,6 +294,8 @@ def parse_options():
                             dir_name=os.path.join('<AppDir>', '..', '..')))
     parser.add_argument('-w', '--no-web-server', dest='no_web_server', action='store_true',
                         help='Turn off the Web and Socket Server ')
+    parser.add_argument('--display-custom-path', dest='display_custom_path', default=None,
+                        help='Specify the custom path for display renderer (HTML). Useful for development.')
     parser.add_argument('rargs', nargs='*', default=[])
     # Parse command line options and deal with them.
     return parser.parse_args()
@@ -308,6 +313,8 @@ def set_up_logging(log_path):
     logfile = logging.FileHandler(file_path, 'w', encoding='UTF-8')
     logfile.setFormatter(logging.Formatter('%(asctime)s %(threadName)s %(name)-55s %(levelname)-8s %(message)s'))
     log.addHandler(logfile)
+    # Send warnings to the log file
+    logging.captureWarnings(True)
     print(f'Logging to: {file_path} and level {log.level}')
 
 
@@ -410,10 +417,17 @@ def main():
         # support dark mode on windows 10. This makes the titlebar dark, the rest is setup later
         # by calling set_windows_darkmode
         qt_args.extend(['-platform', 'windows:darkmode=1'])
+    elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
+        # Work around an issue where PyInstaller is not setting this environment variable
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PyQt5' / 'Qt5' /
+                                                    'lib' / 'QtWebEngineCore.framework' / 'Versions' / '5' /
+                                                    'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
+                                                    'QtWebEngineProcess')
     # Initialise the resources
     qInitResources()
     # Now create and actually run the application.
     QtWidgets.QApplication.setAttribute(QtCore.Qt.AA_EnableHighDpiScaling)
+    init_webview_custom_schemes()
     application = QtWidgets.QApplication(qt_args)
     application.setOrganizationName('OpenLP')
     application.setOrganizationDomain('openlp.org')
@@ -451,23 +465,43 @@ def main():
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
         set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
     # Set the libvlc environment variable if we're frozen
-    if getattr(sys, 'frozen', False) and is_win():
+    if getattr(sys, 'frozen', False):
         # Path to libvlc and the plugins
-        os.environ['PYTHON_VLC_LIB_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc' / 'libvlc.dll')
-        os.environ['PYTHON_VLC_MODULE_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
-        os.environ['PATH'] += ';' + str(AppLocation.get_directory(AppLocation.AppDir) / 'vlc')
-        log.debug('VLC Path: {}'.format(os.environ['PYTHON_VLC_LIB_PATH']))
+        vlc_dir = AppLocation.get_directory(AppLocation.AppDir) / 'vlc'
+        vlc_lib = None
+        if is_win():
+            vlc_lib = 'libvlc.dll'
+        elif is_macosx():
+            vlc_lib = 'libvlc.dylib'
+        if vlc_lib and vlc_dir.joinpath(vlc_lib).exists():
+            os.environ['PYTHON_VLC_LIB_PATH'] = str(vlc_dir / vlc_lib)
+            os.environ['PYTHON_VLC_MODULE_PATH'] = str(vlc_dir)
+            os.environ['PATH'] += ';' + str(vlc_dir)
+            log.debug('VLC Path: {}'.format(os.environ.get('PYTHON_VLC_LIB_PATH', '')))
     app = OpenLP()
     # Initialise the Registry
     Registry.create()
     settings = Settings()
     Registry().register('settings', settings)
+    if settings.value('advanced/protect data directory'):
+        # attempt to create a file lock
+        app.data_dir_lock = FileLock(AppLocation.get_data_path(), get_version()['full'])
+        if not app.data_dir_lock.lock():
+            # not good! A message will have been presented to the user explaining why we're quitting.
+            sys.exit()
+    else:
+        app.data_dir_lock = None
     log.info(f'Arguments passed {args}')
     # Need settings object for the threads.
     settings_thread = Settings()
     Registry().register('settings_thread', settings_thread)
     Registry().register('application-qt', application)
     Registry().register('application', app)
+    if args.display_custom_path:
+        if (args.display_custom_path.startswith('http:') or args.display_custom_path.startswith('https:')):
+            Registry().register('display_custom_url', args.display_custom_path)
+        else:
+            set_webview_display_path(args.display_custom_path)
     Registry().set_flag('no_web_server', args.no_web_server)
     # Upgrade settings.
     app.settings = settings

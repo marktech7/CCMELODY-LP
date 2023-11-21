@@ -37,6 +37,7 @@ class FontSelectPage(GridLayoutPage):
     Outline = 'outline'
     Shadow = 'shadow'
     LineSpacing = 'line_spacing'
+    LetterSpacing = 'letter_spacing'
 
     font_name_changed = QtCore.pyqtSignal(str)
     font_size_changed = QtCore.pyqtSignal(int)
@@ -44,6 +45,7 @@ class FontSelectPage(GridLayoutPage):
     is_bold_changed = QtCore.pyqtSignal(bool)
     is_italic_changed = QtCore.pyqtSignal(bool)
     line_spacing_changed = QtCore.pyqtSignal(int)
+    letter_spacing_changed = QtCore.pyqtSignal(int)
     is_outline_enabled_changed = QtCore.pyqtSignal(bool)
     outline_color_changed = QtCore.pyqtSignal(str)
     outline_size_changed = QtCore.pyqtSignal(int)
@@ -56,7 +58,8 @@ class FontSelectPage(GridLayoutPage):
         self.feature_widgets = {
             FontSelectPage.Outline: [self.outline_groupbox],
             FontSelectPage.Shadow: [self.shadow_groupbox],
-            FontSelectPage.LineSpacing: [self.line_spacing_label, self.line_spacing_spinbox]
+            FontSelectPage.LineSpacing: [self.line_spacing_label, self.line_spacing_spinbox],
+            FontSelectPage.LetterSpacing: [self.letter_spacing_label, self.letter_spacing_spinbox]
         }
 
     def setup_ui(self):
@@ -82,13 +85,13 @@ class FontSelectPage(GridLayoutPage):
         self.style_bold_button = QtWidgets.QToolButton(self)
         self.style_bold_button.setCheckable(True)
         self.style_bold_button.setIcon(UiIcons().bold)
-        self.style_bold_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.Bold))
+        self.style_bold_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Bold))
         self.style_bold_button.setObjectName('style_bold_button')
         self.style_layout.addWidget(self.style_bold_button)
         self.style_italic_button = QtWidgets.QToolButton(self)
         self.style_italic_button.setCheckable(True)
         self.style_italic_button.setIcon(UiIcons().italic)
-        self.style_italic_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.Italic))
+        self.style_italic_button.setShortcut(QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Italic))
         self.style_italic_button.setObjectName('style_italic_button')
         self.style_layout.addWidget(self.style_italic_button)
         self.style_layout.addStretch(1)
@@ -111,13 +114,22 @@ class FontSelectPage(GridLayoutPage):
         self.line_spacing_spinbox.setMaximum(250)
         self.line_spacing_spinbox.setObjectName('line_spacing_spinbox')
         self.layout.addWidget(self.line_spacing_spinbox, 2, 3)
+        # Letter spacing
+        self.letter_spacing_label = FormLabel(self)
+        self.letter_spacing_label.setObjectName('letter_spacing_label')
+        self.layout.addWidget(self.letter_spacing_label, 3, 2)
+        self.letter_spacing_spinbox = QtWidgets.QDoubleSpinBox(self)
+        self.letter_spacing_spinbox.setMinimum(-250)
+        self.letter_spacing_spinbox.setMaximum(250)
+        self.letter_spacing_spinbox.setObjectName('letter_spacing_spinbox')
+        self.layout.addWidget(self.letter_spacing_spinbox, 3, 3)
         # Outline
         self.outline_groupbox = QtWidgets.QGroupBox(self)
         self.outline_groupbox.setCheckable(True)
         self.outline_groupbox.setChecked(False)
         self.outline_groupbox.setObjectName('outline_groupbox')
         self.outline_layout = QtWidgets.QGridLayout(self.outline_groupbox)
-        self.layout.addWidget(self.outline_groupbox, 3, 0, 1, 2)
+        self.layout.addWidget(self.outline_groupbox, 4, 0, 1, 2)
         # Outline colour
         self.outline_color_label = FormLabel(self.outline_groupbox)
         self.outline_color_label.setObjectName('outline_color_label')
@@ -139,7 +151,7 @@ class FontSelectPage(GridLayoutPage):
         self.shadow_groupbox.setChecked(False)
         self.shadow_groupbox.setObjectName('shadow_groupbox')
         self.shadow_layout = QtWidgets.QGridLayout(self.shadow_groupbox)
-        self.layout.addWidget(self.shadow_groupbox, 3, 2, 1, 2)
+        self.layout.addWidget(self.shadow_groupbox, 4, 2, 1, 2)
         # Shadow color
         self.shadow_color_label = FormLabel(self.shadow_groupbox)
         self.shadow_color_label.setObjectName('shadow_color_label')
@@ -162,6 +174,7 @@ class FontSelectPage(GridLayoutPage):
         self.style_italic_button.toggled.connect(self._on_style_italic_toggled)
         self.font_size_spinbox.valueChanged.connect(self._on_font_size_changed)
         self.line_spacing_spinbox.valueChanged.connect(self._on_line_spacing_changed)
+        self.letter_spacing_spinbox.valueChanged.connect(self._on_letter_spacing_changed)
         self.outline_groupbox.toggled.connect(self._on_outline_toggled)
         self.outline_color_button.colorChanged.connect(self._on_outline_color_changed)
         self.outline_size_spinbox.valueChanged.connect(self._on_outline_size_changed)
@@ -175,15 +188,16 @@ class FontSelectPage(GridLayoutPage):
         self.font_style_label.setText(translate('OpenLP.FontSelectWidget', 'Style:'))
         self.style_bold_button.setToolTip('{name} ({shortcut})'.format(
             name=translate('OpenLP.FontSelectWidget', 'Bold'),
-            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.Bold).toString()
+            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Bold).toString()
         ))
         self.style_italic_button.setToolTip('{name} ({shortcut})'.format(
             name=translate('OpenLP.FontSelectWidget', 'Italic'),
-            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.Italic).toString()
+            shortcut=QtGui.QKeySequence(QtGui.QKeySequence.StandardKey.Italic).toString()
         ))
         self.font_size_label.setText(translate('OpenLP.FontSelectWidget', 'Size:'))
         self.font_size_spinbox.setSuffix(' {unit}'.format(unit=UiStrings().FontSizePtUnit))
         self.line_spacing_label.setText(translate('OpenLP.FontSelectWidget', 'Line Spacing:'))
+        self.letter_spacing_label.setText(translate('OpenLP.FontSelectWidget', 'Letter Spacing:'))
         self.outline_groupbox.setTitle(translate('OpenLP.FontSelectWidget', 'Outline'))
         self.outline_color_label.setText(translate('OpenLP.FontSelectWidget', 'Color:'))
         self.outline_size_label.setText(translate('OpenLP.FontSelectWidget', 'Size:'))
@@ -209,6 +223,9 @@ class FontSelectPage(GridLayoutPage):
 
     def _on_line_spacing_changed(self, spacing):
         self.line_spacing_changed.emit(spacing)
+
+    def _on_letter_spacing_changed(self, spacing):
+        self.letter_spacing_changed.emit(spacing)
 
     def _on_outline_toggled(self, is_enabled):
         self.is_outline_enabled_changed.emit(is_enabled)
@@ -295,6 +312,14 @@ class FontSelectPage(GridLayoutPage):
     @line_spacing.setter
     def line_spacing(self, line_spacing):
         self.line_spacing_spinbox.setValue(line_spacing)
+
+    @property
+    def letter_spacing(self):
+        return self.letter_spacing_spinbox.value()
+
+    @letter_spacing.setter
+    def letter_spacing(self, letter_spacing):
+        self.letter_spacing_spinbox.setValue(letter_spacing)
 
     @property
     def is_outline_enabled(self):

@@ -19,18 +19,17 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-Package to test the openlp.core.lib package.
+Package to test the :mod:`~openlp.core.db.helpers` package.
 """
 from pathlib import Path
-from sqlite3 import OperationalError as SQLiteOperationalError
 from unittest.mock import MagicMock, patch
 
-from sqlalchemy import MetaData
-from sqlalchemy.exc import OperationalError as SQLAlchemyOperationalError
+from sqlalchemy import MetaData, __version__ as sqla_version
+from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm.scoping import ScopedSession
-from sqlalchemy.pool import NullPool
+from sqlalchemy.pool import StaticPool
 
-from openlp.core.lib.db import Manager, delete_database, get_upgrade_op, init_db, upgrade_db
+from openlp.core.db.helpers import init_db, delete_database
 
 
 def test_init_db_calls_correct_functions():
@@ -38,10 +37,10 @@ def test_init_db_calls_correct_functions():
     Test that the init_db function makes the correct function calls
     """
     # GIVEN: Mocked out SQLAlchemy calls and return objects, and an in-memory SQLite database URL
-    with patch('openlp.core.lib.db.create_engine') as mocked_create_engine, \
-            patch('openlp.core.lib.db.MetaData') as MockedMetaData, \
-            patch('openlp.core.lib.db.sessionmaker') as mocked_sessionmaker, \
-            patch('openlp.core.lib.db.scoped_session') as mocked_scoped_session:
+    with patch('openlp.core.db.helpers.create_engine') as mocked_create_engine, \
+            patch('openlp.core.db.helpers.MetaData') as MockedMetaData, \
+            patch('openlp.core.db.helpers.sessionmaker') as mocked_sessionmaker, \
+            patch('openlp.core.db.helpers.scoped_session') as mocked_scoped_session:
         mocked_engine = MagicMock()
         mocked_metadata = MagicMock()
         mocked_sessionmaker_object = MagicMock()
@@ -56,9 +55,12 @@ def test_init_db_calls_correct_functions():
         session, metadata = init_db(db_url)
 
         # THEN: We should see the correct function calls
-        mocked_create_engine.assert_called_with(db_url, poolclass=NullPool)
+        mocked_create_engine.assert_called_with(db_url, poolclass=StaticPool)
         MockedMetaData.assert_called_with(bind=mocked_engine)
-        mocked_sessionmaker.assert_called_with(autoflush=True, autocommit=False, bind=mocked_engine)
+        if sqla_version.startswith('1.'):
+            mocked_sessionmaker.assert_called_with(autoflush=True, autocommit=False, bind=mocked_engine)
+        else:
+            mocked_sessionmaker.assert_called_with(autoflush=True, autobegin=True, bind=mocked_engine)
         mocked_scoped_session.assert_called_with(mocked_sessionmaker_object)
         assert session is mocked_scoped_session_object, 'The ``session`` object should be the mock'
         assert metadata is mocked_metadata, 'The ``metadata`` object should be the mock'
@@ -70,38 +72,14 @@ def test_init_db_defaults():
     """
     # GIVEN: An in-memory SQLite URL
     db_url = 'sqlite://'
+    Base = declarative_base()
 
     # WHEN: The database is initialised through init_db
-    session, metadata = init_db(db_url)
+    session, metadata = init_db(db_url, base=Base)
 
     # THEN: Valid session and metadata objects should be returned
     assert isinstance(session, ScopedSession), 'The ``session`` object should be a ``ScopedSession`` instance'
     assert isinstance(metadata, MetaData), 'The ``metadata`` object should be a ``MetaData`` instance'
-
-
-def test_get_upgrade_op():
-    """
-    Test that the ``get_upgrade_op`` function creates a MigrationContext and an Operations object
-    """
-    # GIVEN: Mocked out alembic classes and a mocked out SQLAlchemy session object
-    with patch('openlp.core.lib.db.MigrationContext') as MockedMigrationContext, \
-            patch('openlp.core.lib.db.Operations') as MockedOperations:
-        mocked_context = MagicMock()
-        mocked_op = MagicMock()
-        mocked_connection = MagicMock()
-        MockedMigrationContext.configure.return_value = mocked_context
-        MockedOperations.return_value = mocked_op
-        mocked_session = MagicMock()
-        mocked_session.bind.connect.return_value = mocked_connection
-
-        # WHEN: get_upgrade_op is executed with the mocked session object
-        op = get_upgrade_op(mocked_session)
-
-        # THEN: The op object should be mocked_op, and the correction function calls should have been made
-        assert op is mocked_op, 'The return value should be the mocked object'
-        mocked_session.bind.connect.assert_called_with()
-        MockedMigrationContext.configure.assert_called_with(mocked_connection)
-        MockedOperations.assert_called_with(mocked_context)
 
 
 def test_delete_database_without_db_file_name(registry):
@@ -109,8 +87,8 @@ def test_delete_database_without_db_file_name(registry):
     Test that the ``delete_database`` function removes a database file, without the file name parameter
     """
     # GIVEN: Mocked out AppLocation class and delete_file method, a test plugin name and a db location
-    with patch('openlp.core.lib.db.AppLocation') as MockedAppLocation, \
-            patch('openlp.core.lib.db.delete_file') as mocked_delete_file:
+    with patch('openlp.core.db.helpers.AppLocation') as MockedAppLocation, \
+            patch('openlp.core.db.helpers.delete_file') as mocked_delete_file:
         MockedAppLocation.get_section_data_path.return_value = Path('test-dir')
         mocked_delete_file.return_value = True
         test_plugin = 'test'
@@ -130,8 +108,8 @@ def test_delete_database_with_db_file_name():
     Test that the ``delete_database`` function removes a database file, with the file name supplied
     """
     # GIVEN: Mocked out AppLocation class and delete_file method, a test plugin name and a db location
-    with patch('openlp.core.lib.db.AppLocation') as MockedAppLocation, \
-            patch('openlp.core.lib.db.delete_file') as mocked_delete_file:
+    with patch('openlp.core.db.helpers.AppLocation') as MockedAppLocation, \
+            patch('openlp.core.db.helpers.delete_file') as mocked_delete_file:
         MockedAppLocation.get_section_data_path.return_value = Path('test-dir')
         mocked_delete_file.return_value = False
         test_plugin = 'test'
@@ -145,65 +123,3 @@ def test_delete_database_with_db_file_name():
         MockedAppLocation.get_section_data_path.assert_called_with(test_plugin)
         mocked_delete_file.assert_called_with(test_location)
         assert result is False, 'The result of delete_file should be False (was rigged that way)'
-
-
-def test_skip_db_upgrade_with_no_database(temp_folder):
-    """
-    Test the upgrade_db function does not try to update a missing database
-    """
-    # GIVEN: Database URL that does not (yet) exist
-    url = 'sqlite:///{tmp}/test_db.sqlite'.format(tmp=temp_folder)
-    mocked_upgrade = MagicMock()
-
-    # WHEN: We attempt to upgrade a non-existent database
-    upgrade_db(url, mocked_upgrade)
-
-    # THEN: upgrade should NOT have been called
-    assert mocked_upgrade.called is False, 'Database upgrade function should NOT have been called'
-
-
-@patch('openlp.core.lib.db.init_url')
-@patch('openlp.core.lib.db.create_engine')
-def test_manager_finalise_exception(mocked_create_engine, mocked_init_url, temp_folder, settings):
-    """Test that the finalise method silently fails on an exception"""
-    # GIVEN: A db Manager object
-    mocked_init_url.return_value = f'sqlite:///{temp_folder}/test_db.sqlite'
-    mocked_session = MagicMock()
-
-    def init_schema(url):
-        return mocked_session
-
-    mocked_create_engine.return_value.execute.side_effect = SQLAlchemyOperationalError(
-        statement='vacuum',
-        params=[],
-        orig=SQLiteOperationalError('database is locked')
-    )
-    manager = Manager('test', init_schema)
-    manager.is_dirty = True
-
-    # WHEN: finalise() is called
-    manager.finalise()
-
-    # THEN: vacuum should have been called on the database
-    mocked_create_engine.return_value.execute.assert_called_once_with('vacuum')
-
-
-@patch('openlp.core.lib.db.init_url')
-@patch('openlp.core.lib.db.create_engine')
-def test_manager_finalise(mocked_create_engine, mocked_init_url, temp_folder, settings):
-    """Test that the finalise method works correctly"""
-    # GIVEN: A db Manager object
-    mocked_init_url.return_value = f'sqlite:///{temp_folder}/test_db.sqlite'
-    mocked_session = MagicMock()
-
-    def init_schema(url):
-        return mocked_session
-
-    manager = Manager('test', init_schema)
-    manager.is_dirty = True
-
-    # WHEN: finalise() is called
-    manager.finalise()
-
-    # THEN: vacuum should have been called on the database
-    mocked_create_engine.return_value.execute.assert_called_once_with('vacuum')

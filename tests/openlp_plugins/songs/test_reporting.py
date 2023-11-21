@@ -24,12 +24,14 @@ This module contains tests for the report_song_list function.
 from unittest.mock import MagicMock, patch
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.reporting import report_song_list
 
 
 @patch('openlp.plugins.songs.reporting.csv')
 @patch('openlp.plugins.songs.reporting.FileDialog')
-def test_report_song_list(mock_file_dialog, mocked_csv, registry):
+def test_report_song_list(mock_file_dialog: MagicMock, mocked_csv: MagicMock, registry: Registry,
+                          settings: Settings):
     """
     Test that report_song_list works
     """
@@ -65,9 +67,10 @@ def test_report_song_list(mock_file_dialog, mocked_csv, registry):
     mocked_songs = MagicMock(plugin=MagicMock(manager=MagicMock(get_all_objects=MagicMock(return_value=song_list))))
     mocked_main_window = MagicMock()
     mocked_application = MagicMock()
-    Registry().register('songs', mocked_songs)
-    Registry().register('main_window', mocked_main_window)
-    Registry().register('application', mocked_application)
+    registry.register('songs', mocked_songs)
+    registry.register('main_window', mocked_main_window)
+    registry.remove('application')
+    registry.register('application', mocked_application)
     mock_writer = MagicMock()
     mocked_csv.DictWriter.return_value = mock_writer
 
@@ -90,7 +93,8 @@ def test_report_song_list(mock_file_dialog, mocked_csv, registry):
 
 @patch('openlp.plugins.songs.reporting.log')
 @patch('openlp.plugins.songs.reporting.FileDialog')
-def test_report_song_list_error_reading(mock_file_dialog, mock_log, registry):
+def test_report_song_list_error_reading(mock_file_dialog: MagicMock, mock_log: MagicMock, registry: Registry,
+                                        settings: Settings):
     """
     Test that report song list sends an exception if the selected file location is not writable
     """
@@ -103,11 +107,8 @@ def test_report_song_list_error_reading(mock_file_dialog, mock_log, registry):
     mock_file.open.side_effect = raise_os_error
     mock_file_dialog.getSaveFileName = MagicMock(return_value=(mock_file, None))
     mocked_songs = MagicMock()
-    mocked_main_window = MagicMock()
-    mocked_application = MagicMock()
-    Registry().register('songs', mocked_songs)
-    Registry().register('main_window', mocked_main_window)
-    Registry().register('application', mocked_application)
+    registry.register('songs', mocked_songs)
+    registry.register('main_window', MagicMock())
 
     # WHEN: report_song_list is called
     report_song_list()
@@ -118,14 +119,15 @@ def test_report_song_list_error_reading(mock_file_dialog, mock_log, registry):
 
 
 @patch('openlp.plugins.songs.reporting.FileDialog')
-def test_report_song_list_cancel(mock_file_dialog, registry):
+def test_report_song_list_cancel(mock_file_dialog: MagicMock, registry: Registry, settings: Settings):
     """
     Test that report song list does not crash if no file location was specified
     """
     # GIVEN: getSaveFileName returns None
     mock_file_dialog.getSaveFileName = MagicMock(return_value=(None, None))
     mocked_songs = MagicMock()
-    Registry().register('songs', mocked_songs)
+    registry.register('songs', mocked_songs)
+    registry.register('main_window', MagicMock())
 
     # WHEN: report_song_list is called
     report_song_list()

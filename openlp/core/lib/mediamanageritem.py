@@ -114,7 +114,7 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
     def required_icons(self):
         """
         This method is called to define the icons for the plugin. It provides a default set and the plugin is able to
-        override the if required.
+        override if required.
         """
         self.has_import_icon = False
         self.has_new_icon = True
@@ -590,8 +590,6 @@ class MediaManagerItem(QtWidgets.QWidget, RegistryProperties, LogMixin):
                                               translate('OpenLP.MediaManagerItem',
                                                         'You must select one or more items to add.'))
         else:
-            # Is it possible to process multiple list items to generate
-            # multiple service items?
             if self.single_service_item:
                 self.log_debug('{plugin} Add requested'.format(plugin=self.plugin.name))
                 self.add_to_service(remote=self.remote_triggered)

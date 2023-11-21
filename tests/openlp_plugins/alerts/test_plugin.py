@@ -24,19 +24,23 @@ This module contains tests for the plugin class Alerts plugin.
 import pytest
 from unittest.mock import MagicMock, patch
 
+from openlp.core.state import State
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.alerts.alertsplugin import AlertsPlugin
 
 
 @pytest.fixture
-@patch('openlp.plugins.alerts.alertsplugin.Manager')
-def plugin_env(mocked_manager, settings, state, registry):
+@patch('openlp.plugins.alerts.alertsplugin.DBManager')
+def alerts_plugin(mocked_manager: MagicMock, settings: Settings, state: State, registry: Registry):
     """An instance of the AlertsPlugin"""
+    registry.register('main_window', None)
     mocked_manager.return_value = MagicMock()
-    return AlertsPlugin(), settings
+    return AlertsPlugin()
 
 
 def test_plugin_about():
-    """Test the Abput text string"""
+    """Test the About text string"""
     # GIVEN an environment
     result = AlertsPlugin.about()
 
@@ -46,51 +50,46 @@ def test_plugin_about():
     )
 
 
-def test_plugin_state(plugin_env):
+def test_plugin_state(alerts_plugin: AlertsPlugin, settings: Settings):
     """Test changing state"""
     # GIVEN an environment
-    plugin = plugin_env[0]
-    settings = plugin_env[1]
-    plugin.alerts_active = settings.value('alerts/status')
+    alerts_plugin.alerts_active = settings.value('alerts/status')
     # WHEN: I toggle the settings
-    plugin.toggle_alerts_state()
+    alerts_plugin.toggle_alerts_state()
     # THEN: the state has changed
-    assert settings.value('alerts/status') != plugin.alerts_active
+    assert settings.value('alerts/status') != alerts_plugin.alerts_active
 
 
-def test_alerts_trigger(plugin_env):
+def test_alerts_trigger(alerts_plugin: AlertsPlugin):
     """Test triggering the Alerts dialog"""
     # GIVEN an environment
-    plugin = plugin_env[0]
-    plugin.alert_form = MagicMock()
+    alerts_plugin.alert_form = MagicMock()
     # WHEN: I request the form
-    plugin.on_alerts_trigger()
+    alerts_plugin.on_alerts_trigger()
     # THEN: the form is loaded
-    plugin.alert_form.load_list.assert_called_once()
-    plugin.alert_form.exec.assert_called_once()
+    alerts_plugin.alert_form.load_list.assert_called_once()
+    alerts_plugin.alert_form.exec.assert_called_once()
 
 
-def test_alerts_initialise(plugin_env):
+def test_alerts_initialise(alerts_plugin: AlertsPlugin):
     """Test the initialise functionality"""
     # GIVEN an environment
-    plugin = plugin_env[0]
-    plugin.tools_alert_item = MagicMock()
+    alerts_plugin.tools_alert_item = MagicMock()
     # WHEN: I request the form
-    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist:
-        plugin.initialise()
+    with patch('openlp.plugins.alerts.alertsplugin.ActionList.instance') as mocked_actionlist:
+        alerts_plugin.initialise()
         # THEN: the form is loaded
-        mocked_actionlist.instance.add_action.assert_called_once()
-        plugin.tools_alert_item.setVisible.assert_called_once_with(True)
+        mocked_actionlist.add_action.assert_called_once()
+        alerts_plugin.tools_alert_item.setVisible.assert_called_once_with(True)
 
 
-def test_alerts_finalise(plugin_env):
+def test_alerts_finalise(alerts_plugin: AlertsPlugin):
     """Test the finalise functionality"""
     # GIVEN an environment
-    plugin = plugin_env[0]
-    plugin.tools_alert_item = MagicMock()
+    alerts_plugin.tools_alert_item = MagicMock()
     # WHEN: I request the form
-    with patch('openlp.core.common.actions.ActionList') as mocked_actionlist:
-        plugin.finalise()
+    with patch('openlp.plugins.alerts.alertsplugin.ActionList.instance') as mocked_actionlist:
+        alerts_plugin.finalise()
         # THEN: the form is loaded
-        mocked_actionlist.instance.remove_action.assert_called_once()
-        plugin.tools_alert_item.setVisible.assert_called_once_with(False)
+        mocked_actionlist.remove_action.assert_called_once()
+        alerts_plugin.tools_alert_item.setVisible.assert_called_once_with(False)

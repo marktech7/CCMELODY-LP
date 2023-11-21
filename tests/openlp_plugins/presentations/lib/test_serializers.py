@@ -25,11 +25,11 @@ from pathlib import Path
 from unittest.mock import patch
 
 try:
-    import Pyro4    # noqa
+    import Pyro5    # noqa
     from openlp.plugins.presentations.lib.serializers import path_class_to_dict, path_dict_to_class, register_classes
 except ImportError:
     import pytest
-    pytestmark = pytest.mark.skip('Pyro4 not installed')
+    pytestmark = pytest.mark.skip('Pyro5 not installed')
 
 
 def test_path_class_to_dict():

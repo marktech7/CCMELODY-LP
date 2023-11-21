@@ -26,16 +26,19 @@ from unittest.mock import patch
 
 from PyQt5 import QtCore, QtTest
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.servicenoteform import ServiceNoteForm
 
 
 @pytest.fixture
-def form(settings):
+def form(registry: Registry, settings: Settings):
+    Registry().register('main_window', None)
     frm = ServiceNoteForm()
     return frm
 
 
-def test_basic_display(form):
+def test_basic_display(form: ServiceNoteForm):
     """
     Test Service Note form functionality
     """

@@ -103,7 +103,8 @@ class SongExportForm(OpenLPWizard):
         self.search_line_edit = QtWidgets.QLineEdit(self.available_songs_page)
         self.search_line_edit.setObjectName('search_line_edit')
         self.horizontal_layout.addWidget(self.search_line_edit)
-        spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Minimum)
+        spacer_item = QtWidgets.QSpacerItem(40, 20, QtWidgets.QSizePolicy.Policy.Expanding,
+                                            QtWidgets.QSizePolicy.Policy.Minimum)
         self.horizontal_layout.addItem(spacer_item)
         self.uncheck_button = QtWidgets.QPushButton(self.available_songs_page)
         self.uncheck_button.setObjectName('uncheck_button')

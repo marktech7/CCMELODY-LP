@@ -25,7 +25,8 @@ from unittest.mock import MagicMock, patch, call
 
 import pytest
 
-from openlp.core.ui.style import MEDIA_MANAGER_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, get_application_stylesheet, \
+from openlp.core.ui.style import MEDIA_MANAGER_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, \
+    get_alternate_rows_repair_stylesheet, get_application_stylesheet, \
     get_library_stylesheet, has_ui_theme, is_ui_theme_dark, set_default_theme
 import openlp.core.ui.style
 
@@ -37,13 +38,13 @@ def test_get_application_stylesheet_qdarkstyle(mocked_qdarkstyle, mock_settings)
     """Test that the QDarkStyle stylesheet is returned when available and enabled"""
     # GIVEN: Theme is QDarkStyle
     mock_settings.value.return_value = UiThemes.QDarkStyle
-    mocked_qdarkstyle.load_stylesheet_pyqt5.return_value = 'dark_style'
+    mocked_qdarkstyle.load_stylesheet_pyqt5.return_value = '//dark_style//'
 
     # WHEN: get_application_stylesheet() is called
     result = get_application_stylesheet()
 
     # THEN: the result should be QDarkStyle stylesheet
-    assert result == 'dark_style'
+    assert '//dark_style//' in result
 
 
 @pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')
@@ -94,7 +95,7 @@ def test_get_application_stylesheet_not_alternate_rows(mocked_palette, mocked_is
 
     # THEN: result should match non-alternate-rows
     mock_settings.value.assert_has_calls([call('advanced/ui_theme_name'), call('advanced/alternate rows')])
-    assert result == 'QTableWidget, QListWidget, QTreeWidget {alternate-background-color: color;}\n', result
+    assert get_alternate_rows_repair_stylesheet('color') in result
 
 
 @patch('openlp.core.ui.style.HAS_DARK_THEME', False)
@@ -116,7 +117,7 @@ def test_get_application_stylesheet_win_repair(mocked_is_win, mock_settings):
 
     # THEN: result should return Windows repair stylesheet
     mock_settings.value.assert_has_calls([call('advanced/ui_theme_name'), call('advanced/alternate rows')])
-    assert result == WIN_REPAIR_STYLESHEET
+    assert WIN_REPAIR_STYLESHEET in result
 
 
 @patch('openlp.core.ui.style.HAS_DARK_THEME', False)

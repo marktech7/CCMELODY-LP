@@ -21,6 +21,8 @@
 """
 This module contains tests for the SingingTheFaith song importer.
 """
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
@@ -28,7 +30,7 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'singingthefaith'
 
 
-def test_singingthefaith_file_import(registry):
+def test_singingthefaith_file_import(registry: Registry, settings: Settings):
     """
     Test that loading a Singing The Faith file works correctly on various files
     """

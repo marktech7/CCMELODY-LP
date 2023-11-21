@@ -38,6 +38,8 @@ class FormattingTags(object):
         """
         Provide access to the html_expands list.
         """
+        if not FormattingTags.html_expands:
+            FormattingTags.load_tags()
         return FormattingTags.html_expands
 
     @staticmethod

@@ -22,6 +22,7 @@
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
+from openlp.core.common.enum import SongFirstSlideMode
 from openlp.core.lib.settingstab import SettingsTab
 from openlp.plugins.songs.lib.db import AuthorType
 
@@ -50,12 +51,20 @@ class SongsTab(SettingsTab):
         self.add_from_service_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.add_from_service_check_box.setObjectName('add_from_service_check_box')
         self.mode_layout.addWidget(self.add_from_service_check_box)
-        self.songbook_slide_check_box = QtWidgets.QCheckBox(self.mode_group_box)
-        self.songbook_slide_check_box.setObjectName('songbook_slide_check_box')
-        self.mode_layout.addWidget(self.songbook_slide_check_box)
         self.auto_play_check_box = QtWidgets.QCheckBox(self.mode_group_box)
         self.auto_play_check_box.setObjectName('auto_play_check_box')
         self.mode_layout.addWidget(self.auto_play_check_box)
+        # First Slide Mode
+        self.first_slide_mode_widget = QtWidgets.QWidget(self.mode_group_box)
+        self.first_slide_mode_layout = QtWidgets.QHBoxLayout(self.first_slide_mode_widget)
+        self.first_slide_mode_layout.setContentsMargins(0, 0, 0, 0)
+        self.first_slide_mode_label = QtWidgets.QLabel(self.first_slide_mode_widget)
+        self.first_slide_mode_combobox = QtWidgets.QComboBox(self.first_slide_mode_widget)
+        self.first_slide_mode_combobox.addItems(['', '', ''])
+        self.first_slide_mode_layout.addWidget(self.first_slide_mode_label)
+        self.first_slide_mode_layout.addWidget(self.first_slide_mode_combobox)
+        self.first_slide_mode_widget.setLayout(self.first_slide_mode_layout)
+        self.mode_layout.addWidget(self.first_slide_mode_widget)
         self.left_layout.addWidget(self.mode_group_box)
 
         # Chords group box
@@ -128,7 +137,7 @@ class SongsTab(SettingsTab):
         self.ccli_password_label = QtWidgets.QLabel(self.ccli_login_group_box)
         self.ccli_password_label.setObjectName('ccli_password_label')
         self.ccli_password = QtWidgets.QLineEdit(self.ccli_login_group_box)
-        self.ccli_password.setEchoMode(QtWidgets.QLineEdit.Password)
+        self.ccli_password.setEchoMode(QtWidgets.QLineEdit.EchoMode.Password)
         self.ccli_password.setObjectName('ccli_password')
         self.ccli_login_layout.addRow(self.ccli_password_label, self.ccli_password)
         self.right_layout.addWidget(self.ccli_login_group_box)
@@ -141,7 +150,7 @@ class SongsTab(SettingsTab):
         self.tool_bar_active_check_box.stateChanged.connect(self.on_tool_bar_active_check_box_changed)
         self.update_on_edit_check_box.stateChanged.connect(self.on_update_on_edit_check_box_changed)
         self.add_from_service_check_box.stateChanged.connect(self.on_add_from_service_check_box_changed)
-        self.songbook_slide_check_box.stateChanged.connect(self.on_songbook_slide_check_box_changed)
+        self.first_slide_mode_combobox.currentIndexChanged.connect(self.on_first_slide_mode_combo_box_changed)
         self.auto_play_check_box.stateChanged.connect(self.on_auto_play_check_box_changed)
         self.disable_chords_import_check_box.stateChanged.connect(self.on_disable_chords_import_check_box_changed)
         self.song_key_warning_check_box.stateChanged.connect(self.on_song_key_warning_check_box_changed)
@@ -157,8 +166,10 @@ class SongsTab(SettingsTab):
         self.update_on_edit_check_box.setText(translate('SongsPlugin.SongsTab', 'Update service from song edit'))
         self.add_from_service_check_box.setText(translate('SongsPlugin.SongsTab',
                                                           'Import missing songs from Service files'))
-        self.songbook_slide_check_box.setText(translate('SongsPlugin.SongsTab',
-                                                        'Add Songbooks as first slide'))
+        self.first_slide_mode_label.setText(translate('SongsPlugin.SongsTab', 'Add first slide:'))
+        self.first_slide_mode_combobox.setItemText(0, translate('SongsPlugin.SongsTab', 'None'))
+        self.first_slide_mode_combobox.setItemText(1, translate('SongsPlugin.SongsTab', 'Songbook'))
+        self.first_slide_mode_combobox.setItemText(2, translate('SongsPlugin.SongsTab', 'Same as Footer'))
         self.auto_play_check_box.setText(translate('SongsPlugin.SongsTab', 'Auto-play background audio'))
         self.chords_info_label.setText(translate('SongsPlugin.SongsTab', 'If enabled all text between "[" and "]" will '
                                                                          'be regarded as chords.'))
@@ -201,6 +212,7 @@ class SongsTab(SettingsTab):
             ['ccli_license_label', const.format(translate('SongsPlugin.SongsTab', 'CCLI License')), False, False],
             ['ccli_number', translate('SongsPlugin.SongsTab', 'Song CCLI Number'), True, False],
             ['topics', translate('SongsPlugin.SongsTab', 'Topics'), False, True],
+            ['first_slide', translate('SongsPlugin.SongsTab', 'Where rendering on first (cover) slide'), False, False],
         ]
         placeholder_info = '<table><tr><th><b>{ph}</b></th><th><b>{desc}</b></th></tr>'.format(
             ph=translate('SongsPlugin.SongsTab', 'Placeholder'), desc=translate('SongsPlugin.SongsTab', 'Description'))
@@ -233,8 +245,8 @@ class SongsTab(SettingsTab):
     def on_add_from_service_check_box_changed(self, check_state):
         self.update_load = (check_state == QtCore.Qt.Checked)
 
-    def on_songbook_slide_check_box_changed(self, check_state):
-        self.songbook_slide = (check_state == QtCore.Qt.Checked)
+    def on_first_slide_mode_combo_box_changed(self, index):
+        self.first_slide_mode = SongFirstSlideMode(index)
 
     def on_auto_play_check_box_changed(self, check_state):
         self.auto_play = (check_state == QtCore.Qt.Checked)
@@ -264,7 +276,7 @@ class SongsTab(SettingsTab):
         self.tool_bar = self.settings.value('songs/display songbar')
         self.update_edit = self.settings.value('songs/update service on edit')
         self.update_load = self.settings.value('songs/add song from service')
-        self.songbook_slide = self.settings.value('songs/add songbook slide')
+        self.first_slide_mode = self.settings.value('songs/first slide mode')
         self.auto_play = self.settings.value('songs/auto play audio')
         self.enable_chords = self.settings.value('songs/enable chords')
         self.chord_notation = self.settings.value('songs/chord notation')
@@ -286,6 +298,8 @@ class SongsTab(SettingsTab):
         self.ccli_username.setText(self.settings.value('songs/songselect username'))
         self.ccli_password.setText(self.settings.value('songs/songselect password'))
         self.footer_edit_box.setPlainText(self.settings.value('songs/footer template'))
+        if self.first_slide_mode > 0:
+            self.first_slide_mode_combobox.setCurrentIndex(self.first_slide_mode)
 
     def save(self):
         """
@@ -315,7 +329,7 @@ class SongsTab(SettingsTab):
         # Only save footer template if it has been changed. This allows future updates
         if self.footer_edit_box.toPlainText() != self.settings.value('songs/footer template'):
             self.settings.setValue('songs/footer template', self.footer_edit_box.toPlainText())
-        self.settings.setValue('songs/add songbook slide', self.songbook_slide)
+        self.settings.setValue('songs/first slide mode', self.first_slide_mode)
         if self.tab_visited:
             self.settings_form.register_post_process('songs_config_updated')
         self.tab_visited = False

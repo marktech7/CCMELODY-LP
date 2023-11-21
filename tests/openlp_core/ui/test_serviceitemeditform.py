@@ -26,16 +26,19 @@ from unittest.mock import MagicMock, call, patch
 
 from PyQt5 import QtCore, QtTest
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.serviceitemeditform import ServiceItemEditForm
 
 
 @pytest.fixture
-def form(settings):
+def form(registry: Registry, settings: Settings):
+    Registry().register('main_window', None)
     frm = ServiceItemEditForm()
     return frm
 
 
-def test_basic_display(form):
+def test_basic_display(form: ServiceItemEditForm):
     """Test that the ServiceItemEditForm is displayed"""
     # GIVEN: A dialog
     # WHEN: Displaying the UI
@@ -48,7 +51,7 @@ def test_basic_display(form):
     assert form.item_list == [], 'The item list should be empty'
 
 
-def test_set_service_item(form):
+def test_set_service_item(form: ServiceItemEditForm):
     """Test that the ServiceItemEditForm.set_service_item() method works correctly"""
     # GIVEN: A form with some methods mocked out
     mocked_item = MagicMock(**{'is_image.return_value': True, 'slides': ['slide1.jpg']})
@@ -67,7 +70,7 @@ def test_set_service_item(form):
     form.list_widget.setCurrentItem.assert_called_once_with(None)
 
 
-def test_get_service_item(form):
+def test_get_service_item(form: ServiceItemEditForm):
     """Test that the ServiceItemEditForm.get_service_item() works correctly"""
     # GIVEN: A form with some methods mocked out
     form.data = True
@@ -89,7 +92,7 @@ def test_get_service_item(form):
 
 
 @patch('openlp.core.ui.serviceitemeditform.QtWidgets.QListWidgetItem')
-def test_load_data(MockQListWidgetItem, form):
+def test_load_data(MockQListWidgetItem: MagicMock, form: ServiceItemEditForm):
     """Test that the ServiceItemEditForm.load_data() works correctly"""
     # GIVEN: A form with some methods mocked out
     MockQListWidgetItem.side_effect = lambda x: x
@@ -108,7 +111,7 @@ def test_load_data(MockQListWidgetItem, form):
     assert form.list_widget.addItem.call_args_list == [call('slide1.jpg'), call('slide2.jpg')]
 
 
-def test_on_delete_button_clicked_no_item(form):
+def test_on_delete_button_clicked_no_item(form: ServiceItemEditForm):
     """Test that nothing happens when the delete button is clicked but no item is selected"""
     # GIVEN: A form with the currentItem() method mocked
     form.list_widget.currentItem = MagicMock(return_value=None)
@@ -121,7 +124,7 @@ def test_on_delete_button_clicked_no_item(form):
     assert form.list_widget.row.call_count == 0, 'The row method should not have been called'
 
 
-def test_on_delete_button_clicked(form):
+def test_on_delete_button_clicked(form: ServiceItemEditForm):
     """Test that clicking the delete button removes a row from the list"""
     # GIVEN: A form with some items mocked out
     mocked_list_item = MagicMock()
@@ -144,7 +147,7 @@ def test_on_delete_button_clicked(form):
     form.list_widget.setCurrentRow.assert_called_once_with(0)
 
 
-def test_on_up_button_clicked(form):
+def test_on_up_button_clicked(form: ServiceItemEditForm):
     """Test that the the up button click calls the correct method"""
     # GIVEN: A form with a mocked out method
     form._ServiceItemEditForm__move_item = MagicMock()
@@ -156,7 +159,7 @@ def test_on_up_button_clicked(form):
     form._ServiceItemEditForm__move_item.assert_called_once_with('up')
 
 
-def test_on_down_button_clicked(form):
+def test_on_down_button_clicked(form: ServiceItemEditForm):
     """Test that the the down button click calls the correct method"""
     # GIVEN: A form with a mocked out method
     form._ServiceItemEditForm__move_item = MagicMock()
@@ -168,7 +171,7 @@ def test_on_down_button_clicked(form):
     form._ServiceItemEditForm__move_item.assert_called_once_with('down')
 
 
-def test_move_item_no_direction(form):
+def test_move_item_no_direction(form: ServiceItemEditForm):
     """Test that the __move_item() method exits early if no direction is specified"""
     # GIVEN: A form with am ocked out method
     form.list_widget.currentItem = MagicMock()
@@ -180,7 +183,7 @@ def test_move_item_no_direction(form):
     assert form.list_widget.currentItem.call_count == 0, 'currentItem() should not have been called'
 
 
-def test_move_item_no_item(form):
+def test_move_item_no_item(form: ServiceItemEditForm):
     """Test that the __move_item() method exits early if no item in the list is selected"""
     # GIVEN: A form with am ocked out method
     form.list_widget.currentItem = MagicMock(return_value=None)
@@ -193,7 +196,7 @@ def test_move_item_no_item(form):
     assert form.list_widget.row.call_count == 0, 'row() should not have been called'
 
 
-def test_move_item_up(form):
+def test_move_item_up(form: ServiceItemEditForm):
     """Test that the __move_item() method moves an item up"""
     # GIVEN: A form with am ocked out method
     mocked_list_item = MagicMock()
@@ -211,7 +214,7 @@ def test_move_item_up(form):
     form.list_widget.setCurrentRow.assert_called_once_with(0)
 
 
-def test_move_item_down(form):
+def test_move_item_down(form: ServiceItemEditForm):
     """Test that the __move_item() method moves an item down"""
     # GIVEN: A form with am ocked out method
     mocked_list_item = MagicMock()
@@ -229,7 +232,7 @@ def test_move_item_down(form):
     form.list_widget.setCurrentRow.assert_called_once_with(1)
 
 
-def test_on_current_row_changed_no_selection(form):
+def test_on_current_row_changed_no_selection(form: ServiceItemEditForm):
     """Test that all buttons are disabled when there is no selected item"""
     # GIVEN: A form and a row of -1
     row = -1
@@ -243,7 +246,7 @@ def test_on_current_row_changed_no_selection(form):
     assert form.delete_button.isEnabled() is False, 'Delete button should be disabled'
 
 
-def test_on_current_row_changed_end_of_list(form):
+def test_on_current_row_changed_end_of_list(form: ServiceItemEditForm):
     """Test that the down button is disabled at the end of the list"""
     # GIVEN: A form with a couple of mocked methods and a row of 5
     row = 5
@@ -258,7 +261,7 @@ def test_on_current_row_changed_end_of_list(form):
     assert form.delete_button.isEnabled() is True, 'Delete button should be enabled'
 
 
-def test_on_current_row_changed_beginning_of_list(form):
+def test_on_current_row_changed_beginning_of_list(form: ServiceItemEditForm):
     """Test that the up button is disabled at the top of the list"""
     # GIVEN: A form with a couple of mocked methods and a row of 0
     row = 0

@@ -28,7 +28,7 @@ from pathlib import Path
 from openlp.core.common import sha256_file_hash
 from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
@@ -51,7 +51,7 @@ class MediaPlugin(Plugin):
 
     def __init__(self):
         super().__init__('media', MediaMediaItem)
-        self.manager = Manager(plugin_name='media', init_schema=init_schema)
+        self.manager = DBManager(plugin_name='media', init_schema=init_schema)
         self.weight = -6
         self.icon_path = UiIcons().video
         self.icon = build_icon(self.icon_path)

@@ -182,11 +182,11 @@ class Ui_ProjectorEditForm(object):
         self.dialog_layout.addWidget(self.notes_label, _row, 0, alignment=QtCore.Qt.AlignTop)
         self.dialog_layout.addWidget(self.notes_text, _row, 1)
         # Time for the buttons
-        self.button_box_edit = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Help |
-                                                          QtWidgets.QDialogButtonBox.Save |
-                                                          QtWidgets.QDialogButtonBox.Cancel)
+        self.button_box_edit = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Help |
+                                                          QtWidgets.QDialogButtonBox.StandardButton.Save |
+                                                          QtWidgets.QDialogButtonBox.StandardButton.Cancel)
         self.dialog_layout.addWidget(self.button_box_edit, 8, 0, 1, 2)
-        self.button_box_view = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.Ok)
+        self.button_box_view = QtWidgets.QDialogButtonBox(QtWidgets.QDialogButtonBox.StandardButton.Ok)
         self.dialog_layout.addWidget(self.button_box_view, 8, 0, 1, 2)
 
     def retranslate_ui(self, edit_projector_dialog):

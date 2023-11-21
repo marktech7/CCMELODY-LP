@@ -86,6 +86,7 @@ class ItemMediaInfo(object):
     """
     file_info = None
     is_background = False
+    is_theme_background = None
     length = 0
     start_time = 0
     end_time = 0

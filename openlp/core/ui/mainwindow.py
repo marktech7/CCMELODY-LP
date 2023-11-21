@@ -21,7 +21,9 @@
 """
 This is the main window, where all the action happens.
 """
+import json
 import shutil
+import webbrowser
 from contextlib import contextmanager
 from datetime import datetime, date
 from pathlib import Path
@@ -36,6 +38,7 @@ from openlp.core.common import add_actions
 from openlp.core.common.actions import ActionList, CategoryOrder
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import LanguageManager, UiStrings, translate
+from openlp.core.common.json import OpenLPJSONDecoder
 from openlp.core.common.mixins import LogMixin, RegistryProperties
 from openlp.core.common.path import create_paths, resolve
 from openlp.core.common.platform import is_macosx, is_win
@@ -187,7 +190,7 @@ class Ui_MainWindow(object):
                                             can_shortcuts=True,
                                             category=UiStrings().File, triggers=main_window.close)
         # Give QT Extra Hint that this is the Exit Menu Item
-        self.file_exit_item.setMenuRole(QtWidgets.QAction.QuitRole)
+        self.file_exit_item.setMenuRole(QtWidgets.QAction.MenuRole.QuitRole)
         action_list.add_category(UiStrings().Import, CategoryOrder.standard_menu)
         self.import_theme_item = create_action(main_window, 'importThemeItem', category=UiStrings().Import,
                                                can_shortcuts=True)
@@ -280,7 +283,7 @@ class Ui_MainWindow(object):
                                                      icon=UiIcons().settings, can_shortcuts=True,
                                                      category=UiStrings().Settings)
         # Give Qt Extra Hint that this is the Preferences Menu Item
-        self.settings_configure_item.setMenuRole(QtWidgets.QAction.PreferencesRole)
+        self.settings_configure_item.setMenuRole(QtWidgets.QAction.MenuRole.PreferencesRole)
         self.settings_import_item = create_action(main_window, 'settingsImportItem',
                                                   category=UiStrings().Import, can_shortcuts=True)
         self.settings_export_item = create_action(main_window, 'settingsExportItem',
@@ -290,7 +293,7 @@ class Ui_MainWindow(object):
                                         can_shortcuts=True, category=UiStrings().Help,
                                         triggers=self.on_about_item_clicked)
         # Give Qt Extra Hint that this is an About Menu Item
-        self.about_item.setMenuRole(QtWidgets.QAction.AboutRole)
+        self.about_item.setMenuRole(QtWidgets.QAction.MenuRole.AboutRole)
         if is_win():
             self.local_help_file = AppLocation.get_directory(AppLocation.AppDir) / 'OpenLP.chm'
         elif is_macosx():
@@ -326,10 +329,10 @@ class Ui_MainWindow(object):
         add_actions(self.settings_language_menu, self.language_group.actions())
         # Qt on OS X looks for keywords in the menu items title to determine which menu items get added to the main
         # menu. If we are running on Mac OS X the menu items whose title contains those keywords but don't belong in the
-        # main menu need to be marked as such with QAction.NoRole.
+        # main menu need to be marked as such with QAction.MenuRole.NoRole.
         if is_macosx():
-            self.settings_shortcuts_item.setMenuRole(QtWidgets.QAction.NoRole)
-            self.formatting_tag_item.setMenuRole(QtWidgets.QAction.NoRole)
+            self.settings_shortcuts_item.setMenuRole(QtWidgets.QAction.MenuRole.NoRole)
+            self.formatting_tag_item.setMenuRole(QtWidgets.QAction.MenuRole.NoRole)
         add_actions(self.settings_menu, (self.settings_plugin_list_item, self.settings_language_menu.menuAction(),
                     None, self.formatting_tag_item, self.settings_shortcuts_item, self.settings_configure_item))
         add_actions(self.tools_menu, (self.tools_add_tool_item, None))
@@ -531,7 +534,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.screen_updating_lock = Lock()
 
     @contextmanager
-    def _show_wait_dialog(self, title, message):
+    def _show_wait_dialog(self, title: str, message: str):
         """
         Show a wait dialog, wait for some tasks to complete, and then close it.
         """
@@ -612,7 +615,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         if widget:
             widget.on_focus()
 
-    def on_media_tool_box_changed(self, index):
+    def on_media_tool_box_changed(self, index: int):
         """
         Focus a widget when the media toolbox changes.
         """
@@ -620,7 +623,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         if widget:
             widget.on_focus()
 
-    def on_new_version(self, version):
+    def on_new_version(self, version: str):
         """
         Notifies the user that a newer version of OpenLP is available. Triggered by delay thread and cannot display
         popup.
@@ -632,7 +635,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                  'https://openlp.org/.').format(new=version, current=get_version()[u'full'])
         QtWidgets.QMessageBox.question(self, translate('OpenLP.MainWindow', 'OpenLP Version Updated'), version_text)
 
-    def on_new_remote_version(self, version):
+    def on_new_remote_version(self, version: str):
         """
         Notifies the user that a newer version of the web remote is available. Triggered by delay thread and cannot
         display popup.
@@ -755,7 +758,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 QtWidgets.QMessageBox.question(self, translate('OpenLP.MainWindow', 'OpenLP Main Display Blanked'),
                                                translate('OpenLP.MainWindow', 'The Main Display has been blanked out'))
 
-    def error_message(self, title, message):
+    def error_message(self, title: str, message: str):
         """
         Display an error message
 
@@ -766,7 +769,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.application.splash.close()
         QtWidgets.QMessageBox.critical(self, title, message)
 
-    def warning_message(self, title, message):
+    def warning_message(self, title: str, message: str):
         """
         Display a warning message
 
@@ -777,7 +780,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.application.splash.close()
         QtWidgets.QMessageBox.warning(self, title, message)
 
-    def information_message(self, title, message):
+    def information_message(self, title: str, message: str):
         """
         Display an informational message
 
@@ -793,7 +796,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         Load the OpenLP website
         """
-        import webbrowser
         webbrowser.open_new('https://openlp.org/')
 
     def on_help_clicked(self):
@@ -801,11 +803,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         If is_macosx or is_win, open the local OpenLP help file.
         Use the Online manual in other cases. (Linux)
         """
-        if is_macosx() or is_win():
-            QtGui.QDesktopServices.openUrl(QtCore.QUrl.fromLocalFile(str(self.local_help_file)))
-        else:
-            import webbrowser
-            webbrowser.open_new('https://manual.openlp.org/')
+        webbrowser.open_new('https://manual.openlp.org/')
 
     def on_about_item_clicked(self):
         """
@@ -897,7 +895,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         create_paths(temp_dir_path)
         temp_config_path = temp_dir_path / import_file_path.name
         shutil.copyfile(import_file_path, temp_config_path)
-        import_settings = Settings(str(temp_config_path), QtCore.QSettings.IniFormat)
+        import_settings = Settings(str(temp_config_path), QtCore.QSettings.Format.IniFormat)
 
         self.log_info('hook upgrade_plugin_settings')
         self.plugin_manager.hook_upgrade_plugin_settings(import_settings)
@@ -1011,8 +1009,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.setValue('user interface/is preset layout', True)
         self.settings.setValue('projector/show after wizard', True)
 
-    def set_view_mode(self, media=True, service=True, theme=True, preview=True,
-                      live=True, projector=True, mode='') -> None:
+    def set_view_mode(self, media: bool = True, service: bool = True, theme: bool = True, preview: bool = True,
+                      live: bool = True, projector: bool = True, mode: str = '') -> None:
         """
         Set OpenLP to a different view mode.
         """
@@ -1037,12 +1035,12 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 and (datetime.now() - self.screen_change_timestamp).seconds < 5
             should_show_messagebox = self.settings_form.isHidden() and not has_shown_messagebox_recently
             if should_show_messagebox:
-                QtWidgets.QMessageBox.warning(self, translate('OpenLP.MainWindow', 'Screen setup has changed'),
-                                              translate('OpenLP.MainWindow',
-                                                        'The screen setup has changed. '
-                                                        'OpenLP will try to automatically select a display screen, but '
-                                                        'you should consider updating the screen settings.'),
-                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+                QtWidgets.QMessageBox.information(self, translate('OpenLP.MainWindow', 'Screen setup has changed'),
+                                                  translate('OpenLP.MainWindow',
+                                                            'The screen setup has changed. OpenLP will try to '
+                                                            'automatically select a display screen, but '
+                                                            'you should consider updating the screen settings.'),
+                                                  QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
                 self.screen_change_timestamp = datetime.now()
             self.application.set_busy_cursor()
             self.renderer.resize(self.live_controller.screens.current.display_geometry.size())
@@ -1059,7 +1057,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         finally:
             self.screen_updating_lock.release()
 
-    def closeEvent(self, event):
+    def closeEvent(self, event: QtGui.QCloseEvent):
         """
         Hook to close the main window and display windows on exit
         """
@@ -1081,7 +1079,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 event.ignore()
         else:
             if self.settings.value('advanced/enable exit confirmation'):
-                msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
+                msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,
                                                 translate('OpenLP.MainWindow', 'Exit OpenLP'),
                                                 translate('OpenLP.MainWindow', 'Are you sure you want to exit OpenLP?'),
                                                 QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Close |
@@ -1104,7 +1102,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 # If we just did a settings import, close without saving changes.
                 self.clean_up(save_settings=not self.settings_imported)
 
-    def eventFilter(self, obj, event):
+    def eventFilter(self, obj, event: QtCore.QEvent):
         if event.type() == QtCore.QEvent.FileOpen:
             file_name = event.file()
             self.log_debug('Got open file event for {name}!'.format(name=file_name))
@@ -1125,7 +1123,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
 
         return super(MainWindow, self).eventFilter(obj, event)
 
-    def clean_up(self, save_settings=True):
+    def clean_up(self, save_settings: bool = True):
         """
         Runs all the cleanup code before OpenLP shuts down.
 
@@ -1153,7 +1151,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             # Needed for Windows to stop crashes on exit
             Registry().remove('application')
 
-    def set_service_modified(self, modified, file_name):
+    def set_service_modified(self, modified: bool, file_name: Path | str):
         """
         This method is called from the ServiceManager to set the title of the main window.
 
@@ -1166,7 +1164,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             title = '{title} - {name}'.format(title=UiStrings().OpenLP, name=file_name)
         self.setWindowTitle(title)
 
-    def show_status_message(self, message):
+    def show_status_message(self, message: str):
         """
         Show a message in the status bar
         """
@@ -1225,29 +1223,29 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.settings.setValue('user interface/is preset layout', False)
         self.settings.setValue('user interface/show themes', self.theme_manager_dock.isVisible())
 
-    def set_preview_panel_visibility(self, visible):
+    def set_preview_panel_visibility(self, is_visible: bool):
         """
         Sets the visibility of the preview panel including saving the setting and updating the menu.
 
-        :param visible: A bool giving the state to set the panel to
+        :param is_visible: A bool giving the state to set the panel to
                 True - Visible
                 False - Hidden
 
         """
-        self.preview_controller.panel.setVisible(visible)
-        self.settings.setValue('user interface/preview panel', visible)
-        self.view_preview_panel.setChecked(visible)
+        self.preview_controller.panel.setVisible(is_visible)
+        self.settings.setValue('user interface/preview panel', is_visible)
+        self.view_preview_panel.setChecked(is_visible)
         self.settings.setValue('user interface/is preset layout', False)
 
-    def set_lock_panel(self, lock):
+    def set_lock_panel(self, is_locked: bool):
         """
         Sets the ability to stop the toolbars being changed.
         """
-        if lock:
-            self.theme_manager_dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-            self.service_manager_dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-            self.media_manager_dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
-            self.projector_manager_dock.setFeatures(QtWidgets.QDockWidget.NoDockWidgetFeatures)
+        if is_locked:
+            self.theme_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+            self.service_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+            self.media_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
+            self.projector_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
             self.view_mode_menu.setEnabled(False)
             self.view_media_manager_item.setEnabled(False)
             self.view_service_manager_item.setEnabled(False)
@@ -1256,10 +1254,10 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.view_preview_panel.setEnabled(False)
             self.view_live_panel.setEnabled(False)
         else:
-            self.theme_manager_dock.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
-            self.service_manager_dock.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
-            self.media_manager_dock.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
-            self.projector_manager_dock.setFeatures(QtWidgets.QDockWidget.AllDockWidgetFeatures)
+            self.theme_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
+            self.service_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
+            self.media_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
+            self.projector_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
             self.view_mode_menu.setEnabled(True)
             self.view_media_manager_item.setEnabled(True)
             self.view_service_manager_item.setEnabled(True)
@@ -1267,20 +1265,19 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.view_projector_manager_item.setEnabled(True)
             self.view_preview_panel.setEnabled(True)
             self.view_live_panel.setEnabled(True)
-        self.settings.setValue('user interface/lock panel', lock)
+        self.settings.setValue('user interface/lock panel', is_locked)
 
-    def set_live_panel_visibility(self, visible):
+    def set_live_panel_visibility(self, is_visible: bool):
         """
         Sets the visibility of the live panel including saving the setting and updating the menu.
 
-
-        :param visible: A bool giving the state to set the panel to
+        :param is_visible: A bool giving the state to set the panel to
                 True - Visible
                 False - Hidden
         """
-        self.live_controller.panel.setVisible(visible)
-        self.settings.setValue('user interface/live panel', visible)
-        self.view_live_panel.setChecked(visible)
+        self.live_controller.panel.setVisible(is_visible)
+        self.settings.setValue('user interface/live panel', is_visible)
+        self.view_live_panel.setChecked(is_visible)
         self.settings.setValue('user interface/is preset layout', False)
 
     def load_settings(self):
@@ -1303,7 +1300,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         # which was True (by default) < OpenLP 2.1.
         self.control_splitter.setChildrenCollapsible(False)
 
-    def _window_position_is_valid(self, position, geometry):
+    def _window_position_is_valid(self, position: QtCore.QPoint, geometry: QtCore.QRect):
         """
         Checks if the saved window position is still valid by checking if the bar at the top of the window
         (which allows the user to move the window) appears on one of the screens.
@@ -1347,6 +1344,23 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         Updates the recent file menu with the latest list of service files accessed.
         """
         recent_file_count = self.settings.value('advanced/recent file count')
+        # This is to get around a weird issue that we're seeing on macOS. We've not been able to reproduce it
+        # ourselves, but hopefully this will catch the issue.
+        # See https://gitlab.com/openlp/openlp/-/issues/1383
+        if isinstance(self.recent_files, str):
+            try:
+                self.recent_files = json.loads(self.recent_files, cls=OpenLPJSONDecoder)
+            except json.JSONDecodeError as e:
+                self.log_exception(e)
+                self.recent_files = []
+        elif isinstance(self.recent_files, list) and self.recent_files and isinstance(self.recent_files[0], str) and \
+                self.recent_files[0].startswith('['):
+            try:
+                self.recent_files = json.loads(self.recent_files[0], cls=OpenLPJSONDecoder)
+            except json.JSONDecodeError as e:
+                self.log_exception(e)
+                self.recent_files = []
+        # Now continue as usual...
         self.recent_files_menu.clear()
         count = 0
         for recent_path in self.recent_files:
@@ -1369,7 +1383,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                           enabled=bool(self.recent_files), triggers=self.clear_recent_file_menu)
         add_actions(self.recent_files_menu, (None, clear_recent_files_action))
 
-    def add_recent_file(self, filename):
+    def add_recent_file(self, filename: Path | str):
         """
         Adds a service to the list of recently used files.
 
@@ -1393,7 +1407,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.recent_files = []
 
-    def display_progress_bar(self, size):
+    def display_progress_bar(self, size: int):
         """
         Make Progress bar visible and set size
         """
@@ -1402,7 +1416,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         self.load_progress_bar.setValue(0)
         self.application.process_events()
 
-    def increment_progress_bar(self, increment=1):
+    def increment_progress_bar(self, increment: int = 1):
         """
         Increase the Progress Bar by the value in increment.
 
@@ -1417,7 +1431,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
         """
         self.timer_id = self.startTimer(2500)
 
-    def timerEvent(self, event):
+    def timerEvent(self, event: QtCore.QTimerEvent):
         """
         Remove the Progress bar from view.
         """

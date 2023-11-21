@@ -22,16 +22,75 @@ from collections import namedtuple
 from pathlib import Path
 from unittest.mock import MagicMock
 
+from PyQt5 import QtCore
+
 from openlp.core.common.registry import Registry
 from openlp.core.common.enum import PluginStatus
 from openlp.core.display.render import Renderer
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.core.state import State
+from openlp.core.api.versions.v2.plugins import search
 from tests.openlp_core.lib.test_serviceitem import TEST_PATH as SERVICEITEM_TEST_PATH
 from tests.utils import convert_file_service_item
 
 
-# Search options tests
+def test_search_threaded(registry, settings):
+    """Test that the search function calls the search method correctly when threaded"""
+    # GIVEN: A mocked plugin, and plugin manager
+    mocked_songs_plugin = MagicMock()
+    mocked_songs_plugin.status = PluginStatus.Active
+    mocked_songs_plugin.media_item.has_search = True
+    mocked_songs_plugin.media_item.search.__pyqtSignature__ = 'slot'
+    mocked_songs_plugin.media_item.staticMetaObject.invokeMethod.return_value = [[1, 'Test', 'This is a test']]
+    mocked_plugin_manager = MagicMock(**{'get_plugin_by_name.return_value': mocked_songs_plugin})
+    Registry().register('plugin_manager', mocked_plugin_manager)
+
+    # WHEN: the search function is called
+    result = search('songs', 'test')
+
+    # THEN: A song should be returned via the invokeMethod method
+    assert result == [[1, 'Test', 'This is a test']]
+    mocked_songs_plugin.media_item.staticMetaObject.invokeMethod.assert_called_once()
+    invoke_call = mocked_songs_plugin.media_item.staticMetaObject.invokeMethod.call_args_list[0]
+    assert invoke_call.args[0] is mocked_songs_plugin.media_item
+    assert invoke_call.args[1] == 'search'
+    assert invoke_call.args[2] == QtCore.Qt.BlockingQueuedConnection
+
+
+def test_search_unthreaded(registry, settings):
+    """Test that the search function calls the search method correctly when we don't care about threads"""
+    # GIVEN: A mocked plugin, and plugin manager
+    mocked_songs_plugin = MagicMock()
+    mocked_songs_plugin.status = PluginStatus.Active
+    mocked_songs_plugin.media_item.has_search = True
+    mocked_songs_plugin.media_item.search.return_value = [[1, 'Test', 'This is a test']]
+    mocked_plugin_manager = MagicMock(**{'get_plugin_by_name.return_value': mocked_songs_plugin})
+    Registry().register('plugin_manager', mocked_plugin_manager)
+
+    # WHEN: the search function is called
+    result = search('songs', 'test')
+
+    # THEN: A song should be returned via the regular search method
+    assert result == [[1, 'Test', 'This is a test']]
+    mocked_songs_plugin.media_item.staticMetaObject.invokeMethod.assert_not_called()
+    mocked_songs_plugin.media_item.search.assert_called_once_with('test', False)
+
+
+def test_search_nothing(registry, settings):
+    """Test that the search function returns None when there are no plugins by that name enabled"""
+    # GIVEN: A mocked plugin, and plugin manager
+    mocked_songs_plugin = MagicMock()
+    mocked_songs_plugin.status = PluginStatus.Disabled
+    mocked_plugin_manager = MagicMock(**{'get_plugin_by_name.return_value': mocked_songs_plugin})
+    Registry().register('plugin_manager', mocked_plugin_manager)
+
+    # WHEN: the search function is called
+    result = search('songs', 'test')
+
+    # THEN: None should be returned
+    assert result is None
+
+
 def test_bibles_search_options_returns_list(flask_client, settings):
     """
     Test a list is returned when a plugin's search options are requested.
@@ -73,7 +132,7 @@ def test_bibles_set_search_options_sets_bible_version(flask_client, settings):
 
 def test_plugin_set_search_option_aborts_if_no_option(flask_client, settings):
     Registry().register('plugin_manager', MagicMock())
-    res = flask_client.post('/api/v2/plugins/songs/search-options')
+    res = flask_client.post('/api/v2/plugins/songs/search-options', json={})
     assert res.status_code == 400
 
 

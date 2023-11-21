@@ -1,7 +1,7 @@
 {
     "title": "Amazing Grace",
     "authors": [
-        "Words: John Newton (1725-1807)"
+        ["John Newton (1725-1807)", "words"]
     ],
     "copyright" : "Public Domain",
     "verse_order_list": ["V1", "V2", "V3", "V4", "V5", "V6"],

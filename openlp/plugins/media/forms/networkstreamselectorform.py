@@ -59,10 +59,10 @@ class NetworkStreamSelectorForm(StreamSelectorFormBase):
         self.main_layout.addWidget(self.more_options_group)
         # Save and close buttons
         self.button_box = QtWidgets.QDialogButtonBox(self)
-        self.button_box.addButton(QtWidgets.QDialogButtonBox.Save)
-        self.button_box.addButton(QtWidgets.QDialogButtonBox.Close)
-        self.close_button = self.button_box.button(QtWidgets.QDialogButtonBox.Close)
-        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.Save)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.StandardButton.Save)
+        self.button_box.addButton(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        self.close_button = self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Close)
+        self.save_button = self.button_box.button(QtWidgets.QDialogButtonBox.StandardButton.Save)
         self.main_layout.addWidget(self.button_box)
 
         # translate

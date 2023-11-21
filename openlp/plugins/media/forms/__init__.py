@@ -46,10 +46,11 @@ class StreamSelectorFormBase(QtWidgets.QDialog):
 
     def setup_base_ui(self):
         self.setObjectName('stream_selector')
-        self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,
-                                                          QtWidgets.QSizePolicy.Fixed)
+        self.combobox_size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                                          QtWidgets.QSizePolicy.Policy.Fixed)
         self.setSizePolicy(
-            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding))
+            QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.MinimumExpanding,
+                                  QtWidgets.QSizePolicy.Policy.MinimumExpanding))
         self.main_layout = QtWidgets.QVBoxLayout(self)
         self.main_layout.setObjectName('main_layout')
 

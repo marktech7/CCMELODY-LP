@@ -24,6 +24,7 @@ Package to test the openlp.core.lib package.
 import json
 import os
 import pytest
+import tempfile
 from pathlib import Path
 from unittest.mock import Mock, MagicMock, patch
 
@@ -35,6 +36,7 @@ from openlp.core.common.registry import Registry
 from openlp.core.lib.formattingtags import FormattingTags
 from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.lib.theme import TransitionSpeed
+from openlp.core.state import State
 from openlp.core.ui.icons import UiIcons
 from tests.utils import convert_file_service_item
 from tests.utils.constants import RESOURCE_PATH
@@ -398,7 +400,6 @@ def test_service_item_load_optical_media_from_service(state_media):
     # GIVEN: A new service item and a mocked add icon function
     service_item = ServiceItem(None)
     service_item.add_icon = MagicMock()
-
     # WHEN: We load a serviceitem with optical media
     line = convert_file_service_item(TEST_PATH, 'serviceitem-dvd.osj')
     with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
@@ -413,6 +414,92 @@ def test_service_item_load_optical_media_from_service(state_media):
     assert service_item.start_time == 654.375, 'Start time should be 654.375'
     assert service_item.end_time == 672.069, 'End time should be 672.069'
     assert service_item.media_length == 17.694, 'Media length should be 17.694'
+
+
+def test_service_item_load_optical_media_from_service_no_vlc(state_media):
+    """
+    Test the Service Item - load an optical media item
+    """
+    # GIVEN: A new service item and a mocked add icon function
+    service_item = ServiceItem(None)
+    service_item.add_icon = MagicMock()
+    State().modules["media"].pass_preconditions = False
+    # WHEN: We load a serviceitem with optical media
+    line = convert_file_service_item(TEST_PATH, 'serviceitem-dvd.osj')
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
+        mocked_sha256_file_hash.return_value = 'abcd'
+        mocked_exists.return_value = True
+        service_item.set_from_service(line)
+
+    # THEN: We should get back a valid service item with optical media info
+    assert service_item.is_valid is False, 'The service item should not be valid'
+    assert service_item.is_capable(ItemCapabilities.IsOptical) is True, 'The item should be Optical'
+    assert service_item.start_time == 654.375, 'Start time should be 654.375'
+    assert service_item.end_time == 672.069, 'End time should be 672.069'
+    assert service_item.media_length == 17.694, 'Media length should be 17.694'
+
+
+def test_service_item_load_duplicate_presentation_from_24x_service(state_media, settings):
+    """
+    Test the Service Item - simulate loading the same presentation file from a 2.4.x service file twice
+    """
+    presentation_service_time_246 = \
+        {'serviceitem':
+            {'data': [{'display_title': 'test1 ',
+                       'image': 'C:\\OpenLPPortable-246\\Data\\presentations\\thumbnails\\prøve.odp\\slide1.png',
+                       'notes': '\n',
+                       'path': 'C:/Documents',
+                       'title': 'prøve.odp'},
+                      {'display_title': 'Thats all ',
+                       'image': 'C:\\OpenLPPortable-246\\Data\\presentations\\thumbnails\\prøve.odp\\slide2.png',
+                       'notes': '\n',
+                       'path': 'C:/Documents',
+                       'title': 'prøve.odp'}],
+             'header': {'audit': '',
+                        'auto_play_slides_loop': False,
+                        'auto_play_slides_once': False,
+                        'background_audio': [],
+                        'capabilities': [17, 10, 19, 20, 21],
+                        'data': '',
+                        'end_time': 0,
+                        'footer': [],
+                        'from_plugin': False,
+                        'icon': ':/plugins/plugin_presentations.png',
+                        'media_length': 0,
+                        'name': 'presentations',
+                        'notes': '',
+                        'plugin': 'presentations',
+                        'processor': 'Impress',
+                        'search': '',
+                        'start_time': 0,
+                        'theme': None,
+                        'theme_overwritten': False,
+                        'timed_slide_interval': 0,
+                        'title': 'prøve.odp',
+                        'type': 3,
+                        'will_auto_start': False,
+                        'xml_version': None}}}
+
+    # GIVEN: 2 new service items and a mocked add icon and add_from_command function
+    service_item1 = ServiceItem(None)
+    service_item1.add_icon = MagicMock()
+    service_item2 = ServiceItem(None)
+    service_item2.add_icon = MagicMock()
+
+    # create a temp folder with a dummy presentation file
+    with tempfile.TemporaryDirectory(ignore_cleanup_errors=True) as tmp_folder:
+        open(tmp_folder + '/prøve.odp', 'a').close()
+
+        # WHEN: We add a custom from a saved service, twice
+        service_item1.set_from_service(presentation_service_time_246, Path(tmp_folder))
+        service_item2.set_from_service(presentation_service_time_246, Path(tmp_folder))
+
+    # THEN: Loading should have succeeded and service items should be valid
+    assert service_item1.is_valid is True, 'The new service item should be valid'
+    assert service_item2.is_valid is True, 'The new service item should be valid'
+    assert len(service_item1.slides) == 2, 'The service item should have 2 slides'
+    assert len(service_item2.slides) == 2, 'The service item should have 2 slides'
 
 
 @patch('openlp.core.lib.serviceitem.sha256_file_hash')
@@ -443,6 +530,37 @@ def test_service_item_load_song_and_audio_from_service(mock_sha256_file_hash, st
         '"’Twas grace that taught my hea" has been returned as the title'
     assert (Path('/test/amazing_grace.mp3'), 'abcd') == service_item.background_audio[0], \
         'The tuple ("/test/abcd.mp3", "abcd") should be in the background_audio list'
+
+
+@patch('openlp.core.lib.serviceitem.sha256_file_hash')
+def test_service_item_load_song_and_audio_from_service_no_vlc(mock_sha256_file_hash, state_media,
+                                                              settings, service_item_env):
+    """
+    Test the Service Item - adding a song slide from a saved service
+    """
+    # GIVEN: A new service item and a mocked add icon function
+    service_item = ServiceItem(None)
+    service_item.add_icon = MagicMock()
+    FormattingTags.load_tags()
+    mock_sha256_file_hash.return_value = 'abcd'
+    State().modules["media"].pass_preconditions = False
+
+    # WHEN: We add a custom from a saved service
+    line = convert_file_service_item(TEST_PATH, 'serviceitem-song-linked-audio.osj')
+    service_item.set_from_service(line, Path('/test/'))
+
+    # THEN: We should get back a valid service item
+    assert service_item.is_valid is True, 'The new service item should not be valid'
+    assert len(service_item.display_slides) == 6, 'The service item should have 6 display slides'
+    assert len(service_item.capabilities) == 7, 'There should be 7 default custom item capabilities'
+    assert 'Amazing Grace' == service_item.get_display_title(), 'The title should be "Amazing Grace"'
+    assert CLEANED_VERSE[:-1] == service_item.get_frames()[0]['text'], \
+        'The returned text matches the input, except the last line feed'
+    assert 'Amazing Grace! how sweet the s' == service_item.get_frame_title(0), \
+        '"Amazing Grace! how sweet the s" has been returned as the title'
+    assert '’Twas grace that taught my hea' == service_item.get_frame_title(1), \
+        '"’Twas grace that taught my hea" has been returned as the title'
+    assert service_item.background_audio == [], 'The background_audio list is not populated'
 
 
 @patch('openlp.core.lib.serviceitem.sha256_file_hash')
@@ -966,6 +1084,56 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
         'data': {}
     }
     assert result == expected_dict
+
+
+def test_add_from_text_adds_per_slide_footer_html():
+    """
+    Test the Service Item - adding text slides with per slide footer_html
+    """
+    # GIVEN: A service item and two slides
+    service_item = ServiceItem(None)
+    slide1 = "This is the first slide"
+    slide1FooterHtml = '<small>First Footer</small>'
+    slide2 = "This is the second slide"
+    slide2FooterHtml = '<small>Second Footer</small>'
+
+    # WHEN: adding text slides to service_item
+    service_item.add_from_text(slide1, footer_html=slide1FooterHtml)
+    service_item.add_from_text(slide2, footer_html=slide2FooterHtml)
+
+    # THEN: Slides should be added with correctly numbered verse tags (Should start at 1)
+    assert service_item.slides == [
+        {'text': slide1, 'title': slide1, 'verse': '1', 'footer_html': slide1FooterHtml},
+        {'text': slide2, 'title': slide2, 'verse': '2', 'footer_html': slide2FooterHtml}
+    ]
+
+
+@patch('openlp.core.lib.serviceitem.UiIcons')
+def test_add_from_text_per_slide_footer_html_is_honoured(mock_uiicons, settings, registry):
+    """
+    Test the Service Item - adding text slides with per slide footer_html is honoured
+    """
+    # GIVEN: A service item, mocked live_controller and renderer, and two slides
+    renderer_mock = MagicMock()
+    Registry().register('live_controller', MagicMock())
+    Registry().register('renderer', renderer_mock)
+    Registry().register('service_list', MagicMock())
+    renderer_mock.format_slide.side_effect = lambda text, item: [text]
+    service_item = ServiceItem(None)
+    slide1 = "This is the first slide"
+    slide1FooterHtml = '<small>First Footer</small>'
+    slide2 = "This is the second slide"
+    slide2FooterHtml = '<small>Second Footer</small>'
+
+    # WHEN: adding text slides to service_item
+    service_item.add_from_text(slide1, footer_html=slide1FooterHtml)
+    service_item.add_from_text(slide2, footer_html=slide2FooterHtml)
+
+    service_item._create_slides()
+
+    # THEN: Slides should be added with correctly numbered verse tags (Should start at 1)
+    assert service_item._rendered_slides[0]['footer'] == slide1FooterHtml
+    assert service_item._rendered_slides[1]['footer'] == slide2FooterHtml
 
 
 @pytest.mark.parametrize('plugin_name,icon', [('songs', 'music'), ('bibles', 'bible'),

@@ -27,15 +27,16 @@ from unittest.mock import MagicMock, patch, call
 
 import pytest
 
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.openlp import OpenLPSongImport
 
-# from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
 TEST_PATH = RESOURCE_PATH / 'songs' / 'openlp'
 
 
-def test_create_importer(registry):
+def test_create_importer(registry: Registry, settings: Settings):
     """
     Test creating an instance of the OpenLP database importer
     """
@@ -50,7 +51,7 @@ def test_create_importer(registry):
         assert importer is not None, 'Import should not be none'
 
 
-def test_invalid_import_source(registry):
+def test_invalid_import_source(registry: Registry, settings: Settings):
     """
     Test OpenLPSongImport.do_import handles different invalid import_source values
     """
@@ -77,7 +78,8 @@ def test_invalid_import_source(registry):
 @patch('openlp.plugins.songs.lib.importers.openlp.Topic')
 @patch('openlp.plugins.songs.lib.importers.openlp.SongBook')
 @patch('openlp.plugins.songs.lib.importers.openlp.MediaFile')
-def test_openlp_db_import(MockMediaFile, MockSongBook, MockTopic, MockAuthor, MockSong, mock_settings, base_name: str):
+def test_openlp_db_import(MockMediaFile: MagicMock, MockSongBook: MagicMock, MockTopic: MagicMock,
+                          MockAuthor: MagicMock, MockSong: MagicMock, mock_settings: MagicMock, base_name: str):
     """Test that OpenLP is able to import an older OpenLP database"""
     # GIVEN: An OpenLP importer and a bunch of mocks
     mocked_progress_dialog = MagicMock()

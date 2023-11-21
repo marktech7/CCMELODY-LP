@@ -144,6 +144,17 @@ def test_path_to_str_path_object():
     assert result == os.path.join('test', 'path')
 
 
+def test_str_to_path_path_object():
+    """
+    Test that `str_to_path` returns the Path object it is supplied
+    """
+    # GIVEN: The `str_to_path` function and a Path object
+    path = Path(__file__)
+    # WHEN: Calling `str_to_path` with a Path object
+    # THEN: returns that exact Path object
+    assert str_to_path(path) is path
+
+
 def test_str_to_path_type_error():
     """
     Test that `str_to_path` returns None if called with invalid information
@@ -151,7 +162,7 @@ def test_str_to_path_type_error():
     # GIVEN: The `str_to_path` function
     # WHEN: Calling `str_to_path` with an invalid Type
     # THEN: None is returned
-    assert str_to_path(Path()) is None
+    assert str_to_path(42) is None
 
 
 def test_str_to_path_empty_str():

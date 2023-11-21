@@ -27,7 +27,7 @@ import logging
 from sqlalchemy import Column, Table, types
 from sqlalchemy.sql.expression import null
 
-from openlp.core.lib.db import get_upgrade_op
+from openlp.core.db.upgrades import get_upgrade_op
 
 
 log = logging.getLogger(__name__)
@@ -61,7 +61,7 @@ def upgrade_2(session, metadata):
     :param metadata: Metadata of current DB
     """
     log.debug('Checking projector DB upgrade to version 2')
-    projector_table = Table('projector', metadata, autoload=True)
+    projector_table = Table('projector', metadata, autoload_with=metadata.bind)
     upgrade_db = 'mac_adx' not in [col.name for col in projector_table.c.values()]
     if upgrade_db:
         new_op = get_upgrade_op(session)
@@ -85,7 +85,7 @@ def upgrade_3(session, metadata):
     :param metadata: Metadata of current DB
     """
     log.debug('Checking projector DB upgrade to version 3')
-    projector_table = Table('projector', metadata, autoload=True)
+    projector_table = Table('projector', metadata, autoload_with=metadata.bind)
     upgrade_db = 'pjlink_class' not in [col.name for col in projector_table.c.values()]
     if upgrade_db:
         new_op = get_upgrade_op(session)

@@ -118,7 +118,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         self.review_scroll_area_widget.setObjectName('review_scroll_area_widget')
         self.review_scroll_area_layout = QtWidgets.QHBoxLayout(self.review_scroll_area_widget)
         self.review_scroll_area_layout.setObjectName('review_scroll_area_layout')
-        self.review_scroll_area_layout.setSizeConstraint(QtWidgets.QLayout.SetMinAndMaxSize)
+        self.review_scroll_area_layout.setSizeConstraint(QtWidgets.QLayout.SizeConstraint.SetMinAndMaxSize)
         self.review_scroll_area_layout.setContentsMargins(0, 0, 0, 0)
         self.review_scroll_area_layout.setSpacing(0)
         self.review_scroll_area.setWidget(self.review_scroll_area_widget)
@@ -163,11 +163,11 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         :param page_id: ID of the page the wizard changed to.
         """
         # Hide back button.
-        self.button(QtWidgets.QWizard.BackButton).hide()
+        self.button(QtWidgets.QWizard.WizardButton.BackButton).hide()
         if page_id == self.searching_page_id:
             self.application.set_busy_cursor()
             try:
-                self.button(QtWidgets.QWizard.NextButton).hide()
+                self.button(QtWidgets.QWizard.WizardButton.NextButton).hide()
                 # Search duplicate songs.
                 max_songs = self.plugin.manager.get_object_count(Song)
                 if max_songs == 0 or max_songs == 1:
@@ -202,7 +202,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
                         self.found_duplicates_edit.appendPlainText(song1.title + "  =  " + song2.title)
                 self.review_total_count = len(self.duplicate_song_list)
                 if self.duplicate_song_list:
-                    self.button(QtWidgets.QWizard.NextButton).show()
+                    self.button(QtWidgets.QWizard.WizardButton.NextButton).show()
                 else:
                     self.notify_no_duplicates()
             finally:
@@ -214,10 +214,10 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
         """
         Notifies the user, that there were no duplicates found in the database.
         """
-        self.button(QtWidgets.QWizard.FinishButton).show()
-        self.button(QtWidgets.QWizard.FinishButton).setEnabled(True)
-        self.button(QtWidgets.QWizard.NextButton).hide()
-        self.button(QtWidgets.QWizard.CancelButton).hide()
+        self.button(QtWidgets.QWizard.WizardButton.FinishButton).show()
+        self.button(QtWidgets.QWizard.WizardButton.FinishButton).setEnabled(True)
+        self.button(QtWidgets.QWizard.WizardButton.NextButton).hide()
+        self.button(QtWidgets.QWizard.WizardButton.CancelButton).hide()
         QtWidgets.QMessageBox.information(
             self, translate('Wizard', 'Information'),
             translate('Wizard', 'No duplicate songs have been found in the database.'))
@@ -343,7 +343,7 @@ class DuplicateSongRemovalForm(OpenLPWizard, RegistryProperties):
             self.review_scroll_area_layout.addStretch(1)
         # Change next button to finish button on last review.
         if len(self.duplicate_song_list) == 1:
-            self.button(QtWidgets.QWizard.FinishButton).show()
-            self.button(QtWidgets.QWizard.FinishButton).setEnabled(True)
-            self.button(QtWidgets.QWizard.NextButton).hide()
-            self.button(QtWidgets.QWizard.CancelButton).hide()
+            self.button(QtWidgets.QWizard.WizardButton.FinishButton).show()
+            self.button(QtWidgets.QWizard.WizardButton.FinishButton).setEnabled(True)
+            self.button(QtWidgets.QWizard.WizardButton.NextButton).hide()
+            self.button(QtWidgets.QWizard.WizardButton.CancelButton).hide()

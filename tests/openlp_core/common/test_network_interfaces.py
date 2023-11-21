@@ -21,14 +21,14 @@
 """
 Functional tests to test calls for network interfaces.
 """
-from unittest import TestCase
-from unittest.mock import call, patch
+from unittest.mock import MagicMock, call, patch
+
+import pytest
 from PyQt5.QtCore import QObject
 from PyQt5.QtNetwork import QHostAddress, QNetworkAddressEntry, QNetworkInterface
 
-import openlp.core.common
+# import openlp.core.common
 from openlp.core.common import get_network_interfaces
-from tests.helpers.testmixin import TestMixin
 
 
 class FakeIP4InterfaceEntry(QObject):
@@ -79,154 +79,158 @@ class FakeIP4InterfaceEntry(QObject):
         return self._is_valid
 
 
-class TestInterfaces(TestCase, TestMixin):
+@pytest.fixture
+def fake_lo():
+    return FakeIP4InterfaceEntry()
+
+
+@pytest.fixture
+def fake_localhost():
+    return FakeIP4InterfaceEntry(name='localhost')
+
+
+@pytest.fixture
+def fake_address():
+    return FakeIP4InterfaceEntry(name='eth25')
+
+
+@pytest.fixture
+def invalid_if():
+    return FakeIP4InterfaceEntry(name='invalid', is_valid=False)
+
+
+@patch('openlp.core.common.log')
+def test_network_interfaces_no_interfaces(mocked_log: MagicMock):
     """
-    A test suite to test out functions/methods that use network interface(s).
+    Test no interfaces available
     """
-    def setUp(self):
-        """
-        Create an instance and a few example actions.
-        """
-        self.build_settings()
-        if not hasattr(self, 'fake_lo'):
-            # Since these shouldn't change, only need to instantiate them the first time
-            self.fake_lo = FakeIP4InterfaceEntry()
-            self.fake_localhost = FakeIP4InterfaceEntry(name='localhost')
-            self.fake_address = FakeIP4InterfaceEntry(name='eth25')
-            self.invalid_if = FakeIP4InterfaceEntry(name='invalid', is_valid=False)
+    # GIVEN: Test environment
+    call_debug = [call('Getting local IPv4 interface(es) information')]
+    call_warning = [call('No active IPv4 network interfaces detected')]
 
-    def tearDown(self):
-        """
-        Clean up
-        """
-        self.destroy_settings()
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = []
+        interfaces = get_network_interfaces()
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_no_interfaces(self, mock_log):
-        """
-        Test no interfaces available
-        """
-        # GIVEN: Test environment
-        call_debug = [call('Getting local IPv4 interface(es) information')]
-        call_warning = [call('No active IPv4 network interfaces detected')]
+    # THEN: There should not be any interfaces detected
+    mocked_log.debug.assert_has_calls(call_debug)
+    mocked_log.warning.assert_has_calls(call_warning)
+    assert not interfaces, 'There should have been no active interfaces listed'
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = []
-            interfaces = get_network_interfaces()
 
-        # THEN: There should not be any interfaces detected
-        mock_log.debug.assert_has_calls(call_debug)
-        mock_log.warning.assert_has_calls(call_warning)
-        assert not interfaces, 'There should have been no active interfaces listed'
+@patch('openlp.core.common.log')
+def test_network_interfaces_lo(mock_log: MagicMock, fake_lo: FakeIP4InterfaceEntry):
+    """
+    Test get_network_interfaces() returns an empty dictionary if "lo" is the only network interface
+    """
+    # GIVEN: Test environment
+    call_debug = [
+        call('Getting local IPv4 interface(es) information'),
+        call('Filtering out interfaces we don\'t care about: lo')
+    ]
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_lo(self, mock_log):
-        """
-        Test get_network_interfaces() returns an empty dictionary if "lo" is the only network interface
-        """
-        # GIVEN: Test environment
-        call_debug = [
-            call('Getting local IPv4 interface(es) information'),
-            call('Filtering out interfaces we don\'t care about: lo')
-        ]
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = [fake_lo]
+        interfaces = get_network_interfaces()
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = [self.fake_lo]
-            interfaces = get_network_interfaces()
+    # THEN: There should be no interfaces
+    mock_log.debug.assert_has_calls(call_debug)
+    assert interfaces == {}, 'There should be no interfaces listed'
 
-        # THEN: There should be no interfaces
-        mock_log.debug.assert_has_calls(call_debug)
-        assert interfaces == {}, 'There should be no interfaces listed'
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_localhost(self, mock_log):
-        """
-        Test get_network_interfaces() returns an empty dictionary if "localhost" is the only network interface
-        """
-        # GIVEN: Test environment
-        call_debug = [
-            call('Getting local IPv4 interface(es) information'),
-            call('Filtering out interfaces we don\'t care about: localhost')
-        ]
+@patch('openlp.core.common.log')
+def test_network_interfaces_localhost(mock_log: MagicMock, fake_localhost: FakeIP4InterfaceEntry):
+    """
+    Test get_network_interfaces() returns an empty dictionary if "localhost" is the only network interface
+    """
+    # GIVEN: Test environment
+    call_debug = [
+        call('Getting local IPv4 interface(es) information'),
+        call('Filtering out interfaces we don\'t care about: localhost')
+    ]
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = [self.fake_localhost]
-            interfaces = get_network_interfaces()
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = [fake_localhost]
+        interfaces = get_network_interfaces()
 
-        # THEN: There should be no interfaces
-        mock_log.debug.assert_has_calls(call_debug)
-        assert interfaces == {}, 'There should be no interfaces listed'
+    # THEN: There should be no interfaces
+    mock_log.debug.assert_has_calls(call_debug)
+    assert interfaces == {}, 'There should be no interfaces listed'
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_eth25(self, mock_log):
-        """
-        Test get_network_interfaces() returns proper dictionary with 'eth25'
-        """
-        # GIVEN: Test environment
-        call_debug = [
-            call('Getting local IPv4 interface(es) information'),
-            call('Checking for isValid and flags == IsUP | IsRunning'),
-            call('Checking address(es) protocol'),
-            call('Checking for protocol == IPv4Protocol'),
-            call('Getting interface information'),
-            call('Adding eth25 to active list')
-        ]
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = [self.fake_address]
-            interfaces = get_network_interfaces()
+@patch('openlp.core.common.log')
+def test_network_interfaces_eth25(mock_log: MagicMock, fake_address: FakeIP4InterfaceEntry):
+    """
+    Test get_network_interfaces() returns proper dictionary with 'eth25'
+    """
+    # GIVEN: Test environment
+    call_debug = [
+        call('Getting local IPv4 interface(es) information'),
+        call('Checking for isValid and flags == IsUP | IsRunning'),
+        call('Checking address(es) protocol'),
+        call('Checking for protocol == IPv4Protocol'),
+        call('Getting interface information'),
+        call('Adding eth25 to active list')
+    ]
 
-        # THEN: There should be a fake 'eth25' interface
-        mock_log.debug.assert_has_calls(call_debug)
-        assert interfaces == self.fake_address.fake_data
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = [fake_address]
+        interfaces = get_network_interfaces()
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_lo_eth25(self, mock_log):
-        """
-        Test get_network_interfaces() returns proper dictionary with 'eth25'
-        """
-        # GIVEN: Test environment
-        call_debug = [
-            call('Getting local IPv4 interface(es) information'),
-            call('Filtering out interfaces we don\'t care about: lo'),
-            call('Checking for isValid and flags == IsUP | IsRunning'),
-            call('Checking address(es) protocol'),
-            call('Checking for protocol == IPv4Protocol'),
-            call('Getting interface information'),
-            call('Adding eth25 to active list')
-        ]
+    # THEN: There should be a fake 'eth25' interface
+    mock_log.debug.assert_has_calls(call_debug)
+    assert interfaces == fake_address.fake_data
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = [self.fake_lo, self.fake_address]
-            interfaces = get_network_interfaces()
 
-        # THEN: There should be a fake 'eth25' interface
-        mock_log.debug.assert_has_calls(call_debug)
-        assert interfaces == self.fake_address.fake_data, 'There should have been only "eth25" interface listed'
+@patch('openlp.core.common.log')
+def test_network_interfaces_lo_eth25(mock_log: MagicMock, fake_lo: FakeIP4InterfaceEntry,
+                                     fake_address: FakeIP4InterfaceEntry):
+    """
+    Test get_network_interfaces() returns proper dictionary with 'eth25'
+    """
+    # GIVEN: Test environment
+    call_debug = [
+        call('Getting local IPv4 interface(es) information'),
+        call('Filtering out interfaces we don\'t care about: lo'),
+        call('Checking for isValid and flags == IsUP | IsRunning'),
+        call('Checking address(es) protocol'),
+        call('Checking for protocol == IPv4Protocol'),
+        call('Getting interface information'),
+        call('Adding eth25 to active list')
+    ]
 
-    @patch.object(openlp.core.common, 'log')
-    def test_network_interfaces_invalid(self, mock_log):
-        """
-        Test get_network_interfaces() returns an empty dictionary when there are no valid interfaces
-        """
-        # GIVEN: Test environment
-        call_debug = [
-            call('Getting local IPv4 interface(es) information'),
-            call('Checking for isValid and flags == IsUP | IsRunning')
-        ]
-        call_warning = [call('No active IPv4 network interfaces detected')]
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = [fake_lo, fake_address]
+        interfaces = get_network_interfaces()
 
-        # WHEN: get_network_interfaces() is called
-        with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
-            mock_network_interface.allInterfaces.return_value = [self.invalid_if]
-            interfaces = get_network_interfaces()
+    # THEN: There should be a fake 'eth25' interface
+    mock_log.debug.assert_has_calls(call_debug)
+    assert interfaces == fake_address.fake_data, 'There should have been only "eth25" interface listed'
 
-        # THEN: There should be a fake 'eth25' interface
-        mock_log.debug.assert_has_calls(call_debug)
-        mock_log.warning.assert_has_calls(call_warning)
-        assert interfaces == {}, 'There should not be any interfaces listed'
+
+@patch('openlp.core.common.log')
+def test_network_interfaces_invalid(mock_log: MagicMock, invalid_if: FakeIP4InterfaceEntry):
+    """
+    Test get_network_interfaces() returns an empty dictionary when there are no valid interfaces
+    """
+    # GIVEN: Test environment
+    call_debug = [
+        call('Getting local IPv4 interface(es) information'),
+        call('Checking for isValid and flags == IsUP | IsRunning')
+    ]
+    call_warning = [call('No active IPv4 network interfaces detected')]
+
+    # WHEN: get_network_interfaces() is called
+    with patch('openlp.core.common.QNetworkInterface') as mock_network_interface:
+        mock_network_interface.allInterfaces.return_value = [invalid_if]
+        interfaces = get_network_interfaces()
+
+    # THEN: There should be a fake 'eth25' interface
+    mock_log.debug.assert_has_calls(call_debug)
+    mock_log.warning.assert_has_calls(call_warning)
+    assert interfaces == {}, 'There should not be any interfaces listed'

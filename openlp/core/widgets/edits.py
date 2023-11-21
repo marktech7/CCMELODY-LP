@@ -156,7 +156,7 @@ class SearchEdit(QtWidgets.QLineEdit):
             self.menu_button = QtWidgets.QToolButton(self)
             self.menu_button.setIcon(UiIcons().shortcuts)
             self.menu_button.setCursor(QtCore.Qt.ArrowCursor)
-            self.menu_button.setPopupMode(QtWidgets.QToolButton.InstantPopup)
+            self.menu_button.setPopupMode(QtWidgets.QToolButton.ToolButtonPopupMode.InstantPopup)
             self.menu_button.setStyleSheet('QToolButton { border: none; padding: 0px 10px 0px 0px; }')
             self.menu_button.resize(QtCore.QSize(28, 18))
         self.menu_button.setMenu(menu)
@@ -264,10 +264,11 @@ class PathEdit(QtWidgets.QWidget):
         :param Path path: The path to set the widget to
         :rtype: None
         """
-        self._path = path
-        text = path_to_str(path)
-        self.line_edit.setText(text)
-        self.line_edit.setToolTip(text)
+        if path:
+            self._path = Path(path)
+            text = path_to_str(path)
+            self.line_edit.setText(text)
+            self.line_edit.setToolTip(text)
 
     @property
     def path_type(self):
@@ -400,7 +401,7 @@ class SpellTextEdit(QtWidgets.QPlainTextEdit):
         cursor = self.textCursor()
         # only select text if not already selected
         if not cursor.hasSelection():
-            cursor.select(QtGui.QTextCursor.WordUnderCursor)
+            cursor.select(QtGui.QTextCursor.SelectionType.WordUnderCursor)
         self.setTextCursor(cursor)
         # Add menu with available languages.
         if ENCHANT_AVAILABLE:
@@ -509,7 +510,7 @@ class Highlighter(QtGui.QSyntaxHighlighter):
         text = str(text)
         char_format = QtGui.QTextCharFormat()
         char_format.setUnderlineColor(QtCore.Qt.red)
-        char_format.setUnderlineStyle(QtGui.QTextCharFormat.SpellCheckUnderline)
+        char_format.setUnderlineStyle(QtGui.QTextCharFormat.UnderlineStyle.SpellCheckUnderline)
         for word_object in re.finditer(self.WORDS, text):
             if not self.spelling_dictionary.check(word_object.group()):
                 self.setFormat(word_object.start(), word_object.end() - word_object.start(), char_format)
@@ -546,8 +547,8 @@ class HistoryComboBox(QtWidgets.QComboBox):
         super().__init__(parent)
         self.setDuplicatesEnabled(False)
         self.setEditable(True)
-        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
-        self.setInsertPolicy(QtWidgets.QComboBox.InsertAtTop)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
+        self.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAtTop)
 
     def keyPressEvent(self, event):
         """

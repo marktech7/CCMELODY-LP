@@ -19,6 +19,8 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """ Patch the QFileDialog so it accepts and returns Path objects"""
+from pathlib import Path
+
 from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.path import path_to_str, replace_params, str_to_path
@@ -27,7 +29,7 @@ from openlp.core.common.i18n import UiStrings, translate
 
 class FileDialog(QtWidgets.QFileDialog):
     @classmethod
-    def getExistingDirectory(cls, *args, **kwargs):
+    def getExistingDirectory(cls, *args, **kwargs) -> Path:
         """
         Wraps `getExistingDirectory` so that it can be called with, and return Path objects
 
@@ -38,7 +40,6 @@ class FileDialog(QtWidgets.QFileDialog):
         :rtype: pathlib.Path
         """
         args, kwargs = replace_params(args, kwargs, ((2, 'directory', path_to_str),))
-
         return_value = super().getExistingDirectory(*args, **kwargs)
 
         # getExistingDirectory returns a str that represents the path. The string is empty if the user cancels the
@@ -46,7 +47,7 @@ class FileDialog(QtWidgets.QFileDialog):
         return str_to_path(return_value)
 
     @classmethod
-    def getOpenFileName(cls, *args, **kwargs):
+    def getOpenFileName(cls, *args, **kwargs) -> tuple[Path, str]:
         """
         Wraps `getOpenFileName` so that it can be called with, and return Path objects
 
@@ -59,7 +60,6 @@ class FileDialog(QtWidgets.QFileDialog):
         :rtype: tuple[pathlib.Path, str]
         """
         args, kwargs = replace_params(args, kwargs, ((2, 'directory', path_to_str),))
-
         file_name, selected_filter = super().getOpenFileName(*args, **kwargs)
 
         # getOpenFileName returns a tuple. The first item is a str that represents the path. The string is empty if
@@ -67,7 +67,7 @@ class FileDialog(QtWidgets.QFileDialog):
         return str_to_path(file_name), selected_filter
 
     @classmethod
-    def getOpenFileNames(cls, *args, **kwargs):
+    def getOpenFileNames(cls, *args, **kwargs) -> tuple[list[Path], str]:
         """
         Wraps `getOpenFileNames` so that it can be called with, and return Path objects
 
@@ -80,7 +80,6 @@ class FileDialog(QtWidgets.QFileDialog):
         :rtype: tuple[list[pathlib.Path], str]
         """
         args, kwargs = replace_params(args, kwargs, ((2, 'directory', path_to_str),))
-
         file_names, selected_filter = super().getOpenFileNames(*args, **kwargs)
 
         # getSaveFileName returns a tuple. The first item is a list of str's that represents the path. The list is
@@ -89,7 +88,7 @@ class FileDialog(QtWidgets.QFileDialog):
         return paths, selected_filter
 
     @classmethod
-    def getSaveFileName(cls, *args, **kwargs):
+    def getSaveFileName(cls, *args, **kwargs) -> tuple[Path | None, str]:
         """
         Wraps `getSaveFileName` so that it can be called with, and return Path objects
 

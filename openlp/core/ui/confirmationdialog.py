@@ -74,7 +74,7 @@ class Ui_ConfirmationDialog():
         self.message_label.setWordWrap(True)
         self.message_and_buttons_layout.addWidget(self.message_label)
 
-        button_types = QtWidgets.QDialogButtonBox.Yes | QtWidgets.QDialogButtonBox.No
+        button_types = QtWidgets.QDialogButtonBox.StandardButton.Yes | QtWidgets.QDialogButtonBox.StandardButton.No
         self.buttonBox = QtWidgets.QDialogButtonBox(button_types)
         self.buttonBox.setObjectName('buttons')
         self.message_and_buttons_layout.addWidget(self.buttonBox)

@@ -21,8 +21,9 @@
 """
 This module contains tests for the Songbeamer song importer.
 """
-from unittest import TestCase
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
+
+import pytest
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
@@ -34,7 +35,14 @@ from tests.utils.constants import RESOURCE_PATH
 TEST_PATH = RESOURCE_PATH / 'songs' / 'songbeamer'
 
 
-def test_songbeamer_file_import(settings):
+@pytest.fixture
+def importer(registry: Registry, settings: Settings):
+    # with patch('openlp.plugins.songs.lib.importers.songbeamer.SongImport'):
+    #     yield SongBeamerImport(MagicMock(), file_paths=[])
+    return SongBeamerImport(MagicMock(), file_paths=[])
+
+
+def test_songbeamer_file_import(settings: Settings):
     """
     Test that loading an SongBeamer file works correctly on various files
     """
@@ -49,7 +57,7 @@ def test_songbeamer_file_import(settings):
                            helper.load_external_result_data(TEST_PATH / 'When I Call On You.json'))
 
 
-def test_songbeamer_cp1252_encoded_file(settings):
+def test_songbeamer_cp1252_encoded_file(settings: Settings):
     """
     Test that a CP1252 encoded file get's decoded properly.
     """
@@ -58,159 +66,83 @@ def test_songbeamer_cp1252_encoded_file(settings):
                            helper.load_external_result_data(TEST_PATH / 'cp1252song.json'))
 
 
-class TestSongBeamerImport(TestCase):
+def test_create_importer(importer: SongBeamerImport):
     """
-    Test the functions in the :mod:`songbeamerimport` module.
+    Test creating an instance of the SongBeamer file importer
     """
-    def setUp(self):
-        """
-        Create the registry
-        """
-        Registry.create()
-        self.song_import_patcher = patch('openlp.plugins.songs.lib.importers.songbeamer.SongImport')
-        self.song_import_patcher.start()
-        mocked_manager = MagicMock()
-        self.importer = SongBeamerImport(mocked_manager, file_paths=[])
+    # GIVEN: A mocked out SongImport class, and a mocked out "manager"
+    # WHEN: An importer object is created
+    # THEN: The importer object should not be None
+    assert importer is not None, 'Import should not be none'
 
-    def tearDown(self):
-        """
-        Clean up
-        """
-        self.song_import_patcher.stop()
 
-    def test_create_importer(self):
-        """
-        Test creating an instance of the SongBeamer file importer
-        """
-        # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-        with patch('openlp.plugins.songs.lib.importers.songbeamer.SongImport'):
-            mocked_manager = MagicMock()
+def test_invalid_import_source(importer: SongBeamerImport):
+    """
+    Test SongBeamerImport.do_import handles different invalid import_source values
+    """
+    # GIVEN: A mocked out import wizard
+    mocked_import_wizard = MagicMock()
+    importer.import_wizard = mocked_import_wizard
+    importer.stop_import_flag = True
 
-            # WHEN: An importer object is created
-            importer = SongBeamerImport(mocked_manager, file_paths=[])
+    # WHEN: Import source is not a list
+    for source in ['not a list', 0]:
+        importer.import_source = source
 
-            # THEN: The importer object should not be None
-            assert importer is not None, 'Import should not be none'
+        # THEN: do_import should return none and the progress bar maximum should not be set.
+        assert importer.do_import() is None, \
+            'do_import should return None when import_source is not a list'
+        assert mocked_import_wizard.progress_bar.setMaximum.called is False, \
+            'setMaxium on import_wizard.progress_bar should not have been called'
 
-    def test_invalid_import_source(self):
-        """
-        Test SongBeamerImport.do_import handles different invalid import_source values
-        """
-        # GIVEN: A mocked out import wizard
-        mocked_import_wizard = MagicMock()
-        self.importer.import_wizard = mocked_import_wizard
-        self.importer.stop_import_flag = True
 
-        # WHEN: Import source is not a list
-        for source in ['not a list', 0]:
-            self.importer.import_source = source
+def test_valid_import_source(importer: SongBeamerImport):
+    """
+    Test SongBeamerImport.do_import handles different invalid import_source values
+    """
+    # GIVEN: A mocked out import wizard
+    mocked_import_wizard = MagicMock()
+    importer.import_wizard = mocked_import_wizard
+    importer.stop_import_flag = True
 
-            # THEN: do_import should return none and the progress bar maximum should not be set.
-            assert self.importer.do_import() is None, \
-                'do_import should return None when import_source is not a list'
-            assert mocked_import_wizard.progress_bar.setMaximum.called is False, \
-                'setMaxium on import_wizard.progress_bar should not have been called'
+    # WHEN: Import source is a list
+    importer.import_source = ['List', 'of', 'files']
 
-    def test_valid_import_source(self):
-        """
-        Test SongBeamerImport.do_import handles different invalid import_source values
-        """
-        # GIVEN: A mocked out import wizard
-        mocked_import_wizard = MagicMock()
-        self.importer.import_wizard = mocked_import_wizard
-        self.importer.stop_import_flag = True
+    # THEN: do_import should return none and the progress bar setMaximum should be called with the length of
+    #       import_source.
+    assert importer.do_import() is None, \
+        'do_import should return None when import_source is a list and stop_import_flag is True'
+    mocked_import_wizard.progress_bar.setMaximum.assert_called_with(len(importer.import_source))
 
-        # WHEN: Import source is a list
-        self.importer.import_source = ['List', 'of', 'files']
 
-        # THEN: do_import should return none and the progress bar setMaximum should be called with the length of
-        #       import_source.
-        assert self.importer.do_import() is None, \
-            'do_import should return None when import_source is a list and stop_import_flag is True'
-        mocked_import_wizard.progress_bar.setMaximum.assert_called_with(len(self.importer.import_source))
+@pytest.mark.parametrize('line,is_found,verse_type', [('Refrain', True, 'c'),
+                                                      ('ReFrain ', True, 'c'),
+                                                      ('VersE 1', True, 'v1'),
+                                                      ('$$M=special', True, 'o'),
+                                                      ('Jesus my saviour', False, None),
+                                                      ('Praise him', False, None),
+                                                      (' ', False, None),
+                                                      ('', False, None)])
+def test_check_verse_marks(importer: SongBeamerImport, line: str, is_found: bool, verse_type: str | None):
+    """
+    Tests different lines to see if a verse mark is detected or not
+    """
+    # GIVEN: line with unnumbered verse-type
+    importer.current_verse_type = None
+    # WHEN: line is being checked for verse marks
+    result = importer.check_verse_marks(line)
+    # THEN: we should get back true and c as self.importer.current_verse_type
+    assertion_message = f'Versemark for <{line}> should be found, value {is_found}' if is_found \
+                        else f'No versemark for <{line}> should be found, value {is_found}'
+    assert result is is_found, assertion_message
+    assert importer.current_verse_type == verse_type, f'<{line}> should be interpreted as <{verse_type}>'
 
-    def test_check_verse_marks(self):
-        """
-        Tests different lines to see if a verse mark is detected or not
-        """
 
-        # GIVEN: line with unnumbered verse-type
-        line = 'Refrain'
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back true and c as self.importer.current_verse_type
-        assert result is True, 'Versemark for <Refrain> should be found, value true'
-        assert self.importer.current_verse_type == 'c', '<Refrain> should be interpreted as <c>'
-
-        # GIVEN: line with unnumbered verse-type and trailing space
-        line = 'ReFrain '
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back true and c as self.importer.current_verse_type
-        assert result is True, 'Versemark for <ReFrain > should be found, value true'
-        assert self.importer.current_verse_type == 'c', '<ReFrain > should be interpreted as <c>'
-
-        # GIVEN: line with numbered verse-type
-        line = 'VersE 1'
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back true and v1 as self.importer.current_verse_type
-        assert result is True, 'Versemark for <VersE 1> should be found, value true'
-        assert self.importer.current_verse_type == 'v1', u'<VersE 1> should be interpreted as <v1>'
-
-        # GIVEN: line with special unnumbered verse-mark (used in Songbeamer to allow usage of non-supported tags)
-        line = '$$M=special'
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back true and o as self.importer.current_verse_type
-        assert result is True, 'Versemark for <$$M=special> should be found, value true'
-        assert self.importer.current_verse_type == 'o', u'<$$M=special> should be interpreted as <o>'
-
-        # GIVEN: line with song-text with 3 words
-        line = 'Jesus my saviour'
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back false and none as self.importer.current_verse_type
-        assert result is False, 'No versemark for <Jesus my saviour> should be found, value false'
-        assert self.importer.current_verse_type is None, '<Jesus my saviour> should be interpreted as none versemark'
-
-        # GIVEN: line with song-text with 2 words
-        line = 'Praise him'
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back false and none as self.importer.current_verse_type
-        assert result is False, 'No versemark for <Praise him> should be found, value false'
-        assert self.importer.current_verse_type is None, '<Praise him> should be interpreted as none versemark'
-
-        # GIVEN: line with only a space (could occur, nothing regular)
-        line = ' '
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back false and none as self.importer.current_verse_type
-        assert result is False, 'No versemark for < > should be found, value false'
-        assert self.importer.current_verse_type is None, '< > should be interpreted as none versemark'
-
-        # GIVEN: blank line (could occur, nothing regular)
-        line = ''
-        self.importer.current_verse_type = None
-        # WHEN: line is being checked for verse marks
-        result = self.importer.check_verse_marks(line)
-        # THEN: we should get back false and none as self.importer.current_verse_type
-        assert result is False, 'No versemark for <> should be found, value false'
-        assert self.importer.current_verse_type is None, '<> should be interpreted as none versemark'
-
-    def test_verse_marks_defined_in_lowercase(self):
-        """
-        Test that the verse marks are all defined in lowercase
-        """
-        # GIVEN: SongBeamber MarkTypes
-        for tag in SongBeamerTypes.MarkTypes.keys():
-            # THEN: tag should be defined in lowercase
-            assert tag == tag.lower(), 'Tags should be defined in lowercase'
+def test_verse_marks_defined_in_lowercase(settings: Settings):
+    """
+    Test that the verse marks are all defined in lowercase
+    """
+    # GIVEN: SongBeamber MarkTypes
+    for tag in SongBeamerTypes.MarkTypes.keys():
+        # THEN: tag should be defined in lowercase
+        assert tag == tag.lower(), 'Tags should be defined in lowercase'

@@ -19,7 +19,7 @@
 ##########################################################################
 from unittest.mock import MagicMock
 
-from openlp.core.state import State
+from openlp.core.state import State, MessageType
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus
 
@@ -158,10 +158,12 @@ def test_missing_text(state):
     State().modules['test'] = MagicMock()
 
     # WHEN: missing_text() is called
-    State().missing_text('test', 'Test test')
+    State().missing_text('test', 'Test test', MessageType.Information)
 
     # THEN: The text is set
     assert State().modules['test'].text == 'Test test', 'The text on the module should have been set'
+    assert State().modules['test'].message_type == MessageType.Information, \
+        'The message type on the module should have been set'
 
 
 def test_get_text(state):
@@ -169,13 +171,29 @@ def test_get_text(state):
     Test that the get_text() method returns the text of all the states
     """
     # GIVEN: Some states with text
-    State().modules.update({'test1': MagicMock(text='Test 1'), 'test2': MagicMock(text='Test 2')})
+    State().modules.update({'test1': MagicMock(text='Test 1', message_type=MessageType.Error),
+                            'test2': MagicMock(text='Test 2', message_type=MessageType.Information)})
 
     # WHEN: get_text() is called
     result = State().get_text()
 
     # THEN: The correct text is returned
     assert result == 'Test 1\nTest 2\n', 'The full text is returned'
+
+
+def test_get_text_single_type(state):
+    """
+    Test that the get_text() method returns the text of only that particular message type
+    """
+    # GIVEN: Some states with text
+    State().modules.update({'test1': MagicMock(text='Test 1', message_type=MessageType.Error),
+                            'test2': MagicMock(text='Test 2', message_type=MessageType.Information)})
+
+    # WHEN: get_text() is called
+    result = State().get_text(MessageType.Information)
+
+    # THEN: The correct text is returned
+    assert result == 'Test 2\n', 'Only the information text is returned'
 
 
 def test_check_preconditions_no_required(state):

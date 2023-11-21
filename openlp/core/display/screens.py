@@ -40,7 +40,8 @@ class Screen(object):
     A Python representation of a screen
     """
 
-    def __init__(self, number=None, geometry=None, custom_geometry=None, is_primary=False, is_display=False):
+    def __init__(self, number=None, geometry=None, custom_geometry=None, is_primary=False, is_display=False,
+                 device_pixel_ratio=1.0, raw_screen=None):
         """
         Set up the screen object
 
@@ -53,12 +54,16 @@ class Screen(object):
             so left = 0, top = 0 refers to the top left of that screen.
         :param bool is_primary: Whether or not this screen is the primary screen
         :param bool is_display: Whether or not this screen should be used to display lyrics
+        :param float device_pixel_ratio: Device pixel ratio of screen
+        :param raw_screen: Raw screen (Qt/QScreen) object
         """
         self.number = int(number)
         self.geometry = geometry
         self.custom_geometry = custom_geometry
         self.is_primary = is_primary
         self.is_display = is_display
+        self.device_pixel_ratio = device_pixel_ratio
+        self.raw_screen = raw_screen
 
     def __str__(self):
         """
@@ -158,12 +163,28 @@ class Screen(object):
                                                 screen_dict['custom_geometry']['width'],
                                                 screen_dict['custom_geometry']['height'])
 
-    def on_geometry_changed(self, geometry):
+    def on_geometry_changed(self, geometry, device_pixel_ratio):
         """
         Callback function for when the screens geometry changes
         """
         self.geometry = geometry
+        # Device pixel ratio is implicity changed due to geometry change
+        self.device_pixel_ratio = device_pixel_ratio
         ConfigScreenChangedEmitter().emit()
+
+    def try_grab_screen_part(self, x, y, width, height):
+        """
+        Tries to grab a screenshot using the underlying display object
+        """
+        try:
+            if self.raw_screen:
+                # windowId = 0 means to grab entire screen. See: https://doc.qt.io/qt-6/qscreen.html#grabWindow
+                return self.raw_screen.grabWindow(0, x, y, width, height)
+            else:
+                return None
+        except BaseException as e:
+            log.exception(e)
+            return None
 
 
 class ScreenList(metaclass=Singleton):
@@ -199,7 +220,7 @@ class ScreenList(metaclass=Singleton):
         return len(self.screens)
 
     @property
-    def current(self):
+    def current(self) -> Screen:
         """
         Return the first "current" desktop
 
@@ -374,9 +395,12 @@ class ScreenList(metaclass=Singleton):
         os_screens = self.application.screens()
         os_screens.sort(key=cmp_to_key(_screen_compare))
         for number, screen in enumerate(os_screens):
+            device_pixel_ratio = screen.devicePixelRatio()
             self.screens.append(
-                Screen(number, screen.geometry(), is_primary=self.application.primaryScreen() == screen))
-            screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
+                Screen(number, screen.geometry(), is_primary=self.application.primaryScreen() == screen,
+                       device_pixel_ratio=device_pixel_ratio, raw_screen=screen))
+            screen.geometryChanged.connect(lambda geometry: self.screens[-1]
+                                           .on_geometry_changed(geometry, screen.devicePixelRatio()))
 
     def on_screen_added(self, changed_screen):
         """
@@ -391,11 +415,13 @@ class ScreenList(metaclass=Singleton):
         if is_primary:
             for screen in self.screens:
                 screen.is_primary = False
-
+        device_pixel_ratio = changed_screen.devicePixelRatio()
         self.screens.append(Screen(number, changed_screen.geometry(),
-                                   is_primary=self.application.primaryScreen() == changed_screen))
+                                   is_primary=self.application.primaryScreen() == changed_screen,
+                                   device_pixel_ratio=device_pixel_ratio, raw_screen=changed_screen))
         self.find_new_display_screen()
-        changed_screen.geometryChanged.connect(self.screens[-1].on_geometry_changed)
+        changed_screen.geometryChanged.connect(lambda geometry: self.screens[-1]
+                                               .on_geometry_changed(geometry, changed_screen.devicePixelRatio()))
         ConfigScreenChangedEmitter().emit()
 
     def on_screen_removed(self, removed_screen):

@@ -35,6 +35,7 @@ def test_retrieve_service_items(flask_client, settings):
 
 def test_service_set_requires_login(flask_client, settings):
     settings.setValue('api/authentication enabled', True)
+    Registry().register('authentication_token', 'test-token')
     res = flask_client.post('/api/v2/service/show', json=dict())
     settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401
@@ -55,6 +56,7 @@ def test_service_set_calls_service_manager(flask_client, settings):
 
 def test_service_direction_requires_login(flask_client, settings):
     settings.setValue('api/authentication enabled', True)
+    Registry().register('authentication_token', 'test-token')
     res = flask_client.post('/api/v2/service/progress', json=dict())
     settings.setValue('api/authentication enabled', False)
     assert res.status_code == 401

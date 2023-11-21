@@ -22,7 +22,6 @@
 All the tests
 """
 import os
-import sys
 import shutil
 from tempfile import mkdtemp
 from tempfile import mkstemp
@@ -31,8 +30,7 @@ from unittest.mock import MagicMock
 import pytest
 from pytestqt.qt_compat import qt_api
 
-from PyQt5 import QtCore, QtWidgets  # noqa
-sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
+from PyQt5 import QtCore  # noqa
 
 from openlp.core.app import OpenLP
 from openlp.core.state import State
@@ -63,7 +61,7 @@ def mocked_qapp():
 
 
 @pytest.fixture
-def registry(autouse=True):
+def registry():
     """An instance of the Registry"""
     yield Registry.create()
     Registry._instances = {}
@@ -74,7 +72,7 @@ def settings(qapp, registry):
     """A Settings() instance"""
     fd, ini_file = mkstemp('.ini')
     Settings.set_filename(ini_file)
-    Settings().setDefaultFormat(QtCore.QSettings.IniFormat)
+    Settings().setDefaultFormat(QtCore.QSettings.Format.IniFormat)
     # Needed on windows to make sure a Settings object is available during the tests
     sets = Settings()
     sets.setValue('themes/global theme', 'my_theme')
@@ -115,6 +113,7 @@ def state_media(state):
     State().add_service("media", 0)
     State().update_pre_conditions("media", True)
     State().flush_preconditions()
+    yield state
 
 
 @pytest.fixture()

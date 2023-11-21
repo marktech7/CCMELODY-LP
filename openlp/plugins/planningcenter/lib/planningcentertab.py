@@ -41,7 +41,7 @@ class PlanningCenterTab(SettingsTab):
         self.auth_group_box = QtWidgets.QGroupBox(self)
         self.tab_layout.addWidget(self.auth_group_box)
         self.auth_layout = QtWidgets.QFormLayout(self.auth_group_box)
-        self.auth_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.AllNonFixedFieldsGrow)
+        self.auth_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.AllNonFixedFieldsGrow)
         # notice
         self.notice_label = QtWidgets.QLabel(self.auth_group_box)
         self.notice_label.setWordWrap(True)
@@ -63,7 +63,7 @@ class PlanningCenterTab(SettingsTab):
         # Buttons
         self.button_layout = QtWidgets.QDialogButtonBox(self.auth_group_box)
         self.test_credentials_button = QtWidgets.QPushButton(self.auth_group_box)
-        self.button_layout.addButton(self.test_credentials_button, QtWidgets.QDialogButtonBox.AcceptRole)
+        self.button_layout.addButton(self.test_credentials_button, QtWidgets.QDialogButtonBox.ButtonRole.AcceptRole)
         self.auth_layout.addRow(self.button_layout)
         # signals
         self.test_credentials_button.clicked.connect(self.on_test_credentials_button_clicked)

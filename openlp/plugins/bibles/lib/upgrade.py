@@ -30,7 +30,7 @@ from sqlalchemy.sql.expression import delete, select
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import ProxyMode
-from openlp.core.lib.db import get_upgrade_op
+from openlp.core.db.upgrades import get_upgrade_op
 
 
 log = logging.getLogger(__name__)
@@ -54,21 +54,22 @@ def upgrade_2(session, metadata):
     """
     settings = Registry().get('settings')
     op = get_upgrade_op(session)
-    metadata_table = Table('metadata', metadata, autoload=True)
-    proxy, = session.execute(select([metadata_table.c.value], metadata_table.c.key == 'proxy_server')).first() or ('', )
+    metadata_table = Table('metadata', metadata, autoload_with=metadata.bind)
+    proxy, = session.execute(
+        select(metadata_table.c.value).where(metadata_table.c.key == 'proxy_server')).first() or ('', )
     if proxy and not \
             (proxy == settings.value('advanced/proxy http') or proxy == settings.value('advanced/proxy https')):
         http_proxy = ''
         https_proxy = ''
-        name, = session.execute(select([metadata_table.c.value], metadata_table.c.key == 'name')).first()
+        name, = session.execute(select(metadata_table.c.value).where(metadata_table.c.key == 'name')).first()
         msg_box = QtWidgets.QMessageBox()
         msg_box.setText(translate('BiblesPlugin', f'The proxy server {proxy} was found in the bible {name}.<br>'
                                                   f'Would you like to set it as the proxy for OpenLP?'))
-        msg_box.setIcon(QtWidgets.QMessageBox.Question)
+        msg_box.setIcon(QtWidgets.QMessageBox.Icon.Question)
         msg_box.addButton(QtWidgets.QMessageBox.No)
-        http_button = msg_box.addButton('http', QtWidgets.QMessageBox.ActionRole)
-        both_button = msg_box.addButton(translate('BiblesPlugin', 'both'), QtWidgets.QMessageBox.ActionRole)
-        https_button = msg_box.addButton('https', QtWidgets.QMessageBox.ActionRole)
+        http_button = msg_box.addButton('http', QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        both_button = msg_box.addButton(translate('BiblesPlugin', 'both'), QtWidgets.QMessageBox.ButtonRole.ActionRole)
+        https_button = msg_box.addButton('https', QtWidgets.QMessageBox.ButtonRole.ActionRole)
         msg_box.setDefaultButton(both_button)
         msg_box.exec()
 
@@ -81,12 +82,13 @@ def upgrade_2(session, metadata):
             settings.setValue('advanced/proxy https', proxy)
         if http_proxy or https_proxy:
             username, = session.execute(
-                select([metadata_table.c.value], metadata_table.c.key == 'proxy_username')).first()
-            proxy, = session.execute(select([metadata_table.c.value], metadata_table.c.key == 'proxy_password')).first()
+                select(metadata_table.c.value).where(metadata_table.c.key == 'proxy_username')).scalar().first()
+            proxy, = session.execute(
+                select(metadata_table.c.value).where(metadata_table.c.key == 'proxy_password')).scalar().first()
             settings.setValue('advanced/proxy username', username)
             settings.setValue('advanced/proxy password', proxy)
             settings.setValue('advanced/proxy mode', ProxyMode.MANUAL_PROXY)
 
-    op.execute(delete(metadata_table, metadata_table.c.key == 'proxy_server'))
-    op.execute(delete(metadata_table, metadata_table.c.key == 'proxy_username'))
-    op.execute(delete(metadata_table, metadata_table.c.key == 'proxy_password'))
+    op.execute(delete(metadata_table).where(metadata_table.c.key == 'proxy_server'))
+    op.execute(delete(metadata_table).where(metadata_table.c.key == 'proxy_username'))
+    op.execute(delete(metadata_table).where(metadata_table.c.key == 'proxy_password'))

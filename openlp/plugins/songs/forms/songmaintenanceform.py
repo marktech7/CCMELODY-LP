@@ -108,16 +108,19 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         Delete an item.
         """
         item_id = self._get_current_item_id(list_widget)
-        if item_id != -1:
-            item = self.manager.get_object(item_class, item_id)
-            if item and not item.songs:
-                if critical_error_message_box(dlg_title, del_text, self, True) == QtWidgets.QMessageBox.Yes:
-                    self.manager.delete_object(item_class, item.id)
-                    reset_func()
-            else:
-                critical_error_message_box(dlg_title, err_text)
-        else:
+        if item_id == -1:
             critical_error_message_box(dlg_title, UiStrings().NISs)
+            return
+        item = self.manager.get_object(item_class, item_id)
+        if item:
+            song_titles = [song.title for song in item.songs]
+            if song_titles:
+                critical_error_message_box(dlg_title, err_text + '\n\n' + '\n'.join(song_titles))
+            elif critical_error_message_box(dlg_title, del_text, self, True) == QtWidgets.QMessageBox.Yes:
+                self.manager.delete_object(item_class, item.id)
+                reset_func()
+        else:
+            critical_error_message_box(dlg_title, err_text)
 
     def reset_authors(self):
         """

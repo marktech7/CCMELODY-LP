@@ -26,10 +26,13 @@ from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
 
+from openlp.core.common.enum import SongFirstSlideMode
 from openlp.core.common.registry import Registry
 from openlp.core.lib.serviceitem import ServiceItem
 from openlp.plugins.songs.lib.db import AuthorType, Song
 from openlp.plugins.songs.lib.mediaitem import SongMediaItem
+from openlp.plugins.songs.lib.openlyricsxml import OpenLyrics
+
 
 __default_settings__ = {
     'songs/footer template': """
@@ -86,6 +89,10 @@ ${title}<br/>
 %endif
 """
 }
+
+
+SONG_VERSES_TEST_LYRICS = [[{'type': 'v', 'label': '1'}, 'Test text']]
+SONG_VERSES_TEST_VERSE_ORDER = 'v1'
 
 
 @pytest.fixture
@@ -170,12 +177,17 @@ def test_display_results_author(media_item):
         mock_song.title = 'My Song'
         mock_song.sort_key = 'My Song'
         mock_song.temporary = False
+        mock_author_song = MagicMock()
+        mock_author_song.author = mock_author
+        mock_author_song.song = mock_song
         mock_song_temp.id = 2
         mock_song_temp.title = 'My Temporary'
         mock_song_temp.sort_key = 'My Temporary'
         mock_song_temp.temporary = True
-        mock_author.songs.append(mock_song)
-        mock_author.songs.append(mock_song_temp)
+        mock_author_song_temp = MagicMock()
+        mock_author_song_temp.author = mock_author
+        mock_author_song_temp.song = mock_song_temp
+        mock_author.authors_songs = [mock_author_song, mock_author_song_temp]
         mock_search_results.append(mock_author)
         mock_qlist_widget = MagicMock()
         MockedQListWidgetItem.return_value = mock_qlist_widget
@@ -370,9 +382,12 @@ def test_build_song_footer_two_authors(media_item):
     mock_song.copyright = 'My copyright'
     mock_song.songbook_entries = []
     service_item = ServiceItem(None)
+    songbooks_str = []
+    authors = media_item._get_music_authors(mock_song)
+    mako_vars = media_item._get_mako_vars(mock_song, authors, songbooks_str)
 
     # WHEN: I generate the Footer with default settings
-    author_list = media_item.generate_footer(service_item, mock_song)
+    author_list = media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
     # THEN: I get the following Array returned
     assert service_item.raw_footer == ['My Song', 'Words: another author', 'Music: my author',
@@ -393,9 +408,12 @@ def test_build_song_footer_base_ccli(media_item):
     mock_song.songbook_entries = []
     service_item = ServiceItem(None)
     media_item.settings.setValue('core/ccli number', '1234')
+    songbooks_str = []
+    authors = media_item._get_music_authors(mock_song)
+    mako_vars = media_item._get_mako_vars(mock_song, authors, songbooks_str)
 
     # WHEN: I generate the Footer with default settings
-    media_item.generate_footer(service_item, mock_song)
+    media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
     # THEN: I get the following Array returned
     assert service_item.raw_footer == ['My Song', '© My copyright', 'CCLI License: 1234'], \
@@ -403,7 +421,7 @@ def test_build_song_footer_base_ccli(media_item):
 
     # WHEN: I amend the CCLI value
     media_item.settings.setValue('core/ccli number', '4321')
-    media_item.generate_footer(service_item, mock_song)
+    media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
     # THEN: I would get an amended footer string
     assert service_item.raw_footer == ['My Song', '© My copyright', 'CCLI License: 4321'], \
@@ -428,13 +446,16 @@ def test_build_song_footer_base_songbook(media_item):
     book1.name = 'My songbook'
     book2 = MagicMock()
     book2.name = 'Thy songbook'
-    song.songbookentries = []
+    song.songbook_entries = []
     song.add_songbook_entry(book1, '12')
     song.add_songbook_entry(book2, '502A')
     service_item = ServiceItem(None)
+    songbooks_str = [str(songbook) for songbook in song.songbook_entries]
+    authors = media_item._get_music_authors(song)
+    mako_vars = media_item._get_mako_vars(song, authors, songbooks_str)
 
     # WHEN: I generate the Footer with default settings
-    media_item.generate_footer(service_item, song)
+    media_item.generate_footer(service_item, song, authors, songbooks_str, mako_vars)
 
     # THEN: The songbook should be in the footer
     assert service_item.raw_footer == ['My Song', '© My copyright', 'My songbook #12, Thy songbook #502A']
@@ -451,9 +472,12 @@ def test_build_song_footer_copyright_enabled(media_item):
     mock_song.copyright = 'My copyright'
     mock_song.songbook_entries = []
     service_item = ServiceItem(None)
+    songbooks_str = []
+    authors = media_item._get_music_authors(mock_song)
+    mako_vars = media_item._get_mako_vars(mock_song, authors, songbooks_str)
 
     # WHEN: I generate the Footer with default settings
-    media_item.generate_footer(service_item, mock_song)
+    media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
     # THEN: The copyright symbol should be in the footer
     assert service_item.raw_footer == ['My Song', '© My copyright']
@@ -469,9 +493,12 @@ def test_build_song_footer_copyright_disabled(media_item):
     mock_song.copyright = 'My copyright'
     mock_song.songbook_entries = []
     service_item = ServiceItem(None)
+    songbooks_str = []
+    authors = media_item._get_music_authors(mock_song)
+    mako_vars = media_item._get_mako_vars(mock_song, authors, songbooks_str)
 
     # WHEN: I generate the Footer with default settings
-    media_item.generate_footer(service_item, mock_song)
+    media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
     # THEN: The copyright symbol should not be in the footer
     assert service_item.raw_footer == ['My Song', '© My copyright']
@@ -601,9 +628,12 @@ def test_build_song_footer_one_author_show_written_by(media_item):
         mock_song.copyright = 'My copyright'
         mock_song.songbook_entries = []
         service_item = ServiceItem(None)
+        songbooks_str = []
+        authors = media_item._get_music_authors(mock_song)
+        mako_vars = media_item._get_mako_vars(mock_song, authors, songbooks_str)
 
         # WHEN: I generate the Footer with default settings
-        author_list = media_item.generate_footer(service_item, mock_song)
+        author_list = media_item.generate_footer(service_item, mock_song, authors, songbooks_str, mako_vars)
 
         # THEN: The mako function was called with the following arguments
         args = {'authors_translation': [], 'authors_music_label': 'Music',
@@ -616,6 +646,66 @@ def test_build_song_footer_one_author_show_written_by(media_item):
                 'authors_none': ['my author'],
                 'ccli_license_label': 'CCLI License', 'authors_words': [],
                 'ccli_license': '0', 'authors_translation_label': 'Translation',
-                'authors_words_all': []}
+                'authors_words_all': [], 'first_slide': False}
         MockedRenderer.assert_called_once_with(**args)
         assert author_list == ['my author'], 'The author list should be returned correctly with one author'
+
+
+@patch('openlp.plugins.songs.lib.mediaitem.SongMediaItem._get_id_of_item_to_generate')
+@patch('openlp.plugins.songs.lib.mediaitem.SongXML.get_verses')
+@pytest.mark.parametrize('first_slide_mode', SongFirstSlideMode)
+def test_song_first_slide_creation_works(mocked_get_verses, mocked__get_id_of_item_to_generate, media_item,
+                                         first_slide_mode, settings):
+    """
+    Test building song with SongFirstSlideMode = Songbook works
+    """
+    # GIVEN: A Song and a Service Item
+    mocked__get_id_of_item_to_generate.return_value = '00000000-0000-0000-0000-000000000000'
+    settings.setValue('songs/first slide mode', first_slide_mode)
+    mocked_get_verses.return_value = SONG_VERSES_TEST_LYRICS
+    media_item.plugin = MagicMock()
+    media_item.open_lyrics = OpenLyrics(media_item.plugin.manager)
+    song = Song()
+    song.title = 'My Song'
+    song.alternate_title = ''
+    song.copyright = 'My copyright'
+    song.authors_songs = []
+    song.songbook_entries = []
+    song.alternate_title = ''
+    song.lyrics = 'Teste'
+    song.theme_name = 'Default'
+    song.topics = []
+    song.ccli_number = ''
+    song.lyrics = '<fake xml>'  # Mocked by mocked_get_verses
+    song.verse_order = SONG_VERSES_TEST_VERSE_ORDER
+    song.search_title = 'my song@'
+    song.last_modified = '2023-02-20T00:00:00Z'
+    song.media_files = []
+    song.comments = ''
+    book1 = MagicMock()
+    book1.name = 'My songbook'
+    book1.publisher = None
+    book2 = MagicMock()
+    book2.name = 'Thy songbook'
+    book2.publisher = 'Publisher'
+    song.songbook_entries = []
+    song.add_songbook_entry(book1, '12')
+    song.add_songbook_entry(book2, '502A')
+    service_item = ServiceItem(None)
+    media_item.plugin.manager.get_object.return_value = song
+
+    # WHEN: I generate the Footer with default settings
+    media_item.generate_slide_data(service_item, item=song)
+
+    # THEN: The copyright symbol should not be in the footer
+    if first_slide_mode == SongFirstSlideMode.Default:
+        # No metadata is needed on default slide mode (at least for now)
+        assert 'metadata' not in service_item.slides[0]
+    else:
+        assert service_item.slides[0]['metadata']['songs_first_slide_type'] == first_slide_mode
+    if first_slide_mode == SongFirstSlideMode.Songbook:
+        assert service_item.slides[0]['text'] == '\nMy songbook #12\n\nThy songbook #502A (Publisher)\n\n'
+    if first_slide_mode == SongFirstSlideMode.Footer:
+        assert service_item.slides[0]['text'] == service_item.footer_html
+        # It needs to have empty footer as it's already shown on text
+        assert service_item.slides[0]['footer_html'] == ''

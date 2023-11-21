@@ -110,23 +110,18 @@ The song database contains the following tables:
 """
 from typing import Optional
 
-from sqlalchemy import Column, ForeignKey, MetaData, Table
+from sqlalchemy import Column, ForeignKey, Table
 from sqlalchemy.ext.hybrid import hybrid_property
-from sqlalchemy.orm import reconstructor, relationship
+from sqlalchemy.orm import Session, declarative_base, reconstructor, relationship
 from sqlalchemy.sql.expression import func, text
 from sqlalchemy.types import Boolean, DateTime, Integer, Unicode, UnicodeText
 
-# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
-try:
-    from sqlalchemy.orm import declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative import declarative_base
-
 from openlp.core.common.i18n import get_natural_key, translate
-from openlp.core.lib.db import PathType, init_db
+from openlp.core.db.types import PathType
+from openlp.core.db.helpers import init_db
 
 
-Base = declarative_base(MetaData())
+Base = declarative_base()
 
 
 songs_topics_table = Table(
@@ -197,9 +192,15 @@ class Author(Base):
     authors_songs = relationship('AuthorSong', back_populates='author')
 
     def get_display_name(self, author_type: Optional[str] = None) -> str:
+        """Determine the display name"""
         if author_type:
             return "{name} ({author})".format(name=self.display_name, author=AuthorType.Types[author_type])
         return self.display_name
+
+    @property
+    def songs(self):
+        """All the songs associated with this author"""
+        return [author_song.song for author_song in self.authors_songs]
 
 
 class AuthorSong(Base):
@@ -336,6 +337,10 @@ class Song(Base):
                 return
 
         new_songbook_entry = SongBookEntry()
+        if session := Session.object_session(self):
+            # Session is None in the tests
+            session.add(songbook)
+
         new_songbook_entry.songbook = songbook
         new_songbook_entry.entry = entry
         self.songbook_entries.append(new_songbook_entry)
@@ -383,5 +388,5 @@ def init_schema(url):
 
     """
     session, metadata = init_db(url, base=Base)
-    metadata.create_all(checkfirst=True)
+    metadata.create_all(bind=metadata.bind, checkfirst=True)
     return session

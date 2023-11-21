@@ -23,6 +23,7 @@ The :mod:`~openlp.plugins.planningcenter.PlanningCenterPlugin` module contains
 the Plugin class for the PlanningCenter plugin.
 """
 import logging
+from typing import Optional
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
@@ -51,6 +52,8 @@ class PlanningCenterPlugin(Plugin):
         self.icon = UiIcons().planning_center
         self.icon_path = self.icon
         self.weight = -1
+        self.application_id: Optional[str] = None
+        self.secret: Optional[str] = None
         State().add_service('planning_center', self.weight, is_plugin=True)
         State().update_pre_conditions('planning_center', self.check_pre_conditions())
 
@@ -86,7 +89,7 @@ class PlanningCenterPlugin(Plugin):
         # Determine which dialog to show based on whether the auth values are set yet
         self.application_id = self.settings.value("planningcenter/application_id")
         self.secret = self.settings.value("planningcenter/secret")
-        if len(self.application_id) == 0 or len(self.secret) == 0:
+        if not self.application_id or not self.secret:
             self.planningcenter_form = Registry().get('settings_form')
             self.planningcenter_form.exec(translate('PlanningCenterPlugin', 'PlanningCenter'))
         else:

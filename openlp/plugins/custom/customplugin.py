@@ -29,7 +29,7 @@ from openlp.core.state import State
 from openlp.core.common.i18n import translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
 from openlp.plugins.custom.lib.db import CustomSlide, init_schema
@@ -52,9 +52,9 @@ class CustomPlugin(Plugin):
     def __init__(self):
         super(CustomPlugin, self).__init__('custom', CustomMediaItem, CustomTab)
         self.weight = -5
-        self.db_manager = Manager('custom', init_schema)
+        self.db_manager = DBManager('custom', init_schema)
+        self.icon_path = UiIcons().custom
         Registry().register('custom_manager', self.db_manager)
-        self.icon_path = UiIcons().clone
         self.icon = build_icon(self.icon_path)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())

@@ -29,14 +29,15 @@ from pathlib import Path
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore
-from openlp.core.display.screens import Screen
 
 # Mock QtWebEngineWidgets
 sys.modules['PyQt5.QtWebEngineWidgets'] = MagicMock()
 
-from openlp.core.display.window import TRANSITION_END_EVENT_NAME, DisplayWindow, DisplayWatcher
-from openlp.core.common.platform import is_win
 from openlp.core.common.enum import ServiceItemType
+from openlp.core.common.platform import is_win
+from openlp.core.common.registry import Registry
+from openlp.core.display.screens import Screen
+from openlp.core.display.window import TRANSITION_END_EVENT_NAME, DisplayWindow, DisplayWatcher
 from openlp.core.lib.theme import Theme
 from openlp.core.ui import HideMode
 
@@ -173,13 +174,13 @@ def test_set_scale_not_initialised(display_window_env, mock_settings):
     # GIVEN: A display window not yet initialised
     display_window = DisplayWindow()
     display_window._is_initialised = False
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
 
     # WHEN: set scale is run
     display_window.set_scale(0.5)
 
     # THEN: javascript should not be run
-    display_window.run_javascript.assert_not_called()
+    display_window.run_in_display.assert_not_called()
 
 
 def test_set_scale_initialised(display_window_env, mock_settings):
@@ -189,13 +190,31 @@ def test_set_scale_initialised(display_window_env, mock_settings):
     # GIVEN: A initialised display window
     display_window = DisplayWindow()
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
 
     # WHEN: set scale is run
     display_window.set_scale(0.5)
 
     # THEN: javascript should not be run
-    display_window.run_javascript.assert_called_once_with('Display.setScale(50.0);')
+    display_window.run_in_display.assert_called_once_with('setScale', 50.0)
+
+
+def test_set_display_custom_url_works_http(registry, display_window_env, mock_settings):
+    """
+    Test that setting a display custom url works with HTTP path
+    """
+    # GIVEN: A mocked set_url and a custom display path
+    test_path = 'http://localhost:4200?testing=true'
+    registry.register('display_custom_url', test_path)
+
+    with patch('openlp.core.display.window.DisplayWindow.set_url') as mocked_set_url, \
+         patch('openlp.core.display.window.QtCore.QUrl') as mocked_qurl:
+        mocked_qurl.side_effect = lambda input: input
+        # WHEN: creating a DisplayWindow
+        DisplayWindow()
+
+        # THEN: URL should be set with the custom path
+        mocked_set_url.assert_called_once_with(test_path)
 
 
 def test_set_startup_screen(display_window_env, mock_settings):
@@ -205,7 +224,7 @@ def test_set_startup_screen(display_window_env, mock_settings):
     # GIVEN: A display window and mocked settings with logo path
     display_window = DisplayWindow()
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
 
     if is_win():
         image_path = 'c:/my/image.png'
@@ -225,8 +244,9 @@ def test_set_startup_screen(display_window_env, mock_settings):
     display_window.set_startup_screen()
 
     # THEN: javascript should be run
-    display_window.run_javascript.assert_called_once_with(
-        'Display.setStartupSplashScreen("red", "file://{path}");'.format(path=expect_image_path))
+    display_window.run_in_display.assert_called_once_with('setStartupSplashScreen', "red",
+                                                          "openlp-library://local-file/{path}"
+                                                          .format(path=expect_image_path))
 
 
 def test_set_startup_screen_default_image(display_window_env, mock_settings):
@@ -236,14 +256,10 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
     # GIVEN: A display window and mocked settings with logo path
     display_window = DisplayWindow()
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
-    if is_win():
-        splash_screen_path = 'c:/default/splash_screen.png'
-        expect_splash_screen_path = '/' + splash_screen_path
-    else:
-        splash_screen_path = '/default/splash_screen.png'
-        expect_splash_screen_path = splash_screen_path
-    display_window.openlp_splash_screen_path = Path(splash_screen_path)
+    display_window.run_in_display = MagicMock()
+    splash_screen_path = 'openlp://display/openlp-splash-screen.png'
+    expect_splash_screen_path = splash_screen_path
+    display_window.openlp_splash_screen_path = splash_screen_path
     settings = {
         'core/logo background color': 'blue',
         'core/logo file': Path(':/graphics/openlp-splash-screen.png'),
@@ -255,8 +271,8 @@ def test_set_startup_screen_default_image(display_window_env, mock_settings):
     display_window.set_startup_screen()
 
     # THEN: javascript should be run
-    display_window.run_javascript.assert_called_with(
-        'Display.setStartupSplashScreen("blue", "file://{path}");'.format(path=expect_splash_screen_path))
+    display_window.run_in_display.assert_called_with('setStartupSplashScreen', 'blue',
+                                                     "{path}".format(path=expect_splash_screen_path))
 
 
 def test_set_startup_screen_missing(display_window_env, mock_settings):
@@ -266,7 +282,7 @@ def test_set_startup_screen_missing(display_window_env, mock_settings):
     # GIVEN: A display window and mocked settings with logo path missing
     display_window = DisplayWindow()
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
     settings = {
         'core/logo background color': 'green',
@@ -279,8 +295,7 @@ def test_set_startup_screen_missing(display_window_env, mock_settings):
     display_window.set_startup_screen()
 
     # THEN: javascript should be run
-    display_window.run_javascript.assert_called_with(
-        'Display.setStartupSplashScreen("green", "");')
+    display_window.run_in_display.assert_called_with('setStartupSplashScreen', 'green', '')
 
 
 def test_set_startup_screen_hide(display_window_env, mock_settings):
@@ -290,7 +305,7 @@ def test_set_startup_screen_hide(display_window_env, mock_settings):
     # GIVEN: A display window and mocked settings with hide logo true
     display_window = DisplayWindow()
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.openlp_splash_screen_path = Path('/default/splash_screen.png')
     settings = {
         'core/logo background color': 'orange',
@@ -303,8 +318,7 @@ def test_set_startup_screen_hide(display_window_env, mock_settings):
     display_window.set_startup_screen()
 
     # THEN: javascript should be run
-    display_window.run_javascript.assert_called_once_with(
-        'Display.setStartupSplashScreen("orange", "");')
+    display_window.run_in_display.assert_called_once_with('setStartupSplashScreen', 'orange', '')
 
 
 def test_after_loaded(display_window_env, mock_settings, registry):
@@ -317,7 +331,7 @@ def test_after_loaded(display_window_env, mock_settings, registry):
     mock_settings.value.return_value = True
     display_window.scale = 2
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.set_scale = MagicMock()
     display_window.set_startup_screen = MagicMock()
 
@@ -325,17 +339,16 @@ def test_after_loaded(display_window_env, mock_settings, registry):
     display_window.after_loaded()
 
     # THEN: The following functions should have been called
-    display_window.run_javascript.assert_called_once_with('Display.init({'
-                                                          'isDisplay: true,'
-                                                          'doItemTransitions: true,'
-                                                          'slideNumbersInFooter: true,'
-                                                          'hideMouse: true'
-                                                          '});')
+    display_window.run_in_display.assert_called_once_with('init', {'isDisplay': True,
+                                                                   'doItemTransitions': True,
+                                                                   'slideNumbersInFooter': True,
+                                                                   'hideMouse': True,
+                                                                   'displayTitle': None})
     display_window.set_scale.assert_called_once_with(2)
     display_window.set_startup_screen.assert_called_once()
 
 
-def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings, registry):
+def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings):
     """
     Test the mouse is showing even if the `hide mouse` setting is set while is_display=false
     """
@@ -345,7 +358,7 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings, 
     mock_settings.value.return_value = True
     display_window.scale = 2
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.set_scale = MagicMock()
     display_window.set_startup_screen = MagicMock()
 
@@ -353,12 +366,11 @@ def test_after_loaded_hide_mouse_not_display(display_window_env, mock_settings, 
     display_window.after_loaded()
 
     # THEN: Display.init should be called where is_display=false, do_item_transitions=true, show_mouse=false
-    display_window.run_javascript.assert_called_once_with('Display.init({'
-                                                          'isDisplay: false,'
-                                                          'doItemTransitions: true,'
-                                                          'slideNumbersInFooter: true,'
-                                                          'hideMouse: false'
-                                                          '});')
+    display_window.run_in_display.assert_called_once_with('init', {'isDisplay': False,
+                                                                   'doItemTransitions': True,
+                                                                   'slideNumbersInFooter': True,
+                                                                   'hideMouse': False,
+                                                                   'displayTitle': None})
 
 
 def test_after_loaded_callback(display_window_env, mock_settings, registry):
@@ -371,7 +383,7 @@ def test_after_loaded_callback(display_window_env, mock_settings, registry):
     display_window.is_display = True
     mock_settings.value.return_value = True
     display_window._is_initialised = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.set_scale = MagicMock()
     display_window.set_startup_screen = MagicMock()
 
@@ -383,7 +395,7 @@ def test_after_loaded_callback(display_window_env, mock_settings, registry):
 
 
 @patch.object(time, 'time')
-def test_run_javascript_no_sync_no_wait(mock_time, display_window_env, mock_settings):
+def test_run_in_display_no_sync_no_wait(mock_time, display_window_env, mock_settings):
     """
     test a script is run on the webview
     """
@@ -393,7 +405,7 @@ def test_run_javascript_no_sync_no_wait(mock_time, display_window_env, mock_sett
     display_window.webview.page = MagicMock(return_value=webengine_page)
 
     # WHEN: javascript is requested to run
-    display_window.run_javascript('javascript to execute')
+    display_window._run_javascript('javascript to execute')
 
     # THEN: javascript should be run with no delay
     webengine_page.runJavaScript.assert_called_once_with('javascript to execute')
@@ -401,7 +413,7 @@ def test_run_javascript_no_sync_no_wait(mock_time, display_window_env, mock_sett
 
 
 @patch.object(time, 'time')
-def test_run_javascript_sync_no_wait(mock_time, display_window_env, mock_settings):
+def test_run_in_display_sync_no_wait(mock_time, display_window_env, mock_settings):
     """
     test a synced script is run on the webview and immediately returns a result
     """
@@ -415,7 +427,7 @@ def test_run_javascript_sync_no_wait(mock_time, display_window_env, mock_setting
     display_window.webview.page.return_value = webengine_page
 
     # WHEN: javascript is requested to run
-    result = display_window.run_javascript('javascript to execute', True)
+    result = display_window._run_javascript('javascript to execute', True)
 
     # THEN: javascript should be run with no delay and return with the correct result
     assert result == 1234
@@ -432,7 +444,7 @@ def test_fix_font_bold_windows(mocked_is_win, display_window_env, mock_settings)
     mocked_is_win.return_value = True
     display_window = DisplayWindow()
     display_window.is_display = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     font_name = 'Arial Rounded MT Bold'
 
     # WHEN: The font is processed
@@ -451,7 +463,7 @@ def test_fix_font_bold_not_windows(mocked_is_win, display_window_env, mock_setti
     mocked_is_win.return_value = False
     display_window = DisplayWindow()
     display_window.is_display = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     font_name = 'Arial Rounded MT Bold'
 
     # WHEN: The font is processed
@@ -470,7 +482,7 @@ def test_fix_font_foundry(mocked_is_win, display_window_env, mock_settings):
     mocked_is_win.return_value = False
     display_window = DisplayWindow()
     display_window.is_display = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     font_name = 'CMG Sans [Foundry]'
 
     # WHEN: The font is processed
@@ -487,7 +499,7 @@ def test_set_theme_is_display_video(display_window_env, mock_settings, mock_geom
     # GIVEN: A display window and a video theme
     display_window = DisplayWindow()
     display_window.is_display = True
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     theme = Theme()
     theme.background_type = 'video'
     result_theme = Theme()
@@ -498,8 +510,7 @@ def test_set_theme_is_display_video(display_window_env, mock_settings, mock_geom
     display_window.set_theme(theme, is_sync=False, service_item_type=ServiceItemType.Text)
 
     # THEN: The final theme should be transparent
-    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
-                                                          is_sync=False)
+    display_window.run_in_display.assert_called_once_with('setTheme', raw_parameters=result_theme, is_sync=False)
 
 
 def test_set_theme_not_display_video(display_window_env, mock_settings, mock_geometry):
@@ -509,7 +520,7 @@ def test_set_theme_not_display_video(display_window_env, mock_settings, mock_geo
     # GIVEN: A display window and a video theme
     display_window = DisplayWindow()
     display_window.is_display = False
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     theme = Theme()
     theme.background_type = 'video'
     theme.background_border_color = 'border_colour'
@@ -527,8 +538,7 @@ def test_set_theme_not_display_video(display_window_env, mock_settings, mock_geo
     display_window.set_theme(theme, is_sync=False, service_item_type=False)
 
     # THEN: The final theme should use 'border_colour' for it's colour values
-    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
-                                                          is_sync=False)
+    display_window.run_in_display.assert_called_once_with('setTheme', raw_parameters=result_theme, is_sync=False)
 
 
 def test_set_theme_not_display_live(display_window_env, mock_settings, mock_geometry):
@@ -538,7 +548,7 @@ def test_set_theme_not_display_live(display_window_env, mock_settings, mock_geom
     # GIVEN: A display window and a video theme
     display_window = DisplayWindow()
     display_window.is_display = False
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     theme = Theme()
     theme.background_type = 'live'
     result_theme = Theme()
@@ -553,13 +563,13 @@ def test_set_theme_not_display_live(display_window_env, mock_settings, mock_geom
     display_window.set_theme(theme, is_sync=False, service_item_type=False)
 
     # THEN: The final theme should use the preset colour values
-    display_window.run_javascript.assert_called_once_with('Display.setTheme({theme});'.format(theme=result_theme),
-                                                          is_sync=False)
+    display_window.run_in_display.assert_called_once_with('setTheme', raw_parameters=result_theme, is_sync=False)
 
 
 @patch('openlp.core.display.window.Registry.execute')
 @patch('openlp.core.display.window.ScreenList')
-def test_show_display(mocked_screenlist, mocked_registry_execute, display_window_env, mock_settings):
+def test_show_display(mocked_screenlist: MagicMock, mocked_registry_execute: MagicMock, display_window_env,
+                      mock_settings: MagicMock, registry: Registry):
     """
     Test show_display function
     """
@@ -568,7 +578,7 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, display_window
     display_window.is_display = True
     display_window.isHidden = MagicMock(return_value=True)
     display_window.setVisible = MagicMock()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     mocked_screenlist.screens = [1, 2]
 
     # WHEN: Show display is run
@@ -576,7 +586,7 @@ def test_show_display(mocked_screenlist, mocked_registry_execute, display_window
 
     # THEN: Should show the display and set the hide mode to none
     display_window.setVisible.assert_called_once_with(True)
-    display_window.run_javascript.assert_called_once_with('Display.show();')
+    display_window.run_in_display.assert_called_once_with('show')
 
 
 @patch('openlp.core.display.window.ScreenList')
@@ -586,7 +596,7 @@ def test_show_display_no_display(mocked_screenlist, display_window_env, mock_set
     """
     # GIVEN: A Display window, one screen and core/display on monitor disabled
     display_window = DisplayWindow()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.is_display = True
     mocked_screenlist.return_value = [1]
     mock_settings.value.return_value = False
@@ -595,7 +605,7 @@ def test_show_display_no_display(mocked_screenlist, display_window_env, mock_set
     display_window.show_display()
 
     # THEN: Shouldn't run the js show fn
-    assert display_window.run_javascript.call_count == 0
+    assert display_window.run_in_display.call_count == 0
 
 
 def test_hide_display_to_screen(display_window_env, mock_settings):
@@ -604,7 +614,7 @@ def test_hide_display_to_screen(display_window_env, mock_settings):
     """
     # GIVEN: Display window and setting advanced/disable transparent display = False
     display_window = DisplayWindow()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.setVisible = MagicMock()
     mock_settings.value.return_value = False
 
@@ -613,7 +623,7 @@ def test_hide_display_to_screen(display_window_env, mock_settings):
 
     # THEN: Should hide the display with the js transparency function (not setVisible)
     display_window.setVisible.call_count == 0
-    display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
+    display_window.run_in_display.assert_called_once_with('toTransparent')
 
 
 def test_hide_display_to_blank(display_window_env, mock_settings):
@@ -622,14 +632,14 @@ def test_hide_display_to_blank(display_window_env, mock_settings):
     """
     # GIVEN: Display window and setting advanced/disable transparent display = False
     display_window = DisplayWindow()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     mock_settings.value.return_value = False
 
     # WHEN: Hide display is run with HideMode.Blank
     display_window.hide_display(HideMode.Blank)
 
     # THEN: Should run the correct javascript on the display and set the hide mode
-    display_window.run_javascript.assert_called_once_with('Display.toBlack();')
+    display_window.run_in_display.assert_called_once_with('toBlack')
 
 
 def test_hide_display_to_theme(display_window_env, mock_settings):
@@ -638,14 +648,14 @@ def test_hide_display_to_theme(display_window_env, mock_settings):
     """
     # GIVEN: Display window and setting advanced/disable transparent display = False
     display_window = DisplayWindow()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     mock_settings.value.return_value = False
 
     # WHEN: Hide display is run with HideMode.Theme
     display_window.hide_display(HideMode.Theme)
 
     # THEN: Should run the correct javascript on the display and set the hide mode
-    display_window.run_javascript.assert_called_once_with('Display.toTheme();')
+    display_window.run_in_display.assert_called_once_with('toTheme')
 
 
 def test_hide_display_to_transparent(display_window_env, mock_settings):
@@ -654,7 +664,7 @@ def test_hide_display_to_transparent(display_window_env, mock_settings):
     """
     # GIVEN: Display window and setting advanced/disable transparent display = False
     display_window = DisplayWindow()
-    display_window.run_javascript = MagicMock()
+    display_window.run_in_display = MagicMock()
     display_window.setVisible = MagicMock()
     mock_settings.value.return_value = False
 
@@ -662,7 +672,7 @@ def test_hide_display_to_transparent(display_window_env, mock_settings):
     display_window.hide_display(HideMode.Screen)
 
     # THEN: Should run the correct javascript on the display and not set the visiblity
-    display_window.run_javascript.assert_called_once_with('Display.toTransparent();')
+    display_window.run_in_display.assert_called_once_with('toTransparent')
     assert display_window.setVisible.call_count == 0
 
 
@@ -778,12 +788,27 @@ def test_display_watcher_unregisters_registered_permanent_and_transient_event(di
     event_listener_permanent.assert_not_called()
 
 
+def test_display_watcher_generates_event_names(display_window_env, mock_settings):
+    """
+    Test that the display watcher generate unique event names
+    """
+    # GIVEN: Display window
+    display_window = DisplayWindow()
+
+    # WHEN: Getting unique event names
+    first_event_name = display_window.display_watcher.get_unique_event_name()
+    second_event_name = display_window.display_watcher.get_unique_event_name()
+
+    # THEN: Event names should be different
+    assert first_event_name != second_event_name
+
+
 def test_hide_transparent_to_screen(display_window_env, mock_settings):
     """
     Test that when going transparent, and the disable transparent setting is enabled,
     the screen mode should be used.
     """
-    # GIVEN: Display window, setting advanced/disable transparent display = True and mocked run_javascript
+    # GIVEN: Display window, setting advanced/disable transparent display = True and mocked run_in_display
     display_window = DisplayWindow()
     display_window.setVisible = MagicMock()
     has_ran_event = False
@@ -792,11 +817,11 @@ def test_hide_transparent_to_screen(display_window_env, mock_settings):
         nonlocal has_ran_event
         has_ran_event = True
 
-    def on_dispatch_event(_):
+    def on_dispatch_event(*args, **kwargs):
         display_window.display_watcher.register_event_listener(TRANSITION_END_EVENT_NAME, set_has_ran_event, False)
         display_window.display_watcher.dispatchEvent(TRANSITION_END_EVENT_NAME, {})
 
-    display_window.run_javascript = MagicMock(side_effect=on_dispatch_event)
+    display_window.run_in_display = MagicMock(side_effect=on_dispatch_event)
     mock_settings.value.return_value = True
 
     # WHEN: Hide display is run with HideMode.Screen
@@ -891,3 +916,79 @@ def test_close_event_accepts_event_manual_close(display_window_env, mock_setting
 
     # THEN: The event should have been ignored
     assert mocked_event.ignore.called is False
+
+
+def test_run_in_display_run(display_window_env, mock_settings):
+    """
+    Test that when run_in_display is called
+    """
+    # GIVEN: A DisplayWindow instance and a mocked _run_javascript
+    display_window = DisplayWindow()
+    display_window._run_javascript = MagicMock()
+
+    # WHEN: The run_is_display is called
+    display_window.run_in_display('test_event')
+
+    # THEN: The event should be called
+    display_window._run_javascript.assert_called_once_with('requestAction(\'test_event\')', False)
+
+
+def test_run_in_display_honors_is_sync(display_window_env, mock_settings):
+    """
+    Test that when run_in_display honors is_sync flag
+    """
+    # GIVEN: A DisplayWindow instance and a mocked _run_javascript
+    display_window = DisplayWindow()
+    display_window._run_javascript = MagicMock()
+
+    # WHEN: The run_is_display is called
+    display_window.run_in_display('test_event', is_sync=True)
+
+    # THEN: The event should be called
+    display_window._run_javascript.assert_called_once_with('requestAction(\'test_event\')', True)
+
+
+def test_run_in_display_honors_raw_parameters(display_window_env, mock_settings):
+    """
+    Test that when run_in_display honors raw_parameters parameters
+    """
+    # GIVEN: A DisplayWindow instance and a mocked _run_javascript
+    display_window = DisplayWindow()
+    display_window._run_javascript = MagicMock()
+
+    # WHEN: The run_is_display is called
+    display_window.run_in_display('test_event', raw_parameters='a test: testing')
+
+    # THEN: The event should be called
+    display_window._run_javascript.assert_called_once_with('requestAction(\'test_event\', a test: testing)', False)
+
+
+def test_run_in_display_honors_return_event_name(display_window_env, mock_settings):
+    """
+    Test that when run_in_display honors return_event_name parameter
+    """
+    # GIVEN: A DisplayWindow instance and a mocked _run_javascript
+    display_window = DisplayWindow()
+    display_window._run_javascript = MagicMock()
+
+    # WHEN: The run_is_display is called
+    display_window.run_in_display('test_event', return_event_name='test_event')
+
+    # THEN: The event should be called
+    display_window._run_javascript.assert_called_once_with('requestActionAsync(\'test_event\', \'test_event\')', False)
+
+
+def test_run_in_display_dumps_json(display_window_env, mock_settings):
+    """
+    Test that when run_in_display is called with parameters, each of it will be dumped as a JSON string
+    """
+    # GIVEN: A DisplayWindow instance and a mocked _run_javascript
+    display_window = DisplayWindow()
+    display_window._run_javascript = MagicMock()
+
+    # WHEN: The run_is_display is called
+    display_window.run_in_display('test_event', 1.23, 'a "string', [1, 2, 'test'], {"test1": "test2"})
+
+    # THEN: The parameters should be correctly converted to JSON
+    display_window._run_javascript.assert_called_once_with('requestAction(\'test_event\', 1.23, "a \\"string\", '
+                                                           '[1, 2, "test"], {"test1": "test2"})', False)

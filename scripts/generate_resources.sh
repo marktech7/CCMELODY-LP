@@ -35,19 +35,30 @@
 ###############################################################################
 # Backup the existing resources
 if [ -f "openlp/core/resources.py" ]; then
+    echo "Backup old resources file"
     mv openlp/core/resources.py openlp/core/resources.py.old
 fi
 
 # Create the new data from the updated qrc
+echo "Generate new resources file"
 pyrcc5 -o openlp/core/resources.py.new resources/images/openlp-2.qrc
 
 # Remove patch breaking lines
+echo "Remove 'Created by' line"
 cat openlp/core/resources.py.new | sed '/# Created by: /d' > openlp/core/resources.py
 
 # Patch resources.py to OpenLP coding style
-patch --posix -s openlp/core/resources.py scripts/resources.patch
+ARCH=`uname -m`
+echo "Architecture is: $ARCH"
+if [ "$ARCH" == "arm64" ]; then
+    echo "Running ARM64 patch"
+    patch --posix -s openlp/core/resources.py scripts/resources.arm64.patch
+else
+    echo "Running x86 patch"
+    patch --posix -s openlp/core/resources.py scripts/resources.patch
+fi
 
 # Remove temporary file
-rm openlp/core/resources.py.new 2>/dev/null
-rm openlp/core/resources.py.old 2>/dev/null
-rm openlp/core/resources.py.orig 2>/dev/null
+rm -f openlp/core/resources.py.new 2>/dev/null
+rm -f openlp/core/resources.py.old 2>/dev/null
+rm -f openlp/core/resources.py.orig 2>/dev/null

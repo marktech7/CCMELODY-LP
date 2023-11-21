@@ -96,6 +96,7 @@ def test_setup(settings):
     theme_form.main_area_page.font_name_changed.connect.assert_called_once_with(theme_form.calculate_lines)
     theme_form.main_area_page.font_size_changed.connect.assert_called_once_with(theme_form.calculate_lines)
     theme_form.main_area_page.line_spacing_changed.connect.assert_called_once_with(theme_form.calculate_lines)
+    theme_form.main_area_page.letter_spacing_changed.connect.assert_called_once_with(theme_form.calculate_lines)
     theme_form.main_area_page.is_outline_enabled_changed.connect.assert_called_once_with(
         theme_form.on_outline_toggled)
     theme_form.main_area_page.outline_size_changed.connect.assert_called_once_with(theme_form.calculate_lines)
@@ -104,6 +105,8 @@ def test_setup(settings):
     theme_form.main_area_page.shadow_size_changed.connect.assert_called_once_with(theme_form.calculate_lines)
     theme_form.footer_area_page.font_name_changed.connect.assert_called_once_with(theme_form.update_theme)
     theme_form.footer_area_page.font_size_changed.connect.assert_called_once_with(theme_form.update_theme)
+    theme_form.footer_area_page.line_spacing_changed.connect.assert_called_once_with(theme_form.calculate_lines)
+    theme_form.footer_area_page.letter_spacing_changed.connect.assert_called_once_with(theme_form.calculate_lines)
 
 
 @patch('openlp.core.ui.themeform.ThemeForm._setup')
@@ -455,9 +458,9 @@ def test_update_theme_static(mocked_setup, settings):
     theme_form.main_area_page = MagicMock(font_name='Montserrat', font_color='#f00', font_size=50, line_spacing=12,
                                           is_outline_enabled=True, outline_color='#00f', outline_size=3,
                                           is_shadow_enabled=True, shadow_color='#111', shadow_size=5, is_bold=True,
-                                          is_italic=False)
+                                          is_italic=False, letter_spacing=2)
     theme_form.footer_area_page = MagicMock(font_name='Oxygen', font_color='#fff', font_size=20, is_bold=False,
-                                            is_italic=True)
+                                            is_italic=True, line_spacing=2, letter_spacing=-1)
     theme_form.alignment_page = MagicMock(horizontal_align='left', vertical_align='top', is_transition_enabled=True,
                                           transition_type='fade', transition_speed='normal',
                                           transition_direction='horizontal', is_transition_reverse_enabled=False)
@@ -472,6 +475,7 @@ def test_update_theme_static(mocked_setup, settings):
     assert theme_form.theme.font_main_color == '#f00'
     assert theme_form.theme.font_main_size == 50
     assert theme_form.theme.font_main_line_adjustment == 12
+    assert theme_form.theme.font_main_letter_adjustment == 2
     assert theme_form.theme.font_main_outline is True
     assert theme_form.theme.font_main_outline_color == '#00f'
     assert theme_form.theme.font_main_outline_size == 3
@@ -489,6 +493,8 @@ def test_update_theme_static(mocked_setup, settings):
     assert theme_form.theme.font_footer_bold is False
     assert theme_form.theme.font_footer_italics is True
     assert theme_form.theme.font_footer_override is False
+    assert theme_form.theme.font_footer_line_adjustment == 2
+    assert theme_form.theme.font_footer_letter_adjustment == -1
     theme_form.theme.set_default_footer.assert_called_once_with()
     # Alignment
     assert theme_form.theme.display_horizontal_align == 'left'

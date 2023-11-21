@@ -25,15 +25,18 @@ from pathlib import Path
 from unittest.mock import ANY, MagicMock, patch
 
 import pytest
+from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.registry import Registry
 from openlp.core.common.enum import ImageThemeMode
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.serviceitem import ItemCapabilities
+from openlp.core.widgets.views import TreeWidgetWithDnD
 from openlp.plugins.images.lib.mediaitem import ImageMediaItem
 
 
 @pytest.fixture
-def media_item(mock_settings):
+def media_item(registry: Registry, mock_settings: MagicMock):
     """Local test setup"""
     mocked_main_window = MagicMock()
     Registry().register('service_list', MagicMock())
@@ -48,7 +51,95 @@ def media_item(mock_settings):
     return m_item
 
 
-def test_on_reset_click(media_item):
+def test_setup_item(registry: Registry, media_item: ImageMediaItem):
+    """Test that setup_item() does the right thing"""
+    # GIVEN: An instance of ImageMediaItem with some stuff mocked out
+    # WHEN: setup_item is called
+    with patch.object(media_item, 'list_view') as mocked_list_view, \
+            patch.object(media_item, 'images_go_live') as mocked_images_go_live, \
+            patch.object(media_item, 'images_add_to_service') as mocked_images_add_to_service:
+        media_item.setup_item()
+
+    # THEN: The correct things should be set and called
+    mocked_images_go_live.connect.assert_called_once_with(media_item.go_live_remote)
+    mocked_images_add_to_service.connect.assert_called_once_with(media_item.add_to_service_remote)
+    assert media_item.quick_preview_allowed is True
+    assert media_item.has_search is True
+    mocked_list_view.setSelectionMode.assert_called_once_with(QtWidgets.QAbstractItemView.ExtendedSelection)
+    assert registry.has_function('live_theme_changed')
+    assert registry.has_function('slidecontroller_live_started')
+    mocked_list_view.activateDnD.assert_called_once_with()
+
+
+@patch('openlp.plugins.images.lib.mediaitem.FolderLibraryItem.retranslate_ui')
+def test_retranslate_ui(mocked_retranslate_ui: MagicMock, media_item: ImageMediaItem):
+    """Test that the retranslate_ui method sets up the strings in the UI"""
+    # GIVEN: An insance of ImageMediaItem with some stuff mocked out
+    media_item.replace_action = MagicMock()
+    media_item.replace_action_context = MagicMock()
+    media_item.reset_action = MagicMock()
+    media_item.reset_action_context = MagicMock()
+
+    # WHEN: retranslate_ui() is called
+    media_item.retranslate_ui()
+
+    # THEN: The UI is translated
+    assert media_item.on_new_prompt == 'Select Image(s)'
+    # file_formats = get_images_filter()
+    # self.on_new_file_masks = '{formats};;{files} (*)'.format(formats=file_formats, files=UiStrings().AllFiles)
+    expected_replace_text = 'Replace Background'
+    expected_replace_tooltip = 'Replace live background.'
+    media_item.replace_action.setText.assert_called_once_with(expected_replace_text)
+    media_item.replace_action.setToolTip.assert_called_once_with(expected_replace_tooltip)
+    media_item.replace_action_context.setText.assert_called_once_with(expected_replace_text)
+    media_item.replace_action_context.setToolTip.assert_called_once_with(expected_replace_tooltip)
+    expected_reset_text = 'Reset Background'
+    expected_reset_tooltip = 'Reset live background.'
+    media_item.reset_action.setText.assert_called_once_with(expected_reset_text)
+    media_item.reset_action.setToolTip.assert_called_once_with(expected_reset_tooltip)
+    media_item.reset_action_context.setText.assert_called_once_with(expected_reset_text)
+    media_item.reset_action_context.setToolTip.assert_called_once_with(expected_reset_tooltip)
+
+
+@patch('openlp.plugins.images.lib.mediaitem.FolderLibraryItem.required_icons')
+def test_required_icons(mocked_required_icons: MagicMock, media_item: ImageMediaItem):
+    """Test that the required_icons() method sets up the flags for icons needed"""
+    # GIVEN: An insance of ImageMediaItem
+    # WHEN: required_icons() is called
+    media_item.required_icons()
+
+    # THEN: The correct flags are set
+    assert media_item.has_file_icon is True
+    assert media_item.has_new_icon is False
+    assert media_item.has_edit_icon is False
+    assert media_item.add_to_service_item is True
+
+
+@patch('openlp.plugins.images.lib.mediaitem.create_paths')
+@patch('openlp.plugins.images.lib.mediaitem.Item', autospec=True)
+def test_initialise(MockItem: MagicMock, mocked_create_paths: MagicMock, media_item: ImageMediaItem):
+    """Test that the initialise method does the right things"""
+    # GIVEN: An instance of ImageMediaItem and some stuff mocked out
+    media_item.list_view = MagicMock(spec=TreeWidgetWithDnD, default_indentation=4)
+    media_item.manager = MagicMock(spec=DBManager)
+    media_item.manager.get_all_objects.return_value = []
+    media_item.load_list = MagicMock()
+
+    # WHEN: initialise() is called
+    media_item.initialise()
+
+    # THEN: The correct methods should have been called
+    media_item.list_view.clear.assert_called_once_with()
+    media_item.list_view.setIconSize.assert_called_once_with(QtCore.QSize(88, 50))
+    media_item.list_view.setIndentation.assert_called_once_with(4)
+    assert media_item.list_view.allow_internal_dnd is True
+    assert media_item.service_path.parts[-1] == 'thumbnails'
+    mocked_create_paths.assert_called_once_with(media_item.service_path)
+    media_item.manager.get_all_objects.assert_called_once_with(MockItem, order_by_ref=MockItem.file_path)
+    media_item.load_list.assert_called_once_with([], is_initial_load=True)
+
+
+def test_on_reset_click(media_item: ImageMediaItem):
     """
     Test that on_reset_click() actually resets the background
     """

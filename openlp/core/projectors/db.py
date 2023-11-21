@@ -35,11 +35,12 @@ The Projector table keeps track of entries for controlled projectors.
 
 import logging
 
-from sqlalchemy import Column, ForeignKey, Integer, MetaData, String, and_
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
+from sqlalchemy import Column, ForeignKey, Integer, String, and_
+from sqlalchemy.orm import declarative_base, relationship
 
-from openlp.core.lib.db import CommonMixin, Manager, init_db, init_url
+from openlp.core.db.helpers import init_db, init_url
+from openlp.core.db.manager import DBManager
+from openlp.core.db.mixins import CommonMixin
 from openlp.core.projectors import upgrade
 from openlp.core.projectors.constants import PJLINK_DEFAULT_CODES
 
@@ -48,7 +49,7 @@ log = logging.getLogger(__name__)
 log.debug('projector.lib.db module loaded')
 
 
-Base = declarative_base(MetaData())
+Base = declarative_base()
 
 
 class Manufacturer(Base, CommonMixin):
@@ -206,12 +207,8 @@ class Projector(Base, CommonMixin):
     sw_version = Column(String(30))
     model_filter = Column(String(30))
     model_lamp = Column(String(30))
-    source_list = relationship('ProjectorSource',
-                               order_by='ProjectorSource.code',
-                               backref='projector',
-                               cascade='all, delete-orphan',
-                               primaryjoin='Projector.id==ProjectorSource.projector_id',
-                               lazy='joined')
+    source_list = relationship('ProjectorSource', order_by='ProjectorSource.code', back_populates='projector',
+                               cascade='all, delete-orphan')
 
 
 class ProjectorSource(Base, CommonMixin):
@@ -240,8 +237,10 @@ class ProjectorSource(Base, CommonMixin):
     text = Column(String(20))
     projector_id = Column(Integer, ForeignKey('projector.id'))
 
+    projector = relationship('Projector', back_populates='source_list')
 
-class ProjectorDB(Manager):
+
+class ProjectorDB(DBManager):
     """
     Class to access the projector database.
     """
@@ -261,7 +260,7 @@ class ProjectorDB(Manager):
         """
         self.db_url = init_url('projector')
         session, metadata = init_db(self.db_url, base=Base)
-        metadata.create_all(checkfirst=True)
+        metadata.create_all(bind=metadata.bind, checkfirst=True)
         return session
 
     def get_projector(self, *args, **kwargs):
@@ -318,7 +317,7 @@ class ProjectorDB(Manager):
             log.warning('get_projector(): No valid query found - cancelled')
             return None
 
-        return self.get_all_objects(object_class=Projector, filter_clause=db_filter)
+        return self.get_all_objects(Projector, db_filter)
 
     def get_projector_by_id(self, dbid):
         """
@@ -328,7 +327,7 @@ class ProjectorDB(Manager):
         :returns: Projector() instance
         """
         log.debug('get_projector_by_id(id="{data}")'.format(data=dbid))
-        projector = self.get_object_filtered(Projector, Projector.id == dbid)
+        projector = self.get_object(Projector, dbid)
         if projector is None:
             # Not found
             log.warning('get_projector_by_id() did not find {data}'.format(data=id))

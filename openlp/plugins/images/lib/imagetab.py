@@ -43,14 +43,16 @@ class ImageTab(SettingsTab):
         self.radio_group = QtWidgets.QButtonGroup(self)
         self.use_black_radio = QtWidgets.QRadioButton('', self)
         self.radio_group.addButton(self.use_black_radio, ImageThemeMode.Black)
-        self.image_theme_group_box_layout.setWidget(0, QtWidgets.QFormLayout.SpanningRole, self.use_black_radio)
+        self.image_theme_group_box_layout.setWidget(0, QtWidgets.QFormLayout.ItemRole.SpanningRole,
+                                                    self.use_black_radio)
         self.custom_theme_radio = QtWidgets.QRadioButton('', self)
         self.radio_group.addButton(self.custom_theme_radio, ImageThemeMode.CustomTheme)
-        self.image_theme_group_box_layout.setWidget(2, QtWidgets.QFormLayout.SpanningRole, self.custom_theme_radio)
+        self.image_theme_group_box_layout.setWidget(2, QtWidgets.QFormLayout.ItemRole.SpanningRole,
+                                                    self.custom_theme_radio)
         # Theme selection
         self.theme_combo_box = QtWidgets.QComboBox(self.image_theme_group_box)
-        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-        self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.theme_combo_box.setObjectName('theme_combo_box')
         self.image_theme_label = QtWidgets.QLabel(self.theme_combo_box)
         self.image_theme_label.setObjectName('image_theme_label')
@@ -58,7 +60,7 @@ class ImageTab(SettingsTab):
         # Add all to layout
         self.left_layout.addWidget(self.image_theme_group_box)
         self.left_layout.addStretch()
-        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Preferred)
+        self.right_column.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Preferred)
         self.right_layout.addStretch()
         # Signals and slots
         self.radio_group.buttonToggled.connect(self.on_radio_group_button_toggled)

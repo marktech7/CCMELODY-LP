@@ -24,7 +24,6 @@ Package to test the openlp.core.common.json package.
 import json
 import os
 from pathlib import Path
-from unittest import TestCase
 from unittest.mock import patch
 
 from openlp.core.common.json import JSONMixin, OpenLPJSONDecoder, OpenLPJSONEncoder, PathSerializer, _registered_classes
@@ -41,113 +40,115 @@ class BaseTestClass(object):
         self.c = c
 
 
-class TestJSONMixin(TestCase):
+@patch.dict(_registered_classes, clear=True)
+def test_subclass_json_mixin():
     """
-    Test the JSONMixin class
+    Test that a class is `registered` when subclassing JSONMixin
     """
-    def setUp(self):
-        self._registered_classes_patcher = patch.dict(_registered_classes, clear=True)
-        self.addCleanup(self._registered_classes_patcher.stop)
-        self._registered_classes_patcher.start()
+    # GIVEN: The JSONMixin class
+    # WHEN: Subclassing it
+    class TestClass(JSONMixin):
+        pass
 
-    def test_subclass_json_mixin(self):
-        """
-        Test that a class is `registered` when subclassing JSONMixin
-        """
-        # GIVEN: The JSONMixin class
-        # WHEN: Subclassing it
-        class TestClass(JSONMixin):
-            pass
+    # THEN: The TestClass should have been `registered`
+    assert _registered_classes['TestClass'] == TestClass
 
-        # THEN: The TestClass should have been `registered`
-        assert _registered_classes['TestClass'] == TestClass
 
-    def test_subclass_json_mixin_alt_names(self):
-        """
-        Test that a class is `registered` using the specified names when subclassing JSONMixin
-        """
-        # GIVEN: The JSONMixin class
-        # WHEN: Subclassing it with custom names
-        class TestClass(JSONMixin, register_names=('AltName1', 'AltName2')):
-            pass
+@patch.dict(_registered_classes, clear=True)
+def test_subclass_json_mixin_alt_names():
+    """
+    Test that a class is `registered` using the specified names when subclassing JSONMixin
+    """
+    # GIVEN: The JSONMixin class
+    # WHEN: Subclassing it with custom names
+    class TestClass(JSONMixin, register_names=('AltName1', 'AltName2')):
+        pass
 
-        # THEN: The TestClass should have been registered with only those names
-        assert 'TestClass' not in _registered_classes
-        assert _registered_classes['AltName1'] == TestClass
-        assert _registered_classes['AltName2'] == TestClass
+    # THEN: The TestClass should have been registered with only those names
+    assert 'TestClass' not in _registered_classes
+    assert _registered_classes['AltName1'] == TestClass
+    assert _registered_classes['AltName2'] == TestClass
 
-    def test_encoding_json_mixin_subclass(self):
-        """
-        Test that an instance of a JSONMixin subclass is properly serialized to a JSON string
-        """
-        # GIVEN: A instance of a subclass of the JSONMixin class
-        class TestClass(BaseTestClass, JSONMixin):
-            _json_keys = ['a', 'b']
 
-        instance = TestClass(a=1, c=2)
+@patch.dict(_registered_classes, clear=True)
+def test_encoding_json_mixin_subclass():
+    """
+    Test that an instance of a JSONMixin subclass is properly serialized to a JSON string
+    """
+    # GIVEN: A instance of a subclass of the JSONMixin class
+    class TestClass(BaseTestClass, JSONMixin):
+        _json_keys = ['a', 'b']
 
-        # WHEN: Serializing the instance
-        json_string = json.dumps(instance, cls=OpenLPJSONEncoder)
+    instance = TestClass(a=1, c=2)
 
-        # THEN: Only the attributes specified by `_json_keys` should be serialized, and only if they have been set
-        assert json_string == '{"a": 1, "json_meta": {"class": "TestClass", "version": 1}}'
+    # WHEN: Serializing the instance
+    json_string = json.dumps(instance, cls=OpenLPJSONEncoder)
 
-    def test_decoding_json_mixin_subclass(self):
-        """
-        Test that an instance of a JSONMixin subclass is properly deserialized from a JSON string
-        """
-        # GIVEN: A subclass of the JSONMixin class
-        class TestClass(BaseTestClass, JSONMixin):
-            _json_keys = ['a', 'b']
+    # THEN: Only the attributes specified by `_json_keys` should be serialized, and only if they have been set
+    assert json_string == '{"a": 1, "json_meta": {"class": "TestClass", "version": 1}}'
 
-        # WHEN: Deserializing a JSON representation of the TestClass
-        instance = json.loads(
-            '{"a": 1, "c": 2, "json_meta": {"class": "TestClass", "version": 1}}', cls=OpenLPJSONDecoder)
 
-        # THEN: Only the attributes specified by `_json_keys` should have been set
-        assert instance.__class__ == TestClass
-        assert instance.a == 1
-        assert instance.b is None
-        assert instance.c is None
+@patch.dict(_registered_classes, clear=True)
+def test_decoding_json_mixin_subclass():
+    """
+    Test that an instance of a JSONMixin subclass is properly deserialized from a JSON string
+    """
+    # GIVEN: A subclass of the JSONMixin class
+    class TestClass(BaseTestClass, JSONMixin):
+        _json_keys = ['a', 'b']
 
-    def test_encoding_json_mixin_subclass_custom_name(self):
-        """
-        Test that an instance of a JSONMixin subclass is properly serialized to a JSON string when using a custom name
-        """
-        # GIVEN: A instance of a subclass of the JSONMixin class with a custom name
-        class TestClass(BaseTestClass, JSONMixin, register_names=('AltName', )):
-            _json_keys = ['a', 'b']
-            _name = 'AltName'
-            _version = 2
+    # WHEN: Deserializing a JSON representation of the TestClass
+    instance = json.loads(
+        '{"a": 1, "c": 2, "json_meta": {"class": "TestClass", "version": 1}}', cls=OpenLPJSONDecoder)
 
-        instance = TestClass(a=1, c=2)
+    # THEN: Only the attributes specified by `_json_keys` should have been set
+    assert instance.__class__ == TestClass
+    assert instance.a == 1
+    assert instance.b is None
+    assert instance.c is None
 
-        # WHEN: Serializing the instance
-        json_string = json.dumps(instance, cls=OpenLPJSONEncoder)
 
-        # THEN: Only the attributes specified by `_json_keys` should be serialized, and only if they have been set
-        assert json_string == '{"a": 1, "json_meta": {"class": "AltName", "version": 2}}'
+@patch.dict(_registered_classes, clear=True)
+def test_encoding_json_mixin_subclass_custom_name():
+    """
+    Test that an instance of a JSONMixin subclass is properly serialized to a JSON string when using a custom name
+    """
+    # GIVEN: A instance of a subclass of the JSONMixin class with a custom name
+    class TestClass(BaseTestClass, JSONMixin, register_names=('AltName', )):
+        _json_keys = ['a', 'b']
+        _name = 'AltName'
+        _version = 2
 
-    def test_decoding_json_mixin_subclass_custom_name(self):
-        """
-        Test that an instance of a JSONMixin subclass is properly deserialized from a JSON string when using a custom
-        name
-        """
-        # GIVEN: A instance of a subclass of the JSONMixin class with a custom name
-        class TestClass(BaseTestClass, JSONMixin, register_names=('AltName', )):
-            _json_keys = ['a', 'b']
-            _name = 'AltName'
-            _version = 2
+    instance = TestClass(a=1, c=2)
 
-        # WHEN: Deserializing a JSON representation of the TestClass
-        instance = json.loads(
-            '{"a": 1, "c": 2, "json_meta": {"class": "AltName", "version": 2}}', cls=OpenLPJSONDecoder)
+    # WHEN: Serializing the instance
+    json_string = json.dumps(instance, cls=OpenLPJSONEncoder)
 
-        # THEN: Only the attributes specified by `_json_keys` should have been set
-        assert instance.__class__ == TestClass
-        assert instance.a == 1
-        assert instance.b is None
-        assert instance.c is None
+    # THEN: Only the attributes specified by `_json_keys` should be serialized, and only if they have been set
+    assert json_string == '{"a": 1, "json_meta": {"class": "AltName", "version": 2}}'
+
+
+@patch.dict(_registered_classes, clear=True)
+def test_decoding_json_mixin_subclass_custom_name():
+    """
+    Test that an instance of a JSONMixin subclass is properly deserialized from a JSON string when using a custom
+    name
+    """
+    # GIVEN: A instance of a subclass of the JSONMixin class with a custom name
+    class TestClass(BaseTestClass, JSONMixin, register_names=('AltName', )):
+        _json_keys = ['a', 'b']
+        _name = 'AltName'
+        _version = 2
+
+    # WHEN: Deserializing a JSON representation of the TestClass
+    instance = json.loads(
+        '{"a": 1, "c": 2, "json_meta": {"class": "AltName", "version": 2}}', cls=OpenLPJSONDecoder)
+
+    # THEN: Only the attributes specified by `_json_keys` should have been set
+    assert instance.__class__ == TestClass
+    assert instance.a == 1
+    assert instance.b is None
+    assert instance.c is None
 
 
 def test_object_hook_path_object():

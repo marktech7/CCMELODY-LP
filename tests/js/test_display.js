@@ -1,9 +1,13 @@
-function _createDiv(attrs) {
+function _createDiv(attrs, inElement) {
     var div = document.createElement("div");
     for (key in attrs) {
         div.setAttribute(key, attrs[key]);
     }
-    document.body.appendChild(div);
+    if (inElement) {
+      inElement.appendChild(div);
+    } else {
+      document.body.appendChild(div);
+    }
     return div;
 }
 
@@ -170,6 +174,7 @@ describe("The Display object", function () {
 
   it("should initialise Reveal when init is called", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     Display.init();
     expect(Reveal.initialize).toHaveBeenCalled();
@@ -177,6 +182,7 @@ describe("The Display object", function () {
 
   it("should have checkerboard class when init is called when not display", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     document.body.classList = "";
     Display.init({isDisplay: false});
@@ -185,6 +191,7 @@ describe("The Display object", function () {
 
   it("should not have checkerboard class when init is called when is a display", function () {
     spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
     document.body.innerHTML = "";
     document.body.classList = "";
     Display.init({isDisplay: true});
@@ -205,6 +212,14 @@ describe("The Display object", function () {
 
   it("should have a setItemTransition() method", function () {
     expect(Display.setItemTransition).toBeDefined();
+  });
+
+  it("should register _onSlideChanged event for slide change", function () {
+    spyOn(Reveal, "initialize");
+    spyOn(Reveal, "addEventListener");
+    document.body.innerHTML = "";
+    Display.init();
+    expect(Reveal.addEventListener).toHaveBeenCalledWith('slidechanged', Display._onSlideChanged);
   });
 
   it("should have a correctly functioning clearSlides() method", function () {
@@ -307,92 +322,6 @@ describe("Transitions", function () {
 
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition")).toEqual("convex-vertical-reverse");
     expect(Display._slidesContainer.children[0].children[0].getAttribute("data-transition-speed")).toEqual("slow");
-  });
-});
-
-
-describe("Screen Visibility", function () {
-  var TRANSITION_TIMEOUT = 2000;
-
-  beforeEach(function() {
-    window.displayWatcher = jasmine.createSpyObj('DisplayWatcher', ['dispatchEvent', 'setInitialised', 'pleaseRepaint']);
-    document.body.innerHTML = "";
-    var revealDiv = _createDiv({"class": "reveal"});
-    var slidesDiv = _createDiv({"class": "slides"});
-    var footerDiv = _createDiv({"class": "footer"});
-    slidesDiv.innerHTML = "<section><section><p></p></section></section>";
-    revealDiv.append(slidesDiv);
-    revealDiv.append(footerDiv);
-    document.body.style.transition = "opacity 75ms ease-in-out";
-    Display.init({isDisplay: true, doItemTransition: false});
-  });
-  afterEach(function() {
-    // Reset theme
-    Display._theme = null;
-  });
-
-  it("should trigger dispatchEvent when toTransparent(eventName) is called with an event parameter", function (done) {
-    var testEventName = 'event_32';
-    displayWatcher.dispatchEvent = function(eventName) {
-      if (eventName == testEventName) {
-        done();
-      }
-    };
-
-    Display.toTransparent(testEventName);
-
-    setTimeout(function() {
-      fail('dispatchEvent not called');
-      done();
-    }, TRANSITION_TIMEOUT);
-  });
-
-  it("should trigger dispatchEvent when toBlack(eventName) is called with an event parameter", function (done) {
-    var testEventName = 'event_33';
-    displayWatcher.dispatchEvent = function(eventName) {
-      if (eventName == testEventName) {
-        done();
-      }
-    };
-
-    Display.toBlack(testEventName);
-
-    setTimeout(function() {
-      fail('dispatchEvent not called');
-      done();
-    }, TRANSITION_TIMEOUT);
-  });
-
-  it("should trigger dispatchEvent when toTheme(eventName) is called with an event parameter", function (done) {
-    var testEventName = 'event_34';
-    displayWatcher.dispatchEvent = function(eventName) {
-      if (eventName == testEventName) {
-        done();
-      }
-    };
-
-    Display.toTheme(testEventName);
-
-    setTimeout(function() {
-      fail('dispatchEvent not called');
-      done();
-    }, TRANSITION_TIMEOUT);
-  });
-
-  it("should trigger dispatchEvent when show(eventName) is called with an event parameter", function (done) {
-    var testEventName = 'event_35';
-    displayWatcher.dispatchEvent = function(eventName) {
-      if (eventName == testEventName) {
-        done();
-      }
-    };
-
-    Display.show(testEventName);
-
-    setTimeout(function() {
-      fail('dispatchEvent not called');
-      done();
-    }, TRANSITION_TIMEOUT);
   });
 });
 
@@ -770,17 +699,17 @@ describe("Display.setTextSlide", function () {
 });
 
 describe("Display.setTextSlides", function () {
+  var textSlides;
+
   beforeEach(function() {
     document.body.innerHTML = "";
-    var slides_container = _createDiv({"class": "slides"});
-    var footer_container = _createDiv({"class": "footer"});
+    var revealContainer = Display._revealContainer = _createDiv({"class": "reveal"})
+    var slides_container = _createDiv({"class": "slides"}, revealContainer);
+    var footer_container = _createDiv({"class": "footer"}, revealContainer);
     Display._slidesContainer = slides_container;
     Display._footerContainer = footer_container;
     Display._slides = {};
-  });
-
-  it("should add a list of slides", function () {
-    var slides = [
+    textSlides = [
       {
         "verse": "v1",
         "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
@@ -794,6 +723,10 @@ describe("Display.setTextSlides", function () {
         "footer": "Public Domain"
       }
     ];
+  });
+
+  it("should add a list of slides", function () {
+    var slides = textSlides;
     spyOn(Display, "clearSlides");
     spyOn(Reveal, "sync");
     spyOn(Reveal, "slide");
@@ -808,14 +741,7 @@ describe("Display.setTextSlides", function () {
   });
 
   it("should correctly set outline width", function () {
-    const slides = [
-      {
-        "verse": "v1",
-        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
-                "I once was lost, but now I'm found\nWas blind but now I see",
-        "footer": "Public Domain"
-      }
-    ];
+    const slides = [textSlides[0]];
     const theme = {
       'font_main_color': 'yellow',
       'font_main_outline': true,
@@ -834,14 +760,7 @@ describe("Display.setTextSlides", function () {
 
   it("should correctly set text alignment,\
       (check the order of alignments in the emuns are the same in both js and python)", function () {
-    const slides = [
-      {
-        "verse": "v1",
-        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
-                "I once was lost, but now I'm found\nWas blind but now I see",
-        "footer": "Public Domain"
-      }
-    ];
+    const slides = [textSlides[0]];
     //
     const theme = {
       'display_horizontal_align': 3,
@@ -859,14 +778,7 @@ describe("Display.setTextSlides", function () {
   })
 
   it("should enable shadows", function () {
-    const slides = [
-      {
-        "verse": "v1",
-        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
-                "I once was lost, but now I'm found\nWas blind but now I see",
-        "footer": "Public Domain"
-      }
-    ];
+    const slides = [textSlides[0]];
     //
     const theme = {
       'font_main_shadow': true,
@@ -884,14 +796,7 @@ describe("Display.setTextSlides", function () {
   })
 
   it("should not enable shadows", function () {
-    const slides = [
-      {
-        "verse": "v1",
-        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
-                "I once was lost, but now I'm found\nWas blind but now I see",
-        "footer": "Public Domain"
-      }
-    ];
+    const slides = [textSlides[0]];
     //
     const theme = {
       'font_main_shadow': false,
@@ -909,14 +814,7 @@ describe("Display.setTextSlides", function () {
   })
 
   it("should correctly set slide size position to theme size when adding a text slide", function () {
-    const slides = [
-      {
-        "verse": "v1",
-        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
-                "I once was lost, but now I'm found\nWas blind but now I see",
-        "footer": "Public Domain"
-      }
-    ];
+    const slides = [textSlides[0]];
     //
     const theme = {
       'font_main_y': 789,
@@ -936,6 +834,33 @@ describe("Display.setTextSlides", function () {
     expect(slidesDiv.style['width']).toEqual('1230px');
     expect(slidesDiv.style['height']).toEqual('4560px');
   })
+
+  it("should work correctly with different footer contents per slide", function () {
+    var slides = textSlides;
+    spyOn(Display, "clearSlides");
+    spyOn(Reveal, "sync");
+    spyOn(Reveal, "slide");
+
+    Display.setTextSlides(slides);
+
+    expect(Display.clearSlides).toHaveBeenCalledTimes(0);
+    expect($(".footer > .footer-item").length).toEqual(2);
+    expect(document.querySelectorAll(".footer > .footer-item")[0].innerHTML).toEqual(slides[0].footer);
+    expect(document.querySelectorAll(".footer > .footer-item")[1].innerHTML).toEqual(slides[1].footer);
+  });
+
+  it("should select correct footer index when resetting text", function () {
+    var slides = textSlides;
+    slides[1]['footer'] = 'Public Domain, Second Test';
+
+    Display.init({isDisplay: false});
+    Display.setTextSlides(slides);
+    spyOn(Reveal, 'getIndices').and.returnValue({v: 1, h: 0});
+    slides[1]['footer'] = 'Second Slide';
+    Display.setTextSlides(slides);
+
+    expect(document.querySelectorAll(".footer > .footer-item")[1].classList.contains('active')).toBeTruthy();
+  });
 });
 
 describe("Display.setImageSlides", function () {
@@ -949,7 +874,7 @@ describe("Display.setImageSlides", function () {
   });
 
   it("should add a list of images", function () {
-    var slides = [{"path": "file:///openlp1.jpg"}, {"path": "file:///openlp2.jpg"}];
+    var slides = [{"path": "openlp-library://local-file//openlp1.jpg"}, {"path": "openlp-library://local-file//openlp2.jpg"}];
     spyOn(Reveal, "sync");
     spyOn(Reveal, "slide");
 
@@ -959,9 +884,9 @@ describe("Display.setImageSlides", function () {
     expect(Display._slides["1"]).toEqual(1);
     expect($(".slides > section > section").length).toEqual(2);
     expect($(".slides > section > section > img").length).toEqual(2);
-    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("file:///openlp1.jpg");
+    expect($(".slides > section > section > img")[0].getAttribute("src")).toEqual("openlp-library://local-file//openlp1.jpg");
     expect($(".slides > section > section > img")[0].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;");
-    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("file:///openlp2.jpg");
+    expect($(".slides > section > section > img")[1].getAttribute("src")).toEqual("openlp-library://local-file//openlp2.jpg");
     expect($(".slides > section > section > img")[1].getAttribute("style")).toEqual("width: 100%; height: 100%; margin: 0; object-fit: contain;");
     expect(Reveal.sync).toHaveBeenCalledTimes(1);
   });
@@ -1169,5 +1094,54 @@ describe("Display.toggleVideoMute", function () {
     mockVideo.muted = true;
     Display.toggleVideoMute();
     expect(mockVideo.muted).toEqual(false);
+  });
+});
+
+describe("localFile", function() {
+  it('should translate file:// protocol to openlp-library://local-file/ scheme', function() {
+    const fileUrl = 'file:///home/path/to/image.png';
+    const resultFile = Display._getFileUrl(fileUrl);
+    expect(resultFile).toEqual('openlp-library://local-file//home/path/to/image.png');
+  })
+})
+
+describe("Reveal slidechanged event", function () {
+  it("should swap footer content", function (done) {
+    var slides = [
+      {
+        "verse": "v1",
+        "text": "Amazing grace, how sweet the sound\nThat saved a wretch like me\n" +
+                "I once was lost, but now I'm found\nWas blind but now I see",
+        "footer": "Public Domain"
+      },
+      {
+        "verse": "v2",
+        "text": "'twas Grace that taught, my heart to fear\nAnd grace, my fears relieved.\n" +
+                "How precious did that grace appear,\nthe hour I first believed.",
+        "footer": "Public Domain, Second Test"
+      }
+    ];
+
+    document.body.innerHTML = '';
+    var revealContainer = Display._revealContainer = _createDiv({"class": "reveal"});
+
+    var slidesDiv = _createDiv({"class": "slides"}, revealContainer);
+    slidesDiv.innerHTML = "<section><p></p></section>";
+    Display._slidesContainer = slidesDiv;
+    var footerDiv = _createDiv({"class": "footer"}, revealContainer);
+    Display._footerContainer = footerDiv;
+
+    Display.init({isDisplay: false, doItemTransitions: false});
+    var oldDisplaySlideChanged = Display._onSlideChanged; 
+    Display._onSlideChanged = function(event) {
+      oldDisplaySlideChanged(event);
+      expect(document.querySelector(".footer > .footer-item.active").getAttribute('data-slide')).toEqual('1');
+      done();
+    }
+    Display.setTextSlides(slides);
+
+    var currentSlide = Display._slidesContainer.querySelector('*:nth-child(2)');
+    currentSlide.id = '1';
+    Display._onSlideChanged({currentSlide: currentSlide});
   });
 });

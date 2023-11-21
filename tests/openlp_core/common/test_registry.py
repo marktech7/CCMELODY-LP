@@ -21,8 +21,10 @@
 """
 Package to test the openlp.core.lib package.
 """
+import logging
+from unittest.mock import MagicMock, patch
+
 import pytest
-from unittest.mock import MagicMock
 
 from openlp.core.common.registry import Registry, RegistryBase
 
@@ -35,7 +37,7 @@ def dummy_function_2():
     return "function_2"
 
 
-def test_registry_service(registry):
+def test_registry_service(registry: Registry):
     """
     Test the registry creation and its usage
     """
@@ -55,18 +57,16 @@ def test_registry_service(registry):
         'KeyError exception should have been thrown for duplicate service'
 
     # WHEN I try to get back a non existent component
-    # THEN I will get an exception
-    temp = Registry().get('test2')
-    assert temp is None, 'None should have been returned for missing service'
+    # THEN I will get None
+    assert Registry().get('test2') is None
 
     # WHEN I try to replace a component I should be allowed
     Registry().remove('test1')
     # THEN I will get an exception
-    temp = Registry().get('test1')
-    assert temp is None, 'None should have been returned for deleted service'
+    assert Registry().get('test1') is None
 
 
-def test_registry_function(registry):
+def test_registry_function(registry: Registry):
     """
     Test the registry function creation and their usages
     """
@@ -94,7 +94,43 @@ def test_registry_function(registry):
     assert return_value[0] == 'function_2', 'A return value is provided and matches'
 
 
-def test_registry_working_flags(registry):
+@patch('openlp.core.common.registry.log')
+@patch('openlp.core.common.registry.trace_error_handler')
+def test_registry_function_type_error(mocked_trace_error: MagicMock, mocked_log: MagicMock, registry: Registry):
+    """Test that a TypeError is logged"""
+    # GIVEN: A registry, some mocks, and a rigged function
+    mock_function = MagicMock()
+    mock_function.side_effect = TypeError
+    registry.register_function('mock', mock_function)
+
+    # WHEN: execute is called
+    result = registry.execute('mock', 'arg', kwarg='kwarg')
+
+    # THEN: result should be an empty list, and the correct functions should have been called
+    assert result == []
+    mock_function.assert_called_with('arg', kwarg='kwarg')
+    mocked_trace_error.assert_called_once_with(mocked_log)
+    mocked_log.exception.assert_called_once_with(f'Exception for function {mock_function}')
+
+
+@patch('openlp.core.common.registry.log')
+@patch('openlp.core.common.registry.trace_error_handler')
+def test_registry_function_does_not_exist(mocked_trace_error: MagicMock, mocked_log: MagicMock,
+                                          registry: Registry):
+    """Test that a TypeError is logged"""
+    # GIVEN: A registry, some mocks, and a rigged function
+    mocked_log.getEffectiveLevel.return_value = logging.DEBUG
+
+    # WHEN: execute is called
+    result = registry.execute('mock')
+
+    # THEN: result should be an empty list, and the correct functions should have been called
+    assert result == []
+    mocked_trace_error.assert_called_once_with(mocked_log)
+    mocked_log.error.assert_called_once_with('Event mock called but not registered')
+
+
+def test_registry_working_flags(registry: Registry):
     """
     Test the registry working flags creation and its usage
     """
@@ -130,7 +166,7 @@ def test_registry_working_flags(registry):
         'KeyError exception should have been thrown for duplicate working flag'
 
 
-def test_remove_function(registry):
+def test_remove_function(registry: Registry):
     """
     Test the remove_function() method
     """
@@ -154,7 +190,7 @@ class RegistryStub(RegistryBase):
         super().__init__()
 
 
-def test_registry_mixin_missing(registry):
+def test_registry_mixin_missing(registry: Registry):
     """
     Test the registry creation and its usage
     """
@@ -166,7 +202,7 @@ def test_registry_mixin_missing(registry):
     assert len(Registry().functions_list) == 0, 'The function should not be in the dict anymore.'
 
 
-def test_registry_mixin_present(registry):
+def test_registry_mixin_present(registry: Registry):
     """
     Test the registry creation and its usage
     """
@@ -176,3 +212,11 @@ def test_registry_mixin_present(registry):
 
     # THEN: The bootstrap methods should be registered
     assert len(Registry().functions_list) == 3, 'The bootstrap functions should be in the dict.'
+
+
+def test_registry_base_empty_methods(registry: Registry):
+    """Test the RegistryBase class, just to increase coverage"""
+    base = RegistryStub()
+    base.bootstrap_initialise()
+    base.bootstrap_post_set_up()
+    base.bootstrap_completion()

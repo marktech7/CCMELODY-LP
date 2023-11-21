@@ -25,6 +25,7 @@ import pytest
 from unittest.mock import MagicMock, patch
 
 from PyQt5 import QtCore, QtWidgets
+from openlp.core.common.enum import SongFirstSlideMode
 
 from openlp.core.common.registry import Registry
 from openlp.plugins.songs.lib.songstab import SongsTab
@@ -89,7 +90,6 @@ def test_save_check_box_settings(form):
     form.on_tool_bar_active_check_box_changed(QtCore.Qt.Checked)
     form.on_update_on_edit_check_box_changed(QtCore.Qt.Unchecked)
     form.on_add_from_service_check_box_changed(QtCore.Qt.Checked)
-    form.on_songbook_slide_check_box_changed(QtCore.Qt.Unchecked)
     form.on_disable_chords_import_check_box_changed(QtCore.Qt.Unchecked)
     form.on_auto_play_check_box_changed(QtCore.Qt.Checked)
     # WHEN: Save is invoked
@@ -99,7 +99,6 @@ def test_save_check_box_settings(form):
     assert form.settings.value('songs/display songbar') is True
     assert form.settings.value('songs/update service on edit') is False
     assert form.settings.value('songs/add song from service') is True
-    assert form.settings.value('songs/add songbook slide') is False
     assert form.settings.value('songs/disable chords import') is False
     assert form.settings.value('songs/auto play audio') is True
 
@@ -245,3 +244,17 @@ def test_save_tab_change(form):
     # THEN: the post process should be requested
     assert 1 == form.settings_form.register_post_process.call_count, \
         'Songs Post processing should have been requested'
+
+
+def test_save_first_slide_settings(form):
+    """
+    Tests that "Add First Slide" setting is saved correctly.
+    """
+    # GIVEN: "Add First Slide" has been changed
+    form.on_first_slide_mode_combo_box_changed(2)
+
+    # WHEN: save() is invoked
+    form.save()
+
+    # THEN: The correct values should be stored in the settings
+    assert form.settings.value('songs/first slide mode') is SongFirstSlideMode.Footer.value

@@ -102,6 +102,8 @@ def str_to_path(string):
     :return: None if :param:`string` is empty, or a Path object representation of :param:`string`
     :rtype: Path | None
     """
+    if isinstance(string, Path):
+        return string
     if not isinstance(string, str):
         log.error('parameter \'string\' must be of type str, got {} which is a {} instead'.format(string, type(string)))
         return None

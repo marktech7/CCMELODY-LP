@@ -227,8 +227,8 @@ def test_get_directory_for_language_dir_from_macosx(mocked_getenv, mocked_is_mac
 @patch('openlp.core.common.applocation.is_win')
 @patch('openlp.core.common.applocation.is_macosx')
 @patch('openlp.core.common.applocation.AppDirs')
-@patch('openlp.core.common.applocation.Path')
-def test_get_directory_for_language_dir_from_linux(MockPath, MockAppDirs, mocked_is_macosx, mocked_is_win,
+@patch('openlp.core.common.applocation.Path.exists', autospec=True)
+def test_get_directory_for_language_dir_from_linux(mocked_exists, MockAppDirs, mocked_is_macosx, mocked_is_win,
                                                    mocked_resolve):
     """
     Test the AppLocation.get_directory() method for AppLocation.LanguageDir
@@ -238,11 +238,10 @@ def test_get_directory_for_language_dir_from_linux(MockPath, MockAppDirs, mocked
     mocked_resolve.return_value = openlp_i18n_path
     mocked_is_win.return_value = False
     mocked_is_macosx.return_value = False
-    mocked_dirs = MagicMock(site_data_dir=os.pathsep.join(['/usr/share/gnome/openlp', '/usr/local/share/openlp',
-                                                           '/usr/share/openlp']))
+    candidate_dirs = ['/usr/share/gnome/openlp', '/usr/local/share/openlp', '/usr/share/openlp']
+    mocked_dirs = MagicMock(site_data_dir=os.pathsep.join(candidate_dirs))
     MockAppDirs.return_value = mocked_dirs
-    mocked_path = MagicMock(**{'exists.return_value': True, '__truediv__.return_value': openlp_i18n_path})
-    MockPath.side_effect = [MagicMock(**{'exists.return_value': False}), mocked_path]
+    mocked_exists.side_effect = lambda p: p in candidate_dirs + [openlp_i18n_path]
 
     # WHEN: We call AppLocation.get_directory
     directory = AppLocation.get_directory(AppLocation.LanguageDir)

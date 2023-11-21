@@ -21,20 +21,28 @@
 """
 This module contains tests for the SongShow Plus song importer.
 """
-from unittest import skip
+from typing import Any
 from unittest.mock import MagicMock, patch
 
+import pytest
+
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib import VerseType
 from openlp.plugins.songs.lib.importers.songshowplus import SongShowPlusImport
 from tests.helpers.songfileimport import SongImportTestHelper
 from tests.utils.constants import RESOURCE_PATH
 
-
 TEST_PATH = RESOURCE_PATH / 'songs' / 'songshowplus'
 
 
-def test_song_show_plus(mock_settings):
+@pytest.fixture
+def importer(registry: Registry, settings: Settings):
+    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
+        yield SongShowPlusImport(MagicMock(), file_paths=[])
 
+
+def test_song_show_plus(mock_settings: MagicMock):
     test_file_import = SongImportTestHelper('SongShowPlusImport', 'songshowplus')
     test_file_import.setUp()
     test_file_import.file_import([TEST_PATH / 'Amazing Grace.sbsong'],
@@ -50,120 +58,98 @@ def test_song_show_plus(mock_settings):
     test_file_import.tearDown()
 
 
-def test_create_importer(registry):
+def test_create_importer(importer: SongShowPlusImport):
     """
     Test creating an instance of the SongShow Plus file importer
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
-        mocked_manager = MagicMock()
-
-        # WHEN: An importer object is created
-        importer = SongShowPlusImport(mocked_manager, file_paths=[])
-
-        # THEN: The importer object should not be None
-        assert importer is not None, 'Import should not be none'
+    # THEN: The importer object should not be None
+    assert importer is not None, 'Import should not be none'
 
 
-def test_invalid_import_source(registry):
+@pytest.mark.parametrize('source', [('not a list',), (0,)])
+def test_invalid_import_source(importer: SongShowPlusImport, source: Any):
     """
     Test SongShowPlusImport.do_import handles different invalid import_source values
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
-        mocked_manager = MagicMock()
-        mocked_import_wizard = MagicMock()
-        importer = SongShowPlusImport(mocked_manager, file_paths=[])
-        importer.import_wizard = mocked_import_wizard
-        importer.stop_import_flag = True
+    mocked_import_wizard = MagicMock()
+    importer.import_wizard = mocked_import_wizard
+    importer.stop_import_flag = True
 
-        # WHEN: Import source is not a list
-        for source in ['not a list', 0]:
-            importer.import_source = source
+    # WHEN: Import source is not a list, and the importer is run
+    importer.import_source = source
+    result = importer.do_import()
 
-            # THEN: do_import should return none and the progress bar maximum should not be set.
-            assert importer.do_import() is None, 'do_import should return None when import_source is not a list'
-            assert mocked_import_wizard.progress_bar.setMaximum.called is False, \
-                'setMaximum on import_wizard.progress_bar should not have been called'
+    # THEN: do_import should return none and the progress bar maximum should not be set.
+    assert result is None, 'do_import should return None when import_source is not a list'
+    assert mocked_import_wizard.progress_bar.setMaximum.called is False, \
+        'setMaximum on import_wizard.progress_bar should not have been called'
 
 
-def test_valid_import_source(registry):
+def test_valid_import_source(importer: SongShowPlusImport):
     """
     Test SongShowPlusImport.do_import handles different invalid import_source values
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
-        mocked_manager = MagicMock()
-        mocked_import_wizard = MagicMock()
-        importer = SongShowPlusImport(mocked_manager, file_paths=[])
-        importer.import_wizard = mocked_import_wizard
-        importer.stop_import_flag = True
+    mocked_import_wizard = MagicMock()
+    importer.import_wizard = mocked_import_wizard
+    importer.stop_import_flag = True
 
-        # WHEN: Import source is a list
-        importer.import_source = ['List', 'of', 'files']
+    # WHEN: Import source is a list
+    importer.import_source = ['List', 'of', 'files']
+    result = importer.do_import()
 
-        # THEN: do_import should return none and the progress bar setMaximum should be called with the length of
-        #       import_source.
-        assert importer.do_import() is None, \
-            'do_import should return None when import_source is a list and stop_import_flag is True'
-        mocked_import_wizard.progress_bar.setMaximum.assert_called_with(len(importer.import_source))
+    # THEN: do_import should return none and the progress bar setMaximum should be called with the length of
+    #       import_source.
+    assert result is None, \
+        'do_import() should return None when import_source is a list and stop_import_flag is True'
+    mocked_import_wizard.progress_bar.setMaximum.assert_called_with(len(importer.import_source))
 
 
-def test_to_openlp_verse_tag_unique(registry):
+@pytest.mark.parametrize('original_tag,openlp_tag', [('Verse 1', VerseType.tags[VerseType.Verse] + '1'),
+                                                     ('Verse 2', VerseType.tags[VerseType.Verse] + '2'),
+                                                     ('verse1', VerseType.tags[VerseType.Verse] + '1'),
+                                                     ('Verse', VerseType.tags[VerseType.Verse] + '1'),
+                                                     ('Verse1', VerseType.tags[VerseType.Verse] + '1'),
+                                                     ('chorus 1', VerseType.tags[VerseType.Chorus] + '1'),
+                                                     ('bridge 1', VerseType.tags[VerseType.Bridge] + '1'),
+                                                     ('pre-chorus 1', VerseType.tags[VerseType.PreChorus] + '1'),
+                                                     ('different 1', VerseType.tags[VerseType.Other] + '1'),
+                                                     ('random 1', VerseType.tags[VerseType.Other] + '1')])
+def test_to_openlp_verse_tag_unique(importer: SongShowPlusImport, original_tag: str, openlp_tag: str):
     """
     Test to_openlp_verse_tag method by simulating adding a verse
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
-        mocked_manager = MagicMock()
-        importer = SongShowPlusImport(mocked_manager, file_paths=[])
-
-        # WHEN: Supplied with the following arguments replicating verses being added
-        test_values = [
-            ('Verse 1', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse 2', VerseType.tags[VerseType.Verse] + '2'),
-            ('verse1', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse1', VerseType.tags[VerseType.Verse] + '1'),
-            ('chorus 1', VerseType.tags[VerseType.Chorus] + '1'),
-            ('bridge 1', VerseType.tags[VerseType.Bridge] + '1'),
-            ('pre-chorus 1', VerseType.tags[VerseType.PreChorus] + '1'),
-            ('different 1', VerseType.tags[VerseType.Other] + '1'),
-            ('random 1', VerseType.tags[VerseType.Other] + '2')]
-
-        # THEN: The returned value should should correlate with the input arguments
-        for original_tag, openlp_tag in test_values:
-            assert importer.to_openlp_verse_tag(original_tag) == openlp_tag, \
-                'SongShowPlusImport.to_openlp_verse_tag should return "%s" when called with "%s"' % \
-                (openlp_tag, original_tag)
+    # WHEN: Supplied with the following arguments replicating verses being added
+    # THEN: The returned value should should correlate with the input arguments
+    assert importer.to_openlp_verse_tag(original_tag) == openlp_tag, \
+        f'SongShowPlusImport.to_openlp_verse_tag should return "{openlp_tag}" when called with "{original_tag}"'
 
 
-@skip('Broken never worked')
-def test_to_openlp_verse_tag_verse_order(registry):
+@pytest.mark.skip('Broken never worked')
+def test_to_openlp_verse_tag_verse_order(importer: SongShowPlusImport):
     """
     Test to_openlp_verse_tag method by simulating adding a verse to the verse order
     """
     # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-    with patch('openlp.plugins.songs.lib.importers.songshowplus.SongImport'):
-        mocked_manager = MagicMock()
-        importer = SongShowPlusImport(mocked_manager, file_paths=[])
+    # WHEN: Supplied with the following arguments replicating a verse order being added
+    test_values = [
+        ('Verse 1', VerseType.tags[VerseType.Verse] + '1'),
+        ('Verse 2', VerseType.tags[VerseType.Verse] + '2'),
+        ('verse1', VerseType.tags[VerseType.Verse] + '1'),
+        ('Verse', VerseType.tags[VerseType.Verse] + '1'),
+        ('Verse1', VerseType.tags[VerseType.Verse] + '1'),
+        ('chorus 1', VerseType.tags[VerseType.Chorus] + '1'),
+        ('bridge 1', VerseType.tags[VerseType.Bridge] + '1'),
+        ('pre-chorus 1', VerseType.tags[VerseType.PreChorus] + '1'),
+        ('different 1', VerseType.tags[VerseType.Other] + '1'),
+        ('random 1', VerseType.tags[VerseType.Other] + '2'),
+        ('unused 2', None)]
 
-        # WHEN: Supplied with the following arguments replicating a verse order being added
-        test_values = [
-            ('Verse 1', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse 2', VerseType.tags[VerseType.Verse] + '2'),
-            ('verse1', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse', VerseType.tags[VerseType.Verse] + '1'),
-            ('Verse1', VerseType.tags[VerseType.Verse] + '1'),
-            ('chorus 1', VerseType.tags[VerseType.Chorus] + '1'),
-            ('bridge 1', VerseType.tags[VerseType.Bridge] + '1'),
-            ('pre-chorus 1', VerseType.tags[VerseType.PreChorus] + '1'),
-            ('different 1', VerseType.tags[VerseType.Other] + '1'),
-            ('random 1', VerseType.tags[VerseType.Other] + '2'),
-            ('unused 2', None)]
-
-        # THEN: The returned value should should correlate with the input arguments
-        for original_tag, openlp_tag in test_values:
-            assert importer.to_openlp_verse_tag(original_tag, ignore_unique=True) == openlp_tag, \
-                'SongShowPlusImport.to_openlp_verse_tag should return "%s" when called with "%s"' % \
-                (openlp_tag, original_tag)
+    # THEN: The returned value should should correlate with the input arguments
+    for original_tag, openlp_tag in test_values:
+        assert importer.to_openlp_verse_tag(original_tag, ignore_unique=True) == openlp_tag, \
+            'SongShowPlusImport.to_openlp_verse_tag should return "%s" when called with "%s"' % \
+            (openlp_tag, original_tag)

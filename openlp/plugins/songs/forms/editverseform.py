@@ -45,8 +45,8 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
         """
         Constructor
         """
-        super(EditVerseForm, self).__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
-                                            QtCore.Qt.WindowCloseButtonHint)
+        super().__init__(parent, QtCore.Qt.WindowSystemMenuHint | QtCore.Qt.WindowTitleHint |
+                         QtCore.Qt.WindowCloseButtonHint)
         self.setup_ui(self)
         self.has_single_verse = False
         self.insert_button.clicked.connect(self.on_insert_button_clicked)
@@ -54,9 +54,12 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
         self.verse_text_edit.cursorPositionChanged.connect(self.on_cursor_position_changed)
         self.verse_type_combo_box.currentIndexChanged.connect(self.on_verse_type_combo_box_changed)
         self.forced_split_button.clicked.connect(self.on_forced_split_button_clicked)
-        if Registry().get('settings').value('songs/enable chords'):
-            self.transpose_down_button.clicked.connect(self.on_transpose_down_button_clicked)
-            self.transpose_up_button.clicked.connect(self.on_transpose_up_button_clicked)
+        self.transpose_down_button.clicked.connect(self.on_transpose_down_button_clicked)
+        self.transpose_up_button.clicked.connect(self.on_transpose_up_button_clicked)
+
+    def exec(self):
+        self.transpose_widget.setVisible(Registry().get('settings').value('songs/enable chords'))
+        return super().exec()
 
     def insert_verse(self, verse_tag, verse_num=1):
         """
@@ -138,7 +141,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
                                                          .format(err_msg=ke)))
             return
         self.verse_text_edit.setFocus()
-        self.verse_text_edit.moveCursor(QtGui.QTextCursor.End)
+        self.verse_text_edit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
 
     def on_transpose_down_button_clicked(self):
         """
@@ -160,7 +163,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
                                                          .format(err_msg=ke)))
             return
         self.verse_text_edit.setFocus()
-        self.verse_text_edit.moveCursor(QtGui.QTextCursor.End)
+        self.verse_text_edit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
 
     def update_suggested_verse_number(self):
         """
@@ -219,7 +222,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
                 self.transpose_widget.setVisible(True)
         self.verse_text_edit.setPlainText(text)
         self.verse_text_edit.setFocus()
-        self.verse_text_edit.moveCursor(QtGui.QTextCursor.End)
+        self.verse_text_edit.moveCursor(QtGui.QTextCursor.MoveOperation.End)
 
     def get_verse(self):
         """
@@ -248,7 +251,7 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
         if Registry().get('settings').value('songs/enable chords'):
             try:
                 transpose_lyrics(self.verse_text_edit.toPlainText(), 0)
-                super(EditVerseForm, self).accept()
+                super().accept()
             except KeyError as ke:
                 # Transposing failed
                 critical_error_message_box(title=translate('SongsPlugin.EditVerseForm', 'Invalid Chord'),
@@ -256,4 +259,4 @@ class EditVerseForm(QtWidgets.QDialog, Ui_EditVerseDialog):
                                                              'An invalid chord was detected:\n{err_msg}'
                                                              .format(err_msg=ke)))
         else:
-            super(EditVerseForm, self).accept()
+            super().accept()

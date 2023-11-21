@@ -25,7 +25,7 @@ import os
 
 from PyQt5 import QtWidgets
 
-from openlp.core.state import State
+from openlp.core.state import State, MessageType
 from openlp.core.common import extension_loader
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate, UiStrings
@@ -169,13 +169,16 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
         if uninitialised_plugins:
             display_text = translate('OpenLP.PluginManager', 'Unable to initialise the following plugins:') + \
                 '\n\n'.join(uninitialised_plugins) + '\n\n'
-        error_text = State().get_text()
+        error_text = State().get_text(MessageType.Error)
+        info_text = State().get_text(MessageType.Information)
         if error_text:
-            display_text = display_text + error_text + '\n'
-        if display_text:
-            display_text = display_text + translate('OpenLP.PluginManager', 'See the log file for more details')
+            display_text = display_text + error_text + '\n' + \
+                translate('OpenLP.PluginManager', 'See the log file for more details')
             QtWidgets.QMessageBox.critical(None, UiStrings().Error, display_text,
                                            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
+        if info_text:
+            QtWidgets.QMessageBox.information(None, UiStrings().Error, info_text,
+                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Ok))
 
     def finalise_plugins(self):
         """

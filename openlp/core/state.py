@@ -26,14 +26,21 @@ All the core functions of the OpenLP application including the GUI, settings, lo
 contained within the openlp.core module.
 """
 import logging
+from enum import IntEnum
 
 from openlp.core.common import Singleton
 from openlp.core.common.registry import Registry
 from openlp.core.common.mixins import LogMixin
-from openlp.core.lib.plugin import PluginStatus
+from openlp.core.lib.plugin import Plugin, PluginStatus
 
 
 log = logging.getLogger()
+
+
+class MessageType(IntEnum):
+    Error = 1
+    Warning = 2
+    Information = 3
 
 
 class StateModule(LogMixin):
@@ -42,14 +49,15 @@ class StateModule(LogMixin):
         Holder of State information per module
         """
         super(StateModule, self).__init__()
-        self.name = None
-        self.order = 0
-        self.is_plugin = None
-        self.status = PluginStatus.Inactive
-        self.pass_preconditions = False
-        self.requires = None
-        self.required_by = None
-        self.text = None
+        self.name: str | None = None
+        self.order: int = 0
+        self.is_plugin: bool = False
+        self.status: PluginStatus = PluginStatus.Inactive
+        self.pass_preconditions: bool = False
+        self.requires: str | None = None
+        self.required_by: list | None = None
+        self.text: str | None = None
+        self.message_type: MessageType = MessageType.Error
 
 
 class State(LogMixin, metaclass=Singleton):
@@ -60,7 +68,8 @@ class State(LogMixin, metaclass=Singleton):
     def save_settings(self):
         pass
 
-    def add_service(self, name, order, is_plugin=False, status=PluginStatus.Active, requires=None):
+    def add_service(self, name: str, order: int, is_plugin: bool = False, status: PluginStatus = PluginStatus.Active,
+                    requires: str | None = None):
         """
         Add a module to the array and load dependencies.  There will only be one item per module
         :param name: Module name
@@ -83,7 +92,7 @@ class State(LogMixin, metaclass=Singleton):
                 if requires not in self.modules[requires].required_by:
                     self.modules[requires].required_by.append(name)
 
-    def missing_text(self, name, text):
+    def missing_text(self, name: str, text: str, type_: MessageType = MessageType.Error):
         """
         Updates the preconditions state of a module
 
@@ -92,31 +101,32 @@ class State(LogMixin, metaclass=Singleton):
         :return:
         """
         self.modules[name].text = text
+        self.modules[name].message_type = type_
 
-    def get_text(self):
+    def get_text(self, type_: MessageType | None = None) -> str:
         """
         return an string of error text
         :return: a string of text
         """
-        error_text = ''
+        all_text = ''
         for mod in self.modules:
-            if self.modules[mod].text:
-                error_text = error_text + self.modules[mod].text + '\n'
-        return error_text
+            if self.modules[mod].text and (not type_ or self.modules[mod].message_type == type_):
+                all_text = all_text + self.modules[mod].text + '\n'
+        return all_text
 
-    def update_pre_conditions(self, name, status):
+    def update_pre_conditions(self, name: str, is_active: bool):
         """
         Updates the preconditions state of a module
 
         :param name: Module name
-        :param status: Module new status
+        :param is_active: Module new status
         :return:
         """
-        self.modules[name].pass_preconditions = status
+        self.modules[name].pass_preconditions = is_active
         if self.modules[name].is_plugin:
-            plugin = Registry().get('{mod}_plugin'.format(mod=name))
-            if status:
-                self.log_debug('Plugin {plugin} active'.format(plugin=str(plugin.name)))
+            plugin = Registry().get(f'{name}_plugin')
+            if is_active:
+                self.log_debug(f'Plugin {plugin.name} active')
                 plugin.set_status()
             else:
                 plugin.status = PluginStatus.Disabled
@@ -136,10 +146,17 @@ class State(LogMixin, metaclass=Singleton):
             mdl[pl] = self.modules[pl]
         self.modules = mdl
 
-    def is_module_active(self, name):
+    def is_module_active(self, name: str) -> bool:
+        """
+        Checks if a modules is active.
+
+        :param name: Module name
+        :return: Have the preconditions been met.
+        :rtype: bool
+        """
         return self.modules[name].status == PluginStatus.Active
 
-    def check_preconditions(self, name):
+    def check_preconditions(self, name: str) -> bool:
         """
         Checks if a modules preconditions have been met.
 
@@ -157,7 +174,7 @@ class State(LogMixin, metaclass=Singleton):
             # Module is missing so therefore not found.
             return False
 
-    def list_plugins(self):
+    def list_plugins(self) -> list[Plugin]:
         """
         Return a list of plugins
         :return: an array of plugins
@@ -165,5 +182,5 @@ class State(LogMixin, metaclass=Singleton):
         plugins = []
         for mod in self.modules:
             if self.modules[mod].is_plugin:
-                plugins.append(Registry().get('{mod}_plugin'.format(mod=mod)))
+                plugins.append(Registry().get(f'{mod}_plugin'))
         return plugins

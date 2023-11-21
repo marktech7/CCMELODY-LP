@@ -2,6 +2,7 @@
  * display.js is the main Javascript file that is used to drive the display.
  */
 
+
 /**
  * Background type enumeration
  */
@@ -290,8 +291,11 @@ function _fixFontName(fontName) {
  * The Display object is what we use from OpenLP
  */
 var Display = {
+  /** @type {HTMLElement} */
   _slidesContainer: null,
+  /** @type {HTMLElement} */
   _footerContainer: null,
+  /** @type {HTMLElement} */
   _backgroundsContainer: null,
   _alerts: [],
   _slides: {},
@@ -352,6 +356,7 @@ var Display = {
     Display._backgroundsContainer = $(".backgrounds")[0];
     Display._doTransitions = isDisplay;
     Reveal.initialize(Display._revealConfig);
+    Reveal.addEventListener('slidechanged', Display._onSlideChanged);
     Display.setItemTransition(doItemTransitions && isDisplay);
     displayWatcher.setInitialised(true);
   },
@@ -452,7 +457,7 @@ var Display = {
     section.setAttribute("data-background", bg_color);
     section.setAttribute("style", "height: 100%; width: 100%;");
     var img = document.createElement('img');
-    img.src = image;
+    img.src = Display._getFileUrl(image);
     img.setAttribute("style", "position: absolute; top: 0; bottom: 0; left: 0; right: 0; margin: auto; max-height: 100%; max-width: 100%");
     section.appendChild(img);
     Display._slides['0'] = 0;
@@ -649,6 +654,18 @@ var Display = {
     slide.innerHTML = html;
     return slide;
   },
+
+  _onSlideChanged: function(event) {
+    Display._footerContainer.querySelectorAll('.footer-item')
+      .forEach(footerItem => footerItem.classList.remove('active'));
+    var currentSlideNth = parseInt(event.currentSlide.getAttribute('data-slide'));
+    var newActiveFooter = Display._footerContainer.querySelector('.footer-item[data-slide="' + currentSlideNth + '"]');
+
+    if (newActiveFooter) {
+      newActiveFooter.classList.add('active');
+    }
+  },
+
   /**
    * Set text slides.
    * @param {Object[]} slides - A list of slides to add as JS objects: {"verse": "v1", "text": "line 1\nline2"}
@@ -658,12 +675,26 @@ var Display = {
     var slide_html;
     var parentSection = document.createElement("section");
     parentSection.classList = "text-slides";
-    slides.forEach(function (slide) {
+    slides.forEach(function (slide, index) {
       slide_html = Display._createTextSlide(slide.verse, slide.text);
+      slide_html.setAttribute('data-slide', index);
       parentSection.appendChild(slide_html);
       Display._slides[slide.verse] = parentSection.children.length - 1;
       if (slide.footer) {
-        Display._footerContainer.innerHTML = slide.footer;
+        var footerSlide = document.createElement('div');
+        footerSlide.classList.add('footer-item');
+        footerSlide.setAttribute('data-slide', index);
+        var currentSlide = Reveal.getIndices();
+        if (currentSlide) {
+          currentSlide = currentSlide.v;
+        } else {
+          currentSlide = 0;
+        }
+        if (index == currentSlide) {
+          footerSlide.classList.add('active');
+        }
+        footerSlide.innerHTML = slide.footer;
+        Display._footerContainer.append(footerSlide);
       }
     });
     Display.replaceSlides(parentSection, true);
@@ -689,6 +720,7 @@ var Display = {
       var parentSection = document.createElement("section");
       parentSection.classList = "text-slides";
       slide_html = Display._createTextSlide("test-slide", text);
+      slide_html.setAttribute('data-slide', 0);
       parentSection.appendChild(slide_html);
       Display._slides["test-slide"] = 0;
       Display.applyTheme(parentSection);
@@ -709,8 +741,9 @@ var Display = {
       section.setAttribute("id", index);
       section.setAttribute("style", "height: 100%; width: 100%;");
       var img = document.createElement('img');
-      img.src = slide.path;
+      img.src = Display._getFileUrl(slide.path);
       img.setAttribute("style", "width: 100%; height: 100%; margin: 0; object-fit: contain;");
+      img.setAttribute('data-slide', index);
       section.appendChild(img);
       parentSection.appendChild(section);
       Display._slides[index.toString()] = index;
@@ -730,6 +763,7 @@ var Display = {
     videoElement.preload = "auto";
     videoElement.setAttribute("id", "video");
     videoElement.setAttribute("style", "height: 100%; width: 100%;");
+    videoElement.setAttribute('data-slide', 0);
     videoElement.autoplay = false;
     // All the update methods below are Python functions, hence not camelCase
     videoElement.addEventListener("durationchange", function (event) {
@@ -859,122 +893,122 @@ var Display = {
   /**
    * Blank the screen
   */
-  toBlack: function (onFinishedEventName) {
-    /* Avoid race conditions where display goes to transparent and quickly goes to black */
-    Display._abortLastTransitionOperation();
-    /*
-      Reveal's black overlay should be shown before the transitions are
-      restored, to avoid screen flashes
-    */
-    Display._restorePauseBehavior();
-    Display._requestAnimationFrameExclusive(function() {
-      if (!Reveal.isPaused()) {
-        Reveal.togglePause();
-      }
-      Display._reenableGlobalTransitions(function() {
-        var documentBody = $("body")[0];
-        documentBody.style.opacity = 1;
-        if (onFinishedEventName) {
-          displayWatcher.dispatchEvent(onFinishedEventName, {});
+  toBlack: function () {
+    return new Promise((resolve, reject) => {
+      /* Avoid race conditions where display goes to transparent and quickly goes to black */
+      Display._abortLastTransitionOperation();
+      /*
+        Reveal's black overlay should be shown before the transitions are
+        restored, to avoid screen flashes
+      */
+      Display._restorePauseBehavior();
+      Display._requestAnimationFrameExclusive(function() {
+        if (!Reveal.isPaused()) {
+          Reveal.togglePause();
         }
+        Display._reenableGlobalTransitions(function() {
+          var documentBody = $("body")[0];
+          documentBody.style.opacity = 1;
+          resolve();
+        });
       });
     });
   },
   /**
    * Hide all but theme background
   */
-  toTheme: function (onFinishedEventName) {
-    Display._abortLastTransitionOperation();
-    /*
-      Reveal's black overlay should be shown before the transitions are
-      restored, to avoid screen flashes
-    */
-    Display._restorePauseBehavior();
-    var documentBody = $("body")[0];
-    documentBody.style.opacity = 1;
-    Display._slidesContainer.style.opacity = 0;
-    Display._footerContainer.style.opacity = 0;
-    if (Reveal.isPaused()) {
-      Reveal.togglePause();
-    }
-    Display._reenableGlobalTransitions(function() {
-      if (onFinishedEventName) {
-        displayWatcher.dispatchEvent(onFinishedEventName, {});
+  toTheme: function () {
+    return new Promise((resolve, reject) => {
+      Display._abortLastTransitionOperation();
+      /*
+        Reveal's black overlay should be shown before the transitions are
+        restored, to avoid screen flashes
+      */
+      Display._restorePauseBehavior();
+      var documentBody = $("body")[0];
+      documentBody.style.opacity = 1;
+      Display._slidesContainer.style.opacity = 0;
+      Display._footerContainer.style.opacity = 0;
+      if (Reveal.isPaused()) {
+        Reveal.togglePause();
       }
+      Display._reenableGlobalTransitions(function() {
+        resolve();
+      });
     });
   },
   /**
    * Hide everything (CAUTION: Causes a invisible mouse barrier)
   */
-  toTransparent: function (onFinishedEventName) {
-    Display._abortLastTransitionOperation();
-    var documentBody = $("body")[0];
-    documentBody.style.opacity = 0;
-    if (!Reveal.isPaused()) {
-      /*
-        Removing previously the overlay if it's not paused, to avoid a
-        content flash while going from black screen to transparent
-      */
-      document.body.classList.add('is-desktop');
-      Reveal.togglePause();
-    }
-    /*
-      Waiting for body transition to happen, now it would be safe to
-      hide the Webview (as other transitions were suppressed)
-    */
-    Display._abortLastTransitionOperation();
-    Display._addTransitionEndEventToBody(transitionEndEvent);
-    function transitionEndEvent(e) {
-      // Targeting only body
-      if (e.target != documentBody) {
-        return;
+  toTransparent: function () {
+    return new Promise((resolve, reject) => {
+      Display._abortLastTransitionOperation();
+      var documentBody = $("body")[0];
+      documentBody.style.opacity = 0;
+      if (!Reveal.isPaused()) {
+        /*
+          Removing previously the overlay if it's not paused, to avoid a
+          content flash while going from black screen to transparent
+        */
+        document.body.classList.add('is-desktop');
+        Reveal.togglePause();
       }
       /*
-        Disabling all transitions (except body) to allow the Webview to attain the
-        transparent state before it gets hidden by Qt.
+        Waiting for body transition to happen, now it would be safe to
+        hide the Webview (as other transitions were suppressed)
       */
-      document.body.classList.add('disable-transitions');
-      document.body.classList.add('is-desktop');
-      Display._slidesContainer.style.opacity = 0;
-      Display._footerContainer.style.opacity = 0;
-      /*
-        Repainting before hiding the Webview to avoid flashes when
-        showing it again.
-      */
-      displayWatcher.pleaseRepaint();
-      /* Waiting for repaint to happen before saying that it's done. */
-      Display._requestAnimationFrameExclusive(function() {
-        /* We're transparent now, aborting any transition event between */
-        Display._abortLastTransitionOperation();
-        if (onFinishedEventName) {
-          displayWatcher.dispatchEvent(onFinishedEventName, {});
+      Display._abortLastTransitionOperation();
+      Display._addTransitionEndEventToBody(transitionEndEvent);
+      function transitionEndEvent(e) {
+        // Targeting only body
+        if (e.target != documentBody) {
+          return;
         }
-      });
-    }
+        /*
+          Disabling all transitions (except body) to allow the Webview to attain the
+          transparent state before it gets hidden by Qt.
+        */
+        document.body.classList.add('disable-transitions');
+        document.body.classList.add('is-desktop');
+        Display._slidesContainer.style.opacity = 0;
+        Display._footerContainer.style.opacity = 0;
+        /*
+          Repainting before hiding the Webview to avoid flashes when
+          showing it again.
+        */
+        displayWatcher.pleaseRepaint();
+        /* Waiting for repaint to happen before saying that it's done. */
+        Display._requestAnimationFrameExclusive(function() {
+          /* We're transparent now, aborting any transition event between */
+          Display._abortLastTransitionOperation();
+          resolve();
+        });
+      }
+    });
   },
   /**
    * Show the screen
   */
-  show: function (onFinishedEventName) {
-    var documentBody = $("body")[0];
-    /*
-      Removing transitionend event, avoids the content being hidden if the user
-      tries to show content again before toTransparent() transitionend event
-      happens
-    */
-    Display._abortLastTransitionOperation();
+  show: function () {
+    return new Promise((resolve, reject) => {
+      var documentBody = $("body")[0];
+      /*
+        Removing transitionend event, avoids the content being hidden if the user
+        tries to show content again before toTransparent() transitionend event
+        happens
+      */
+      Display._abortLastTransitionOperation();
 
-    Display._slidesContainer.style.opacity = 1;
-    Display._footerContainer.style.opacity = 1;
-    if (Reveal.isPaused()) {
-      Reveal.togglePause();
-    }
-    Display._restorePauseBehavior();
-    Display._reenableGlobalTransitions(function() {
-      documentBody.style.opacity = 1;
-      if (onFinishedEventName) {
-        displayWatcher.dispatchEvent(onFinishedEventName, {});
+      Display._slidesContainer.style.opacity = 1;
+      Display._footerContainer.style.opacity = 1;
+      if (Reveal.isPaused()) {
+        Reveal.togglePause();
       }
+      Display._restorePauseBehavior();
+      Display._reenableGlobalTransitions(function() {
+        documentBody.style.opacity = 1;
+        resolve();
+      });
     });
   },
 
@@ -1184,12 +1218,12 @@ var Display = {
         }
         break;
       case BackgroundType.Image:
-        backgroundContent = "url('" + Display._theme.background_filename + "')";
+        backgroundContent = "url('" + Display._getFileUrl(Display._theme.background_filename) + "')";
         break;
       case BackgroundType.Video:
         // never actually used since background type is overridden from video to transparent in window.py
         backgroundContent = Display._theme.background_border_color;
-        backgroundHtml = "<video loop autoplay muted><source src='" + Display._theme.background_filename + "'></video>";
+        backgroundHtml = "<video loop autoplay muted><source src='" + Display._getFileUrl(Display._theme.background_filename) + "'></video>";
         break;
       default:
         backgroundContent = "#000";
@@ -1215,6 +1249,7 @@ var Display = {
     mainStyle["font-style"] = !!Display._theme.font_main_italics ? "italic" : "";
     mainStyle["font-weight"] = !!Display._theme.font_main_bold ? "bold" : "";
     mainStyle["line-height"] = "" + (100 + Display._theme.font_main_line_adjustment) + "%";
+    mainStyle["letter-spacing"] = "" + (Display._theme.font_main_letter_adjustment) + 'px';
     // Using text-align-last because there is a <br> seperating each line
     switch (Display._theme.display_horizontal_align) {
       case HorizontalAlign.Justify:
@@ -1289,6 +1324,8 @@ var Display = {
     footerStyle["font-size"] = "" + Display._theme.font_footer_size + "pt";
     footerStyle["font-style"] = !!Display._theme.font_footer_italics ? "italic" : "";
     footerStyle["font-weight"] = !!Display._theme.font_footer_bold ? "bold" : "";
+    footerStyle["line-height"] = "" + (100 + Display._theme.font_footer_line_adjustment) + "%";
+    footerStyle["letter-spacing"] = "" + (Display._theme.font_footer_letter_adjustment) + 'px';
     footerStyle["white-space"] = Display._theme.font_footer_wrap ? "normal" : "nowrap";
     for (var footerKey in footerStyle) {
       if (footerStyle.hasOwnProperty(footerKey)) {
@@ -1366,8 +1403,23 @@ var Display = {
     value[1] = '/';
     value[2] = Object.keys(Display._slides).length;
     return value;
+  },
+  /**
+   * Translates file:// protocol URLs to openlp-library://local-file/ scheme
+   */
+  _getFileUrl: function(url) {
+    if (url && (url.indexOf('file://') === 0)) {
+      return url.replace('file://', 'openlp-library://local-file/');
+    }
+    return url;
+  },
+};
+
+Display._handleNativeCall = (action, ...values) => {
+  if (Display[action]) {
+    return Display[action](...values);
   }
 };
-new QWebChannel(qt.webChannelTransport, function (channel) {
-  window.displayWatcher = channel.objects.displayWatcher;
-});
+
+initCommunicationBridge();
+communicationBridge.setDisplayTarget(Display);

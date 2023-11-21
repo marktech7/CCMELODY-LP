@@ -94,6 +94,19 @@ class PowerPraiseImport(SongImport):
                         verse_order_list[i] = verse_def
 
             self.verse_order_list = verse_order_list
+
+            for text in root.information.copyright['text']:
+                if not hasattr(text, 'line'):
+                    continue
+                for line in text.line:
+                    if not line:
+                        continue
+                    if line.text.startswith('©') or line.text.lower().startswith('(c)') or \
+                            line.text.lower().startswith('copyright'):
+                        self.add_copyright(line.text)
+                    else:
+                        self.add_author(line.text)
+
             if not self.finish():
                 self.log_error(file_path)
         except AttributeError:

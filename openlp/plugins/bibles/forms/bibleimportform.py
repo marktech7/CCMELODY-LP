@@ -36,7 +36,7 @@ except ImportError:
 from openlp.core.common import trace_error_handler
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import UiStrings, get_locale_key, translate
-from openlp.core.lib.db import delete_database
+from openlp.core.db.helpers import delete_database
 from openlp.core.lib.exceptions import ValidationError
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.core.widgets.enums import PathEditType
@@ -144,8 +144,9 @@ class BibleImportForm(OpenLPWizard):
         self.format_combo_box.addItems(['', '', '', '', '', '', ''])
         self.format_combo_box.setObjectName('FormatComboBox')
         self.format_layout.addRow(self.format_label, self.format_combo_box)
-        self.spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
-        self.format_layout.setItem(1, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                                            QtWidgets.QSizePolicy.Policy.Minimum)
+        self.format_layout.setItem(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_page_layout.addLayout(self.format_layout)
         self.select_stack = QtWidgets.QStackedLayout()
         self.select_stack.setObjectName('SelectStack')
@@ -162,7 +163,7 @@ class BibleImportForm(OpenLPWizard):
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.OSIS),
             show_revert=False)
         self.osis_layout.addRow(self.osis_file_label, self.osis_path_edit)
-        self.osis_layout.setItem(1, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.osis_layout.setItem(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_stack.addWidget(self.osis_widget)
         self.csv_widget = QtWidgets.QWidget(self.select_page)
         self.csv_widget.setObjectName('CsvWidget')
@@ -192,7 +193,7 @@ class BibleImportForm(OpenLPWizard):
             '{name} (*.csv)'.format(name=translate('BiblesPlugin.ImportWizardForm', 'CSV File'))
         self.csv_layout.addRow(self.csv_books_label, self.csv_books_path_edit)
         self.csv_layout.addRow(self.csv_verses_label, self.csv_verses_path_edit)
-        self.csv_layout.setItem(3, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.csv_layout.setItem(3, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_stack.addWidget(self.csv_widget)
         self.open_song_widget = QtWidgets.QWidget(self.select_page)
         self.open_song_widget.setObjectName('OpenSongWidget')
@@ -208,7 +209,7 @@ class BibleImportForm(OpenLPWizard):
             show_revert=False,
         )
         self.open_song_layout.addRow(self.open_song_file_label, self.open_song_path_edit)
-        self.open_song_layout.setItem(1, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.open_song_layout.setItem(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_stack.addWidget(self.open_song_widget)
         self.web_widget = QtWidgets.QWidget(self.select_page)
         self.web_widget.setObjectName('WebWidget')
@@ -218,31 +219,31 @@ class BibleImportForm(OpenLPWizard):
         self.web_bible_layout.setObjectName('WebBibleLayout')
         self.web_update_label = QtWidgets.QLabel(self.web_widget)
         self.web_update_label.setObjectName('WebUpdateLabel')
-        self.web_bible_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.web_update_label)
+        self.web_bible_layout.setWidget(0, QtWidgets.QFormLayout.ItemRole.LabelRole, self.web_update_label)
         self.web_update_button = QtWidgets.QPushButton(self.web_widget)
         self.web_update_button.setObjectName('WebUpdateButton')
-        self.web_bible_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.web_update_button)
+        self.web_bible_layout.setWidget(0, QtWidgets.QFormLayout.ItemRole.FieldRole, self.web_update_button)
         self.web_source_label = QtWidgets.QLabel(self.web_widget)
         self.web_source_label.setObjectName('WebSourceLabel')
-        self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.web_source_label)
+        self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.web_source_label)
         self.web_source_combo_box = QtWidgets.QComboBox(self.web_widget)
         self.web_source_combo_box.setObjectName('WebSourceComboBox')
         self.web_source_combo_box.addItems(['', '', ''])
         self.web_source_combo_box.setEnabled(False)
-        self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.web_source_combo_box)
+        self.web_bible_layout.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.web_source_combo_box)
         self.web_translation_label = QtWidgets.QLabel(self.web_bible_tab)
         self.web_translation_label.setObjectName('web_translation_label')
-        self.web_bible_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.web_translation_label)
+        self.web_bible_layout.setWidget(2, QtWidgets.QFormLayout.ItemRole.LabelRole, self.web_translation_label)
         self.web_translation_combo_box = QtWidgets.QComboBox(self.web_bible_tab)
-        self.web_translation_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
+        self.web_translation_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
         self.web_translation_combo_box.setObjectName('WebTranslationComboBox')
         self.web_translation_combo_box.setEnabled(False)
-        self.web_bible_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.web_translation_combo_box)
+        self.web_bible_layout.setWidget(2, QtWidgets.QFormLayout.ItemRole.FieldRole, self.web_translation_combo_box)
         self.web_progress_bar = QtWidgets.QProgressBar(self)
         self.web_progress_bar.setRange(0, 3)
         self.web_progress_bar.setObjectName('WebTranslationProgressBar')
         self.web_progress_bar.setVisible(False)
-        self.web_bible_layout.setWidget(3, QtWidgets.QFormLayout.SpanningRole, self.web_progress_bar)
+        self.web_bible_layout.setWidget(3, QtWidgets.QFormLayout.ItemRole.SpanningRole, self.web_progress_bar)
         self.select_stack.addWidget(self.web_widget)
         self.zefania_widget = QtWidgets.QWidget(self.select_page)
         self.zefania_widget.setObjectName('ZefaniaWidget')
@@ -258,7 +259,7 @@ class BibleImportForm(OpenLPWizard):
             show_revert=False,
         )
         self.zefania_layout.addRow(self.zefania_file_label, self.zefania_path_edit)
-        self.zefania_layout.setItem(2, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.zefania_layout.setItem(2, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_stack.addWidget(self.zefania_widget)
         self.sword_widget = QtWidgets.QWidget(self.select_page)
         self.sword_widget.setObjectName('SwordWidget')
@@ -285,8 +286,8 @@ class BibleImportForm(OpenLPWizard):
         self.sword_bible_label = QtWidgets.QLabel(self.sword_folder_tab)
         self.sword_bible_label.setObjectName('SwordBibleLabel')
         self.sword_bible_combo_box = QtWidgets.QComboBox(self.sword_folder_tab)
-        self.sword_bible_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
-        self.sword_bible_combo_box.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.sword_bible_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.sword_bible_combo_box.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
         self.sword_bible_combo_box.setObjectName('SwordBibleComboBox')
         self.sword_folder_tab_layout.addRow(self.sword_bible_label, self.sword_bible_combo_box)
         self.sword_tab_widget.addTab(self.sword_folder_tab, '')
@@ -306,8 +307,8 @@ class BibleImportForm(OpenLPWizard):
         self.sword_zipbible_label = QtWidgets.QLabel(self.sword_folder_tab)
         self.sword_zipbible_label.setObjectName('SwordZipBibleLabel')
         self.sword_zipbible_combo_box = QtWidgets.QComboBox(self.sword_zip_tab)
-        self.sword_zipbible_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToContents)
-        self.sword_zipbible_combo_box.setInsertPolicy(QtWidgets.QComboBox.InsertAlphabetically)
+        self.sword_zipbible_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToContents)
+        self.sword_zipbible_combo_box.setInsertPolicy(QtWidgets.QComboBox.InsertPolicy.InsertAlphabetically)
         self.sword_zipbible_combo_box.setObjectName('SwordZipBibleComboBox')
         self.sword_zip_layout.addRow(self.sword_zipbible_label, self.sword_zipbible_combo_box)
         self.sword_tab_widget.addTab(self.sword_zip_tab, '')
@@ -330,7 +331,7 @@ class BibleImportForm(OpenLPWizard):
             dialog_caption=WizardStrings.OpenTypeFile.format(file_type=WizardStrings.WordProject),
             show_revert=False)
         self.wordproject_layout.addRow(self.wordproject_file_label, self.wordproject_path_edit)
-        self.wordproject_layout.setItem(1, QtWidgets.QFormLayout.LabelRole, self.spacer)
+        self.wordproject_layout.setItem(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.spacer)
         self.select_stack.addWidget(self.wordproject_widget)
         self.select_page_layout.addLayout(self.select_stack)
         self.addPage(self.select_page)
@@ -341,28 +342,28 @@ class BibleImportForm(OpenLPWizard):
         self.license_details_layout.setObjectName('LicenseDetailsLayout')
         self.version_name_label = QtWidgets.QLabel(self.license_details_page)
         self.version_name_label.setObjectName('VersionNameLabel')
-        self.license_details_layout.setWidget(0, QtWidgets.QFormLayout.LabelRole, self.version_name_label)
+        self.license_details_layout.setWidget(0, QtWidgets.QFormLayout.ItemRole.LabelRole, self.version_name_label)
         self.version_name_edit = QtWidgets.QLineEdit(self.license_details_page)
         self.version_name_edit.setObjectName('VersionNameEdit')
-        self.license_details_layout.setWidget(0, QtWidgets.QFormLayout.FieldRole, self.version_name_edit)
+        self.license_details_layout.setWidget(0, QtWidgets.QFormLayout.ItemRole.FieldRole, self.version_name_edit)
         self.copyright_label = QtWidgets.QLabel(self.license_details_page)
         self.copyright_label.setObjectName('CopyrightLabel')
-        self.license_details_layout.setWidget(1, QtWidgets.QFormLayout.LabelRole, self.copyright_label)
+        self.license_details_layout.setWidget(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.copyright_label)
         self.copyright_edit = QtWidgets.QLineEdit(self.license_details_page)
         self.copyright_edit.setObjectName('CopyrightEdit')
-        self.license_details_layout.setWidget(1, QtWidgets.QFormLayout.FieldRole, self.copyright_edit)
+        self.license_details_layout.setWidget(1, QtWidgets.QFormLayout.ItemRole.FieldRole, self.copyright_edit)
         self.permissions_label = QtWidgets.QLabel(self.license_details_page)
         self.permissions_label.setObjectName('PermissionsLabel')
-        self.license_details_layout.setWidget(2, QtWidgets.QFormLayout.LabelRole, self.permissions_label)
+        self.license_details_layout.setWidget(2, QtWidgets.QFormLayout.ItemRole.LabelRole, self.permissions_label)
         self.permissions_edit = QtWidgets.QLineEdit(self.license_details_page)
         self.permissions_edit.setObjectName('PermissionsEdit')
-        self.license_details_layout.setWidget(2, QtWidgets.QFormLayout.FieldRole, self.permissions_edit)
+        self.license_details_layout.setWidget(2, QtWidgets.QFormLayout.ItemRole.FieldRole, self.permissions_edit)
         self.full_license_label = QtWidgets.QLabel(self.license_details_page)
         self.full_license_label.setObjectName('FullLicenseLabel')
-        self.license_details_layout.setWidget(3, QtWidgets.QFormLayout.LabelRole, self.full_license_label)
+        self.license_details_layout.setWidget(3, QtWidgets.QFormLayout.ItemRole.LabelRole, self.full_license_label)
         self.full_license_edit = QtWidgets.QPlainTextEdit(self.license_details_page)
         self.full_license_edit.setObjectName('FullLicenseEdit')
-        self.license_details_layout.setWidget(3, QtWidgets.QFormLayout.FieldRole, self.full_license_edit)
+        self.license_details_layout.setWidget(3, QtWidgets.QFormLayout.ItemRole.FieldRole, self.full_license_edit)
         self.addPage(self.license_details_page)
 
     def retranslate_ui(self):
@@ -438,7 +439,7 @@ class BibleImportForm(OpenLPWizard):
                           self.csv_verses_label.minimumSizeHint().width(),
                           self.open_song_file_label.minimumSizeHint().width(),
                           self.zefania_file_label.minimumSizeHint().width())
-        self.spacer.changeSize(label_width, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.spacer.changeSize(label_width, 0, QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
 
     def validateCurrentPage(self):
         """
@@ -621,7 +622,12 @@ class BibleImportForm(OpenLPWizard):
                 for key in bible_keys:
                     self.sword_bible_combo_box.addItem(self.pysword_folder_modules_json[key]['description'], key)
             except Exception:
+                log.exception('Loading SWORD folder failed')
+                critical_error_message_box(translate('BiblesPlugin.ImportWizardForm', 'Invalid SWORD folder'),
+                                           translate('BiblesPlugin.ImportWizardForm',
+                                                     'The folder selected does not contain a valid SWORD module.'))
                 self.sword_bible_combo_box.clear()
+                self.setField('sword_folder_path', None)
 
     def on_sword_zipfile_path_edit_path_changed(self, new_path):
         """
@@ -636,7 +642,12 @@ class BibleImportForm(OpenLPWizard):
                 for key in bible_keys:
                     self.sword_zipbible_combo_box.addItem(self.pysword_zip_modules_json[key]['description'], key)
             except Exception:
+                log.exception('Loading SWORD zip-file failed')
+                critical_error_message_box(translate('BiblesPlugin.ImportWizardForm', 'Invalid SWORD zip-file'),
+                                           translate('BiblesPlugin.ImportWizardForm',
+                                                     'The file selected is not a valid SWORD zip-file.'))
                 self.sword_zipbible_combo_box.clear()
+                self.setField('sword_zip_path', None)
 
     def register_fields(self):
         """

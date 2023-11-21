@@ -39,7 +39,7 @@ from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import RegistryProperties
 from openlp.core.common.registry import Registry
 from openlp.core.common.utils import wait_for
-from openlp.core.display.render import remove_tags, render_tags, render_chords_for_printing
+from openlp.core.display.render import remove_html_and_strip, remove_tags, render_tags, render_chords_for_printing
 from openlp.core.lib import create_thumb, image_to_data_uri, ItemCapabilities
 from openlp.core.lib.theme import BackgroundType, TransitionSpeed
 from openlp.core.state import State
@@ -196,7 +196,7 @@ class ServiceItem(RegistryProperties):
         elif self.name == 'media':
             self.icon = UiIcons().video
         else:
-            self.icon = UiIcons().clone
+            self.icon = UiIcons().custom
 
     def _create_slides(self):
         """
@@ -221,22 +221,35 @@ class ServiceItem(RegistryProperties):
                 pages = self.renderer.format_slide(raw_slide['text'], self)
                 previous_pages[verse_tag] = (raw_slide, pages)
             for page in pages:
+                footer_html = None
+                has_footer_html = 'footer_html' in raw_slide
+                if has_footer_html:
+                    footer_html = raw_slide['footer_html']
+                else:
+                    footer_html = self.footer_html
                 rendered_slide = {
                     'title': raw_slide['title'],
                     'text': render_tags(page),
                     'chords': remove_tags(page),
                     'verse': index,
-                    'footer': self.footer_html
+                    'footer': footer_html
                 }
                 self._rendered_slides.append(rendered_slide)
                 display_slide = {
                     'title': raw_slide['title'],
-                    'text': remove_tags(page, can_remove_chords=True),
+                    'text': remove_html_and_strip(remove_tags(page, can_remove_chords=True)),
                     'verse': verse_tag,
                 }
                 self._display_slides.append(display_slide)
                 index += 1
         self._creating_slides = False
+
+    def _clear_slides_cache(self):
+        """
+        Clears the internal representation/cache of slides (display_slides and rendered_slides).
+        """
+        self._display_slides = None
+        self._rendered_slides = None
 
     @property
     def rendered_slides(self):
@@ -303,12 +316,41 @@ class ServiceItem(RegistryProperties):
         self.slides.append(slide)
         self._new_item()
 
-    def add_from_text(self, text, verse_tag=None):
+    def add_from_text(self, text, verse_tag=None, footer_html=None, metadata=None):
         """
         Add a text slide to the service item.
 
         :param text: The raw text of the slide.
         :param verse_tag:
+        :param footer_html: Custom HTML footer for current slide
+        :param metadata: Additional metadata to add to service item
+        """
+        slide = self._create_slide_from_text(text, verse_tag, footer_html, metadata)
+        self.slides.append(slide)
+        self._new_item()
+
+    def replace_slide_from_text(self, index, text, verse_tag=None, footer_html=None, metadata=None):
+        """
+        Replace a text slide on the service item.
+
+        :param index: The index of slide to replace
+        :param text: The raw text of the slide.
+        :param verse_tag:
+        :param footer_html: Custom HTML footer for current slide
+        :param metadata: Additional metadata to add to service item
+        """
+        slide = self._create_slide_from_text(text, verse_tag, footer_html, metadata)
+        self.slides[index] = slide
+        self._clear_slides_cache()
+
+    def _create_slide_from_text(self, text, verse_tag=None, footer_html=None, metadata=None):
+        """
+        Creates a text slide.
+
+        :param text: The raw text of the slide.
+        :param verse_tag:
+        :param footer_html: Custom HTML footer for current slide
+        :param metadata: Additional metadata to add to service item
         """
         if verse_tag:
             verse_tag = verse_tag.upper()
@@ -317,8 +359,12 @@ class ServiceItem(RegistryProperties):
             verse_tag = str(len(self.slides) + 1)
         self.service_item_type = ServiceItemType.Text
         title = text[:30].split('\n')[0]
-        self.slides.append({'title': title, 'text': text, 'verse': verse_tag})
-        self._new_item()
+        slide = {'title': title, 'text': text, 'verse': verse_tag}
+        if footer_html is not None:
+            slide['footer_html'] = footer_html
+        if isinstance(metadata, dict):
+            slide['metadata'] = metadata
+        return slide
 
     def add_from_command(self, path, file_name, image, display_title=None, notes=None, file_hash=None):
         """
@@ -506,7 +552,9 @@ class ServiceItem(RegistryProperties):
         self.theme_overwritten = header.get('theme_overwritten', False)
         if self.service_item_type == ServiceItemType.Text:
             for slide in service_item['serviceitem']['data']:
-                self.add_from_text(slide['raw_slide'], slide['verseTag'])
+                footer_html = slide['footer_html'] if 'footer_html' in slide else None
+                metadata = slide['metadata'] if 'metadata' in slide and isinstance(slide['metadata'], dict) else None
+                self.add_from_text(slide['raw_slide'], slide['verseTag'], footer_html, metadata)
             self._create_slides()
         elif self.service_item_type == ServiceItemType.Image:
             if path:
@@ -566,7 +614,9 @@ class ServiceItem(RegistryProperties):
                     self.sha256_file_hash = sha256_file_hash(file_path)
                     new_file = path / '{hash}{ext}'.format(hash=self.sha256_file_hash,
                                                            ext=os.path.splitext(self.title)[1])
-                    move(file_path, new_file)
+                    # while copying instead of moving can lead to longer load times for older files, if we move we
+                    # cannot load service files with duplicated files.
+                    copy(file_path, new_file)
                 else:
                     file_path = Path(service_item['serviceitem']['data'][0]['path']) / self.title
                     self.sha256_file_hash = sha256_file_hash(file_path)
@@ -847,7 +897,14 @@ class ServiceItem(RegistryProperties):
                 self.is_valid = False
                 break
             elif self.is_command():
-                if self.is_capable(ItemCapabilities.IsOptical) and State().check_preconditions('media'):
+                # Needs Media but no media processing available.
+                if self.is_capable(ItemCapabilities.RequiresMedia) and not State().check_preconditions('media'):
+                    self.is_valid = False
+                    break
+                elif self.is_capable(ItemCapabilities.HasBackgroundAudio) and not State().check_preconditions('media'):
+                    self.is_valid = False
+                    break
+                elif self.is_capable(ItemCapabilities.IsOptical) and State().check_preconditions('media'):
                     if not os.path.exists(slide['title']):
                         self.is_valid = False
                         break

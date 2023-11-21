@@ -22,7 +22,11 @@
 The :mod:`~openlp.core.ui.media.mediaplayer` module contains the MediaPlayer class.
 """
 from openlp.core.common.mixins import RegistryProperties
+from openlp.core.common.platform import is_macosx, is_win
+from openlp.core.display.screens import ScreenList
+from openlp.core.display.window import DisplayWindow
 from openlp.core.ui.media import MediaState
+from openlp.core.ui.slidecontroller import SlideController
 
 
 class MediaPlayer(RegistryProperties):
@@ -41,6 +45,7 @@ class MediaPlayer(RegistryProperties):
         self.can_folder = False
         self.state = {0: MediaState.Off, 1: MediaState.Off}
         self.has_own_widget = False
+        self.can_repeat = False
 
     def check_available(self):
         """
@@ -66,13 +71,35 @@ class MediaPlayer(RegistryProperties):
         """
         return True
 
-    def resize(self, controller):
+    def add_display(self, controller: SlideController):
+        # The media player has to be 'connected' to the QFrame.
+        # (otherwise a video would be displayed in it's own window)
+        # This is platform specific!
+        # You have to give the id of the QFrame (or similar object)
+        # to vlc, different platforms have different functions for this.
+        win_id = int(controller.vlc_widget.winId())
+        if is_win():
+            controller.vlc_media_player.set_hwnd(win_id)
+        elif is_macosx():
+            # We have to use 'set_nsobject' since Qt5 on OSX uses Cocoa
+            # framework and not the old Carbon.
+            controller.vlc_media_player.set_nsobject(win_id)
+        else:
+            # for Linux/*BSD using the X Server
+            controller.vlc_media_player.set_xwindow(win_id)
+        self.has_own_widget = True
+
+    def resize(self, controller: SlideController) -> None:
         """
-        If the main display size or position is changed, the media widgets
-        should also resized
-        :param controller: Which Controller is running the show.
+        Resize the player
+
+        :param controller: The display where the media is stored within the controller.
+        :return:
         """
-        pass
+        if controller.is_live:
+            controller.vlc_widget.setGeometry(ScreenList().current.display_geometry)
+        else:
+            controller.vlc_widget.resize(controller.preview_display.size())
 
     def play(self, controller, display):
         """
@@ -99,67 +126,64 @@ class MediaPlayer(RegistryProperties):
         """
         pass
 
-    def volume(self, controller, volume):
+    def volume(self, controller: SlideController, vol: int) -> None:
         """
-        Change volume of current Media File
+        Set the volume
 
-        :param controller: Which Controller is running the show.
-        :param volume: The volume to set.
+        :param vol: The volume to be sets
+        :param controller: The controller where the media is
+        :return:
         """
-        pass
+        controller.vlc_media_player.audio_set_volume(vol)
 
-    def seek(self, controller, seek_value):
+    def seek(self, controller: SlideController, seek_value: int) -> None:
         """
-        Change playing position of current Media File
+        Go to a particular position
 
-        :param controller: Which Controller is running the show.
-        :param seek_value: The where to seek to.
+        :param seek_value: The position of where a seek goes to
+        :param controller: The controller where the media is
         """
-        pass
+        if controller.vlc_media_player.is_seekable():
+            controller.vlc_media_player.set_time(seek_value)
 
-    def reset(self, controller):
+    def reset(self, controller: SlideController) -> None:
         """
-        Remove the current loaded video
+        Reset the player
 
-        :param controller: Which Controller is running the show.
+        :param controller: The controller where the media is
         """
-        pass
+        controller.vlc_media_player.stop()
+        self.set_state(MediaState.Off, controller)
 
-    def set_visible(self, controller, status):
+    def set_visible(self, controller: SlideController, status: bool) -> None:
         """
-        Show/Hide the media widgets
+        Set the visibility
 
-        :param controller: Which Controller is running the show.
-        :param status: The status to be set.
+        :param controller: The controller where the media display is
+        :param status: The visibility status
         """
-        pass
+        controller.vlc_widget.setVisible(status)
 
-    def update_ui(self, controller, output_display):
+    def update_ui(self, controller: SlideController, output_display: DisplayWindow) -> None:
         """
-        Do some ui related stuff (e.g. update the seek slider)
+        Update the UI
 
         :param controller: Which Controller is running the show.
         :param output_display: The display where the media is
         """
+        if not controller.mediabar.seek_slider.isSliderDown():
+            controller.mediabar.seek_slider.blockSignals(True)
+            controller.mediabar.seek_slider.setSliderPosition(controller.vlc_media_player.get_time())
+            controller.mediabar.seek_slider.blockSignals(False)
+
+    def toggle_loop(self, controller, loop_required: bool) -> None:
+        """
+        Changes the looping style
+        :param controller: Which Controller is running the show.
+        :param loop_required: Are we to be toggled or not
+        :return: none
+        """
         pass
-
-    def get_media_display_css(self):
-        """
-        Add css style sheets to htmlbuilder
-        """
-        return ''
-
-    def get_media_display_javascript(self):
-        """
-        Add javascript functions to htmlbuilder
-        """
-        return ''
-
-    def get_media_display_html(self):
-        """
-        Add html code to htmlbuilder
-        """
-        return ''
 
     def get_live_state(self):
         """

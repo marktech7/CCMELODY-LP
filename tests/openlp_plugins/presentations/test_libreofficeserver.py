@@ -28,17 +28,17 @@ import pytest
 from openlp.core.common.platform import is_macosx
 
 try:
-    import Pyro4    # noqa: F401
-    has_pyro4 = True
+    import Pyro5    # noqa: F401
+    has_pyro5 = True
 except ImportError:
-    has_pyro4 = False
+    has_pyro5 = False
 
-if has_pyro4:
+if has_pyro5:
     from openlp.plugins.presentations.lib.libreofficeserver import LibreOfficeServer, TextType, main
 
 
 pytestmark = [
-    pytest.mark.skipif(not has_pyro4, reason='Pyro4 is not installed, skipping testing the LibreOffice server'),
+    pytest.mark.skipif(not has_pyro5, reason='Pyro5 is not installed, skipping testing the LibreOffice server'),
     pytest.mark.skipif(not is_macosx(), reason='Not on macOS, skipping testing the LibreOffice server')
 ]
 

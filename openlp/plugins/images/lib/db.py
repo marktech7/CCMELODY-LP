@@ -21,19 +21,13 @@
 """
 The :mod:`db` module provides the database and schema that is the backend for the Images plugin.
 """
-from sqlalchemy import MetaData
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, declarative_base
 
-# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
-try:
-    from sqlalchemy.orm import declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative import declarative_base
-
-from openlp.core.lib.db import FolderMixin, ItemMixin, init_db
+from openlp.core.db.helpers import init_db
+from openlp.core.db.mixins import FolderMixin, ItemMixin
 
 
-Base = declarative_base(MetaData())
+Base = declarative_base()
 
 
 class Folder(Base, FolderMixin):
@@ -74,5 +68,5 @@ def init_schema(url: str) -> Session:
             * file_hash
     """
     session, metadata = init_db(url, base=Base)
-    metadata.create_all(checkfirst=True)
+    metadata.create_all(bind=metadata.bind, checkfirst=True)
     return session

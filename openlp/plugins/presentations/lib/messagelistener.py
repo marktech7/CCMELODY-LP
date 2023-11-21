@@ -61,13 +61,15 @@ class Controller(object):
         if not self.doc.load_presentation():
             # Display error message to user
             # Inform slidecontroller that the action failed?
-            self.doc.slidenumber = 0
+            self.doc.ui_slidenumber = 0
             return
         PresentationList().add(self.doc, unique_id)
-        self.doc.slidenumber = slide_no
+        self.doc.ui_slidenumber = slide_no
         self.hide_mode = hide_mode
         log.debug('add_handler, slide_number: {slide:d}'.format(slide=slide_no))
         if self.is_live:
+            if self.doc.ui_slidenumber == 0:
+                self.doc.ui_slidenumber = 1
             if hide_mode == HideMode.Screen:
                 Registry().execute('live_display_hide', HideMode.Screen)
                 self.stop()
@@ -78,7 +80,6 @@ class Controller(object):
             else:
                 self.doc.start_presentation()
                 Registry().execute('live_display_hide', HideMode.Screen)
-                self.doc.slidenumber = 1
                 if slide_no > 1:
                     self.slide(slide_no)
 
@@ -97,10 +98,10 @@ class Controller(object):
                 return False
         if self.is_live:
             self.doc.start_presentation()
-            if self.doc.slidenumber > 1:
-                if self.doc.slidenumber > self.doc.get_slide_count():
-                    self.doc.slidenumber = self.doc.get_slide_count()
-                self.doc.goto_slide(self.doc.slidenumber)
+            if self.doc.ui_slidenumber > 1:
+                if self.doc.ui_slidenumber > self.doc.get_slide_count():
+                    self.doc.ui_slidenumber = self.doc.get_slide_count()
+                self.doc.goto_slide(self.doc.ui_slidenumber)
         if self.doc.is_active():
             return True
         else:
@@ -116,8 +117,8 @@ class Controller(object):
             return
         if not self.is_live:
             return
+        self.doc.ui_slidenumber = int(slide) + 1
         if self.hide_mode:
-            self.doc.slidenumber = int(slide) + 1
             self.poll()
             return
         if not self.activate():
@@ -134,8 +135,8 @@ class Controller(object):
             return
         if not self.is_live:
             return
+        self.doc.ui_slidenumber = 1
         if self.hide_mode:
-            self.doc.slidenumber = 1
             self.poll()
             return
         if not self.activate():
@@ -152,8 +153,8 @@ class Controller(object):
             return
         if not self.is_live:
             return
+        self.doc.ui_slidenumber = self.doc.get_slide_count()
         if self.hide_mode:
-            self.doc.slidenumber = self.doc.get_slide_count()
             self.poll()
             return
         if not self.activate():
@@ -170,12 +171,12 @@ class Controller(object):
             return False
         if not self.is_live:
             return False
+        if not self.doc.is_active():
+            return False
+        if self.doc.ui_slidenumber < self.doc.get_slide_count():
+            self.doc.ui_slidenumber += 1
         if self.hide_mode:
-            if not self.doc.is_active():
-                return False
-            if self.doc.slidenumber < self.doc.get_slide_count():
-                self.doc.slidenumber += 1
-                self.poll()
+            self.poll()
             return False
         if not self.activate():
             return False
@@ -192,12 +193,12 @@ class Controller(object):
             return False
         if not self.is_live:
             return False
+        if not self.doc.is_active():
+            return False
+        if self.doc.ui_slidenumber > 1:
+            self.doc.ui_slidenumber -= 1
         if self.hide_mode:
-            if not self.doc.is_active():
-                return False
-            if self.doc.slidenumber > 1:
-                self.doc.slidenumber -= 1
-                self.poll()
+            self.poll()
             return False
         if not self.activate():
             return False
@@ -235,6 +236,8 @@ class Controller(object):
             if not self.activate():
                 return
             self.doc.blank_screen()
+        elif hide_mode == HideMode.Screen:
+            self.stop()
 
     def stop(self):
         """
@@ -247,7 +250,7 @@ class Controller(object):
             return
         # Save the current slide number to be able to return to this slide if the presentation is activated again.
         if self.doc.is_active():
-            self.doc.slidenumber = self.doc.get_slide_number()
+            self.doc.ui_slidenumber = self.doc.get_slide_number()
         self.hide_mode = HideMode.Screen
         if not self.doc:
             return
@@ -271,6 +274,8 @@ class Controller(object):
             return
         if not self.activate():
             return
+        # if a different slide has been selected while blank, this will transfer to the correct slide
+        self.doc.goto_slide(self.doc.ui_slidenumber)
         self.doc.unblank_screen()
         Registry().execute('live_display_hide', HideMode.Screen)
 
@@ -278,6 +283,16 @@ class Controller(object):
         if not self.doc:
             return
         self.doc.poll_slidenumber(self.is_live, self.hide_mode)
+
+    def attempt_screenshot(self, index):
+        """
+        Tries to perform a live screenshot when visible service item uses ProvidesOwnDisplay flag.
+
+        :returns: A tuple: whether the request succedded, and then the image.
+        """
+        if self.is_live:
+            return self.doc.attempt_screenshot(index)
+        return (False, None)
 
 
 class MessageListener(object):
@@ -310,6 +325,7 @@ class MessageListener(object):
         Registry().register_function('presentations_slide', self.slide)
         Registry().register_function('presentations_blank', self.blank)
         Registry().register_function('presentations_unblank', self.unblank)
+        Registry().register_function('presentations_attempt_screenshot', self.attempt_live_screenshot)
         self.timer = QtCore.QTimer()
         self.timer.setInterval(500)
         self.timer.timeout.connect(self.timeout)
@@ -487,3 +503,13 @@ class MessageListener(object):
         Poll occasionally to check which slide is currently displayed so the slidecontroller view can be updated.
         """
         self.live_handler.poll()
+
+    def attempt_live_screenshot(self, message):
+        """
+        Tries to perform a live screenshot when visible service item uses ProvidesOwnDisplay flag.
+
+        :returns: A tuple: whether the request succedded, and then the image.
+        """
+        current_row = message[1]
+        result = self.live_handler.attempt_screenshot(current_row)
+        return result

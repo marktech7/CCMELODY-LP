@@ -398,11 +398,8 @@ def get_images_filter():
     if not IMAGES_FILTER:
         log.debug('Generating images filter.')
         formats = list(map(bytes.decode, map(bytes, QtGui.QImageReader.supportedImageFormats())))
-        visible_formats = '(*.{text})'.format(text='; *.'.join(formats))
-        actual_formats = '(*.{text})'.format(text=' *.'.join(formats))
-        IMAGES_FILTER = '{text} {visible} {actual}'.format(text=translate('OpenLP', 'Image Files'),
-                                                           visible=visible_formats,
-                                                           actual=actual_formats)
+        actual_formats = '(' + ' *.'.join(formats) + ')'
+        IMAGES_FILTER = '{text}{actual}'.format(text=translate('OpenLP', 'Image Files'), actual=actual_formats)
     return IMAGES_FILTER
 
 

@@ -23,11 +23,15 @@ Package to test the openlp.core.ui.themeform package.
 """
 from unittest.mock import MagicMock, patch
 
+import pytest
+
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.core.ui.themeprogressform import ThemeProgressForm
 
 
-def _get_theme_progress_form():
+@pytest.fixture
+def form(qapp, registry: Registry) -> ThemeProgressForm:
     """Common code used to create the ThemeProgressForm object"""
     with patch('openlp.core.ui.themeprogressdialog.ThemePreviewRenderer'), \
             patch('openlp.core.ui.themeprogressdialog.UiThemeProgressDialog.setup_ui'):
@@ -35,24 +39,23 @@ def _get_theme_progress_form():
     return form
 
 
-def test_init(qapp):
+def test_init(form: ThemeProgressForm):
     """
     Test that the ThemeProgressForm is created without problems
     """
     # GIVEN: ThemeProgressForm class
     # WHEN: An object is instatiated
     # THEN: There is no problem
-    _get_theme_progress_form()
+    assert form is not None
 
 
 @patch('openlp.core.ui.themeprogressform.ScreenList')
 @patch('openlp.core.ui.themeprogressform.QtWidgets.QDialog.show')
-def test_show(mocked_show, MockScreenList, settings):
+def test_show(mocked_show: MagicMock, MockScreenList: MagicMock, form: ThemeProgressForm, settings: Settings):
     """
     Test that the ThemeProgressForm is created without problems
     """
     # GIVEN: ThemeProgressForm object
-    form = _get_theme_progress_form()
     mocked_screen_list = MagicMock()
     mocked_screen_list.current.display_geometry.width.return_value = 1920
     mocked_screen_list.current.display_geometry.height.return_value = 1080
@@ -73,12 +76,12 @@ def test_show(mocked_show, MockScreenList, settings):
 
 @patch('openlp.core.ui.themeprogressform.ScreenList')
 @patch('openlp.core.ui.themeprogressform.QtWidgets.QDialog.show')
-def test_show_divide_by_zero(mocked_show, MockScreenList, settings):
+def test_show_divide_by_zero(mocked_show: MagicMock, MockScreenList: MagicMock, form: ThemeProgressForm,
+                             settings: Settings):
     """
     Test that the ThemeProgressForm is created without problems even if there's a divide by zero exception
     """
     # GIVEN: ThemeProgressForm object
-    form = _get_theme_progress_form()
     mocked_screen_list = MagicMock()
     mocked_screen_list.current.display_geometry.width.return_value = 1920
     mocked_screen_list.current.display_geometry.height.return_value = 0
@@ -97,17 +100,15 @@ def test_show_divide_by_zero(mocked_show, MockScreenList, settings):
     mocked_show.assert_called_once()
 
 
-def test_get_preview(settings):
+def test_get_preview(form: ThemeProgressForm, registry: Registry, settings: Settings):
     """
     Test that the get_preview() method returns a preview image
     """
     # GIVEN: ThemeProgressForm object
-    Registry.create()
     mocked_renderer = MagicMock()
-    Registry().register('renderer', mocked_renderer)
+    registry.register('renderer', mocked_renderer)
     test_theme_name = 'Test Theme'
     test_theme_data = {'name': test_theme_name}
-    form = _get_theme_progress_form()
     form.isVisible = MagicMock(return_value=True)
     form.progress_bar = MagicMock(**{'value.return_value': 0})
     form.label = MagicMock()
@@ -128,17 +129,15 @@ def test_get_preview(settings):
     assert preview == 'preview'
 
 
-def test_get_preview_not_visible(settings):
+def test_get_preview_not_visible(form: ThemeProgressForm, registry: Registry, settings: Settings):
     """
     Test that the get_preview() method does not return a preview image when display is not visible
     """
     # GIVEN: ThemeProgressForm object
-    Registry.create()
     mocked_renderer = MagicMock()
     Registry().register('renderer', mocked_renderer)
     test_theme_name = 'Test Theme'
     test_theme_data = {'name': test_theme_name}
-    form = _get_theme_progress_form()
     form.isVisible = MagicMock(return_value=False)
     form.progress_bar = MagicMock(**{'value.return_value': 0})
     form.label = MagicMock()
@@ -152,10 +151,9 @@ def test_get_preview_not_visible(settings):
     assert preview is None
 
 
-def test_theme_list(qapp):
+def test_theme_list(qapp, form: ThemeProgressForm):
     # GIVEN: ThemeProgressForm object and theme list
     test_theme_list = ['Theme 1', 'Theme 2']
-    form = _get_theme_progress_form()
     form.progress_bar = MagicMock()
 
     # WHEN: theme_list is set and get'ed

@@ -36,7 +36,6 @@ The basic XML is of the format::
 
 import copy
 import logging
-from xml.etree.ElementTree import dump
 from lxml import etree, objectify
 
 
@@ -100,6 +99,9 @@ class CustomXML(object):
 
     def add_title_and_credit(self, title, credit):
         """
+        Add title and credit to xml
+        :param title: Title to add
+        :param credit: Credit to add
         """
         # set title
         title_element = self.custom_xml.find('title')
@@ -116,6 +118,7 @@ class CustomXML(object):
 
     def get_title(self):
         """
+        Return title if one exists
         """
         title_element = self.custom_xml.find('title')
         if not title_element:
@@ -124,6 +127,7 @@ class CustomXML(object):
 
     def get_credit(self):
         """
+        Return credit if one exists
         """
         credit_element = self.custom_xml.find('credit')
         if not credit_element:

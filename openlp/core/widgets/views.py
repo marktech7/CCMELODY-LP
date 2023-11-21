@@ -89,8 +89,8 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         self.setColumnCount(1)
         self.horizontalHeader().setVisible(False)
         self.setColumnWidth(0, self.parent().width())
-        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectRows)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.SingleSelection)
+        self.setSelectionBehavior(QtWidgets.QAbstractItemView.SelectionBehavior.SelectRows)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.SingleSelection)
         self.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.setHorizontalScrollBarPolicy(QtCore.Qt.ScrollBarAlwaysOff)
         self.setAlternatingRowColors(True)
@@ -293,7 +293,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         self.mime_data_text = name
         self.no_results_text = UiStrings().NoResults
         self.setSpacing(1)
-        self.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.setAlternatingRowColors(True)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
 
@@ -302,7 +302,7 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
         Activate DnD of widget
         """
         self.setAcceptDrops(True)
-        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.DragDrop)
         Registry().register_function(('%s_dnd' % self.mime_data_text), self.parent().handle_mime_data)
 
     def clear(self, search_while_typing=False):
@@ -417,7 +417,7 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         Activate DnD of widget
         """
         self.setAcceptDrops(True)
-        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.DragDrop)
         Registry().register_function(('%s_dnd' % self.mime_data_text), self.parent().handle_mime_data)
         Registry().register_function(('%s_dnd_internal' % self.mime_data_text), self.parent().dnd_move_internal)
 

@@ -94,6 +94,8 @@ class OpenLyricsImport(SongImport):
                 elem.text = elem.text.strip()
             if elem.tail is not None and not is_chord_after_tail:
                 elem.tail = elem.tail.strip()
+            if elem.tail is not None and elem.tail.startswith('\n'):
+                elem.tail = elem.tail.lstrip()
         else:
             has_children = bool(elem.getchildren())
             if elem.text is not None:

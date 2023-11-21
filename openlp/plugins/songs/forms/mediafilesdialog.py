@@ -49,7 +49,7 @@ class Ui_MediaFilesDialog(object):
         self.files_vertical_layout.addWidget(self.select_label)
         self.file_list_widget = QtWidgets.QListWidget(media_files_dialog)
         self.file_list_widget.setAlternatingRowColors(True)
-        self.file_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.file_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.file_list_widget.setObjectName('file_list_widget')
         self.files_vertical_layout.addWidget(self.file_list_widget)
         self.button_box = create_button_box(media_files_dialog, 'button_box', ['cancel', 'ok'])

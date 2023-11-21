@@ -35,7 +35,7 @@ from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.common.registry import Registry
 from openlp.core.lib import build_icon
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.ui import create_action
 from openlp.core.ui.icons import UiIcons
@@ -120,7 +120,7 @@ class SongsPlugin(Plugin):
         Create and set up the Songs plugin.
         """
         super(SongsPlugin, self).__init__('songs', SongMediaItem, SongsTab)
-        self.manager = Manager('songs', init_schema, upgrade_mod=upgrade)
+        self.manager = DBManager('songs', init_schema, upgrade_mod=upgrade)
         Registry().register('songs_manager', self.manager)
         self.weight = -10
         self.icon_path = UiIcons().music
@@ -349,8 +349,6 @@ class SongsPlugin(Plugin):
         If the first time wizard has run, this function is run to import all the new songs into the database.
         """
         self.application.process_events()
-        self.on_tools_reindex_item_triggered()
-        self.application.process_events()
         db_dir_path = Path(gettempdir(), 'openlp')
         if not db_dir_path.exists():
             return
@@ -377,6 +375,9 @@ class SongsPlugin(Plugin):
             importer.do_import(progress)
             self.application.process_events()
         progress.setValue(song_count)
+        self.application.process_events()
+        self.on_tools_reindex_item_triggered()
+        self.application.process_events()
         self.media_item.on_search_text_button_clicked()
 
     def finalise(self):

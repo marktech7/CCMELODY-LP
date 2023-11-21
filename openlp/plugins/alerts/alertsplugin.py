@@ -24,7 +24,7 @@ import logging
 from openlp.core.state import State
 from openlp.core.common.actions import ActionList
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.lib.theme import VerticalType
 from openlp.core.lib.ui import create_action
@@ -124,7 +124,7 @@ class AlertsPlugin(Plugin):
         self.icon_path = UiIcons().alert
         self.icon = self.icon_path
         AlertsManager(self)
-        self.manager = Manager('alerts', init_schema)
+        self.manager = DBManager('alerts', init_schema)
         self.alert_form = AlertForm(self)
         State().add_service(self.name, self.weight, is_plugin=True)
         State().update_pre_conditions(self.name, self.check_pre_conditions())

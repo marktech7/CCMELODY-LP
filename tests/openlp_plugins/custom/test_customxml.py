@@ -22,9 +22,14 @@
 from openlp.plugins.custom.lib.customxmlhandler import CustomXML
 
 
-custom_xml_test1 = '<?xml version="1.0" encoding="utf-8"?><song version="1.0"><lyrics language="en"/><lyrics language="en"><verse type="custom" label="1"><![CDATA[Slide\nnumber 1]]></verse><verse type="custom" label="2"><![CDATA[Slide\nnumber 2]]></verse></lyrics></song>'
-custom_xml_output1 = b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n<song version="1.0"><lyrics language="en"><verse type="custom" label="1"><![CDATA[Custom slide 1]]></verse></lyrics></song>'
-custom_xml_output2 = b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n<song version="1.0"><lyrics language="en"><verse type="custom" label="1"><![CDATA[Custom slide 1]]></verse></lyrics><title>Test Title</title><credit>Super User</credit></song>'
+custom_xml_test1 = '<?xml version="1.0" encoding="utf-8"?><song version="1.0"><lyrics language="en"/>' \
+    '<lyrics language="en"><verse type="custom" label="1"><![CDATA[Slide\nnumber 1]]></verse>' \
+    '<verse type="custom" label="2"><![CDATA[Slide\nnumber 2]]></verse></lyrics></song>'
+custom_xml_output1 = b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n<song version="1.0"><lyrics language="en">' \
+    b'<verse type="custom" label="1"><![CDATA[Custom slide 1]]></verse></lyrics></song>'
+custom_xml_output2 = b'<?xml version=\'1.0\' encoding=\'utf-8\'?>\n<song version="1.0"><lyrics language="en">' \
+    b'<verse type="custom" label="1"><![CDATA[Custom slide 1]]></verse></lyrics><title>Test Title</title>' \
+    b'<credit>Super User</credit></song>'
 
 
 def test_custom_xml_import():

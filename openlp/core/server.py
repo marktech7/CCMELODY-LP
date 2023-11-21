@@ -19,11 +19,15 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 from pathlib import Path
+from typing import Optional
 
 from PyQt5 import QtCore, QtNetwork
 
 from openlp.core.common.mixins import LogMixin
 from openlp.core.common.registry import Registry
+
+# The maximum amount of time to wait before giving up, 120s
+MAX_WAIT_TIME_MS = 120000
 
 
 class Server(QtCore.QObject, LogMixin):
@@ -34,10 +38,12 @@ class Server(QtCore.QObject, LogMixin):
     def __init__(self):
         super(Server, self).__init__()
         self.out_socket = QtNetwork.QLocalSocket()
-        self.server = None
+        self.server: Optional[QtNetwork.QLocalServer] = None
+        self.file_name: Optional[Path | str] = None
         self.id = 'OpenLPDual'
+        self._ms_waited = 0
 
-    def is_another_instance_running(self):
+    def is_another_instance_running(self) -> bool:
         """
         Check the see if an other instance is running
         :return: True of False
@@ -46,7 +52,7 @@ class Server(QtCore.QObject, LogMixin):
         self.out_socket.connectToServer(self.id)
         return self.out_socket.waitForConnected()
 
-    def post_to_server(self, args):
+    def post_to_server(self, args: list):
         """
         Post the file name to the over instance
         :param args: The passed arguments including maybe a file name
@@ -62,7 +68,7 @@ class Server(QtCore.QObject, LogMixin):
                 raise Exception(str(self.out_socket.errorString()))
             self.out_socket.disconnectFromServer()
 
-    def start_server(self):
+    def start_server(self) -> bool:
         """
         Start the socket server to allow inter app communication
         :return:
@@ -90,15 +96,27 @@ class Server(QtCore.QObject, LogMixin):
         self.in_stream.setCodec('UTF-8')
         self.in_socket.readyRead.connect(self._on_ready_read)
 
+    @QtCore.pyqtSlot()
     def _on_ready_read(self):
         """
         Read a record passed to the server and pass to the service manager to handle
         :return:
         """
-        msg = self.in_stream.readLine()
-        if msg:
-            self.log_debug("socket msg = " + msg)
-            Registry().get('service_manager').load_service(Path(msg))
+        if not self.file_name:
+            self.file_name = self.in_stream.readLine()
+            self.log_debug(f'file name = "{self.file_name}"')
+        try:
+            service_manager = Registry().get('service_manager')
+        except KeyError:
+            service_manager = None
+        if service_manager:
+            service_manager.load_service(Path(self.file_name))
+        elif self._ms_waited > MAX_WAIT_TIME_MS:
+            self.log_error('OpenLP is taking too long to start up, abandoning file load')
+        else:
+            self.log_info('Service manager is not loaded yet, waiting 500ms')
+            self._ms_waited += 500
+            QtCore.QTimer.singleShot(500, self._on_ready_read)
 
     def close_server(self):
         """

@@ -26,7 +26,7 @@ import logging
 
 from sqlalchemy import Column, Table, types
 
-from openlp.core.lib.db import get_upgrade_op
+from openlp.core.db.upgrades import get_upgrade_op
 
 
 log = logging.getLogger(__name__)
@@ -52,7 +52,7 @@ def upgrade_2(session, metadata):
     :param metadata: SQLAlchemy MetaData object
     """
     op = get_upgrade_op(session)
-    songusage_table = Table('songusage_data', metadata, autoload=True)
+    songusage_table = Table('songusage_data', metadata, autoload_with=metadata.bind)
     if 'plugin_name' not in [col.name for col in songusage_table.c.values()]:
         op.add_column('songusage_data', Column('plugin_name', types.Unicode(20), server_default=''))
         op.add_column('songusage_data', Column('source', types.Unicode(10), server_default=''))

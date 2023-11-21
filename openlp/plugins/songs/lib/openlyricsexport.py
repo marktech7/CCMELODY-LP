@@ -23,6 +23,7 @@ The :mod:`openlyricsexport` module provides the functionality for exporting song
 format.
 """
 import logging
+from pathlib import Path
 
 from lxml import etree
 
@@ -51,7 +52,7 @@ class OpenLyricsExport(RegistryProperties):
         self.parent = parent
         self.manager = parent.plugin.manager
         self.songs = songs
-        self.save_path = save_path
+        self.save_path = Path(save_path)
         create_paths(self.save_path)
 
     def do_export(self):

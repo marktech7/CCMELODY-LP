@@ -157,7 +157,7 @@ def _get_os_dir_path(dir_type):
                 if 'share/openlp' not in site_dir:
                     continue
                 directory = Path(site_dir)
-                if directory.exists():
+                if (directory / 'i18n').exists():
                     return directory
             return Path(site_dirs[0])
         if dir_type == AppLocation.DataDir:

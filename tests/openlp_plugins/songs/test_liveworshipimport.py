@@ -21,13 +21,13 @@
 """
 This module contains tests for the LiveWorship song importer.
 """
-from unittest import TestCase
 from unittest.mock import MagicMock, patch
 
 from tests.utils import load_external_result_data
 from tests.utils.constants import RESOURCE_PATH
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.lib.importers.liveworship import LiveWorshipImport
 
 
@@ -43,50 +43,41 @@ def _get_item(data, key):
     return ''
 
 
-class TestLiveWorshipSongImport(TestCase):
+@patch('openlp.plugins.songs.lib.importers.liveworship.SongImport')
+def test_create_importer(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
     """
-    Test the functions in the :mod:`liveworshipimport` module.
+    Test creating an instance of the LiveWorship file importer
     """
-    def setUp(self):
-        """
-        Create the registry
-        """
-        Registry.create()
+    # GIVEN: A mocked out SongImport class, and a mocked out "manager"
+    mocked_manager = MagicMock()
 
-    @patch('openlp.plugins.songs.lib.importers.liveworship.SongImport')
-    def test_create_importer(self, mocked_songimport):
-        """
-        Test creating an instance of the LiveWorship file importer
-        """
-        # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-        mocked_manager = MagicMock()
+    # WHEN: An importer object is created
+    importer = LiveWorshipImport(mocked_manager, file_paths=[])
 
-        # WHEN: An importer object is created
-        importer = LiveWorshipImport(mocked_manager, file_paths=[])
+    # THEN: The importer object should not be None
+    assert importer is not None, 'Import should not be none'
 
-        # THEN: The importer object should not be None
-        assert importer is not None, 'Import should not be none'
 
-    @patch('openlp.plugins.songs.lib.importers.liveworship.SongImport')
-    def test_parse_xml_dump(self, mocked_songimport):
-        """
-        Test importing a simple XML dump in LiveWorshipImport
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out "manager" and a simple XML dump
-        mocked_manager = MagicMock()
-        importer = LiveWorshipImport(mocked_manager, file_paths=[])
-        importer.finish = MagicMock()
-        importer.import_wizard = MagicMock()
-        importer.import_source = TEST_PATH / 'valentina-db-simplified-dump.xml'
+@patch('openlp.plugins.songs.lib.importers.liveworship.SongImport')
+def test_parse_xml_dump(mocked_songimport: MagicMock, registry: Registry, settings: Settings):
+    """
+    Test importing a simple XML dump in LiveWorshipImport
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out "manager" and a simple XML dump
+    mocked_manager = MagicMock()
+    importer = LiveWorshipImport(mocked_manager, file_paths=[])
+    importer.finish = MagicMock()
+    importer.import_wizard = MagicMock()
+    importer.import_source = TEST_PATH / 'valentina-db-simplified-dump.xml'
 
-        # WHEN: The XML is loaded and processed
-        importer.load_xml_dump()
-        importer.extract_songs()
+    # WHEN: The XML is loaded and processed
+    importer.load_xml_dump()
+    importer.extract_songs()
 
-        # THEN: The imported data should look like expected
-        result_data = load_external_result_data(TEST_PATH / 'A Child Of The King.json')
-        assert importer.title == _get_item(result_data, 'title')
-        assert importer.verses == _get_item(result_data, 'verses')
-        assert importer.topics[0] == _get_item(result_data, 'topics')[0]
-        assert importer.authors[0][0] == _get_item(result_data, 'authors')[0]
-        assert importer.authors[1][0] == _get_item(result_data, 'authors')[1]
+    # THEN: The imported data should look like expected
+    result_data = load_external_result_data(TEST_PATH / 'A Child Of The King.json')
+    assert importer.title == _get_item(result_data, 'title')
+    assert importer.verses == _get_item(result_data, 'verses')
+    assert importer.topics[0] == _get_item(result_data, 'topics')[0]
+    assert importer.authors[0][0] == _get_item(result_data, 'authors')[0]
+    assert importer.authors[1][0] == _get_item(result_data, 'authors')[1]

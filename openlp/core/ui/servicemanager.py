@@ -64,7 +64,7 @@ class ServiceManagerList(QtWidgets.QTreeWidget):
         Constructor
         """
         super(ServiceManagerList, self).__init__(parent)
-        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
+        self.setDragDropMode(QtWidgets.QAbstractItemView.DragDropMode.DragDrop)
         self.setAlternatingRowColors(True)
         self.setHeaderHidden(True)
         self.setExpandsOnDoubleClick(False)
@@ -159,8 +159,8 @@ class Ui_ServiceManager(object):
         self.toolbar.add_toolbar_widget(self.theme_label)
         self.theme_combo_box = QtWidgets.QComboBox(self.toolbar)
         self.theme_combo_box.setToolTip(translate('OpenLP.ServiceManager', 'Select a theme for the service.'))
-        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.AdjustToMinimumContentsLength)
-        self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
+        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLength)
+        self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.theme_combo_box.setObjectName('theme_combo_box')
         self.toolbar.add_toolbar_widget(self.theme_combo_box)
         self.toolbar.setObjectName('toolbar')
@@ -168,9 +168,9 @@ class Ui_ServiceManager(object):
         # Create the service manager list
         self.service_manager_list = ServiceManagerList(widget)
         self.service_manager_list.setEditTriggers(
-            QtWidgets.QAbstractItemView.CurrentChanged |
-            QtWidgets.QAbstractItemView.DoubleClicked |
-            QtWidgets.QAbstractItemView.EditKeyPressed)
+            QtWidgets.QAbstractItemView.EditTrigger.CurrentChanged |
+            QtWidgets.QAbstractItemView.EditTrigger.DoubleClicked |
+            QtWidgets.QAbstractItemView.EditTrigger.EditKeyPressed)
         self.service_manager_list.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.service_manager_list.customContextMenuRequested.connect(self.context_menu)
         self.service_manager_list.setObjectName('service_manager_list')
@@ -264,7 +264,7 @@ class Ui_ServiceManager(object):
         self.create_custom_action = create_widget_action(self.menu,
                                                          text=translate('OpenLP.ServiceManager', 'Create New &Custom '
                                                                                                  'Slide'),
-                                                         icon=UiIcons().clone,
+                                                         icon=UiIcons().custom,
                                                          triggers=self.create_custom)
         self.menu.addSeparator()
         # Add AutoPlay menu actions
@@ -319,6 +319,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         Sets up the service manager, toolbars, list view, et al.
         """
         super().__init__(parent)
+        self._save_lite = False
         self.service_items = []
         self.suffixes = set()
         self.add_media_suffixes()
@@ -331,12 +332,19 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.list_double_clicked = False
         self.servicefile_version = None
         self.tree_widget_items = []
+        # repaint_service_list debouncer
+        self.repaint_service_list_timer = QtCore.QTimer(self)
+        self.repaint_service_list_timer.setInterval(100)
+        self.repaint_service_list_timer.timeout.connect(self._try_run_repaint_service_list)
+        self.is_running_repaint = False
+        self.repaint_select_indexes = (None, None)
 
     def bootstrap_initialise(self):
         """
         To be called as part of initialisation
         """
         self.setup_ui(self)
+        self.set_theme_visibility()
         # Need to use event as called across threads and UI is updated
         self.servicemanager_set_item.connect(self.on_set_item)
         self.servicemanager_set_item_by_uuid.connect(self.set_item_by_uuid)
@@ -361,7 +369,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.start_time_form = StartTimeForm()
 
     def _delete_confirmation_dialog(self):
-        msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Question,
+        msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,
                                         translate('OpenLP.ServiceManager', 'Delete item from service'),
                                         translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
                                                   'this item from the service?'),
@@ -448,6 +456,12 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         else:
             self.suffixes.update(suffix_list)
 
+    def set_theme_visibility(self):
+        """Set the visibility of the theme items"""
+        visible = self.settings.value('themes/theme level') != ThemeLevel.Global
+        self.toolbar.actions['theme_combo_box'].setVisible(visible)
+        self.toolbar.actions['theme_label'].setVisible(visible)
+
     def on_new_service_clicked(self):
         """
         Create a new service.
@@ -461,7 +475,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                     return False
         if not self.service_items and self.settings.value('advanced/new service message'):
             do_not_show_again = QtWidgets.QCheckBox(translate('OpenLP.Ui', 'Do not show this message again'), None)
-            message_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Information,
+            message_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Information,
                                                 translate('OpenLP.Ui', 'Create a new service.'),
                                                 translate('OpenLP.Ui', 'You already have a blank new service.\n'
                                                                        'Add some items to it then press Save'),
@@ -597,7 +611,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 # For items that has thumbnails, add them to the list
                 if item['service_item'].is_capable(ItemCapabilities.HasThumbnails):
                     thumbnail_path = item['service_item'].get_thumbnail_path()
-                    if not thumbnail_path:
+                    if not thumbnail_path or not Path(thumbnail_path).exists():
                         continue
                     thumbnail_path_parent = Path(thumbnail_path).parent
                     if item['service_item'].is_command():
@@ -799,7 +813,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                 compressed_size = 0
                 for zip_info in zip_file.infolist():
                     compressed_size += zip_info.compress_size
-                self.main_window.display_progress_bar(compressed_size)
+                self.main_window.display_progress_bar(compressed_size // 1024)
                 # First find the osj-file to find out how to handle the file
                 for zip_info in zip_file.infolist():
                     # The json file has been called 'service_data.osj' since OpenLP 3.0
@@ -837,7 +851,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                 is_broken_file = True
                                 self.log_debug(f'Fixing file {fname} => {zip_info.filename}')
                         zip_file.extract(zip_info, str(self.service_path))
-                    self.main_window.increment_progress_bar(zip_info.compress_size)
+                    self.main_window.increment_progress_bar(zip_info.compress_size // 1024)
                 # Handle the content
                 self.new_file()
                 self.process_service_items(items)
@@ -1313,7 +1327,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             self.set_modified()
             self.servicemanager_changed.emit()
 
-    def repaint_service_list(self, service_item, service_item_child):
+    def repaint_service_list(self, service_item: int, service_item_child: int):
         """
         Clear the existing service list and prepaint all the items. This is used when moving items as the move takes
         place in a supporting list, and when regenerating all the items due to theme changes.
@@ -1321,7 +1335,53 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         :param service_item: The item which changed. (int)
         :param service_item_child: The child of the ``service_item``, which will be selected. (int)
         """
+        self.repaint_select_indexes = (service_item, service_item_child)
+        self._try_run_repaint_service_list()
+
+    def _try_run_repaint_service_list(self):
+        if not self.is_running_repaint:
+            self.repaint_service_list_timer.stop()
+            self._repaint_service_list()
+            if (self.repaint_select_indexes[0] is not None):
+                self._select_item_after_repaint(self.repaint_select_indexes[0], self.repaint_select_indexes[1])
+                self.repaint_select_indexes = (None, None)
+        else:
+            # Trying again later
+            self.repaint_service_list_timer.stop()
+            self.repaint_service_list_timer.start()
+
+    def _select_item_after_repaint(self, service_item: int, service_item_child: int):
+        """
+        Selects the list active item after repaint.
+
+        :param service_item: The item which changed. (int)
+        :param service_item_child: The child of the ``service_item``, which will be selected. (int)
+        """
+        for item_index, item in enumerate(self.service_items):
+            service_item_from_item = item['service_item']
+            for slide_index, slide in enumerate(service_item_from_item.get_frames()):
+                if service_item == item_index:
+                    try:
+                        if item['expanded'] and service_item_child == slide_index:
+                            self.service_manager_list.setCurrentIndex(
+                                self.service_manager_list.model().index(service_item, 0).child(service_item_child, 0)
+                            )
+                        elif service_item_child == -1:
+                            self.service_manager_list.setCurrentIndex(
+                                self.service_manager_list.model().index(service_item, 0)
+                            )
+                    except RuntimeError:
+                        pass
+
+    def _repaint_service_list(self) -> bool:
+        """
+        Clear the existing service list and prepaint all the items. This is used when moving items as the move takes
+        place in a supporting list, and when regenerating all the items due to theme changes.
+
+        :returns: Whether the call should be scheduled to be run again due to fail.
+        """
         # Correct order of items in array
+        self.is_running_repaint = True
         count = 1
         self.service_has_all_original_files = True
         for item in self.service_items:
@@ -1333,7 +1393,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         self.tree_widget_items = []
         self.service_manager_list.clearSelection()
         self.service_manager_list.clear()
-        for item_index, item in enumerate(self.service_items):
+        for _, item in enumerate(self.service_items):
             service_item_from_item = item['service_item']
             tree_widget_item = QtWidgets.QTreeWidgetItem(self.service_manager_list)
             self.tree_widget_items.append(tree_widget_item)
@@ -1382,21 +1442,26 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             tree_widget_item.setSelected(item['selected'])
             # Add the children to their parent tree_widget_item.
             for slide_index, slide in enumerate(service_item_from_item.get_frames()):
-                child = QtWidgets.QTreeWidgetItem(tree_widget_item)
-                # prefer to use a display_title
-                if service_item_from_item.is_capable(ItemCapabilities.HasDisplayTitle) or \
-                        service_item_from_item.service_item_type is not ServiceItemType.Text:
-                    text = slide['title'].replace('\n', ' ')
-                else:
-                    text = service_item_from_item.get_rendered_frame(slide_index, clean=True)
-                child.setText(0, text[:40])
-                child.setData(0, QtCore.Qt.UserRole, slide_index)
-                if service_item == item_index:
-                    if item['expanded'] and service_item_child == slide_index:
-                        self.service_manager_list.setCurrentItem(child)
-                    elif service_item_child == -1:
-                        self.service_manager_list.setCurrentItem(tree_widget_item)
+                try:
+                    child = QtWidgets.QTreeWidgetItem(tree_widget_item)
+                    # prefer to use a display_title
+                    if service_item_from_item.is_capable(ItemCapabilities.HasDisplayTitle) or \
+                            service_item_from_item.service_item_type is not ServiceItemType.Text:
+                        text = slide['title'].replace('\n', ' ')
+                    else:
+                        text = service_item_from_item.get_rendered_frame(slide_index, clean=True)
+                    child.setText(0, text[:40])
+                    child.setData(0, QtCore.Qt.UserRole, slide_index)
+                except RuntimeError:
+                    # it's probably a "wrapped C/C++ object of type QTreeWidgetItem has been deleted" due to
+                    # consecutive/parallel repaint_service_list execution. We've added some mitigation to avoid this
+                    # to happen, but it for any reason it happens again, we'll silent it and try to repaint the list
+                    # again (to avoid a broken list presented to the user).
+                    self.is_running_repaint = False
+                    return True
             tree_widget_item.setExpanded(item['expanded'])
+        self.is_running_repaint = False
+        return False
 
     def clean_up(self):
         """
@@ -1423,9 +1488,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         """
         The theme may have changed in the settings dialog so make sure the theme combo box is in the correct state.
         """
-        visible = self.settings.value('themes/theme level') != ThemeLevel.Global
-        self.toolbar.actions['theme_combo_box'].setVisible(visible)
-        self.toolbar.actions['theme_label'].setVisible(visible)
+        self.set_theme_visibility()
         self.regenerate_service_items()
 
     def on_service_theme_change(self):
@@ -1647,7 +1710,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
         title = self.service_items[item]['service_item'].title
         title, ok = QtWidgets.QInputDialog.getText(self, translate('OpenLP.ServiceManager', 'Rename item title'),
                                                    translate('OpenLP.ServiceManager', 'Title:'),
-                                                   QtWidgets.QLineEdit.Normal, self.tr(title))
+                                                   QtWidgets.QLineEdit.EchoMode.Normal, self.tr(title))
         if ok:
             self.service_items[item]['service_item'].title = title
             self.repaint_service_list(item, -1)

@@ -144,6 +144,22 @@ def remove_chords(text):
     return _get_chord_match().sub(r'', text)
 
 
+RE_HTML_STRIP = re.compile(r'<[^>]+>')
+
+
+def remove_html_and_strip(text):
+    """
+    Removes all HTML from the text and strips the whitespace from the remaining lines.
+    """
+    lines = map(__clean_html_line, text.split('\n'))
+    return '\n'.join(lines)
+
+
+def __clean_html_line(line):
+    line = RE_HTML_STRIP.sub('', line)
+    return line.strip()
+
+
 def remove_tags(text, can_remove_chords=False):
     """
     Remove Tags from text for display
@@ -152,6 +168,8 @@ def remove_tags(text, can_remove_chords=False):
     :param can_remove_chords: Can we remove the chords too?
     """
     text = text.replace('<br>', '\n')
+    text = text.replace('<br/>', '\n')
+    text = text.replace('<br />', '\n')
     text = text.replace('{br}', '\n')
     text = text.replace('&nbsp;', ' ')
     text = text.replace('<sup>', '')
@@ -539,13 +557,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         """
         Calculate the number of lines that fits on one slide
         """
-        return self.run_javascript('Display.calculateLineCount();', is_sync=True)
+        return self.run_in_display('calculateLineCount', is_sync=True)
 
     def clear_slides(self):
         """
         Clear slides
         """
-        return self.run_javascript('Display.clearSlides();')
+        return self.run_in_display('clearSlides')
 
     def generate_footer(self):
         """
@@ -841,10 +859,9 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             return True
         self.clear_slides()
         self.log_debug('_text_fits_on_slide: 1\n{text}'.format(text=text))
-        self.run_javascript('Display.setTextSlide("{text}");'
-                            .format(text=text.replace('"', '\\"')), is_sync=True)
+        self.run_in_display('setTextSlide', text.replace('"', '\\"'), is_sync=True)
         self.log_debug('_text_fits_on_slide: 2')
-        does_text_fit = self.run_javascript('Display.doesContentFit();', is_sync=True)
+        does_text_fit = self.run_in_display('doesContentFit', is_sync=True)
         return does_text_fit
 
     def save_screenshot(self, fname=None):

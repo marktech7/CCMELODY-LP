@@ -22,10 +22,11 @@
 The :mod:`~openlp.core.loader` module provides a bootstrap for the singleton classes
 """
 
+from openlp.core.display.render import Renderer
+from openlp.core.lib.pluginmanager import PluginManager
 from openlp.core.state import State
 from openlp.core.ui.media.mediacontroller import MediaController
-from openlp.core.lib.pluginmanager import PluginManager
-from openlp.core.display.render import Renderer
+
 from openlp.core.ui.slidecontroller import LiveController, PreviewController
 
 
@@ -39,7 +40,7 @@ def loader():
     MediaController()
     PluginManager()
     # Set up the path with plugins
-    Renderer()
+    Renderer(window_title='Renderer')
     # Create slide controllers
     PreviewController()
     LiveController()

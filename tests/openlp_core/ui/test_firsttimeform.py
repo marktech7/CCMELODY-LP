@@ -273,7 +273,7 @@ def test_on_custom_button_clicked(mocked_proxy_dialog):
     frw = FirstTimeForm(None)
 
     # WHEN: Calling _on_custom_button_clicked with a different button to the 'internet settings button.
-    frw._on_custom_button_clicked(QtWidgets.QWizard.CustomButton2)
+    frw._on_custom_button_clicked(QtWidgets.QWizard.WizardButton.CustomButton2)
 
     # THEN: The ProxyDialog should not be shown.
     mocked_proxy_dialog.assert_not_called()
@@ -288,7 +288,7 @@ def test_on_custom_button_clicked_internet_settings(mocked_proxy_dialog):
     frw = FirstTimeForm(None)
 
     # WHEN: Calling _on_custom_button_clicked with the constant for the 'internet settings' button (CustomButton1)
-    frw._on_custom_button_clicked(QtWidgets.QWizard.CustomButton1)
+    frw._on_custom_button_clicked(QtWidgets.QWizard.WizardButton.CustomButton1)
 
     # THEN: The ProxyDialog should be shown.
     mocked_proxy_dialog.assert_called_with(frw)
@@ -493,7 +493,7 @@ def test_help(mocked_help, settings):
     frw = FirstTimeForm(None)
 
     # WHEN: The Help button is clicked
-    QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.HelpButton), QtCore.Qt.LeftButton)
+    QtTest.QTest.mouseClick(frw.button(QtWidgets.QWizard.WizardButton.HelpButton), QtCore.Qt.LeftButton)
 
     # THEN: The Help function should be called
     mocked_help.assert_called_once()

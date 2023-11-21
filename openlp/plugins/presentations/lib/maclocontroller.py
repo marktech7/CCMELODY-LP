@@ -36,7 +36,7 @@ LIBREOFFICE_PATH = Path('/Applications/LibreOffice.app')
 LIBREOFFICE_PYTHON = LIBREOFFICE_PATH / 'Contents' / 'Resources' / 'python'
 
 try:
-    from Pyro4 import Proxy
+    from Pyro5.client import Proxy
     if is_macosx() and LIBREOFFICE_PATH.exists():
         macuno_available = True
     else:
@@ -46,7 +46,7 @@ except ImportError:
 
 
 if macuno_available:
-    # If this controller is good to go, register the serializer classes with Pyro4
+    # If this controller is good to go, register the serializer classes with Pyro5
     from openlp.plugins.presentations.lib.serializers import register_classes
     register_classes()
 
@@ -56,8 +56,8 @@ log = logging.getLogger(__name__)
 
 class MacLOController(PresentationController, LogMixin):
     """
-    Class to control interactions with MacLO presentations on Mac OS X via Pyro4. It starts the Pyro4 nameserver,
-    starts the LibreOfficeServer, and then controls MacLO via Pyro4.
+    Class to control interactions with MacLO presentations on Mac OS X via Pyro5. It starts the Pyro5 nameserver,
+    starts the LibreOfficeServer, and then controls MacLO via Pyro5.
     """
     log.info('MacLOController loaded')
 
@@ -86,7 +86,7 @@ class MacLOController(PresentationController, LogMixin):
     @property
     def client(self):
         """
-        Set up a Pyro4 client so that we can talk to the LibreOfficeServer
+        Set up a Pyro5 client so that we can talk to the LibreOfficeServer
         """
         if not self._client:
             self._client = Proxy('PYRO:openlp.libreofficeserver@localhost:4310')

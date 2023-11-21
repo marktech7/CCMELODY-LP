@@ -165,3 +165,12 @@ class FtpType(IntEnum):
     """
     Ftp = 1
     FtpTls = 2
+
+
+class SongFirstSlideMode(IntEnum):
+    """
+    An enumeration for song first slide types.
+    """
+    Default = 0  # No cover
+    Songbook = 1
+    Footer = 2

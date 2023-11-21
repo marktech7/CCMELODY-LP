@@ -46,14 +46,17 @@ class Ui_ThemeWizard(object):
         theme_wizard.setObjectName('OpenLP.ThemeWizard')
         theme_wizard.setWindowIcon(UiIcons().main_icon)
         theme_wizard.setModal(True)
-        theme_wizard.setOptions(QtWidgets.QWizard.IndependentPages |
-                                QtWidgets.QWizard.NoBackButtonOnStartPage | QtWidgets.QWizard.HaveCustomButton1)
+        theme_wizard.setOptions(QtWidgets.QWizard.WizardOption.IndependentPages |
+                                QtWidgets.QWizard.WizardOption.NoBackButtonOnStartPage |
+                                QtWidgets.QWizard.WizardOption.HaveCustomButton1)
         theme_wizard.setFixedWidth(640)
         if is_macosx():     # pragma: no cover
-            theme_wizard.setPixmap(QtWidgets.QWizard.BackgroundPixmap, QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
+            theme_wizard.setPixmap(QtWidgets.QWizard.WizardPixmap.BackgroundPixmap,
+                                   QtGui.QPixmap(':/wizards/openlp-osx-wizard.png'))
         else:
-            theme_wizard.setWizardStyle(QtWidgets.QWizard.ModernStyle)
-        self.spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
+            theme_wizard.setWizardStyle(QtWidgets.QWizard.WizardStyle.ModernStyle)
+        self.spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                                            QtWidgets.QSizePolicy.Policy.Minimum)
         # Welcome Page
         add_welcome_page(theme_wizard, ':/wizards/wizard_createtheme.bmp')
         # Background Page
@@ -67,8 +70,7 @@ class Ui_ThemeWizard(object):
         # Footer Area Page
         self.footer_area_page = FontSelectPage()
         self.footer_area_page.setObjectName('footer_area_page')
-        self.footer_area_page.disable_features(FontSelectPage.Outline, FontSelectPage.Shadow,
-                                               FontSelectPage.LineSpacing)
+        self.footer_area_page.disable_features(FontSelectPage.Outline, FontSelectPage.Shadow)
         theme_wizard.addPage(self.footer_area_page)
         # Alignment Page
         self.alignment_page = AlignmentTransitionsPage()
@@ -98,7 +100,7 @@ class Ui_ThemeWizard(object):
         self.preview_area_layout.margin = 8
         self.preview_area_layout.setSpacing(0)
         self.preview_area_layout.setObjectName('preview_web_layout')
-        self.preview_box = ThemePreviewRenderer(self)
+        self.preview_box = ThemePreviewRenderer(self, window_title="Theme Editor Preview")
         self.preview_box.setObjectName('preview_box')
         self.preview_area_layout.addWidget(self.preview_box)
         self.preview_layout.addWidget(self.preview_area)
@@ -130,8 +132,9 @@ class Ui_ThemeWizard(object):
         self.area_position_page.setTitle(translate('OpenLP.ThemeWizard', 'Output Area Locations'))
         self.area_position_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Allows you to change and move the'
                                                       ' Main and Footer areas.'))
-        theme_wizard.setOption(QtWidgets.QWizard.HaveCustomButton1, False)
-        theme_wizard.setButtonText(QtWidgets.QWizard.CustomButton1, translate('OpenLP.ThemeWizard', 'Layout Preview'))
+        theme_wizard.setOption(QtWidgets.QWizard.WizardOption.HaveCustomButton1, False)
+        theme_wizard.setButtonText(QtWidgets.QWizard.WizardButton.CustomButton1,
+                                   translate('OpenLP.ThemeWizard', 'Layout Preview'))
         self.preview_page.setTitle(translate('OpenLP.ThemeWizard', 'Preview and Save'))
         self.preview_page.setSubTitle(translate('OpenLP.ThemeWizard', 'Preview the theme and save it.'))
         self.theme_name_label.setText(translate('OpenLP.ThemeWizard', 'Theme name:'))

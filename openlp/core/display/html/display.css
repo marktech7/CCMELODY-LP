@@ -427,3 +427,11 @@ section.text-slides.stack.present {
 
 .reveal[class*=fade].overview .slides section {
   transition: none; }
+
+.footer .footer-item {
+  display: none;
+}
+
+.footer .footer-item.active {
+  display: block;
+}

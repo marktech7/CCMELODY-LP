@@ -27,20 +27,70 @@ import pytest
 from PyQt5 import QtCore, QtTest, QtGui, QtWidgets
 
 from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 from openlp.plugins.songs.forms.editverseform import EditVerseForm
 
 
 @pytest.fixture()
-def edit_verse_form(settings):
+def edit_verse_form(registry: Registry, settings: Settings) -> EditVerseForm:
     main_window = QtWidgets.QMainWindow()
-    Registry().register('main_window', main_window)
+    registry.register('main_window', main_window)
     frm = EditVerseForm()
     yield frm
     del frm
     del main_window
 
 
-def test_ui_defaults(edit_verse_form):
+@patch('openlp.plugins.songs.forms.editverseform.QtWidgets.QDialog')
+def test_exec(MockQDialog: MagicMock, edit_verse_form: EditVerseForm):
+    """Test the Exec method of the form"""
+    # GIVEN: An EditVerseForm with the QDialog mocked out
+    MockQDialog.exec.return_value = 1
+
+    # WHEN: exec() is called
+    result = edit_verse_form.exec()
+
+    # THEN: The result should be Accepted
+    assert result == 1
+
+
+@pytest.mark.parametrize('chords_enabled', [True, False])
+@patch('openlp.plugins.songs.forms.editverseform.QtWidgets.QDialog')
+@patch('openlp.plugins.songs.forms.editverseform.transpose_lyrics')
+def test_accept(mocked_transpose_lyrics: MagicMock, MockQDialog: MagicMock, chords_enabled: bool, settings: Settings,
+                edit_verse_form: EditVerseForm):
+    """Test the accept method of the form"""
+    # GIVEN: An EditVerseForm with the QDialog mocked out and the chords enabled or disabled
+    settings.setValue('songs/enable chords', chords_enabled)
+
+    # WHEN: accept() is called
+    edit_verse_form.accept()
+
+    # THEN: The result should be Accepted
+    if chords_enabled:
+        mocked_transpose_lyrics.assert_called()
+    else:
+        mocked_transpose_lyrics.assert_not_called()
+
+
+@patch('openlp.plugins.songs.forms.editverseform.QtWidgets.QDialog')
+@patch('openlp.plugins.songs.forms.editverseform.transpose_lyrics')
+@patch('openlp.plugins.songs.forms.editverseform.critical_error_message_box')
+def test_accept_exception(mocked_critical_error: MagicMock, mocked_transpose_lyrics: MagicMock, MockQDialog: MagicMock,
+                          settings: Settings, edit_verse_form: EditVerseForm):
+    """Test the accept method of the form correctly handles the KeyError exception"""
+    # GIVEN: An EditVerseForm with the QDialog mocked out and the chords enabled
+    settings.setValue('songs/enable chords', True)
+    mocked_transpose_lyrics.side_effect = KeyError('test')
+
+    # WHEN: accept() is called
+    edit_verse_form.accept()
+
+    # THEN: The result should be Accepted
+    mocked_critical_error.assert_called()
+
+
+def test_ui_defaults(edit_verse_form: EditVerseForm):
     """
     Test the EditVerseForm defaults are correct
     """
@@ -50,7 +100,7 @@ def test_ui_defaults(edit_verse_form):
     assert edit_verse_form.verse_text_edit.toPlainText() == '', 'The verse edit box is empty.'
 
 
-def test_type_verse_text(edit_verse_form):
+def test_type_verse_text(edit_verse_form: EditVerseForm):
     """
     Test that typing into the verse text edit box returns the correct text
     """
@@ -65,7 +115,7 @@ def test_type_verse_text(edit_verse_form):
         'The verse text edit should have the typed out verse'
 
 
-def test_insert_verse(edit_verse_form):
+def test_insert_verse(edit_verse_form: EditVerseForm):
     """
     Test the insert_verse() method
     """
@@ -79,7 +129,7 @@ def test_insert_verse(edit_verse_form):
         mocked_verse_text_edit.setFocus()
 
 
-def test_insert_verse_insert_click(edit_verse_form):
+def test_insert_verse_insert_click(edit_verse_form: EditVerseForm):
     """
     Test that clicking the insert button inserts the correct verse marker
     """
@@ -92,7 +142,7 @@ def test_insert_verse_insert_click(edit_verse_form):
         'The verse text edit should have a verse marker'
 
 
-def test_insert_verse_up_click(edit_verse_form):
+def test_insert_verse_up_click(edit_verse_form: EditVerseForm):
     """
     Test that clicking the up button on the spin box and then clicking the insert button inserts the correct marker
     """
@@ -106,7 +156,7 @@ def test_insert_verse_up_click(edit_verse_form):
         'The verse text edit should have a "Verse 2" marker'
 
 
-def test_insert_chorus(edit_verse_form):
+def test_insert_chorus(edit_verse_form: EditVerseForm):
     """
     Test that clicking the verse type combo box and then clicking the insert button inserts the correct marker
     """
@@ -120,7 +170,7 @@ def test_insert_chorus(edit_verse_form):
         'The verse text edit should have a "Chorus 1" marker'
 
 
-def test_update_suggested_verse_number_has_no_effect(edit_verse_form):
+def test_update_suggested_verse_number_has_no_effect(edit_verse_form: EditVerseForm):
     """
     Test that update_suggested_verse_number() has no effect when editing a single verse
     """
@@ -137,7 +187,7 @@ def test_update_suggested_verse_number_has_no_effect(edit_verse_form):
     assert 3 == edit_verse_form.verse_number_box.value(), 'The verse number should be 3'
 
 
-def test_update_suggested_verse_number_different_type(edit_verse_form):
+def test_update_suggested_verse_number_different_type(edit_verse_form: EditVerseForm):
     """
     Test that update_suggested_verse_number() returns 0 when editing a second verse of a different type
     """
@@ -154,7 +204,7 @@ def test_update_suggested_verse_number_different_type(edit_verse_form):
     assert 1 == edit_verse_form.verse_number_box.value(), 'The verse number should be 1'
 
 
-def test_on_divide_split_button_clicked(edit_verse_form):
+def test_on_divide_split_button_clicked(edit_verse_form: EditVerseForm):
     """
     Test that divide adds text at the correct position
     """
@@ -169,7 +219,7 @@ def test_on_divide_split_button_clicked(edit_verse_form):
         'The verse number should be [--}{--]\nText\n'
 
 
-def test_on_split_button_clicked(edit_verse_form):
+def test_on_split_button_clicked(edit_verse_form: EditVerseForm):
     """
     Test that divide adds text at the correct position
     """
@@ -185,7 +235,7 @@ def test_on_split_button_clicked(edit_verse_form):
 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
-def test_on_transpose_up_button_clicked_key_warning(mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_up_button_clicked_key_warning(mocked_show_key_warning: MagicMock, edit_verse_form: EditVerseForm):
     """
     Test that transpose button will transpose the chords and warn about missing song key
     """
@@ -201,7 +251,8 @@ def test_on_transpose_up_button_clicked_key_warning(mocked_show_key_warning, edi
 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
-def test_on_transpose_up_button_clicked_no_key_warning(mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_up_button_clicked_no_key_warning(mocked_show_key_warning: MagicMock,
+                                                       edit_verse_form: EditVerseForm):
     """
     Test that transpose button will transpose the chords but won't show a key error
     """
@@ -218,7 +269,9 @@ def test_on_transpose_up_button_clicked_no_key_warning(mocked_show_key_warning, 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
 @patch('openlp.plugins.songs.forms.editverseform.critical_error_message_box')
-def test_on_transpose_up_button_clicked_with_keyerror(mocked_critical_error, mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_up_button_clicked_with_keyerror(mocked_critical_error: MagicMock,
+                                                      mocked_show_key_warning: MagicMock,
+                                                      edit_verse_form: EditVerseForm):
     """
     Test that transpose button will transpose the chords and warn about missing song key
     """
@@ -235,7 +288,8 @@ def test_on_transpose_up_button_clicked_with_keyerror(mocked_critical_error, moc
 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
-def test_on_transpose_down_button_clicked_key_warning(mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_down_button_clicked_key_warning(mocked_show_key_warning: MagicMock,
+                                                      edit_verse_form: EditVerseForm):
     """
     Test that transpose button will transpose the chords and warn about missing song key
     """
@@ -251,7 +305,8 @@ def test_on_transpose_down_button_clicked_key_warning(mocked_show_key_warning, e
 
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
-def test_on_transpose_down_button_clicked_no_key_warning(mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_down_button_clicked_no_key_warning(mocked_show_key_warning: MagicMock,
+                                                         edit_verse_form: EditVerseForm):
     """
     Test that transpose button will transpose the chords but won't show a message about the key
     """
@@ -268,7 +323,8 @@ def test_on_transpose_down_button_clicked_no_key_warning(mocked_show_key_warning
 
 @patch('openlp.plugins.songs.forms.editverseform.show_key_warning')
 @patch('openlp.plugins.songs.forms.editverseform.critical_error_message_box')
-def test_on_transpose_down_button_clicked_keyerror(mocked_critical_error, mocked_show_key_warning, edit_verse_form):
+def test_on_transpose_down_button_clicked_keyerror(mocked_critical_error: MagicMock, mocked_show_key_warning: MagicMock,
+                                                   edit_verse_form: EditVerseForm):
     """
     Test that transpose button shows an error message when there is an invalid chord
     """
@@ -284,7 +340,7 @@ def test_on_transpose_down_button_clicked_keyerror(mocked_critical_error, mocked
                                                   'invalid chord:\n\'"A" not found in "chords"\'')
 
 
-def test_set_verse_single(settings, edit_verse_form):
+def test_set_verse_single(settings: Settings, edit_verse_form: EditVerseForm):
     """
     Test the set_verse() method of the EditVerseForm for single verses
     """
@@ -306,10 +362,10 @@ def test_set_verse_single(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_called_once_with(False)
         mocked_verse_text_edit.setPlainText.assert_called_once_with('Amazing grace, how sweet the sound')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
-def test_set_verse_multiple(settings, edit_verse_form):
+def test_set_verse_multiple(settings: Settings, edit_verse_form: EditVerseForm):
     """
     Test the set_verse() method of the EditVerseForm for multiple verses
     """
@@ -331,10 +387,10 @@ def test_set_verse_multiple(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_called_once_with(True)
         mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
-def test_set_verse_multiple_chords_disabled(settings, edit_verse_form):
+def test_set_verse_multiple_chords_disabled(settings: Settings, edit_verse_form: EditVerseForm):
     """
     Test the set_verse() method of the EditVerseForm for multiple verses when chords are disabled
     """
@@ -356,10 +412,10 @@ def test_set_verse_multiple_chords_disabled(settings, edit_verse_form):
         mocked_transpose_widget.setVisible.assert_not_called()
         mocked_verse_text_edit.setPlainText.assert_called_once_with('---[Verse:1]---\n')
         mocked_verse_text_edit.setFocus.assert_called_once_with()
-        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.End)
+        mocked_verse_text_edit.moveCursor.assert_called_once_with(QtGui.QTextCursor.MoveOperation.End)
 
 
-def test_add_splitter_to_text(edit_verse_form):
+def test_add_splitter_to_text(edit_verse_form: EditVerseForm):
     """
     Test the _add_splitter_to_text() method
     """
@@ -376,7 +432,7 @@ def test_add_splitter_to_text(edit_verse_form):
         mocked_verse_text_edit.setFocus.assert_called_once_with()
 
 
-def test_get_verse(edit_verse_form):
+def test_get_verse(edit_verse_form: EditVerseForm):
     """
     Test getting the verse via get_verse()
     """
@@ -392,7 +448,7 @@ def test_get_verse(edit_verse_form):
     assert result == ('[=G]Am[G]azing gr[G/B]ace, how sw[C]eet the s[G]ound', 'v', '2')
 
 
-def test_get_all_verses(edit_verse_form):
+def test_get_all_verses(edit_verse_form: EditVerseForm):
     """
     Test getting all the verses via get_all_verses()
     """
@@ -409,7 +465,7 @@ def test_get_all_verses(edit_verse_form):
 
 
 @patch('openlp.plugins.songs.forms.editverseform.VERSE_REGEX')
-def test_update_suggested_verse_number_no_end_part(mocked_verse_regex, edit_verse_form):
+def test_update_suggested_verse_number_no_end_part(mocked_verse_regex: MagicMock, edit_verse_form: EditVerseForm):
     """
     Test the update_suggested_verse_number() method when a verse tag doesn't  contain its end
     """
@@ -427,7 +483,7 @@ def test_update_suggested_verse_number_no_end_part(mocked_verse_regex, edit_vers
         mocked_verse_regex.match.assert_not_called()
 
 
-def test_update_suggested_verse_number_no_match(edit_verse_form):
+def test_update_suggested_verse_number_no_match(edit_verse_form: EditVerseForm):
     """
     Test the update_suggested_verse_number() method when a verse tag doesn't  contain its end
     """

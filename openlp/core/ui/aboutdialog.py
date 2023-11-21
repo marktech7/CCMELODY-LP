@@ -151,7 +151,6 @@ class UiAboutDialog(object):
                       '<li><a href="https://mkleehammer.github.io/pyodbc/">pyodbc</a> (MIT)</li>'
                       '<li><a href="http://initd.org/psycopg/">psycopg2</a> (LGPL3+)</li>'
                       '<li><a href="https://github.com/lincolnloop/python-qrcode/">qrcode</a> (MIT)</li>'
-                      '<li><a href="https://pillow.readthedocs.io/en/stable/index.html/">pillow</a> (HPND)</li>'
                       '</ul>')
         final_credit = translate('OpenLP.AboutForm', '<h3>Final credit:</h3>'
                                  '<blockquote><p>For God so loved the world that He gave His one and only Son, so that '

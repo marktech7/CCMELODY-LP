@@ -12,7 +12,8 @@
   <lyrics>
     <verse name="v1">
       <lines>
-        The <chord name="C"/>Amazing <chord name="C7"/>grace, how s<chord name="F"/>weet the s<chord name="Fm"/>ound<br/>That <chord name="C"/>saved a <chord name="Am7"/>wretch like<chord name="D"/> me!
+        The <chord name="C"/>Amazing <chord name="C7"/>grace, how s<chord name="F"/>weet the s<chord name="Fm"/>ound<br/>That <chord name="C"/>saved a <chord name="Am7"/>wretch like<chord name="D"/> me!<br/>
+        That saved a wretch like <chord name="G/C"/>me.
       </lines>
     </verse>
   </lyrics>

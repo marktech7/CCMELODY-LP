@@ -33,9 +33,10 @@ from PyQt5 import QtCore, QtWidgets
 
 from openlp.core.common.i18n import translate
 from openlp.core.common.mixins import LogMixin
-from openlp.core.common.platform import is_linux, is_macosx, is_win
-from openlp.core.display.screens import ScreenList
+from openlp.core.common.platform import is_linux, is_win
+from openlp.core.display.window import DisplayWindow
 from openlp.core.lib.ui import critical_error_message_box
+from openlp.core.ui.slidecontroller import SlideController
 from openlp.core.ui.media import MediaState, MediaType, VlCState, get_volume
 from openlp.core.ui.media.mediaplayer import MediaPlayer
 
@@ -99,7 +100,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
         self.parent = parent
         self.can_folder = True
 
-    def setup(self, controller, display):
+    def setup(self, controller: SlideController, display: DisplayWindow) -> None:
         """
         Set up the media player
 
@@ -139,22 +140,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
         controller.vlc_media_player = controller.vlc_instance.media_player_new()
         controller.vlc_widget.resize(controller.size())
         controller.vlc_widget.hide()
-        # The media player has to be 'connected' to the QFrame.
-        # (otherwise a video would be displayed in it's own window)
-        # This is platform specific!
-        # You have to give the id of the QFrame (or similar object)
-        # to vlc, different platforms have different functions for this.
-        win_id = int(controller.vlc_widget.winId())
-        if is_win():
-            controller.vlc_media_player.set_hwnd(win_id)
-        elif is_macosx():
-            # We have to use 'set_nsobject' since Qt5 on OSX uses Cocoa
-            # framework and not the old Carbon.
-            controller.vlc_media_player.set_nsobject(win_id)
-        else:
-            # for Linux/*BSD using the X Server
-            controller.vlc_media_player.set_xwindow(win_id)
-        self.has_own_widget = True
+        self.add_display(controller)
 
     def check_available(self):
         """
@@ -162,18 +148,19 @@ class VlcPlayer(MediaPlayer, LogMixin):
         """
         return get_vlc() is not None
 
-    def load(self, controller, output_display, file):
+    def load(self, controller: SlideController, output_display: DisplayWindow, file: str) -> bool:
         """
-        Load a video into VLC
+        Load a Stream or DVD into VLC
 
         :param controller: The controller where the media is
         :param output_display: The display where the media is
         :param file: file/stream to be played
-        :return:
+        :return:  Success or Failure
         """
         if not controller.vlc_instance:
             return False
         self.log_debug('load video in VLC Controller')
+        self.add_display(controller)
         path = None
         if file and not controller.media_info.media_type == MediaType.Stream:
             path = os.path.normcase(file)
@@ -216,23 +203,19 @@ class VlcPlayer(MediaPlayer, LogMixin):
                 res = controller.vlc_media_player.video_set_spu(controller.media_info.subtitle_track)
                 self.log_debug('vlc play, subtitle_track set: ' +
                                str(controller.media_info.subtitle_track) + ' ' + str(res))
-        elif controller.media_info.media_type == MediaType.Stream:
+        else:
+            # We must be Streaming
             controller.vlc_media = controller.vlc_instance.media_new_location(file[0])
             controller.vlc_media.add_options(file[1])
             controller.vlc_media_player.set_media(controller.vlc_media)
-        else:
-            controller.vlc_media = controller.vlc_instance.media_new_path(path)
-            controller.vlc_media_player.set_media(controller.vlc_media)
-            controller.media_info.start_time = 0
-            controller.media_info.end_time = controller.media_info.length
         # parse the metadata of the file
         controller.vlc_media.parse()
-        controller.seek_slider.setMinimum(controller.media_info.start_time)
-        controller.seek_slider.setMaximum(controller.media_info.end_time)
+        controller.mediabar.seek_slider.setMinimum(controller.media_info.start_time)
+        controller.mediabar.seek_slider.setMaximum(controller.media_info.end_time)
         self.volume(controller, get_volume(controller))
         return True
 
-    def media_state_wait(self, controller, media_state):
+    def media_state_wait(self, controller: SlideController, media_state: VlCState) -> bool:
         """
         Wait for the video to change its state
         Wait no longer than 60 seconds. (loading an iso file needs a long time)
@@ -251,19 +234,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
                 return False
         return True
 
-    def resize(self, controller):
-        """
-        Resize the player
-
-        :param controller: The display where the media is stored within the controller.
-        :return:
-        """
-        if controller.is_live:
-            controller.vlc_widget.setGeometry(ScreenList().current.display_geometry)
-        else:
-            controller.vlc_widget.resize(controller.preview_display.size())
-
-    def play(self, controller, output_display):
+    def play(self, controller: SlideController, output_display: DisplayWindow) -> bool:
         """
         Play the current item
 
@@ -279,7 +250,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
         self.set_state(MediaState.Playing, controller)
         return True
 
-    def pause(self, controller):
+    def pause(self, controller: SlideController) -> None:
         """
         Pause the current item
 
@@ -292,7 +263,7 @@ class VlcPlayer(MediaPlayer, LogMixin):
         if self.media_state_wait(controller, VlCState.Paused):
             self.set_state(MediaState.Paused, controller)
 
-    def stop(self, controller):
+    def stop(self, controller: SlideController) -> None:
         """
         Stop the current item
 
@@ -301,53 +272,3 @@ class VlcPlayer(MediaPlayer, LogMixin):
         """
         threading.Thread(target=controller.vlc_media_player.stop).start()
         self.set_state(MediaState.Stopped, controller)
-
-    def volume(self, controller, vol):
-        """
-        Set the volume
-
-        :param vol: The volume to be sets
-        :param controller: The controller where the media is
-        :return:
-        """
-        controller.vlc_media_player.audio_set_volume(vol)
-
-    def seek(self, controller, seek_value):
-        """
-        Go to a particular position
-
-        :param seek_value: The position of where a seek goes to
-        :param controller: The controller where the media is
-        """
-        if controller.vlc_media_player.is_seekable():
-            controller.vlc_media_player.set_time(seek_value)
-
-    def reset(self, controller):
-        """
-        Reset the player
-
-        :param controller: The controller where the media is
-        """
-        controller.vlc_media_player.stop()
-        self.set_state(MediaState.Off, controller)
-
-    def set_visible(self, controller, status):
-        """
-        Set the visibility
-
-        :param controller: The controller where the media display is
-        :param status: The visibility status
-        """
-        controller.vlc_widget.setVisible(status)
-
-    def update_ui(self, controller, output_display):
-        """
-        Update the UI
-
-        :param controller: Which Controller is running the show.
-        :param output_display: The display where the media is
-        """
-        if not controller.seek_slider.isSliderDown():
-            controller.seek_slider.blockSignals(True)
-            controller.seek_slider.setSliderPosition(controller.vlc_media_player.get_time())
-            controller.seek_slider.blockSignals(False)

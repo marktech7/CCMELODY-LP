@@ -18,12 +18,13 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
+from flask import jsonify, Blueprint
+from PyQt5 import QtCore
+
 from openlp.core.api.lib import old_auth, old_success_response
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
-
-from flask import jsonify, Blueprint
 
 core_views = Blueprint('old_core', __name__)
 
@@ -54,5 +55,8 @@ def plugin_list():
 
 @core_views.route('/main/image')
 def main_image():
-    img = 'data:image/jpeg;base64,{}'.format(Registry().get('live_controller').grab_maindisplay())
+    live_controller = Registry().get('live_controller')
+    img_data = live_controller.staticMetaObject.invokeMethod(
+        live_controller, 'grab_maindisplay', QtCore.Qt.BlockingQueuedConnection, QtCore.Q_RETURN_ARG(str))
+    img = 'data:image/jpeg;base64,{}'.format(img_data)
     return jsonify({'slide_image': img})

@@ -21,23 +21,14 @@
 """
 Package to test the openlp.core.lib.pluginmanager package.
 """
-import shutil
-import sys
 import pytest
-from pathlib import Path
-from tempfile import mkdtemp
-from unittest import TestCase, skip
 from unittest.mock import MagicMock, patch
 
-from PyQt5 import QtWidgets
-
 from openlp.core.state import State
-from openlp.core.common.platform import is_win
 from openlp.core.common.registry import Registry
 from openlp.core.common.settings import Settings
 from openlp.core.lib.plugin import PluginStatus
 from openlp.core.lib.pluginmanager import PluginManager
-from tests.helpers.testmixin import TestMixin
 
 
 @pytest.fixture()
@@ -53,11 +44,13 @@ def plugin_manager_env(registry, state):
     Registry().register('settings', MagicMock())
 
 
-def test_bootstrap_initialise(settings, state):
+@patch('openlp.core.lib.pluginmanager.Plugin.__subclasses__')
+def test_bootstrap_initialise(mocked_subclasses, settings, state):
     """
     Test the PluginManager.bootstrap_initialise() method
     """
     # GIVEN: A plugin manager with some mocked out methods
+    mocked_subclasses.return_value = [MagicMock()]
     State().add_service('mediacontroller', 0)
     State().update_pre_conditions('mediacontroller', True)
     manager = PluginManager()
@@ -173,6 +166,7 @@ def test_hook_settings_tabs_with_active_plugin_and_mocked_form(registry, state):
     plugin_manager = PluginManager()
     Registry().register('mock_plugin', mocked_plugin)
     mocked_settings_form = MagicMock()
+    Registry().register('settings_form', mocked_settings_form)
     # Replace the autoloaded plugin with the version for testing in real code this would error
     mocked_settings_form.plugin_manager = plugin_manager
     State().add_service("mock", 1, is_plugin=True, status=PluginStatus.Active)
@@ -545,64 +539,3 @@ def test_new_service_created_with_active_plugin(registry, state):
     # THEN: The is_active() and finalise() methods should have been called
     mocked_plugin.is_active.assert_called_with()
     mocked_plugin.new_service_created.assert_called_with()
-
-
-class TestPluginManager(TestCase, TestMixin):
-    """
-    Test the PluginManager class
-    """
-
-    def setUp(self):
-        """
-        Some pre-test setup required.
-        """
-        self.setup_application()
-        self.build_settings()
-        self.temp_dir_path = Path(mkdtemp('openlp'))
-        Settings().setValue('advanced/data path', self.temp_dir_path)
-        Registry.create()
-        Registry().register('service_list', MagicMock())
-        self.main_window = QtWidgets.QMainWindow()
-        Registry().register('main_window', self.main_window)
-
-    def tearDown(self):
-        Settings().remove('advanced/data path')
-        self.destroy_settings()
-        del self.main_window
-        # On windows we need to manually garbage collect to close sqlalchemy files
-        # to avoid errors when temporary files are deleted.
-        if is_win():
-            import gc
-            gc.collect()
-        shutil.rmtree(self.temp_dir_path)
-
-    @skip
-    # This test is broken but totally unable to debug it.
-    @patch('openlp.plugins.songusage.songusageplugin.Manager')
-    @patch('openlp.plugins.songs.songsplugin.Manager')
-    @patch('openlp.plugins.images.imageplugin.Manager')
-    @patch('openlp.plugins.custom.customplugin.Manager')
-    @patch('openlp.plugins.alerts.alertsplugin.Manager')
-    def test_find_plugins(self, mocked_is1, mocked_is2, mocked_is3, mocked_is4, mocked_is5):
-        """
-        Test the find_plugins() method to ensure it imports the correct plugins
-        """
-        # GIVEN: A plugin manager
-        plugin_manager = PluginManager()
-        plugin_manager.bootstrap_initialise()
-
-        # WHEN: We mock out sys.platform to make it return "darwin" and then find the plugins
-        old_platform = sys.platform
-        sys.platform = 'darwin'
-        sys.platform = old_platform
-
-        # THEN: We should find the "Songs", "Bibles", etc in the plugins list
-        plugin_names = [plugin.name for plugin in State().list_plugins()]
-        assert 'songs' in plugin_names, 'There should be a "songs" plugin'
-        assert 'bibles' in plugin_names, 'There should be a "bibles" plugin'
-        assert 'presentations' in plugin_names, 'There should be a "presentations" plugin'
-        assert 'images' in plugin_names, 'There should be a "images" plugin'
-        assert 'media' in plugin_names, 'There should be a "media" plugin'
-        assert 'custom' in plugin_names, 'There should be a "custom" plugin'
-        assert 'songusage' in plugin_names, 'There should be a "songusage" plugin'
-        assert 'alerts' in plugin_names, 'There should be a "alerts" plugin'

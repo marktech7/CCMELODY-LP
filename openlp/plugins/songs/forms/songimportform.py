@@ -112,13 +112,15 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         self.format_combo_box = QtWidgets.QComboBox(self.source_page)
         self.format_combo_box.setObjectName('format_combo_box')
         self.format_layout.addRow(self.format_label, self.format_combo_box)
-        self.format_spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Minimum)
-        self.format_layout.setItem(1, QtWidgets.QFormLayout.LabelRole, self.format_spacer)
+        self.format_spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                                                   QtWidgets.QSizePolicy.Policy.Minimum)
+        self.format_layout.setItem(1, QtWidgets.QFormLayout.ItemRole.LabelRole, self.format_spacer)
         self.source_layout.addLayout(self.format_layout)
         self.format_h_spacing = self.format_layout.horizontalSpacing()
         self.format_v_spacing = self.format_layout.verticalSpacing()
         self.format_layout.setVerticalSpacing(0)
-        self.stack_spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
+        self.stack_spacer = QtWidgets.QSpacerItem(10, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                                                  QtWidgets.QSizePolicy.Policy.Expanding)
         self.format_stack = QtWidgets.QStackedLayout()
         self.format_stack.setObjectName('format_stack')
         self.disablable_formats = []
@@ -179,8 +181,8 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         for format_list in SongFormat.get_format_list():
             if SongFormat.get(format_list, 'descriptionText') is not None:
                 self.format_widgets[format_list]['descriptionSpacer'].changeSize(
-                    max_label_width + self.format_h_spacing, 0, QtWidgets.QSizePolicy.Fixed,
-                    QtWidgets.QSizePolicy.Fixed)
+                    max_label_width + self.format_h_spacing, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                    QtWidgets.QSizePolicy.Policy.Fixed)
 
     def custom_page_changed(self, page_id):
         """
@@ -374,7 +376,8 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
         if description_text is not None:
             description_layout = QtWidgets.QHBoxLayout()
             description_layout.setObjectName(prefix + 'DescriptionLayout')
-            description_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+            description_spacer = QtWidgets.QSpacerItem(0, 0, QtWidgets.QSizePolicy.Policy.Fixed,
+                                                       QtWidgets.QSizePolicy.Policy.Fixed)
             description_layout.addSpacerItem(description_spacer)
             description_label = QtWidgets.QLabel(import_widget)
             description_label.setWordWrap(True)
@@ -409,7 +412,7 @@ class SongImportForm(OpenLPWizard, RegistryProperties):
             self.format_widgets[this_format]['path_edit'] = path_edit
         elif select_mode == SongFormatSelect.MultipleFiles:
             file_list_widget = QtWidgets.QListWidget(import_widget)
-            file_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+            file_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
             file_list_widget.setObjectName(prefix + 'FileListWidget')
             import_layout.addWidget(file_list_widget)
             button_layout = QtWidgets.QHBoxLayout()

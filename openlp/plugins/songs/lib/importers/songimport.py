@@ -32,7 +32,7 @@ from openlp.core.common.path import create_paths
 from openlp.core.common.registry import Registry
 from openlp.core.widgets.wizard import WizardStrings
 from openlp.plugins.songs.lib import VerseType, clean_song
-from openlp.plugins.songs.lib.db import Author, SongBook, MediaFile, Song, Topic
+from openlp.plugins.songs.lib.db import Author, AuthorType, SongBook, MediaFile, Song, Topic
 from openlp.plugins.songs.lib.openlyricsxml import SongXML
 from openlp.plugins.songs.lib.ui import SongStrings
 
@@ -226,13 +226,65 @@ class SongImport(QtCore.QObject):
             self.copyright += ' '
         self.copyright += copyright
 
+    def _check_for_author_prefix(self, author, default_type):
+        """
+        Detect if the author type is prefixed the author name. Looks for the prefix in entire string, in case multiple
+        authors are listed, each prefixed with a type.
+        :param author: String with author(s) to search for predefined prefixes
+        :param default_type: The default or expected author type to use
+        :return: True if a prefix was found, meaning the author will be added from this method. Else False is returned,
+                 and the caller must add the author.
+        """
+        author_low = author.lower()
+        music_prefixes = ['music by', translate('SongsPlugin.SongImport', 'music by').lower(),
+                          'music:', translate('SongsPlugin.SongImport', 'music:').lower(),
+                          'arranged by', translate('SongsPlugin.SongImport', 'arranged by').lower(),
+                          'arranged:', translate('SongsPlugin.SongImport', 'arranged:').lower(),
+                          'composed by', translate('SongsPlugin.SongImport', 'composed by').lower(),
+                          'composer:', translate('SongsPlugin.SongImport', 'composer:').lower()]
+        words_prefixes = ['words by', translate('SongsPlugin.SongImport', 'words by').lower(),
+                          'words:', translate('SongsPlugin.SongImport', 'words:').lower(),
+                          'lyrics by', translate('SongsPlugin.SongImport', 'lyrics by').lower(),
+                          'lyrics:', translate('SongsPlugin.SongImport', 'lyrics:').lower(),
+                          'written by', translate('SongsPlugin.SongImport', 'written by').lower(),
+                          'writer:', translate('SongsPlugin.SongImport', 'writer:').lower(),
+                          'authored by', translate('SongsPlugin.SongImport', 'authored by').lower(),
+                          'author:', translate('SongsPlugin.SongImport', 'author:').lower()]
+        translation_prefixes = ['translated by', translate('SongsPlugin.SongImport', 'translated by').lower(),
+                                'translation:', translate('SongsPlugin.SongImport', 'translation:').lower()]
+        prefix_map = [(music_prefixes, AuthorType.Music), (words_prefixes, AuthorType.Words),
+                      (translation_prefixes, AuthorType.Translation)]
+        for prefixes, prefix_type in prefix_map:
+            for prefix in prefixes:
+                idx = author_low.find(prefix)
+                if idx == -1:
+                    pass  # no hit
+                elif idx == 0:
+                    # found the prefix right at the start
+                    author_without_prefix = author[len(prefix):].strip()
+                    self.parse_author(author_without_prefix, prefix_type)
+                    return True
+                else:
+                    # found the prefix "inside" the string
+                    author_before_prefix = author[0:idx].strip()
+                    author_after_prefix = author[idx + len(prefix):].strip()
+                    # the type of the authors before the "prefix" must be of the type provided in the method parameter
+                    self.parse_author(author_before_prefix, default_type)
+                    self.parse_author(author_after_prefix, prefix_type)
+                    return True
+        return False
+
     def parse_author(self, text, type=None):
         """
-        Add the author. OpenLP stores them individually so split by 'and', '&' and comma. However need to check
-        for 'Mr and Mrs Smith' and turn it to 'Mr Smith' and 'Mrs Smith'.
+        Add the author. OpenLP stores them individually so split by 'and', '&' comma and semicolon.
+        TODO: check for 'Mr and Mrs Smith' and turn it to 'Mr Smith' and 'Mrs Smith'.
         """
+        # check if the given text is prefixed with the author type, in which case the adding of the author will
+        # be done in _check_for_author_prefix
+        if self._check_for_author_prefix(text, type):
+            return
         for author in text.split(','):
-            authors = author.split('&')
+            authors = re.split(r';|&| and |/|\|', author)
             for i in range(len(authors)):
                 author2 = authors[i].strip()
                 if author2.find(' ') == -1 and i < len(authors) - 1:

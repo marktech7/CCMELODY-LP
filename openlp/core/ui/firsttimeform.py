@@ -110,7 +110,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         self.themes_list_widget.itemSelectionChanged.connect(self.on_themes_list_widget_selection_changed)
         self.themes_deselect_all_button.clicked.connect(self.themes_list_widget.clearSelection)
         self.themes_select_all_button.clicked.connect(self.themes_list_widget.selectAll)
-        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.setOption(QtWidgets.QWizard.WizardOption.HaveHelpButton, True)
         self.helpRequested.connect(self.provide_help)
 
     def provide_help(self):
@@ -247,7 +247,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         create_paths(Path(gettempdir(), 'openlp'))
         self.theme_combo_box.clear()
         self.remote_page.can_download_remote = False
-        self.button(QtWidgets.QWizard.CustomButton1).setVisible(False)
+        self.button(QtWidgets.QWizard.WizardButton.CustomButton1).setVisible(False)
         if self.has_run_wizard:
             self.songs_check_box.setChecked(self.plugin_manager.get_plugin_by_name('songs').is_active())
             self.bible_check_box.setChecked(self.plugin_manager.get_plugin_by_name('bibles').is_active())
@@ -274,10 +274,10 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Detects Page changes and updates as appropriate.
         """
-        back_button = self.button(QtWidgets.QWizard.BackButton)
-        cancel_button = self.button(QtWidgets.QWizard.CancelButton)
-        internet_settings_button = self.button(QtWidgets.QWizard.CustomButton1)
-        next_button = self.button(QtWidgets.QWizard.NextButton)
+        back_button = self.button(QtWidgets.QWizard.WizardButton.BackButton)
+        cancel_button = self.button(QtWidgets.QWizard.WizardButton.CancelButton)
+        internet_settings_button = self.button(QtWidgets.QWizard.WizardButton.CustomButton1)
+        next_button = self.button(QtWidgets.QWizard.WizardButton.NextButton)
         back_button.setVisible(True)
         next_button.setVisible(True)
         internet_settings_button.setVisible(False)
@@ -352,7 +352,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         :rtype: None
         """
         # Internet settings button
-        if which == QtWidgets.QWizard.CustomButton1:
+        if which == QtWidgets.QWizard.WizardButton.CustomButton1:
             proxy_dialog = ProxyDialog(self)
             proxy_dialog.retranslate_ui()
             proxy_dialog.exec()
@@ -408,7 +408,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         Prepare the UI for the process.
         """
         self.max_progress = 0
-        self.button(QtWidgets.QWizard.FinishButton).setEnabled(False)
+        self.button(QtWidgets.QWizard.WizardButton.FinishButton).setEnabled(False)
         self.application.process_events()
         try:
             # Loop through the songs list and increase for each selected item
@@ -480,8 +480,8 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             else:
                 text = translate('OpenLP.FirstTimeWizard', 'Click the \'{finish_button}\' button to start OpenLP.')
         self.progress_label.setText(text.format(finish_button=self.finish_button_text))
-        self.button(QtWidgets.QWizard.FinishButton).setEnabled(True)
-        self.button(QtWidgets.QWizard.CancelButton).setVisible(False)
+        self.button(QtWidgets.QWizard.WizardButton.FinishButton).setEnabled(True)
+        self.button(QtWidgets.QWizard.WizardButton.CancelButton).setVisible(False)
         self.application.process_events()
 
     def _perform_wizard(self):
@@ -549,7 +549,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             for entry in missed_files:
                 file_list += '{text}<br \\>'.format(text=entry)
             msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Warning)
+            msg.setIcon(QtWidgets.QMessageBox.Icon.Warning)
             msg.setWindowTitle(translate('OpenLP.FirstTimeWizard', 'Network Error'))
             msg.setText(translate('OpenLP.FirstTimeWizard', 'Unable to download some files'))
             msg.setInformativeText(translate('OpenLP.FirstTimeWizard',

@@ -21,17 +21,26 @@
 """
 This module contains tests for the WorshipCenter Pro song importer.
 """
-from unittest import TestCase, skipUnless
 from unittest.mock import MagicMock, patch
 
+import pytest
+
+from openlp.core.common.registry import Registry
+from openlp.core.common.settings import Settings
 
 try:
     import pyodbc
-    from openlp.core.common.registry import Registry
     from openlp.plugins.songs.lib.importers.worshipcenterpro import WorshipCenterProImport
     CAN_RUN_TESTS = True
 except ImportError:
+    class WorshipCenterProImport:
+        pass
+
+    pyodbc = MagicMock()
     CAN_RUN_TESTS = False
+
+
+pytestmark = pytest.mark.skipif(not CAN_RUN_TESTS, reason='Cannot run WorshipCenterPro tests')
 
 
 class DBTestRecord(object):
@@ -47,27 +56,26 @@ class DBTestRecord(object):
         self.Value = value
 
 
-if CAN_RUN_TESTS:
-    class WorshipCenterProImportLogger(WorshipCenterProImport):
-        """
-        This class logs changes in the title instance variable
-        """
-        _title_assignment_list = None
+class WorshipCenterProImportLogger(WorshipCenterProImport):
+    """
+    This class logs changes in the title instance variable
+    """
+    _title_assignment_list = None
 
-        def __init__(self, manager):
-            WorshipCenterProImport.__init__(self, manager, file_paths=[])
-            self._title_assignment_list = []
+    def __init__(self, manager):
+        WorshipCenterProImport.__init__(self, manager, file_paths=[])
+        self._title_assignment_list = []
 
-        @property
-        def title(self):
-            return self._title_assignment_list[-1]
+    @property
+    def title(self):
+        return self._title_assignment_list[-1]
 
-        @title.setter
-        def title(self, title):
-            try:
-                self._title_assignment_list.append(title)
-            except AttributeError:
-                self._title_assignment_list = [title]
+    @title.setter
+    def title(self, title):
+        try:
+            self._title_assignment_list.append(title)
+        except AttributeError:
+            self._title_assignment_list = [title]
 
 
 RECORDSET_TEST_DATA = [DBTestRecord(1, 'TITLE', 'Amazing Grace'),
@@ -143,144 +151,132 @@ SONG_TEST_DATA = [{'title': 'Amazing Grace',
                         'Just to bow and\nreceive a new blessing\nIn the beautiful\ngarden of prayer.', 'v')]}]
 
 
-@skipUnless(CAN_RUN_TESTS, 'Not Windows, skipping test')
-class TestWorshipCenterProSongImport(TestCase):
+@pytest.fixture
+def importer(registry: Registry, settings: Settings):
+    with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'):
+        yield WorshipCenterProImportLogger(MagicMock())
+
+
+def test_create_importer(importer: WorshipCenterProImportLogger):
     """
-    Test the functions in the :mod:`worshipcenterproimport` module.
+    Test creating an instance of the WorshipCenter Pro file importer
     """
-    def setUp(self):
-        """
-        Create the registry
-        """
-        Registry.create()
+    # GIVEN: A mocked out SongImport class, and a mocked out "manager"
+    # WHEN: An importer object is created
+    # THEN: The importer object should not be None
+    assert importer is not None, 'Import should not be none'
 
-    def test_create_importer(self):
-        """
-        Test creating an instance of the WorshipCenter Pro file importer
-        """
-        # GIVEN: A mocked out SongImport class, and a mocked out "manager"
-        with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'):
-            mocked_manager = MagicMock()
 
-            # WHEN: An importer object is created
-            importer = WorshipCenterProImport(mocked_manager, file_paths=[])
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate')
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc.connect')
+@pytest.mark.parametrize('error', [pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError,
+                                   pyodbc.OperationalError])
+def test_pyodbc_exception(mocked_pyodbc_connect: MagicMock, mocked_translate: MagicMock,
+                          importer: WorshipCenterProImportLogger, error: Exception):
+    """
+    Test that exceptions raised by pyodbc are handled
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out pyodbc module, a mocked out translate method,
+    #       a mocked "manager" and a mocked out log_error method.
+    mocked_log_error = MagicMock()
+    mocked_translate.return_value = 'Translated Text'
+    importer.log_error = mocked_log_error
+    importer.import_source = 'import_source'
+    mocked_pyodbc_connect.side_effect = error
 
-            # THEN: The importer object should not be None
-            assert importer is not None, 'Import should not be none'
+    # WHEN: Calling the do_import method
+    return_value = importer.do_import()
 
-    def test_pyodbc_exception(self):
-        """
-        Test that exceptions raised by pyodbc are handled
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out pyodbc module, a mocked out translate method,
-        #       a mocked "manager" and a mocked out log_error method.
-        with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc.connect') as mocked_pyodbc_connect, \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
-            mocked_manager = MagicMock()
-            mocked_log_error = MagicMock()
-            mocked_translate.return_value = 'Translated Text'
-            importer = WorshipCenterProImport(mocked_manager, file_paths=[])
-            importer.log_error = mocked_log_error
-            importer.import_source = 'import_source'
-            pyodbc_errors = [pyodbc.DatabaseError, pyodbc.IntegrityError, pyodbc.InternalError, pyodbc.OperationalError]
-            mocked_pyodbc_connect.side_effect = pyodbc_errors
+    # THEN: do_import should return None, and pyodbc, translate & log_error are called with known calls
+    assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
+    mocked_pyodbc_connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
+    mocked_translate.assert_called_with('SongsPlugin.WorshipCenterProImport',
+                                        'Unable to connect the WorshipCenter Pro database.')
+    mocked_log_error.assert_called_with('import_source', 'Translated Text')
 
-            # WHEN: Calling the do_import method
-            for effect in pyodbc_errors:
-                return_value = importer.do_import()
 
-                # THEN: do_import should return None, and pyodbc, translate & log_error are called with known calls
-                assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
-                mocked_pyodbc_connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
-                mocked_translate.assert_called_with('SongsPlugin.WorshipCenterProImport',
-                                                    'Unable to connect the WorshipCenter Pro database.')
-                mocked_log_error.assert_called_with('import_source', 'Translated Text')
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate')
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc')
+def test_song_import(mocked_pyodbc: MagicMock, mocked_translate: MagicMock,
+                     importer: WorshipCenterProImportLogger):
+    """
+    Test that a simulated WorshipCenter Pro recordset is imported correctly
+    """
+    # GIVEN: A mocked out SongImport class, a mocked out pyodbc module with a simulated recordset, a mocked out
+    #       translate method,  a mocked "manager", add_verse method & mocked_finish method.
+    mocked_import_wizard = MagicMock()
+    mocked_add_verse = MagicMock()
+    mocked_parse_author = MagicMock()
+    mocked_add_comment = MagicMock()
+    mocked_add_copyright = MagicMock()
+    mocked_finish = MagicMock()
+    mocked_pyodbc.connect.return_value.cursor.return_value.fetchall.return_value = RECORDSET_TEST_DATA
+    mocked_translate.return_value = 'Translated Text'
+    importer.import_source = 'import_source'
+    importer.import_wizard = mocked_import_wizard
+    importer.add_verse = mocked_add_verse
+    importer.parse_author = mocked_parse_author
+    importer.add_comment = mocked_add_comment
+    importer.add_copyright = mocked_add_copyright
+    importer.stop_import_flag = False
+    importer.finish = mocked_finish
 
-    def test_song_import(self):
-        """
-        Test that a simulated WorshipCenter Pro recordset is imported correctly
-        """
-        # GIVEN: A mocked out SongImport class, a mocked out pyodbc module with a simulated recordset, a mocked out
-        #       translate method,  a mocked "manager", add_verse method & mocked_finish method.
-        with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc') as mocked_pyodbc, \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
-            mocked_manager = MagicMock()
-            mocked_import_wizard = MagicMock()
-            mocked_add_verse = MagicMock()
-            mocked_parse_author = MagicMock()
-            mocked_add_comment = MagicMock()
-            mocked_add_copyright = MagicMock()
-            mocked_finish = MagicMock()
-            mocked_pyodbc.connect().cursor().fetchall.return_value = RECORDSET_TEST_DATA
-            mocked_translate.return_value = 'Translated Text'
-            importer = WorshipCenterProImportLogger(mocked_manager)
-            importer.import_source = 'import_source'
-            importer.import_wizard = mocked_import_wizard
-            importer.add_verse = mocked_add_verse
-            importer.parse_author = mocked_parse_author
-            importer.add_comment = mocked_add_comment
-            importer.add_copyright = mocked_add_copyright
-            importer.stop_import_flag = False
-            importer.finish = mocked_finish
+    # WHEN: Calling the do_import method
+    return_value = importer.do_import()
 
-            # WHEN: Calling the do_import method
-            return_value = importer.do_import()
+    # THEN: do_import should return None, and pyodbc, import_wizard, importer.title and add_verse are called
+    # with known calls
+    assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
+    mocked_pyodbc.connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
+    mocked_pyodbc.connect.return_value.cursor.assert_any_call()
+    mocked_pyodbc.connect.return_value.cursor.return_value.execute.assert_called_with(
+        'SELECT ID, Field, Value FROM __SONGDATA')
+    mocked_pyodbc.connect.return_value.cursor.return_value.fetchall.assert_any_call()
+    mocked_import_wizard.progress_bar.setMaximum.assert_called_with(2)
+    add_verse_call_count = 0
+    for song_data in SONG_TEST_DATA:
+        title_value = song_data['title']
+        assert title_value in importer._title_assignment_list, 'title should have been set to %s' % title_value
+        verse_calls = song_data['verses']
+        add_verse_call_count += len(verse_calls)
+        for call in verse_calls:
+            mocked_add_verse.assert_any_call(*call)
+        if 'author' in song_data:
+            mocked_parse_author.assert_any_call(song_data['author'])
+        if 'comments' in song_data:
+            mocked_add_comment.assert_any_call(song_data['comments'])
+        if 'copyright' in song_data:
+            mocked_add_copyright.assert_any_call(song_data['copyright'])
+        if 'subject' in song_data:
+            mocked_add_copyright.assert_any_call(song_data['subject'])
+    assert mocked_add_verse.call_count == add_verse_call_count, 'Incorrect number of calls made to add_verse'
 
-            # THEN: do_import should return None, and pyodbc, import_wizard, importer.title and add_verse are called
-            # with known calls
-            assert return_value is None, 'do_import should return None when pyodbc raises an exception.'
-            mocked_pyodbc.connect.assert_called_with('DRIVER={Microsoft Access Driver (*.mdb)};DBQ=import_source')
-            mocked_pyodbc.connect().cursor.assert_any_call()
-            mocked_pyodbc.connect().cursor().execute.assert_called_with('SELECT ID, Field, Value FROM __SONGDATA')
-            mocked_pyodbc.connect().cursor().fetchall.assert_any_call()
-            mocked_import_wizard.progress_bar.setMaximum.assert_called_with(2)
-            add_verse_call_count = 0
-            for song_data in SONG_TEST_DATA:
-                title_value = song_data['title']
-                assert title_value in importer._title_assignment_list, 'title should have been set to %s' % title_value
-                verse_calls = song_data['verses']
-                add_verse_call_count += len(verse_calls)
-                for call in verse_calls:
-                    mocked_add_verse.assert_any_call(*call)
-                if 'author' in song_data:
-                    mocked_parse_author.assert_any_call(song_data['author'])
-                if 'comments' in song_data:
-                    mocked_add_comment.assert_any_call(song_data['comments'])
-                if 'copyright' in song_data:
-                    mocked_add_copyright.assert_any_call(song_data['copyright'])
-                if 'subject' in song_data:
-                    mocked_add_copyright.assert_any_call(song_data['subject'])
-            assert mocked_add_verse.call_count == add_verse_call_count, 'Incorrect number of calls made to add_verse'
 
-    def test_song_import_stop(self):
-        """Test that the song importer stops when the flag is set"""
-        with patch('openlp.plugins.songs.lib.importers.worshipcenterpro.SongImport'), \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc') as mocked_pyodbc, \
-                patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate') as mocked_translate:
-            mocked_manager = MagicMock()
-            mocked_import_wizard = MagicMock()
-            mocked_add_verse = MagicMock()
-            mocked_parse_author = MagicMock()
-            mocked_add_comment = MagicMock()
-            mocked_add_copyright = MagicMock()
-            mocked_finish = MagicMock()
-            mocked_pyodbc.connect().cursor().fetchall.return_value = RECORDSET_TEST_DATA
-            mocked_translate.return_value = 'Translated Text'
-            importer = WorshipCenterProImportLogger(mocked_manager)
-            importer.import_source = 'import_source'
-            importer.import_wizard = mocked_import_wizard
-            importer.add_verse = mocked_add_verse
-            importer.parse_author = mocked_parse_author
-            importer.add_comment = mocked_add_comment
-            importer.add_copyright = mocked_add_copyright
-            importer.stop_import_flag = True
-            importer.finish = mocked_finish
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.translate')
+@patch('openlp.plugins.songs.lib.importers.worshipcenterpro.pyodbc')
+def test_song_import_stop(mocked_pyodbc: MagicMock, mocked_translate: MagicMock,
+                          importer: WorshipCenterProImportLogger):
+    """Test that the song importer stops when the flag is set"""
+    mocked_import_wizard = MagicMock()
+    mocked_add_verse = MagicMock()
+    mocked_parse_author = MagicMock()
+    mocked_add_comment = MagicMock()
+    mocked_add_copyright = MagicMock()
+    mocked_finish = MagicMock()
+    mocked_pyodbc.connect().cursor().fetchall.return_value = RECORDSET_TEST_DATA
+    mocked_translate.return_value = 'Translated Text'
+    importer.import_source = 'import_source'
+    importer.import_wizard = mocked_import_wizard
+    importer.add_verse = mocked_add_verse
+    importer.parse_author = mocked_parse_author
+    importer.add_comment = mocked_add_comment
+    importer.add_copyright = mocked_add_copyright
+    importer.stop_import_flag = True
+    importer.finish = mocked_finish
 
-            # WHEN: Calling the do_import method
-            importer.do_import()
+    # WHEN: Calling the do_import method
+    importer.do_import()
 
-            # THEN: No songs should have been imported
-            assert len(importer._title_assignment_list) == 0
-            mocked_finish.assert_not_called()
+    # THEN: No songs should have been imported
+    assert len(importer._title_assignment_list) == 0
+    mocked_finish.assert_not_called()

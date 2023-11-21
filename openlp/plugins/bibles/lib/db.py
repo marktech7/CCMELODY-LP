@@ -27,22 +27,17 @@ from typing import Any, List, Optional, Tuple
 
 import chardet
 from PyQt5 import QtCore
-from sqlalchemy import Column, ForeignKey, MetaData, func, or_
+from sqlalchemy import Column, ForeignKey, func, or_
 from sqlalchemy.exc import OperationalError
-from sqlalchemy.orm import Session, relationship
+from sqlalchemy.orm import Session, declarative_base, relationship
 from sqlalchemy.types import Unicode, UnicodeText, Integer
-
-# Maintain backwards compatibility with older versions of SQLAlchemy while supporting SQLAlchemy 1.4+
-try:
-    from sqlalchemy.orm import declarative_base
-except ImportError:
-    from sqlalchemy.ext.declarative import declarative_base
 
 from openlp.core.common import clean_filename
 from openlp.core.common.enum import LanguageSelection
 from openlp.core.common.applocation import AppLocation
 from openlp.core.common.i18n import translate
-from openlp.core.lib.db import Manager, init_db
+from openlp.core.db.helpers import init_db
+from openlp.core.db.manager import DBManager
 from openlp.core.lib.ui import critical_error_message_box
 from openlp.plugins.bibles.lib import BibleStrings, upgrade
 
@@ -52,7 +47,7 @@ log = logging.getLogger(__name__)
 RESERVED_CHARACTERS = '\\.^$*+?{}[]()'
 
 
-class BibleDB(Manager):
+class BibleDB(DBManager):
     """
     This class represents a database-bound Bible. It is used as a base class for all the custom importers, so that
     the can implement their own import methods, but benefit from the database methods in here via inheritance,
@@ -99,7 +94,7 @@ class BibleDB(Manager):
             self.file_path = Path(clean_filename(self.name) + '.sqlite')
         if 'file' in kwargs:
             self.file_path = kwargs['file']
-        Manager.__init__(self, 'bibles', self.init_schema, self.file_path, upgrade)
+        DBManager.__init__(self, 'bibles', self.init_schema, self.file_path, upgrade)
         if self.session and 'file' in kwargs:
             self.get_name()
         self._is_web_bible = None
@@ -113,7 +108,7 @@ class BibleDB(Manager):
 
         :param url: The database to setup.
         """
-        Base = declarative_base(MetaData)
+        Base = declarative_base()
 
         class BibleMeta(Base):
             """
@@ -167,7 +162,7 @@ class BibleDB(Manager):
         self.Verse = Verse
 
         session, metadata = init_db(url, base=Base)
-        metadata.create_all(checkfirst=True)
+        metadata.create_all(bind=metadata.bind, checkfirst=True)
         return session
 
     def get_name(self) -> str:
@@ -447,7 +442,7 @@ class BibleDB(Manager):
         log.debug(verses)
 
 
-class BiblesResourcesDB(QtCore.QObject, Manager):
+class BiblesResourcesDB(QtCore.QObject):
     """
     This class represents the database-bound Bible Resources. It provide
     some resources which are used in the Bibles plugin.
@@ -740,7 +735,7 @@ class BiblesResourcesDB(QtCore.QObject, Manager):
         ]
 
 
-class AlternativeBookNamesDB(Manager):
+class AlternativeBookNamesDB(object):
     """
     This class represents a database-bound alternative book names system.
     """

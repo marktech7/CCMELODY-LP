@@ -48,7 +48,7 @@ class Ui_ExceptionDialog(object):
         self.message_layout.addSpacing(12)
         self.bug_label = QtWidgets.QLabel(exception_dialog)
         self.bug_label.setPixmap(UiIcons().exception.pixmap(40, 40))
-        self.bug_label.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        self.bug_label.setSizePolicy(QtWidgets.QSizePolicy.Policy.Fixed, QtWidgets.QSizePolicy.Policy.Fixed)
         self.bug_label.setObjectName('bug_label')
         self.message_layout.addWidget(self.bug_label)
         self.message_layout.addSpacing(12)

@@ -19,12 +19,14 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 import logging
+
+from flask import jsonify, request, abort, Blueprint
+from PyQt5 import QtCore
+
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
 from openlp.core.lib.plugin import PluginStatus, StringContent
 from openlp.core.state import State
-
-from flask import jsonify, request, abort, Blueprint
 
 core = Blueprint('core', __name__)
 log = logging.getLogger(__name__)
@@ -60,7 +62,7 @@ def system_information():
     data['websocket_port'] = Registry().get('settings_thread').value('api/websocket port')
     data['login_required'] = Registry().get('settings_thread').value('api/authentication enabled')
     data['api_version'] = 2
-    data['api_revision'] = 3
+    data['api_revision'] = 4
     return jsonify(data)
 
 
@@ -82,6 +84,8 @@ def login():
 
 @core.route('/live-image')
 def main_image():
-    controller = Registry().get('live_controller')
-    img = 'data:image/jpeg;base64,{}'.format(controller.grab_maindisplay())
+    live_controller = Registry().get('live_controller')
+    img_data = live_controller.staticMetaObject.invokeMethod(
+        live_controller, 'grab_maindisplay', QtCore.Qt.BlockingQueuedConnection, QtCore.Q_RETURN_ARG(str))
+    img = 'data:image/jpeg;base64,{}'.format(img_data)
     return jsonify({'binary_image': img})

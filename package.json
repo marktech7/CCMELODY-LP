@@ -19,7 +19,7 @@
   },
   "scripts": {
     "test": "karma start --single-run",
-    "lint": "jshint openlp/core/display/html/display.js"
+    "lint": "jshint openlp/core/display/html/display*.js"
   },
   "jshintConfig": {
     "esversion": 6

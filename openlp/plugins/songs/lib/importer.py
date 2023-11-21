@@ -29,6 +29,7 @@ from openlp.core.widgets.wizard import WizardStrings
 
 from .importers.cclifile import CCLIFileImport
 from .importers.chordpro import ChordProImport
+from .importers.datasoul import DatasoulImport
 from .importers.dreambeam import DreamBeamImport
 from .importers.easyslides import EasySlidesImport
 from .importers.easyworship import EasyWorshipSongImport
@@ -186,6 +187,7 @@ class SongFormat(object):
     WorshipAssistant = 28
     WorshipCenterPro = 29
     ZionWorx = 30
+    Datasoul = 31
 
     # Set optional attribute defaults
     __defaults__ = {
@@ -459,6 +461,12 @@ class SongFormat(object):
                                          'First convert your ZionWorx database to a CSV text file, as '
                                          'explained in the <a href="http://manual.openlp.org/songs.html'
                                          '#importing-from-zionworx">User Manual</a>.')
+        },
+        Datasoul: {
+            'class': DatasoulImport,
+            'name': 'Datasoul',
+            'prefix': 'datasoul',
+            'filter': '{text} (*.song)'.format(text=translate('SongsPlugin.ImportWizardForm', 'Datasoul Song Files'))
         }
     }
 
@@ -473,6 +481,7 @@ class SongFormat(object):
             SongFormat.Generic,
             SongFormat.CCLI,
             SongFormat.ChordPro,
+            SongFormat.Datasoul,
             SongFormat.DreamBeam,
             SongFormat.EasySlides,
             SongFormat.EasyWorshipDB,

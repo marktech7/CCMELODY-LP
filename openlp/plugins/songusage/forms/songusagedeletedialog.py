@@ -49,7 +49,7 @@ class Ui_SongUsageDeleteDialog(object):
         self.delete_calendar = QtWidgets.QCalendarWidget(song_usage_delete_dialog)
         self.delete_calendar.setFirstDayOfWeek(QtCore.Qt.Sunday)
         self.delete_calendar.setGridVisible(True)
-        self.delete_calendar.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.NoVerticalHeader)
+        self.delete_calendar.setVerticalHeaderFormat(QtWidgets.QCalendarWidget.VerticalHeaderFormat.NoVerticalHeader)
         self.delete_calendar.setObjectName('delete_calendar')
         self.vertical_layout.addWidget(self.delete_calendar)
         self.button_box = create_button_box(song_usage_delete_dialog, 'button_box', ['cancel', 'ok', 'help'])

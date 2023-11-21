@@ -70,13 +70,16 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.main_area_page.font_name_changed.connect(self.calculate_lines)
         self.main_area_page.font_size_changed.connect(self.calculate_lines)
         self.main_area_page.line_spacing_changed.connect(self.calculate_lines)
+        self.main_area_page.letter_spacing_changed.connect(self.calculate_lines)
         self.main_area_page.is_outline_enabled_changed.connect(self.on_outline_toggled)
         self.main_area_page.outline_size_changed.connect(self.calculate_lines)
         self.main_area_page.is_shadow_enabled_changed.connect(self.on_shadow_toggled)
         self.main_area_page.shadow_size_changed.connect(self.calculate_lines)
         self.footer_area_page.font_name_changed.connect(self.update_theme)
         self.footer_area_page.font_size_changed.connect(self.update_theme)
-        self.setOption(QtWidgets.QWizard.HaveHelpButton, True)
+        self.footer_area_page.line_spacing_changed.connect(self.calculate_lines)
+        self.footer_area_page.letter_spacing_changed.connect(self.calculate_lines)
+        self.setOption(QtWidgets.QWizard.WizardOption.HaveHelpButton, True)
         self.helpRequested.connect(self.provide_help)
 
     def provide_help(self):
@@ -167,7 +170,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         :param page_id: current page number
         """
         enabled = self.page(page_id) == self.area_position_page
-        self.setOption(QtWidgets.QWizard.HaveCustomButton1, enabled)
+        self.setOption(QtWidgets.QWizard.WizardOption.HaveCustomButton1, enabled)
         if self.page(page_id) == self.preview_page:
             self.update_theme()
             self.resizeEvent()
@@ -284,6 +287,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.main_area_page.font_color = self.theme.font_main_color
         self.main_area_page.font_size = self.theme.font_main_size
         self.main_area_page.line_spacing = self.theme.font_main_line_adjustment
+        self.main_area_page.letter_spacing = self.theme.font_main_letter_adjustment
         self.main_area_page.is_outline_enabled = self.theme.font_main_outline
         self.main_area_page.outline_color = self.theme.font_main_outline_color
         self.main_area_page.outline_size = self.theme.font_main_outline_size
@@ -302,6 +306,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.footer_area_page.is_bold = self.theme.font_footer_bold
         self.footer_area_page.is_italic = self.theme.font_footer_italics
         self.footer_area_page.font_size = self.theme.font_footer_size
+        self.footer_area_page.line_spacing = self.theme.font_footer_line_adjustment
+        self.footer_area_page.letter_spacing = self.theme.font_footer_letter_adjustment
 
     def set_position_page_values(self):
         """
@@ -372,6 +378,7 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_main_color = self.main_area_page.font_color
         self.theme.font_main_size = self.main_area_page.font_size
         self.theme.font_main_line_adjustment = self.main_area_page.line_spacing
+        self.theme.font_main_letter_adjustment = self.main_area_page.letter_spacing
         self.theme.font_main_outline = self.main_area_page.is_outline_enabled
         self.theme.font_main_outline_color = self.main_area_page.outline_color
         self.theme.font_main_outline_size = self.main_area_page.outline_size
@@ -386,6 +393,8 @@ class ThemeForm(QtWidgets.QWizard, Ui_ThemeWizard, RegistryProperties):
         self.theme.font_footer_size = self.footer_area_page.font_size
         self.theme.font_footer_bold = self.footer_area_page.is_bold
         self.theme.font_footer_italics = self.footer_area_page.is_italic
+        self.theme.font_footer_line_adjustment = self.footer_area_page.line_spacing
+        self.theme.font_footer_letter_adjustment = self.footer_area_page.letter_spacing
         # position page (main)
         self.theme.font_main_override = not self.area_position_page.use_main_default_location
         if self.theme.font_main_override:

@@ -63,7 +63,7 @@ class ImageMediaItem(FolderLibraryItem):
         self.images_add_to_service.connect(self.add_to_service_remote)
         self.quick_preview_allowed = True
         self.has_search = True
-        self.single_service_item = False
+        self.list_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
         Registry().register_function('live_theme_changed', self.on_display_changed)
         Registry().register_function('slidecontroller_live_started', self.on_display_changed)
         # Allow DnD from the desktop.
@@ -187,14 +187,23 @@ class ImageMediaItem(FolderLibraryItem):
         :param kwargs: Consume other unused args specified by the base implementation, but not use by this one.
         """
         if item:
+            if isinstance(item, QtCore.QModelIndex):
+                item = self.list_view.itemFromIndex(item)
+                if not item:
+                    return False
             items = [item]
         else:
             items = self.list_view.selectedItems()
             if not items:
                 return False
         # Determine service item title
-        if isinstance(items[0].data(0, QtCore.Qt.UserRole), Folder) or len(items) == 1:
+        image_item = items[0].data(0, QtCore.Qt.UserRole)
+        if isinstance(image_item, Folder) or len(items) == 1:
             service_item.title = items[0].text(0)
+            if not service_item.title:
+                name = Path(image_item.file_path).name
+                if name:
+                    service_item.title = name
         else:
             service_item.title = str(self.plugin.name_strings['plural'])
 

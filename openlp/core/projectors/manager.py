@@ -185,7 +185,7 @@ class UiProjectorManager(object):
         self.projector_one_widget.setObjectName('projector_one_toolbar_widget')
         # Create projector manager list
         self.projector_list_widget = QtWidgets.QListWidget(widget)
-        self.projector_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.projector_list_widget.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         self.projector_list_widget.setAlternatingRowColors(True)
         self.projector_list_widget.setIconSize(QtCore.QSize(90, 50))
         self.projector_list_widget.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)

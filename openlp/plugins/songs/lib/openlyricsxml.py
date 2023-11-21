@@ -132,7 +132,7 @@ class SongXML(object):
         if self.song_xml is not None:
             xml_iter = self.song_xml.getiterator()
             for element in xml_iter:
-                if element.tag == 'verse':
+                if etree.QName(element).localname == 'verse':
                     if element.text is None:
                         element.text = ''
                     verse_list.append([element.attrib, str(element.text)])
@@ -592,14 +592,15 @@ class OpenLyrics(object):
         """
         if not hasattr(song_xml, 'format'):
             return
+        FormattingTags.load_tags()
         found_tags = []
         for tag in song_xml.format.tags.getchildren():
             name = tag.get('name')
             if name is None:
                 continue
-            start_tag = '{{{name}}}'.format(name=name[:5])
+            start_tag = f'{{{name[:5]}}}'
             # Some tags have only start tag e.g. {br}
-            end_tag = '{{/{name}}}'.format(name=name[:5]) if hasattr(tag, 'close') else ''
+            end_tag = f'{{/{name[:5]}}}' if hasattr(tag, 'close') else ''
             openlp_tag = {
                 'desc': name,
                 'start tag': start_tag,
