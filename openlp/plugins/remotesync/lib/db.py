@@ -23,31 +23,50 @@
 The :mod:`db` module provides the database and schema that is the backend for
 the Custom plugin
 """
-from sqlalchemy import Column, Table, types
-from sqlalchemy.orm import mapper
+from sqlalchemy import Column, ForeignKey, Table
+from sqlalchemy.orm import Session, declarative_base, reconstructor, relationship
+from sqlalchemy.types import Boolean, DateTime, Integer, Unicode
 
-from openlp.core.lib.db import BaseModel, init_db
+from openlp.core.db.helpers import init_db
 
 
-class RemoteSyncItem(BaseModel):
+Base = declarative_base()
+
+
+class RemoteSyncItem(Base):
     """
-    RemosteSync model
+    RemoteSyncItem model
     """
-    pass
+    __tablename__ = 'remote_sync_map'
+
+    item_id = Column(Integer, primary_key=True)
+    type = Column(Unicode(64), primary_key=True)
+    uuid = Column(Unicode(36), nullable=False)
+    version = Column(Unicode(64), nullable=False)
 
 
-class SyncQueueItem(BaseModel):
+class SyncQueueItem(Base):
     """
-    SyncQueue model
+    SyncQueueItem model
     """
-    pass
+    __tablename__ = 'sync_queue_table'
+
+    item_id = Column(Integer, primary_key=True)
+    type = Column(Unicode(64), primary_key=True)
+    action = Column(Unicode(32))
+    lock_id = Column(Unicode(128))
+    first_attempt = Column(DateTime())
 
 
-class ConflictItem(BaseModel):
+class ConflictItem(Base):
     """
-    Conflict model
+    ConflictItem model
     """
-    pass
+    __tablename__ = 'conflicts_table'
+
+    type = Column(Unicode(64), primary_key=True)
+    uuid = Column(Unicode(36), nullable=False)
+    conflict_reason = Column(Unicode(64), nullable=False)
 
 
 def init_schema(url):
@@ -56,32 +75,6 @@ def init_schema(url):
 
     :param url:  The database to setup
     """
-    session, metadata = init_db(url)
-
-    remote_sync_table = Table('remote_sync_map', metadata,
-                              Column('item_id', types.Integer(), primary_key=True),
-                              Column('type', types.Unicode(64), primary_key=True),
-                              Column('uuid', types.Unicode(36), nullable=False),
-                              Column('version', types.Unicode(64), nullable=False),
-                              )
-
-    sync_queue_table = Table('sync_queue_table', metadata,
-                             Column('item_id', types.Integer(), primary_key=True, nullable=False),
-                             Column('type', types.Unicode(64), primary_key=True, nullable=False),
-                             Column('action', types.Unicode(32)),
-                             Column('lock_id', types.Unicode(128)),
-                             Column('first_attempt', types.DateTime()),
-                             )
-
-    conflicts_table = Table('conflicts_table', metadata,
-                            Column('type', types.Unicode(64), primary_key=True, nullable=False),
-                            Column('uuid', types.Unicode(36), nullable=False),
-                            Column('conflict_reason', types.Unicode(64), nullable=False),
-                            )
-
-    mapper(RemoteSyncItem, remote_sync_table)
-    mapper(SyncQueueItem, sync_queue_table)
-    mapper(ConflictItem, conflicts_table)
-
-    metadata.create_all(checkfirst=True)
+    session, metadata = init_db(url, base=Base)
+    metadata.create_all(bind=metadata.bind, checkfirst=True)
     return session

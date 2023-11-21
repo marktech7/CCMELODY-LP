@@ -41,7 +41,7 @@ from openlp.core.common.i18n import translate
 from openlp.core.lib import build_icon
 from openlp.core.lib.plugin import Plugin, StringContent
 from openlp.core.ui.icons import UiIcons
-from openlp.core.lib.db import Manager
+from openlp.core.db.manager import DBManager
 from openlp.core.common.enum import SyncType
 from openlp.plugins.remotesync.lib.backends.synchronizer import SyncItemType, SyncItemAction, ConflictException, \
     LockException
@@ -66,7 +66,7 @@ class RemoteSyncPlugin(Plugin):
         """
         super(RemoteSyncPlugin, self).__init__('remotesync', None, RemoteSyncTab)
         self.weight = -1
-        self.manager = Manager('remotesync', init_schema)
+        self.manager = DBManager('remotesync', init_schema)
         self.icon = UiIcons().network_stream
         self.icon_path = self.icon
         self.synchronizer = None
