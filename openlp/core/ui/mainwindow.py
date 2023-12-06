@@ -1256,10 +1256,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.view_live_panel.setEnabled(False)
         else:
             all_dock_features = (QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable |
-                                 QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetVerticalTitleBar |
                                  QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
                                  QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable)
-            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
             self.theme_manager_dock.setFeatures(all_dock_features)
             self.service_manager_dock.setFeatures(all_dock_features)
             self.media_manager_dock.setFeatures(all_dock_features)
