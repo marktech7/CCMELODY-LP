@@ -1255,10 +1255,15 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
             self.view_preview_panel.setEnabled(False)
             self.view_live_panel.setEnabled(False)
         else:
-            self.theme_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
-            self.service_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
-            self.media_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
-            self.projector_manager_dock.setFeatures(QtWidgets.QDockWidget.DockWidgetFeature.AllDockWidgetFeatures)
+            all_dock_features = (QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable |
+                                 QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetVerticalTitleBar |
+                                 QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable |
+                                 QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable)
+            QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable
+            self.theme_manager_dock.setFeatures(all_dock_features)
+            self.service_manager_dock.setFeatures(all_dock_features)
+            self.media_manager_dock.setFeatures(all_dock_features)
+            self.projector_manager_dock.setFeatures(all_dock_features)
             self.view_mode_menu.setEnabled(True)
             self.view_media_manager_item.setEnabled(True)
             self.view_service_manager_item.setEnabled(True)
