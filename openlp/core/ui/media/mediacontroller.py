@@ -134,9 +134,9 @@ class MediaController(QtWidgets.QWidget, RegistryBase, LogMixin, RegistryPropert
             else:
                 packages = []
                 if not has_vlc:
-                    packages.append('python3-vlc')
+                    packages.append('python-vlc')
                 if not pymediainfo_available:
-                    packages.append('python3-pymediainfo')
+                    packages.append('pymediainfo')
                 message = generic_message + '\n\n' + ', '.join(packages)
                 if not has_vlc and is_linux(distro='fedora'):
                     message += '\n\n' + fedora_rpmfusion
