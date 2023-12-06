@@ -408,12 +408,6 @@ def apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args):
                 qt_args[platform_index + 1] += ' windows:dpiawareness=0'
             except ValueError:
                 qt_args.extend(['-platform', 'windows:dpiawareness=0'])
-    if hidpi_mode == HiDPIMode.Default:
-        no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
-                                         and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
-        if no_custom_factor_rounding:
-            # TODO Won't be needed on PyQt6, PassThrough is the default
-            os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
 
 
 def apply_dpi_adjustments_stage_application(hidpi_mode: HiDPIMode, application: QtWidgets.QApplication):
@@ -424,18 +418,12 @@ def apply_dpi_adjustments_stage_application(hidpi_mode: HiDPIMode, application: 
     :param settings: The settings object
     :param stage: The stage of app
     """
-    if hidpi_mode == HiDPIMode.Default:
-        no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ
-                                         and bool(os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'].strip()))
-        if no_custom_factor_rounding and hasattr(QtWidgets.QApplication, 'setHighDpiScaleFactorRoundingPolicy'):
-            # TODO Won't be needed on PyQt6, PassThrough is the default
-            application.setHighDpiScaleFactorRoundingPolicy(QtCore.Qt.HighDpiScaleFactorRoundingPolicy.PassThrough)
-        if is_win() and application.devicePixelRatio() > 1.0:
-            # Increasing font size to match pixel ratio (Windows only)
-            # TODO: Review on PyQt6 migration
-            font = application.font()
-            font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
-            application.setFont(font)
+    if hidpi_mode == HiDPIMode.Default and is_win() and application.devicePixelRatio() > 1.0:
+        # Increasing font size to match pixel ratio (Windows only)
+        # TODO: Review on PyQt6 migration
+        font = application.font()
+        font.setPointSizeF(font.pointSizeF() * application.devicePixelRatio())
+        application.setFont(font)
 
 
 def setup_portable_settings(portable_path: Path | str | None) -> Settings:
