@@ -120,5 +120,5 @@ def is_wayland_platform():
 
     :return: True if the OpenLP/Qt instance is running in a Wayland compositor, otherwise False
     """
-    from PyQt5 import QtGui
+    from PyQt6 import QtGui
     return QtGui.QGuiApplication.platformName() == 'wayland'

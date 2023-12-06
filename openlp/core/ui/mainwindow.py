@@ -864,7 +864,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                                'behaviour or OpenLP to terminate '
                                                                                'abnormally.'),
                                                 QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
-                                                                                      QtWidgets.QMessageBox.StandardButton.No),
+                                                                                     QtWidgets.QMessageBox.StandardButton.No),
                                                 QtWidgets.QMessageBox.StandardButton.No)
         if answer == QtWidgets.QMessageBox.StandardButton.No:
             return
@@ -1083,7 +1083,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                 translate('OpenLP.MainWindow', 'Exit OpenLP'),
                                                 translate('OpenLP.MainWindow', 'Are you sure you want to exit OpenLP?'),
                                                 QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Close |
-                                                                                      QtWidgets.QMessageBox.StandardButton.Cancel),
+                                                                                     QtWidgets.QMessageBox.StandardButton.Cancel),
                                                 self)
                 close_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
                 close_button.setText(translate('OpenLP.MainWindow', '&Exit OpenLP'))
@@ -1117,7 +1117,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 if self.main_window.isMinimized():
                     # Copied from QWidget.setWindowState() docs on how to restore and activate a minimized window
                     # while preserving its maximized and/or full-screen state.
-                    self.main_window.setWindowState(self.main_window.windowState() & ~QtCore.Qt.WindowState.WindowMinimized |
+                    self.main_window.setWindowState(self.main_window.windowState() &
+                                                    ~QtCore.Qt.WindowState.WindowMinimized |
                                                     QtCore.Qt.WindowState.WindowActive)
                     return True
 

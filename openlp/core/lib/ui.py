@@ -118,8 +118,9 @@ def critical_error_message_box(title=None, message=None, parent=None, question=F
     """
     if question:
         return QtWidgets.QMessageBox.critical(parent, UiStrings().Error, message,
-                                              QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
-                                                                                    QtWidgets.QMessageBox.StandardButton.No))
+                                              QtWidgets.QMessageBox.StandardButton(
+            QtWidgets.QMessageBox.StandardButton.Yes |
+            QtWidgets.QMessageBox.StandardButton.No))
     # If used before the main window is created, fall back to direct use of QMessageBox
     main_window = Registry().get('main_window')
     if main_window:
@@ -139,8 +140,9 @@ def warning_message_box(title=None, message=None, parent=None, question=False):
     """
     if question:
         return QtWidgets.QMessageBox.warning(parent, UiStrings().Warning, message,
-                                             QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.Yes |
-                                                                                   QtWidgets.QMessageBox.No))
+                                             QtWidgets.QMessageBox.StandardButton(
+            QtWidgets.QMessageBox.StandardButton.Yes |
+            QtWidgets.QMessageBox.StandardButton.No))
     QtWidgets.QMessageBox.warning(parent, title, message)
 
 

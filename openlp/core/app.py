@@ -481,8 +481,8 @@ def main():
         qt_args.extend(['-platform', 'windows:darkmode=1'])
     elif is_macosx() and getattr(sys, 'frozen', False) and not os.environ.get('QTWEBENGINEPROCESS_PATH'):
         # Work around an issue where PyInstaller is not setting this environment variable
-        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PyQt5' / 'Qt5' /
-                                                    'lib' / 'QtWebEngineCore.framework' / 'Versions' / '5' /
+        os.environ['QTWEBENGINEPROCESS_PATH'] = str(AppLocation.get_directory(AppLocation.AppDir) / 'PyQt6' / 'Qt6' /
+                                                    'lib' / 'QtWebEngineCore.framework' / 'Versions' / '6' /
                                                     'Helpers' / 'QtWebEngineProcess.app' / 'Contents' / 'MacOS' /
                                                     'QtWebEngineProcess')
     no_custom_factor_rounding = not ('QT_SCALE_FACTOR_ROUNDING_POLICY' in os.environ

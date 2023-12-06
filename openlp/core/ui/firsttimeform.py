@@ -555,7 +555,7 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
             msg.setInformativeText(translate('OpenLP.FirstTimeWizard',
                                              'The following files were not able to be '
                                              'downloaded:<br \\>{text}'.format(text=file_list)))
-            msg.setStandardButtons(msg.Ok)
+            msg.setStandardButtons(msg.StandardButton.Ok)
             msg.exec()
         return True
 

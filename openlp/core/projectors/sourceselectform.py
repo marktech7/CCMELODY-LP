@@ -234,7 +234,8 @@ class SourceSelectTabs(QtWidgets.QDialog):
         :param projectordb: ProjectorDB session to use
         """
         log.debug('Initializing SourceSelectTabs()')
-        super(SourceSelectTabs, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(SourceSelectTabs, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                               QtCore.Qt.WindowType.WindowTitleHint |
                                                QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setMinimumWidth(350)
         self.projectordb = projectordb
@@ -319,13 +320,13 @@ class SourceSelectTabs(QtWidgets.QDialog):
                   Reset:   Reset all text to PJLink default text
                   Cancel:  Cancel text edit
         """
-        if self.button_box.standardButton(button) == self.button_box.Cancel:
+        if self.button_box.standardButton(button) == self.button_box.StandardButton.Cancel:
             self.done(0)
-        elif self.button_box.standardButton(button) == self.button_box.Reset:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Reset:
             self.done(100)
-        elif self.button_box.standardButton(button) == self.button_box.Discard:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Discard:
             self.delete_sources()
-        elif self.button_box.standardButton(button) == self.button_box.Ok:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Ok:
             return self.accept_me()
         else:
             return 100
@@ -339,10 +340,10 @@ class SourceSelectTabs(QtWidgets.QDialog):
         msg.setInformativeText(translate('OpenLP.SourceSelectForm',
                                          'Are you sure you want to delete ALL user-defined '
                                          'source input text for this projector?'))
-        msg.setStandardButtons(msg.Cancel | msg.Ok)
-        msg.setDefaultButton(msg.Cancel)
+        msg.setStandardButtons(msg.StandardButton.Cancel | msg.StandardButton.Ok)
+        msg.setDefaultButton(msg.StandardButton.Cancel)
         ans = msg.exec()
-        if ans == msg.Cancel:
+        if ans == msg.StandardButton.Cancel:
             return
         self.projectordb.delete_all_objects(ProjectorSource, ProjectorSource.projector_id == self.projector.db_item.id)
         self.done(100)
@@ -390,7 +391,8 @@ class SourceSelectSingle(QtWidgets.QDialog):
         """
         log.debug('Initializing SourceSelectSingle()')
         self.projectordb = projectordb
-        super(SourceSelectSingle, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(SourceSelectSingle, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                 QtCore.Qt.WindowType.WindowTitleHint |
                                                  QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.edit = edit
         if self.edit:
@@ -465,13 +467,13 @@ class SourceSelectSingle(QtWidgets.QDialog):
                   Reset:   Reset all text to PJLink default text
                   Cancel:  Cancel text edit
         """
-        if self.button_box.standardButton(button) == self.button_box.Cancel:
+        if self.button_box.standardButton(button) == self.button_box.StandardButton.Cancel:
             self.done(0)
-        elif self.button_box.standardButton(button) == self.button_box.Reset:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Reset:
             self.done(100)
-        elif self.button_box.standardButton(button) == self.button_box.Discard:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Discard:
             self.delete_sources()
-        elif self.button_box.standardButton(button) == self.button_box.Ok:
+        elif self.button_box.standardButton(button) == self.button_box.StandardButton.Ok:
             return self.accept_me()
         else:
             return 100
@@ -482,10 +484,10 @@ class SourceSelectSingle(QtWidgets.QDialog):
         msg.setInformativeText(translate('OpenLP.SourceSelectForm',
                                          'Are you sure you want to delete ALL user-defined '
                                          'source input text for this projector?'))
-        msg.setStandardButton(msg.Cancel | msg.Ok)
-        msg.setDefaultButton(msg.Cancel)
+        msg.setStandardButtons(msg.StandardButton.Cancel | msg.StandardButton.Ok)
+        msg.setDefaultButton(msg.StandardButton.Cancel)
         ans = msg.exec()
-        if ans == msg.Cancel:
+        if ans == msg.StandardButton.Cancel:
             return
         self.projectordb.delete_all_objects(ProjectorSource, ProjectorSource.projector_id == self.projector.db_item.id)
         self.done(100)

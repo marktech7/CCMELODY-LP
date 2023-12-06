@@ -19,7 +19,7 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 from flask import jsonify, Blueprint
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.api.lib import old_auth, old_success_response
 from openlp.core.common.registry import Registry

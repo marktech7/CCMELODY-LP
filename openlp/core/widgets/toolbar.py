@@ -211,14 +211,14 @@ class MediaToolbar(OpenLPToolbar):
                                     triggers=self._on_action)
         self.position_label = QtWidgets.QLabel()
         self.position_label.setText(' 00:00 / 00:00')
-        self.position_label.setAlignment(QtCore.Qt.AlignRight | QtCore.Qt.AlignVCenter)
+        self.position_label.setAlignment(QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.position_label.setToolTip(translate('OpenLP.SlideController', 'Video timer.'))
         self.position_label.setMinimumSize(90, 0)
         self.position_label.setObjectName(self.action_prefixes + 'position_label')
         self.add_toolbar_widget(self.position_label)
         if 'seek' not in self.hide_components:
             # Build the media seek_slider.
-            self.seek_slider = MediaSlider(QtCore.Qt.Horizontal, self, self)
+            self.seek_slider = MediaSlider(QtCore.Qt.Orientation.Horizontal, self, self)
             self.seek_slider.setMaximum(1000)
             self.seek_slider.setTracking(True)
             self.seek_slider.setMouseTracking(True)
@@ -229,7 +229,7 @@ class MediaToolbar(OpenLPToolbar):
             self.seek_slider.valueChanged.connect(self._on_action)
         if 'volume' not in self.hide_components:
             # Build the volume_slider.
-            self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
+            self.volume_slider = QtWidgets.QSlider(QtCore.Qt.Orientation.Horizontal)
             self.volume_slider.setTickInterval(10)
             self.volume_slider.setTickPosition(QtWidgets.QSlider.TickPosition.TicksAbove)
             self.volume_slider.setMinimum(0)

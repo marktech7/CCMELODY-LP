@@ -191,19 +191,19 @@ def test_parse_options_file_and_debug():
 
 @patch('openlp.core.app.QtWidgets.QMessageBox.critical')
 @patch('openlp.core.app.QtWidgets.QMessageBox.StandardButton')
-def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_critical, qapp):
+def test_is_already_running_is_running_continue(MockedStandardButton, mocked_critical, qapp):
     """
     Test the is_already_running() method when OpenLP IS running and the user chooses to continue
     """
     # GIVEN: An OpenLP app and some mocks
-    MockedStandardButtons.return_value = 0
+    MockedStandardButton.return_value = 0
     mocked_critical.return_value = QtWidgets.QMessageBox.StandardButton.Yes
 
     # WHEN: is_already_running() is called
     qapp.is_already_running()
 
     # THEN: The result should be false
-    MockedStandardButtons.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Ok)
+    MockedStandardButton.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Ok)
     mocked_critical.assert_called_once_with(None, 'Error',
                                             'OpenLP is already running on this machine. \nClosing this instance', 0)
 

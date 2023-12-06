@@ -63,7 +63,7 @@ class ImageMediaItem(FolderLibraryItem):
         self.images_add_to_service.connect(self.add_to_service_remote)
         self.quick_preview_allowed = True
         self.has_search = True
-        self.list_view.setSelectionMode(QtWidgets.QAbstractItemView.ExtendedSelection)
+        self.list_view.setSelectionMode(QtWidgets.QAbstractItemView.SelectionMode.ExtendedSelection)
         Registry().register_function('live_theme_changed', self.on_display_changed)
         Registry().register_function('slidecontroller_live_started', self.on_display_changed)
         # Allow DnD from the desktop.

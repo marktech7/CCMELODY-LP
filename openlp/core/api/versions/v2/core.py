@@ -21,7 +21,7 @@
 import logging
 
 from flask import jsonify, request, abort, Blueprint
-from PyQt5 import QtCore
+from PyQt6 import QtCore
 
 from openlp.core.api.lib import login_required
 from openlp.core.common.registry import Registry
@@ -86,6 +86,6 @@ def login():
 def main_image():
     live_controller = Registry().get('live_controller')
     img_data = live_controller.staticMetaObject.invokeMethod(
-        live_controller, 'grab_maindisplay', QtCore.Qt.BlockingQueuedConnection, QtCore.Q_RETURN_ARG(str))
+        live_controller, 'grab_maindisplay', QtCore.Qt.ConnectionType.BlockingQueuedConnection, QtCore.Q_RETURN_ARG(str))
     img = 'data:image/jpeg;base64,{}'.format(img_data)
     return jsonify({'binary_image': img})

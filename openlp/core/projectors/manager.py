@@ -501,10 +501,10 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                               f'Delete projector ({projector.link.ip}) {projector.link.name}?'))
         msg.setInformativeText(translate('OpenLP.ProjectorManager',
                                          'Are you sure you want to delete this projector?'))
-        msg.setStandardButton(msg.Cancel | msg.Ok)
-        msg.setDefaultButton(msg.Cancel)
+        msg.setStandardButtons(msg.StandardButton.Cancel | msg.StandardButton.Ok)
+        msg.setDefaultButton(msg.StandardButton.Cancel)
         ans = msg.exec()
-        if ans == msg.Cancel:
+        if ans == msg.StandardButton.Cancel:
             return
         try:
             projector.link.projectorChangeStatus.disconnect(self.update_status)
