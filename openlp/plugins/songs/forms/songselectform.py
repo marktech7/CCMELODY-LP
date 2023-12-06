@@ -217,7 +217,7 @@ class SongSelectForm(QtWidgets.QDialog, Ui_SongSelectDialog, RegistryProperties)
                 self, translate('SongsPlugin.SongSelectForm', 'Incomplete song'),
                 translate('SongsPlugin.SongSelectForm', 'This song is missing some information, like the lyrics, '
                                                         'and cannot be imported.'),
-                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok), QtWidgets.QMessageBox.StandardButton.Ok)
+                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok), QtWidgets.QMessageBox.StandardButton.Ok)
             return
         # Clear up the UI
         self.author_list_widget.clear()

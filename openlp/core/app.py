@@ -160,7 +160,7 @@ class OpenLP(QtCore.QObject, LogMixin):
         Tell the user there is a 2nd instance running.
         """
         QtWidgets.QMessageBox.critical(None, UiStrings().Error, UiStrings().OpenLPStart,
-                                       QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                       QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
 
     def is_data_path_missing(self):
         """
@@ -178,7 +178,7 @@ class OpenLP(QtCore.QObject, LogMixin):
                                     'current location available.\n\nDo you want to reset to the default data location? '
                                     'If not, OpenLP will be closed so you can try to fix the problem.')
                 .format(path=data_folder_path),
-                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
+                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
                 QtWidgets.QMessageBox.StandardButton.No)
             if status == QtWidgets.QMessageBox.StandardButton.No:
                 # If answer was "No", return "True", it will shutdown OpenLP in def main
@@ -357,7 +357,7 @@ def backup_if_version_changed(settings):
                       'OpenLP will start with a fresh install as downgrading data is not supported. Any existing data '
                       'will be backed up to:\n\n{data_folder_backup_path}\n\n'
                       'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
-            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
+            QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
             QtWidgets.QMessageBox.StandardButton.No)
         if close_result == QtWidgets.QMessageBox.StandardButton.No:
             # Return false as backup failed.

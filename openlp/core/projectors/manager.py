@@ -501,7 +501,7 @@ class ProjectorManager(QtWidgets.QWidget, RegistryBase, UiProjectorManager, LogM
                               f'Delete projector ({projector.link.ip}) {projector.link.name}?'))
         msg.setInformativeText(translate('OpenLP.ProjectorManager',
                                          'Are you sure you want to delete this projector?'))
-        msg.setStandardButtons(msg.Cancel | msg.Ok)
+        msg.setStandardButton(msg.Cancel | msg.Ok)
         msg.setDefaultButton(msg.Cancel)
         ans = msg.exec()
         if ans == msg.Cancel:

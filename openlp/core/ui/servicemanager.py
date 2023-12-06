@@ -373,7 +373,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                         translate('OpenLP.ServiceManager', 'Delete item from service'),
                                         translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
                                                   'this item from the service?'),
-                                        QtWidgets.QMessageBox.StandardButtons(
+                                        QtWidgets.QMessageBox.StandardButton(
                                             QtWidgets.QMessageBox.StandardButton.Close | QtWidgets.QMessageBox.StandardButton.Cancel), self)
         del_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
         del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
@@ -677,7 +677,7 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                     'These files will be removed if you continue to save.'
                                     ).format(name='\n\t'.join(missing_list))
                 answer = QtWidgets.QMessageBox.critical(self, title, message,
-                                                        QtWidgets.QMessageBox.StandardButtons(
+                                                        QtWidgets.QMessageBox.StandardButton(
                                                             QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel))
                 if answer == QtWidgets.QMessageBox.StandardButton.Cancel:
                     return False

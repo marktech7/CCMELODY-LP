@@ -190,7 +190,7 @@ def test_parse_options_file_and_debug():
 
 
 @patch('openlp.core.app.QtWidgets.QMessageBox.critical')
-@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButtons')
+@patch('openlp.core.app.QtWidgets.QMessageBox.StandardButton')
 def test_is_already_running_is_running_continue(MockedStandardButtons, mocked_critical, qapp):
     """
     Test the is_already_running() method when OpenLP IS running and the user chooses to continue

@@ -717,8 +717,8 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                          'Time Wizard?\n\nRe-running this wizard may make changes to '
                                                          'your current OpenLP configuration and possibly add songs to '
                                                          'your existing songs list and change your default theme.'),
-                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
-                                                                                     QtWidgets.QMessageBox.StandardButton.No),
+                                               QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                                                    QtWidgets.QMessageBox.StandardButton.No),
                                                QtWidgets.QMessageBox.StandardButton.No)
         if answer == QtWidgets.QMessageBox.StandardButton.No:
             return
@@ -863,7 +863,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                                'incorrect settings may cause erratic '
                                                                                'behaviour or OpenLP to terminate '
                                                                                'abnormally.'),
-                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
                                                                                       QtWidgets.QMessageBox.StandardButton.No),
                                                 QtWidgets.QMessageBox.StandardButton.No)
         if answer == QtWidgets.QMessageBox.StandardButton.No:
@@ -906,7 +906,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                           'from a newer version of OpenLP.\n\n'
                                                                           'Processing has terminated and '
                                                                           'no changes have been made.'),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
             return
         # Upgrade settings to prepare the import.
         if import_settings.version_mismatched():
@@ -919,7 +919,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                                                           'to be a valid OpenLP settings file.\n\n'
                                                                           'Processing has terminated and '
                                                                           'no changes have been made.'),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
             return
         import_keys = import_settings.allKeys()
         for section_key in import_keys:
@@ -983,7 +983,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                            translate('OpenLP.MainWindow',
                                                      'An error occurred while exporting the settings: {err}'
                                                      ).format(err=ose.strerror),
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
 
     def on_mode_default_item_clicked(self):
         """
@@ -1082,7 +1082,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                 msg_box = QtWidgets.QMessageBox(QtWidgets.QMessageBox.Icon.Question,
                                                 translate('OpenLP.MainWindow', 'Exit OpenLP'),
                                                 translate('OpenLP.MainWindow', 'Are you sure you want to exit OpenLP?'),
-                                                QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Close |
+                                                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Close |
                                                                                       QtWidgets.QMessageBox.StandardButton.Cancel),
                                                 self)
                 close_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
@@ -1471,7 +1471,7 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow, LogMixin, RegistryPropert
                                      'OpenLP Data directory copy failed\n\n{err}').format(err=str(why))
                 QtWidgets.QMessageBox.critical(self, translate('OpenLP.MainWindow', 'New Data Directory Error'),
                                                err_text,
-                                               QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                               QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
                 return False
         else:
             self.log_info('No data copy requested')

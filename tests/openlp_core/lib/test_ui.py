@@ -119,7 +119,7 @@ def test_critical_error_question(mocked_critical):
 
     # THEN: The error_message() method on the main window should be called
     mocked_critical.assert_called_once_with(mocked_parent, 'Error', 'This is a question',
-                                            QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Yes |
+                                            QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
                                                                                   QtWidgets.QMessageBox.StandardButton.No))
 
 

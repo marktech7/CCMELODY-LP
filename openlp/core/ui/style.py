@@ -238,7 +238,7 @@ def get_application_stylesheet():
     """
     stylesheet = ''
     if is_ui_theme(UiThemes.QDarkStyle):
-        stylesheet = qdarkstyle.load_stylesheet_PyQt6()
+        stylesheet = qdarkstyle.load_stylesheet_pyqt()
     else:
         if not Registry().get('settings').value('advanced/alternate rows'):
             base_color = QtWidgets.QApplication.palette().color(QtGui.QPalette.ColorGroup.Active,

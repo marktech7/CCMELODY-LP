@@ -482,7 +482,7 @@ class SourceSelectSingle(QtWidgets.QDialog):
         msg.setInformativeText(translate('OpenLP.SourceSelectForm',
                                          'Are you sure you want to delete ALL user-defined '
                                          'source input text for this projector?'))
-        msg.setStandardButtons(msg.Cancel | msg.Ok)
+        msg.setStandardButton(msg.Cancel | msg.Ok)
         msg.setDefaultButton(msg.Cancel)
         ans = msg.exec()
         if ans == msg.Cancel:

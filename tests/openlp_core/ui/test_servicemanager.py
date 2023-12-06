@@ -1456,7 +1456,7 @@ def test_service_manager_delete_confirmation_dialog(MockMessageBox: MagicMock, r
     MockMessageBox.Question = QtWidgets.QMessageBox.Icon.Question
     MockMessageBox.Close = QtWidgets.QMessageBox.StandardButton.Close
     MockMessageBox.Cancel = QtWidgets.QMessageBox.StandardButton.Cancel
-    MockMessageBox.StandardButtons = QtWidgets.QMessageBox.StandardButtons
+    MockMessageBox.StandardButton = QtWidgets.QMessageBox.StandardButton
 
     # WHEN: _delete_confirmation_dialog() is called
     service_manager._delete_confirmation_dialog()
@@ -1464,7 +1464,7 @@ def test_service_manager_delete_confirmation_dialog(MockMessageBox: MagicMock, r
     # THEN: All the correct things should have been called
     MockMessageBox.assert_called_once_with(QtWidgets.QMessageBox.Icon.Question, 'Delete item from service',
                                            'Are you sure you want to delete this item from the service?',
-                                           QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Close |
+                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Close |
                                                                                  QtWidgets.QMessageBox.StandardButton.Cancel),
                                            service_manager)
     mocked_message_box.button.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Close)

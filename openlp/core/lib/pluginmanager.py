@@ -178,7 +178,7 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
                                            QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
         if info_text:
             QtWidgets.QMessageBox.information(None, UiStrings().Error, info_text,
-                                              QtWidgets.QMessageBox.StandardButtons(QtWidgets.QMessageBox.StandardButton.Ok))
+                                              QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
 
     def finalise_plugins(self):
         """
