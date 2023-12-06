@@ -142,7 +142,8 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         super(DisplayWindow, self).__init__(parent)
         self.after_loaded_callback = after_loaded_callback
         # Gather all flags for the display window
-        flags = QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool | QtCore.Qt.WindowType.WindowStaysOnTopHint
+        flags = QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool |\
+            QtCore.Qt.WindowType.WindowStaysOnTopHint
         if self.settings.value('advanced/x11 bypass wm'):
             flags |= QtCore.Qt.WindowType.X11BypassWindowManagerHint
         else:
@@ -201,7 +202,7 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
             self.is_display = True
             # Only make visible on single monitor setup if setting enabled.
             if not start_hidden and (len(ScreenList()) > 1 or self.settings.value('core/display on monitor')):
-                self.show()
+                self.auto_show(screen.custom_geometry is not None)
 
     def closeEvent(self, event):
         """
@@ -260,6 +261,18 @@ class DisplayWindow(QtWidgets.QWidget, RegistryProperties, LogMixin):
         """
         self.setGeometry(screen.display_geometry)
         self.screen_number = screen.number
+
+    def auto_show(self, has_custom_geometry: bool):
+        """
+        Displays the window using the fullscreen function if using the whole screen (allows drawing over system UI)
+
+        :param bool has_custom_geometry: Whether the display a custom geometry
+        """
+
+        if has_custom_geometry:
+            self.show()
+        else:
+            self.showFullScreen()
 
     def set_background_image(self, image_path):
         image_uri = image_path.as_uri()
