@@ -1,4 +1,5 @@
-#!/bin/sh
+# -*- coding: utf-8 -*-
+
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
@@ -17,37 +18,32 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-#
-# This script automates the update of the translations on OpenLP.
-#
-# It uses the tx client from Transifex for all the heavy lifting
-# All download *.ts files are converted to *.qm files which are used by
-# OpenLP.
-#
-###############################################################################
-pwd=`pwd`
-result=${PWD##*/}; echo $result
+"""
+The :mod:`~openlp.plugins.breeze.lib.customimport` module provides
+a function that imports a single custom slide into the database and returns
+the database ID of the slide.  This mimics the implementation for SongPlugin
+that was used to import songs from Planning Center.
+"""
 
-if [ $result != 'scripts' ] ; then
-	echo 'This script must be run from the scripts directory'
-	exit
-fi
+from openlp.core.common.registry import Registry
+from openlp.plugins.custom.lib.customxmlhandler import CustomXML
+from openlp.plugins.custom.lib.db import CustomSlide
 
-echo
-echo Generation translation control file
-echo
-rm ../resources/i18n/*.ts
-python3 $pwd/translation_utils.py -p
 
-echo Creating base translation file
-cd ..
-pylupdate5 -verbose -noobsolete openlp.pro
-cd scripts
+class BreezeCustomImport(object):
+    """
+    Creates a custom slide and returns the database ID of that slide
 
-echo Check of invalid characters in push file
-grep -axv '.*' ../resources/i18n/en.ts
-
-tx push -s
-
-echo New translation file pushed.
-
+    :param item_title: The text to put on the slide.
+    :param html_details: The "details" element from PCO, with html formatting
+    :param theme_name:  The theme_name to use for the slide.
+    """
+    def add_slide(self, segment, theme_name):
+        sxml = CustomXML()
+        sxml.add_verse_to_lyrics('custom', str(1), segment['content'])
+        custom_slide = CustomSlide(title='General', text=str(sxml.extract_xml(), 'utf-8'), credits='pco',
+                                   theme_name=theme_name)
+        custom = Registry().get('custom')
+        custom_db_manager = custom.plugin.db_manager
+        custom_db_manager.save_object(custom_slide)
+        return custom_slide.id

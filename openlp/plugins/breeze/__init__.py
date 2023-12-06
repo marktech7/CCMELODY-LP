@@ -1,4 +1,5 @@
-#!/bin/sh
+# -*- coding: utf-8 -*-
+
 ##########################################################################
 # OpenLP - Open Source Lyrics Projection                                 #
 # ---------------------------------------------------------------------- #
@@ -17,37 +18,7 @@
 # You should have received a copy of the GNU General Public License      #
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
-#
-# This script automates the update of the translations on OpenLP.
-#
-# It uses the tx client from Transifex for all the heavy lifting
-# All download *.ts files are converted to *.qm files which are used by
-# OpenLP.
-#
-###############################################################################
-pwd=`pwd`
-result=${PWD##*/}; echo $result
-
-if [ $result != 'scripts' ] ; then
-	echo 'This script must be run from the scripts directory'
-	exit
-fi
-
-echo
-echo Generation translation control file
-echo
-rm ../resources/i18n/*.ts
-python3 $pwd/translation_utils.py -p
-
-echo Creating base translation file
-cd ..
-pylupdate5 -verbose -noobsolete openlp.pro
-cd scripts
-
-echo Check of invalid characters in push file
-grep -axv '.*' ../resources/i18n/en.ts
-
-tx push -s
-
-echo New translation file pushed.
-
+"""
+The :mod:`breeze` module provides the Breeze plugin.
+The Breeze plugin interfaces with the Breeze v2 API to
+download services into OpenLP.  """
