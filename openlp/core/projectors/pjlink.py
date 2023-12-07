@@ -171,7 +171,7 @@ class PJLinkUDP(QtNetwork.QUdpSocket):
             return
         self.udp_broadcast_listen_setting = checked
         if self.udp_broadcast_listen_setting:
-            if self.state() == self.ListeningState:
+            if self.state().value == self.SocketState.ListeningState:
                 log.debug(f'(UDP:{self.port}) Already listening - skipping')
                 return
             self.bind(self.port)
@@ -256,14 +256,14 @@ class PJLink(QtNetwork.QTcpSocket):
         # Socket status signals
         self.connected.connect(self.check_login)
         self.disconnected.connect(self.disconnect_from_host)
-        self.error.connect(self.get_error)
+        self.errorOccurred.connect(self.get_error)
         self.projectorReceivedData.connect(self._send_command)
 
     def reset_information(self):
         """
         Initialize instance variables. Also used to reset projector-specific information to default.
         """
-        conn_state = STATUS_CODE[QSOCKET_STATE[self.state()]]
+        conn_state = STATUS_CODE[QSOCKET_STATE[self.state().value]]
         log.debug(f'({self.entry.name}) reset_information() connect status is {conn_state}')
         self.fan = None  # ERST
         self.filter_time = None  # FILT
