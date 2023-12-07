@@ -149,8 +149,8 @@ def test_not_shown_if_start_hidden_is_set(mocked_show, display_window_env, mock_
     mocked_show.assert_not_called()
 
 
-@patch.object(DisplayWindow, 'show')
-def test_shown_if_start_hidden_is_not_set(mocked_show, display_window_env, mock_settings):
+@patch.object(DisplayWindow, 'showFullScreen')
+def test_shown_if_start_hidden_is_not_set(mocked_show_fullscreen, display_window_env, mock_settings):
     """
     Tests if DisplayWindow's .show() method is called on constructor if constructed with start_hidden=False
     """
@@ -162,6 +162,27 @@ def test_shown_if_start_hidden_is_not_set(mocked_show, display_window_env, mock_
     }
     mock_settings.value.side_effect = lambda key: settings[key]
     screen = Screen(1, QtCore.QRect(0, 0, 800, 600), is_display=True)
+
+    # WHEN: A DisplayWindow is created with start_hidden=True
+    DisplayWindow(screen=screen, start_hidden=False)
+
+    # THEN: Window is shown
+    mocked_show_fullscreen.assert_called()
+
+
+@patch.object(DisplayWindow, 'show')
+def test_shown_if_start_hidden_is_not_set_custom_geometry(mocked_show, display_window_env, mock_settings):
+    """
+    Tests if DisplayWindow's .show() method is called on constructor if constructed with start_hidden=False
+    """
+
+    # GIVEN: A mocked DisplayWindow's show method, a fake screen and relevant settings
+    settings = {
+        'advanced/x11 bypass wm': False,
+        'core/display on monitor': True
+    }
+    mock_settings.value.side_effect = lambda key: settings[key]
+    screen = Screen(1, QtCore.QRect(0, 0, 800, 600), QtCore.QRect(0, 0, 700, 600), is_display=True)
 
     # WHEN: A DisplayWindow is created with start_hidden=True
     DisplayWindow(screen=screen, start_hidden=False)
