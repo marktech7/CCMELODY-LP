@@ -190,7 +190,7 @@ def test_on_browse_button_clicked_directory(mocked_get_open_file_name: MagicMock
     # THEN: The FileDialog.getExistingDirectory should have been called with the default caption
     mocked_get_existing_directory.assert_called_once_with(path_edit, 'Select Directory',
                                                           Path('test', 'path'),
-                                                          FileDialog.ShowDirsOnly)
+                                                          FileDialog.Option.ShowDirsOnly)
     assert mocked_get_open_file_name.called is False
 
 
@@ -214,7 +214,7 @@ def test_on_browse_button_clicked_directory_custom_caption(path_edit: PathEdit):
         # THEN: The FileDialog.getExistingDirectory should have been called with the custom caption
         mocked_get_existing_directory.assert_called_once_with(path_edit, 'Directory Caption',
                                                               Path('test', 'path'),
-                                                              FileDialog.ShowDirsOnly)
+                                                              FileDialog.Option.ShowDirsOnly)
         assert mocked_get_open_file_name.called is False
 
 

@@ -318,7 +318,7 @@ class PathEdit(QtWidgets.QWidget):
         if self._path_type == PathEditType.Directories:
             if not caption:
                 caption = translate('OpenLP.PathEdit', 'Select Directory')
-            path = FileDialog.getExistingDirectory(self, caption, self._path, FileDialog.ShowDirsOnly)
+            path = FileDialog.getExistingDirectory(self, caption, self._path, FileDialog.Option.ShowDirsOnly)
         elif self._path_type == PathEditType.Files:
             if not caption:
                 caption = self.dialog_caption = translate('OpenLP.PathEdit', 'Select File')
