@@ -401,7 +401,8 @@ class ListWidgetWithDnD(QtWidgets.QListWidget):
             font.setItalic(True)
             painter.setFont(font)
             painter.drawText(QtCore.QRect(0, 0, viewport.width(), viewport.height()),
-                             (QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.TextFlag.TextWordWrap), self.no_results_text)
+                             (QtCore.Qt.AlignmentFlag.AlignHCenter | QtCore.Qt.TextFlag.TextWordWrap),
+                             self.no_results_text)
 
 
 class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
@@ -486,7 +487,8 @@ class TreeWidgetWithDnD(QtWidgets.QTreeWidget):
         # If we are on Windows, OpenLP window will not be set on top. For example, user can drag images to Library and
         # the folder stays on top of the group creation box. This piece of code fixes this issue.
         if is_win():
-            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowState.WindowMinimized | QtCore.Qt.WindowState.WindowActive)
+            self.setWindowState(self.windowState() & ~QtCore.Qt.WindowState.WindowMinimized |
+                                QtCore.Qt.WindowState.WindowActive)
             self.setWindowState(QtCore.Qt.WindowState.WindowNoState)
         if event.mimeData().hasUrls():
             event.setDropAction(QtCore.Qt.DropAction.CopyAction)

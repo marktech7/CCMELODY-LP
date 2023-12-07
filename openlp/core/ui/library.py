@@ -430,7 +430,8 @@ class FolderLibraryItem(MediaManagerItem):
         items_to_move = self.list_view.selectedItems()
         # Determine group to move images to
         target_folder = target
-        if target_folder is not None and isinstance(target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole), self.item_class):
+        if target_folder is not None and isinstance(target_folder.data(0, QtCore.Qt.ItemDataRole.UserRole),
+                                                    self.item_class):
             target_folder = target.parent()
         # Move to toplevel
         if target_folder is None:

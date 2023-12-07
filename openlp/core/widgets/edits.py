@@ -389,7 +389,10 @@ class SpellTextEdit(QtWidgets.QPlainTextEdit):
         if event.button() == QtCore.Qt.MouseButton.RightButton:
             # Rewrite the mouse event to a left button event so the cursor is moved to the location of the pointer.
             event = QtGui.QMouseEvent(QtCore.QEvent.Type.MouseButtonPress,
-                                      event.pos(), QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.MouseButton.LeftButton, QtCore.Qt.KeyboardModifier.NoModifier)
+                                      event.pos(),
+                                      QtCore.Qt.MouseButton.LeftButton,
+                                      QtCore.Qt.MouseButton.LeftButton,
+                                      QtCore.Qt.KeyboardModifier.NoModifier)
         QtWidgets.QPlainTextEdit.mousePressEvent(self, event)
 
     def contextMenuEvent(self, event):

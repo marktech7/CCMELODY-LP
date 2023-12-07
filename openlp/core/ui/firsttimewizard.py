@@ -278,7 +278,8 @@ class UiFirstTimeWizard(object):
         self.select_buttons_layout = QtWidgets.QHBoxLayout()
         self.themes_select_all_button = QtWidgets.QToolButton(self.themes_page)
         self.themes_select_all_button.setIcon(UiIcons().select_all)
-        self.select_buttons_layout.addWidget(self.themes_select_all_button, stretch=1, alignment=QtCore.Qt.AlignmentFlag.AlignRight)
+        self.select_buttons_layout.addWidget(self.themes_select_all_button, stretch=1,
+                                             alignment=QtCore.Qt.AlignmentFlag.AlignRight)
         self.themes_deselect_all_button = QtWidgets.QToolButton(self.themes_page)
         self.themes_deselect_all_button.setIcon(UiIcons().select_none)
         self.select_buttons_layout.addWidget(self.themes_deselect_all_button)

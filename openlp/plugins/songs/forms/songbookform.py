@@ -37,7 +37,9 @@ class SongBookForm(QtWidgets.QDialog, Ui_SongBookDialog):
         """
         Constructor
         """
-        super(SongBookForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(SongBookForm, self).__init__(parent,
+                                           QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                           QtCore.Qt.WindowType.WindowTitleHint |
                                            QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
 

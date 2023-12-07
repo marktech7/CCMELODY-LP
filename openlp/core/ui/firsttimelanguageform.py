@@ -37,8 +37,10 @@ class FirstTimeLanguageForm(QtWidgets.QDialog, Ui_FirstTimeLanguageDialog):
         """
         Constructor
         """
-        super(FirstTimeLanguageForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
-                                                    QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
+        super(FirstTimeLanguageForm, self).__init__(parent,
+                                                    QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                    QtCore.Qt.WindowType.WindowTitleHint |
+                                                    QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.qm_list = LanguageManager.get_qm_list()
         self.language_combo_box.addItem('Autodetect')

@@ -47,6 +47,8 @@ class ConfirmationForm(QtWidgets.QDialog, Ui_ConfirmationDialog):
         :param width:    Width of the dialog window
         :param height:   Height of the dialog window
         """
-        super(ConfirmationForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(ConfirmationForm, self).__init__(parent,
+                                               QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                               QtCore.Qt.WindowType.WindowTitleHint |
                                                QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self, title, items, message, width, height)

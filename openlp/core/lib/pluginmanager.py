@@ -175,10 +175,12 @@ class PluginManager(RegistryBase, LogMixin, RegistryProperties):
             display_text = display_text + error_text + '\n' + \
                 translate('OpenLP.PluginManager', 'See the log file for more details')
             QtWidgets.QMessageBox.critical(None, UiStrings().Error, display_text,
-                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
+                                           QtWidgets.QMessageBox.StandardButton(
+                                               QtWidgets.QMessageBox.StandardButton.Ok))
         if info_text:
             QtWidgets.QMessageBox.information(None, UiStrings().Error, info_text,
-                                              QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
+                                              QtWidgets.QMessageBox.StandardButton(
+                                                  QtWidgets.QMessageBox.StandardButton.Ok))
 
     def finalise_plugins(self):
         """

@@ -36,7 +36,9 @@ class MediaFilesForm(QtWidgets.QDialog, Ui_MediaFilesDialog):
     log.info('{name} MediaFilesForm loaded'.format(name=__name__))
 
     def __init__(self, parent):
-        super(MediaFilesForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(MediaFilesForm, self).__init__(parent,
+                                             QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                             QtCore.Qt.WindowType.WindowTitleHint |
                                              QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
 

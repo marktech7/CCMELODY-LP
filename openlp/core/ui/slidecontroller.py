@@ -258,7 +258,8 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
                                            text=translate('OpenLP.SlideController', 'Previous Slide'),
                                            icon=UiIcons().arrow_up,
                                            tooltip=translate('OpenLP.SlideController', 'Move to previous.'),
-                                           can_shortcuts=True, context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
+                                           can_shortcuts=True,
+                                           context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
                                            category=self.category, triggers=self.on_slide_selected_previous)
         self.toolbar.addAction(self.previous_item)
         self.next_item = create_action(self, 'nextItem_' + self.type_prefix,
@@ -563,12 +564,14 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         """
         self.previous_service = create_action(parent, 'previousService',
                                               text=translate('OpenLP.SlideController', 'Previous Service'),
-                                              can_shortcuts=True, context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
+                                              can_shortcuts=True,
+                                              context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
                                               category=self.category,
                                               triggers=self.service_previous)
         self.next_service = create_action(parent, 'nextService',
                                           text=translate('OpenLP.SlideController', 'Next Service'),
-                                          can_shortcuts=True, context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
+                                          can_shortcuts=True,
+                                          context=QtCore.Qt.ShortcutContext.WidgetWithChildrenShortcut,
                                           category=self.category,
                                           triggers=self.service_next)
 

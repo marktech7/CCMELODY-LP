@@ -43,7 +43,9 @@ class PluginForm(QtWidgets.QDialog, Ui_PluginViewDialog, RegistryProperties):
         """
         Constructor
         """
-        super(PluginForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(PluginForm, self).__init__(parent,
+                                         QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                         QtCore.Qt.WindowType.WindowTitleHint |
                                          QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.active_plugin = None
         self.programmatic_change = False

@@ -45,7 +45,9 @@ class LanguageForm(QDialog, Ui_LanguageDialog):
         """
         Constructor
         """
-        super(LanguageForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(LanguageForm, self).__init__(parent,
+                                           QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                           QtCore.Qt.WindowType.WindowTitleHint |
                                            QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
 

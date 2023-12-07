@@ -224,7 +224,8 @@ class ImageMediaItem(FolderLibraryItem):
         existing_images = []
         # Expand groups to images
         for bitem in items:
-            if isinstance(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole), Folder) or bitem.data(0, QtCore.Qt.ItemDataRole.UserRole) is None:
+            if (isinstance(bitem.data(0, QtCore.Qt.ItemDataRole.UserRole), Folder) or
+                    bitem.data(0, QtCore.Qt.ItemDataRole.UserRole) is None):
                 for index in range(0, bitem.childCount()):
                     if isinstance(bitem.child(index).data(0, QtCore.Qt.ItemDataRole.UserRole), Item):
                         images.append(bitem.child(index).data(0, QtCore.Qt.ItemDataRole.UserRole))

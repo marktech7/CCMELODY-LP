@@ -53,7 +53,9 @@ class SettingsForm(QtWidgets.QDialog, Ui_SettingsDialog, RegistryProperties):
         """
         Registry().register('settings_form', self)
         Registry().register_function('bootstrap_post_set_up', self.bootstrap_post_set_up)
-        super(SettingsForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(SettingsForm, self).__init__(parent,
+                                           QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                           QtCore.Qt.WindowType.WindowTitleHint |
                                            QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.processes = []
         self.setup_ui(self)

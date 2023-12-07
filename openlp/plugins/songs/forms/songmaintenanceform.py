@@ -46,7 +46,9 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
         """
         Constructor
         """
-        super(SongMaintenanceForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(SongMaintenanceForm, self).__init__(parent,
+                                                  QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                  QtCore.Qt.WindowType.WindowTitleHint |
                                                   QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.manager = manager
@@ -116,7 +118,8 @@ class SongMaintenanceForm(QtWidgets.QDialog, Ui_SongMaintenanceDialog, RegistryP
             song_titles = [song.title for song in item.songs]
             if song_titles:
                 critical_error_message_box(dlg_title, err_text + '\n\n' + '\n'.join(song_titles))
-            elif critical_error_message_box(dlg_title, del_text, self, True) == QtWidgets.QMessageBox.StandardButton.Yes:
+            elif (critical_error_message_box(dlg_title, del_text, self, True) ==
+                  QtWidgets.QMessageBox.StandardButton.Yes):
                 self.manager.delete_object(item_class, item.id)
                 reset_func()
         else:

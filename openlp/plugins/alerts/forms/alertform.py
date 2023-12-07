@@ -36,8 +36,10 @@ class AlertForm(QtWidgets.QDialog, AlertDialog):
         """
         Initialise the alert form
         """
-        super(AlertForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowType.WindowSystemMenuHint |
-                                        QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
+        super(AlertForm, self).__init__(Registry().get('main_window'),
+                                        QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                        QtCore.Qt.WindowType.WindowTitleHint |
+                                        QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.manager = plugin.manager
         self.plugin = plugin
         self.item_id = None

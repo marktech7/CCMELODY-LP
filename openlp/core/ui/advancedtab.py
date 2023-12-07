@@ -284,8 +284,9 @@ class AdvancedTab(SettingsTab):
                                                              '\n\nappears to contain OpenLP data files. Do you wish to '
                                                              'replace these files with the current data '
                                                              'files?').format(path=data_path),
-                                                   QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
-                                                                                         QtWidgets.QMessageBox.StandardButton.No),
+                                                   QtWidgets.QMessageBox.StandardButton(
+                                                       QtWidgets.QMessageBox.StandardButton.Yes |
+                                                       QtWidgets.QMessageBox.StandardButton.No),
                                                    QtWidgets.QMessageBox.StandardButton.No)
             self.data_directory_copy_check_box.show()
             if answer == QtWidgets.QMessageBox.StandardButton.Yes:

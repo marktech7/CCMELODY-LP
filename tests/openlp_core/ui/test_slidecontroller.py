@@ -1698,7 +1698,8 @@ def test_paint_event_text_fits():
 
         # THEN: The text should be drawn left with the complete test_string
         mocked_qpainter().drawText.assert_called_once_with(mocked_rect(),
-                                                           QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter, test_string)
+                                                           QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                           QtCore.Qt.AlignmentFlag.AlignVCenter, test_string)
 
 
 def test_paint_event_text_doesnt_fit():
@@ -1730,7 +1731,8 @@ def test_paint_event_text_doesnt_fit():
         # THEN: The text should be drawn aligned left with an elided test_string
         elided_test_string = metrics.elidedText(test_string, QtCore.Qt.TextElideMode.ElideRight, label_width)
         mocked_qpainter().drawText.assert_called_once_with(mocked_rect(),
-                                                           QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter,
+                                                           QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                           QtCore.Qt.AlignmentFlag.AlignVCenter,
                                                            elided_test_string)
 
 

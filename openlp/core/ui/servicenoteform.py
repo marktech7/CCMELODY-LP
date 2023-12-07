@@ -38,8 +38,10 @@ class ServiceNoteForm(QtWidgets.QDialog, RegistryProperties):
         """
         Constructor
         """
-        super(ServiceNoteForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowType.WindowSystemMenuHint |
-                                              QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
+        super(ServiceNoteForm, self).__init__(Registry().get('main_window'),
+                                              QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                              QtCore.Qt.WindowType.WindowTitleHint |
+                                              QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui()
         self.retranslate_ui()
 

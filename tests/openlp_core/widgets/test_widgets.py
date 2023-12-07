@@ -554,7 +554,8 @@ def test_on_identify_button_clicked():
                                                        'background-color: #0C0; color: #000; '
                                                        'border: 5px solid #000;')
     mocked_label.setGeometry.assert_called_once_with(QtCore.QRect(0, 0, 1920, 100))
-    mocked_label.setWindowFlags.assert_called_once_with(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool |
+    mocked_label.setWindowFlags.assert_called_once_with(QtCore.Qt.WindowType.FramelessWindowHint |
+                                                        QtCore.Qt.WindowType.Tool |
                                                         QtCore.Qt.WindowType.WindowStaysOnTopHint |
                                                         QtCore.Qt.WindowType.WindowDoesNotAcceptFocus)
     mocked_label.show.assert_called_once()

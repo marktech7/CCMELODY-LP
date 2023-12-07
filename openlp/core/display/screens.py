@@ -299,7 +299,8 @@ class ScreenList(metaclass=Singleton):
                                                         'There is a mismatch between screens and screen settings. '
                                                         'OpenLP will try to automatically select a display screen, but '
                                                         'you should consider updating the screen settings.'),
-                                              QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Ok))
+                                              QtWidgets.QMessageBox.StandardButton(
+                                                  QtWidgets.QMessageBox.StandardButton.Ok))
                 self.find_new_display_screen()
         else:
             # if no settings we need to set a display

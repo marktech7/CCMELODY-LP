@@ -493,6 +493,7 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     theme_manager.upgrade_themes.assert_called_once()
     theme_manager.load_themes.assert_called_once()
 
+
 @patch('openlp.core.lib.theme.Theme.set_default_header')
 @patch('openlp.core.lib.theme.Theme.set_default_footer')
 def test_clone_theme_data(mock_set_default_header, mock_set_default_footer, theme_manager):

@@ -95,9 +95,12 @@ class OpenLPWizard(QtWidgets.QWizard, RegistryProperties):
         """
         Constructor
         """
-        # QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint  remove the "?" buttons from windows,
+        # QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint
+        # remove the "?" buttons from windows,
         # QtCore.Qt.WindowType.WindowCloseButtonHint enables the "x" button to close these windows.
-        super(OpenLPWizard, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(OpenLPWizard, self).__init__(parent,
+                                           QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                           QtCore.Qt.WindowType.WindowTitleHint |
                                            QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.plugin = plugin
         self.with_progress_page = add_progress_page

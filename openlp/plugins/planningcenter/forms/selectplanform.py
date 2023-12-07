@@ -46,7 +46,9 @@ class SelectPlanForm(QtWidgets.QDialog, Ui_SelectPlanDialog):
     """
 
     def __init__(self, parent=None, plugin=None):
-        QtWidgets.QDialog.__init__(self, parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint)
+        QtWidgets.QDialog.__init__(self, parent,
+                                   QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                   QtCore.Qt.WindowType.WindowTitleHint)
         self.plugin = plugin
         # create an Planning Center API Object
         application_id = Registry().get('settings').value("planningcenter/application_id")

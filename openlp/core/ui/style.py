@@ -220,7 +220,9 @@ def set_default_darkmode(app):
     dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.HighlightedText, disabled_color)
     # Fixes ugly (not to mention hard to read) disabled menu items.
     # Source: https://bugreports.qt.io/browse/QTBUG-10322?focusedCommentId=371060#comment-371060
-    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled, QtGui.QPalette.ColorRole.Light, QtCore.Qt.GlobalColor.transparent)
+    dark_palette.setColor(QtGui.QPalette.ColorGroup.Disabled,
+                          QtGui.QPalette.ColorRole.Light,
+                          QtCore.Qt.GlobalColor.transparent)
     # Fixes ugly media manager headers.
     dark_palette.setColor(QtGui.QPalette.ColorRole.Mid, QtGui.QColor(64, 64, 64))
     app.setPalette(dark_palette)

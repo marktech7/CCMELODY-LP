@@ -280,7 +280,8 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
         self.identify_button = QtWidgets.QPushButton(self)
         self.identify_button.setObjectName('identify_button')
         self.identify_layout.addWidget(
-            self.identify_button, stretch=1, alignment=QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
+            self.identify_button, stretch=1,
+            alignment=QtCore.Qt.AlignmentFlag.AlignRight | QtCore.Qt.AlignmentFlag.AlignTop)
         self.screen_button_group = QtWidgets.QButtonGroup(self.screen_frame)
         self.screen_button_group.setExclusive(True)
         self.screen_button_group.setObjectName('screen_button_group')
@@ -421,7 +422,9 @@ class ScreenSelectionWidget(QtWidgets.QWidget):
             label.setStyleSheet('font-size: 24pt; font-weight: bold; '
                                 'background-color: #0C0; color: #000; border: 5px solid #000;')
             label.setGeometry(QtCore.QRect(screen.geometry.x(), screen.geometry.y(), screen.geometry.width(), 100))
-            label.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint | QtCore.Qt.WindowType.Tool | QtCore.Qt.WindowType.WindowStaysOnTopHint |
+            label.setWindowFlags(QtCore.Qt.WindowType.FramelessWindowHint |
+                                 QtCore.Qt.WindowType.Tool |
+                                 QtCore.Qt.WindowType.WindowStaysOnTopHint |
                                  QtCore.Qt.WindowType.WindowDoesNotAcceptFocus)
             label.show()
             self.identify_labels.append(label)

@@ -41,7 +41,8 @@ class Ui_ChooseGroupDialog(object):
         self.choose_group_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         self.choose_group_layout.setContentsMargins(8, 8, 8, 8)
         self.choose_group_layout.setSpacing(8)
-        self.choose_group_layout.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.choose_group_layout.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                   QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.choose_group_layout.setObjectName('choose_group_layout')
         self.group_question_label = QtWidgets.QLabel(choose_group_dialog)
         self.group_question_label.setWordWrap(True)

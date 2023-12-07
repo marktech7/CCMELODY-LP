@@ -226,7 +226,9 @@ class SongExportForm(OpenLPWizard):
                                                 author=create_separated_list(authors))
             item = QtWidgets.QListWidgetItem(title)
             item.setData(QtCore.Qt.ItemDataRole.UserRole, song)
-            item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable | QtCore.Qt.ItemFlag.ItemIsUserCheckable | QtCore.Qt.ItemFlag.ItemIsEnabled)
+            item.setFlags(QtCore.Qt.ItemFlag.ItemIsSelectable |
+                          QtCore.Qt.ItemFlag.ItemIsUserCheckable |
+                          QtCore.Qt.ItemFlag.ItemIsEnabled)
             item.setCheckState(QtCore.Qt.CheckState.Unchecked)
             self.available_list_widget.addItem(item)
         self.application.set_normal_cursor()

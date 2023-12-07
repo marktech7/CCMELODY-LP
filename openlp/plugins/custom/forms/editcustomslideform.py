@@ -39,7 +39,9 @@ class EditCustomSlideForm(QtWidgets.QDialog, Ui_CustomSlideEditDialog):
         """
         Constructor
         """
-        super(EditCustomSlideForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(EditCustomSlideForm, self).__init__(parent,
+                                                  QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                  QtCore.Qt.WindowType.WindowTitleHint |
                                                   QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         # Connecting signals and slots

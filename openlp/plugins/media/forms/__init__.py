@@ -37,8 +37,10 @@ class StreamSelectorFormBase(QtWidgets.QDialog):
         """
         Constructor
         """
-        super(StreamSelectorFormBase, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint |
-                                                     QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
+        super(StreamSelectorFormBase, self).__init__(parent,
+                                                     QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                                     QtCore.Qt.WindowType.WindowTitleHint |
+                                                     QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.callback = callback
         self.theme_stream = theme_stream
         self.setup_base_ui()

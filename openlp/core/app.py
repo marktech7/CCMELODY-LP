@@ -178,7 +178,8 @@ class OpenLP(QtCore.QObject, LogMixin):
                                     'current location available.\n\nDo you want to reset to the default data location? '
                                     'If not, OpenLP will be closed so you can try to fix the problem.')
                 .format(path=data_folder_path),
-                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
+                QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                     QtWidgets.QMessageBox.StandardButton.No),
                 QtWidgets.QMessageBox.StandardButton.No)
             if status == QtWidgets.QMessageBox.StandardButton.No:
                 # If answer was "No", return "True", it will shutdown OpenLP in def main
@@ -228,10 +229,11 @@ class OpenLP(QtCore.QObject, LogMixin):
         elif data_version != openlp_version:
             if can_show_splash and self.splash.isVisible():
                 self.splash.hide()
-            if QtWidgets.QMessageBox.question(None, translate('OpenLP', 'Backup'),
-                                              translate('OpenLP', 'OpenLP has been upgraded, do you want to create\n'
-                                                                  'a backup of the old data folder?'),
-                                              defaultButton=QtWidgets.QMessageBox.StandardButton.Yes) == QtWidgets.QMessageBox.StandardButton.Yes:
+            if (QtWidgets.QMessageBox.question(None, translate('OpenLP', 'Backup'),
+                                               translate('OpenLP', 'OpenLP has been upgraded, do you want to create\n'
+                                                                   'a backup of the old data folder?'),
+                                               defaultButton=QtWidgets.QMessageBox.StandardButton.Yes) ==
+                    QtWidgets.QMessageBox.StandardButton.Yes):
                 # Create copy of data folder
                 data_folder_path = AppLocation.get_data_path()
                 timestamp = time.strftime("%Y%m%d-%H%M%S")
@@ -357,7 +359,8 @@ def backup_if_version_changed(settings):
                       'OpenLP will start with a fresh install as downgrading data is not supported. Any existing data '
                       'will be backed up to:\n\n{data_folder_backup_path}\n\n'
                       'Do you want to continue?').format(data_folder_backup_path=data_folder_backup_path),
-            QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes | QtWidgets.QMessageBox.StandardButton.No),
+            QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Yes |
+                                                 QtWidgets.QMessageBox.StandardButton.No),
             QtWidgets.QMessageBox.StandardButton.No)
         if close_result == QtWidgets.QMessageBox.StandardButton.No:
             # Return false as backup failed.

@@ -100,7 +100,9 @@ class FirstTimeForm(QtWidgets.QWizard, UiFirstTimeWizard, RegistryProperties):
         """
         Create and set up the first time wizard.
         """
-        super(FirstTimeForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(FirstTimeForm, self).__init__(parent,
+                                            QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                            QtCore.Qt.WindowType.WindowTitleHint |
                                             QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.has_web_access = True
         self.web = ''

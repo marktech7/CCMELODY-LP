@@ -37,8 +37,10 @@ class FileRenameForm(QtWidgets.QDialog, Ui_FileRenameDialog, RegistryProperties)
         """
         Constructor
         """
-        super(FileRenameForm, self).__init__(Registry().get('main_window'), QtCore.Qt.WindowType.WindowSystemMenuHint |
-                                             QtCore.Qt.WindowType.WindowTitleHint | QtCore.Qt.WindowType.WindowCloseButtonHint)
+        super(FileRenameForm, self).__init__(Registry().get('main_window'),
+                                             QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                             QtCore.Qt.WindowType.WindowTitleHint |
+                                             QtCore.Qt.WindowType.WindowCloseButtonHint)
         self._setup()
 
     def _setup(self):

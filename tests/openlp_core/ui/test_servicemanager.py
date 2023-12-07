@@ -1464,8 +1464,9 @@ def test_service_manager_delete_confirmation_dialog(MockMessageBox: MagicMock, r
     # THEN: All the correct things should have been called
     MockMessageBox.assert_called_once_with(QtWidgets.QMessageBox.Icon.Question, 'Delete item from service',
                                            'Are you sure you want to delete this item from the service?',
-                                           QtWidgets.QMessageBox.StandardButton(QtWidgets.QMessageBox.StandardButton.Close |
-                                                                                 QtWidgets.QMessageBox.StandardButton.Cancel),
+                                           QtWidgets.QMessageBox.StandardButton(
+                                               QtWidgets.QMessageBox.StandardButton.Close |
+                                               QtWidgets.QMessageBox.StandardButton.Cancel),
                                            service_manager)
     mocked_message_box.button.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Close)
     mocked_message_box.setDefaultButton.assert_called_once_with(QtWidgets.QMessageBox.StandardButton.Close)
@@ -1487,8 +1488,10 @@ def test_service_manager_save_modified_service(mocked_question: MagicMock, regis
     mocked_question.assert_called_once_with(mocked_main_window, 'Modified Service',
                                             'The current service has been modified. '
                                             'Would you like to save this service?',
-                                            QtWidgets.QMessageBox.StandardButton.Save | QtWidgets.QMessageBox.StandardButton.Discard |
-                                            QtWidgets.QMessageBox.StandardButton.Cancel, QtWidgets.QMessageBox.StandardButton.Save)
+                                            QtWidgets.QMessageBox.StandardButton.Save |
+                                            QtWidgets.QMessageBox.StandardButton.Discard |
+                                            QtWidgets.QMessageBox.StandardButton.Cancel,
+                                            QtWidgets.QMessageBox.StandardButton.Save)
 
 
 def test_service_manager_on_recent_service_clicked_cancel(registry: Registry):
@@ -2354,7 +2357,9 @@ def test_delete_selection_on_delete_key(service_manager: ServiceManager):
 
     # WHEN the delete key event is called
     service_manager.setup_ui(service_manager)
-    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress, QtCore.Qt.Key.Key_Delete, QtCore.Qt.KeyboardModifier.NoModifier)
+    event = QtGui.QKeyEvent(QtCore.QEvent.Type.KeyPress,
+                            QtCore.Qt.Key.Key_Delete,
+                            QtCore.Qt.KeyboardModifier.NoModifier)
     service_manager.service_manager_list.keyPressEvent(event)
 
     # THEN the on_delete_from_service function should have been called.

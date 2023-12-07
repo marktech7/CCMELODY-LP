@@ -34,7 +34,9 @@ class AuthorsForm(QtWidgets.QDialog, Ui_AuthorsDialog):
         """
         Set up the screen and common data
         """
-        super(AuthorsForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(AuthorsForm, self).__init__(parent,
+                                          QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                          QtCore.Qt.WindowType.WindowTitleHint |
                                           QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.auto_display_name = False

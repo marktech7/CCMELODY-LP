@@ -46,7 +46,9 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
         """
         Constructor
         """
-        super(ShortcutListForm, self).__init__(parent, QtCore.Qt.WindowType.WindowSystemMenuHint | QtCore.Qt.WindowType.WindowTitleHint |
+        super(ShortcutListForm, self).__init__(parent,
+                                               QtCore.Qt.WindowType.WindowSystemMenuHint |
+                                               QtCore.Qt.WindowType.WindowTitleHint |
                                                QtCore.Qt.WindowType.WindowCloseButtonHint)
         self.setup_ui(self)
         self.changed_actions = {}
@@ -426,9 +428,11 @@ class ShortcutListForm(QtWidgets.QDialog, Ui_ShortcutListDialog, RegistryPropert
                     is_valid = False
                 # The new shortcut is already assigned, but if both shortcuts are only valid in a different widget the
                 # new shortcut is valid, because they will not interfere.
-                if action.shortcutContext() in [QtCore.Qt.ShortcutContext.WindowShortcut, QtCore.Qt.ShortcutContext.ApplicationShortcut]:
+                if action.shortcutContext() in [QtCore.Qt.ShortcutContext.WindowShortcut,
+                                                QtCore.Qt.ShortcutContext.ApplicationShortcut]:
                     is_valid = False
-                if changing_action.shortcutContext() in [QtCore.Qt.ShortcutContext.WindowShortcut, QtCore.Qt.ShortcutContext.ApplicationShortcut]:
+                if changing_action.shortcutContext() in [QtCore.Qt.ShortcutContext.WindowShortcut,
+                                                         QtCore.Qt.ShortcutContext.ApplicationShortcut]:
                     is_valid = False
         if not is_valid:
             text = translate('OpenLP.ShortcutListDialog',

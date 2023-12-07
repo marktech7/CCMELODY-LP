@@ -89,7 +89,8 @@ class MediaTab(SettingsTab):
         """
         Load the settings
         """
-        self.auto_start_check_box.setChecked(self.settings.value('media/media auto start') == QtCore.Qt.CheckState.Checked)
+        self.auto_start_check_box.setChecked(self.settings.value('media/media auto start') ==
+                                             QtCore.Qt.CheckState.Checked)
         self.vlc_arguments_edit.setText(self.settings.value('media/vlc arguments'))
 
     def save(self):

@@ -159,7 +159,8 @@ class Ui_ServiceManager(object):
         self.toolbar.add_toolbar_widget(self.theme_label)
         self.theme_combo_box = QtWidgets.QComboBox(self.toolbar)
         self.theme_combo_box.setToolTip(translate('OpenLP.ServiceManager', 'Select a theme for the service.'))
-        self.theme_combo_box.setSizeAdjustPolicy(QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
+        self.theme_combo_box.setSizeAdjustPolicy(
+            QtWidgets.QComboBox.SizeAdjustPolicy.AdjustToMinimumContentsLengthWithIcon)
         self.theme_combo_box.setSizePolicy(QtWidgets.QSizePolicy.Policy.Expanding, QtWidgets.QSizePolicy.Policy.Fixed)
         self.theme_combo_box.setObjectName('theme_combo_box')
         self.toolbar.add_toolbar_widget(self.theme_combo_box)
@@ -374,7 +375,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                         translate('OpenLP.ServiceManager', 'Are you sure you want to delete '
                                                   'this item from the service?'),
                                         QtWidgets.QMessageBox.StandardButton(
-                                            QtWidgets.QMessageBox.StandardButton.Close | QtWidgets.QMessageBox.StandardButton.Cancel), self)
+                                            QtWidgets.QMessageBox.StandardButton.Close |
+                                            QtWidgets.QMessageBox.StandardButton.Cancel), self)
         del_button = msg_box.button(QtWidgets.QMessageBox.StandardButton.Close)
         del_button.setText(translate('OpenLP.ServiceManager', '&Delete item'))
         msg_box.setDefaultButton(QtWidgets.QMessageBox.StandardButton.Close)
@@ -528,8 +530,10 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                               translate('OpenLP.ServiceManager',
                                                         'The current service has been modified. Would you like to save '
                                                         'this service?'),
-                                              QtWidgets.QMessageBox.StandardButton.Save | QtWidgets.QMessageBox.StandardButton.Discard |
-                                              QtWidgets.QMessageBox.StandardButton.Cancel, QtWidgets.QMessageBox.StandardButton.Save)
+                                              QtWidgets.QMessageBox.StandardButton.Save |
+                                              QtWidgets.QMessageBox.StandardButton.Discard |
+                                              QtWidgets.QMessageBox.StandardButton.Cancel,
+                                              QtWidgets.QMessageBox.StandardButton.Save)
 
     def on_recent_service_clicked(self, checked):
         """
@@ -678,7 +682,8 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
                                     ).format(name='\n\t'.join(missing_list))
                 answer = QtWidgets.QMessageBox.critical(self, title, message,
                                                         QtWidgets.QMessageBox.StandardButton(
-                                                            QtWidgets.QMessageBox.StandardButton.Ok | QtWidgets.QMessageBox.StandardButton.Cancel))
+                                                            QtWidgets.QMessageBox.StandardButton.Ok |
+                                                            QtWidgets.QMessageBox.StandardButton.Cancel))
                 if answer == QtWidgets.QMessageBox.StandardButton.Cancel:
                     return False
         # Check if item contains a missing file.
@@ -1400,17 +1405,20 @@ class ServiceManager(QtWidgets.QWidget, RegistryBase, Ui_ServiceManager, LogMixi
             self.tree_widget_items.append(tree_widget_item)
             if service_item_from_item.is_valid:
                 icon = service_item_from_item.icon.pixmap(80, 80).toImage()
-                icon = icon.scaled(80, 80, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
+                icon = icon.scaled(80, 80, QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                                   QtCore.Qt.TransformationMode.SmoothTransformation)
                 if service_item_from_item.notes:
                     overlay = UiIcons().notes.pixmap(40, 40).toImage()
-                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
+                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                                             QtCore.Qt.TransformationMode.SmoothTransformation)
                     painter = QtGui.QPainter(icon)
                     painter.drawImage(0, 0, overlay)
                     painter.end()
                     tree_widget_item.setIcon(0, build_icon(icon))
                 elif service_item_from_item.temporary_edit:
                     overlay = QtGui.QImage(UiIcons().upload)
-                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio, QtCore.Qt.TransformationMode.SmoothTransformation)
+                    overlay = overlay.scaled(40, 40, QtCore.Qt.AspectRatioMode.KeepAspectRatio,
+                                             QtCore.Qt.TransformationMode.SmoothTransformation)
                     painter = QtGui.QPainter(icon)
                     painter.drawImage(40, 0, overlay)
                     painter.end()

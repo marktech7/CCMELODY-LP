@@ -67,7 +67,7 @@ def test_udp_listen_add_new(mock_registry, mock_udp, projector_manager, caplog):
     # THEN: Appropriate listener and log entries
     assert 20 in projector_manager.pjlink_udp, "Port not added"
     assert 2 == len(projector_manager.pjlink_udp), "Invalid ports in list"
-    assert type(projector_manager.pjlink_udp[20]) == FakePJLinkUDP, \
+    assert type(projector_manager.pjlink_udp[20]) is FakePJLinkUDP, \
         'PJLinkUDP instance should have been added'
     assert mocked_registry.execute.has_call('udp_broadcast_add', port=20)
     assert caplog.messages == log_entries, 'Invalid log entries'

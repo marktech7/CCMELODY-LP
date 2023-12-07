@@ -186,7 +186,8 @@ class ChooseFolderForm(QtWidgets.QDialog, FolderPopulateMixin):
         self.choose_folder_layout.setFieldGrowthPolicy(QtWidgets.QFormLayout.FieldGrowthPolicy.ExpandingFieldsGrow)
         self.choose_folder_layout.setContentsMargins(8, 8, 8, 8)
         self.choose_folder_layout.setSpacing(8)
-        self.choose_folder_layout.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignLeft | QtCore.Qt.AlignmentFlag.AlignVCenter)
+        self.choose_folder_layout.setLabelAlignment(QtCore.Qt.AlignmentFlag.AlignLeft |
+                                                    QtCore.Qt.AlignmentFlag.AlignVCenter)
         self.choose_folder_layout.setObjectName('choose_folder_layout')
         self.folder_question_label = QtWidgets.QLabel(self)
         self.folder_question_label.setWordWrap(True)

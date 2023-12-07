@@ -658,7 +658,8 @@ def test_on_delete_click_response_no(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects no from the message box
     """
-    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.No
+    # GIVEN: An instance of :class:`MediaManagerItem`
+    # and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.No
     media_item.bible = MagicMock()
     with patch('openlp.plugins.bibles.lib.mediaitem.QtWidgets.QMessageBox.question',
                return_value=QtWidgets.QMessageBox.StandardButton.No) as mocked_qmessage_box:
@@ -675,7 +676,8 @@ def test_on_delete_click_response_yes(media_item: BibleMediaItem):
     """
     Test on_delete_click when the user selects yes from the message box
     """
-    # GIVEN: An instance of :class:`MediaManagerItem` and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.Yes
+    # GIVEN: An instance of :class:`MediaManagerItem`
+    # and a QMessageBox which reutrns QtWidgets.QMessageBox.StandardButton.Yes
     media_item.bible = MagicMock()
     with patch('openlp.plugins.bibles.lib.mediaitem.QtWidgets.QMessageBox.question',
                return_value=QtWidgets.QMessageBox.StandardButton.Yes) as mocked_qmessage_box, \

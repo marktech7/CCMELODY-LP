@@ -301,8 +301,8 @@ class PresentationMediaItem(FolderLibraryItem):
         items = [self.list_view.itemFromIndex(item) if isinstance(item, QtCore.QModelIndex) else item
                  for item in items]
         # If this is a folder, show an error message and return
-        is_folder = items and not isinstance(items[0], ServiceItem) and isinstance(items[0].data(0, QtCore.Qt.ItemDataRole.UserRole),
-                                                                                   Folder)
+        is_folder = (items and not isinstance(items[0], ServiceItem) and
+                     isinstance(items[0].data(0, QtCore.Qt.ItemDataRole.UserRole), Folder))
         if is_folder:
             return False
         if file_path is None:
