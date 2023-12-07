@@ -46,12 +46,11 @@ def theme_manager(registry: Registry, settings: Settings) -> ThemeManager:
 
 @patch('openlp.core.ui.thememanager.zipfile.ZipFile.__init__')
 @patch('openlp.core.ui.thememanager.zipfile.ZipFile.write')
-def test_export_theme(mocked_zipfile_write: MagicMock, mocked_zipfile_init: MagicMock, registry: Registry):
+def test_export_theme(mocked_zipfile_write: MagicMock, mocked_zipfile_init: MagicMock, theme_manager: ThemeManager):
     """
     Test exporting a theme .
     """
     # GIVEN: A new ThemeManager instance.
-    theme_manager = ThemeManager()
     theme_manager.theme_path = RESOURCE_PATH / 'themes'
     mocked_zipfile_init.return_value = None
 
@@ -64,25 +63,22 @@ def test_export_theme(mocked_zipfile_write: MagicMock, mocked_zipfile_init: Magi
                                             Path('Default', 'Default.xml'))
 
 
-def test_initial_theme_manager(registry: Registry):
+def test_initial_theme_manager(theme_manager: ThemeManager):
     """
     Test the instantiation of theme manager.
     """
     # GIVEN: A new service manager instance.
-    ThemeManager(None)
-
     # WHEN: the default theme manager is built.
     # THEN: The the controller should be registered in the registry.
     assert Registry().get('theme_manager') is not None, 'The base theme manager should be registered'
 
 
 @patch('openlp.core.ui.thememanager.Theme')
-def test_get_global_theme(mocked_theme: MagicMock, registry: Registry):
+def test_get_global_theme(mocked_theme: MagicMock, theme_manager: ThemeManager):
     """
     Test the global theme method returns the theme data for the global theme
     """
     # GIVEN: A service manager instance and the global theme
-    theme_manager = ThemeManager(None)
     theme_manager.global_theme = 'global theme name'
     theme_manager._theme_list = {'global theme name': sentinel.global_theme}
 
@@ -94,12 +90,11 @@ def test_get_global_theme(mocked_theme: MagicMock, registry: Registry):
 
 
 @patch('openlp.core.ui.thememanager.Theme')
-def test_get_theme_data(mocked_theme, registry):
+def test_get_theme_data(mocked_theme: MagicMock, theme_manager: ThemeManager):
     """
     Test that the get theme data method returns the requested theme data
     """
     # GIVEN: A service manager instance and themes
-    theme_manager = ThemeManager(None)
     theme_manager._theme_list = {'theme1': sentinel.theme1, 'theme2': sentinel.theme2}
 
     # WHEN: Get theme data is called with 'theme2'
@@ -110,12 +105,11 @@ def test_get_theme_data(mocked_theme, registry):
 
 
 @patch('openlp.core.ui.thememanager.Theme')
-def test_get_theme_data_missing(mocked_theme, registry):
+def test_get_theme_data_missing(mocked_theme: MagicMock, theme_manager: ThemeManager):
     """
     Test that the get theme data method returns the default theme when theme name not found
     """
     # GIVEN: A service manager instance and themes
-    theme_manager = ThemeManager(None)
     theme_manager._theme_list = {'theme1': sentinel.theme1, 'theme2': sentinel.theme2}
     mocked_theme.return_value = sentinel.default_theme
 
@@ -128,14 +122,13 @@ def test_get_theme_data_missing(mocked_theme, registry):
 
 @patch('openlp.core.ui.thememanager.shutil')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_same_image(mocked_create_paths, mocked_shutil, registry):
+def test_save_theme_same_image(mocked_create_paths: MagicMock, mocked_shutil: MagicMock, theme_manager: ThemeManager):
     """
     Test that we don't try to overwrite a theme background image with itself
     """
     # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
     #        theme, create_paths, thememanager-attributes and background
     #       .filename path is the same as the source path.
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = None
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -156,14 +149,13 @@ def test_save_theme_same_image(mocked_create_paths, mocked_shutil, registry):
 
 @patch('openlp.core.ui.thememanager.shutil')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_diff_images(mocked_create_paths, mocked_shutil, registry):
+def test_save_theme_diff_images(mocked_create_paths, mocked_shutil, theme_manager: ThemeManager):
     """
     Test that we do overwrite a theme background image when a new is submitted
     """
     # GIVEN: A new theme manager instance, with mocked builtins.open, copyfile,
     #        theme, create_paths, thememanager-attributes and background
     #       .filename path is the same as the source path.
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = None
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -182,14 +174,13 @@ def test_save_theme_diff_images(mocked_create_paths, mocked_shutil, registry):
 @patch('openlp.core.ui.thememanager.shutil')
 @patch('openlp.core.ui.thememanager.delete_file')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_delete_old_image(mocked_create_paths, mocked_delete_file, mocked_shutil, registry):
+def test_save_theme_delete_old_image(mocked_create_paths, mocked_del_file, mocked_shutil, theme_manager: ThemeManager):
     """
     Test that we do delete a old theme background image when a new is submitted
     """
     # GIVEN: A new theme manager instance, with mocked builtins.open,
     #        theme, create_paths, thememanager-attributes and background
     #       .filename path is the same as the source path.
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = RESOURCE_PATH / 'old_church.png'
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -202,13 +193,13 @@ def test_save_theme_delete_old_image(mocked_create_paths, mocked_delete_file, mo
     theme_manager.save_theme(mocked_theme)
 
     # THEN: The mocked_delete_file should have been called to delete the old cached background
-    assert mocked_delete_file.called is True, 'delete_file should be called'
+    assert mocked_del_file.called is True, 'delete_file should be called'
 
 
 @patch.object(ThemeManager, 'log_exception')
 @patch('openlp.core.ui.thememanager.delete_file')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_missing_original(mocked_paths, mocked_delete, mocked_log_exception, registry):
+def test_save_theme_missing_original(mocked_paths, mocked_delete, mocked_log_exception, theme_manager: ThemeManager):
     """
     Test that we revert to the old theme background image if the source is missing
     when changing the theme. (User doesn't change background but the original is
@@ -218,7 +209,6 @@ def test_save_theme_missing_original(mocked_paths, mocked_delete, mocked_log_exc
     # has left the background the same, or reselected the same path.
     # Not using resource dir because I could potentially copy a file
     folder_path = Path(mkdtemp())
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = folder_path / 'old.png'
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -246,7 +236,7 @@ def test_save_theme_missing_original(mocked_paths, mocked_delete, mocked_log_exc
 @patch.object(ThemeManager, 'log_warning')
 @patch('openlp.core.ui.thememanager.delete_file')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning, registry):
+def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning, theme_manager: ThemeManager):
     """
     Test that we log a warning if the new background is missing
     """
@@ -254,7 +244,6 @@ def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning,
     # has changed the background to a invalid path.
     # Not using resource dir because I could potentially copy a file
     folder_path = Path(mkdtemp())
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = folder_path / 'old.png'
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -273,7 +262,7 @@ def test_save_theme_missing_new(mocked_paths, mocked_delete, mocked_log_warning,
 @patch('openlp.core.ui.thememanager.shutil')
 @patch('openlp.core.ui.thememanager.delete_file')
 @patch('openlp.core.ui.thememanager.create_paths')
-def test_save_theme_background_override(mocked_paths, mocked_delete, mocked_shutil, registry):
+def test_save_theme_background_override(mocked_paths, mocked_delete, mocked_shutil, theme_manager: ThemeManager):
     """
     Test that we log a warning if the new background is missing
     """
@@ -281,7 +270,6 @@ def test_save_theme_background_override(mocked_paths, mocked_delete, mocked_shut
     # has changed the background to a invalid path.
     # Not using resource dir because I could potentially copy a file
     folder_path = Path(mkdtemp())
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = folder_path / 'old.png'
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = MagicMock()
@@ -300,12 +288,11 @@ def test_save_theme_background_override(mocked_paths, mocked_delete, mocked_shut
     mocked_shutil.copyfile.assert_called_once_with(override_background, mocked_theme.background_filename)
 
 
-def test_save_theme_special_char_name(registry, temp_folder):
+def test_save_theme_special_char_name(registry, temp_folder, theme_manager: ThemeManager):
     """
     Test that we can save themes with special characters in the name
     """
     # GIVEN: A new theme manager instance, with mocked theme and thememanager-attributes.
-    theme_manager = ThemeManager(None)
     theme_manager.old_background_image_path = None
     theme_manager.update_preview_images = MagicMock()
     theme_manager.theme_path = Path(temp_folder)
@@ -321,15 +308,15 @@ def test_save_theme_special_char_name(registry, temp_folder):
         'Theme with special characters should have been created!'
 
 
-@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.StandardButton.Yes)
+@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question',
+       return_value=QtWidgets.QMessageBox.StandardButton.Yes)
 @patch('openlp.core.ui.thememanager.translate')
-def test_over_write_message_box_yes(mocked_translate, mocked_qmessagebox_question, registry):
+def test_over_write_message_box_yes(mocked_translate, mocked_qmessagebox_question, theme_manager: ThemeManager):
     """
     Test that theme_manager.over_write_message_box returns True when the user clicks yes.
     """
     # GIVEN: A patched QMessageBox.question and an instance of ThemeManager
     mocked_translate.side_effect = lambda context, text: text
-    theme_manager = ThemeManager(None)
 
     # WHEN: Calling over_write_message_box with 'Theme Name'
     result = theme_manager.over_write_message_box('Theme Name')
@@ -341,15 +328,15 @@ def test_over_write_message_box_yes(mocked_translate, mocked_qmessagebox_questio
         defaultButton=ANY)
 
 
-@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question', return_value=QtWidgets.QMessageBox.StandardButton.No)
+@patch('openlp.core.ui.thememanager.QtWidgets.QMessageBox.question',
+       return_value=QtWidgets.QMessageBox.StandardButton.No)
 @patch('openlp.core.ui.thememanager.translate')
-def test_over_write_message_box_no(mocked_translate, mocked_qmessagebox_question, registry):
+def test_over_write_message_box_no(mocked_translate, mocked_qmessagebox_question, theme_manager: ThemeManager):
     """
     Test that theme_manager.over_write_message_box returns False when the user clicks no.
     """
     # GIVEN: A patched QMessageBox.question and an instance of ThemeManager
     mocked_translate.side_effect = lambda context, text: text
-    theme_manager = ThemeManager(None)
 
     # WHEN: Calling over_write_message_box with 'Theme Name'
     result = theme_manager.over_write_message_box('Theme Name')
@@ -362,14 +349,13 @@ def test_over_write_message_box_no(mocked_translate, mocked_qmessagebox_question
 
 
 @patch('openlp.core.lib.theme.Theme.set_default_header_footer')
-def test_unzip_theme(mocked_theme_set_defaults, registry):
+def test_unzip_theme(mocked_theme_set_defaults, theme_manager: ThemeManager):
     """
     Test that unzipping of themes works
     """
     # GIVEN: A theme file, a output folder and some mocked out internal functions
     with patch('openlp.core.ui.thememanager.critical_error_message_box') \
             as mocked_critical_error_message_box:
-        theme_manager = ThemeManager(None)
         theme_manager.update_preview_images = MagicMock()
         theme_manager.theme_path = Path(mkdtemp())
         theme_file_path = RESOURCE_PATH / 'themes' / 'Moss_on_tree.otz'
@@ -384,7 +370,7 @@ def test_unzip_theme(mocked_theme_set_defaults, registry):
         shutil.rmtree(theme_manager.theme_path)
 
 
-def test_unzip_theme_invalid_version(registry):
+def test_unzip_theme_invalid_version(theme_manager: ThemeManager):
     """
     Test that themes with invalid (< 2.0) or with no version attributes are rejected
     """
@@ -396,7 +382,6 @@ def test_unzip_theme_invalid_version(registry):
 
         mocked_zip_file.return_value = MagicMock(**{'namelist.return_value': [os.path.join('theme', 'theme.xml')]})
         mocked_getroot.return_value = MagicMock(**{'get.return_value': None})
-        theme_manager = ThemeManager(None)
         theme_manager.theme_path = Path('folder')
 
         # WHEN: unzip_theme is called
@@ -406,14 +391,13 @@ def test_unzip_theme_invalid_version(registry):
         assert mocked_critical_error_message_box.call_count == 1, 'Should have been called once'
 
 
-def test_update_preview_images(registry):
+def test_update_preview_images(theme_manager: ThemeManager):
     """
     Test that the update_preview_images() method works correctly
     """
     # GIVEN: A ThemeManager
     def get_theme_data(value):
         return '{}_theme_data'.format(value)
-    theme_manager = ThemeManager(None)
     theme_manager.save_preview = MagicMock()
     theme_manager._get_theme_data = Mock(side_effect=get_theme_data)
     theme_manager.progress_form = MagicMock(**{'get_preview.return_value': 'preview'})
@@ -509,8 +493,9 @@ def test_bootstrap_post(mocked_rename_form, mocked_theme_form, theme_manager):
     theme_manager.upgrade_themes.assert_called_once()
     theme_manager.load_themes.assert_called_once()
 
-
-def test_clone_theme_data(theme_manager):
+@patch('openlp.core.lib.theme.Theme.set_default_header')
+@patch('openlp.core.lib.theme.Theme.set_default_footer')
+def test_clone_theme_data(mock_set_default_header, mock_set_default_footer, theme_manager):
     """Test that cloning the theme data works correctly"""
     # GIVEN: A theme manager, a theme (without a background source) and a new theme name
     existing_theme = Theme()
