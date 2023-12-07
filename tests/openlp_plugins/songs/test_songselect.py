@@ -524,8 +524,8 @@ def test_page_loaded_other(form: SongSelectForm):
     # WHEN: The method is run
     form.page_loaded(True)
 
-        # THEN: Back button should be available
-        ssform.back_button.setEnabled.assert_called_with(True)
+    # THEN: Back button should be available
+    form.back_button.setEnabled.assert_called_with(True)
 
 
 def test_signin_page_loaded(form: SongSelectForm):
