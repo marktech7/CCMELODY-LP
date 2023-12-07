@@ -34,7 +34,7 @@ try:
 except ImportError:
     PYMUPDF_AVAILABLE = False
 
-from openlp.plugins.presentations.lib.applescriptbasecontroller import AppleScriptBaseController,\
+from openlp.plugins.presentations.lib.applescriptbasecontroller import AppleScriptBaseController, \
     AppleScriptBaseDocument
 
 

@@ -168,11 +168,11 @@ def test_service_item_load_image_from_service(state_media, settings):
                                       'file_hash': fake_hash2}]}}
 
     # WHEN: adding an image from a saved Service and mocked exists
-    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
-            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
-            patch('openlp.core.lib.serviceitem.AppLocation.get_data_path') as mocked_get_data_path,\
-            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
-            patch('openlp.core.lib.serviceitem.copy'),\
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists, \
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path, \
+            patch('openlp.core.lib.serviceitem.AppLocation.get_data_path') as mocked_get_data_path, \
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash, \
+            patch('openlp.core.lib.serviceitem.copy'), \
             patch('openlp.core.lib.serviceitem.move'):
         mocked_sha256_file_hash.side_effect = [fake_hash1, fake_hash2]
         mocked_exists.return_value = True
@@ -208,9 +208,9 @@ def test_old_service_item_load_image_from_service(state_media, settings):
 
     # WHEN: adding an image from a saved Service and mocked exists
     line = convert_file_service_item(TEST_PATH, 'serviceitem_image_1.osj')
-    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
-            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path,\
-            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists, \
+            patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path, \
+            patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash, \
             patch('openlp.core.lib.serviceitem.move'):
         mocked_sha256_file_hash.return_value = fake_hash
         mocked_exists.return_value = True
@@ -329,7 +329,7 @@ def test_add_from_command_for_a_presentation():
              'display_title': display_title, 'notes': notes, 'thumbnail': image}
 
     # WHEN: adding presentation to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash, \
             patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
         mocked_get_section_data_path.return_value = Path('.')
@@ -353,7 +353,7 @@ def test_add_from_command_without_display_title_and_notes():
              'display_title': None, 'notes': None, 'thumbnail': image}
 
     # WHEN: adding image to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash, \
             patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = 'abcd'
         mocked_get_section_data_path.return_value = Path('.')
@@ -402,7 +402,7 @@ def test_service_item_load_optical_media_from_service(state_media):
     service_item.add_icon = MagicMock()
     # WHEN: We load a serviceitem with optical media
     line = convert_file_service_item(TEST_PATH, 'serviceitem-dvd.osj')
-    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists, \
             patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
         mocked_sha256_file_hash.return_value = 'abcd'
         mocked_exists.return_value = True
@@ -426,7 +426,7 @@ def test_service_item_load_optical_media_from_service_no_vlc(state_media):
     State().modules["media"].pass_preconditions = False
     # WHEN: We load a serviceitem with optical media
     line = convert_file_service_item(TEST_PATH, 'serviceitem-dvd.osj')
-    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists,\
+    with patch('openlp.core.ui.servicemanager.os.path.exists') as mocked_exists, \
             patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash:
         mocked_sha256_file_hash.return_value = 'abcd'
         mocked_exists.return_value = True
@@ -1049,7 +1049,7 @@ def test_to_dict_presentation_item(mocked_image_uri, mocked_get_data_path, state
     mocked_image_uri.side_effect = lambda x: 'your img uri at: {}'.format(x.as_posix())
 
     # WHEN: adding presentation to service_item
-    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash,\
+    with patch('openlp.core.lib.serviceitem.sha256_file_hash') as mocked_sha256_file_hash, \
             patch('openlp.core.lib.serviceitem.AppLocation.get_section_data_path') as mocked_get_section_data_path:
         mocked_sha256_file_hash.return_value = '4a067fed6834ea2bc4b8819f11636365'
         mocked_get_section_data_path.return_value = Path('/path/to/presentations/')
