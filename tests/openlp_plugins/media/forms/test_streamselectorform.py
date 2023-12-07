@@ -53,9 +53,11 @@ def stream_selector_form_win(settings):
     camera2.deviceName.return_value = "Camera 2 device"
 
     audio1 = MagicMock()
-    audio1.deviceName.return_value = "Audio 1"
+    audio1.description.return_value = "Audio 1"
+    audio1.deviceName.return_value = "Audio 1 device"
     audio2 = MagicMock()
-    audio2.deviceName.return_value = "Audio 2"
+    audio2.description.return_value = "Audio 2"
+    audio2.deviceName.return_value = "Audio 2 device"
 
     with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=True), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
@@ -117,9 +119,11 @@ def stream_selector_form_mac(settings):
     camera2.deviceName.return_value = "Camera 2 device"
 
     audio1 = MagicMock()
-    audio1.deviceName.return_value = "Audio 1"
+    audio1.description.return_value = "Audio 1"
+    audio1.deviceName.return_value = "Audio 1 device"
     audio2 = MagicMock()
-    audio2.deviceName.return_value = "Audio 2"
+    audio2.description.return_value = "Audio 2"
+    audio2.deviceName.return_value = "Audio 2 device"
 
     with patch('openlp.plugins.media.forms.streamselectordialog.is_win', return_value=False), \
             patch('openlp.plugins.media.forms.streamselectordialog.is_linux', return_value=False), \
