@@ -567,7 +567,7 @@ def test_projector_manager_dock_locked(main_window_reduced):
     main_window_reduced.lock_panel.triggered.emit(True)
 
     # THEN: Projector manager dock should have been called with disable UI features
-    projector_dock.setFeatures.assert_called_with(0)
+    projector_dock.setFeatures.assert_called_with(QtWidgets.QDockWidget.DockWidgetFeature.NoDockWidgetFeatures)
 
 
 def test_projector_manager_dock_unlocked(main_window_reduced):
@@ -581,7 +581,9 @@ def test_projector_manager_dock_unlocked(main_window_reduced):
     main_window_reduced.lock_panel.triggered.emit(False)
 
     # THEN: Projector manager dock should have been called with enable UI features
-    projector_dock.setFeatures.assert_called_with(7)
+    projector_dock.setFeatures.assert_called_with(QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetClosable |
+                                                  QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetFloatable |
+                                                  QtWidgets.QDockWidget.DockWidgetFeature.DockWidgetMovable)
 
 
 @patch('openlp.core.ui.mainwindow.MainWindow.open_cmd_line_files')

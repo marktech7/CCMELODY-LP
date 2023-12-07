@@ -92,7 +92,7 @@ def test_setup(MockedQtWidgets, mocked_get_vlc, mock_settings):
 
     # THEN: The VLC widget should be set up correctly
     assert mocked_output_display.vlc_widget == mocked_qframe
-    mocked_qframe.setFrameStyle.assert_called_with(1)
+    mocked_qframe.setFrameStyle.assert_called_with(MockedQtWidgets.QFrame.Shape.NoFrame)
     mock_settings.value.assert_any_call('advanced/hide mouse')
     mock_settings.value.assert_any_call('media/vlc arguments')
     mocked_vlc.Instance.assert_called_with('--no-video-title-show ')

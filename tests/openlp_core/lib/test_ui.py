@@ -436,8 +436,8 @@ def test_add_list_view_mode_items_to_toolbar_creates_items(settings):
     add_list_view_mode_items_to_toolbar(toolbar, MagicMock())
 
     # THEN: Assert correct icons are created
-    assert isinstance(toolbar.actions['listView'], QtWidgets.QAction) is True
-    assert isinstance(toolbar.actions['gridView'], QtWidgets.QAction) is True
+    assert isinstance(toolbar.actions['listView'], QtGui.QAction) is True
+    assert isinstance(toolbar.actions['gridView'], QtGui.QAction) is True
 
 
 def test_add_list_view_mode_items_to_toolbar_click_calls_handlers(settings):

@@ -324,7 +324,6 @@ def test_network_error(mocked_message_box, mocked_get_web_page, ftf_app):
     first_time_form = FirstTimeForm(None)
     first_time_form.initialize(MagicMock())
     mocked_get_web_page.side_effect = ConnectionError('')
-    mocked_message_box.Ok = 'OK'
 
     # WHEN: the First Time Wizard calls to get the initial configuration
     first_time_form._download_index()
@@ -332,7 +331,8 @@ def test_network_error(mocked_message_box, mocked_get_web_page, ftf_app):
     # THEN: the critical_error_message_box should have been called
     mocked_message_box.critical.assert_called_once_with(
         first_time_form, 'Network Error',
-        'There was a network error attempting to connect to retrieve initial configuration information', 'OK')
+        'There was a network error attempting to connect to retrieve initial configuration information',
+        mocked_message_box.StandardButton.Ok)
 
 
 def test_accept_method_theme_selected(mock_settings):

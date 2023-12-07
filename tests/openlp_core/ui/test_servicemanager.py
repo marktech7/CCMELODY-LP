@@ -54,7 +54,7 @@ def _create_mock_action(s_manager: ServiceManager, name: str, **kwargs):
     """
     Create a fake action with some "real" attributes
     """
-    action = QtWidgets.QAction(s_manager.toolbar)
+    action = QtGui.QAction(s_manager.toolbar)
     action.setObjectName(name)
     if kwargs.get('triggers'):
         action.triggered.connect(kwargs.pop('triggers'))
