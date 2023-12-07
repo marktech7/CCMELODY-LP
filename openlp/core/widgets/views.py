@@ -34,6 +34,14 @@ from openlp.core.lib.serviceitem import ItemCapabilities, ServiceItem
 from openlp.core.widgets.layouts import AspectRatioLayout
 
 
+SCROLL_HINT = {
+    0: QtWidgets.QAbstractItemView.ScrollHint.EnsureVisible,
+    1: QtWidgets.QAbstractItemView.ScrollHint.PositionAtTop,
+    2: QtWidgets.QAbstractItemView.ScrollHint.PositionAtCenter,
+    3: QtWidgets.QAbstractItemView.ScrollHint.PositionAtBottom
+}
+
+
 def handle_mime_data_urls(mime_data):
     """
     Process the data from a drag and drop operation.
@@ -265,8 +273,7 @@ class ListPreviewWidget(QtWidgets.QTableWidget, RegistryProperties):
         if scroll_to_slide >= self.slide_count():
             scroll_to_slide = self.slide_count() - 1
         # Scroll to item if possible.
-        # TODO: auto_scrolling['pos'] should be a scroll hint not a int; and `middle` and `bottom` might be switched in qt6
-        self.scrollToItem(self.item(scroll_to_slide, 0), QtWidgets.QAbstractItemView.ScrollHint.EnsureVisible)
+        self.scrollToItem(self.item(scroll_to_slide, 0), SCROLL_HINT[auto_scrolling['pos']])
         self.selectRow(slide)
 
     def current_slide_number(self):
