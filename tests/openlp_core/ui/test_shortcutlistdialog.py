@@ -28,7 +28,7 @@ from PyQt6 import QtCore
 from openlp.core.ui.shortcutlistdialog import CaptureShortcutButton, ShortcutTreeWidget
 
 
-def test_key_press_event():
+def test_key_press_event(mock_settings):
     """
     Test the keyPressEvent method
     """
@@ -45,7 +45,7 @@ def test_key_press_event():
     mocked_event.ignore.assert_called_once_with()
 
 
-def test_keyboard_search():
+def test_keyboard_search(mock_settings):
     """
     Test the keyboardSearch method of the ShortcutTreeWidget
     """

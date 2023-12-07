@@ -40,7 +40,7 @@ from openlp.core.ui.slidecontroller import NON_TEXT_MENU, WIDE_MENU, NARROW_MENU
     PreviewController, SlideController
 
 
-def test_initial_slide_controller(registry: Registry):
+def test_initial_slide_controller(registry: Registry, mock_settings: MagicMock):
     """
     Test the initial slide controller state .
     """

@@ -19,14 +19,14 @@
 ##########################################################################
 import os
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 from PyQt6 import QtWidgets
 
 from openlp.core.widgets.dialogs import FileDialog
 
 
-def test_file_dialog():
+def test_file_dialog(mock_settings: MagicMock):
     """
     Test that the :class:`FileDialog` instantiates correctly
     """

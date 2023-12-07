@@ -77,7 +77,7 @@ def mocked_set_icon(mock_settings):
     q_thread_patcher.stop()
 
 
-def test_init_sample_data(download_env):
+def test_init_sample_data(download_env, mock_settings):
     """
     Test that the theme data is loaded correctly in to a ThemeListWidgetItem object when instantiated
     """
@@ -94,7 +94,7 @@ def test_init_sample_data(download_env):
     mocked_download_worker.assert_called_once_with('url', 'BlueBurst.png')
 
 
-def test_init_download_worker(download_env):
+def test_init_download_worker(download_env, mock_settings):
     """
     Test that the `DownloadWorker` worker is set up correctly and that the thread is started.
     """
@@ -115,7 +115,7 @@ def test_init_download_worker(download_env):
     assert mocked_ftw.thumbnail_download_threads == ['thumbnail_download_BlueBurst.png']
 
 
-def test_firsttimeform_initialise():
+def test_firsttimeform_initialise(mock_settings):
     """
     Test if we can intialise the FirstTimeForm
     """
@@ -134,7 +134,7 @@ def test_firsttimeform_initialise():
 
 
 @patch('openlp.core.ui.firsttimeform.QtWidgets.QWizard.exec')
-def test_firsttimeform_exec(mocked_qwizard_exec):
+def test_firsttimeform_exec(mocked_qwizard_exec, mock_settings):
 
     # GIVEN: An instance of FirstTimeForm
     frw = FirstTimeForm(None)
@@ -316,7 +316,7 @@ def test__parse_config_invalid_config(mocked_message_box):
 
 @patch('openlp.core.ui.firsttimeform.get_web_page')
 @patch('openlp.core.ui.firsttimeform.QtWidgets.QMessageBox')
-def test_network_error(mocked_message_box, mocked_get_web_page, ftf_app):
+def test_network_error(mocked_message_box, mocked_get_web_page, mock_settings):
     """
     Test we catch a network error in First Time Wizard - bug 1409627
     """

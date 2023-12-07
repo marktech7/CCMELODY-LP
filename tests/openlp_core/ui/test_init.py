@@ -40,7 +40,7 @@ def test_single_col_widget_create():
 
 
 @patch('openlp.core.ui.QtWidgets.QTableWidget')
-def test_single_col_widget_resize_event(MockQTableWidget):
+def test_single_col_widget_resize_event(MockQTableWidget, mock_settings):
     """
     Test that the resizeEvent method does the right thing
     """

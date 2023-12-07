@@ -21,12 +21,13 @@
 """
 Package to test the openlp.core.ui package.
 """
+from unittest.mock import MagicMock
 from PyQt6 import QtCore
 
 from openlp.core.ui.splashscreen import SplashScreen
 
 
-def test_splashscreen():
+def test_splashscreen(mock_settings: MagicMock):
     """
     Test that the SpashScreen is created correctly
     """

@@ -49,7 +49,8 @@ SEARCH_TYPES = [(SearchTypes.First, QtGui.QIcon(), "First", "First Placeholder T
 
 
 @pytest.fixture()
-def search_edit(mock_settings: MagicMock) -> SearchEdit:
+@patch('openlp.core.ui.icons.is_ui_theme_dark')
+def search_edit(mock_is_dark: MagicMock, mock_settings: MagicMock) -> SearchEdit:
     main_window = QtWidgets.QMainWindow()
     Registry().register('main_window', main_window)
     Registry().remove('settings')
@@ -70,7 +71,7 @@ def history_combo(mock_settings: MagicMock) -> HistoryComboBox:
 
 
 @pytest.fixture()
-def path_edit() -> PathEdit:
+def path_edit(mock_settings: MagicMock) -> PathEdit:
     with patch('openlp.core.widgets.edits.PathEdit._setup'):
         return PathEdit()
 
