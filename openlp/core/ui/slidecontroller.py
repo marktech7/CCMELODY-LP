@@ -238,7 +238,7 @@ class SlideController(QtWidgets.QWidget, LogMixin, RegistryProperties):
         self.controller = QtWidgets.QWidget(self.splitter)
         self.controller.setGeometry(QtCore.QRect(0, 0, 100, 536))
         self.controller.setSizePolicy(QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Policy.Preferred,
-                                                            QtWidgets.QSizePolicy.Policy.Maximum))
+                                                            QtWidgets.QSizePolicy.Policy.Expanding))
         self.controller_layout = QtWidgets.QVBoxLayout(self.controller)
         self.controller_layout.setSpacing(0)
         self.controller_layout.setContentsMargins(0, 0, 0, 0)
