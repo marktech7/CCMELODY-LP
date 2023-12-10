@@ -495,17 +495,6 @@ def main():
         os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
-    # Initialise OpenLP
-    app = OpenLP()
-    Registry.create()
-    if args.portable:
-        # This has to be done here so that we can load the settings before instantiating the application object
-        portable_path, settings = setup_portable_settings(args.portablepath)
-    else:
-        settings = Settings()
-    # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
-    hidpi_mode = settings.value('advanced/hidpi mode')
-    apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     # Instantiating QCoreApplication
     init_webview_custom_schemes()
     application = QtWidgets.QApplication(qt_args)
@@ -552,6 +541,17 @@ def main():
             os.environ['PYTHON_VLC_MODULE_PATH'] = str(vlc_dir)
             os.environ['PATH'] += ';' + str(vlc_dir)
             log.debug('VLC Path: {}'.format(os.environ.get('PYTHON_VLC_LIB_PATH', '')))
+    # Initialise OpenLP
+    app = OpenLP()
+    Registry.create()
+    if args.portable:
+        # This has to be done here so that we can load the settings before instantiating the application object
+        portable_path, settings = setup_portable_settings(args.portablepath)
+    else:
+        settings = Settings()
+    # Doing HiDPI adjustments
+    hidpi_mode = settings.value('advanced/hidpi mode')
+    apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     settings.init_default_shortcuts()
     Registry().register('settings', settings)
     if settings.value('advanced/protect data directory'):
