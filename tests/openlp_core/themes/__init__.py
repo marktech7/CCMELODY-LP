@@ -19,31 +19,5 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The form layout
+Package to test the openlp.core.themes package.
 """
-from PyQt5 import QtCore, QtWidgets
-
-from .themelayoutdialog import Ui_ThemeLayoutDialog
-
-
-class ThemeLayoutForm(QtWidgets.QDialog, Ui_ThemeLayoutDialog):
-    """
-    The exception dialog
-    """
-    def __init__(self, parent):
-        """
-        Constructor
-        """
-        super(ThemeLayoutForm, self).__init__(parent)
-        self.setup_ui(self)
-
-    def exec(self, image):
-        """
-        Run the Dialog with correct heading.
-        """
-        pixmap = image.scaledToHeight(400, QtCore.Qt.SmoothTransformation)
-        pixmap.setDevicePixelRatio(self.theme_display_label.devicePixelRatio())
-        self.theme_display_label.setPixmap(pixmap)
-        display_aspect_ratio = float(image.width()) / image.height()
-        self.theme_display_label.setFixedSize(400, int(400 / display_aspect_ratio))
-        return QtWidgets.QDialog.exec(self)

@@ -23,7 +23,7 @@ import datetime
 from PyQt5 import QtGui, QtWidgets
 
 from openlp.core.common.i18n import UiStrings, translate
-from openlp.core.lib.ui import create_button, create_button_box
+from openlp.core.lib.ui import create_button, create_button_box, create_separator
 from openlp.core.ui.icons import UiIcons
 
 
@@ -50,11 +50,7 @@ class UiAboutDialog(object):
         self.logo_label.setMargin(8)
         self.logo_label.setObjectName('logo_label')
         self.base_layout.addWidget(self.logo_label)
-        self.line = QtWidgets.QFrame(about_dialog)
-        self.line.setFrameShape(QtWidgets.QFrame.HLine)
-        self.line.setFrameShadow(QtWidgets.QFrame.Sunken)
-        self.line.setObjectName('line')
-        self.base_layout.addWidget(self.line)
+        self.base_layout.addWidget(create_separator(about_dialog))
         self.about_dialog_layout = QtWidgets.QVBoxLayout()
         self.about_dialog_layout.setContentsMargins(8, 8, 8, 8)
         self.about_dialog_layout.setSpacing(8)

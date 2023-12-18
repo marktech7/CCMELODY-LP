@@ -25,7 +25,7 @@ from unittest.mock import MagicMock, patch, call
 
 import pytest
 
-from openlp.core.ui.style import MEDIA_MANAGER_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, \
+from openlp.core.ui.style import TOOLBOX_STYLE, UiThemes, WIN_REPAIR_STYLESHEET, \
     get_alternate_rows_repair_stylesheet, get_application_stylesheet, \
     get_library_stylesheet, has_ui_theme, is_ui_theme_dark, set_default_theme
 import openlp.core.ui.style
@@ -152,7 +152,7 @@ def test_get_library_stylesheet_automatic_ui_theme(mock_settings):
     result = get_library_stylesheet()
 
     # THEN: the correct stylesheet should be returned
-    assert result == MEDIA_MANAGER_STYLE
+    assert result == TOOLBOX_STYLE
 
 
 @patch('openlp.core.ui.style.HAS_DARK_THEME', False)
@@ -165,7 +165,7 @@ def test_get_library_stylesheet_defaultlight_ui_theme(mock_settings):
     result = get_library_stylesheet()
 
     # THEN: the correct stylesheet should be returned
-    assert result == MEDIA_MANAGER_STYLE
+    assert result == TOOLBOX_STYLE
 
 
 @patch('openlp.core.ui.style.HAS_DARK_THEME', False)
@@ -178,7 +178,7 @@ def test_get_library_stylesheet_defaultdark_ui_theme(mock_settings):
     result = get_library_stylesheet()
 
     # THEN: the correct stylesheet should be returned
-    assert result == MEDIA_MANAGER_STYLE
+    assert result == TOOLBOX_STYLE
 
 
 @pytest.mark.skipif(not hasattr(openlp.core.ui.style, 'qdarkstyle'), reason='qdarkstyle is not installed')

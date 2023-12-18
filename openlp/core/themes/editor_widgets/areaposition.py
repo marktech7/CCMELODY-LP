@@ -19,19 +19,28 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.pages.areaposition` module contains the area position page used in the theme wizard
+The :mod:`~openlp.core.themes.editor_widgets.areaposition` module contains the area position widget used in the
+theme editor
 """
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from openlp.core.common.i18n import translate
-from openlp.core.pages import GridLayoutPage
-from openlp.core.widgets.labels import FormLabel
+from openlp.core.themes.editor_widgets import ThemeEditorWidget, create_label
 
 
-class AreaPositionPage(GridLayoutPage):
+DEBOUNCE_TIME = 200
+
+
+class AreaPositionWidget(ThemeEditorWidget):
+    on_value_changed = QtCore.pyqtSignal()
+
     """
-    A wizard page for the area positioning widgets in the theme wizard
+    A widget for the area positioning in the theme editor
     """
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the UI
@@ -44,35 +53,35 @@ class AreaPositionPage(GridLayoutPage):
         self.main_position_check_box = QtWidgets.QCheckBox(self.main_position_group_box)
         self.main_position_check_box.setObjectName('main_position_check_box')
         self.main_position_layout.addWidget(self.main_position_check_box, 0, 0, 1, 2)
-        self.main_x_label = FormLabel(self.main_position_group_box)
+        self.main_x_label = create_label(self, self.main_position_group_box)
         self.main_x_label.setObjectName('main_x_label')
         self.main_position_layout.addWidget(self.main_x_label, 1, 0)
         self.main_x_spin_box = QtWidgets.QSpinBox(self.main_position_group_box)
         self.main_x_spin_box.setMaximum(9999)
         self.main_x_spin_box.setObjectName('main_x_spin_box')
         self.main_position_layout.addWidget(self.main_x_spin_box, 1, 1)
-        self.main_y_label = FormLabel(self.main_position_group_box)
+        self.main_y_label = create_label(self, self.main_position_group_box)
         self.main_y_label.setObjectName('main_y_label')
         self.main_position_layout.addWidget(self.main_y_label, 2, 0)
         self.main_y_spin_box = QtWidgets.QSpinBox(self.main_position_group_box)
         self.main_y_spin_box.setMaximum(9999)
         self.main_y_spin_box.setObjectName('main_y_spin_box')
         self.main_position_layout.addWidget(self.main_y_spin_box, 2, 1)
-        self.main_width_label = FormLabel(self.main_position_group_box)
+        self.main_width_label = create_label(self, self.main_position_group_box)
         self.main_width_label.setObjectName('main_width_label')
         self.main_width_spin_box = QtWidgets.QSpinBox(self.main_position_group_box)
         self.main_width_spin_box.setMaximum(9999)
         self.main_width_spin_box.setObjectName('main_width_spin_box')
         self.main_position_layout.addWidget(self.main_width_label, 3, 0)
         self.main_position_layout.addWidget(self.main_width_spin_box, 3, 1)
-        self.main_height_label = FormLabel(self.main_position_group_box)
+        self.main_height_label = create_label(self, self.main_position_group_box)
         self.main_height_label.setObjectName('main_height_label')
         self.main_height_spin_box = QtWidgets.QSpinBox(self.main_position_group_box)
         self.main_height_spin_box.setMaximum(9999)
         self.main_height_spin_box.setObjectName('main_height_spin_box')
         self.main_position_layout.addWidget(self.main_height_label, 4, 0)
         self.main_position_layout.addWidget(self.main_height_spin_box, 4, 1)
-        self.layout.addWidget(self.main_position_group_box, 0, 0)
+        self.main_layout.addWidget(self.main_position_group_box)
         # Footer area position
         self.footer_position_group_box = QtWidgets.QGroupBox(self)
         self.footer_position_group_box.setObjectName('footer_position_group_box')
@@ -81,44 +90,88 @@ class AreaPositionPage(GridLayoutPage):
         self.footer_position_check_box = QtWidgets.QCheckBox(self.footer_position_group_box)
         self.footer_position_check_box.setObjectName('footer_position_check_box')
         self.footer_position_layout.addWidget(self.footer_position_check_box, 0, 0, 1, 2)
-        self.footer_x_label = FormLabel(self.footer_position_group_box)
+        self.footer_x_label = create_label(self, self.footer_position_group_box)
         self.footer_x_label.setObjectName('footer_x_label')
         self.footer_x_spin_box = QtWidgets.QSpinBox(self.footer_position_group_box)
         self.footer_x_spin_box.setMaximum(9999)
         self.footer_x_spin_box.setObjectName('footer_x_spin_box')
         self.footer_position_layout.addWidget(self.footer_x_label, 1, 0)
         self.footer_position_layout.addWidget(self.footer_x_spin_box, 1, 1)
-        self.footer_y_label = FormLabel(self.footer_position_group_box)
+        self.footer_y_label = create_label(self, self.footer_position_group_box)
         self.footer_y_label.setObjectName('footer_y_label')
         self.footer_y_spin_box = QtWidgets.QSpinBox(self.footer_position_group_box)
         self.footer_y_spin_box.setMaximum(9999)
         self.footer_y_spin_box.setObjectName('footer_y_spin_box')
         self.footer_position_layout.addWidget(self.footer_y_label, 2, 0)
         self.footer_position_layout.addWidget(self.footer_y_spin_box, 2, 1)
-        self.footer_width_label = FormLabel(self.footer_position_group_box)
+        self.footer_width_label = create_label(self, self.footer_position_group_box)
         self.footer_width_label.setObjectName('footer_width_label')
         self.footer_width_spin_box = QtWidgets.QSpinBox(self.footer_position_group_box)
         self.footer_width_spin_box.setMaximum(9999)
         self.footer_width_spin_box.setObjectName('footer_width_spin_box')
         self.footer_position_layout.addWidget(self.footer_width_label, 3, 0)
         self.footer_position_layout.addWidget(self.footer_width_spin_box, 3, 1)
-        self.footer_height_label = FormLabel(self.footer_position_group_box)
+        self.footer_height_label = create_label(self, self.footer_position_group_box)
         self.footer_height_label.setObjectName('footer_height_label')
         self.footer_height_spin_box = QtWidgets.QSpinBox(self.footer_position_group_box)
         self.footer_height_spin_box.setMaximum(9999)
         self.footer_height_spin_box.setObjectName('footer_height_spin_box')
         self.footer_position_layout.addWidget(self.footer_height_label, 4, 0)
         self.footer_position_layout.addWidget(self.footer_height_spin_box, 4, 1)
-        self.layout.addWidget(self.footer_position_group_box, 0, 1)
+        self.main_layout.addWidget(self.footer_position_group_box)
+
+    def connect_signals(self):
         # Connect signals to slots
-        self.main_position_check_box.toggled.connect(self.main_x_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_y_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_width_spin_box.setDisabled)
-        self.main_position_check_box.toggled.connect(self.main_height_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_x_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_y_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_width_spin_box.setDisabled)
-        self.footer_position_check_box.toggled.connect(self.footer_height_spin_box.setDisabled)
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.main_position_check_box.toggled.connect(self.main_x_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_y_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_width_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self.main_height_spin_box.setDisabled)
+            self.main_position_check_box.toggled.connect(self._on_value_changed_emit)
+            self.footer_position_check_box.toggled.connect(self.footer_x_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_y_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_width_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self.footer_height_spin_box.setDisabled)
+            self.footer_position_check_box.toggled.connect(self._on_value_changed_emit)
+            self.main_x_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_y_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_width_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.main_height_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_x_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_y_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_width_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            self.footer_height_spin_box.valueChanged.connect(self._on_value_changed_emit_debounce)
+            # Re-checking after connecting signals
+            self.main_x_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_y_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_width_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.main_height_spin_box.setDisabled(self.main_position_check_box.isChecked())
+            self.footer_x_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_y_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_width_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+            self.footer_height_spin_box.setDisabled(self.footer_position_check_box.isChecked())
+
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.main_position_check_box.toggled.disconnect(self.main_x_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_y_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_width_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self.main_height_spin_box.setDisabled)
+        self.main_position_check_box.toggled.disconnect(self._on_value_changed_emit)
+        self.footer_position_check_box.toggled.disconnect(self.footer_x_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_y_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_width_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self.footer_height_spin_box.setDisabled)
+        self.footer_position_check_box.toggled.disconnect(self._on_value_changed_emit)
+        self.main_x_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_y_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_width_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.main_height_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_x_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_y_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_width_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
+        self.footer_height_spin_box.valueChanged.disconnect(self._on_value_changed_emit_debounce)
 
     def retranslate_ui(self):
         """
@@ -224,3 +277,14 @@ class AreaPositionPage(GridLayoutPage):
     @footer_height.setter
     def footer_height(self, value):
         self.footer_height_spin_box.setValue(value)
+
+    def _on_value_changed_emit(self):
+        self.on_value_changed.emit()
+
+    def _on_value_changed_emit_debounce(self):
+        if not hasattr(self, 'debounce_timer'):
+            self.debounce_timer = QtCore.QTimer(self)
+            self.debounce_timer.setInterval(DEBOUNCE_TIME)
+            self.debounce_timer.setSingleShot(True)
+            self.debounce_timer.timeout.connect(self._on_value_changed_emit)
+        self.debounce_timer.start()

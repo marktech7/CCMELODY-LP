@@ -55,13 +55,20 @@ FIRST_CHORD_TEMPLATE = '<span class="chordline">{chord}</span>'
 NO_CHORD_TEMPLATE = '<span class="nochordline">{chord}</span>'
 CHORD_LINE_TEMPLATE = '<span class="chord"><span><strong>{chord}</strong></span></span>{tail}{whitespace}{remainder}'
 WHITESPACE_TEMPLATE = '<span class="ws">{whitespaces}</span>'
-VERSE = 'The Lord said to {r}Noah{/r}: \n' \
+VERSE_1 = 'The Lord said to {r}Noah{/r}: \n' \
     'There\'s gonna be a {su}floody{/su}, {sb}floody{/sb}\n' \
     'The Lord said to {g}Noah{/g}:\n' \
     'There\'s gonna be a {st}floody{/st}, {it}floody{/it}\n' \
     'Get those children out of the muddy, muddy \n' \
     '{r}C{/r}{b}h{/b}{bl}i{/bl}{y}l{/y}{g}d{/g}{pk}' \
     'r{/pk}{o}e{/o}{pp}n{/pp} of the Lord\n'
+VERSE_2 = 'The Lord told Noah\n' \
+    'To build him an arky, arky\n' \
+    'Lord told Noah to build him an arky, arky\n' \
+    'Build it out of gopher barky, barky,\n' \
+    '{r}C{/r}{b}h{/b}{bl}i{/bl}{y}l{/y}{g}d{/g}{pk}' \
+    'r{/pk}{o}e{/o}{pp}n{/pp} of the Lord\n'
+VERSES = [VERSE_1, VERSE_2]
 VERSE_FOR_LINE_COUNT = '\n'.join(map(str, range(100)))
 TITLE = 'Arky Arky'
 AUTHOR = 'John Doe'
@@ -565,12 +572,13 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
         """
         return self.run_in_display('clearSlides')
 
-    def generate_footer(self):
+    def generate_footer(self, is_first_slide=True):
         """
         """
         footer_template = self.settings.value('songs/footer template')
         # Keep this in sync with the list in songstab.py
         vars = {
+            'first_slide': False,
             'title': TITLE,
             'authors_none_label': translate('OpenLP.Ui', 'Written by'),
             'authors_words_label': translate('SongsPlugin.AuthorType', 'Words',
@@ -580,6 +588,7 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             'ccli_license': self.settings.value('core/ccli number'),
             'ccli_license_label': translate('SongsPlugin.MediaItem', 'CCLI License'),
             'ccli_number': CCLI_NO,
+            'songbook_entries': [],
         }
         try:
             footer_html = mako.template.Template(footer_template).render_unicode(**vars).replace('\n', '')
@@ -588,33 +597,46 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             footer_html = 'Dummy footer text'
         return footer_html
 
-    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True):
+    def generate_preview(self, theme_data, force_page=False, generate_screenshot=True, use_delay=True,
+                         use_extended_preview=False):
         """
         Generate a preview of a theme.
 
         :param theme_data:  The theme to generated a preview for.
         :param force_page: Flag to tell message lines per page need to be generated.
         :param generate_screenshot: Do I need to generate a screen shot?
+        :param use_delay: Do I need to wait for a second before grab the screen shot?
+        :param use_extended_preview: Use a extended preview with two slides
         :rtype: QtGui.QPixmap
         """
         # save value for use in format_slide
         self.force_page = force_page
         if not self.force_page:
             self.set_theme(theme_data, is_sync=True, service_item_type=ServiceItemType.Text)
-            slides = self.format_slide(VERSE, None)
-            verses = dict()
-            verses['title'] = TITLE
-            verses['text'] = render_tags(slides[0])
-            verses['verse'] = 'V1'
-            verses['footer'] = self.generate_footer()
-            self.load_verses([verses], is_sync=True)
-            # Wait for a second
-            wait_for(lambda: False, timeout=1)
+            verses = []
+            verseOne = self._generate_preview_slide()
+            verses.append(verseOne)
+            if use_extended_preview:
+                verseTwo = self._generate_preview_slide(1)
+                verses.append(verseTwo)
+            self.load_verses(verses, is_sync=True)
+            if use_delay:
+                # Wait for a second
+                wait_for(lambda: False, timeout=1)
             self.force_page = False
             if generate_screenshot:
                 return self.grab()
         self.force_page = False
         return None
+
+    def _generate_preview_slide(self, number=0):
+        slides = self.format_slide(VERSES[number], None)
+        verse = dict()
+        verse['title'] = TITLE
+        verse['text'] = render_tags(slides[0])
+        verse['verse'] = 'V1'
+        verse['footer'] = self.generate_footer(number == 0)
+        return verse
 
     def format_slide(self, text, item):
         """
@@ -880,6 +902,28 @@ class ThemePreviewRenderer(DisplayWindow, LogMixin):
             pixmap.save(fname, ext)
         else:
             return pixmap
+
+    def set_text_area_layout_borders(self, enabled=True):
+        """
+        Enables or disables the layout border area to aid user on the theme positioning tasks.
+
+        :param enabled: True to enable borders, False to disable them
+        """
+        self.run_in_display('setTextAreaLayoutBorders', enabled)
+
+    def set_transitions_enabled(self, enabled=True):
+        """
+        Enables or disables the slide transitions (disabled by default on ThemePreviewRenderer).
+
+        :param enabled: True to enable slide transitions, false to disable them
+        """
+        self.run_in_display('setTransitionsEnabled', enabled)
+
+    def play_transition(self):
+        """
+        Plays a sample transition.
+        """
+        self.run_in_display('playExampleTransition')
 
 
 class Renderer(RegistryBase, ThemePreviewRenderer):

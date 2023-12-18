@@ -19,24 +19,23 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>. #
 ##########################################################################
 """
-The :mod:`~openlp.core.pages.background` module contains the background page used in the theme wizard
+The :mod:`~openlp.core.themes.editor_widgets.background` module contains the background widget used in the theme editor
 """
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 
 from openlp.core.common import get_images_filter
 from openlp.core.common.i18n import UiStrings, translate
 from openlp.core.lib.theme import BackgroundGradientType, BackgroundType
 from openlp.core.lib.ui import critical_error_message_box
-from openlp.core.pages import GridLayoutPage
 from openlp.core.ui.icons import UiIcons
 from openlp.core.ui.media import VIDEO_EXT
 from openlp.core.widgets.buttons import ColorButton
 from openlp.core.widgets.edits import PathEdit
-from openlp.core.widgets.labels import FormLabel
+from openlp.core.themes.editor_widgets import ThemeEditorWidget, create_label
 from openlp.core.ui.media.vlcplayer import get_vlc
 
 
-class BackgroundPage(GridLayoutPage):
+class BackgroundWidget(ThemeEditorWidget):
     """
     A background selection widget
     """
@@ -46,116 +45,155 @@ class BackgroundPage(GridLayoutPage):
     Video = 'video'
     Stream = 'stream'
 
+    on_value_changed = QtCore.pyqtSignal()
+
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.connected_signals = False
+
     def setup_ui(self):
         """
         Set up the ui
         """
         # background type
-        self.background_label = FormLabel(self)
+        self.background_label = create_label(self)
         self.background_label.setObjectName('background_label')
-        self.layout.addWidget(self.background_label, 0, 0)
+        self.main_layout.addWidget(self.background_label)
         self.background_combo_box = QtWidgets.QComboBox(self)
         self.background_combo_box.addItems(['', '', '', '', '', ''])
         self.background_combo_box.setObjectName('background_combo_box')
-        self.layout.addWidget(self.background_combo_box, 0, 1, 1, 3)
+        self.main_layout.addWidget(self.background_combo_box)
         # color
-        self.color_label = FormLabel(self)
+        self.color_label = create_label(self)
         self.color_label.setObjectName('color_label')
-        self.layout.addWidget(self.color_label, 1, 0)
+        self.main_layout.addWidget(self.color_label)
         self.color_button = ColorButton(self)
         self.color_button.setObjectName('color_button')
-        self.layout.addWidget(self.color_button, 1, 1)
+        self.main_layout.addWidget(self.color_button)
         self.color_widgets = [self.color_label, self.color_button]
         # gradient
-        self.gradient_type_label = FormLabel(self)
+        self.gradient_type_label = create_label(self)
         self.gradient_type_label.setObjectName('gradient_type_label')
-        self.layout.addWidget(self.gradient_type_label, 2, 0)
+        self.main_layout.addWidget(self.gradient_type_label)
         self.gradient_combo_box = QtWidgets.QComboBox(self)
         self.gradient_combo_box.setObjectName('gradient_combo_box')
         self.gradient_combo_box.addItems(['', '', '', '', ''])
-        self.layout.addWidget(self.gradient_combo_box, 2, 1, 1, 3)
-        self.gradient_start_label = FormLabel(self)
+        self.main_layout.addWidget(self.gradient_combo_box)
+        self.gradient_start_label = create_label(self)
         self.gradient_start_label.setObjectName('gradient_start_label')
-        self.layout.addWidget(self.gradient_start_label, 3, 0)
+        self.main_layout.addWidget(self.gradient_start_label)
         self.gradient_start_button = ColorButton(self)
         self.gradient_start_button.setObjectName('gradient_start_button')
-        self.layout.addWidget(self.gradient_start_button, 3, 1)
-        self.gradient_end_label = FormLabel(self)
+        self.main_layout.addWidget(self.gradient_start_button)
+        self.gradient_end_label = create_label(self)
         self.gradient_end_label.setObjectName('gradient_end_label')
-        self.layout.addWidget(self.gradient_end_label, 3, 2)
+        self.main_layout.addWidget(self.gradient_end_label)
         self.gradient_end_button = ColorButton(self)
         self.gradient_end_button.setObjectName('gradient_end_button')
-        self.layout.addWidget(self.gradient_end_button, 3, 3)
+        self.main_layout.addWidget(self.gradient_end_button)
         self.gradient_widgets = [self.gradient_type_label, self.gradient_combo_box, self.gradient_start_label,
                                  self.gradient_start_button, self.gradient_end_label, self.gradient_end_button]
         # image
-        self.image_label = FormLabel(self)
+        self.image_label = create_label(self)
         self.image_label.setObjectName('image_label')
-        self.layout.addWidget(self.image_label, 4, 0)
+        self.main_layout.addWidget(self.image_label)
         self.image_path_edit = PathEdit(self, dialog_caption=translate('OpenLP.ThemeWizard', 'Select Image'),
                                         show_revert=False)
-        self.layout.addWidget(self.image_path_edit, 4, 1, 1, 3)
-        self.image_color_label = FormLabel(self)
+        self.main_layout.addWidget(self.image_path_edit)
+        self.image_color_label = create_label(self)
         self.image_color_label.setObjectName('image_color_label')
-        self.layout.addWidget(self.image_color_label, 5, 0)
+        self.main_layout.addWidget(self.image_color_label)
         self.image_color_button = ColorButton(self)
         self.image_color_button.color = '#000000'
         self.image_color_button.setObjectName('image_color_button')
-        self.layout.addWidget(self.image_color_button, 5, 1)
+        self.main_layout.addWidget(self.image_color_button)
         self.image_widgets = [self.image_label, self.image_path_edit, self.image_color_label, self.image_color_button]
         # video
-        self.video_label = FormLabel(self)
+        self.video_label = create_label(self)
         self.video_label.setObjectName('video_label')
-        self.layout.addWidget(self.video_label, 6, 0)
+        self.main_layout.addWidget(self.video_label)
         self.video_path_edit = PathEdit(self, dialog_caption=translate('OpenLP.ThemeWizard', 'Select Video'),
                                         show_revert=False)
-        self.layout.addWidget(self.video_path_edit, 6, 1, 1, 3)
-        self.video_color_label = FormLabel(self)
+        self.main_layout.addWidget(self.video_path_edit)
+        self.video_color_label = create_label(self)
         self.video_color_label.setObjectName('video_color_label')
-        self.layout.addWidget(self.video_color_label, 7, 0)
+        self.main_layout.addWidget(self.video_color_label)
         self.video_color_button = ColorButton(self)
         self.video_color_button.color = '#000000'
         self.video_color_button.setObjectName('video_color_button')
-        self.layout.addWidget(self.video_color_button, 7, 1)
+        self.main_layout.addWidget(self.video_color_button)
         self.video_widgets = [self.video_label, self.video_path_edit, self.video_color_label, self.video_color_button]
         # streams
-        self.stream_label = FormLabel(self)
+        self.stream_label = create_label(self)
         self.stream_label.setObjectName('stream_label')
-        self.layout.addWidget(self.stream_label, 6, 0)
-        self.stream_layout = QtWidgets.QHBoxLayout()
+        self.main_layout.addWidget(self.stream_label)
+        self.stream_main_layout = QtWidgets.QHBoxLayout()
         self.stream_lineedit = QtWidgets.QLineEdit(self)
         self.stream_lineedit.setObjectName('stream_lineedit')
         self.stream_lineedit.setReadOnly(True)
-        self.stream_layout.addWidget(self.stream_lineedit)
+        self.stream_main_layout.addWidget(self.stream_lineedit)
         # button to open select device stream form
         self.device_stream_select_button = QtWidgets.QToolButton(self)
         self.device_stream_select_button.setObjectName('device_stream_select_button')
         self.device_stream_select_button.setIcon(UiIcons().device_stream)
-        self.stream_layout.addWidget(self.device_stream_select_button)
+        self.stream_main_layout.addWidget(self.device_stream_select_button)
         # button to open select network stream form
         self.network_stream_select_button = QtWidgets.QToolButton(self)
         self.network_stream_select_button.setObjectName('network_stream_select_button')
         self.network_stream_select_button.setIcon(UiIcons().network_stream)
-        self.stream_layout.addWidget(self.network_stream_select_button)
-        self.layout.addLayout(self.stream_layout, 6, 1, 1, 3)
-        self.stream_color_label = FormLabel(self)
+        self.stream_main_layout.addWidget(self.network_stream_select_button)
+        self.main_layout.addLayout(self.stream_main_layout)
+        self.stream_color_label = create_label(self)
         self.stream_color_label.setObjectName('stream_color_label')
-        self.layout.addWidget(self.stream_color_label, 7, 0)
+        self.main_layout.addWidget(self.stream_color_label)
         self.stream_color_button = ColorButton(self)
         self.stream_color_button.color = '#000000'
         self.stream_color_button.setObjectName('stream_color_button')
-        self.layout.addWidget(self.stream_color_button, 7, 1)
+        self.main_layout.addWidget(self.stream_color_button)
         self.stream_widgets = [self.stream_label, self.stream_lineedit, self.device_stream_select_button,
                                self.network_stream_select_button, self.stream_color_label, self.stream_color_button]
         # Force everything up
-        self.layout_spacer = QtWidgets.QSpacerItem(1, 1)
-        self.layout.addItem(self.layout_spacer, 8, 0, 1, 4)
-        # Connect slots
-        self.background_combo_box.currentIndexChanged.connect(self._on_background_type_index_changed)
-        self.device_stream_select_button.clicked.connect(self._on_device_stream_select_button_triggered)
-        self.network_stream_select_button.clicked.connect(self._on_network_stream_select_button_triggered)
+        self.main_layout_spacer = QtWidgets.QSpacerItem(1, 1)
+        self.main_layout.addItem(self.main_layout_spacer)
         # Force the first set of widgets to show
-        self._on_background_type_index_changed(0)
+        self._on_background_type_index_changed(0, emit=False)
+
+    def connect_signals(self):
+        # Connect slots
+        if not self.connected_signals:
+            self.connected_signals = True
+            self.background_combo_box.currentIndexChanged.connect(self._on_background_type_index_changed)
+            self.device_stream_select_button.clicked.connect(self._on_device_stream_select_button_triggered)
+            self.network_stream_select_button.clicked.connect(self._on_network_stream_select_button_triggered)
+            self.gradient_combo_box.currentIndexChanged.connect(self._on_value_changed_emit)
+            self.color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.image_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.gradient_start_button.colorChanged.connect(self._on_value_changed_emit)
+            self.gradient_end_button.colorChanged.connect(self._on_value_changed_emit)
+            self.video_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.stream_color_button.colorChanged.connect(self._on_value_changed_emit)
+            self.stream_lineedit.textChanged.connect(self._on_value_changed_emit)
+            self.image_path_edit.pathChanged.connect(self._on_value_changed_emit)
+            self.video_path_edit.pathChanged.connect(self._on_value_changed_emit)
+            # Force the first set of widgets to show
+            # Running after signal connect to ensure it's shown
+            self._on_background_type_index_changed(self.background_combo_box.currentIndex(), emit=False)
+
+    def disconnect_signals(self):
+        self.connected_signals = False
+        self.background_combo_box.currentIndexChanged.disconnect(self._on_background_type_index_changed)
+        self.device_stream_select_button.clicked.disconnect(self._on_device_stream_select_button_triggered)
+        self.network_stream_select_button.clicked.disconnect(self._on_network_stream_select_button_triggered)
+        self.gradient_combo_box.currentIndexChanged.disconnect(self._on_value_changed_emit)
+        self.color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.image_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.gradient_start_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.gradient_end_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.video_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.stream_color_button.colorChanged.disconnect(self._on_value_changed_emit)
+        self.stream_lineedit.textChanged.disconnect(self._on_value_changed_emit)
+        self.image_path_edit.pathChanged.disconnect(self._on_value_changed_emit)
+        self.video_path_edit.pathChanged.disconnect(self._on_value_changed_emit)
 
     def retranslate_ui(self):
         """
@@ -198,7 +236,7 @@ class BackgroundPage(GridLayoutPage):
                                                            visible=visible_formats, actual=actual_formats)
         self.video_path_edit.filters = '{video};;{ui} (*)'.format(video=video_filter, ui=UiStrings().AllFiles)
 
-    def _on_background_type_index_changed(self, index):
+    def _on_background_type_index_changed(self, index, emit=True):
         """
         Hide and show widgets based on index
         """
@@ -210,6 +248,8 @@ class BackgroundPage(GridLayoutPage):
         if index < len(widget_sets):
             for widget in widget_sets[index]:
                 widget.show()
+        if emit:
+            self._on_value_changed_emit()
 
     def _on_device_stream_select_button_triggered(self):
         """
@@ -225,6 +265,7 @@ class BackgroundPage(GridLayoutPage):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
+            self._on_value_changed_emit()
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
                                        translate('MediaPlugin.MediaItem', 'Device streaming support requires VLC.'))
@@ -243,6 +284,7 @@ class BackgroundPage(GridLayoutPage):
                 stream_selector_form.set_mrl(self.stream_lineedit.text())
             stream_selector_form.exec()
             del stream_selector_form
+            self._on_value_changed_emit()
         else:
             critical_error_message_box(translate('MediaPlugin.MediaItem', 'VLC is not available'),
                                        translate('MediaPlugin.MediaItem', 'Network streaming support requires VLC.'))
@@ -252,6 +294,7 @@ class BackgroundPage(GridLayoutPage):
         callback method used to get the stream mrl and options
         """
         self.stream_lineedit.setText(stream_str)
+        self._on_value_changed_emit()
 
     @property
     def background_type(self):
@@ -350,3 +393,6 @@ class BackgroundPage(GridLayoutPage):
     @stream_mrl.setter
     def stream_mrl(self, value):
         self.stream_lineedit.setText(value)
+
+    def _on_value_changed_emit(self):
+        self.on_value_changed.emit()

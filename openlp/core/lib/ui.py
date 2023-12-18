@@ -327,13 +327,13 @@ def set_case_insensitive_completer(cache, widget):
     widget.setCompleter(completer)
 
 
-def create_valign_selection_widgets(parent):
+def create_valign_selection_widgets(parent, use_form_label=True):
     """
     Creates a standard label and combo box for asking users to select a vertical alignment.
 
     :param parent: The parent object. This should be a ``QWidget`` descendant.
     """
-    label = FormLabel(parent)
+    label = FormLabel(parent) if use_form_label else QtWidgets.QLabel(parent)
     label.setText(translate('OpenLP.Ui', '&Vertical Align:'))
     combo_box = QtWidgets.QComboBox(parent)
     combo_box.addItems([UiStrings().Top, UiStrings().Middle, UiStrings().Bottom])
@@ -354,6 +354,14 @@ def find_and_set_in_combo_box(combo_box, value_to_find, set_missing=True):
         # Not Found.
         index = 0 if set_missing else combo_box.currentIndex()
     combo_box.setCurrentIndex(index)
+
+
+def create_separator(parent, objectName='line', vertical=False):
+    separator = QtWidgets.QFrame(parent)
+    separator.setFrameShape(QtWidgets.QFrame.HLine if not vertical else QtWidgets.QFrame.VLine)
+    if objectName is not None:
+        separator.setObjectName(objectName)
+    return separator
 
 
 class MultipleViewModeList(QtWidgets.QListWidget):
@@ -449,3 +457,15 @@ def add_list_view_mode_items_to_toolbar(toolbar, trigger_handler):
                                checked=False,
                                tooltip=translate('OpenLP.Ui', 'Shows the list in a grid view.'),
                                triggers=trigger_handler.on_set_view_mode_grid)
+
+
+class AutoSizeableQFontComboBox(QtWidgets.QFontComboBox):
+    """
+    Default QFontComboBox can have a big mininum size hint due to calculating it based on
+    largest font name. This fixes it.
+    """
+
+    def minimumSizeHint(self) -> QtCore.QSize:
+        minimumHint = super().minimumSizeHint()
+        minimumHint.setWidth(100)
+        return minimumHint
