@@ -74,6 +74,7 @@ class OpenLP(QtCore.QObject, LogMixin):
     """
     args = []
     worker_threads = {}
+    settings = None
 
     def exec(self):
         """
@@ -495,11 +496,24 @@ def main():
         os.environ['QT_SCALE_FACTOR_ROUNDING_POLICY'] = 'PassThrough'
     # Initialise the resources
     qInitResources()
+    # Initialise OpenLP
+    app = OpenLP()
+    Registry.create()
+    QtWidgets.QApplication.setOrganizationName('OpenLP')
+    QtWidgets.QApplication.setOrganizationName('openlp.org')
+    if args.portable:
+        # This has to be done here so that we can load the settings before instantiating the application object
+        portable_path, settings = setup_portable_settings(args.portablepath)
+    else:
+        settings = Settings()
+    Registry().register('settings', settings)
+    app.settings = settings
+    # Doing HiDPI adjustments that need to be done before QCoreApplication instantiation.
+    hidpi_mode = settings.value('advanced/hidpi mode')
+    apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
     # Instantiating QCoreApplication
     init_webview_custom_schemes()
     application = QtWidgets.QApplication(qt_args)
-    application.setOrganizationName('OpenLP')
-    application.setOrganizationDomain('openlp.org')
     application.setAttribute(QtCore.Qt.AA_DontCreateNativeWidgetSiblings, True)
     # Doing HiDPI adjustments that need to be done after QCoreApplication instantiation.
     apply_dpi_adjustments_stage_application(hidpi_mode, application)
@@ -527,6 +541,7 @@ def main():
         application.setApplicationName('OpenLP')
         set_up_logging(AppLocation.get_directory(AppLocation.CacheDir))
         set_up_web_engine_cache(AppLocation.get_directory(AppLocation.CacheDir) / 'web_cache')
+    settings.init_default_shortcuts()
     # Set the libvlc environment variable if we're frozen
     if getattr(sys, 'frozen', False):
         # Path to libvlc and the plugins
@@ -541,19 +556,6 @@ def main():
             os.environ['PYTHON_VLC_MODULE_PATH'] = str(vlc_dir)
             os.environ['PATH'] += ';' + str(vlc_dir)
             log.debug('VLC Path: {}'.format(os.environ.get('PYTHON_VLC_LIB_PATH', '')))
-    # Initialise OpenLP
-    app = OpenLP()
-    Registry.create()
-    if args.portable:
-        # This has to be done here so that we can load the settings before instantiating the application object
-        portable_path, settings = setup_portable_settings(args.portablepath)
-    else:
-        settings = Settings()
-    # Doing HiDPI adjustments
-    hidpi_mode = settings.value('advanced/hidpi mode')
-    apply_dpi_adjustments_stage_qt(hidpi_mode, qt_args)
-    settings.init_default_shortcuts()
-    Registry().register('settings', settings)
     if settings.value('advanced/protect data directory'):
         # attempt to create a file lock
         app.data_dir_lock = FileLock(AppLocation.get_data_path(), get_version()['full'])
@@ -574,8 +576,6 @@ def main():
         else:
             set_webview_display_path(args.display_custom_path)
     Registry().set_flag('no_web_server', args.no_web_server)
-    # Upgrade settings.
-    app.settings = settings
     application.setApplicationVersion(get_version()['version'])
     # Check if an instance of OpenLP is already running. Quit if there is a running instance and the user only wants one
     server = Server()
