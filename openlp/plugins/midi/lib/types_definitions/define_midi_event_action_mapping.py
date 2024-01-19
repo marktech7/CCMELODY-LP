@@ -76,11 +76,6 @@ default_action_midi_mappings = [
                       M.NOTE_ON, 50, 'Go to the next slide'),
     MidiActionMapping('event_slide_goto', 'Slide Go to Select', C.SLIDE, A.VARIABLE,
                       M.NOTE_ON, 52, 'Go to a specific section with velocity'),
-    MidiActionMapping('event_timer_start', 'Slide Timer Start', C.SLIDE, A.TOGGLE,
-                      M.NOTE_ON, 54, 'Start/Stop the slider timer.'),
-    MidiActionMapping('event_timer_set', 'Slide Timer Set', C.SLIDE, A.VARIABLE,
-                      M.NOTE_ON, 55, 'Set the slider timer value in seconds.'),
-    # TODO: maybe put the timer in a separate group
 
     # Group 5: Song-specific transpose actions
     MidiActionMapping('event_transpose_down', 'Transpose Down', C.TRANSPOSE, A.VARIABLE,
@@ -89,14 +84,6 @@ default_action_midi_mappings = [
                       M.NOTE_ON, 61, 'Reset the song transposition'),
     MidiActionMapping('event_transpose_up', 'Transpose Up', C.TRANSPOSE, A.VARIABLE,
                       M.NOTE_ON, 62, 'Transpose the song up'),
-
-    # Group 6:Bible display selection actions
-    # TODO: maybe put the timer in a separate group
-    MidiActionMapping('event_bible_book', 'Bible Go To Book', C.SLIDE, A.VARIABLE,
-                      M.NOTE_ON, 56, 'Set to a selected Bible book.'),
-    MidiActionMapping('event_bible_chapter', 'Bible Go To Chapter', C.SLIDE, A.VARIABLE,
-                      M.NOTE_ON, 57, 'Set to a selected Bible chapter.'),
-
 ]
 
 
