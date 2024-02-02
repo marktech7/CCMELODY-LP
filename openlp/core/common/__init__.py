@@ -80,9 +80,7 @@ def get_network_interfaces():
                     'broadcast': address.broadcast().toString(),
                     'netmask': address.netmask().toString(),
                     'prefix': address.prefixLength(),
-                    'localnet': QHostAddress(
-                        str([mask & ip_segment for mask, ip_segment
-                             in (address.netmask().toIPv4Address(), ip.toIPv4Address())])).toString()
+                    'localnet': QHostAddress(address.netmask().toIPv4Address() & ip.toIPv4Address()).toString()
                 }
                 log.debug('Adding {interface} to active list'.format(interface=interface.name()))
     if len(interfaces) == 0:
